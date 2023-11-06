@@ -46,6 +46,7 @@ from litestar._openapi.schema_generation.utils import (
     _should_create_enum_schema,
     _should_create_literal_schema,
     _type_or_first_not_none_inner_type,
+    get_example_name,
 )
 from litestar.datastructures.upload_file import UploadFile
 from litestar.exceptions import ImproperlyConfiguredException
@@ -644,7 +645,7 @@ class SchemaCreator:
         if not schema.examples and self.generate_examples:
             from litestar._openapi.schema_generation.examples import create_examples_for_field
 
-            schema.examples = create_examples_for_field(field)
+            schema.examples = {get_example_name(field): ex for ex in create_examples_for_field(field)}
 
         if schema.title and schema.type in (OpenAPIType.OBJECT, OpenAPIType.ARRAY):
             if schema.title in self.schemas and hash(self.schemas[schema.title]) != hash(schema):

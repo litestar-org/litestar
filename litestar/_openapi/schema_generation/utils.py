@@ -75,3 +75,9 @@ def _should_create_literal_schema(field_definition: FieldDefinition) -> bool:
         or field_definition.is_optional
         and all(inner.is_literal for inner in field_definition.inner_types if not inner.is_none_type)
     )
+
+
+def get_example_name(field_definition: FieldDefinition) -> str:
+    """Get the key for the example for the given field definition."""
+
+    return field_definition.name or field_definition.type_.__name__.lower()

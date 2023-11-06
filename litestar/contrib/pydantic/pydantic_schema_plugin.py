@@ -278,5 +278,11 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
             properties={k: schema_creator.for_field_definition(f) for k, f in field_definitions.items()},
             type=OpenAPIType.OBJECT,
             title=title or _get_type_schema_name(field_definition),
-            examples=[Example(example)] if example else None,  # type: ignore[arg-type]
+            examples={
+                field_definition.name.lower(): Example(
+                    description=f"Example {field_definition.name} value", value=example
+                )
+            }
+            if example
+            else None,
         )
