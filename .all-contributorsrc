@@ -1381,6 +1381,27 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/43068450?v=4",
       "profile": "https://github.com/myslak71",
       "contributions": [
+        "doc",
+        "test"
+      ]
+    },
+    {
+      "login": "orgarten",
+      "name": "Orell Garten",
+      "avatar_url": "https://avatars.githubusercontent.com/u/10799869?v=4",
+      "profile": "https://github.com/orgarten",
+      "contributions": [
+        "code",
+        "doc",
+        "test"
+      ]
+    },
+    {
+      "login": "Kumzy",
+      "name": "Julien",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5995441?v=4",
+      "profile": "https://github.com/Kumzy",
+      "contributions": [
         "doc"
       ]
     }

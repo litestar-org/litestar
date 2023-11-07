@@ -110,9 +110,9 @@ Then, run the following command:
     uvicorn app:app --reload
 
 You can now visit ``http://localhost:8000/`` and ``http://localhost:8000/books/1`` in your browser and
-you should see the JSON responses of your two endpoints:
+you should see the responses of your two endpoints:
 
-.. code-block:: json
+.. code-block:: text
 
    "Hello, world!"
 

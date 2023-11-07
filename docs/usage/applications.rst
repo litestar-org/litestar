@@ -65,6 +65,29 @@ connection, around.
     :language: python
     :caption: Handling a database connection
 
+Order of execution
+-----------------------------------------------------
+
+When multiple lifespan context managers and ``on_shutdown`` hooks are specified, Litestar will invoke the context
+managers in inverse order before the shutdown hooks are invoked.
+
+Consider the case where there are two lifespan context managers ``ctx_a`` and ``ctx_b`` as well as two shutdown hooks
+``hook_a`` and ``hook_b`` as shown in the following code:
+
+.. code-block:: python
+
+    app = Litestar(lifespan=[ctx_a, ctx_b], on_shutdown=[hook_a, hook_b])
+
+During shutdown, they are executed in the following order:
+
+.. mermaid::
+
+    flowchart LR
+        ctx_b --> ctx_a --> hook_a --> hook_b
+
+As seen, the context managers are invoked in inverse order.
+On the other hand, the shutdown hooks are invoked in their specified order.
+
 .. _application-state:
 
 Using Application State

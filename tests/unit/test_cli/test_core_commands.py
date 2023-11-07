@@ -142,8 +142,6 @@ def test_run_command(
             f"{path.stem}:app",
             f"--host={host}",
             f"--port={port}",
-            "--ssl-certfile=None",
-            "--ssl-keyfile=None",
         ]
         if fd is not None:
             expected_args.append(f"--fd={fd}")

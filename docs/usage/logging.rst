@@ -73,6 +73,7 @@ Standard Library Logging (Manual Configuration)
 The above example is the same as using logging without the litestar LoggingConfig.
 
 .. code-block:: python
+
     import logging
 
     from litestar import Litestar, Request, get
