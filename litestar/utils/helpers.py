@@ -91,3 +91,13 @@ def unique_name_for_scope(base_name: str, scope: Container[str]) -> str:
         if (unique_name := f"{base_name}_{i}") not in scope:
             return unique_name
         i += 1
+
+
+def get_exception_group() -> type[BaseException]:
+    """Get the exception group class with version compatibility."""
+    try:
+        return cast("type[BaseException]", ExceptionGroup)  # type:ignore[name-defined]
+    except NameError:
+        from exceptiongroup import ExceptionGroup as _ExceptionGroup
+
+        return cast("type[BaseException]", _ExceptionGroup)
