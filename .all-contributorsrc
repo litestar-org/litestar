@@ -1395,6 +1395,15 @@
         "doc",
         "test"
       ]
+    },
+    {
+      "login": "Kumzy",
+      "name": "Julien",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5995441?v=4",
+      "profile": "https://github.com/Kumzy",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,

@@ -3,18 +3,17 @@
 from __future__ import annotations
 
 from sys import version_info
-from typing import Any, Deque, Dict, Generic, Iterable, List, Optional, Sequence, Tuple, TypeVar, Union
+from typing import Any, Dict, Generic, List, Optional, TypeVar, Union
 
 import pytest
 from typing_extensions import Annotated
 
 from litestar.utils.typing import (
-    annotation_is_iterable_of_type,
     get_origin_or_inner_type,
     get_type_hints_with_generics_resolved,
     make_non_optional_union,
 )
-from tests.models import DataclassPerson, DataclassPet
+from tests.models import DataclassPerson, DataclassPet  # noqa: F401
 
 if version_info >= (3, 10):
     from collections import deque  # noqa: F401
@@ -32,29 +31,6 @@ if version_info >= (3, 10):
     ]
 else:
     py_310_plus_annotation = []
-
-
-@pytest.mark.parametrize(
-    "annotation, expected",
-    (
-        (List[DataclassPerson], True),
-        (Sequence[DataclassPerson], True),
-        (Iterable[DataclassPerson], True),
-        (Tuple[DataclassPerson, ...], True),
-        (Deque[DataclassPerson], True),
-        (List[DataclassPet], False),
-        (Sequence[DataclassPet], False),
-        (Iterable[DataclassPet], False),
-        (Tuple[DataclassPet, ...], False),
-        (Deque[DataclassPet], False),
-        *py_310_plus_annotation,
-        (int, False),
-        (str, False),
-        (bool, False),
-    ),
-)
-def test_annotation_is_iterable_of_type(annotation: Any, expected: bool) -> None:
-    assert annotation_is_iterable_of_type(annotation=annotation, type_value=DataclassPerson) is expected
 
 
 @pytest.mark.parametrize(

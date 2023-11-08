@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Empty
-from litestar.utils import Ref, async_partial
+from litestar.utils import ensure_async_callable
 from litestar.utils.predicates import is_async_callable, is_sync_or_async_generator
 from litestar.utils.warnings import (
     warn_implicit_sync_to_thread,
@@ -35,7 +35,7 @@ class Provide:
     )
 
     signature_model: type[SignatureModel]
-    dependency: Ref[AnyCallable]
+    dependency: AnyCallable
 
     def __init__(
         self,
@@ -64,10 +64,10 @@ class Provide:
             warn_implicit_sync_to_thread(dependency, stacklevel=3)
 
         if sync_to_thread and has_sync_callable:
-            self.dependency = Ref["AnyCallable"](async_partial(dependency))  # pyright: ignore
+            self.dependency = ensure_async_callable(dependency)  # pyright: ignore
             self.has_sync_callable = False
         else:
-            self.dependency = Ref["AnyCallable"](dependency)  # pyright: ignore
+            self.dependency = dependency  # pyright: ignore
             self.has_sync_callable = has_sync_callable
 
         self.sync_to_thread = bool(sync_to_thread)
@@ -81,9 +81,9 @@ class Provide:
             return self.value
 
         if self.has_sync_callable:
-            value = self.dependency.value(**kwargs)
+            value = self.dependency(**kwargs)
         else:
-            value = await self.dependency.value(**kwargs)
+            value = await self.dependency(**kwargs)
 
         if self.use_cache:
             self.value = value

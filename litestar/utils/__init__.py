@@ -1,6 +1,6 @@
 from litestar.utils.deprecation import deprecated, warn_deprecation
 
-from .helpers import Ref, get_enum_string_value, get_name, unique_name_for_scope, url_quote
+from .helpers import get_enum_string_value, get_name, unique_name_for_scope, url_quote
 from .path import join_paths, normalize_path
 from .predicates import (
     is_annotated_type,
@@ -16,9 +16,7 @@ from .predicates import (
     is_non_string_iterable,
     is_non_string_sequence,
     is_optional_union,
-    is_struct_class,
     is_sync_or_async_generator,
-    is_typed_dict,
     is_undefined_sentinel,
     is_union,
 )
@@ -29,15 +27,12 @@ from .scope import (
     set_litestar_scope_state,
 )
 from .sequence import find_index, unique
-from .sync import AsyncCallable, AsyncIteratorWrapper, async_partial
-from .typing import annotation_is_iterable_of_type, get_origin_or_inner_type, make_non_optional_union
+from .sync import AsyncIteratorWrapper, ensure_async_callable
+from .typing import get_origin_or_inner_type, make_non_optional_union
 
 __all__ = (
-    "AsyncCallable",
+    "ensure_async_callable",
     "AsyncIteratorWrapper",
-    "Ref",
-    "annotation_is_iterable_of_type",
-    "async_partial",
     "delete_litestar_scope_state",
     "deprecated",
     "find_index",
@@ -59,9 +54,7 @@ __all__ = (
     "is_non_string_iterable",
     "is_non_string_sequence",
     "is_optional_union",
-    "is_struct_class",
     "is_sync_or_async_generator",
-    "is_typed_dict",
     "is_undefined_sentinel",
     "is_union",
     "join_paths",
