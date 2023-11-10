@@ -1190,13 +1190,10 @@ document.write(`
 
 
 <span class="n">logging_config</span> <span class="o">=</span> <span class="n">LoggingConfig</span><span class="p">(</span>
-    <span class="n">loggers</span><span class="o">=</span><span class="p">{</span>
-        <span class="s2">&quot;root&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;level&quot;</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLevelName</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">),</span> <span class="s2">&quot;handlers&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;console&quot;</span><span class="p">]},</span>
-        <span class="s2">&quot;my_app&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="s2">&quot;level&quot;</span><span class="p">:</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;handlers&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;queue_listener&quot;</span><span class="p">],</span>
-        <span class="p">},</span>
-    <span class="p">}</span>
+    <span class="n">root</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;level&quot;</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLevelName</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">),</span> <span class="s2">&quot;handlers&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;console&quot;</span><span class="p">]},</span>
+    <span class="n">formatters</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;standard&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> - </span><span class="si">%(name)s</span><span class="s2"> - </span><span class="si">%(levelname)s</span><span class="s2"> - </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">}</span>
+    <span class="p">},</span>
 <span class="p">)</span>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">my_router_handler</span><span class="p">],</span> <span class="n">logging_config</span><span class="o">=</span><span class="n">logging_config</span><span class="p">)</span>
@@ -1210,20 +1207,20 @@ which is optimal for async applications. Make sure to use it in your own loggers
 </div>
 <section id="standard-library-logging-manual-configuration">
 <h2>Standard Library Logging (Manual Configuration)<a class="headerlink" href="#standard-library-logging-manual-configuration" title="Permalink to this heading">#</a></h2>
-<p><a class="reference external" href="https://docs.python.org/3/howto/logging.html">logging</a> is Python’s builtin standard logging library and can be integrated with <cite>LoggingConfig</cite> as the <cite>root</cite> logging.</p>
+<p><a class="reference external" href="https://docs.python.org/3/howto/logging.html">logging</a> is Python’s builtin standard logging library and can be integrated with <cite>LoggingConfig</cite> as the <cite>root</cite> logging. By using <cite>logging_config()()</cite> you can build a <cite>logger</cite> to be used around your project.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">litestar.logging.config</span> <span class="kn">import</span> <span class="n">LoggingConfig</span>
+<span class="kn">from</span> <span class="nn">litestar.logging</span> <span class="kn">import</span> <span class="n">LoggingConfig</span>
 
-<span class="n">log_config</span> <span class="o">=</span> <span class="n">LoggingConfig</span><span class="p">(</span>
+<span class="n">logging_config</span> <span class="o">=</span> <span class="n">LoggingConfig</span><span class="p">(</span>
     <span class="n">root</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;level&quot;</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLevelName</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">),</span> <span class="s2">&quot;handlers&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;console&quot;</span><span class="p">]},</span>
     <span class="n">formatters</span><span class="o">=</span><span class="p">{</span>
         <span class="s2">&quot;standard&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> - </span><span class="si">%(name)s</span><span class="s2"> - </span><span class="si">%(levelname)s</span><span class="s2"> - </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">}</span>
     <span class="p">},</span>
 <span class="p">)</span>
 
-<span class="n">logger</span> <span class="o">=</span> <span class="n">log_config</span><span class="o">.</span><span class="n">configure</span><span class="p">()()</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging_config</span><span class="o">.</span><span class="n">configure</span><span class="p">()()</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
@@ -1234,7 +1231,7 @@ which is optimal for async applications. Make sure to use it in your own loggers
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
     <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">my_router_handler</span><span class="p">],</span>
-    <span class="n">logging_config</span><span class="o">=</span><span class="n">log_config</span><span class="p">,</span>
+    <span class="n">logging_config</span><span class="o">=</span><span class="n">logging_config</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 </div>
