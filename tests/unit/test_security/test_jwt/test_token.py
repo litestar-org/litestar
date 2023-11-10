@@ -10,8 +10,8 @@ from hypothesis import given
 from hypothesis.strategies import datetimes
 from jose import jwt
 
-from litestar.contrib.jwt import Token
 from litestar.exceptions import ImproperlyConfiguredException, NotAuthorizedException
+from litestar.security.jwt import Token
 
 
 @pytest.mark.parametrize("algorithm", ["HS256", "HS384", "HS512"])
