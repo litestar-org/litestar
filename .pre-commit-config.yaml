@@ -23,7 +23,7 @@ repos:
       - id: unasyncd
         additional_dependencies: ["ruff"]
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.1.2"
+    rev: "v0.1.5"
     hooks:
       - id: ruff
         args: ["--fix"]
@@ -35,7 +35,7 @@ repos:
         additional_dependencies:
           - tomli
   - repo: https://github.com/psf/black
-    rev: 23.10.1
+    rev: 23.11.0
     hooks:
       - id: black
         args: [--config=./pyproject.toml]
@@ -55,7 +55,7 @@ repos:
         exclude: "test*|examples*|tools"
         args: ["--use-tuple"]
   - repo: https://github.com/ariebovenberg/slotscheck
-    rev: v0.17.0
+    rev: v0.17.1
     hooks:
       - id: slotscheck
         exclude: "test_*|docs"
