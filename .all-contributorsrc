@@ -1411,7 +1411,8 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/37034741?v=4",
       "profile": "https://github.com/leejayhsu",
       "contributions": [
-        "maintenance"
+        "maintenance",
+        "infra"
       ]
     }
   ],
