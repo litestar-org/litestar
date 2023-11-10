@@ -501,6 +501,9 @@ see [the contribution guide](CONTRIBUTING.rst).
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Kumzy"><img src="https://avatars.githubusercontent.com/u/5995441?v=4?s=100" width="100px;" alt="Julien"/><br /><sub><b>Julien</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=Kumzy" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/leejayhsu"><img src="https://avatars.githubusercontent.com/u/37034741?v=4?s=100" width="100px;" alt="Leejay Hsu"/><br /><sub><b>Leejay Hsu</b></sub></a><br /><a href="#maintenance-leejayhsu" title="Maintenance">🚧</a> <a href="#infra-leejayhsu" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://x14.nl"><img src="https://avatars.githubusercontent.com/u/659504?v=4?s=100" width="100px;" alt="Michiel W. Beijen"/><br /><sub><b>Michiel W. Beijen</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=mbeijen" title="Documentation">📖</a></td>
+    </tr>
   </tbody>
 </table>
 
