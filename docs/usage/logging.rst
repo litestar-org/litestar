@@ -18,13 +18,10 @@ Application and request level loggers can be configured using the :class:`~lites
 
 
    logging_config = LoggingConfig(
-       loggers={
-           "root": {"level": logging.getLevelName(logging.INFO), "handlers": ["console"]},
-           "my_app": {
-               "level": "INFO",
-               "handlers": ["queue_listener"],
-           },
-       }
+       root={"level": logging.getLevelName(logging.INFO), "handlers": ["console"]},
+       formatters={
+           "standard": {"format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"}
+       },
    )
 
    app = Litestar(route_handlers=[my_router_handler], logging_config=logging_config)
@@ -40,23 +37,23 @@ Application and request level loggers can be configured using the :class:`~lites
 Standard Library Logging (Manual Configuration)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-`logging <https://docs.python.org/3/howto/logging.html>`_ is Python's builtin standard logging library and can be integrated with `LoggingConfig` as the `root` logging.
+`logging <https://docs.python.org/3/howto/logging.html>`_ is Python's builtin standard logging library and can be integrated with `LoggingConfig` as the `root` logging. By using `logging_config()()` you can build a `logger` to be used around your project.
 
 .. code-block:: python
 
     import logging
 
     from litestar import Litestar, Request, get
-    from litestar.logging.config import LoggingConfig
+    from litestar.logging import LoggingConfig
 
-    log_config = LoggingConfig(
+    logging_config = LoggingConfig(
         root={"level": logging.getLevelName(logging.INFO), "handlers": ["console"]},
         formatters={
             "standard": {"format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"}
         },
     )
 
-    logger = log_config.configure()()
+    logger = logging_config.configure()()
 
 
     @get("/")
@@ -67,7 +64,7 @@ Standard Library Logging (Manual Configuration)
 
     app = Litestar(
         route_handlers=[my_router_handler],
-        logging_config=log_config,
+        logging_config=logging_config,
     )
 
 The above example is the same as using logging without the litestar LoggingConfig.
