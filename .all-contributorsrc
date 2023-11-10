@@ -1414,6 +1414,15 @@
         "maintenance",
         "infra"
       ]
+    },
+    {
+      "login": "mbeijen",
+      "name": "Michiel W. Beijen",
+      "avatar_url": "https://avatars.githubusercontent.com/u/659504?v=4",
+      "profile": "https://x14.nl",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,

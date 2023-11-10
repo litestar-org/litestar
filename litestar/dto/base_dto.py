@@ -82,7 +82,7 @@ class AbstractDTO(Generic[T]):
         if not field_definition.is_type_var:
             cls_dict.update(model_type=field_definition.annotation)
 
-        return type(f"{cls.__name__}[{annotation}]", (cls,), cls_dict)
+        return type(f"{cls.__name__}[{annotation}]", (cls,), cls_dict)  # pyright: ignore
 
     def decode_builtins(self, value: dict[str, Any]) -> Any:
         """Decode a dictionary of Python values into an the DTO's datatype."""
