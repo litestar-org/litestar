@@ -25,7 +25,8 @@ import pytest
 from litestar import Litestar, Request, get, post
 from litestar.stores.base import Store
 from litestar.testing import TestClient
-from tests.helpers import get_exception_group, maybe_async, maybe_async_cm
+from litestar.utils.helpers import get_exception_group
+from tests.helpers import maybe_async, maybe_async_cm
 
 _ExceptionGroup = get_exception_group()
 

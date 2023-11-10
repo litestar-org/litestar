@@ -1404,6 +1404,25 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "leejayhsu",
+      "name": "Leejay Hsu",
+      "avatar_url": "https://avatars.githubusercontent.com/u/37034741?v=4",
+      "profile": "https://github.com/leejayhsu",
+      "contributions": [
+        "maintenance",
+        "infra"
+      ]
+    },
+    {
+      "login": "mbeijen",
+      "name": "Michiel W. Beijen",
+      "avatar_url": "https://avatars.githubusercontent.com/u/659504?v=4",
+      "profile": "https://x14.nl",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
