@@ -1395,6 +1395,25 @@
         "doc",
         "test"
       ]
+    },
+    {
+      "login": "Kumzy",
+      "name": "Julien",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5995441?v=4",
+      "profile": "https://github.com/Kumzy",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "leejayhsu",
+      "name": "Leejay Hsu",
+      "avatar_url": "https://avatars.githubusercontent.com/u/37034741?v=4",
+      "profile": "https://github.com/leejayhsu",
+      "contributions": [
+        "maintenance",
+        "infra"
+      ]
     }
   ],
   "contributorsPerLine": 7,
