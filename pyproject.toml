@@ -92,6 +92,9 @@ sqlalchemy = ["advanced-alchemy>=0.2.2,<1.0.0"]
 standard = ["jinja2", "jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0; sys_platform != 'win32'", "fast-query-parsers>=1.0.2"]
 structlog = ["structlog"]
 
+[tool.pdm]
+ignore_package_warnings = true
+
 [tool.pdm.dev-dependencies]
 dev = [
   "beanie>=1.21.0",
@@ -120,7 +123,6 @@ docs = [
 ]
 linting = [
   "ruff",
-  "black",
   "mypy",
   "pre-commit",
   "slotscheck",
@@ -171,10 +173,6 @@ ci = {composite = ["lint", "test"]}
 docs-serve = "sphinx-autobuild docs docs/_build/ -j auto --watch litestar --watch docs --watch tests --port 8002"
 lint = "pre-commit run --all-files"
 test = "pytest tests docs/examples"
-
-[tool.black]
-include = '\.pyi?$'
-line-length = 120
 
 [tool.codespell]
 ignore-words-list = "selectin"
@@ -335,6 +333,7 @@ ignore = [
   "E501", # pycodestyle line too long, handled by black
   "PLW2901", # pylint - for loop variable overwritten by assignment target
   "RUF012", # Ruff-specific rule - annotated with classvar
+  "ISC001", # Ruff formatter incompatible
 ]
 line-length = 120
 src = ["litestar", "tests", "docs/examples"]

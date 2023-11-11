@@ -90,7 +90,7 @@ pyright:                                            ## Run pyright
 type-check: mypy pyright                            ## Run all type checking
 
 .PHONY: pre-commit
-pre-commit: 										## Runs pre-commit hooks; includes ruff linting, codespell, black
+pre-commit: 										## Runs pre-commit hooks; includes ruff formatting and linting, codespell
 	@echo "=> Running pre-commit process"
 	@$(ENV_PREFIX)pre-commit run --all-files
 	@echo "=> Pre-commit complete"

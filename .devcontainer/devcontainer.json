@@ -34,7 +34,7 @@
         "charliermarsh.ruff"
       ],
       "settings": {
-        "python.editor.defaultFormatter": "ms-python.black-formatter",
+        "python.editor.defaultFormatter": "charliermarsh.ruff",
         "python.defaultInterpreterPath": "${workspaceFolder}/.venv",
         "python.terminal.activateEnvInCurrentTerminal": true,
         "python.testing.unittestEnabled": false,
