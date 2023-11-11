@@ -14,10 +14,10 @@ T = TypeVar("T")
 D = TypeVar("D")
 
 try:
-    async_next = anext  # pyright: ignore
-except NameError:  # pragma: no cover
+    async_next = anext  # type: ignore[name-defined]
+except NameError:
 
-    async def async_next(gen: AsyncGenerator[T, Any], default: D | EmptyType = Empty) -> T | D:  # type: ignore[misc]
+    async def async_next(gen: AsyncGenerator[T, Any], default: D | EmptyType = Empty) -> T | D:
         """Backwards compatibility shim for Python<3.10."""
         try:
             return await gen.__anext__()

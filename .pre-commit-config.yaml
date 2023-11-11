@@ -1,5 +1,5 @@
 default_language_version:
-  python: "3.12"
+  python: "3.8"
 repos:
   - repo: https://github.com/compilerla/conventional-pre-commit
     rev: v2.4.0
@@ -18,12 +18,12 @@ repos:
       - id: mixed-line-ending
       - id: trailing-whitespace
   - repo: https://github.com/provinzkraut/unasyncd
-    rev: "v0.6.1"
+    rev: "v0.7.1"
     hooks:
       - id: unasyncd
         additional_dependencies: ["ruff"]
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.0.292"
+    rev: "v0.1.2"
     hooks:
       - id: ruff
         args: ["--fix"]
@@ -32,8 +32,10 @@ repos:
     hooks:
       - id: codespell
         exclude: "tests/openapi/typescript_converter/test_converter|README.md"
+        additional_dependencies:
+          - tomli
   - repo: https://github.com/psf/black
-    rev: 23.9.1
+    rev: 23.10.1
     hooks:
       - id: black
         args: [--config=./pyproject.toml]
@@ -57,140 +59,8 @@ repos:
     hooks:
       - id: slotscheck
         exclude: "test_*|docs"
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: "v1.6.0"
-    hooks:
-      - id: mypy
-        exclude: "docs.*|test_apps.*|tests/examples.*"
-        files: "^litestar/.*|^tests/.*"
-        additional_dependencies:
-          [
-            "advanced_alchemy>=0.2.2,<0.4.0",
-            aiosqlite,
-            annotated_types,
-            anyio>=3,
-            asyncpg,
-            asyncpg_stubs,
-            attrs,
-            beanie>=1.21.0,
-            beautifulsoup4,
-            brotli,
-            click,
-            cryptography,
-            fast-query-parsers>=1.0.2,
-            fsspec,
-            greenlet,
-            httpx>=0.22,
-            httpx_sse,
-            hypothesis,
-            jinja2>=3.1.2,
-            jsbeautifier,
-            mako>=1.2.4,
-            minijinja>=1.0.0,
-            msgspec>=0.18.2,
-            multidict>=6.0.2,
-            opentelemetry-instrumentation-asgi,
-            opentelemetry-sdk,
-            piccolo,
-            picologging,
-            polyfactory>=2.6.3,
-            prometheus_client,
-            "pydantic[email]>=2",
-            pydantic-extra-types,
-            pytest,
-            pytest-asyncio,
-            pytest-cov,
-            pytest-lazy-fixture,
-            pytest-mock,
-            pytest-rerunfailures,
-            pytest-timeout,
-            pytest-xdist,
-            python-dotenv,
-            python-jose,
-            pyyaml,
-            "redis[hiredis]>=4.4.4",
-            rich-click,
-            rich>=13.0.0,
-            starlette,
-            structlog,
-            time-machine,
-            trio,
-            types-beautifulsoup4,
-            types-pytest-lazy-fixture,
-            types-python-jose,
-            types-pyyaml,
-            types-redis,
-            typing-extensions,
-            "uvicorn[standard]",
-            uvloop>=0.18.0,
-          ]
-  - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.331
-    hooks:
-      - id: pyright
-        additional_dependencies:
-          [
-            "advanced_alchemy>=0.2.2,<0.4.0",
-            aiosqlite,
-            annotated_types,
-            anyio>=3,
-            asyncpg,
-            asyncpg_stubs,
-            attrs,
-            beanie>=1.21.0,
-            beautifulsoup4,
-            brotli,
-            click,
-            cryptography,
-            fast-query-parsers>=1.0.2,
-            fsspec,
-            greenlet,
-            httpx>=0.22,
-            httpx_sse,
-            hypothesis,
-            jinja2>=3.1.2,
-            jsbeautifier,
-            mako>=1.2.4,
-            minijinja>=1.0.0,
-            msgspec>=0.18.2,
-            multidict>=6.0.2,
-            opentelemetry-instrumentation-asgi,
-            opentelemetry-sdk,
-            piccolo,
-            picologging,
-            polyfactory>=2.6.3,
-            prometheus_client,
-            "pydantic[email]>=2",
-            pydantic-extra-types,
-            pytest,
-            pytest-asyncio,
-            pytest-cov,
-            pytest-lazy-fixture,
-            pytest-mock,
-            pytest-rerunfailures,
-            pytest-timeout,
-            pytest-xdist,
-            python-dotenv,
-            python-jose,
-            pyyaml,
-            "redis[hiredis]>=4.4.4",
-            rich-click,
-            rich>=13.0.0,
-            starlette,
-            structlog,
-            time-machine,
-            trio,
-            types-beautifulsoup4,
-            types-pytest-lazy-fixture,
-            types-python-jose,
-            types-pyyaml,
-            types-redis,
-            typing-extensions,
-            "uvicorn[standard]",
-            uvloop>=0.18.0,
-          ]
   - repo: https://github.com/sphinx-contrib/sphinx-lint
-    rev: "v0.6.8"
+    rev: "v0.8.1"
     hooks:
       - id: sphinx-lint
   - repo: local

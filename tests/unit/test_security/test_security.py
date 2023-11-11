@@ -73,7 +73,7 @@ def test_abstract_security_config_registers_route_handlers(
     (
         (None, None),
         (
-            OpenAPIConfig(title="Litestar API", version="1.0.0", components=None),
+            OpenAPIConfig(title="Litestar API", version="1.0.0"),
             {
                 "schemas": {},
                 "securitySchemes": {

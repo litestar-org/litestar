@@ -6,27 +6,33 @@ from copy import deepcopy
 from dataclasses import dataclass, replace
 from inspect import Signature, getmembers, isclass, ismethod
 from itertools import chain
-from typing import Any
+from typing import Any, Union
 
-from typing_extensions import Self, get_type_hints
+from typing_extensions import Self, get_args, get_origin, get_type_hints
 
 from litestar import connection, datastructures, types
-from litestar.enums import RequestEncodingType
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.params import BodyKwarg
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
+from litestar.utils.typing import unwrap_annotation
 
 if typing.TYPE_CHECKING:
     from typing import Sequence
 
     from litestar.types import AnyCallable
 
+if sys.version_info < (3, 11):
+    from typing import _get_defaults  # type: ignore[attr-defined]
+else:
+
+    def _get_defaults(_: Any) -> Any:
+        ...
+
+
 __all__ = (
     "add_types_to_signature_namespace",
     "get_fn_type_hints",
     "ParsedSignature",
-    "infer_request_encoding_from_field_definition",
 )
 
 _GLOBAL_NAMES = {
@@ -41,6 +47,57 @@ _GLOBAL_NAMES = {
 
 This allows users to include these names within an `if TYPE_CHECKING:` block in their handler module.
 """
+
+
+def _unwrap_implicit_optional_hints(defaults: dict[str, Any], hints: dict[str, Any]) -> dict[str, Any]:
+    """Unwrap implicit optional hints.
+
+    On Python<3.11, if a function parameter annotation has a ``None`` default, it is unconditionally wrapped in an
+    ``Optional`` type. This function reverses that process.
+
+    Args:
+        defaults: Mapping of names to default values.
+        hints: Mapping of names to types.
+
+    Returns:
+        Mapping of names to types.
+    """
+
+    def _is_two_arg_optional(origin: Any, args: Any) -> bool:
+        """Check if a type is a two-argument optional type.
+
+        If the type has been wrapped in `Optional` by `get_type_hints()` it will always be a union of a type and
+        `NoneType`.
+
+        See: https://github.com/litestar-org/litestar/pull/2516
+        """
+        return origin is Union and len(args) == 2 and args[1] is type(None)
+
+    def _is_any_optional(origin: Any, args: Any) -> bool:
+        """Detect if a type is a union with `NoneType`.
+
+        After detecting that a type is a two-argument optional type, this function can be used to detect if the
+        inner type is a union with `NoneType` at all.
+
+        We only want to perform the unwrapping of the optional union if the inner type is optional as well.
+        """
+        return origin is Union and any(arg is type(None) for arg in args)
+
+    for name, default in defaults.items():
+        if default is not None:
+            continue
+
+        hint = hints[name]
+        origin = get_origin(hint)
+        args = get_args(hint)
+
+        if _is_two_arg_optional(origin, args):
+            unwrapped_inner, _, _ = unwrap_annotation(args[0])
+            if not _is_any_optional(get_origin(unwrapped_inner), get_args(unwrapped_inner)):
+                continue
+
+            hints[name] = args[0]
+    return hints
 
 
 def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -76,7 +133,14 @@ def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[
         **vars(sys.modules[module_name]),
         **(namespace or {}),
     }
-    return get_type_hints(fn_to_inspect, globalns=namespace, include_extras=True)
+    hints = get_type_hints(fn_to_inspect, globalns=namespace, include_extras=True)
+
+    if sys.version_info < (3, 11):
+        # see https://github.com/litestar-org/litestar/pull/2516
+        defaults = _get_defaults(fn_to_inspect)
+        hints = _unwrap_implicit_optional_hints(defaults, hints)
+
+    return hints
 
 
 @dataclass(frozen=True)
@@ -145,22 +209,6 @@ class ParsedSignature:
             return_type=return_type if "return" in fn_type_hints else replace(return_type, annotation=Empty),
             original_signature=signature,
         )
-
-
-def infer_request_encoding_from_field_definition(field_definition: FieldDefinition) -> RequestEncodingType | str:
-    """Infer the request encoding type from a parsed type.
-
-    Args:
-        field_definition: The parsed parameter to infer the request encoding type from.
-
-    Returns:
-        The inferred request encoding type.
-    """
-    if field_definition.kwarg_definition and isinstance(field_definition.kwarg_definition, BodyKwarg):
-        return field_definition.kwarg_definition.media_type
-    if isinstance(field_definition.default, BodyKwarg):
-        return field_definition.default.media_type
-    return RequestEncodingType.JSON
 
 
 def add_types_to_signature_namespace(

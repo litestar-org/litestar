@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Generator, List, Optional
 
 import pytest
 from typing_extensions import Annotated
@@ -8,7 +8,7 @@ from litestar.di import Provide
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import Body, Dependency, Parameter
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
-from litestar.testing import create_test_client
+from litestar.testing import TestClient, create_test_client
 
 
 def test_parsing_of_parameter_as_annotated() -> None:
@@ -219,3 +219,78 @@ def test_regex_validation() -> None:
 
         response = client.get("/val_regex?text=c")
         assert response.status_code == HTTP_400_BAD_REQUEST
+
+
+@pytest.fixture(name="optional_no_default_client")
+def optional_no_default_client_fixture() -> Generator[TestClient, None, None]:
+    @get("/optional-no-default")
+    def handle_optional(key: Optional[str]) -> Dict[str, Optional[str]]:
+        return {"key": key}
+
+    @get("/optional-annotated-no-default")
+    def handle_optional_annotated(param: Annotated[Optional[str], Parameter(query="key")]) -> Dict[str, Optional[str]]:
+        return {"key": param}
+
+    with create_test_client(route_handlers=[handle_optional, handle_optional_annotated], openapi_config=None) as client:
+        yield client
+
+
+def test_optional_query_parameter_consistency_no_default_queried_without_param(
+    optional_no_default_client: TestClient,
+) -> None:
+    assert optional_no_default_client.get("/optional-no-default", params={}).json() == {"key": None}
+    assert optional_no_default_client.get("/optional-annotated-no-default", params={}).json() == {"key": None}
+
+
+def test_optional_query_parameter_consistency_no_default_queried_with_expected_param(
+    optional_no_default_client: TestClient,
+) -> None:
+    assert optional_no_default_client.get("/optional-no-default", params={"key": "a"}).json() == {"key": "a"}
+    assert optional_no_default_client.get("/optional-annotated-no-default", params={"key": "a"}).json() == {"key": "a"}
+
+
+def test_optional_query_parameter_consistency_no_default_queried_with_other_param(
+    optional_no_default_client: TestClient,
+) -> None:
+    assert optional_no_default_client.get("/optional-no-default", params={"param": "a"}).json() == {"key": None}
+    assert optional_no_default_client.get("/optional-annotated-no-default", params={"param": "a"}).json() == {
+        "key": None
+    }
+
+
+@pytest.fixture(name="optional_default_client")
+def optional_default_client_fixture() -> Generator[TestClient, None, None]:
+    @get("/optional-default")
+    def handle_default(key: Optional[str] = None) -> Dict[str, Optional[str]]:
+        return {"key": key}
+
+    @get("/optional-annotated-default")
+    def handle_default_annotated(
+        param: Annotated[Optional[str], Parameter(query="key")] = None
+    ) -> Dict[str, Optional[str]]:
+        return {"key": param}
+
+    with create_test_client(route_handlers=[handle_default, handle_default_annotated], openapi_config=None) as client:
+        yield client
+
+
+def test_optional_query_parameter_consistency_wiht_default_queried_without_param(
+    optional_default_client: TestClient,
+) -> None:
+    assert optional_default_client.get("/optional-default", params={}).json() == {"key": None}
+    assert optional_default_client.get("/optional-annotated-default", params={}).json() == {"key": None}
+
+
+def test_optional_query_parameter_consistency_with_default_queried_with_expected_param(
+    optional_default_client: TestClient,
+) -> None:
+    assert optional_default_client.get("/optional-default", params={"key": "a"}).json() == {"key": "a"}
+    assert optional_default_client.get("/optional-annotated-default", params={"key": "a"}).json() == {"key": "a"}
+
+
+def test_optional_query_parameter_consistency_with_default_queried_with_other_param(
+    optional_default_client: TestClient,
+) -> None:
+    assert optional_default_client.get("/optional-default", params={"param": "a"}).json() == {"key": None}
+    assert optional_default_client.get("/optional-annotated-default", params={"abc": "xyz"}).json() == {"key": None}
+    assert optional_default_client.get("/optional-annotated-default", params={"param": "a"}).json() == {"key": None}

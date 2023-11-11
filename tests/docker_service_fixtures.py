@@ -14,7 +14,7 @@ import pytest
 from redis.asyncio import Redis as AsyncRedis
 from redis.exceptions import ConnectionError as RedisConnectionError
 
-from litestar.utils import AsyncCallable
+from litestar.utils import ensure_async_callable
 
 
 async def wait_until_responsive(
@@ -81,7 +81,7 @@ class DockerServiceRegistry:
             self._running_services.add(name)
 
             await wait_until_responsive(
-                check=AsyncCallable(check),
+                check=ensure_async_callable(check),
                 timeout=timeout,
                 pause=pause,
                 host=self.docker_ip,

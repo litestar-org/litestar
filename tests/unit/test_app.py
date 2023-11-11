@@ -3,16 +3,17 @@ from __future__ import annotations
 
 import inspect
 import logging
+from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
 from dataclasses import fields
 from typing import TYPE_CHECKING, List, Tuple
 from unittest.mock import MagicMock, Mock, PropertyMock
 
 import pytest
 from click import Group
-from pydantic import VERSION
 from pytest import MonkeyPatch
 
-from litestar import Litestar, MediaType, Request, Response, get, post
+from litestar import Litestar, MediaType, Request, Response, get
 from litestar.config.app import AppConfig
 from litestar.config.response_cache import ResponseCacheConfig
 from litestar.contrib.sqlalchemy.plugins import SQLAlchemySerializationPlugin
@@ -29,7 +30,6 @@ from litestar.plugins import CLIPluginProtocol
 from litestar.router import Router
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import TestClient, create_test_client
-from tests import PydanticPerson
 
 if TYPE_CHECKING:
     from typing import Dict
@@ -244,18 +244,6 @@ def test_before_send() -> None:
         assert response.headers.get("My Header") == "value injected during send"
 
 
-def test_default_handling_of_pydantic_errors() -> None:
-    @post("/{param:int}")
-    def my_route_handler(param: int, data: PydanticPerson) -> None:
-        ...
-
-    with create_test_client(my_route_handler) as client:
-        response = client.post("/123", json={"first_name": "moishe"})
-        extra = response.json().get("extra")
-        assert extra is not None
-        assert 3 if len(extra) == VERSION.startswith("1") else 4
-
-
 def test_using_custom_http_exception_handler() -> None:
     @get("/{param:int}")
     def my_route_handler(param: int) -> None:
@@ -406,3 +394,48 @@ def test_plugin_registry() -> None:
     app = Litestar(plugins=[foo])
 
     assert foo in app.plugins.cli
+
+
+def test_lifespan_context_and_shutdown_hook_execution_order() -> None:
+    events: list[str] = []
+    counter = {"value": 0}
+
+    @asynccontextmanager
+    async def lifespan_context_1(app: Litestar) -> AsyncGenerator[None, None]:
+        try:
+            yield
+        finally:
+            events.append("ctx_1")
+            counter["value"] += 1
+
+    @asynccontextmanager
+    async def lifespan_context_2(app: Litestar) -> AsyncGenerator[None, None]:
+        try:
+            yield
+        finally:
+            events.append("ctx_2")
+            counter["value"] += 1
+
+    async def hook_a(app: Litestar) -> None:
+        events.append("hook_a")
+        counter["value"] += 1
+
+    async def hook_b(app: Litestar) -> None:
+        events.append("hook_b")
+        counter["value"] += 1
+
+    with create_test_client(
+        route_handlers=[],
+        lifespan=[
+            lifespan_context_1,
+            lifespan_context_2,
+        ],
+        on_shutdown=[hook_a, hook_b],
+    ):
+        assert counter["value"] == 0
+
+    assert counter["value"] == 4
+    assert events[0] == "ctx_2"
+    assert events[1] == "ctx_1"
+    assert events[2] == "hook_a"
+    assert events[3] == "hook_b"

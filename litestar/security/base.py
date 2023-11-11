@@ -6,7 +6,7 @@ from dataclasses import field
 from typing import TYPE_CHECKING, Any, Callable, Generic, Iterable, Sequence, TypeVar, cast
 
 from litestar import Response
-from litestar.utils.sync import AsyncCallable
+from litestar.utils.sync import ensure_async_callable
 
 if TYPE_CHECKING:
     from litestar.config.app import AppConfig
@@ -146,11 +146,11 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType]):
         )
 
     def __post_init__(self) -> None:
-        self.retrieve_user_handler = AsyncCallable(self.retrieve_user_handler)
+        self.retrieve_user_handler = ensure_async_callable(self.retrieve_user_handler)
 
     @property
     @abstractmethod
-    def openapi_components(self) -> Components:  # pragma: no cover
+    def openapi_components(self) -> Components:
         """Create OpenAPI documentation for the JWT auth schema used.
 
         Returns:
@@ -160,7 +160,7 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType]):
 
     @property
     @abstractmethod
-    def security_requirement(self) -> SecurityRequirement:  # pragma: no cover
+    def security_requirement(self) -> SecurityRequirement:
         """Return OpenAPI 3.1.
 
         :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for the auth
@@ -173,7 +173,7 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType]):
 
     @property
     @abstractmethod
-    def middleware(self) -> DefineMiddleware:  # pragma: no cover
+    def middleware(self) -> DefineMiddleware:
         """Create an instance of the config's ``authentication_middleware_class`` attribute and any required kwargs,
         wrapping it in Litestar's ``DefineMiddleware``.
 

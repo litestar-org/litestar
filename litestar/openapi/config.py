@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from dataclasses import dataclass, field, fields
-from typing import TYPE_CHECKING, Literal, cast
+from typing import TYPE_CHECKING, Literal
 
 from litestar._openapi.utils import default_operation_id_creator
 from litestar.openapi.controller import OpenAPIController
@@ -67,7 +68,7 @@ class OpenAPIConfig:
     Should be an instance of
         :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>`.
     """
-    components: Components | list[Components] | None = field(default=None)
+    components: Components | list[Components] = field(default_factory=Components)
     """API Components information.
 
     Should be an instance of :class:`Components <litestar.openapi.spec.components.Components>` or a list thereof.
@@ -87,10 +88,19 @@ class OpenAPIConfig:
 
     :class:`Reference <litestar.openapi.spec.reference.Reference>` objects.
     """
-    root_schema_site: Literal["redoc", "swagger", "elements"] = "redoc"
+    root_schema_site: Literal["redoc", "swagger", "elements", "rapidoc"] = "redoc"
     """The static schema generator to use for the "root" path of `/schema/`."""
     enabled_endpoints: set[str] = field(
-        default_factory=lambda: {"redoc", "swagger", "elements", "openapi.json", "openapi.yaml", "openapi.yml"}
+        default_factory=lambda: {
+            "redoc",
+            "swagger",
+            "elements",
+            "rapidoc",
+            "openapi.json",
+            "openapi.yaml",
+            "openapi.yml",
+            "oauth2-redirect.html",
+        }
     )
     """A set of the enabled documentation sites and schema download endpoints."""
     operation_id_creator: OperationIDCreator = default_operation_id_creator
@@ -124,7 +134,7 @@ class OpenAPIConfig:
         return OpenAPI(
             external_docs=self.external_docs,
             security=self.security,
-            components=cast("Components", self.components),
+            components=deepcopy(self.components),  # deepcopy prevents mutation of the config's components
             servers=self.servers,
             tags=self.tags,
             webhooks=self.webhooks,

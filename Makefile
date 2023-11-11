@@ -74,16 +74,34 @@ lock:                                             ## Rebuild lockfiles from scra
 # =============================================================================
 # Tests, Linting, Coverage
 # =============================================================================
-.PHONY: lint
-lint: 												## Runs pre-commit hooks; includes ruff linting, codespell, black
+.PHONY: mypy
+mypy:                                               ## Run mypy
+	@echo "=> Running mypy"
+	@$(ENV_PREFIX)dmypy run
+	@echo "=> mypy complete"
+
+.PHONY: pyright
+pyright:                                            ## Run pyright
+	@echo "=> Running pyright"
+	@$(ENV_PREFIX)pyright
+	@echo "=> pyright complete"
+
+.PHONY: type-check
+type-check: mypy pyright                            ## Run all type checking
+
+.PHONY: pre-commit
+pre-commit: 										## Runs pre-commit hooks; includes ruff linting, codespell, black
 	@echo "=> Running pre-commit process"
 	@$(ENV_PREFIX)pre-commit run --all-files
 	@echo "=> Pre-commit complete"
 
+.PHONY: lint
+lint: pre-commit type-check 						## Run all linting
+
 .PHONY: coverage
 coverage:  											## Run the tests and generate coverage report
 	@echo "=> Running tests with coverage"
-	@$(ENV_PREFIX)pytest tests --cov=litestar -n auto
+	@$(ENV_PREFIX)pytest tests --cov -n auto
 	@$(ENV_PREFIX)coverage html
 	@$(ENV_PREFIX)coverage xml
 	@echo "=> Coverage report generated"

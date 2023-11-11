@@ -9,24 +9,27 @@ from .pydantic_init_plugin import PydanticInitPlugin
 from .pydantic_schema_plugin import PydanticSchemaPlugin
 
 if TYPE_CHECKING:
-    import pydantic
+    from pydantic import BaseModel
+    from pydantic.v1 import BaseModel as BaseModelV1
 
     from litestar.config.app import AppConfig
 
 __all__ = ("PydanticDTO", "PydanticInitPlugin", "PydanticSchemaPlugin", "PydanticPlugin")
 
 
-def _model_dump(model: pydantic.BaseModel, *, by_alias: bool = False) -> dict[str, Any]:
+def _model_dump(model: BaseModel | BaseModelV1, *, by_alias: bool = False) -> dict[str, Any]:
     return (
-        model.model_dump(mode="json", by_alias=by_alias)
+        model.model_dump(mode="json", by_alias=by_alias)  # pyright: ignore
         if hasattr(model, "model_dump")
         else {k: v.decode() if isinstance(v, bytes) else v for k, v in model.dict(by_alias=by_alias).items()}
     )
 
 
-def _model_dump_json(model: pydantic.BaseModel, by_alias: bool = False) -> str:
+def _model_dump_json(model: BaseModel | BaseModelV1, by_alias: bool = False) -> str:
     return (
-        model.model_dump_json(by_alias=by_alias) if hasattr(model, "model_dump_json") else model.json(by_alias=by_alias)
+        model.model_dump_json(by_alias=by_alias)  # pyright: ignore
+        if hasattr(model, "model_dump_json")
+        else model.json(by_alias=by_alias)  # pyright: ignore
     )
 
 

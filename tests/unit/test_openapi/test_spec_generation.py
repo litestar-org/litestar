@@ -5,27 +5,10 @@ from msgspec import Struct
 
 from litestar import post
 from litestar.testing import create_test_client
-from tests import (
-    AttrsPerson,
-    MsgSpecStructPerson,
-    PydanticDataClassPerson,
-    PydanticPerson,
-    TypedDictPerson,
-    VanillaDataClassPerson,
-)
+from tests.models import DataclassPerson, MsgSpecStructPerson, TypedDictPerson
 
 
-@pytest.mark.parametrize(
-    "cls",
-    (
-        PydanticPerson,
-        VanillaDataClassPerson,
-        PydanticDataClassPerson,
-        TypedDictPerson,
-        MsgSpecStructPerson,
-        AttrsPerson,
-    ),
-)
+@pytest.mark.parametrize("cls", (DataclassPerson, TypedDictPerson, MsgSpecStructPerson))
 def test_spec_generation(cls: Any) -> None:
     @post("/")
     def handler(data: cls) -> cls:
@@ -51,7 +34,7 @@ def test_spec_generation(cls: Any) -> None:
                 "pets": {
                     "oneOf": [
                         {"type": "null"},
-                        {"items": {"$ref": "#/components/schemas/PydanticPet"}, "type": "array"},
+                        {"items": {"$ref": "#/components/schemas/DataclassPet"}, "type": "array"},
                     ]
                 },
             },

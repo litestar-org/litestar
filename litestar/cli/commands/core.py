@@ -9,7 +9,15 @@ from typing import TYPE_CHECKING, Any
 
 from rich.tree import Tree
 
-from litestar.cli._utils import RICH_CLICK_INSTALLED, UVICORN_INSTALLED, LitestarEnv, console, show_app_info
+from litestar.cli._utils import (
+    RICH_CLICK_INSTALLED,
+    UVICORN_INSTALLED,
+    LitestarEnv,
+    console,
+    create_ssl_files,
+    show_app_info,
+    validate_ssl_file_paths,
+)
 from litestar.routes import HTTPRoute, WebSocketRoute
 from litestar.utils.helpers import unwrap_partial
 
@@ -41,6 +49,42 @@ def _convert_uvicorn_args(args: dict[str, Any]) -> list[str]:
             process_args.append(f"--{arg}={value}")
 
     return process_args
+
+
+def _run_uvicorn_in_subprocess(
+    *,
+    env: LitestarEnv,
+    host: str | None,
+    port: int | None,
+    workers: int | None,
+    reload: bool,
+    reload_dirs: tuple[str, ...] | None,
+    fd: int | None,
+    uds: str | None,
+    certfile_path: str | None,
+    keyfile_path: str | None,
+) -> None:
+    process_args: dict[str, Any] = {
+        "reload": reload,
+        "host": host,
+        "port": port,
+        "workers": workers,
+        "factory": env.is_app_factory,
+    }
+    if fd is not None:
+        process_args["fd"] = fd
+    if uds is not None:
+        process_args["uds"] = uds
+    if reload_dirs:
+        process_args["reload-dir"] = reload_dirs
+    if certfile_path is not None:
+        process_args["ssl-certfile"] = certfile_path
+    if keyfile_path is not None:
+        process_args["ssl-keyfile"] = keyfile_path
+    subprocess.run(
+        [sys.executable, "-m", "uvicorn", env.app_path, *_convert_uvicorn_args(process_args)],  # noqa: S603
+        check=True,
+    )
 
 
 @command(name="version")
@@ -85,6 +129,13 @@ def info_command(app: Litestar) -> None:
 @option("-U", "--uds", "--unix-domain-socket", help="Bind to a UNIX domain socket.", default=None, show_default=True)
 @option("-d", "--debug", help="Run app in debug mode", is_flag=True)
 @option("-P", "--pdb", "--use-pdb", help="Drop into PDB on an exception", is_flag=True)
+@option("--ssl-certfile", help="Location of the SSL cert file", default=None)
+@option("--ssl-keyfile", help="Location of the SSL key file", default=None)
+@option(
+    "--create-self-signed-cert",
+    help="If certificate and key are not found at specified locations, create a self-signed certificate and a key",
+    is_flag=True,
+)
 def run_command(
     reload: bool,
     port: int,
@@ -95,6 +146,9 @@ def run_command(
     debug: bool,
     reload_dir: tuple[str, ...],
     pdb: bool,
+    ssl_certfile: str | None,
+    ssl_keyfile: str | None,
+    create_self_signed_cert: bool,
     ctx: Context,
 ) -> None:
     """Run a Litestar app; requires ``uvicorn``.
@@ -138,6 +192,16 @@ def run_command(
     reload = env.reload or reload or bool(reload_dirs)
     workers = env.web_concurrency or wc
 
+    ssl_certfile = ssl_certfile or env.certfile_path
+    ssl_keyfile = ssl_keyfile or env.keyfile_path
+    create_self_signed_cert = create_self_signed_cert or env.create_self_signed_cert
+
+    certfile_path, keyfile_path = (
+        create_ssl_files(ssl_certfile, ssl_keyfile, host)
+        if create_self_signed_cert
+        else validate_ssl_file_paths(ssl_certfile, ssl_keyfile)
+    )
+
     console.rule("[yellow]Starting server process", align="left")
 
     show_app_info(app)
@@ -153,6 +217,8 @@ def run_command(
             fd=fd,
             uds=uds,
             factory=env.is_app_factory,
+            ssl_certfile=certfile_path,
+            ssl_keyfile=keyfile_path,
         )
     else:
         # invoke uvicorn in a subprocess to be able to use the --reload flag. see
@@ -163,23 +229,17 @@ def run_command(
                 " with the --reload or --workers options[/]"
             )
 
-        process_args = {
-            "reload": reload,
-            "host": host,
-            "port": port,
-            "workers": workers,
-            "factory": env.is_app_factory,
-        }
-        if fd is not None:
-            process_args["fd"] = fd
-        if uds is not None:
-            process_args["uds"] = uds
-        if reload_dirs:
-            process_args["reload-dir"] = reload_dirs
-
-        subprocess.run(
-            [sys.executable, "-m", "uvicorn", env.app_path, *_convert_uvicorn_args(process_args)],  # noqa: S603
-            check=True,
+        _run_uvicorn_in_subprocess(
+            env=env,
+            host=host,
+            port=port,
+            workers=workers,
+            reload=reload,
+            reload_dirs=reload_dirs,
+            fd=fd,
+            uds=uds,
+            certfile_path=certfile_path,
+            keyfile_path=keyfile_path,
         )
 
 
@@ -197,7 +257,7 @@ def routes_command(app: Litestar) -> None:  # pragma: no cover
                     f"[blue]{handler.name or handler.handler_name}[/blue]",
                 ]
 
-                if inspect.iscoroutinefunction(unwrap_partial(handler.fn.value)):
+                if inspect.iscoroutinefunction(unwrap_partial(handler.fn)):
                     handler_info.append("[magenta]async[/magenta]")
                 else:
                     handler_info.append("[yellow]sync[/yellow]")

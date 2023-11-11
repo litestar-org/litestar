@@ -609,7 +609,7 @@ File responses send a file:
    def handle_file_download() -> File:
        return File(
            path=Path(Path(__file__).resolve().parent, "report").with_suffix(".pdf"),
-           filename="repost.pdf",
+           filename="report.pdf",
        )
 
 The :class:`File <.response.File>` class expects two kwargs:
@@ -641,7 +641,7 @@ For example:
    def handle_file_download() -> File:
        return File(
            path=Path(Path(__file__).resolve().parent, "report").with_suffix(".pdf"),
-           filename="repost.pdf",
+           filename="report.pdf",
        )
 
 

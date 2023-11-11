@@ -21,9 +21,9 @@ def test_create_function_signature_model_parameter_parsing() -> None:
 
     model = SignatureModel.create(
         dependency_name_set=set(),
-        fn=my_fn.fn.value,
+        fn=my_fn.fn,
         data_dto=None,
-        parsed_signature=ParsedSignature.from_fn(my_fn.fn.value, {}),
+        parsed_signature=ParsedSignature.from_fn(my_fn.fn, {}),
         type_decoders=[],
     )
     fields = model._fields
@@ -38,7 +38,7 @@ def test_create_function_signature_model_parameter_parsing() -> None:
     assert fields["d"].default == b"123"
     assert fields["e"].annotation == Optional[dict]
     assert fields["e"].is_optional
-    assert fields["e"].default is Empty
+    assert fields["e"].default is None
 
 
 def test_create_function_signature_model_ignore_return_annotation() -> None:
@@ -48,9 +48,9 @@ def test_create_function_signature_model_ignore_return_annotation() -> None:
 
     signature_model_type = SignatureModel.create(
         dependency_name_set=set(),
-        fn=health_check.fn.value,
+        fn=health_check.fn,
         data_dto=None,
-        parsed_signature=ParsedSignature.from_fn(health_check.fn.value, {}),
+        parsed_signature=ParsedSignature.from_fn(health_check.fn, {}),
         type_decoders=[],
     )
     assert signature_model_type().to_dict() == {}
@@ -61,11 +61,11 @@ def test_signature_model_resolves_forward_ref_annotations(create_module: Callabl
         """
 from __future__ import annotations
 
-from pydantic import BaseModel
+from msgspec import Struct
 from litestar import Litestar, get
 from litestar.di import Provide
 
-class Test(BaseModel):
+class Test(Struct):
     hello: str
 
 async def get_dep() -> Test:

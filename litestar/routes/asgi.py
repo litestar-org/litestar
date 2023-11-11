@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Any
 from litestar.connection import ASGIConnection
 from litestar.enums import ScopeType
 from litestar.routes.base import BaseRoute
-from litestar.utils.helpers import unwrap_partial
 
 if TYPE_CHECKING:
     from litestar.handlers.asgi_handlers import ASGIRouteHandler
@@ -33,7 +32,7 @@ class ASGIRoute(BaseRoute):
         super().__init__(
             path=path,
             scope_type=ScopeType.ASGI,
-            handler_names=[unwrap_partial(route_handler.handler_name)],
+            handler_names=[route_handler.handler_name],
         )
 
     async def handle(self, scope: Scope, receive: Receive, send: Send) -> None:
@@ -52,4 +51,4 @@ class ASGIRoute(BaseRoute):
             connection = ASGIConnection["ASGIRouteHandler", Any, Any, Any](scope=scope, receive=receive)
             await self.route_handler.authorize_connection(connection=connection)
 
-        await self.route_handler.fn.value(scope=scope, receive=receive, send=send)
+        await self.route_handler.fn(scope=scope, receive=receive, send=send)
