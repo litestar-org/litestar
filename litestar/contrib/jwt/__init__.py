@@ -28,5 +28,5 @@ warn_deprecation(
     version="2.3.2",
     kind="import",
     removal_in="3.0",
-    info="importing from 'litestar.contrib.jwt' is deprecated, please import it from 'litestar.security.jwt' instead",
+    info="importing from 'litestar.contrib.jwt' is deprecated, please import from 'litestar.security.jwt' instead",
 )
