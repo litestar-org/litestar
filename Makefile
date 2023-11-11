@@ -80,6 +80,12 @@ mypy:                                               ## Run mypy
 	@$(ENV_PREFIX)dmypy run
 	@echo "=> mypy complete"
 
+.PHONY: mypy-nocache
+mypy-nocache:                                       ## Run Mypy without cache
+	@echo "=> Running mypy without a cache"
+	@$(ENV_PREFIX)dmypy run -- --cache-dir=/dev/null
+	@echo "=> mypy complete"
+
 .PHONY: pyright
 pyright:                                            ## Run pyright
 	@echo "=> Running pyright"
@@ -90,7 +96,7 @@ pyright:                                            ## Run pyright
 type-check: mypy pyright                            ## Run all type checking
 
 .PHONY: pre-commit
-pre-commit: 										## Runs pre-commit hooks; includes ruff linting, codespell, black
+pre-commit: 										## Runs pre-commit hooks; includes ruff formatting and linting, codespell
 	@echo "=> Running pre-commit process"
 	@$(ENV_PREFIX)pre-commit run --all-files
 	@echo "=> Pre-commit complete"

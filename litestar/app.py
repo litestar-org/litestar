@@ -538,7 +538,7 @@ class Litestar(Router):
     async def _call_lifespan_hook(self, hook: LifespanHook) -> None:
         ret = hook(self) if inspect.signature(hook).parameters else hook()  # type: ignore
 
-        if is_async_callable(hook):  # type: ignore
+        if is_async_callable(hook):  # pyright: ignore[reportGeneralTypeIssues]
             await ret
 
     @asynccontextmanager
@@ -791,7 +791,8 @@ class Litestar(Router):
             asgi_handler = CORSMiddleware(app=asgi_handler, config=self.cors_config)
 
         return wrap_in_exception_handler(
-            app=asgi_handler, exception_handlers=self.exception_handlers or {}  # pyright: ignore
+            app=asgi_handler,
+            exception_handlers=self.exception_handlers or {},  # pyright: ignore
         )
 
     def _wrap_send(self, send: Send, scope: Scope) -> Send:
