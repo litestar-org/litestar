@@ -80,6 +80,12 @@ mypy:                                               ## Run mypy
 	@$(ENV_PREFIX)dmypy run
 	@echo "=> mypy complete"
 
+.PHONY: mypy-nocache
+mypy-nocache:                                       ## Run Mypy without cache
+	@echo "=> Running mypy without a cache"
+	@$(ENV_PREFIX)dmypy run -- --cache-dir=/dev/null
+	@echo "=> mypy complete"
+
 .PHONY: pyright
 pyright:                                            ## Run pyright
 	@echo "=> Running pyright"

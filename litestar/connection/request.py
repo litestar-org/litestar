@@ -106,9 +106,9 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         """
         if self._json is Empty:
             body = await self.body()
-            self._json = self.scope["_json"] = decode_json(
+            self._json = self.scope["_json"] = decode_json(  # type: ignore[typeddict-unknown-key]
                 body or b"null", type_decoders=self.route_handler.resolve_type_decoders()
-            )  # type: ignore[typeddict-unknown-key]
+            )
         return self._json
 
     async def msgpack(self) -> Any:
@@ -119,9 +119,9 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         """
         if self._msgpack is Empty:
             body = await self.body()
-            self._msgpack = self.scope["_msgpack"] = decode_msgpack(
+            self._msgpack = self.scope["_msgpack"] = decode_msgpack(  # type: ignore[typeddict-unknown-key]
                 body or b"\xc0", type_decoders=self.route_handler.resolve_type_decoders()
-            )  # type: ignore[typeddict-unknown-key]
+            )
         return self._msgpack
 
     async def stream(self) -> AsyncGenerator[bytes, None]:
