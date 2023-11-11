@@ -538,7 +538,7 @@ class Litestar(Router):
     async def _call_lifespan_hook(self, hook: LifespanHook) -> None:
         ret = hook(self) if inspect.signature(hook).parameters else hook()  # type: ignore
 
-        if is_async_callable(hook):  # type: ignore
+        if is_async_callable(hook):
             await ret
 
     @asynccontextmanager

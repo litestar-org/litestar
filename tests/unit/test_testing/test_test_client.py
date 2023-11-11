@@ -110,13 +110,13 @@ async def test_use_testclient_in_endpoint(
     async def homepage() -> Any:
         local_client = test_client_cls(mock_service, backend=test_client_backend)
         local_response = await maybe_async(local_client.get("/"))
-        return local_response.json()  # type: ignore[union-attr, misc]
+        return local_response.json()
 
     app = Litestar(route_handlers=[homepage])
 
     client = test_client_cls(app)
     response = await maybe_async(client.get("/"))
-    assert response.json() == {"mock": "example"}  # type: ignore[union-attr, misc]
+    assert response.json() == {"mock": "example"}
 
 
 def raise_error(app: Litestar) -> NoReturn:
