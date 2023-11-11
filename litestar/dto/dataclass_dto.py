@@ -47,11 +47,9 @@ class DataclassDTO(AbstractDTO[T], Generic[T]):
                 default=default,
             )
 
-            yield (
-                replace(field_defintion, default=Empty, kwarg_definition=default)
-                if isinstance(default, (KwargDefinition, DependencyKwarg))
-                else field_defintion
-            )
+            yield replace(field_defintion, default=Empty, kwarg_definition=default) if isinstance(
+                default, (KwargDefinition, DependencyKwarg)
+            ) else field_defintion
 
     @classmethod
     def detect_nested_field(cls, field_definition: FieldDefinition) -> bool:

@@ -353,11 +353,7 @@ async def test_request_disconnect() -> None:
         return {"type": "http.disconnect"}
 
     with pytest.raises(InternalServerException):
-        await app(
-            {"type": "http", "route_handler": _route_handler, "method": "POST", "path": "/"},  # type: ignore[arg-type]
-            receiver,  # type: ignore[arg-type]
-            empty_send,
-        )
+        await app({"type": "http", "route_handler": _route_handler, "method": "POST", "path": "/"}, receiver, empty_send)  # type: ignore
 
 
 def test_request_state() -> None:

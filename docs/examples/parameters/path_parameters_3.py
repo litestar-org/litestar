@@ -29,7 +29,7 @@ def get_product_version(
                 url="https://mywebsite.com/documentation/product#versions",  # type: ignore[arg-type]
             ),
         ),
-    ],
+    ]
 ) -> Version:
     return VERSIONS[version]
 

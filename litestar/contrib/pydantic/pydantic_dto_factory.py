@@ -75,8 +75,7 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
             model_fields = dict(model_type.model_fields)  # type: ignore[union-attr]
         except AttributeError:
             model_fields = {
-                k: model_field.field_info
-                for k, model_field in model_type.__fields__.items()  # type: ignore[union-attr]
+                k: model_field.field_info for k, model_field in model_type.__fields__.items()  # type: ignore[union-attr]
             }
 
         for field_name, field_info in model_fields.items():

@@ -791,8 +791,7 @@ class Litestar(Router):
             asgi_handler = CORSMiddleware(app=asgi_handler, config=self.cors_config)
 
         return wrap_in_exception_handler(
-            app=asgi_handler,
-            exception_handlers=self.exception_handlers or {},  # pyright: ignore
+            app=asgi_handler, exception_handlers=self.exception_handlers or {}  # pyright: ignore
         )
 
     def _wrap_send(self, send: Send, scope: Scope) -> Send:

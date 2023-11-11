@@ -40,7 +40,8 @@ _GLOBAL_NAMES = {
     for namespace, export in chain(
         tuple(getmembers(types)), tuple(getmembers(connection)), tuple(getmembers(datastructures))
     )
-    if namespace[0].isupper() and namespace in chain(types.__all__, connection.__all__, datastructures.__all__)  # pyright: ignore
+    if namespace[0].isupper()
+    and namespace in chain(types.__all__, connection.__all__, datastructures.__all__)  # pyright: ignore
 }
 """A mapping of names used for handler signature forward-ref resolution.
 

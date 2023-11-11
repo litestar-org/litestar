@@ -232,11 +232,7 @@ def decode_msgpack(value: bytes, target_type: type[T], type_decoders: TypeDecode
     ...
 
 
-def decode_msgpack(  # type: ignore[misc]
-    value: bytes,
-    target_type: type[T] | EmptyType = Empty,  # pyright: ignore
-    type_decoders: TypeDecodersSequence | None = None,
-) -> Any:
+def decode_msgpack(value: bytes, target_type: type[T] | EmptyType = Empty, type_decoders: TypeDecodersSequence | None = None) -> Any:  # type: ignore[misc]
     """Decode a MessagePack string/bytes into an object.
 
     Args:

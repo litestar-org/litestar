@@ -83,14 +83,18 @@ class TestClientTransport(Generic[T]):
     def create_send(request: Request, context: SendReceiveContext) -> Send:
         async def send(message: Message) -> None:
             if message["type"] == "http.response.start":
-                assert not context["response_started"], 'Received multiple "http.response.start" messages.'  # noqa: S101
+                assert not context[  # noqa: S101
+                    "response_started"
+                ], 'Received multiple "http.response.start" messages.'
                 context["raw_kwargs"]["status_code"] = message["status"]
                 context["raw_kwargs"]["headers"] = [
                     (k.decode("utf-8"), v.decode("utf-8")) for k, v in message.get("headers", [])
                 ]
                 context["response_started"] = True
             elif message["type"] == "http.response.body":
-                assert context["response_started"], 'Received "http.response.body" without "http.response.start".'  # noqa: S101
+                assert context[  # noqa: S101
+                    "response_started"
+                ], 'Received "http.response.body" without "http.response.start".'
                 assert not context[  # noqa: S101
                     "response_complete"
                 ].is_set(), 'Received "http.response.body" after response completed.'

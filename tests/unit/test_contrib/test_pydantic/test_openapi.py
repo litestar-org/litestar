@@ -497,10 +497,7 @@ def test_schema_by_alias_plugin_override(base_model: AnyBaseModelType, pydantic_
 def test_create_schema_for_field_v1() -> None:
     class Model(pydantic_v1.BaseModel):
         value: str = pydantic_v1.Field(
-            title="title",
-            description="description",
-            example="example",
-            max_length=16,  # pyright: ignore
+            title="title", description="description", example="example", max_length=16  # pyright: ignore
         )
 
     schemas: Dict[str, Schema] = {}
