@@ -42,7 +42,7 @@ from litestar.types import (
     TypeEncodersMap,
 )
 from litestar.types.builtin_types import NoneType
-from litestar.utils import ensure_async_callable
+from litestar.utils import AsyncCallable, async_partial
 from litestar.utils.predicates import is_async_callable
 from litestar.utils.warnings import warn_implicit_sync_to_thread, warn_sync_to_thread_with_async_callable
 
@@ -57,7 +57,7 @@ if TYPE_CHECKING:
     from litestar.dto import AbstractDTO
     from litestar.openapi.datastructures import ResponseSpec
     from litestar.openapi.spec import SecurityRequirement
-    from litestar.types.callable_types import AsyncAnyCallable, OperationIDCreator
+    from litestar.types.callable_types import OperationIDCreator
 
 __all__ = ("HTTPRouteHandler", "route")
 
@@ -247,10 +247,10 @@ class HTTPRouteHandler(BaseRouteHandler):
             **kwargs,
         )
 
-        self.after_request = ensure_async_callable(after_request) if after_request else None  # pyright: ignore
-        self.after_response = ensure_async_callable(after_response) if after_response else None
+        self.after_request = AsyncCallable(after_request) if after_request else None  # pyright: ignore
+        self.after_response = AsyncCallable(after_response) if after_response else None
         self.background = background
-        self.before_request = ensure_async_callable(before_request) if before_request else None
+        self.before_request = AsyncCallable(before_request) if before_request else None
         self.cache = cache
         self.cache_control = cache_control
         self.cache_key_builder = cache_key_builder
@@ -276,8 +276,8 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.security = security
         self.responses = responses
         # memoized attributes, defaulted to Empty
-        self._resolved_after_response: AsyncAnyCallable | None | EmptyType = Empty
-        self._resolved_before_request: AsyncAnyCallable | None | EmptyType = Empty
+        self._resolved_after_response: AsyncCallable | None | EmptyType = Empty
+        self._resolved_before_request: AsyncCallable | None | EmptyType = Empty
         self._response_handler_mapping: ResponseHandlerMap = {"default_handler": Empty, "response_type_handler": Empty}
         self._resolved_include_in_schema: bool | EmptyType = Empty
 
@@ -356,7 +356,7 @@ class HTTPRouteHandler(BaseRouteHandler):
                     response_cookies.update(cast("set[Cookie]", layer_response_cookies))
         return frozenset(response_cookies)
 
-    def resolve_before_request(self) -> AsyncAnyCallable | None:
+    def resolve_before_request(self) -> AsyncCallable | None:
         """Resolve the before_handler handler by starting from the route handler and moving up.
 
         If a handler is found it is returned, otherwise None is set.
@@ -366,11 +366,15 @@ class HTTPRouteHandler(BaseRouteHandler):
             An optional :class:`before request lifecycle hook handler <.types.BeforeRequestHookHandler>`
         """
         if self._resolved_before_request is Empty:
-            before_request_handlers = [layer.before_request for layer in self.ownership_layers if layer.before_request]
+            before_request_handlers: list[AsyncCallable] = [
+                layer.before_request  # type: ignore[misc]
+                for layer in self.ownership_layers
+                if layer.before_request
+            ]
             self._resolved_before_request = before_request_handlers[-1] if before_request_handlers else None
-        return cast("AsyncAnyCallable | None", self._resolved_before_request)
+        return cast("AsyncCallable | None", self._resolved_before_request)
 
-    def resolve_after_response(self) -> AsyncAnyCallable | None:
+    def resolve_after_response(self) -> AsyncCallable | None:
         """Resolve the after_response handler by starting from the route handler and moving up.
 
         If a handler is found it is returned, otherwise None is set.
@@ -380,12 +384,14 @@ class HTTPRouteHandler(BaseRouteHandler):
             An optional :class:`after response lifecycle hook handler <.types.AfterResponseHookHandler>`
         """
         if self._resolved_after_response is Empty:
-            after_response_handlers: list[AsyncAnyCallable] = [
-                layer.after_response for layer in self.ownership_layers if layer.after_response  # type: ignore[misc]
+            after_response_handlers: list[AsyncCallable] = [
+                layer.after_response  # type: ignore[misc]
+                for layer in self.ownership_layers
+                if layer.after_response
             ]
             self._resolved_after_response = after_response_handlers[-1] if after_response_handlers else None
 
-        return cast("AsyncAnyCallable | None", self._resolved_after_response)
+        return cast("AsyncCallable | None", self._resolved_after_response)
 
     def resolve_include_in_schema(self) -> bool:
         """Resolve the 'include_in_schema' property by starting from the route handler and moving up.
@@ -416,8 +422,10 @@ class HTTPRouteHandler(BaseRouteHandler):
             Async Callable to handle an HTTP Request
         """
         if self._response_handler_mapping["default_handler"] is Empty:
-            after_request_handlers: list[AsyncAnyCallable] = [
-                layer.after_request for layer in self.ownership_layers if layer.after_request  # type: ignore[misc]
+            after_request_handlers: list[AsyncCallable] = [
+                layer.after_request  # type: ignore[misc]
+                for layer in self.ownership_layers
+                if layer.after_request
             ]
             after_request = cast(
                 "AfterRequestHookHandler | None",
@@ -490,11 +498,12 @@ class HTTPRouteHandler(BaseRouteHandler):
         super().on_registration(app)
         self.resolve_after_response()
         self.resolve_include_in_schema()
-        self.has_sync_callable = not is_async_callable(self.fn)
 
-        if self.has_sync_callable and self.sync_to_thread:
-            self._fn = ensure_async_callable(self.fn)
+        if self.sync_to_thread and not is_async_callable(self.fn.value):
+            self.fn.value = async_partial(self.fn.value)
             self.has_sync_callable = False
+        else:
+            self.has_sync_callable = not is_async_callable(self.fn.value)
 
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once it is set by inspecting its return annotations."""

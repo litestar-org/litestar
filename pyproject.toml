@@ -120,7 +120,6 @@ docs = [
 ]
 linting = [
   "ruff",
-  "black",
   "mypy",
   "pre-commit",
   "slotscheck",
@@ -171,10 +170,6 @@ ci = {composite = ["lint", "test"]}
 docs-serve = "sphinx-autobuild docs docs/_build/ -j auto --watch litestar --watch docs --watch tests --port 8002"
 lint = "pre-commit run --all-files"
 test = "pytest tests docs/examples"
-
-[tool.black]
-include = '\.pyi?$'
-line-length = 120
 
 [tool.codespell]
 ignore-words-list = "selectin"
@@ -297,7 +292,7 @@ select = [
   "G", # flake8-logging-format
   "I", # isort
   "ICN", # flake8-import-conventions
-  "ISC", # flake8-implicit-str-concat
+  "ISC", # flake8-implicit-str-concat  # Ruff Formatter conflicts with this
   "N", # pep8-naming
   "PIE", # flake8-pie
   "PLC", # pylint - convention
@@ -332,9 +327,10 @@ ignore = [
   "D202", # pydocstyle - no blank lines allowed after function docstring
   "D205", # pydocstyle - 1 blank line required between summary line and description
   "D415", # pydocstyle - first line should end with a period, question mark, or exclamation point
-  "E501", # pycodestyle line too long, handled by black
+  "E501", # pycodestyle line too long, handled by ruff-fmt
   "PLW2901", # pylint - for loop variable overwritten by assignment target
   "RUF012", # Ruff-specific rule - annotated with classvar
+  "ISC001", # flake8-implicit-str-concat - implicit string concatenation - ruff formatter has issue with this
 ]
 line-length = 120
 src = ["litestar", "tests", "docs/examples"]
@@ -358,6 +354,10 @@ classmethod-decorators = [
 
 [tool.ruff.isort]
 known-first-party = ["litestar", "tests", "examples"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
 
 [tool.ruff.per-file-ignores]
 "docs/**/*.*" = ["S", "B", "DTZ", "A", "TCH", "ERA", "D", "RET"]
