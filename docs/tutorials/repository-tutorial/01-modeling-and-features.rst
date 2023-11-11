@@ -5,11 +5,16 @@ with database modeling using the included SQLAlchemy declarative model helpers. 
 are a series of classes and mixins that incorporate commonly used functions/column types
 to make working with models easier.
 
+.. tip:: The full code for this tutorial can be found below in the :ref:`Full Code <full-code>` section.
+
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py
     :language: python
     :caption: app.py
-    :emphasize-lines: 9,18,19,20
+    :lines: 9,18,19,20
     :linenos:
+
+Modeling
+--------
 
 We'll begin by modelling the entities and relationships between authors and books.
 We'll start by creating the ``Author`` table, utilizing the
@@ -26,7 +31,7 @@ key constraints when using the ``author_id`` field in each ``Book`` record.
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py
     :language: python
     :caption: app.py
-    :emphasize-lines: 9,21,27,28,29,30
+    :lines: 9,21,27,28,29,30
     :linenos:
 
 By using the audit model, we can automatically record the time a record was created and
@@ -71,3 +76,16 @@ Additional features provided by the built-in base models include:
   native ``JSONB`` where possible and ``Binary`` or ``Blob`` as an alternative.
 
 Let's build on this as we look at the repository classes.
+
+.. _full-code:
+
+Full Code
+---------
+
+.. dropdown:: Full Code (click to expand)
+
+    .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py
+        :language: python
+        :caption: app.py
+        :emphasize-lines: 9,18,19,20, 21,27,28,29,30
+        :linenos:
