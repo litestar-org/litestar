@@ -102,7 +102,7 @@ jobs:
     with:
       python-version: "3.12"
       os: ${{ matrix.os }}
-      timeout: 15
+      timeout: 30
 
   sonar:
     needs:
