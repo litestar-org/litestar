@@ -172,7 +172,7 @@ async def test_client_interface(
         response = await maybe_async(client.head("/"))
     else:
         response = await maybe_async(client.options("/"))
-    assert response.status_code == HTTP_200_OK  # type: ignore[union-attr, misc]
+    assert response.status_code == HTTP_200_OK  # type: ignore[union-attr]
 
 
 def test_warns_problematic_domain(test_client_cls: Type[AnyTestClient]) -> None:
