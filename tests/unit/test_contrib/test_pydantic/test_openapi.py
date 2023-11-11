@@ -547,3 +547,35 @@ class Foo(BaseModel):
     )
     schema = schemas["Foo"]
     assert schema.properties and "foo" in schema.properties
+
+
+def test_create_schema_for_pydantic_model_with_unhashable_literal_default(
+    create_module: "Callable[[str], ModuleType]",
+) -> None:
+    """Test that a model with unhashable literal defaults is correctly handled."""
+    module = create_module(
+        """
+from pydantic import BaseModel, Field
+
+class Model(BaseModel):
+    id: int
+    dict_default: dict = {}
+    dict_default_in_field: dict = Field(default={})
+    dict_default_in_factory: dict = Field(default_factory=dict)
+    list_default: list = []
+    list_default_in_field: list = Field(default=[])
+    list_default_in_factory: list = Field(default_factory=list)
+"""
+    )
+    schemas: Dict[str, Schema] = {}
+    SchemaCreator(schemas=schemas, plugins=[PydanticSchemaPlugin()]).for_field_definition(
+        FieldDefinition.from_annotation(module.Model)
+    )
+    schema = schemas["Model"]
+    assert schema.properties
+    assert "dict_default" in schema.properties
+    assert "dict_default_in_field" in schema.properties
+    assert "dict_default_in_factory" in schema.properties
+    assert "list_default" in schema.properties
+    assert "list_default_in_field" in schema.properties
+    assert "list_default_in_factory" in schema.properties

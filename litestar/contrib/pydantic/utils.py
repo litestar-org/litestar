@@ -162,4 +162,4 @@ def is_pydantic_2_model(
 
 
 def is_pydantic_undefined(value: Any) -> bool:
-    return value in PYDANTIC_UNDEFINED_SENTINELS
+    return any(v is value for v in PYDANTIC_UNDEFINED_SENTINELS)
