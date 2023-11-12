@@ -260,12 +260,17 @@ html_theme_options = {
         "Community": {
             "Contributing": {
                 "description": "Learn how to contribute to the Litestar project",
-                "link": "https://docs.litestar.dev/2/contribution-guide.html",
+                "link": "https://docs.litestar.dev/latest/contribution-guide.html",
                 "icon": "contributing",
             },
             "Code of Conduct": {
                 "description": "Review the etiquette for interacting with the Litestar community",
-                "link": "https://github.com/litestar-org/.github/blob/main/CODE_OF_CONDUCT.md",
+                "link": "https://github.com/litestar-org/.github?tab=coc-ov-file",
+                "icon": "coc",
+            },
+            "Security": {
+                "description": "Learn how we handle security issues in Litestar",
+                "link": "https://github.com/litestar-org/.github?tab=coc-ov-file#security-ov-file",
                 "icon": "coc",
             },
         },
@@ -276,7 +281,7 @@ html_theme_options = {
                 "icon": "org",
             },
             "Releases": {
-                "description": "Details about the Litestar release process",
+                "description": "Explore the release process for Litestar",
                 "link": "https://litestar.dev/about/litestar-releases",
                 "icon": "releases",
             },
@@ -286,7 +291,23 @@ html_theme_options = {
             "2.x Changelog": "https://docs.litestar.dev/2/release-notes/changelog.html",
             "1.x Changelog": "https://docs.litestar.dev/1/release-notes/changelog.html",
         },
-        "Help": "https://github.com/orgs/litestar-org/discussions",
+        "Help": {
+            "Discord Help Forum": {
+                "description": "We are active on Discord with a dedicated help forum",
+                "link": "https://discord.gg/litestar-919193495116337154",
+                "icon": "coc",
+            },
+            "GitHub Discussions": {
+                "description": "You can ask questions and discuss Litestar on GitHub Discussions",
+                "link": "https://github.com/orgs/litestar-org/discussions",
+                "icon": "coc",
+            },
+            "Stack Overflow": {
+                "description": "We monitor the <code><b>litestar</b></code> tag on Stack Overflow",
+                "link": "https://stackoverflow.com/questions/tagged/litestar",
+                "icon": "coc",
+            },
+        },
     },
 }
 
