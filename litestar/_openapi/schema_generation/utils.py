@@ -82,12 +82,6 @@ def _should_create_literal_schema(field_definition: FieldDefinition) -> bool:
     )
 
 
-def get_example_name(field_definition: FieldDefinition) -> str:
-    """Get the key for the example for the given field definition."""
-
-    return field_definition.name or get_name(field_definition.type_)
-
-
 def get_formatted_examples(field_definition: FieldDefinition, examples: Sequence[Example]) -> Mapping[str, Example]:
     """Format the examples into the OpenAPI schema format."""
 
