@@ -77,8 +77,8 @@ def test_process_schema_result() -> None:
     schema = SchemaCreator().for_field_definition(field)
 
     assert isinstance(schema, Schema)
-    assert schema.title  # type: ignore
-    assert schema.const == test_str  # type: ignore
+    assert schema.title
+    assert schema.const == test_str
     assert kwarg_definition.examples
     for signature_key, schema_key in KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP.items():
         if schema_key == "examples":
@@ -177,7 +177,7 @@ def test_schema_hashing() -> None:
             Schema(type=OpenAPIType.NUMBER),
             Schema(type=OpenAPIType.OBJECT, properties={"key": Schema(type=OpenAPIType.STRING)}),
         ],
-        examples=[Example(value=None), Example(value=[1, 2, 3])],
+        examples={"example-1": Example(value=None), "example-2": Example(value=[1, 2, 3])},
     )
     assert hash(schema)
 
