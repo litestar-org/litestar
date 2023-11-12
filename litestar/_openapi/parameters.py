@@ -111,10 +111,12 @@ def create_parameter(
 
     schema = result if isinstance(result, Schema) else schema_creator.schemas[result.value]
 
-    examples: dict[str, Example | Reference] = {}
-    for i, example in enumerate(kwarg_definition.examples or [] if kwarg_definition else []):
-        examples[f"{field_definition.name}-example-{i}"] = example
-
+    examples: dict[str, Example | Reference] = {
+        f"{field_definition.name}-example-{i}": example
+        for i, example in enumerate(
+            kwarg_definition.examples or [] if kwarg_definition else []
+        )
+    }
     return Parameter(
         description=schema.description,
         name=parameter_name,
