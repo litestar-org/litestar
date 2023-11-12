@@ -7,26 +7,26 @@ Usage
     applications
     routing/index
     requests
-    responses
-    dependency-injection
-    websockets
-    dto/index
-    middleware/index
-    plugins
-    security/index
-    channels
-    databases/index
-    exceptions
-    stores
-    openapi
-    lifecycle-hooks
     caching
-    templating
-    events
-    logging
-    static-files
-    metrics/index
-    htmx
+    channels
     cli
-    testing
+    databases/index
     debugging
+    dependency-injection
+    dto/index
+    events
+    exceptions
+    htmx
+    lifecycle-hooks
+    logging
+    metrics/index
+    middleware/index
+    openapi
+    plugins
+    responses
+    security/index
+    static-files
+    stores
+    templating
+    testing
+    websockets
