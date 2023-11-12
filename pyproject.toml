@@ -61,7 +61,7 @@ version = "2.3.2"
 [project.urls]
 Blog = "https://blog.litestar.dev"
 Changelog = "https://github.com/litestar-org/litestar/releases/"
-Discord = "https://discord.gg/MmcwxztmQb"
+Discord = "https://discord.gg/litestar-919193495116337154"
 Documentation = "https://docs.litestar.dev/"
 Homepage = "https://litestar.dev/"
 "Issue Tracker" = "https://github.com/litestar-org/litestar/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc"
