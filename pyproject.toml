@@ -93,7 +93,7 @@ standard = ["jinja2", "jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0; sys_
 structlog = ["structlog"]
 
 [tool.pdm]
-ignore_package_warnings = true
+ignore_package_warnings = ["sphinx", "slotscheck"]
 
 [tool.pdm.dev-dependencies]
 dev = [
