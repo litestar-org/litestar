@@ -46,7 +46,7 @@ from litestar._openapi.schema_generation.utils import (
     _should_create_enum_schema,
     _should_create_literal_schema,
     _type_or_first_not_none_inner_type,
-    get_example_name,
+    get_formatted_examples,
 )
 from litestar.datastructures.upload_file import UploadFile
 from litestar.exceptions import ImproperlyConfiguredException
@@ -73,6 +73,7 @@ from litestar.utils.typing import (
 if TYPE_CHECKING:
     from msgspec.structs import FieldInfo
 
+    from litestar.openapi.spec import Example
     from litestar.plugins import OpenAPISchemaPluginProtocol
 
 KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP: dict[str, str] = {
@@ -640,12 +641,15 @@ class SchemaCreator:
                 if (value := getattr(field.kwarg_definition, kwarg_definition_key, Empty)) and (
                     not isinstance(value, Hashable) or not self.is_undefined(value)
                 ):
+                    if schema_key == "examples":
+                        value = get_formatted_examples(field, cast("list[Example]", value))
+
                     setattr(schema, schema_key, value)
 
         if not schema.examples and self.generate_examples:
             from litestar._openapi.schema_generation.examples import create_examples_for_field
 
-            schema.examples = {get_example_name(field): ex for ex in create_examples_for_field(field)}
+            schema.examples = get_formatted_examples(field, create_examples_for_field(field))
 
         if schema.title and schema.type in (OpenAPIType.OBJECT, OpenAPIType.ARRAY):
             if schema.title in self.schemas and hash(self.schemas[schema.title]) != hash(schema):
