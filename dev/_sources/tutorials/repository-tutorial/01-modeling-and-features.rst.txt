@@ -5,7 +5,7 @@ with database modeling using the included SQLAlchemy declarative model helpers. 
 are a series of classes and mixins that incorporate commonly used functions/column types
 to make working with models easier.
 
-.. tip:: The full code for this tutorial can be found below in the :ref:`Full Code <full-code>` section.
+.. tip:: The full code for this tutorial can be found below in the :ref:`Full Code <01-repo-full-code>` section.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py
     :language: python
@@ -77,7 +77,7 @@ Additional features provided by the built-in base models include:
 
 Let's build on this as we look at the repository classes.
 
-.. _full-code:
+.. _01-repo-full-code:
 
 Full Code
 ---------

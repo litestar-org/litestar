@@ -4,7 +4,7 @@ While most of the functionality you need is built into the repository, there are
 cases where you need to add in additional functionality. Let's explore ways that we
 can add functionality on top of the repository pattern.
 
-.. tip:: The full code for this tutorial can be found below in the :ref:`Full Code <full-code>` section.
+.. tip:: The full code for this tutorial can be found below in the :ref:`Full Code <04-repo-full-code>` section.
 
 Slug Fields
 -----------
@@ -54,7 +54,7 @@ Finally, we insert the model with the added slug.
     Using this method does introduce an additional query on each insert. This should be
     considered when determining which fields actually need this type of functionality.
 
-.. _full-code:
+.. _04-repo-full-code:
 
 Full Code
 ---------

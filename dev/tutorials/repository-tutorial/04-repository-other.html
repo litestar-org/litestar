@@ -1189,13 +1189,13 @@ cases where you need to add in additional functionality. Let’s explore ways th
 can add functionality on top of the repository pattern.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>The full code for this tutorial can be found below in the <a class="reference internal" href="#full-code"><span class="std std-ref">Full Code</span></a> section.</p>
+<p>The full code for this tutorial can be found below in the <a class="reference internal" href="#repo-full-code"><span class="std std-ref">Full Code</span></a> section.</p>
 </div>
 </section>
 <section id="slug-fields">
 <h1>Slug Fields<a class="headerlink" href="#slug-fields" title="Permalink to this heading">#</a></h1>
-<div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">declarative_mixin</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="c1"># we are going to add a simple &quot;slug&quot; to our model that is a URL safe surrogate key to</span>
@@ -1227,8 +1227,8 @@ unique column <code class="docutils literal notranslate"><span class="pre">slug<
 the data passed to the <code class="docutils literal notranslate"><span class="pre">title</span></code> field.  To demonstrate what we are trying to
 accomplish, we want a record that has a blog title of “Follow the Yellow Brick Road!”
 to have the slugified value of “follow-the-yellow-brick-road”.</p>
-<div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="c1"># this class can be re-used with any model that has the `SlugKey` Mixin</span>
 <span class="linenos"> 2</span><span class="k">class</span> <span class="nc">SQLAlchemyAsyncSlugRepository</span><span class="p">(</span><span class="n">SQLAlchemyAsyncRepository</span><span class="p">[</span><span class="n">ModelT</span><span class="p">]):</span>
 <span class="linenos"> 3</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Extends the repository to include slug model features..&quot;&quot;&quot;</span>
@@ -1290,8 +1290,8 @@ to have the slugified value of “follow-the-yellow-brick-road”.</p>
 <p>Since the <code class="docutils literal notranslate"><span class="pre">BlogPost.title</span></code> field is not marked as unique, this means that we’ll have
 to test the slug value for uniqueness before the insert.  If the initial slug is found,
 a random set of digits are appended to the end of the slug to make it unique.</p>
-<div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>    <span class="n">blog_post_repo</span><span class="p">:</span> <span class="n">BlogPostRepository</span><span class="p">,</span>
 <span class="linenos">2</span>    <span class="n">data</span><span class="p">:</span> <span class="n">BlogPostCreate</span><span class="p">,</span>
 <span class="linenos">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BlogPostDTO</span><span class="p">:</span>
@@ -1308,7 +1308,7 @@ considered when determining which fields actually need this type of functionalit
 </div>
 </section>
 <section id="full-code">
-<span id="id1"></span><h1>Full Code<a class="headerlink" href="#full-code" title="Permalink to this heading">#</a></h1>
+<span id="repo-full-code"></span><h1>Full Code<a class="headerlink" href="#full-code" title="Permalink to this heading">#</a></h1>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header">
 Full Code (click to expand)<div class="sd-summary-down docutils">
@@ -1316,8 +1316,8 @@ Full Code (click to expand)<div class="sd-summary-down docutils">
 <div class="sd-summary-up docutils">
 <svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
 </summary><div class="sd-summary-content sd-card-body docutils">
-<div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">declarative_mixin</span><span class="p">,</span> <span class="n">mapped_column</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="c1"># we are going to add a simple &quot;slug&quot; to our model that is a URL safe surrogate key to</span>
