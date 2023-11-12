@@ -4,7 +4,7 @@ Now that we've covered the modeling basics, we are able to create our first repo
 class.  The repository classes include all of the standard CRUD operations as well as a
 few advanced features such as pagination, filtering and bulk operations.
 
-.. tip:: The full code for this tutorial can be found below in the :ref:`Full Code <full-code>` section.
+.. tip:: The full code for this tutorial can be found below in the :ref:`Full Code <02-repo-full-code>` section.
 
 Before we jump in to the code, let's take a look at the available functions available in
 the the synchronous and asynchronous repositories.
@@ -216,7 +216,7 @@ Now that we have demonstrated how to interact with the repository objects outsid
 Litestar application, our next example will use dependency injection to add this
 functionality to a :class:`~litestar.controller.Controller`!
 
-.. _full-code:
+.. _02-repo-full-code:
 
 Full Code
 ---------

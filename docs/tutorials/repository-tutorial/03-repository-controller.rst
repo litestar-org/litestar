@@ -4,7 +4,7 @@ We've been working our way up the stack, starting with the database models, and 
 are ready to use the repository in an actual route.  Let's see how we can use this in a
 controller.
 
-.. tip:: The full code for this tutorial can be found below in the :ref:`Full Code <full-code>` section.
+.. tip:: The full code for this tutorial can be found below in the :ref:`Full Code <03-repo-full-code>` section.
 
 First, we create a simple function that returns an instance of ``AuthorRepository``.
 This function will be used to inject a repository instance into our controller routes.
@@ -63,7 +63,7 @@ The examples above enable a feature-complete CRUD service that includes paginati
 the next section, we'll explore how to extend the built-in repository to add additional
 functionality to our application.
 
-.. _full-code:
+.. _03-repo-full-code:
 
 Full Code
 ---------
