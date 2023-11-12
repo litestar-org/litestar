@@ -81,6 +81,8 @@ def create_test_client(
     middleware: Sequence[Middleware] | None = None,
     multipart_form_part_limit: int = 1000,
     on_app_init: Sequence[OnAppInitHandler] | None = None,
+    on_cli_shutdown: Sequence[Callable] | None = None,
+    on_cli_startup: Sequence[Callable] | None = None,
     on_shutdown: Sequence[LifespanHook] | None = None,
     on_startup: Sequence[LifespanHook] | None = None,
     openapi_config: OpenAPIConfig | None = DEFAULT_OPENAPI_CONFIG,
@@ -189,6 +191,8 @@ def create_test_client(
             an instance of :class:`AppConfig <.config.app.AppConfig>` that will have been initially populated with
             the parameters passed to :class:`Litestar <litestar.app.Litestar>`, and must return an instance of same.
             If more than one handler is registered they are called in the order they are provided.
+        on_cli_shutdown: A sequence of :class:`Callable <typing.Callable>` called on CLI shutdown.
+        on_cli_startup: A sequence of :class:`Callable <typing.Callable>` called on CLI startup.
         on_shutdown: A sequence of :class:`LifespanHook <.types.LifespanHook>` called during application
             shutdown.
         on_startup: A sequence of :class:`LifespanHook <litestar.types.LifespanHook>` called during
@@ -266,6 +270,8 @@ def create_test_client(
         middleware=middleware,
         multipart_form_part_limit=multipart_form_part_limit,
         on_app_init=on_app_init,
+        on_cli_shutdown=on_cli_shutdown,
+        on_cli_startup=on_cli_startup,
         on_shutdown=on_shutdown,
         on_startup=on_startup,
         openapi_config=openapi_config,
@@ -335,6 +341,8 @@ def create_async_test_client(
     middleware: Sequence[Middleware] | None = None,
     multipart_form_part_limit: int = 1000,
     on_app_init: Sequence[OnAppInitHandler] | None = None,
+    on_cli_shutdown: Sequence[Callable] | None = None,
+    on_cli_startup: Sequence[Callable] | None = None,
     on_shutdown: Sequence[LifespanHook] | None = None,
     on_startup: Sequence[LifespanHook] | None = None,
     openapi_config: OpenAPIConfig | None = DEFAULT_OPENAPI_CONFIG,
@@ -442,6 +450,8 @@ def create_async_test_client(
             an instance of :class:`AppConfig <.config.app.AppConfig>` that will have been initially populated with
             the parameters passed to :class:`Litestar <litestar.app.Litestar>`, and must return an instance of same.
             If more than one handler is registered they are called in the order they are provided.
+        on_cli_shutdown: A sequence of :class:`Callable <typing.Callable>` called on CLI shutdown.
+        on_cli_startup: A sequence of :class:`Callable <typing.Callable>` called on CLI startup.
         on_shutdown: A sequence of :class:`LifespanHook <.types.LifespanHook>` called during application
             shutdown.
         on_startup: A sequence of :class:`LifespanHook <litestar.types.LifespanHook>` called during
@@ -518,6 +528,8 @@ def create_async_test_client(
         middleware=middleware,
         multipart_form_part_limit=multipart_form_part_limit,
         on_app_init=on_app_init,
+        on_cli_shutdown=on_cli_shutdown,
+        on_cli_startup=on_cli_startup,
         on_shutdown=on_shutdown,
         on_startup=on_startup,
         openapi_config=openapi_config,

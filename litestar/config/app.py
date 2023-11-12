@@ -137,6 +137,10 @@ class AppConfig:
     """An instance of :class:`BaseLoggingConfig <.logging.config.BaseLoggingConfig>` subclass."""
     middleware: list[Middleware] = field(default_factory=list)
     """A list of :class:`Middleware <.types.Middleware>`."""
+    on_cli_shutdown: list[Callable] = field(default_factory=list)
+    """A list of :class:`Callable <typing.Callable>` called on CLI shutdown."""
+    on_cli_startup: list[Callable] = field(default_factory=list)
+    """A list of :class:`Callable <typing.Callable>` called on CLI startup."""
     on_shutdown: list[LifespanHook] = field(default_factory=list)
     """A list of :class:`LifespanHook <.types.LifespanHook>` called during application shutdown."""
     on_startup: list[LifespanHook] = field(default_factory=list)
@@ -159,7 +163,7 @@ class AppConfig:
     """An optional subclass of :class:`Request <.connection.Request>` to use for http connections."""
     response_class: ResponseType | None = field(default=None)
     """A custom subclass of :class:`Response <.response.Response>` to be used as the app's default response."""
-    response_cookies: ResponseCookies = field(default_factory=list)
+    response_cookies: ResponseCookies = field(default_factory=list)  # type: ignore[assignment]
     """A list of :class:`Cookie <.datastructures.Cookie>`."""
     response_headers: Sequence[ResponseHeader] = field(default_factory=list)
     """A string keyed dictionary mapping :class:`ResponseHeader <.datastructures.ResponseHeader>`."""
