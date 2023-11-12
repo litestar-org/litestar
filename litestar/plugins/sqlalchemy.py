@@ -1,3 +1,15 @@
+from advanced_alchemy import filters, types
+from advanced_alchemy.base import (
+    AuditColumns,
+    BigIntAuditBase,
+    BigIntBase,
+    BigIntPrimaryKey,
+    CommonTableAttributes,
+    UUIDAuditBase,
+    UUIDBase,
+    UUIDPrimaryKey,
+    orm_registry,
+)
 from advanced_alchemy.extensions.litestar import (
     AlembicAsyncConfig,
     AlembicCommands,
@@ -15,6 +27,17 @@ from advanced_alchemy.extensions.litestar import (
 )
 
 __all__ = (
+    "orm_registry",
+    "filters",
+    "types",
+    "AuditColumns",
+    "BigIntAuditBase",
+    "BigIntBase",
+    "UUIDAuditBase",
+    "UUIDPrimaryKey",
+    "CommonTableAttributes",
+    "UUIDBase",
+    "BigIntPrimaryKey",
     "AlembicCommands",
     "AlembicAsyncConfig",
     "AlembicSyncConfig",
