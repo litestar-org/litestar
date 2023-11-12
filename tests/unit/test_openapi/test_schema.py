@@ -76,10 +76,15 @@ def test_process_schema_result() -> None:
     field = FieldDefinition.from_annotation(annotation=str, kwarg_definition=kwarg_definition)
     schema = SchemaCreator().for_field_definition(field)
 
+    assert isinstance(schema, Schema)
     assert schema.title  # type: ignore
     assert schema.const == test_str  # type: ignore
+    assert kwarg_definition.examples
     for signature_key, schema_key in KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP.items():
-        assert getattr(schema, schema_key) == getattr(kwarg_definition, signature_key)
+        if schema_key == "examples":
+            assert schema.examples == {"str-example-1": kwarg_definition.examples[0]}
+        else:
+            assert getattr(schema, schema_key) == getattr(kwarg_definition, signature_key)
 
 
 def test_dependency_schema_generation() -> None:
@@ -249,7 +254,7 @@ def test_create_schema_from_msgspec_annotated_type() -> None:
     schema = schemas["Lookup"]
 
     assert schema.properties["id"].type == OpenAPIType.STRING  # type: ignore
-    assert schema.properties["id"].examples == [Example(value="example")]  # type: ignore
+    assert schema.properties["id"].examples == {"id-example-1": Example(value="example")}  # type: ignore
     assert schema.properties["id"].description == "description"  # type: ignore
     assert schema.properties["id"].title == "title"  # type: ignore
     assert schema.properties["id"].max_length == 16  # type: ignore
