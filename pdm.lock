@@ -1411,7 +1411,7 @@ name = "litestar-sphinx-theme"
 version = "0.2.0"
 requires_python = ">=3.8,<4.0"
 git = "https://github.com/litestar-org/litestar-sphinx-theme.git"
-revision = "09d6313949f3fb390ff871bd6b485053dbe0c700"
+revision = "c5ce66aadc8f910c24f54bf0d172798c237a67eb"
 summary = "A Sphinx theme for the Litestar organization"
 dependencies = [
     "pydata-sphinx-theme<1.0.0,>=0.13.3",
