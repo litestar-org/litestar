@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from inspect import isclass
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Callable
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Empty
@@ -13,7 +13,7 @@ from litestar.utils.warnings import (
     warn_sync_to_thread_with_generator,
 )
 
-__all__ = ("Provide",)
+__all__ = ("Provide", "provide", "BoundProvide")
 
 
 if TYPE_CHECKING:
@@ -98,3 +98,35 @@ class Provide:
             and other.use_cache == self.use_cache
             and other.value == self.value
         )
+
+
+class BoundProvide:
+    """Provide a dependency that's bound to a specific name"""
+
+    def __init__(
+        self,
+        dependency_key: str,
+        dependency: AnyCallable | type,
+        use_cache: bool = False,
+        sync_to_thread: bool | None = None,
+    ) -> None:
+        self.dependency_key = dependency_key
+        self.provide = Provide(dependency=dependency, use_cache=use_cache, sync_to_thread=sync_to_thread)
+
+
+def provide(
+    use_cache: bool = False,
+    sync_to_thread: bool | None = None,
+    key: str | None = None,
+) -> Callable[[AnyCallable | type], BoundProvide]:
+    """Decorate callable to make it available for dependency injection"""
+
+    def wrapper(dependency: AnyCallable | type) -> BoundProvide:
+        return BoundProvide(
+            dependency=dependency,
+            sync_to_thread=sync_to_thread,
+            use_cache=use_cache,
+            dependency_key=key or dependency.__name__,
+        )
+
+    return wrapper
