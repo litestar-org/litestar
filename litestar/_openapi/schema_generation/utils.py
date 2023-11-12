@@ -3,6 +3,8 @@ from __future__ import annotations
 from enum import Enum
 from typing import TYPE_CHECKING, Any
 
+from litestar.utils.helpers import get_name
+
 if TYPE_CHECKING:
     from litestar.typing import FieldDefinition
 
@@ -80,4 +82,4 @@ def _should_create_literal_schema(field_definition: FieldDefinition) -> bool:
 def get_example_name(field_definition: FieldDefinition) -> str:
     """Get the key for the example for the given field definition."""
 
-    return field_definition.name or field_definition.type_.__name__.lower()
+    return field_definition.name or get_name(field_definition.type_)
