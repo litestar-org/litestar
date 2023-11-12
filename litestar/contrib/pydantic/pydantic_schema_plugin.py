@@ -5,6 +5,7 @@ from typing import Any
 from typing_extensions import Annotated
 
 from litestar._openapi.schema_generation.schema import SchemaCreator, _get_type_schema_name
+from litestar._openapi.schema_generation.utils import get_formatted_examples
 from litestar.contrib.pydantic.utils import (
     is_pydantic_2_model,
     is_pydantic_constrained_field,
@@ -278,11 +279,9 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
             properties={k: schema_creator.for_field_definition(f) for k, f in field_definitions.items()},
             type=OpenAPIType.OBJECT,
             title=title or _get_type_schema_name(field_definition),
-            examples={
-                field_definition.name.lower(): Example(
-                    description=f"Example {field_definition.name} value", value=example
-                )
-            }
+            examples=get_formatted_examples(
+                field_definition, [Example(description=f"Example {field_definition.name} value", value=example)]
+            )
             if example
             else None,
         )
