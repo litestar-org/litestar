@@ -47,7 +47,7 @@ class BaseEventEmitterBackend(AsyncContextManager["BaseEventEmitterBackend"], AB
                 self.listeners[event_id].add(listener)
 
     @abstractmethod
-    def emit(self, event_id: str, *args: Any, **kwargs: Any) -> None:  # pragma: no cover
+    def emit(self, event_id: str, *args: Any, **kwargs: Any) -> None:
         """Emit an event to all attached listeners.
 
         Args:

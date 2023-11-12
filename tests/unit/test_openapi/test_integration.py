@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Optional
+from dataclasses import dataclass
+from typing import Generic, Optional, TypeVar
 
 import msgspec
 import pytest
@@ -197,3 +198,83 @@ def test_schema_for_optional_path_parameter() -> None:
         assert parameter
         assert parameter["in"] == ParamType.PATH
         assert parameter["name"] == "test_message"
+
+
+T = TypeVar("T")
+
+
+@dataclass
+class Foo(Generic[T]):
+    foo: T
+
+
+def test_with_generic_class() -> None:
+    @get("/foo-str", sync_to_thread=False)
+    def handler_foo_str() -> Foo[str]:
+        return Foo("")
+
+    @get("/foo-int", sync_to_thread=False)
+    def handler_foo_int() -> Foo[int]:
+        return Foo(1)
+
+    with create_test_client(
+        route_handlers=[handler_foo_str, handler_foo_int],
+        openapi_config=OpenAPIConfig(
+            title="Example API",
+            version="1.0.0",
+        ),
+    ) as client:
+        response = client.get("/schema/openapi.json")
+
+        assert response.status_code == HTTP_200_OK
+        assert response.json() == {
+            "info": {"title": "Example API", "version": "1.0.0"},
+            "openapi": "3.1.0",
+            "servers": [{"url": "/"}],
+            "paths": {
+                "/foo-str": {
+                    "get": {
+                        "summary": "HandlerFooStr",
+                        "operationId": "FooStrHandlerFooStr",
+                        "responses": {
+                            "200": {
+                                "description": "Request fulfilled, document follows",
+                                "headers": {},
+                                "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Foo[str]"}}},
+                            }
+                        },
+                        "deprecated": False,
+                    }
+                },
+                "/foo-int": {
+                    "get": {
+                        "summary": "HandlerFooInt",
+                        "operationId": "FooIntHandlerFooInt",
+                        "responses": {
+                            "200": {
+                                "description": "Request fulfilled, document follows",
+                                "headers": {},
+                                "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Foo[int]"}}},
+                            }
+                        },
+                        "deprecated": False,
+                    }
+                },
+            },
+            "components": {
+                "schemas": {
+                    "Foo[str]": {
+                        "properties": {"foo": {"type": "string"}},
+                        "type": "object",
+                        "required": ["foo"],
+                        "title": "Foo[str]",
+                    },
+                    "Foo[int]": {
+                        "properties": {"foo": {"type": "integer"}},
+                        "type": "object",
+                        "required": ["foo"],
+                        "title": "Foo[int]",
+                    },
+                }
+            },
+        }

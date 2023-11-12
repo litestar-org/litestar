@@ -1,23 +1,22 @@
 from __future__ import annotations
 
-from msgspec.msgpack import encode as encode_msgpack
-
-from litestar.enums import ScopeType
-from litestar.utils import get_litestar_scope_state
-
-from .base import AbstractMiddleware
-
-__all__ = ["ResponseCacheMiddleware"]
-
 from typing import TYPE_CHECKING, cast
 
+from msgspec.msgpack import encode as encode_msgpack
+
 from litestar import Request
-from litestar.constants import SCOPE_STATE_IS_CACHED
+from litestar.constants import HTTP_RESPONSE_BODY, HTTP_RESPONSE_START, SCOPE_STATE_DO_CACHE, SCOPE_STATE_IS_CACHED
+from litestar.enums import ScopeType
+from litestar.utils import get_litestar_scope_state, set_litestar_scope_state
+
+from .base import AbstractMiddleware
 
 if TYPE_CHECKING:
     from litestar.config.response_cache import ResponseCacheConfig
     from litestar.handlers import HTTPRouteHandler
-    from litestar.types import ASGIApp, Message, Receive, Scope, Send
+    from litestar.types import ASGIApp, HTTPScope, Message, Receive, Scope, Send
+
+__all__ = ["ResponseCacheMiddleware"]
 
 
 class ResponseCacheMiddleware(AbstractMiddleware):
@@ -27,7 +26,6 @@ class ResponseCacheMiddleware(AbstractMiddleware):
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         route_handler = cast("HTTPRouteHandler", scope["route_handler"])
-        store = self.config.get_store_from_app(scope["app"])
 
         expires_in: int | None = None
         if route_handler.cache is True:
@@ -35,13 +33,21 @@ class ResponseCacheMiddleware(AbstractMiddleware):
         elif route_handler.cache is not False and isinstance(route_handler.cache, int):
             expires_in = route_handler.cache
 
-        messages = []
+        messages: list[Message] = []
 
         async def wrapped_send(message: Message) -> None:
             if not get_litestar_scope_state(scope, SCOPE_STATE_IS_CACHED):
-                messages.append(message)
-                if message["type"] == "http.response.body" and not message["more_body"]:
+                if message["type"] == HTTP_RESPONSE_START:
+                    do_cache = self.config.cache_response_filter(cast("HTTPScope", scope), message["status"])
+                    set_litestar_scope_state(scope, SCOPE_STATE_DO_CACHE, do_cache)
+                    if do_cache:
+                        messages.append(message)
+                elif get_litestar_scope_state(scope, SCOPE_STATE_DO_CACHE):
+                    messages.append(message)
+
+                if messages and message["type"] == HTTP_RESPONSE_BODY and not message["more_body"]:
                     key = (route_handler.cache_key_builder or self.config.key_builder)(Request(scope))
+                    store = self.config.get_store_from_app(scope["app"])
                     await store.set(key, encode_msgpack(messages), expires_in=expires_in)
             await send(message)
 

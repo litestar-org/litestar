@@ -6,6 +6,7 @@ import pytest
 
 from litestar import MediaType, get
 from litestar.config.csrf import CSRFConfig
+from litestar.constants import SCOPE_STATE_CSRF_TOKEN_KEY
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.contrib.mako import MakoTemplateEngine
 from litestar.contrib.minijinja import MiniJinjaTemplateEngine
@@ -14,6 +15,7 @@ from litestar.response.template import Template
 from litestar.template.config import TemplateConfig
 from litestar.testing import create_test_client
 from litestar.types import Scope
+from litestar.utils import get_litestar_scope_state
 
 
 @pytest.mark.parametrize(
@@ -59,7 +61,7 @@ def test_csrf_input(engine: Any, template: str, tmp_path: Path) -> None:
 
     @get(path="/", media_type=MediaType.HTML)
     def handler(scope: Scope) -> Template:
-        token["value"] = scope.get("_csrf_token", "")  # type: ignore
+        token["value"] = get_litestar_scope_state(scope, SCOPE_STATE_CSRF_TOKEN_KEY)
         return Template(template_name="abc.html")
 
     csrf_config = CSRFConfig(secret="yaba daba do")

@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 from inspect import Traceback, isasyncgen
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Coroutine, Generator
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Awaitable, Callable, Generator
 
 from anyio import create_task_group
 
-from litestar.utils import AsyncCallable
+from litestar.utils import ensure_async_callable
 from litestar.utils.compat import async_next
 
 __all__ = ("DependencyCleanupGroup",)
@@ -49,7 +49,7 @@ class DependencyCleanupGroup:
         self._generators.append(generator)
 
     @staticmethod
-    def _wrap_next(generator: AnyGenerator) -> Callable[[], Coroutine[None, None, None]]:
+    def _wrap_next(generator: AnyGenerator) -> Callable[[], Awaitable[None]]:
         if isasyncgen(generator):
 
             async def wrapped_async() -> None:
@@ -60,7 +60,7 @@ class DependencyCleanupGroup:
         def wrapped() -> None:
             next(generator, None)  # type: ignore[arg-type]
 
-        return AsyncCallable(wrapped)
+        return ensure_async_callable(wrapped)
 
     async def cleanup(self) -> None:
         """Execute cleanup by calling :func:`next` / :func:`anext` on all generators.

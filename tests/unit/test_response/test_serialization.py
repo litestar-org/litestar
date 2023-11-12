@@ -1,5 +1,5 @@
 import enum
-from pathlib import Path, PurePath
+from pathlib import Path, PurePath, PureWindowsPath
 from typing import Any, Callable, cast
 
 import msgspec
@@ -58,7 +58,8 @@ def test_enum(media_type: MediaType, decode_media_type: DecodeMediaType) -> None
 @pytest.mark.parametrize("path", [PurePath("/path/to/file"), Path("/path/to/file")])
 def test_path(media_type: MediaType, decode_media_type: DecodeMediaType, path: Path) -> None:
     encoded = Response(None).render({"value": path}, media_type=media_type)
-    assert decode_media_type(encoded) == {"value": "/path/to/file"}
+    expected = r"\path\to\file" if isinstance(path, PureWindowsPath) else "/path/to/file"
+    assert decode_media_type(encoded) == {"value": expected}
 
 
 @pytest.mark.parametrize(

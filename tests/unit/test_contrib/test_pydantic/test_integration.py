@@ -1,63 +1,95 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Type, Union
 
-from pydantic import VERSION, BaseModel, Field
+import pydantic as pydantic_v2
+import pytest
+from pydantic import v1 as pydantic_v1
+from typing_extensions import Annotated
 
 from litestar import post
 from litestar.contrib.pydantic.pydantic_dto_factory import PydanticDTO
-from litestar.params import Parameter
+from litestar.enums import RequestEncodingType
+from litestar.params import Body, Parameter
 from litestar.status_codes import HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
-from tests.unit.test_contrib.test_pydantic.models import PydanticPerson
+from tests.unit.test_contrib.test_pydantic.models import PydanticPerson, PydanticV1Person
+
+from . import PydanticVersion
 
 
-def test_pydantic_validation_error_raises_400() -> None:
-    class Model(BaseModel):
-        foo: str = Field(max_length=2)
+@pytest.mark.parametrize(("meta",), [(None,), (Body(media_type=RequestEncodingType.URL_ENCODED),)])
+def test_pydantic_v1_validation_error_raises_400(meta: Any) -> None:
+    class Model(pydantic_v1.BaseModel):
+        foo: str = pydantic_v1.Field(max_length=2)
 
     ModelDTO = PydanticDTO[Model]
 
-    @post(dto=ModelDTO, signature_types=[Model])
-    def handler(data: Model) -> Model:
+    annotation: Any
+    annotation = Annotated[Model, meta] if meta is not None else Model
+
+    @post(dto=ModelDTO, signature_namespace={"annotation": annotation})
+    def handler(data: annotation) -> Any:  # pyright: ignore
         return data
 
     model_json = {"foo": "too long"}
     expected_errors: List[Dict[str, Any]]
 
-    if VERSION.startswith("1"):
-        expected_errors = [
-            {
-                "loc": ["foo"],
-                "msg": "ensure this value has at most 2 characters",
-                "type": "value_error.any_str.max_length",
-                "ctx": {"limit_value": 2},
-            }
-        ]
-    else:
-        expected_errors = [
-            {
-                "type": "string_too_long",
-                "loc": ["foo"],
-                "msg": "String should have at most 2 characters",
-                "input": "too long",
-                "ctx": {"max_length": 2},
-            }
-        ]
+    expected_errors = [
+        {
+            "loc": ["foo"],
+            "msg": "ensure this value has at most 2 characters",
+            "type": "value_error.any_str.max_length",
+            "ctx": {"limit_value": 2},
+        }
+    ]
 
     with create_test_client(route_handlers=handler) as client:
-        response = client.post("/", json=model_json)
-
-        assert response.status_code == 400
-
+        kws = {"data": model_json} if meta else {"json": model_json}
+        response = client.post("/", **kws)  # type: ignore[arg-type]
         extra = response.json()["extra"]
 
-        if VERSION.startswith("2"):
-            # the URL keeps on changing as per the installed pydantic version
-            extra[0].pop("url")
-
+        assert response.status_code == 400
         assert extra == expected_errors
 
 
-def test_default_handling_of_pydantic_errors() -> None:
+@pytest.mark.parametrize(("meta",), [(None,), (Body(media_type=RequestEncodingType.URL_ENCODED),)])
+def test_pydantic_v2_validation_error_raises_400(meta: Any) -> None:
+    class Model(pydantic_v2.BaseModel):
+        foo: str = pydantic_v2.Field(max_length=2)
+
+    ModelDTO = PydanticDTO[Model]
+
+    annotation: Any
+    annotation = Annotated[Model, meta] if meta is not None else Model
+
+    @post(dto=ModelDTO, signature_namespace={"annotation": annotation})
+    def handler(data: annotation) -> Any:  # pyright: ignore
+        return data
+
+    model_json = {"foo": "too long"}
+    expected_errors: List[Dict[str, Any]]
+
+    expected_errors = [
+        {
+            "type": "string_too_long",
+            "loc": ["foo"],
+            "msg": "String should have at most 2 characters",
+            "input": "too long",
+            "ctx": {"max_length": 2},
+        }
+    ]
+
+    with create_test_client(route_handlers=handler) as client:
+        kws = {"data": model_json} if meta else {"json": model_json}
+        response = client.post("/", **kws)  # type: ignore[arg-type]
+
+        extra = response.json()["extra"]
+        extra[0].pop("url")
+
+        assert response.status_code == 400
+        assert extra == expected_errors
+
+
+def test_default_error_handling() -> None:
     @post("/{param:int}")
     def my_route_handler(param: int, data: PydanticPerson) -> None:
         ...
@@ -66,18 +98,32 @@ def test_default_handling_of_pydantic_errors() -> None:
         response = client.post("/123", json={"first_name": "moishe"})
         extra = response.json().get("extra")
         assert extra is not None
-        assert 3 if len(extra) == VERSION.startswith("1") else 4
+        assert len(extra) == 4
 
 
-def test_signature_model_invalid_input() -> None:
-    class OtherChild(BaseModel):
+def test_default_error_handling_v1() -> None:
+    @post("/{param:int}")
+    def my_route_handler(param: int, data: PydanticV1Person) -> None:
+        ...
+
+    with create_test_client(my_route_handler) as client:
+        response = client.post("/123", json={"first_name": "moishe"})
+        extra = response.json().get("extra")
+        assert extra is not None
+        assert len(extra) == 3
+
+
+def test_signature_model_invalid_input(
+    base_model: Type[Union[pydantic_v2.BaseModel, pydantic_v1.BaseModel]], pydantic_version: PydanticVersion
+) -> None:
+    class OtherChild(base_model):  # type: ignore[misc, valid-type]
         val: List[int]
 
-    class Child(BaseModel):
+    class Child(base_model):  # type: ignore[misc, valid-type]
         val: int
         other_val: int
 
-    class Parent(BaseModel):
+    class Parent(base_model):  # type: ignore[misc, valid-type]
         child: Child
         other_child: OtherChild
 
@@ -105,7 +151,7 @@ def test_signature_model_invalid_input() -> None:
         data = response.json()
 
         assert data
-        if VERSION.startswith("1"):
+        if pydantic_version == "v1":
             assert data["extra"] == [
                 {"key": "child.val", "message": "value is not a valid integer"},
                 {"key": "child.other_val", "message": "value is not a valid integer"},

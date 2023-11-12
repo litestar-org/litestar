@@ -215,6 +215,9 @@ This controller exposes the following endpoints:
 ``/schema/elements``
     Serves the docs using `Stoplight Elements <https://github.com/stoplightio/elements>`_.
 
+``/schema/rapidoc``
+    Serves the docs using `RapiDoc <https://github.com/rapi-doc/RapiDoc>`_.
+
 Additionally, the root ``/schema/`` path is accessible, serving the site that is configured as the default in
 the :class:`OpenAPIConfig <.openapi.OpenAPIConfig>`.
 
@@ -233,6 +236,40 @@ For example, lets say we wanted to change the base path of the OpenAPI related e
 
    class MyOpenAPIController(OpenAPIController):
        path = "/api-docs"
+
+
+   app = Litestar(
+       route_handlers=[...],
+       openapi_config=OpenAPIConfig(
+           title="My API", version="1.0.0", openapi_controller=MyOpenAPIController
+       ),
+   )
+
+OAuth2 in Swagger UI
+++++++++++++++++++++
+
+When using Swagger, OAuth2 settings can be configured via :attr:`swagger_ui_init_oauth <litestar.openapi.controller.OpenAPIController.swagger_ui_init_oauth>`, which can be set to a dictionary containing the parameters described in the Swagger UI documentation for OAuth2 `here <https://swagger.io/docs/open-source-tools/swagger-ui/usage/oauth2/>`_.
+
+We that you can preset your clientId or enable PKCE support.
+
+Example Usage
+
+.. code-block:: python
+
+   from litestar import Litestar
+   from litestar.openapi import OpenAPIConfig
+   from litestar.openapi import OpenAPIController
+
+
+   class MyOpenAPIController(OpenAPIController):
+       swagger_ui_init_oauth = {
+           "clientId": "your-client-id",
+           "appName": "your-app-name",
+           "scopeSeparator": " ",
+           "scopes": "openid profile",
+           "useBasicAuthenticationWithAccessCodeGrant": True,
+           "usePkceWithAuthorizationCodeGrant": True,
+       }
 
 
    app = Litestar(
@@ -270,6 +307,7 @@ You can change the default download paths for JS and CSS bundles as well as goog
        stoplight_elements_js_url = (
            "https://offline_location/spotlight-web-components.min.js"
        )
+       rapidoc_js_url = "https://offline_location/rapidock-min.js"
 
 
    app = Litestar(

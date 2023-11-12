@@ -56,7 +56,7 @@ maintainers = [
 name = "litestar"
 readme = "README.md"
 requires-python = ">=3.8,<4.0"
-version = "2.2.1"
+version = "2.3.2"
 
 [project.urls]
 Blog = "https://blog.litestar.dev"
@@ -88,9 +88,12 @@ picologging = ["picologging"]
 prometheus = ["prometheus-client"]
 pydantic = ["pydantic", "email-validator", "pydantic-extra-types"]
 redis = ["redis[hiredis]>=4.4.4"]
-sqlalchemy = ["advanced-alchemy>=0.2.2,<0.4.0"]
+sqlalchemy = ["advanced-alchemy>=0.2.2,<1.0.0"]
 standard = ["jinja2", "jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0; sys_platform != 'win32'", "fast-query-parsers>=1.0.2"]
 structlog = ["structlog"]
+
+[tool.pdm]
+ignore_package_warnings = true
 
 [tool.pdm.dev-dependencies]
 dev = [
@@ -120,7 +123,6 @@ docs = [
 ]
 linting = [
   "ruff",
-  "black",
   "mypy",
   "pre-commit",
   "slotscheck",
@@ -135,6 +137,7 @@ linting = [
   "types-redis",
 ]
 test = [
+  "covdefaults",
   "pytest",
   "pytest-asyncio",
   "pytest-cov",
@@ -171,10 +174,6 @@ docs-serve = "sphinx-autobuild docs docs/_build/ -j auto --watch litestar --watc
 lint = "pre-commit run --all-files"
 test = "pytest tests docs/examples"
 
-[tool.black]
-include = '\.pyi?$'
-line-length = 120
-
 [tool.codespell]
 ignore-words-list = "selectin"
 skip = 'pdm.lock,docs/examples/contrib/sqlalchemy/us_state_lookup.json'
@@ -183,18 +182,16 @@ skip = 'pdm.lock,docs/examples/contrib/sqlalchemy/us_state_lookup.json'
 concurrency = ["multiprocessing", "thread"]
 omit = ["*/tests/*"]
 parallel = true
+plugins = ["covdefaults"]
+source  = ["litestar"]
 
 [tool.coverage.report]
 exclude_lines = [
-  'pragma: no cover',
-  'if TYPE_CHECKING:',
-  'except ImportError as e:',
-  'except ImportError:',
-  '\.\.\.',
-  'raise NotImplementedError',
+  'except ImportError\b',
   'if VERSION.startswith("1"):',
   'if pydantic.VERSION.startswith("1"):',
 ]
+fail_under = 96
 
 [tool.pytest.ini_options]
 addopts = "--strict-markers --strict-config --dist=loadgroup"
@@ -245,13 +242,15 @@ module = ["tests.unit.test_kwargs.test_reserved_kwargs_injection"]
 disallow_untyped_decorators = false
 
 [[tool.mypy.overrides]]
+module = ["tests.unit.test_contrib.test_repository"]
+strict_equality = false
+
+[[tool.mypy.overrides]]
 ignore_missing_imports = true
 module = [
   "brotli.*",
   "fsspec.*",
   "jsbeautifier.*",
-  "mako.*",
-  "minijinja.*",
   "pytimeparse.*",
 ]
 
@@ -268,7 +267,10 @@ exclude = [
   "tools",
   "docs",
   "tests/examples",
-  "tests/docker_service_fixtures.py"
+  "tests/docker_service_fixtures.py",
+  "litestar/contrib/pydantic/pydantic_dto_factory.py",
+  "litestar/contrib/pydantic/pydantic_init_plugin.py",
+  "tests/unit/test_contrib/test_sqlalchemy.py"
 ]
 include = ["litestar", "tests"]
 pythonVersion = "3.8"
@@ -331,6 +333,7 @@ ignore = [
   "E501", # pycodestyle line too long, handled by black
   "PLW2901", # pylint - for loop variable overwritten by assignment target
   "RUF012", # Ruff-specific rule - annotated with classvar
+  "ISC001", # Ruff formatter incompatible
 ]
 line-length = 120
 src = ["litestar", "tests", "docs/examples"]

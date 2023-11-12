@@ -56,7 +56,7 @@ Guidelines for writing code
 
 - Code should be `Pythonic and zen <https://peps.python.org/pep-0020/>`_
 - All code should be fully `typed <https://peps.python.org/pep-0484/>`_. This is enforced via
-  `mypy <https://mypy.readthedocs.io/en/stable/>`_ and `pyright <https://github.com/microsoft/pyright>`_
+  `mypy <https://mypy.readthedocs.io/en/stable/>`_ and `pyright <https://github.com/microsoft/pyright/>`_
 
   * When requiring complex types, use a `type alias <https://docs.python.org/3/library/typing.html#type-aliases>`_.
     Check ``litestar/types`` if a type alias for your use case already exists
@@ -102,7 +102,7 @@ straightforward. For debugging, it's recommended to run the tests individually w
 Running type checkers
 +++++++++++++++++++++
 
-We use `mypy <https://mypy.readthedocs.io/en/stable/>`_ and `pyright <https://microsoft.github.io/pyright/#/>`_ to
+We use `mypy <https://mypy.readthedocs.io/en/stable/>`_ and `pyright <https://github.com/microsoft/pyright/>`_ to
 enforce type safety. You can run them with:
 
 - ``make mypy``

@@ -4,10 +4,10 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from litestar.openapi.spec.base import BaseSchemaObject
+from litestar.openapi.spec.components import Components
 from litestar.openapi.spec.server import Server
 
 if TYPE_CHECKING:
-    from litestar.openapi.spec.components import Components
     from litestar.openapi.spec.external_documentation import ExternalDocumentation
     from litestar.openapi.spec.info import Info
     from litestar.openapi.spec.path_item import PathItem
@@ -64,7 +64,7 @@ class OpenAPI(BaseSchemaObject):
     `example <https://github.com/OAI/OpenAPI-Specification/blob/main/examples/v3.1/webhook-example.yaml>`_ is available.
     """
 
-    components: Components | None = None
+    components: Components = field(default_factory=Components)
     """An element to hold various schemas for the document."""
 
     security: list[SecurityRequirement] | None = None

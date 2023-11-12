@@ -114,7 +114,7 @@ def _default_exception_logging_handler_factory(
     return _default_exception_logging_handler
 
 
-class BaseLoggingConfig(ABC):  # pragma: no cover
+class BaseLoggingConfig(ABC):
     """Abstract class that should be extended by logging configs."""
 
     __slots__ = ("log_exceptions", "traceback_line_limit", "exception_logging_handler")
@@ -255,7 +255,7 @@ def default_structlog_processors() -> list[Processor] | None:  # pyright: ignore
             structlog.processors.TimeStamper(fmt="iso"),
             structlog.processors.JSONRenderer(serializer=default_json_serializer),
         ]
-    except ImportError:  # pragma: no cover
+    except ImportError:
         return None
 
 
@@ -270,7 +270,7 @@ def default_wrapper_class() -> type[BindableLogger] | None:  # pyright: ignore
         import structlog
 
         return structlog.make_filtering_bound_logger(INFO)
-    except ImportError:  # pragma: no cover
+    except ImportError:
         return None
 
 
@@ -284,7 +284,7 @@ def default_logger_factory() -> Callable[..., WrappedLogger] | None:
         import structlog
 
         return structlog.BytesLoggerFactory()
-    except ImportError:  # pragma: no cover
+    except ImportError:
         return None
 
 

@@ -52,7 +52,20 @@ of it when we are done. This context manager is added to the application's ``lif
     /examples/contrib/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
     :language: python
     :linenos:
-    :lines: 29-39,98
+    :lines: 29-43,101
+
+Database creation
++++++++++++++++++
+Before we can use the database we need to make sure it exists and the tables are created as defined by the ``TodoItem``
+class. This can be done by a synchronous call to ``Base.metadata.create_all`` which is invoked by ``run_sync``. If the
+tables are already setup according to the model, the call does nothing.
+
+.. literalinclude::
+    /examples/contrib/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
+    :language: python
+    :linenos:
+    :lines: 29-43
+    :emphasize-lines: 8-9
 
 Application state
 +++++++++++++++++
@@ -64,7 +77,7 @@ where we use the ``app.state`` object to store the engine.
     /examples/contrib/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
     :language: python
     :linenos:
-    :lines: 29-41
+    :lines: 29-43
     :emphasize-lines: 3,6
 
 The second is by using the ``state`` keyword argument in our handler functions, so that we can access the engine in our
@@ -74,7 +87,7 @@ handlers.
     /examples/contrib/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
     :language: python
     :linenos:
-    :lines: 67-72
+    :lines: 70-74
     :emphasize-lines: 2,3
 
 Serialization
@@ -90,7 +103,7 @@ serializable by Litestar.
     /examples/contrib/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
     :language: python
     :linenos:
-    :lines: 2-3,14-16,45-48,89-98
+    :lines: 2-3,14-16,45-48,94-101
     :emphasize-lines: 3,4,6,7,11,16
 
 Behavior

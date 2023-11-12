@@ -7,7 +7,7 @@ from uuid import UUID
 
 from litestar import Request, Response, get, post
 from litestar.connection import ASGIConnection
-from litestar.contrib.jwt import JWTAuth, Token
+from litestar.security.jwt import JWTAuth, Token
 from litestar.status_codes import HTTP_204_NO_CONTENT
 from litestar.testing import create_test_client
 

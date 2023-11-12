@@ -4,7 +4,7 @@ import asyncio
 import sys
 
 if sys.version_info < (3, 9):
-    import importlib_resources  # pragma: no cover
+    import importlib_resources
 else:
     import importlib.resources as importlib_resources
 from abc import ABC
@@ -23,6 +23,35 @@ _FLUSHALL_STREAMS_SCRIPT = (_resource_path / "_redis_flushall_streams.lua").read
 _XADD_EXPIRE_SCRIPT = (_resource_path / "_redis_xadd_expire.lua").read_text()
 
 
+class _LazyEvent:
+    """A lazy proxy to asyncio.Event that only creates the event once it's accessed.
+
+    It ensures that the Event is created within a running event loop. If it's not, there can be an issue where a future
+    within the event itself is attached to a different loop.
+
+    This happens in our tests and could also happen when a user creates an instance of the backend outside an event loop
+    in their application.
+    """
+
+    def __init__(self) -> None:
+        self.__event: asyncio.Event | None = None
+
+    @property
+    def _event(self) -> asyncio.Event:
+        if self.__event is None:
+            self.__event = asyncio.Event()
+        return self.__event
+
+    def set(self) -> None:
+        self._event.set()
+
+    def clear(self) -> None:
+        self._event.clear()
+
+    async def wait(self) -> None:
+        await self._event.wait()
+
+
 class RedisChannelsBackend(ChannelsBackend, ABC):
     def __init__(self, *, redis: Redis, key_prefix: str, stream_sleep_no_subscriptions: int) -> None:
         """Base redis channels backend.
@@ -35,7 +64,7 @@ class RedisChannelsBackend(ChannelsBackend, ABC):
         """
         self._redis = redis
         self._key_prefix = key_prefix
-        self._stream_sleep_no_subscriptions = stream_sleep_no_subscriptions / 1000
+        self._stream_sleep_no_subscriptions = stream_sleep_no_subscriptions
 
     def _make_key(self, channel: str) -> str:
         return f"{self._key_prefix}_{channel.upper()}"
@@ -60,6 +89,7 @@ class RedisChannelsPubSubBackend(RedisChannelsBackend):
         )
         self.__pub_sub: PubSub | None = None
         self._publish_script = self._redis.register_script(_PUBSUB_PUBLISH_SCRIPT)
+        self._has_subscribed = _LazyEvent()
 
     @property
     def _pub_sub(self) -> PubSub:
@@ -77,10 +107,13 @@ class RedisChannelsPubSubBackend(RedisChannelsBackend):
     async def subscribe(self, channels: Iterable[str]) -> None:
         """Subscribe to ``channels``, and enable publishing to them"""
         await self._pub_sub.subscribe(*channels)
+        self._has_subscribed.set()
 
     async def unsubscribe(self, channels: Iterable[str]) -> None:
         """Stop listening for events on ``channels``"""
         await self._pub_sub.unsubscribe(*channels)
+        if not self._pub_sub.subscribed:
+            self._has_subscribed.clear()
 
     async def publish(self, data: bytes, channels: Iterable[str]) -> None:
         """Publish ``data`` to ``channels``
@@ -98,11 +131,10 @@ class RedisChannelsPubSubBackend(RedisChannelsBackend):
         """
 
         while True:
-            if not self._pub_sub.subscribed:
-                await asyncio.sleep(self._stream_sleep_no_subscriptions)  # no subscriptions found so we sleep a bit
-                continue
-
-            message = await self._pub_sub.get_message(ignore_subscribe_messages=True, timeout=None)  # type: ignore[arg-type]
+            await self._has_subscribed.wait()
+            message = await self._pub_sub.get_message(
+                ignore_subscribe_messages=True, timeout=self._stream_sleep_no_subscriptions
+            )
             if message is None:
                 continue
 
@@ -149,6 +181,7 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
         self._stream_ttl = stream_ttl if isinstance(stream_ttl, int) else int(stream_ttl.total_seconds() * 1000)
         self._flush_all_streams_script = self._redis.register_script(_FLUSHALL_STREAMS_SCRIPT)
         self._publish_script = self._redis.register_script(_XADD_EXPIRE_SCRIPT)
+        self._has_subscribed_channels = _LazyEvent()
 
     async def on_startup(self) -> None:
         """Called on application startup"""
@@ -159,10 +192,13 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
     async def subscribe(self, channels: Iterable[str]) -> None:
         """Subscribe to ``channels``"""
         self._subscribed_channels.update(channels)
+        self._has_subscribed_channels.set()
 
     async def unsubscribe(self, channels: Iterable[str]) -> None:
         """Unsubscribe from ``channels``"""
         self._subscribed_channels -= set(channels)
+        if not len(self._subscribed_channels):
+            self._has_subscribed_channels.clear()
 
     async def publish(self, data: bytes, channels: Iterable[str]) -> None:
         """Publish ``data`` to ``channels``.
@@ -182,6 +218,11 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
             ],
         )
 
+    async def _get_subscribed_channels(self) -> set[str]:
+        """Get subscribed channels. If no channels are currently subscribed, wait"""
+        await self._has_subscribed_channels.wait()
+        return self._subscribed_channels
+
     async def stream_events(self) -> AsyncGenerator[tuple[str, Any], None]:
         """Return a generator, iterating over events of subscribed channels as they become available.
 
@@ -190,13 +231,14 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
         """
         stream_ids: dict[str, bytes] = {}
         while True:
-            stream_keys = [self._make_key(c) for c in self._subscribed_channels]
+            # We wait for subscribed channels, because we can't pass an empty dict to
+            # xread and block for subscribers
+            stream_keys = [self._make_key(c) for c in await self._get_subscribed_channels()]
             if not stream_keys:
-                await asyncio.sleep(self._stream_sleep_no_subscriptions)  # no subscriptions found so we sleep a bit
                 continue
 
             data: list[tuple[bytes, list[tuple[bytes, dict[bytes, bytes]]]]] = await self._redis.xread(
-                {key: stream_ids.get(key, 0) for key in stream_keys}, block=1
+                {key: stream_ids.get(key, 0) for key in stream_keys}, block=self._stream_sleep_no_subscriptions
             )
 
             if not data:

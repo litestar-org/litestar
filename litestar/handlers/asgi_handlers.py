@@ -83,7 +83,7 @@ class ASGIRouteHandler(BaseRouteHandler):
             raise ImproperlyConfiguredException(
                 "ASGI handler functions should define 'scope', 'send' and 'receive' arguments"
             )
-        if not is_async_callable(self.fn.value):
+        if not is_async_callable(self.fn):
             raise ImproperlyConfiguredException("Functions decorated with 'asgi' must be async functions")
 
 

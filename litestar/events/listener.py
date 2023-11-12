@@ -1,15 +1,15 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.utils import AsyncCallable
+from litestar.utils import ensure_async_callable
 
 __all__ = ("EventListener", "listener")
 
 
 if TYPE_CHECKING:
-    from litestar.types import AnyCallable
+    from litestar.types import AnyCallable, AsyncAnyCallable
 
 
 class EventListener:
@@ -17,7 +17,7 @@ class EventListener:
 
     __slots__ = ("event_ids", "fn", "listener_id")
 
-    fn: AsyncCallable[Any, Any]
+    fn: AsyncAnyCallable
 
     def __init__(self, *event_ids: str) -> None:
         """Create a decorator for event handlers.
@@ -40,7 +40,7 @@ class EventListener:
         if not callable(fn):
             raise ImproperlyConfiguredException("EventListener instance should be called as a decorator on a callable")
 
-        self.fn = AsyncCallable(fn)
+        self.fn = ensure_async_callable(fn)
 
         return self
 

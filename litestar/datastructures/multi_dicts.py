@@ -55,7 +55,7 @@ class MultiDict(BaseMultiDict[T], MultiMixin[T], Generic[T]):
         Returns:
             An immutable multi dict
         """
-        return ImmutableMultiDict[T](self)
+        return ImmutableMultiDict[T](self)  # pyright: ignore
 
 
 class ImmutableMultiDict(MultiDictProxy[T], MultiMixin[T], Generic[T]):

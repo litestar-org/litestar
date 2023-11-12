@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from litestar.openapi.spec.base import BaseSchemaObject
@@ -31,7 +31,7 @@ class Components(BaseSchemaObject):
     outside the components object.
     """
 
-    schemas: dict[str, Schema] | None = None
+    schemas: dict[str, Schema] = field(default_factory=dict)
     """An object to hold reusable
     `Schema Objects <https://spec.openapis.org/oas/v3.1.0#schemaObject>`_"""
 

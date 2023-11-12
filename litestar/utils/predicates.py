@@ -4,7 +4,6 @@ from asyncio import iscoroutinefunction
 from collections import defaultdict, deque
 from collections.abc import Iterable as CollectionsIterable
 from dataclasses import is_dataclass
-from functools import partial
 from inspect import isasyncgenfunction, isclass, isgeneratorfunction
 from typing import (
     TYPE_CHECKING,
@@ -27,33 +26,26 @@ from typing import (
     TypeVar,
 )
 
-from msgspec import Struct
 from typing_extensions import (
     ParamSpec,
     TypeGuard,
     _AnnotatedAlias,
     get_args,
-    is_typeddict,
 )
 
 from litestar.constants import UNDEFINED_SENTINELS
 from litestar.types import Empty
 from litestar.types.builtin_types import NoneType, UnionTypes
+from litestar.utils.helpers import unwrap_partial
 from litestar.utils.typing import get_origin_or_inner_type
 
 if TYPE_CHECKING:
-    from litestar.types.builtin_types import TypedDictClass
     from litestar.types.callable_types import AnyGenerator
     from litestar.types.protocols import DataclassProtocol
 
 try:
-    import pydantic
-except ImportError:  # pragma: no cover
-    pydantic = Empty  # type: ignore
-
-try:
     import attrs
-except ImportError:  # pragma: no cover
+except ImportError:
     attrs = Empty  # type: ignore
 
 __all__ = (
@@ -70,12 +62,7 @@ __all__ = (
     "is_non_string_iterable",
     "is_non_string_sequence",
     "is_optional_union",
-    "is_pydantic_constrained_field",
-    "is_pydantic_model_class",
-    "is_pydantic_model_instance",
-    "is_struct_class",
     "is_sync_or_async_generator",
-    "is_typed_dict",
     "is_undefined_sentinel",
     "is_union",
 )
@@ -94,8 +81,7 @@ def is_async_callable(value: Callable[P, T]) -> TypeGuard[Callable[P, Awaitable[
     Returns:
         Bool determining if type of ``value`` is an awaitable.
     """
-    while isinstance(value, partial):
-        value = value.func  # type: ignore[unreachable]
+    value = unwrap_partial(value)
 
     return iscoroutinefunction(value) or (
         callable(value) and iscoroutinefunction(value.__call__)  # type: ignore[operator]
@@ -124,6 +110,9 @@ def is_dataclass_class(annotation: Any) -> TypeGuard[type[DataclassProtocol]]:
         ``True`` if instance or type of ``dataclass``.
     """
     try:
+        origin = get_origin_or_inner_type(annotation)
+        annotation = origin or annotation
+
         return isclass(annotation) and is_dataclass(annotation)
     except TypeError:  # pragma: no cover
         return False
@@ -273,46 +262,6 @@ def is_optional_union(annotation: Any) -> TypeGuard[Any | None]:
     )
 
 
-def is_typed_dict(annotation: Any) -> TypeGuard[TypedDictClass]:
-    """Wrap :func:`typing.is_typeddict` in a :data:`typing.TypeGuard`.
-
-    Args:
-        annotation: tested to determine if instance or type of :class:`typing.TypedDict`.
-
-    Returns:
-        ``True`` if instance or type of ``TypedDict``.
-    """
-    return is_typeddict(annotation)
-
-
-def is_pydantic_model_class(annotation: Any) -> TypeGuard[type[pydantic.BaseModel]]:  # pyright: ignore
-    """Given a type annotation determine if the annotation is a subclass of pydantic's BaseModel.
-
-    Args:
-        annotation: A type.
-
-    Returns:
-        A typeguard determining whether the type is :data:`BaseModel pydantic.BaseModel>`.
-    """
-    if pydantic is not Empty:  # type: ignore[comparison-overlap]
-        return is_class_and_subclass(annotation, pydantic.BaseModel)  # pyright: ignore
-    return False  # pragma: no cover
-
-
-def is_pydantic_model_instance(annotation: Any) -> TypeGuard[pydantic.BaseModel]:  # pyright: ignore
-    """Given a type annotation determine if the annotation is an instance of pydantic's BaseModel.
-
-    Args:
-        annotation: A type.
-
-    Returns:
-        A typeguard determining whether the type is :data:`BaseModel pydantic.BaseModel>`.
-    """
-    if pydantic is not Empty:  # type: ignore[comparison-overlap]
-        return isinstance(annotation, pydantic.BaseModel)  # pyright: ignore
-    return False  # pragma: no cover
-
-
 def is_attrs_class(annotation: Any) -> TypeGuard[type[attrs.AttrsInstance]]:  # pyright: ignore
     """Given a type annotation determine if the annotation is a class that includes an attrs attribute.
 
@@ -323,62 +272,6 @@ def is_attrs_class(annotation: Any) -> TypeGuard[type[attrs.AttrsInstance]]:  # 
         A typeguard determining whether the type is an attrs class.
     """
     return attrs.has(annotation) if attrs is not Empty else False  # type: ignore[comparison-overlap]
-
-
-def is_pydantic_constrained_field(
-    annotation: Any,
-) -> Any:
-    """Check if the given annotation is a constrained pydantic type.
-
-    Args:
-        annotation: A type annotation
-
-    Returns:
-        True if pydantic is installed and the type is a constrained type, otherwise False.
-    """
-    try:
-        # removed in pydantic v2
-        # so this will raise an ImportError - which is expected.
-        from pydantic import (
-            ConstrainedBytes,
-            ConstrainedDate,
-            ConstrainedDecimal,
-            ConstrainedFloat,
-            ConstrainedFrozenSet,
-            ConstrainedInt,
-            ConstrainedList,
-            ConstrainedSet,
-            ConstrainedStr,
-        )
-
-        return any(
-            is_class_and_subclass(annotation, constrained_type)  # type: ignore[arg-type]
-            for constrained_type in (
-                ConstrainedBytes,
-                ConstrainedDate,
-                ConstrainedDecimal,
-                ConstrainedFloat,
-                ConstrainedFrozenSet,
-                ConstrainedInt,
-                ConstrainedList,
-                ConstrainedSet,
-                ConstrainedStr,
-            )
-        )
-    except ImportError:
-        return False
-
-
-def is_struct_class(annotation: Any) -> TypeGuard[type[Struct]]:
-    """Check if the given annotation is a :class:`Struct <msgspec.Struct>` type.
-
-    Args:
-        annotation: A type annotation
-
-    Returns:
-        A typeguard for :class:`Struct <msgspec.Struct>`.
-    """
-    return is_class_and_subclass(annotation, Struct)
 
 
 def is_class_var(annotation: Any) -> bool:

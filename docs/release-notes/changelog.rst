@@ -3,6 +3,321 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.3.2
+    :date: 2023/11706
+
+    .. change:: Fix recursion error when re-using the path of a route handler for static files
+        :type: bugfix
+        :pr: 2630
+        :issue: 2629
+
+        A regression was fixed that would cause a recursion error when the path of a
+        static files host was reused for a route handler with a different HTTP method.
+
+        .. code-block:: python
+
+            from litestar import Litestar
+            from litestar import post
+            from litestar.static_files import StaticFilesConfig
+
+
+            @post("/uploads")
+            async def handler() -> None:
+                pass
+
+
+            app = Litestar(
+                [handler],
+                static_files_config=[
+                    StaticFilesConfig(directories=["uploads"], path="/uploads"),
+                ],
+            )
+
+
+.. changelog:: 2.3.1
+    :date: 2023/11/04
+
+    .. change:: CLI: Fix not providing SSL certfiles breaks uvicorn command when using reload or multiple workers
+        :type: bugfix
+        :pr: 2616
+        :issue: 2613
+
+        Fix an issue where not providing the ``--ssl-certfile`` and ``--ssl-keyfile``
+        options to the ``litestar run`` command would cause a :exc:`FileNotFoundError`
+        in uvicorn, when used together with the ``--reload``, ``--web-concurrency``
+        options.
+
+
+.. changelog:: 2.3.0
+    :date: 2023/11/02
+
+    .. change:: Python 3.12 support
+        :type: feature
+        :pr: 2396
+        :issue: 1862
+
+        Python 3.12 is now fully supported and tested.
+
+    .. change:: New layered parameter ``signature_types``
+        :type: feature
+        :pr: 2422
+
+        Types in this collection are added to ``signature_namespace`` using the type's
+        ``__name__`` attribute.
+        This provides a nicer interface when adding names to the signature namespace
+        w ithout modifying the type name, e.g.: ``signature_namespace={"Model": Model}``
+        is equivalent to ``signature_types=[Model]``.
+
+        The implementation makes it an error to supply a type in ``signature_types``
+        that has a value for ``__name__`` already in the signature namespace.
+
+        It will also throw an error if an item in ``signature_types`` has no
+        ``__name__`` attribute.
+
+    .. change:: Added RapiDoc for OpenAPI schema visualisation
+        :type: feature
+        :pr: 2522
+
+        Add support for using `RapiDoc <https://github.com/rapi-doc/RapiDoc>`_ for
+        OpenAPI schema visualisation.
+
+    .. change:: Support Pydantic 1 & 2 within the same application
+        :type: feature
+        :pr: 2487
+
+        Added support for Pydantic 1 & 2 within the same application by integrating with
+        Pydantic's backwards compatibility layer:
+
+        .. code-block:: python
+
+            from litestar import get
+            from pydantic.v1 import BaseModel as BaseModelV1
+            from pydantic import BaseModel
+
+
+            class V1Foo(BaseModelV1):
+                bar: str
+
+
+            class V2Foo(BaseModel):
+                bar: str
+
+
+            @get("/1")
+            def foo_v1(data: V1Foo) -> V1Foo:
+                return data
+
+
+            @get("/2")
+            def foo_v2(data: V2Foo) -> V2Foo:
+                return data
+
+    .. change:: Add ``ResponseCacheConfig.cache_response_filter`` to allow filtering responses eligible for caching
+        :type: feature
+        :pr: 2537
+        :issue: 2501
+
+        ``ResponseCacheConfig.cache_response_filter`` is predicate called by the
+        response cache middleware that discriminates whether a response should be
+        cached, or not.
+
+
+    .. change:: SSL support and self-signed certificates for CLI
+        :type: feature
+        :pr: 2554
+        :issue: 2335
+
+        Add support for SSL and generating self-signed certificates to the CLI.
+
+        For this, three new arguments were added to the CLI's ``run`` command:
+
+        - ``--ssl-certfile``
+        - ``--ssl-keyfile``
+        - ``--create-self-signed-cert``
+
+        The ``--ssl-certfile`` and `--ssl-keyfile` flags are passed to uvicorn when
+        using ``litestar run``. Uvicorn requires both to be passed (or neither) but
+        additional validation was added to generate a more user friendly CLI errors.
+
+        The other SSL-related flags (like password or CA) were not added (yet). See
+        `uvicorn CLI docs <https://www.uvicorn.org/#command-line-options>`_
+
+        **Generating of a self-signed certificate**
+
+        One more CLI flag was added (``--create-devcert``) that uses the
+        ``cryptography`` module to generate a self-signed development certificate. Both
+        of the previous flags must be passed when using this flag. Then the following
+        logic is used:
+
+        - If both files already exists, they are used and nothing is generated
+        - If neither file exists, the dev cert and key are generated
+        - If only one file exists, it is ambiguous what to do so an exception is raised
+
+    .. change:: Use custom request class when given during exception handling
+        :type: bugfix
+        :pr: 2444
+        :issue: 2399
+
+        When a custom ``request_class`` is provided, it will now be used while returning
+        an error response
+
+    .. change:: Fix missing OpenAPI schema for generic response type annotations
+        :type: bugfix
+        :pr: 2463
+        :issue: 2383
+
+        OpenAPI schemas are now correctly generated when a response type annotation
+        contains a generic type such as
+
+        .. code-block:: python
+
+            from msgspec import Struct
+            from litestar import Litestar, get, Response
+            from typing import TypeVar, Generic, Optional
+
+            T = TypeVar("T")
+
+
+            class ResponseStruct(Struct, Generic[T]):
+                code: int
+                data: Optional[T]
+
+
+            @get("/")
+            def test_handler() -> Response[ResponseStruct[str]]:
+                return Response(
+                    ResponseStruct(code=200, data="Hello World"),
+                )
+
+    .. change:: Fix rendering of OpenAPI examples
+        :type: bugfix
+        :pr: 2509
+        :issue: 2494
+
+        An issue was fixed where OpenAPI examples would be rendered as
+
+        .. code-block:: json
+
+            {
+              "parameters": [
+                {
+                  "schema": {
+                    "type": "string",
+                    "examples": [
+                      {
+                        "summary": "example summary",
+                        "value": "example value"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+
+        instead of
+
+        .. code-block:: json
+
+            {
+              "parameters": [
+                {
+                  "schema": {
+                    "type": "string"
+                  },
+                  "examples": {
+                    "example1": {
+                      "summary": "example summary"
+                      "value": "example value"
+                    }
+                  }
+                }
+              ]
+            }
+
+    .. change:: Fix non UTF-8 handling when logging requests
+        :type: bugfix
+        :issue: 2529
+        :pr: 2530
+
+        When structlog is not installed, the request body would not get parsed and shown
+        as a byte sequence. Instead, it was serialized into a string with the assumption
+        that it is valid UTF-8. This was fixed by decoding the bytes with
+        ``backslashreplace`` before displaying them.
+
+    .. change:: Fix ``ExceptionHandler`` typing to properly support ``Exception`` subclasses
+        :type: bugfix
+        :issue: 2520
+        :pr: 2533
+
+        Fix the typing for ``ExceptionHandler`` to support subclasses of ``Exception``,
+        such that code like this will type check properly:
+
+        .. code-block:: python
+
+            from litestar import Litestar, Request, Response
+
+
+            class CustomException(Exception):
+                ...
+
+
+            def handle_exc(req: Request, exc: CustomException) -> Response:
+                ...
+
+    .. change:: Fix OpenAPI schema generation for variable length tuples
+        :type: bugfix
+        :issue: 2460
+        :pr: 2552
+
+        Fix a bug where an annotation such as ``tuple[str, ...]`` would cause a
+        ``TypeError: '<' not supported between instances of 'NoneType' and 'OpenAPIType')``.
+
+    .. change:: Fix channels performance issue when polling with no subscribers in ``arbitrary_channels_allowed`` mode
+        :type: bugfix
+        :pr: 2547
+
+        Fix a bug that would cause high CPU loads while idling when using a
+        ``ChannelsPlugin`` with the ``arbitrary_channels_allowed`` enabled and while no
+        subscriptions for any channel were active.
+
+    .. change:: Fix CLI schema export for non-serializable types when using ``create_examples=True``
+        :type: bugfix
+        :pr: 2581
+        :issue: 2575
+
+        When trying to export a schema via the
+        ``litestar schema openapi --output schema.json`` making use of a non-JSON
+        serializable type, would result in an encoding error because the standard
+        library JSON serializer was used. This has been fixed by using Litestar's own
+        JSON encoder, enabling the serialization of all types supplied by the schema.
+
+    .. change:: Fix OpenAPI schema generation for ``Literal`` and ``Enum`` unions with ``None``
+        :type: bugfix
+        :pr: 2550
+        :issue: 2546
+
+        Existing behavior was to make the schema for every type that is a union with
+        ``None`` a ``"one_of"`` schema, that includes ``OpenAPIType.NULL`` in the
+        ``"one_of"`` types.
+
+        When a ``Literal`` or ``Enum`` type is in a union with ``None``, this behavior
+        is not desirable, as we want to have ``null`` available in the list of available
+        options on the type's schema.
+
+        This was fixed by modifying ``Literal`` and ``Enum`` schema generation so that i
+        t can be identified that the types are in a union with ``None``, allowing
+        ``null`` to be included in ``Schema.enum`` values.
+
+    .. change:: Fix cache overrides when using same route with different handlers
+        :type: bugfix
+        :pr: 2592
+        :issue: 2573, 2588
+
+        A bug was fixed that would cause the cache for routes being overwritten by a
+        route handler on that same route with a different HTTP method.
+
+
+
 .. changelog:: 2.2.0
     :date: 2023/10/12
 

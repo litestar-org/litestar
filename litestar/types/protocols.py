@@ -9,7 +9,7 @@ __all__ = (
 )
 
 
-class Logger(Protocol):  # pragma: no cover
+class Logger(Protocol):
     """Logger protocol."""
 
     def debug(self, event: str, *args: Any, **kwargs: Any) -> Any:

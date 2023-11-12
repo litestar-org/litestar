@@ -1,7 +1,9 @@
 from typing import TYPE_CHECKING, List, Optional, Type, cast
 
 import pytest
+
 from pydantic import BaseModel
+from typing_extensions import Annotated
 
 from litestar import Controller, Litestar, Router, get
 from litestar._openapi.parameters import create_parameter_for_handler
@@ -12,9 +14,11 @@ from litestar._signature import SignatureModel
 from litestar.di import Provide
 from litestar.enums import ParamType
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.openapi.spec import OpenAPI
+from litestar.openapi import OpenAPIConfig
+from litestar.openapi.spec import Example, OpenAPI, Schema
 from litestar.openapi.spec.enums import OpenAPIType
 from litestar.params import Dependency, Parameter
+from litestar.testing import create_test_client
 from litestar.utils import find_index
 
 if TYPE_CHECKING:
@@ -26,7 +30,7 @@ def _create_parameters(app: Litestar, path: str) -> List["OpenAPIParameter"]:
     route = app.routes[index]
     route_handler = route.route_handler_map["GET"][0]  # type: ignore
 
-    handler = route_handler.fn.value
+    handler = route_handler.fn
     assert callable(handler)
 
     handler_fields = SignatureModel.create(
@@ -99,26 +103,26 @@ def test_create_parameters(person_controller: Type[Controller]) -> None:
     assert gender.param_in == ParamType.QUERY
     assert gender.name == "gender"
     assert is_schema_value(gender.schema)
-    assert gender.schema.to_schema() == {
-        "oneOf": [
-            {"type": "null"},
-            {
-                "items": {
-                    "type": "string",
-                    "enum": ["M", "F", "O", "A"],
-                    "examples": [{"description": "Example  value", "value": "F"}],
-                },
-                "type": "array",
-                "examples": [{"description": "Example  value", "value": ["A"]}],
-            },
-            {
-                "type": "string",
-                "enum": ["M", "F", "O", "A"],
-                "examples": [{"description": "Example  value", "value": "M"}],
-            },
+    assert gender.schema == Schema(
+        one_of=[
+            Schema(type=OpenAPIType.NULL),
+            Schema(
+                type=OpenAPIType.STRING,
+                enum=["M", "F", "O", "A"],
+                examples=[Example(description="Example  value", value="M")],
+            ),
+            Schema(
+                type=OpenAPIType.ARRAY,
+                items=Schema(
+                    type=OpenAPIType.STRING,
+                    enum=["M", "F", "O", "A"],
+                    examples=[Example(description="Example  value", value="F")],
+                ),
+                examples=[Example(description="Example  value", value=["A"])],
+            ),
         ],
-        "examples": [{"value": "M"}, {"value": ["M", "O"]}],
-    }
+        examples=[Example(value="M"), Example(value=["M", "O"])],
+    )
     assert not gender.required
 
     assert secret_header.param_in == ParamType.HEADER
@@ -322,3 +326,18 @@ def test_type_single_parameter_query() -> None:
     param_name_set = {p.name for p in cast("OpenAPI", app.openapi_schema).paths["/"].get.parameters}  # type: ignore
     assert "foo" in param_name_set
     assert "bar" in param_name_set
+
+def test_parameter_examples() -> None:
+    @get(path="/")
+    async def index(
+        text: Annotated[str, Parameter(examples=[Example(value="example value", summary="example summary")])]
+    ) -> str:
+        return text
+
+    with create_test_client(
+        route_handlers=[index], openapi_config=OpenAPIConfig(title="Test API", version="1.0.0")
+    ) as client:
+        response = client.get("/schema/openapi.json")
+        assert response.json()["paths"]["/"]["get"]["parameters"][0]["examples"] == {
+            "text-example-0": {"summary": "example summary", "value": "example value"}
+        }
