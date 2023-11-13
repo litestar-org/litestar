@@ -4,7 +4,7 @@ Topics
 Topics are a collection of articles about technical concepts, background information,
 design decisions and similar topics on a higher level.
 
-This can include things like the difference between synchronous and asynchronous, API design,
+This includes things like the difference between synchronous and asynchronous, API design,
 deployment strategies, ASGI and WSGI, and so on.
 
 .. toctree::
