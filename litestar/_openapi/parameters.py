@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from litestar._openapi.schema_generation.utils import get_formatted_examples
 from litestar.constants import RESERVED_KWARGS
 from litestar.enums import ParamType
 from litestar.exceptions import ImproperlyConfiguredException
@@ -18,7 +19,7 @@ if TYPE_CHECKING:
     from litestar._openapi.schema_generation import SchemaCreator
     from litestar.di import Provide
     from litestar.handlers.base import BaseRouteHandler
-    from litestar.openapi.spec import Example, Reference
+    from litestar.openapi.spec import Reference
     from litestar.types.internal_types import PathParameterDefinition
 
 
@@ -109,9 +110,8 @@ def create_parameter(
 
     schema = result if isinstance(result, Schema) else schema_creator.schemas[result.value]
 
-    examples: dict[str, Example | Reference] = {}
-    for i, example in enumerate(kwarg_definition.examples or [] if kwarg_definition else []):
-        examples[f"{field_definition.name}-example-{i}"] = example
+    examples_list = kwarg_definition.examples or [] if kwarg_definition else []
+    examples = get_formatted_examples(field_definition, examples_list)
 
     return Parameter(
         description=schema.description,
