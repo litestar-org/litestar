@@ -1,9 +1,14 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Mapping
+
+from litestar.utils.helpers import get_name
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from litestar.openapi.spec import Example
     from litestar.typing import FieldDefinition
 
 __all__ = (
@@ -75,3 +80,12 @@ def _should_create_literal_schema(field_definition: FieldDefinition) -> bool:
         or field_definition.is_optional
         and all(inner.is_literal for inner in field_definition.inner_types if not inner.is_none_type)
     )
+
+
+def get_formatted_examples(field_definition: FieldDefinition, examples: Sequence[Example]) -> Mapping[str, Example]:
+    """Format the examples into the OpenAPI schema format."""
+
+    name = field_definition.name or get_name(field_definition.type_)
+    name = name.lower()
+
+    return {f"{name}-example-{i}": example for i, example in enumerate(examples, 1)}
