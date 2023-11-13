@@ -53,6 +53,8 @@ Install the ASGI Server
 
 Run the ASGI Server
 -------------------
+Assuming your app defined in the same manner as :ref:`Minimal Example <minimal_example>`, you can run the ASGI server with the following command:
+
 .. tab-set::
 
     .. tab-item:: Uvicorn
