@@ -3,6 +3,8 @@ from __future__ import annotations
 from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any, Generator, Iterator, Protocol, TypeVar, Union, cast, runtime_checkable
 
+from litestar.app import Litestar
+
 if TYPE_CHECKING:
     from click import Group
 
@@ -103,7 +105,7 @@ class ServerLifespanPluginProtocol(Protocol):
     __slots__ = ()
 
     @contextmanager
-    def server_lifespan(self) -> Generator[None, None, None]:
+    def server_lifespan(self, app: Litestar) -> Generator[None, None, None]:
         yield
 
 
