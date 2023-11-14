@@ -44,6 +44,7 @@ from litestar.plugins import (
     PluginRegistry,
     SerializationPluginProtocol,
 )
+from litestar.plugins.base import ServerLifespanPluginProtocol
 from litestar.router import Router
 from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from litestar.static_files.base import StaticFiles
@@ -386,13 +387,15 @@ class Litestar(Router):
             (p.on_app_init for p in config.plugins if isinstance(p, InitPluginProtocol)),
         ):
             config = handler(config)  # pyright: ignore
-
         self.plugins = PluginRegistry(config.plugins)
 
         self._openapi_schema: OpenAPI | None = None
         self._debug: bool = True
         self._lifespan_managers = config.lifespan
         self._server_lifespan_managers = config.server_lifespan
+        self._server_lifespan_managers.extend(
+            p.server_lifespan for p in config.plugins if isinstance(p, ServerLifespanPluginProtocol)
+        )
         self.experimental_features = frozenset(config.experimental_features or [])
 
         self.get_logger: GetLogger = get_logger_placeholder
@@ -400,7 +403,6 @@ class Litestar(Router):
         self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = []
         self.asgi_router = ASGIRouter(app=self)
 
-        self.allowed_hosts = cast("AllowedHostsConfig | None", config.allowed_hosts)
         self.after_exception = [ensure_async_callable(h) for h in config.after_exception]
         self.allowed_hosts = cast("AllowedHostsConfig | None", config.allowed_hosts)
         self.before_send = [ensure_async_callable(h) for h in config.before_send]
@@ -580,7 +582,7 @@ class Litestar(Router):
             yield
 
     @contextmanager
-    def server_lifespan(self) -> Generator[None, None, None]:
+    def server_lifespan(self) -> Generator[None, Any, None]:
         """Context manager handling the ASGI server lifespan.
 
         It will be entered just before the ASGI server is started through the CLI.

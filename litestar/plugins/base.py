@@ -7,7 +7,6 @@ if TYPE_CHECKING:
     from click import Group
 
     from litestar._openapi.schema_generation import SchemaCreator
-    from litestar.app import Litestar
     from litestar.config.app import AppConfig
     from litestar.dto import AbstractDTO
     from litestar.openapi.spec import Schema
@@ -104,7 +103,7 @@ class ServerLifespanPluginProtocol(Protocol):
     __slots__ = ()
 
     @contextmanager
-    def server_lifespan(self, app: Litestar) -> Generator[None, Any, None]:
+    def server_lifespan(self) -> Generator[None, Any, None]:
         yield
 
 
