@@ -1433,6 +1433,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "jdglaser",
+      "name": "Jarred Glaser",
+      "avatar_url": "https://avatars.githubusercontent.com/u/32422167?v=4",
+      "profile": "http://jarredglaser.com",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
