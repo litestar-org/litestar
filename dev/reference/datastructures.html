@@ -1979,6 +1979,32 @@ of key value paris.</p></li>
 </dl>
 <div class="admonition-examples admonition">
 <p class="admonition-title">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">ImmutableState</span>
+
+<span class="n">state_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;first&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;second&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;third&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;fourth&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">}</span>
+<span class="n">state</span> <span class="o">=</span> <span class="n">ImmutableState</span><span class="p">(</span><span class="n">state_dict</span><span class="p">)</span>
+
+<span class="c1"># state implements the Mapping type:</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
+<span class="k">assert</span> <span class="s2">&quot;first&quot;</span> <span class="ow">in</span> <span class="n">state</span>
+<span class="k">assert</span> <span class="ow">not</span> <span class="s2">&quot;fourth&quot;</span> <span class="ow">in</span> <span class="n">state</span>
+<span class="k">assert</span> <span class="n">state</span><span class="p">[</span><span class="s2">&quot;first&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>
+<span class="k">assert</span> <span class="p">[(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span> <span class="o">==</span> <span class="p">[(</span><span class="s2">&quot;first&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;second&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;third&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)]</span>
+
+<span class="c1"># state implements __bool__</span>
+<span class="k">assert</span> <span class="n">state</span>  <span class="c1"># state is true when it has values.</span>
+<span class="k">assert</span> <span class="ow">not</span> <span class="n">State</span><span class="p">()</span>  <span class="c1"># state is empty when it has no values.</span>
+
+<span class="c1"># it has a &#39;dict&#39; method to retrieve a shallow copy of the underlying dict</span>
+<span class="n">inner_dict</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
+<span class="k">assert</span> <span class="n">inner_dict</span> <span class="o">==</span> <span class="n">state_dict</span>
+
+<span class="c1"># you can also retrieve a mutable State by calling &#39;mutable_copy&#39;</span>
+<span class="n">mutable_state</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">mutable_copy</span><span class="p">()</span>
+<span class="k">del</span> <span class="n">state</span><span class="p">[</span><span class="s2">&quot;first&quot;</span><span class="p">]</span>
+<span class="k">assert</span> <span class="s2">&quot;first&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">state</span>
+</pre></div>
+</div>
 </div>
 </dd></dl>
 
@@ -2444,7 +2470,7 @@ the example MUST follow the prescribed serialization strategy for the parameter.
 </dd>
 </dl>
 <p>Examples:
-.. code-block: python</p>
+.. code-block:: python</p>
 <blockquote>
 <div><p>from litestar.datastructures import State</p>
 <p>state_dict = {“first”: 1, “second”: 2, “third”: 3, “fourth”: 4}

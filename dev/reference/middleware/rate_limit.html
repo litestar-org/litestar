@@ -1589,6 +1589,19 @@ should be checked for rate limiting.</p>
 <dd><p>Use this property to insert the config into a middleware list on one of the application layers.</p>
 <div class="admonition-examples admonition">
 <p class="admonition-title">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.middleware.rate_limit</span> <span class="kn">import</span> <span class="n">RateLimitConfig</span>
+
+<span class="c1"># limit to 10 requests per minute, excluding the schema path</span>
+<span class="n">throttle_config</span> <span class="o">=</span> <span class="n">RateLimitConfig</span><span class="p">(</span><span class="n">rate_limit</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;minute&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;/schema&quot;</span><span class="p">])</span>
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">my_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="o">...</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">my_handler</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">throttle_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+</pre></div>
+</div>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
