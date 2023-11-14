@@ -504,6 +504,7 @@ see [the contribution guide](CONTRIBUTING.rst).
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://x14.nl"><img src="https://avatars.githubusercontent.com/u/659504?v=4?s=100" width="100px;" alt="Michiel W. Beijen"/><br /><sub><b>Michiel W. Beijen</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=mbeijen" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/baoliay2008"><img src="https://avatars.githubusercontent.com/u/13620348?v=4?s=100" width="100px;" alt="L. Bao"/><br /><sub><b>L. Bao</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=baoliay2008" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://jarredglaser.com"><img src="https://avatars.githubusercontent.com/u/32422167?v=4?s=100" width="100px;" alt="Jarred Glaser"/><br /><sub><b>Jarred Glaser</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=jdglaser" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>
