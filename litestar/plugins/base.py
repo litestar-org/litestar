@@ -3,12 +3,11 @@ from __future__ import annotations
 from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any, Generator, Iterator, Protocol, TypeVar, Union, cast, runtime_checkable
 
-from litestar.app import Litestar
-
 if TYPE_CHECKING:
     from click import Group
 
     from litestar._openapi.schema_generation import SchemaCreator
+    from litestar.app import Litestar
     from litestar.config.app import AppConfig
     from litestar.dto import AbstractDTO
     from litestar.openapi.spec import Schema
