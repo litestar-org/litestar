@@ -37,7 +37,7 @@ jobs:
           target-folder: ${{ env.PR_NUMBER }}
           branch: gh-pages
 
-      - uses: actions/github-script@v6
+      - uses: actions/github-script@v7
         env:
           PR_NUMBER: ${{ env.PR_NUMBER }}
         with:
