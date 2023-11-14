@@ -34,7 +34,7 @@ class ImmutableState(Mapping[str, Any]):
              deep_copy: Whether to 'deepcopy' the passed in state.
 
         Examples:
-            .. code-block: python
+            .. code-block:: python
 
                 from litestar.datastructures import ImmutableState
 
@@ -189,7 +189,7 @@ class State(ImmutableState, MutableMapping[str, Any]):
              deep_copy: Whether to 'deepcopy' the passed in state.
 
         Examples:
-        .. code-block: python
+        .. code-block:: python
 
             from litestar.datastructures import State
 

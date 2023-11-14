@@ -635,7 +635,7 @@ class Litestar(Router):
         list of paths sorted lexically.
 
         Examples:
-            .. code-block: python
+            .. code-block:: python
 
                 from litestar import Litestar, get
 
@@ -670,7 +670,7 @@ class Litestar(Router):
         parameters.
 
         Examples:
-            .. code-block: python
+            .. code-block:: python
 
                 from litestar import Litestar, get
 
@@ -735,7 +735,7 @@ class Litestar(Router):
         """Receives a static files handler name, an asset file path and returns resolved url path to the asset.
 
         Examples:
-            .. code-block: python
+            .. code-block:: python
 
                 from litestar import Litestar
                 from litestar.static_files.config import StaticFilesConfig

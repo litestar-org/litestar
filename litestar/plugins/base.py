@@ -32,7 +32,7 @@ class InitPluginProtocol(Protocol):
         """Receive the :class:`AppConfig<.config.app.AppConfig>` instance after `on_app_init` hooks have been called.
 
         Examples:
-            .. code-block: python
+            .. code-block:: python
                 from litestar import Litestar, get
                 from litestar.di import Provide
                 from litestar.plugins import InitPluginProtocol

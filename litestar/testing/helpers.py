@@ -120,7 +120,7 @@ def create_test_client(
             handled correctly.
 
     Examples:
-        .. code-block: python
+        .. code-block:: python
 
             from litestar import get
             from litestar.testing import create_test_client
@@ -373,7 +373,7 @@ def create_async_test_client(
             handled correctly.
 
     Examples:
-        .. code-block: python
+        .. code-block:: python
 
             from litestar import get
             from litestar.testing import create_test_client
