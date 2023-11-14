@@ -249,7 +249,7 @@ class RateLimitConfig:
         """Use this property to insert the config into a middleware list on one of the application layers.
 
         Examples:
-            .. code-block: python
+            .. code-block::  python
 
                 from litestar import Litestar, Request, get
                 from litestar.middleware.rate_limit import RateLimitConfig

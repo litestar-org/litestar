@@ -635,13 +635,15 @@ class Litestar(Router):
         list of paths sorted lexically.
 
         Examples:
-            .. code-block: python
+            .. code-block:: python
 
                 from litestar import Litestar, get
+
 
                 @get("/", name="my-handler")
                 def handler() -> None:
                     pass
+
 
                 app = Litestar(route_handlers=[handler])
 
@@ -670,13 +672,15 @@ class Litestar(Router):
         parameters.
 
         Examples:
-            .. code-block: python
+            .. code-block:: python
 
                 from litestar import Litestar, get
+
 
                 @get("/group/{group_id:int}/user/{user_id:int}", name="get_membership_details")
                 def get_membership_details(group_id: int, user_id: int) -> None:
                     pass
+
 
                 app = Litestar(route_handlers=[get_membership_details])
 
@@ -735,7 +739,7 @@ class Litestar(Router):
         """Receives a static files handler name, an asset file path and returns resolved url path to the asset.
 
         Examples:
-            .. code-block: python
+            .. code-block:: python
 
                 from litestar import Litestar
                 from litestar.static_files.config import StaticFilesConfig
