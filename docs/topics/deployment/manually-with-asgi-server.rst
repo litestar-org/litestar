@@ -28,24 +28,28 @@ Install the ASGI Server
 .. tab-set::
 
     .. tab-item:: Uvicorn
+        :sync: uvicorn
 
         .. code-block:: shell
 
             pip install uvicorn
 
     .. tab-item:: Hypercorn
+        :sync: hypercorn
 
         .. code-block:: shell
 
             pip install hypercorn
 
     .. tab-item:: Daphne
+        :sync: daphne
 
         .. code-block:: shell
 
             pip install daphne
 
     .. tab-item:: Granian
+        :sync: granian
 
         .. code-block:: shell
 
@@ -58,6 +62,7 @@ Assuming your app defined in the same manner as :ref:`Minimal Example <minimal_e
 .. tab-set::
 
     .. tab-item:: Uvicorn
+        :sync: uvicorn
 
         .. code-block:: shell
 
@@ -70,6 +75,7 @@ Assuming your app defined in the same manner as :ref:`Minimal Example <minimal_e
             INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
 
     .. tab-item:: Hypercorn
+        :sync: hypercorn
 
         .. code-block:: shell
 
@@ -80,6 +86,7 @@ Assuming your app defined in the same manner as :ref:`Minimal Example <minimal_e
             [2023-11-12 23:31:26 -0800] [16748] [INFO] Running on http://127.0.0.1:8000 (CTRL + C to quit)
 
     .. tab-item:: Daphne
+        :sync: daphne
 
         .. code-block:: shell
 
@@ -91,6 +98,7 @@ Assuming your app defined in the same manner as :ref:`Minimal Example <minimal_e
             INFO - 2023-11-12 23:31:51,572 - daphne.server - server - Listening on TCP address 127.0.0.1:8000
 
     .. tab-item:: Granian
+        :sync: granian
 
         .. code-block:: shell
 
