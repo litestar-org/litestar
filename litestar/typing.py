@@ -424,6 +424,12 @@ class FieldDefinition:
 
         return is_typeddict(self.origin or self.annotation)
 
+    @property
+    def type_(self) -> Any:
+        """The type of the annotation with all the wrappers removed, including the generic types."""
+
+        return self.origin or self.annotation
+
     def is_subclass_of(self, cl: type[Any] | tuple[type[Any], ...]) -> bool:
         """Whether the annotation is a subclass of the given type.
 

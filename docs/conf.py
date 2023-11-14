@@ -269,7 +269,7 @@ html_theme_options = {
                 "icon": "coc",
             },
             "Security": {
-                "description": "Learn how we handle security issues in Litestar",
+                "description": "Overview of Litestar's security protocols",
                 "link": "https://github.com/litestar-org/.github?tab=coc-ov-file#security-ov-file",
                 "icon": "coc",
             },
@@ -281,7 +281,7 @@ html_theme_options = {
                 "icon": "org",
             },
             "Releases": {
-                "description": "Explore the release process for Litestar",
+                "description": "Explore the release process, versioning, and deprecation policy for Litestar",
                 "link": "https://litestar.dev/about/litestar-releases",
                 "icon": "releases",
             },
@@ -293,12 +293,12 @@ html_theme_options = {
         },
         "Help": {
             "Discord Help Forum": {
-                "description": "We are active on Discord with a dedicated help forum",
+                "description": "Dedicated Discord help forum",
                 "link": "https://discord.gg/litestar-919193495116337154",
                 "icon": "coc",
             },
             "GitHub Discussions": {
-                "description": "You can ask questions and discuss Litestar on GitHub Discussions",
+                "description": "GitHub Discussions ",
                 "link": "https://github.com/orgs/litestar-org/discussions",
                 "icon": "coc",
             },
