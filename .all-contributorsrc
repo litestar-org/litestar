@@ -1412,7 +1412,8 @@
       "profile": "https://github.com/leejayhsu",
       "contributions": [
         "maintenance",
-        "infra"
+        "infra",
+        "doc"
       ]
     },
     {
@@ -1420,6 +1421,24 @@
       "name": "Michiel W. Beijen",
       "avatar_url": "https://avatars.githubusercontent.com/u/659504?v=4",
       "profile": "https://x14.nl",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "baoliay2008",
+      "name": "L. Bao",
+      "avatar_url": "https://avatars.githubusercontent.com/u/13620348?v=4",
+      "profile": "https://github.com/baoliay2008",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "jdglaser",
+      "name": "Jarred Glaser",
+      "avatar_url": "https://avatars.githubusercontent.com/u/32422167?v=4",
+      "profile": "http://jarredglaser.com",
       "contributions": [
         "doc"
       ]

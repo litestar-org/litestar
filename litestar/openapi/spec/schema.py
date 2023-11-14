@@ -9,6 +9,7 @@ from litestar.utils.predicates import is_non_string_sequence
 if TYPE_CHECKING:
     from litestar.openapi.spec.discriminator import Discriminator
     from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
+    from litestar.openapi.spec.example import Example
     from litestar.openapi.spec.external_documentation import ExternalDocumentation
     from litestar.openapi.spec.reference import Reference
     from litestar.openapi.spec.xml import XML
@@ -609,19 +610,11 @@ class Schema(BaseSchemaObject):
     Omitting these keywords has the same behavior as values of false.
     """
 
-    examples: Sequence[Any] | None = None
-    """The value of this keyword MUST be an array.  There are no restrictions placed on the values within the array.
-    When multiple occurrences of this keyword are applicable to a single sub-instance, implementations MUST provide a
-    flat array of all values rather than an array of arrays.
+    examples: Mapping[str, Example] | None = None
+    """The value of this must be an array containing the example values directly or a mapping of string
+    to an ``Example`` instance.
 
-    This keyword can be used to provide sample JSON values associated with a particular schema, for the purpose of
-    illustrating usage. It is RECOMMENDED that these values be valid against the associated
-    schema.
-
-    Implementations MAY use the value(s) of "default", if present, as an additional example.  If "examples" is absent,
-    "default" MAY still be used in this manner.
-
-    The OpenAPI Specification's base vocabulary is comprised of the following keywords:
+    This is based on the ``examples`` keyword of JSON Schema.
     """
 
     discriminator: Discriminator | None = None

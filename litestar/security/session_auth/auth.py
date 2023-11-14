@@ -66,7 +66,7 @@ class SessionAuth(Generic[UserType, BaseSessionBackendT], AbstractSecurityConfig
         """Use this property to insert the config into a middleware list on one of the application layers.
 
         Examples:
-            .. code-block: python
+            .. code-block:: python
 
                 from typing import Any
                 from os import urandom

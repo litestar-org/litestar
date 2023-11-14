@@ -120,14 +120,16 @@ def create_test_client(
             handled correctly.
 
     Examples:
-        .. code-block: python
+        .. code-block:: python
 
             from litestar import get
             from litestar.testing import create_test_client
 
+
             @get("/some-path")
             def my_handler() -> dict[str, str]:
                 return {"hello": "world"}
+
 
             def test_my_handler() -> None:
                 with create_test_client(my_handler) as client:
@@ -373,14 +375,16 @@ def create_async_test_client(
             handled correctly.
 
     Examples:
-        .. code-block: python
+        .. code-block:: python
 
             from litestar import get
             from litestar.testing import create_test_client
 
+
             @get("/some-path")
             def my_handler() -> dict[str, str]:
                 return {"hello": "world"}
+
 
             def test_my_handler() -> None:
                 with create_test_client(my_handler) as client:
