@@ -535,7 +535,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
             None
 
         Examples:
-            .. code-block: python
+            .. code-block:: python
 
                 from litestar import Litestar, get
                 from litestar.middleware.session.memory_backend import MemoryBackendConfig
@@ -567,7 +567,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
             A dictionary containing session data.
 
         Examples:
-            .. code-block: python
+            .. code-block:: python
 
                 from litestar import Litestar, post
                 from litestar.middleware.session.memory_backend import MemoryBackendConfig

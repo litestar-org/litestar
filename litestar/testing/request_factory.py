@@ -83,7 +83,7 @@ class RequestFactory:
              handler_kwargs: Kwargs to pass to the route handler created for the request
 
         Examples:
-            .. code-block: python
+            .. code-block:: python
 
                 from litestar import Litestar
                 from litestar.enums import RequestEncodingType

@@ -335,7 +335,7 @@ class LoggingMiddlewareConfig:
         """Use this property to insert the config into a middleware list on one of the application layers.
 
         Examples:
-            .. code-block: python
+            .. code-block::  python
 
                 from litestar import Litestar, Request, get
                 from litestar.logging import LoggingConfig
