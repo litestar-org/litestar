@@ -1,27 +1,31 @@
 Manually with ASGI server
 ==========
 
-ASGI (Asynchronous Server Gateway Interface) is intended to provide a standard interface between async Python web frameworks like Litestar, and async web servers such as the ones below.
+ASGI (Asynchronous Server Gateway Interface) is intended to provide a standard interface between async Python web frameworks like Litestar, and async web servers. There are several popular ASGI servers available, and you can choose the one that best fits your application's needs.
 
-Uvicorn
--------
+Choosing an ASGI Server
+-----------------------
+.. tab-set::
 
-`Uvicorn <https://www.uvicorn.org/>`_ is an ASGI server that supports HTTP/1.1 and WebSocket.
+    .. tab-item:: Uvicorn
+        :sync: uvicorn
 
-Hypercorn
----------
+        `Uvicorn <https://www.uvicorn.org/>`_ is an ASGI server that supports HTTP/1.1 and WebSocket.
 
-`Hypercorn <https://hypercorn.readthedocs.io/en/latest/#/>`_ is an ASGI server that was initially part of `Quart <https://pgjones.gitlab.io/quart//>`_, and supports HTTP/1.1, HTTP/2, and WebSocket.
+    .. tab-item:: Hypercorn
+        :sync: hypercorn
 
-Daphne
-------
+        `Hypercorn <https://hypercorn.readthedocs.io/en/latest/#/>`_ is an ASGI server that was initially part of `Quart <https://pgjones.gitlab.io/quart//>`_, and supports HTTP/1.1, HTTP/2, and WebSocket.
 
-`Daphne <https://github.com/django/daphne/>`_ is an ASGI server that was originally developed for `Django Channels <https://channels.readthedocs.io/en/latest/>`_, and supports HTTP/1.1, HTTP/2, and WebSocket.
+    .. tab-item:: Daphne
+        :sync: daphne
 
-Granian
--------
+        `Daphne <https://github.com/django/daphne/>`_ is an ASGI server that was originally developed for `Django Channels <https://channels.readthedocs.io/en/latest/>`_, and supports HTTP/1.1, HTTP/2, and WebSocket.
 
-`Granian <https://github.com/emmett-framework/granian/>`_ is a Rust based ASGI server that supports HTTP/1.1, HTTP/2, and WebSocket.
+    .. tab-item:: Granian
+        :sync: granian
+
+        `Granian <https://github.com/emmett-framework/granian/>`_ is a Rust based ASGI server that supports HTTP/1.1, HTTP/2, and WebSocket.
 
 Install the ASGI Server
 -----------------------
