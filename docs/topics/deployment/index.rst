@@ -11,3 +11,4 @@ Contents
 .. toctree::
 
     nginx-unit
+    manually-with-asgi-server
