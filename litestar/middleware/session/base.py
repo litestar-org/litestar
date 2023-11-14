@@ -74,7 +74,7 @@ class BaseBackendConfig(ABC, Generic[BaseSessionBackendT]):
         """Use this property to insert the config into a middleware list on one of the application layers.
 
         Examples:
-            .. code-block: python
+            .. code-block:: python
 
                 from os import urandom
 
