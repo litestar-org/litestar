@@ -37,18 +37,22 @@ class InitPluginProtocol(Protocol):
                 from litestar.di import Provide
                 from litestar.plugins import InitPluginProtocol
 
+
                 def get_name() -> str:
                     return "world"
+
 
                 @get("/my-path")
                 def my_route_handler(name: str) -> dict[str, str]:
                     return {"hello": name}
+
 
                 class MyPlugin(InitPluginProtocol):
                     def on_app_init(self, app_config: AppConfig) -> AppConfig:
                         app_config.dependencies["name"] = Provide(get_name)
                         app_config.route_handlers.append(my_route_handler)
                         return app_config
+
 
                 app = Litestar(plugins=[MyPlugin()])
 

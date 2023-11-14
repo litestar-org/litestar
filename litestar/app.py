@@ -639,9 +639,11 @@ class Litestar(Router):
 
                 from litestar import Litestar, get
 
+
                 @get("/", name="my-handler")
                 def handler() -> None:
                     pass
+
 
                 app = Litestar(route_handlers=[handler])
 
@@ -674,9 +676,11 @@ class Litestar(Router):
 
                 from litestar import Litestar, get
 
+
                 @get("/group/{group_id:int}/user/{user_id:int}", name="get_membership_details")
                 def get_membership_details(group_id: int, user_id: int) -> None:
                     pass
+
 
                 app = Litestar(route_handlers=[get_membership_details])
 
