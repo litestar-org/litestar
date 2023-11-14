@@ -54,18 +54,21 @@ def func():
 
 
 APP_FACTORY_FILE_CONTENT_STARTUP_SHUTDOWN_HOOKS = """
+from contextlib import contextmanager
+from typing import Generator
+
 from litestar import Litestar
 
-def before_startup_function() -> None:
-    print("i_run_before_startup")
 
-def after_shutdown_function() -> None:
-    print("i_run_after_shutdown")
+@contextmanager
+def server_lifespan_functions(app: Litestar) -> Generator[None, None, None]:
+    print("i_run_before_startup")  # noqa: T201
+    try:
+        yield
+    finally:
+        print("i_run_after_shutdown")  # noqa: T201
+
 
 def create_app() -> Litestar:
-    return Litestar(
-        [],
-        on_cli_startup=[before_startup_function],
-        on_cli_shutdown=[after_shutdown_function],
-    )
+    return Litestar(route_handlers=[], server_lifespan=[server_lifespan_functions])
 """

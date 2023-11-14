@@ -11,7 +11,7 @@ from litestar.events.emitter import SimpleEventEmitter
 from litestar.types.empty import Empty
 
 if TYPE_CHECKING:
-    from contextlib import AbstractAsyncContextManager
+    from contextlib import AbstractAsyncContextManager, AbstractContextManager
 
     from litestar import Litestar
     from litestar.config.compression import CompressionConfig
@@ -131,16 +131,16 @@ class AppConfig:
         default_factory=list
     )
     """A list of callables returning async context managers, wrapping the lifespan of the ASGI application"""
+    server_lifespan: list[Callable[[Litestar], AbstractContextManager] | AbstractContextManager] = field(
+        default_factory=list
+    )
+    """A list of callables returning async context managers, wrapping the lifespan of the ASGI Server when called from the CLI."""
     listeners: list[EventListener] = field(default_factory=list)
     """A list of :class:`EventListener <.events.listener.EventListener>`."""
     logging_config: BaseLoggingConfig | None = field(default=None)
     """An instance of :class:`BaseLoggingConfig <.logging.config.BaseLoggingConfig>` subclass."""
     middleware: list[Middleware] = field(default_factory=list)
     """A list of :class:`Middleware <.types.Middleware>`."""
-    on_cli_shutdown: list[Callable] = field(default_factory=list)
-    """A list of :class:`Callable <typing.Callable>` called on CLI shutdown."""
-    on_cli_startup: list[Callable] = field(default_factory=list)
-    """A list of :class:`Callable <typing.Callable>` called on CLI startup."""
     on_shutdown: list[LifespanHook] = field(default_factory=list)
     """A list of :class:`LifespanHook <.types.LifespanHook>` called during application shutdown."""
     on_startup: list[LifespanHook] = field(default_factory=list)

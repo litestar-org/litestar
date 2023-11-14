@@ -310,5 +310,12 @@ def test_run_command_with_before_startup_after_shutdown_hooks(
     assert "i_run_before_startup" in result.stdout
     assert "i_run_after_shutdown" in result.stdout
     mock_uvicorn_run.assert_called_once_with(
-        app=str(app_path), host="127.0.0.1", port=8000, factory=True, uds=None, fd=None
+        app=str(app_path),
+        host="127.0.0.1",
+        port=8000,
+        fd=None,
+        uds=None,
+        factory=True,
+        ssl_certfile=None,
+        ssl_keyfile=None,
     )

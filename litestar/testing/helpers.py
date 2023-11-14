@@ -10,7 +10,7 @@ from litestar.types import Empty
 from litestar.utils.predicates import is_class_and_subclass
 
 if TYPE_CHECKING:
-    from contextlib import AbstractAsyncContextManager
+    from contextlib import AbstractAsyncContextManager, AbstractContextManager
 
     from litestar import Request, WebSocket
     from litestar.config.allowed_hosts import AllowedHostsConfig
@@ -81,8 +81,6 @@ def create_test_client(
     middleware: Sequence[Middleware] | None = None,
     multipart_form_part_limit: int = 1000,
     on_app_init: Sequence[OnAppInitHandler] | None = None,
-    on_cli_shutdown: Sequence[Callable] | None = None,
-    on_cli_startup: Sequence[Callable] | None = None,
     on_shutdown: Sequence[LifespanHook] | None = None,
     on_startup: Sequence[LifespanHook] | None = None,
     openapi_config: OpenAPIConfig | None = DEFAULT_OPENAPI_CONFIG,
@@ -100,6 +98,7 @@ def create_test_client(
     return_dto: type[AbstractDTO] | None | EmptyType = Empty,
     root_path: str = "",
     security: Sequence[SecurityRequirement] | None = None,
+    server_lifespan: list[Callable[[Litestar], AbstractContextManager] | AbstractContextManager] | None = None,
     session_config: BaseBackendConfig | None = None,
     signature_namespace: Mapping[str, Any] | None = None,
     signature_types: Sequence[Any] | None = None,
@@ -191,8 +190,6 @@ def create_test_client(
             an instance of :class:`AppConfig <.config.app.AppConfig>` that will have been initially populated with
             the parameters passed to :class:`Litestar <litestar.app.Litestar>`, and must return an instance of same.
             If more than one handler is registered they are called in the order they are provided.
-        on_cli_shutdown: A sequence of :class:`Callable <typing.Callable>` called on CLI shutdown.
-        on_cli_startup: A sequence of :class:`Callable <typing.Callable>` called on CLI startup.
         on_shutdown: A sequence of :class:`LifespanHook <.types.LifespanHook>` called during application
             shutdown.
         on_startup: A sequence of :class:`LifespanHook <litestar.types.LifespanHook>` called during
@@ -219,6 +216,7 @@ def create_test_client(
         security: A sequence of dicts that will be added to the schema of all route handlers in the application.
             See
             :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
+        server_lifespan: A list of callables returning async context managers, wrapping the lifespan of the ASGI application
         signature_namespace: A mapping of names to types for use in forward reference resolution during signature modeling.
         signature_types: A sequence of types for use in forward reference resolution during signature modeling.
             These types will be added to the signature namespace using their ``__name__`` attribute.
@@ -270,8 +268,6 @@ def create_test_client(
         middleware=middleware,
         multipart_form_part_limit=multipart_form_part_limit,
         on_app_init=on_app_init,
-        on_cli_shutdown=on_cli_shutdown,
-        on_cli_startup=on_cli_startup,
         on_shutdown=on_shutdown,
         on_startup=on_startup,
         openapi_config=openapi_config,
@@ -287,6 +283,7 @@ def create_test_client(
         return_dto=return_dto,
         route_handlers=route_handlers,
         security=security,
+        server_lifespan=server_lifespan,
         signature_namespace=signature_namespace,
         signature_types=signature_types,
         state=state,
@@ -341,8 +338,6 @@ def create_async_test_client(
     middleware: Sequence[Middleware] | None = None,
     multipart_form_part_limit: int = 1000,
     on_app_init: Sequence[OnAppInitHandler] | None = None,
-    on_cli_shutdown: Sequence[Callable] | None = None,
-    on_cli_startup: Sequence[Callable] | None = None,
     on_shutdown: Sequence[LifespanHook] | None = None,
     on_startup: Sequence[LifespanHook] | None = None,
     openapi_config: OpenAPIConfig | None = DEFAULT_OPENAPI_CONFIG,
@@ -359,6 +354,7 @@ def create_async_test_client(
     return_dto: type[AbstractDTO] | None | EmptyType = Empty,
     root_path: str = "",
     security: Sequence[SecurityRequirement] | None = None,
+    server_lifespan: list[Callable[[Litestar], AbstractContextManager] | AbstractContextManager] | None = None,
     session_config: BaseBackendConfig | None = None,
     signature_namespace: Mapping[str, Any] | None = None,
     signature_types: Sequence[Any] | None = None,
@@ -450,8 +446,6 @@ def create_async_test_client(
             an instance of :class:`AppConfig <.config.app.AppConfig>` that will have been initially populated with
             the parameters passed to :class:`Litestar <litestar.app.Litestar>`, and must return an instance of same.
             If more than one handler is registered they are called in the order they are provided.
-        on_cli_shutdown: A sequence of :class:`Callable <typing.Callable>` called on CLI shutdown.
-        on_cli_startup: A sequence of :class:`Callable <typing.Callable>` called on CLI startup.
         on_shutdown: A sequence of :class:`LifespanHook <.types.LifespanHook>` called during application
             shutdown.
         on_startup: A sequence of :class:`LifespanHook <litestar.types.LifespanHook>` called during
@@ -478,6 +472,7 @@ def create_async_test_client(
         security: A sequence of dicts that will be added to the schema of all route handlers in the application.
             See
             :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
+        server_lifespan: A list of callables returning async context managers, wrapping the lifespan of the ASGI application
         signature_namespace: A mapping of names to types for use in forward reference resolution during signature modeling.
         signature_types: A sequence of types for use in forward reference resolution during signature modeling.
             These types will be added to the signature namespace using their ``__name__`` attribute.
@@ -528,8 +523,6 @@ def create_async_test_client(
         middleware=middleware,
         multipart_form_part_limit=multipart_form_part_limit,
         on_app_init=on_app_init,
-        on_cli_shutdown=on_cli_shutdown,
-        on_cli_startup=on_cli_startup,
         on_shutdown=on_shutdown,
         on_startup=on_startup,
         openapi_config=openapi_config,
@@ -545,6 +538,7 @@ def create_async_test_client(
         return_dto=return_dto,
         route_handlers=route_handlers,
         security=security,
+        server_lifespan=server_lifespan,
         signature_namespace=signature_namespace,
         signature_types=signature_types,
         state=state,

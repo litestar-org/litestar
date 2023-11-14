@@ -1,11 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Iterator, Protocol, TypeVar, Union, cast, runtime_checkable
+from contextlib import contextmanager
+from typing import TYPE_CHECKING, Any, Generator, Iterator, Protocol, TypeVar, Union, cast, runtime_checkable
 
 if TYPE_CHECKING:
     from click import Group
 
     from litestar._openapi.schema_generation import SchemaCreator
+    from litestar.app import Litestar
     from litestar.config.app import AppConfig
     from litestar.dto import AbstractDTO
     from litestar.openapi.spec import Schema
@@ -17,6 +19,7 @@ __all__ = (
     "OpenAPISchemaPluginProtocol",
     "OpenAPISchemaPlugin",
     "PluginProtocol",
+    "ServerLifespanPluginProtocol",
     "CLIPluginProtocol",
     "PluginRegistry",
 )
@@ -65,6 +68,8 @@ class InitPluginProtocol(Protocol):
 class CLIPluginProtocol(Protocol):
     """Plugin protocol to extend the CLI."""
 
+    __slots__ = ()
+
     def on_cli_init(self, cli: Group) -> None:
         """Called when the CLI is initialized.
 
@@ -90,6 +95,17 @@ class CLIPluginProtocol(Protocol):
 
                 app = Litestar(plugins=[CLIPlugin()])
         """
+
+
+@runtime_checkable
+class ServerLifespanPluginProtocol(Protocol):
+    """Plugin protocol to extend the CLI Server Lifespan."""
+
+    __slots__ = ()
+
+    @contextmanager
+    def server_lifespan(self, app: Litestar) -> Generator[None, Any, None]:
+        yield
 
 
 @runtime_checkable
@@ -174,6 +190,7 @@ PluginProtocol = Union[
     OpenAPISchemaPluginProtocol,
     OpenAPISchemaPlugin,
     CLIPluginProtocol,
+    ServerLifespanPluginProtocol,
 ]
 
 PluginT = TypeVar("PluginT", bound=PluginProtocol)
@@ -184,6 +201,7 @@ class PluginRegistry:
         "init": "Plugins that implement the InitPluginProtocol",
         "openapi": "Plugins that implement the OpenAPISchemaPluginProtocol",
         "serialization": "Plugins that implement the SerializationPluginProtocol",
+        "server_lifespan": "Plugins that implement the ServerLifespanPluginProtocol",
         "cli": "Plugins that implement the CLIPluginProtocol",
         "_plugins_by_type": None,
         "_plugins": None,
@@ -196,6 +214,7 @@ class PluginRegistry:
         self.init = tuple(p for p in plugins if isinstance(p, InitPluginProtocol))
         self.openapi = tuple(p for p in plugins if isinstance(p, OpenAPISchemaPluginProtocol))
         self.serialization = tuple(p for p in plugins if isinstance(p, SerializationPluginProtocol))
+        self.server_lifespan = tuple(p for p in plugins if isinstance(p, ServerLifespanPluginProtocol))
         self.cli = tuple(p for p in plugins if isinstance(p, CLIPluginProtocol))
 
     def get(self, type_: type[PluginT]) -> PluginT:

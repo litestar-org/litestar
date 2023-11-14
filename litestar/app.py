@@ -3,12 +3,20 @@ from __future__ import annotations
 import inspect
 import logging
 import os
-from contextlib import AbstractAsyncContextManager, AsyncExitStack, asynccontextmanager, suppress
+from contextlib import (
+    AbstractAsyncContextManager,
+    AbstractContextManager,
+    AsyncExitStack,
+    ExitStack,
+    asynccontextmanager,
+    contextmanager,
+    suppress,
+)
 from datetime import date, datetime, time, timedelta
 from functools import partial
 from itertools import chain
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Iterable, Mapping, Sequence, TypedDict, cast
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Generator, Iterable, Mapping, Sequence, TypedDict, cast
 
 from litestar._asgi import ASGIRouter
 from litestar._asgi.utils import get_route_handlers, wrap_in_exception_handler
@@ -130,6 +138,7 @@ class Litestar(Router):
 
     __slots__ = (
         "_lifespan_managers",
+        "_server_lifespan_managers",
         "_debug",
         "_openapi_schema",
         "plugins",
@@ -147,8 +156,6 @@ class Litestar(Router):
         "logger",
         "logging_config",
         "multipart_form_part_limit",
-        "on_cli_shutdown",
-        "on_cli_startup",
         "on_shutdown",
         "on_startup",
         "openapi_config",
@@ -192,8 +199,6 @@ class Litestar(Router):
         middleware: Sequence[Middleware] | None = None,
         multipart_form_part_limit: int = 1000,
         on_app_init: Sequence[OnAppInitHandler] | None = None,
-        on_cli_shutdown: Sequence[Callable] | None = None,
-        on_cli_startup: Sequence[Callable] | None = None,
         on_shutdown: Sequence[LifespanHook] | None = None,
         on_startup: Sequence[LifespanHook] | None = None,
         openapi_config: OpenAPIConfig | None = DEFAULT_OPENAPI_CONFIG,
@@ -219,6 +224,7 @@ class Litestar(Router):
         websocket_class: type[WebSocket] | None = None,
         lifespan: Sequence[Callable[[Litestar], AbstractAsyncContextManager] | AbstractAsyncContextManager]
         | None = None,
+        server_lifespan: Sequence[Callable[[Litestar], AbstractContextManager] | AbstractContextManager] | None = None,
         pdb_on_exception: bool | None = None,
         experimental_features: Iterable[ExperimentalFeatures] | None = None,
     ) -> None:
@@ -268,8 +274,6 @@ class Litestar(Router):
                 an instance of :class:`AppConfig <.config.app.AppConfig>` that will have been initially populated with
                 the parameters passed to :class:`Litestar <litestar.app.Litestar>`, and must return an instance of same.
                 If more than one handler is registered they are called in the order they are provided.
-            on_cli_shutdown: A sequence of :class:`Callable <typing.Callable>` called on CLI shutdown.
-            on_cli_startup: A sequence of :class:`Callable <typing.Callable>` called on CLI startup.
             on_shutdown: A sequence of :class:`LifespanHook <.types.LifespanHook>` called during application
                 shutdown.
             on_startup: A sequence of :class:`LifespanHook <litestar.types.LifespanHook>` called during
@@ -296,6 +300,7 @@ class Litestar(Router):
             security: A sequence of dicts that will be added to the schema of all route handlers in the application.
                 See
                 :data:`SecurityRequirement <.openapi.spec.SecurityRequirement>` for details.
+            server_lifespan: A list of callables returning async context managers, wrapping the lifespan of the ASGI application
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature modeling.
             signature_types: A sequence of types for use in forward reference resolution during signature modeling.
                 These types will be added to the signature namespace using their ``__name__`` attribute.
@@ -348,8 +353,6 @@ class Litestar(Router):
             logging_config=cast("BaseLoggingConfig | None", logging_config),
             middleware=list(middleware or []),
             multipart_form_part_limit=multipart_form_part_limit,
-            on_cli_shutdown=list(on_cli_shutdown or []),
-            on_cli_startup=list(on_cli_startup or []),
             on_shutdown=list(on_shutdown or []),
             on_startup=list(on_startup or []),
             openapi_config=openapi_config,
@@ -365,6 +368,7 @@ class Litestar(Router):
             return_dto=return_dto,
             route_handlers=list(route_handlers) if route_handlers is not None else [],
             security=list(security or []),
+            server_lifespan=list(server_lifespan or []),
             signature_namespace=dict(signature_namespace or {}),
             signature_types=list(signature_types or []),
             state=state or State(),
@@ -388,6 +392,7 @@ class Litestar(Router):
         self._openapi_schema: OpenAPI | None = None
         self._debug: bool = True
         self._lifespan_managers = config.lifespan
+        self._server_lifespan_managers = config.server_lifespan
         self.experimental_features = frozenset(config.experimental_features or [])
 
         self.get_logger: GetLogger = get_logger_placeholder
@@ -405,8 +410,6 @@ class Litestar(Router):
         self.event_emitter = config.event_emitter_backend(listeners=config.listeners)
         self.logging_config = config.logging_config
         self.multipart_form_part_limit = config.multipart_form_part_limit
-        self.on_cli_shutdown = config.on_cli_shutdown
-        self.on_cli_startup = config.on_cli_startup
         self.on_shutdown = config.on_shutdown
         self.on_startup = config.on_startup
         self.openapi_config = config.openapi_config
@@ -573,6 +576,20 @@ class Litestar(Router):
 
             for hook in self.on_startup:
                 await self._call_lifespan_hook(hook)
+
+            yield
+
+    @contextmanager
+    def server_lifespan(self) -> Generator[None, None, None]:
+        """Context manager handling the ASGI server lifespan.
+
+        It will be entered just before the ASGI server is started through the CLI.
+        """
+        with ExitStack() as exit_stack:
+            for manager in self._server_lifespan_managers:
+                if not isinstance(manager, AbstractContextManager):
+                    manager = manager(self)
+                exit_stack.enter_context(manager)
 
             yield
 

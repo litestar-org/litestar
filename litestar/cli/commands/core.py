@@ -5,8 +5,7 @@ import multiprocessing
 import os
 import subprocess
 import sys
-from contextlib import contextmanager
-from typing import TYPE_CHECKING, Any, Callable, Generator
+from typing import TYPE_CHECKING, Any
 
 from rich.tree import Tree
 
@@ -32,25 +31,10 @@ else:
     import rich_click as click
     from rich_click import Context, command, option
 
-__all__ = ("info_command", "routes_command", "run_command", "server_lifespan")
+__all__ = ("info_command", "routes_command", "run_command")
 
 if TYPE_CHECKING:
     from litestar import Litestar
-
-
-@contextmanager
-def server_lifespan(app: Litestar) -> Generator[None, Any, None]:
-    for hook in app.on_cli_startup:
-        _call_on_cli_startup_shutdown_hook(hook)
-    try:
-        yield
-    finally:
-        for hook in app.on_cli_shutdown:
-            _call_on_cli_startup_shutdown_hook(hook)
-
-
-def _call_on_cli_startup_shutdown_hook(hook: Callable, *args: Any, **kwargs: Any) -> Any:
-    return hook(*args, **kwargs)
 
 
 def _convert_uvicorn_args(args: dict[str, Any]) -> list[str]:
@@ -221,7 +205,7 @@ def run_command(
     console.rule("[yellow]Starting server process", align="left")
 
     show_app_info(app)
-    with server_lifespan(app):
+    with app.server_lifespan():
         if workers == 1 and not reload:
             # A guard statement at the beginning of this function prevents uvicorn from being unbound
             # See "reportUnboundVariable in:
