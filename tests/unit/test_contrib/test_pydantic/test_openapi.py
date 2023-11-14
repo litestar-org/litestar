@@ -376,7 +376,7 @@ def test_schema_generation_v1(create_examples: bool) -> None:
         assert response.status_code == HTTP_200_OK
         assert response.json()["components"]["schemas"]["Lookup"]["properties"]["id"] == {
             "description": "A unique identifier",
-            "examples": [{"value": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"}],
+            "examples": {"id-example-1": {"value": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"}},
             "maxLength": 16,
             "minLength": 12,
             "type": "string",
@@ -413,7 +413,7 @@ def test_schema_generation_v2(create_examples: bool) -> None:
         assert response.status_code == HTTP_200_OK
         assert response.json()["components"]["schemas"]["Lookup"]["properties"]["id"] == {
             "description": "A unique identifier",
-            "examples": [{"value": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"}],
+            "examples": {"id-example-1": {"value": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"}},
             "maxLength": 16,
             "minLength": 12,
             "type": "string",
@@ -508,9 +508,14 @@ def test_create_schema_for_field_v1() -> None:
     SchemaCreator(schemas=schemas, plugins=[PydanticSchemaPlugin()]).for_field_definition(field_definition)
     schema = schemas["Model"]
 
-    assert schema.properties["value"].description == "description"  # type: ignore
-    assert schema.properties["value"].title == "title"  # type: ignore
-    assert schema.properties["value"].examples == [Example(value="example")]  # type: ignore
+    assert schema.properties
+
+    value = schema.properties["value"]
+
+    assert isinstance(value, Schema)
+    assert value.description == "description"
+    assert value.title == "title"
+    assert value.examples == {"value-example-1": Example(value="example")}
 
 
 def test_create_schema_for_field_v2() -> None:
@@ -524,9 +529,14 @@ def test_create_schema_for_field_v2() -> None:
     SchemaCreator(schemas=schemas, plugins=[PydanticSchemaPlugin()]).for_field_definition(field_definition)
     schema = schemas["Model"]
 
-    assert schema.properties["value"].description == "description"  # type: ignore
-    assert schema.properties["value"].title == "title"  # type: ignore
-    assert schema.properties["value"].examples == [Example(value="example")]  # type: ignore
+    assert schema.properties
+
+    value = schema.properties["value"]
+
+    assert isinstance(value, Schema)
+    assert value.description == "description"
+    assert value.title == "title"
+    assert value.examples == {"value-example-1": Example(value="example")}
 
 
 @pytest.mark.parametrize("with_future_annotations", [True, False])
