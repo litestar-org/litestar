@@ -76,6 +76,7 @@ Installation
 
     .. note:: The full extras is not recommended because it will add a lot of unnecessary extras.
 
+.. _minimal_example:
 
 Minimal Example
 ---------------
