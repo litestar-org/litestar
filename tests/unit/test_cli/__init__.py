@@ -84,7 +84,7 @@ from litestar.plugins.base import ServerLifespanPluginProtocol
 
 class StartupPrintPlugin(ServerLifespanPluginProtocol):
     @contextmanager
-    def server_lifespan(self) -> Generator[None, Any, None]:
+    def server_lifespan(self) -> Generator[None, None, None]:
         print("i_run_before_startup_plugin")  # noqa: T201
         try:
             yield

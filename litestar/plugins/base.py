@@ -103,7 +103,7 @@ class ServerLifespanPluginProtocol(Protocol):
     __slots__ = ()
 
     @contextmanager
-    def server_lifespan(self) -> Generator[None, Any, None]:
+    def server_lifespan(self) -> Generator[None, None, None]:
         yield
 
 

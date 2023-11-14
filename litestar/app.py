@@ -582,7 +582,7 @@ class Litestar(Router):
             yield
 
     @contextmanager
-    def server_lifespan(self) -> Generator[None, Any, None]:
+    def server_lifespan(self) -> Generator[None, None, None]:
         """Context manager handling the ASGI server lifespan.
 
         It will be entered just before the ASGI server is started through the CLI.
