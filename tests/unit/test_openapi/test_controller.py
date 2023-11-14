@@ -61,6 +61,17 @@ def test_default_stoplight_elements_cdn_urls(
         assert all(cdn_url in response.text for cdn_url in default_stoplight_elements_bundles)
 
 
+def test_default_rapidoc_elements_cdn_urls(
+    person_controller: Type[Controller], pet_controller: Type[Controller]
+) -> None:
+    with create_test_client([person_controller, pet_controller]) as client:
+        response = client.get("/schema/rapidoc")
+        default_rapidoc_bundles = [f"https://unpkg.com/rapidoc@{OpenAPIController.rapidoc_version}/dist/rapidoc-min.js"]
+        assert client.app.openapi_config is not None
+        assert client.app.openapi_config.openapi_controller.rapidoc_js_url in default_rapidoc_bundles
+        assert all(cdn_url in response.text for cdn_url in default_rapidoc_bundles)
+
+
 def test_redoc_with_google_fonts(person_controller: Type[Controller], pet_controller: Type[Controller]) -> None:
     with create_test_client([person_controller, pet_controller]) as client:
         response = client.get("/schema/redoc")
@@ -126,6 +137,18 @@ def test_openapi_stoplight_elements_offline(
         assert OfflineOpenAPIController.stoplight_elements_js_url in response.text
 
 
+def test_openapi_rapidoc_offline(person_controller: Type[Controller], pet_controller: Type[Controller]) -> None:
+    class OfflineOpenAPIController(OpenAPIController):
+        """test class for usage in a couple "offline" tests and for without Google fonts test."""
+
+        rapidoc_js_url = "https://offline_location/rapidoc-min.js"
+
+    offline_config = OpenAPIConfig(title="Litestar API", version="1.0.0", openapi_controller=OfflineOpenAPIController)
+    with create_test_client([person_controller, pet_controller], openapi_config=offline_config) as client:
+        response = client.get("/schema/rapidoc")
+        assert OfflineOpenAPIController.rapidoc_js_url in response.text
+
+
 @pytest.mark.parametrize("root_path", root_paths)
 def test_openapi_root(root_path: str, person_controller: Type[Controller], pet_controller: Type[Controller]) -> None:
     with create_test_client([person_controller, pet_controller], root_path=root_path) as client:
@@ -171,6 +194,14 @@ def test_openapi_stoplight_elements(
 ) -> None:
     with create_test_client([person_controller, pet_controller], root_path=root_path) as client:
         response = client.get("/schema/elements/")
+        assert response.status_code == HTTP_200_OK
+        assert response.headers["content-type"].startswith(MediaType.HTML.value)
+
+
+@pytest.mark.parametrize("root_path", root_paths)
+def test_openapi_rapidoc(root_path: str, person_controller: Type[Controller], pet_controller: Type[Controller]) -> None:
+    with create_test_client([person_controller, pet_controller], root_path=root_path) as client:
+        response = client.get("/schema/rapidoc")
         assert response.status_code == HTTP_200_OK
         assert response.headers["content-type"].startswith(MediaType.HTML.value)
 
@@ -229,5 +260,19 @@ def test_openapi_stoplight_elements_not_allowed(
         ),
     ) as client:
         response = client.get("/schema/elements/")
+        assert response.status_code == HTTP_404_NOT_FOUND
+        assert response.headers["content-type"].startswith(MediaType.HTML.value)
+
+
+def test_openapi_rapidoc_not_allowed(person_controller: Type[Controller], pet_controller: Type[Controller]) -> None:
+    with create_test_client(
+        [person_controller, pet_controller],
+        openapi_config=OpenAPIConfig(
+            title="Litestar API",
+            version="1.0.0",
+            enabled_endpoints={"swagger", "elements", "openapi.json", "openapi.yaml", "openapi.yml"},
+        ),
+    ) as client:
+        response = client.get("/schema/rapidoc")
         assert response.status_code == HTTP_404_NOT_FOUND
         assert response.headers["content-type"].startswith(MediaType.HTML.value)

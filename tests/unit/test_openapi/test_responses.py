@@ -9,7 +9,6 @@ from typing import Any, Callable, Dict, TypedDict
 from unittest.mock import MagicMock
 
 import pytest
-from pydantic import BaseModel
 
 from litestar import Controller, Litestar, MediaType, Response, get, post
 from litestar._openapi.responses import (
@@ -41,8 +40,7 @@ from litestar.status_codes import (
 )
 from litestar.typing import FieldDefinition
 from tests.models import DataclassPerson, DataclassPersonFactory
-
-from .utils import PetException
+from tests.unit.test_openapi.utils import PetException
 
 
 def get_registered_route_handler(handler: HTTPRouteHandler | type[Controller], name: str) -> HTTPRouteHandler:
@@ -373,7 +371,8 @@ def test_create_additional_responses() -> None:
 
 
 def test_additional_responses_overlap_with_other_responses() -> None:
-    class OkResponse(BaseModel):
+    @dataclass
+    class OkResponse:
         message: str
 
     @get(responses={200: ResponseSpec(data_container=OkResponse, description="Overwritten response")}, name="test")
@@ -391,7 +390,8 @@ def test_additional_responses_overlap_with_other_responses() -> None:
 
 
 def test_additional_responses_overlap_with_raises() -> None:
-    class ErrorResponse(BaseModel):
+    @dataclass
+    class ErrorResponse:
         message: str
 
     @get(

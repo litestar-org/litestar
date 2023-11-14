@@ -2,6 +2,7 @@ name: Tests And Linting
 
 on:
   pull_request:
+  merge_group:
   push:
     branches:
       - main
@@ -15,11 +16,10 @@ jobs:
 
       - uses: actions/setup-python@v4
         with:
-          python-version: "3.12"
-          allow-prereleases: true
+          python-version: "3.8"
 
       - name: Install Pre-Commit
-        run: python -m pip install pre-commit && pre-commit install
+        run: python -m pip install pre-commit
 
       - name: Load cached Pre-Commit Dependencies
         id: cached-pre-commit-dependencies
@@ -82,16 +82,14 @@ jobs:
         run: pdm run pyright
 
   test:
-    name: "test (${{ matrix.python-version }}, pydantic@${{ matrix.pydantic-version }})"
+    name: "test (${{ matrix.python-version }})"
     strategy:
       fail-fast: true
       matrix:
         python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
-        pydantic-version: ["1", "2"]
     uses: ./.github/workflows/test.yml
     with:
-      coverage: ${{ matrix.python-version == '3.12' && matrix.pydantic-version == '2' }}
-      pydantic-version: ${{ matrix.pydantic-version }}
+      coverage: ${{ (matrix.python-version == '3.12' || matrix.python-version == '3.8') }}
       python-version: ${{ matrix.python-version }}
 
   test-platform-compat:
@@ -103,9 +101,8 @@ jobs:
     uses: ./.github/workflows/test.yml
     with:
       python-version: "3.12"
-      pydantic-version: "2"
       os: ${{ matrix.os }}
-      timeout: 15
+      timeout: 30
 
   sonar:
     needs:
@@ -117,10 +114,21 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
       - name: Download Artifacts
         uses: actions/download-artifact@v3
         with:
-          name: coverage-xml
+          name: coverage-data
+
+      - name: Combine coverage files
+        run: |
+          python -Im pip install coverage covdefaults
+          python -Im coverage combine
+          python -Im coverage xml -i
+
       - name: Fix coverage file for sonarcloud
         run: sed -i "s/home\/runner\/work\/litestar\/litestar/github\/workspace/g" coverage.xml
 

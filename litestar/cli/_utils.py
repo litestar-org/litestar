@@ -6,6 +6,7 @@ import inspect
 import os
 import sys
 from dataclasses import dataclass
+from datetime import datetime, timedelta, timezone
 from functools import wraps
 from itertools import chain
 from os import getenv
@@ -35,6 +36,7 @@ with contextlib.suppress(ImportError):
     import jsbeautifier  # noqa: F401
 
     JSBEAUTIFIER_INSTALLED = True
+
 if TYPE_CHECKING or not RICH_CLICK_INSTALLED:  # pragma: no cover
     from click import ClickException, Command, Context, Group, pass_context
 else:
@@ -59,7 +61,7 @@ __all__ = (
 if sys.version_info >= (3, 10):
     from importlib.metadata import entry_points
 else:
-    from importlib_metadata import entry_points  # pragma: no cover
+    from importlib_metadata import entry_points
 
 
 if TYPE_CHECKING:
@@ -99,6 +101,9 @@ class LitestarEnv:
     reload_dirs: tuple[str, ...] | None = None
     web_concurrency: int | None = None
     is_app_factory: bool = False
+    certfile_path: str | None = None
+    keyfile_path: str | None = None
+    create_self_signed_cert: bool = False
 
     @classmethod
     def from_env(cls, app_path: str | None, app_dir: Path | None = None) -> LitestarEnv:
@@ -144,6 +149,9 @@ class LitestarEnv:
             web_concurrency=int(web_concurrency) if web_concurrency else None,
             is_app_factory=loaded_app.is_factory,
             cwd=cwd,
+            certfile_path=getenv("LITESTAR_SSL_CERT_PATH"),
+            keyfile_path=getenv("LITESTAR_SSL_KEY_PATH"),
+            create_self_signed_cert=_bool_from_env("LITESTAR_CREATE_SELF_SIGNED_CERT"),
         )
 
 
@@ -417,3 +425,118 @@ def show_app_info(app: Litestar) -> None:  # pragma: no cover
         table.add_row("Middlewares", ", ".join(middlewares))
 
     console.print(table)
+
+
+def validate_ssl_file_paths(certfile_arg: str | None, keyfile_arg: str | None) -> tuple[str, str] | tuple[None, None]:
+    """Validate whether given paths exist, are not directories and were both provided or none was. Return the resolved paths.
+
+    Args:
+        certfile_arg: path argument for the certificate file
+        keyfile_arg: path argument for the key file
+
+    Returns:
+        tuple of resolved paths converted to str or tuple of None's if no argument was provided
+    """
+    if certfile_arg is None and keyfile_arg is None:
+        return (None, None)
+
+    resolved_paths = []
+
+    for argname, arg in {"--ssl-certfile": certfile_arg, "--ssl-keyfile": keyfile_arg}.items():
+        if arg is None:
+            raise LitestarCLIException(f"No value provided for {argname}")
+        path = Path(arg).resolve()
+        if path.is_dir():
+            raise LitestarCLIException(f"Path provided for {argname} is a directory: {path}")
+        if not path.exists():
+            raise LitestarCLIException(f"File provided for {argname} was not found: {path}")
+        resolved_paths.append(str(path))
+
+    return tuple(resolved_paths)  # type: ignore
+
+
+def create_ssl_files(
+    certfile_arg: str | None, keyfile_arg: str | None, common_name: str = "localhost"
+) -> tuple[str, str]:
+    """Validate whether both files were provided, are not directories, their parent dirs exist and either both files exists or none does.
+    If neither file exists, create a self-signed ssl certificate and a passwordless key at the location.
+
+    Args:
+        certfile_arg: path argument for the certificate file
+        keyfile_arg: path argument for the key file
+        common_name: the CN to be used as cert issuer and subject
+
+    Returns:
+        resolved paths of the found or generated files
+    """
+    resolved_paths = []
+
+    for argname, arg in {"--ssl-certfile": certfile_arg, "--ssl-keyfile": keyfile_arg}.items():
+        if arg is None:
+            raise LitestarCLIException(f"No value provided for {argname}")
+        path = Path(arg).resolve()
+        if path.is_dir():
+            raise LitestarCLIException(f"Path provided for {argname} is a directory: {path}")
+        if not (parent_dir := path.parent).exists():
+            raise LitestarCLIException(
+                f"Could not create file, parent directory for {argname} doesn't exist: {parent_dir}"
+            )
+        resolved_paths.append(path)
+
+    if (not resolved_paths[0].exists()) ^ (not resolved_paths[1].exists()):
+        raise LitestarCLIException(
+            "Both certificate and key file must exists or both must not exists when using --create-self-signed-cert"
+        )
+
+    if (not resolved_paths[0].exists()) and (not resolved_paths[1].exists()):
+        _generate_self_signed_cert(resolved_paths[0], resolved_paths[1], common_name)
+
+    return (str(resolved_paths[0]), str(resolved_paths[1]))
+
+
+def _generate_self_signed_cert(certfile_path: Path, keyfile_path: Path, common_name: str) -> None:
+    """Create a self-signed certificate using the cryptography modules at given paths"""
+    try:
+        from cryptography import x509
+        from cryptography.hazmat.backends import default_backend
+        from cryptography.hazmat.primitives import hashes, serialization
+        from cryptography.hazmat.primitives.asymmetric import rsa
+        from cryptography.x509.oid import NameOID
+    except ImportError as err:
+        raise LitestarCLIException(
+            "Cryptogpraphy must be installed when using --create-self-signed-cert\nPlease install the litestar[cryptography] extras"
+        ) from err
+
+    subject = x509.Name(
+        [
+            x509.NameAttribute(NameOID.COMMON_NAME, common_name),
+            x509.NameAttribute(NameOID.ORGANIZATION_NAME, "Development Certificate"),
+        ]
+    )
+
+    key = rsa.generate_private_key(public_exponent=65537, key_size=2048, backend=default_backend())
+
+    cert = (
+        x509.CertificateBuilder()
+        .subject_name(subject)
+        .issuer_name(subject)
+        .public_key(key.public_key())
+        .serial_number(x509.random_serial_number())
+        .not_valid_before(datetime.now(tz=timezone.utc))
+        .not_valid_after(datetime.now(tz=timezone.utc) + timedelta(days=365))
+        .add_extension(x509.SubjectAlternativeName([x509.DNSName(common_name)]), critical=False)
+        .add_extension(x509.ExtendedKeyUsage([x509.OID_SERVER_AUTH]), critical=False)
+        .sign(key, hashes.SHA256(), default_backend())
+    )
+
+    with certfile_path.open("wb") as cert_file:
+        cert_file.write(cert.public_bytes(serialization.Encoding.PEM))
+
+    with keyfile_path.open("wb") as key_file:
+        key_file.write(
+            key.private_bytes(
+                encoding=serialization.Encoding.PEM,
+                format=serialization.PrivateFormat.TraditionalOpenSSL,
+                encryption_algorithm=serialization.NoEncryption(),
+            )
+        )

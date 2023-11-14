@@ -90,7 +90,7 @@ class AbstractAuthenticationMiddleware(ABC):
         await self.app(scope, receive, send)
 
     @abstractmethod
-    async def authenticate_request(self, connection: ASGIConnection) -> AuthenticationResult:  # pragma: no cover
+    async def authenticate_request(self, connection: ASGIConnection) -> AuthenticationResult:
         """Receive the http connection and return an :class:`AuthenticationResult`.
 
         Notes:

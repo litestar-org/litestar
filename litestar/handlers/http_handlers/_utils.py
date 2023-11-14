@@ -147,7 +147,10 @@ def create_response_handler(
     cookie_list = list(cookies)
 
     async def handler(
-        data: Response, app: Litestar, request: Request, **kwargs: Any  # kwargs is for return dto
+        data: Response,
+        app: Litestar,
+        request: Request,
+        **kwargs: Any,  # kwargs is for return dto
     ) -> ASGIApp:
         response = await after_request(data) if after_request else data  # type:ignore[arg-type,misc]
         return response.to_asgi_response(  # type: ignore

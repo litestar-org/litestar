@@ -2,7 +2,6 @@ from enum import Enum
 from typing import Any, AnyStr
 
 import pytest
-from pydantic.types import PaymentCardBrand
 
 from litestar import Litestar, MediaType, get
 from tests.models import DataclassPerson
@@ -16,6 +15,10 @@ class MyBytes(bytes):
     ...
 
 
+class CustomStrEnum(str, Enum):
+    foo = "FOO"
+
+
 @pytest.mark.parametrize(
     "annotation, expected_media_type",
     (
@@ -23,7 +26,7 @@ class MyBytes(bytes):
         (bytes, MediaType.TEXT),
         (AnyStr, MediaType.TEXT),
         (MyBytes, MediaType.TEXT),
-        (PaymentCardBrand, MediaType.TEXT),
+        (CustomStrEnum, MediaType.TEXT),
         (MyEnum, MediaType.JSON),
         (dict, MediaType.JSON),
         (DataclassPerson, MediaType.JSON),

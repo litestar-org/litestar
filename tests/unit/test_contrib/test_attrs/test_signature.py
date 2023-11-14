@@ -5,7 +5,7 @@ from litestar.status_codes import HTTP_201_CREATED
 from litestar.testing import create_test_client
 
 
-def test_parsing_of_attrs_data() -> None:
+def test_parse_attrs_data_in_signature() -> None:
     @define(slots=True, frozen=True)
     class AttrsUser:
         name: str

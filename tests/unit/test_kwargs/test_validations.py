@@ -1,14 +1,13 @@
 from typing import Any, Callable, Dict
 
 import pytest
-from pydantic.fields import FieldInfo
 
 from litestar import Litestar, get, post, websocket
-from litestar.constants import RESERVED_KWARGS, SKIP_VALIDATION_NAMES
+from litestar.constants import RESERVED_KWARGS
 from litestar.di import Provide
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.params import Body, Parameter
+from litestar.params import Body, BodyKwarg, Parameter
 
 
 async def my_dependency() -> int:
@@ -58,13 +57,10 @@ def test_raises_when_reserved_kwargs_are_misused(reserved_kwarg: str) -> None:
     with pytest.raises(ImproperlyConfiguredException):
         Litestar(route_handlers=[handler_with_dependency])
 
-    # these kwargs are set to Any when the signature model is generated,
-    # because pydantic can't handle generics for non pydantic classes. So these tests won't work for aliased parameters.
-    if reserved_kwarg not in SKIP_VALIDATION_NAMES:
-        exec(f"async def test_fn({reserved_kwarg}: int = Parameter(query='my_param')) -> None: pass")
-        handler_with_aliased_param = decorator("/")(locals()["test_fn"])
-        with pytest.raises(ImproperlyConfiguredException):
-            Litestar(route_handlers=[handler_with_aliased_param])
+    exec(f"async def test_fn({reserved_kwarg}: int = Parameter(query='my_param')) -> None: pass")
+    handler_with_aliased_param = decorator("/")(locals()["test_fn"])
+    with pytest.raises(ImproperlyConfiguredException):
+        Litestar(route_handlers=[handler_with_aliased_param])
 
 
 def url_encoded_dependency(data: Dict[str, Any] = Body(media_type=RequestEncodingType.URL_ENCODED)) -> Dict[str, Any]:
@@ -90,7 +86,7 @@ def json_dependency(data: Dict[str, Any] = Body()) -> Dict[str, Any]:
         (Body(media_type=RequestEncodingType.URL_ENCODED), url_encoded_dependency),
     ],
 )
-def test_dependency_data_kwarg_validation_success_scenarios(body: FieldInfo, dependency: Callable) -> None:
+def test_dependency_data_kwarg_validation_success_scenarios(body: BodyKwarg, dependency: Callable) -> None:
     @post("/", dependencies={"first": Provide(dependency)})
     def handler(first: Dict[str, Any], data: Any = body) -> None:
         pass
@@ -109,7 +105,7 @@ def test_dependency_data_kwarg_validation_success_scenarios(body: FieldInfo, dep
         [Body(media_type=RequestEncodingType.MULTI_PART), url_encoded_dependency],
     ],
 )
-def test_dependency_data_kwarg_validation_failure_scenarios(body: FieldInfo, dependency: Callable) -> None:
+def test_dependency_data_kwarg_validation_failure_scenarios(body: BodyKwarg, dependency: Callable) -> None:
     @post("/", dependencies={"first": Provide(dependency, sync_to_thread=False)})
     def handler(first: Dict[str, Any], data: Any = body) -> None:
         assert first

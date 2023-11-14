@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from litestar._openapi.schema_generation.utils import get_formatted_examples
 from litestar.constants import RESERVED_KWARGS
 from litestar.enums import ParamType
 from litestar.exceptions import ImproperlyConfiguredException
@@ -109,12 +110,16 @@ def create_parameter(
 
     schema = result if isinstance(result, Schema) else schema_creator.schemas[result.value]
 
+    examples_list = kwarg_definition.examples or [] if kwarg_definition else []
+    examples = get_formatted_examples(field_definition, examples_list)
+
     return Parameter(
         description=schema.description,
         name=parameter_name,
         param_in=param_in,
         required=is_required,
         schema=result,
+        examples=examples or None,
     )
 
 

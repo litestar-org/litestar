@@ -28,7 +28,6 @@ from litestar.exceptions import (
 from litestar.logging.config import LoggingConfig, get_logger_placeholder
 from litestar.middleware.cors import CORSMiddleware
 from litestar.openapi.config import OpenAPIConfig
-from litestar.openapi.spec.components import Components
 from litestar.plugins import (
     CLIPluginProtocol,
     InitPluginProtocol,
@@ -43,7 +42,7 @@ from litestar.static_files.base import StaticFiles
 from litestar.stores.registry import StoreRegistry
 from litestar.types import Empty, TypeDecodersSequence
 from litestar.types.internal_types import PathParameterDefinition
-from litestar.utils import AsyncCallable, deprecated, join_paths, unique
+from litestar.utils import deprecated, ensure_async_callable, join_paths, unique
 from litestar.utils.dataclass import extract_dataclass_items
 from litestar.utils.predicates import is_async_callable
 from litestar.utils.warnings import warn_pdb_on_exception
@@ -389,9 +388,9 @@ class Litestar(Router):
         self.asgi_router = ASGIRouter(app=self)
 
         self.allowed_hosts = cast("AllowedHostsConfig | None", config.allowed_hosts)
-        self.after_exception = [AsyncCallable(h) for h in config.after_exception]
+        self.after_exception = [ensure_async_callable(h) for h in config.after_exception]
         self.allowed_hosts = cast("AllowedHostsConfig | None", config.allowed_hosts)
-        self.before_send = [AsyncCallable(h) for h in config.before_send]
+        self.before_send = [ensure_async_callable(h) for h in config.before_send]
         self.compression_config = config.compression_config
         self.cors_config = config.cors_config
         self.csrf_config = config.csrf_config
@@ -478,9 +477,7 @@ class Litestar(Router):
         return list(self.plugins.serialization)
 
     @staticmethod
-    def _get_default_plugins(plugins: list[PluginProtocol] | None = None) -> list[PluginProtocol]:
-        if plugins is None:
-            plugins = []
+    def _get_default_plugins(plugins: list[PluginProtocol]) -> list[PluginProtocol]:
         with suppress(MissingDependencyException):
             from litestar.contrib.pydantic import PydanticInitPlugin, PydanticPlugin, PydanticSchemaPlugin
 
@@ -541,7 +538,7 @@ class Litestar(Router):
     async def _call_lifespan_hook(self, hook: LifespanHook) -> None:
         ret = hook(self) if inspect.signature(hook).parameters else hook()  # type: ignore
 
-        if is_async_callable(hook):  # type: ignore
+        if is_async_callable(hook):  # pyright: ignore[reportGeneralTypeIssues]
             await ret
 
     @asynccontextmanager
@@ -638,13 +635,15 @@ class Litestar(Router):
         list of paths sorted lexically.
 
         Examples:
-            .. code-block: python
+            .. code-block:: python
 
                 from litestar import Litestar, get
+
 
                 @get("/", name="my-handler")
                 def handler() -> None:
                     pass
+
 
                 app = Litestar(route_handlers=[handler])
 
@@ -673,13 +672,15 @@ class Litestar(Router):
         parameters.
 
         Examples:
-            .. code-block: python
+            .. code-block:: python
 
                 from litestar import Litestar, get
+
 
                 @get("/group/{group_id:int}/user/{user_id:int}", name="get_membership_details")
                 def get_membership_details(group_id: int, user_id: int) -> None:
                     pass
+
 
                 app = Litestar(route_handlers=[get_membership_details])
 
@@ -738,7 +739,7 @@ class Litestar(Router):
         """Receives a static files handler name, an asset file path and returns resolved url path to the asset.
 
         Examples:
-            .. code-block: python
+            .. code-block:: python
 
                 from litestar import Litestar
                 from litestar.static_files.config import StaticFilesConfig
@@ -766,7 +767,7 @@ class Litestar(Router):
         if handler_index is None:
             raise NoRouteMatchFoundException(f"Static handler {name} can not be found")
 
-        handler_fn = cast("AnyCallable", handler_index["handler"].fn.value)
+        handler_fn = cast("AnyCallable", handler_index["handler"].fn)
         if not isinstance(handler_fn, StaticFiles):
             raise NoRouteMatchFoundException(f"Handler with name {name} is not a static files handler")
 
@@ -794,7 +795,8 @@ class Litestar(Router):
             asgi_handler = CORSMiddleware(app=asgi_handler, config=self.cors_config)
 
         return wrap_in_exception_handler(
-            app=asgi_handler, exception_handlers=self.exception_handlers or {}  # pyright: ignore
+            app=asgi_handler,
+            exception_handlers=self.exception_handlers or {},  # pyright: ignore
         )
 
     def _wrap_send(self, send: Send, scope: Scope) -> Send:
@@ -828,14 +830,6 @@ class Litestar(Router):
 
         operation_ids: list[str] = []
 
-        if not self._openapi_schema.components:
-            self._openapi_schema.components = Components()
-            schemas = self._openapi_schema.components.schemas = {}
-        elif not self._openapi_schema.components.schemas:
-            schemas = self._openapi_schema.components.schemas = {}
-        else:
-            schemas = {}
-
         for route in self.routes:
             if (
                 isinstance(route, HTTPRoute)
@@ -850,7 +844,7 @@ class Litestar(Router):
                     plugins=self.plugins.openapi,
                     use_handler_docstrings=self.openapi_config.use_handler_docstrings,
                     operation_id_creator=self.openapi_config.operation_id_creator,
-                    schemas=schemas,
+                    schemas=self._openapi_schema.components.schemas,
                 )
                 self._openapi_schema.paths[route.path_format or "/"] = path_item
 

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Awaitable, Callable, Generator
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Awaitable, Callable, Generator, TypeVar
 
 if TYPE_CHECKING:
     from typing_extensions import TypeAlias
@@ -17,8 +17,9 @@ if TYPE_CHECKING:
     from litestar.types.internal_types import PathParameterDefinition
     from litestar.types.protocols import Logger
 
+ExceptionT = TypeVar("ExceptionT", bound=Exception)
 
-AfterExceptionHookHandler: TypeAlias = "Callable[[Exception, Scope], SyncOrAsyncUnion[None]]"
+AfterExceptionHookHandler: TypeAlias = "Callable[[ExceptionT, Scope], SyncOrAsyncUnion[None]]"
 AfterRequestHookHandler: TypeAlias = (
     "Callable[[ASGIApp], SyncOrAsyncUnion[ASGIApp]] | Callable[[Response], SyncOrAsyncUnion[Response]]"
 )
@@ -29,7 +30,7 @@ AnyGenerator: TypeAlias = "Generator[Any, Any, Any] | AsyncGenerator[Any, Any]"
 BeforeMessageSendHookHandler: TypeAlias = "Callable[[Message, Scope], SyncOrAsyncUnion[None]]"
 BeforeRequestHookHandler: TypeAlias = "Callable[[Request], Any | Awaitable[Any]]"
 CacheKeyBuilder: TypeAlias = "Callable[[Request], str]"
-ExceptionHandler: TypeAlias = "Callable[[Request, Exception], Response]"
+ExceptionHandler: TypeAlias = "Callable[[Request, ExceptionT], Response]"
 ExceptionLoggingHandler: TypeAlias = "Callable[[Logger, Scope, list[str]], None]"
 GetLogger: TypeAlias = "Callable[..., Logger]"
 Guard: TypeAlias = "Callable[[ASGIConnection, BaseRouteHandler], SyncOrAsyncUnion[None]]"

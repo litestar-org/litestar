@@ -1,22 +1,15 @@
 import enum
-from pathlib import Path, PurePath
+from pathlib import Path, PurePath, PureWindowsPath
 from typing import Any, Callable, cast
 
 import msgspec
 import pytest
-from pydantic import SecretStr
 from pytest import FixtureRequest
 
 from litestar import MediaType, Response
-from litestar.contrib.pydantic import PydanticInitPlugin
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.serialization import get_serializer
-from tests.models import (
-    DataclassPersonFactory,
-    MsgSpecStructPerson,
-    PydanticDataclassPerson,
-    PydanticPerson,
-)
+from tests.models import DataclassPersonFactory, MsgSpecStructPerson
 
 person = DataclassPersonFactory.build()
 
@@ -41,21 +34,8 @@ def decode_media_type(media_type: MediaType) -> DecodeMediaType:
     return msgspec.msgpack.decode
 
 
-def test_pydantic(media_type: MediaType, decode_media_type: DecodeMediaType) -> None:
-    content = PydanticPerson.parse_obj(msgspec.to_builtins(person))
-    encoded = Response(None).render(
-        content, media_type=media_type, enc_hook=get_serializer(type_encoders=PydanticInitPlugin.encoders())
-    )
-    assert PydanticPerson.parse_obj(decode_media_type(encoded)) == content
-
-
 def test_dataclass(media_type: MediaType, decode_media_type: DecodeMediaType) -> None:
     encoded = Response(None).render(person, media_type=media_type)
-    assert decode_media_type(encoded) == msgspec.to_builtins(person)
-
-
-def test_pydantic_dataclass(media_type: MediaType, decode_media_type: DecodeMediaType) -> None:
-    encoded = Response(None).render(PydanticDataclassPerson(**msgspec.to_builtins(person)), media_type=media_type)
     assert decode_media_type(encoded) == msgspec.to_builtins(person)
 
 
@@ -75,19 +55,11 @@ def test_enum(media_type: MediaType, decode_media_type: DecodeMediaType) -> None
     assert decode_media_type(encoded) == {"value": _TestEnum.A.value}
 
 
-def test_pydantic_secret(media_type: MediaType, decode_media_type: DecodeMediaType) -> None:
-    encoded = Response(None).render(
-        {"value": SecretStr("secret_text")},
-        media_type=media_type,
-        enc_hook=get_serializer(type_encoders=PydanticInitPlugin.encoders()),
-    )
-    assert decode_media_type(encoded) == {"value": "**********"}
-
-
 @pytest.mark.parametrize("path", [PurePath("/path/to/file"), Path("/path/to/file")])
 def test_path(media_type: MediaType, decode_media_type: DecodeMediaType, path: Path) -> None:
     encoded = Response(None).render({"value": path}, media_type=media_type)
-    assert decode_media_type(encoded) == {"value": "/path/to/file"}
+    expected = r"\path\to\file" if isinstance(path, PureWindowsPath) else "/path/to/file"
+    assert decode_media_type(encoded) == {"value": expected}
 
 
 @pytest.mark.parametrize(

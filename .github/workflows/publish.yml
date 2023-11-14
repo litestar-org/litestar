@@ -38,6 +38,40 @@ jobs:
       - name: Test
         run: mv tests/examples/test_hello_world.py test_hello_world.py && pdm run pytest test_hello_world.py
 
+  test_pydantic_1_app:
+    name: Test Minimal Pydantic 1 application
+    runs-on: ubuntu-latest
+    env:
+      python_version: "3.12"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - uses: pdm-project/setup-pdm@v3
+        name: Set up PDM
+        with:
+          python-version: "3.12"
+          allow-python-prereleases: false
+          cache: true
+          cache-dependency-path: |
+            ./pdm.lock
+
+      - name: Install dependencies
+        run: |
+          pdm install
+          pip install "pydantic==1.*"
+
+      - name: Set pythonpath
+        run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
+
+      - name: Test
+        run: python -m unittest test_apps/pydantic_1_app.py
+
   publish-release:
     name: upload release to PyPI
     runs-on: ubuntu-latest

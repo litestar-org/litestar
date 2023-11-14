@@ -110,9 +110,9 @@ Then, run the following command:
     uvicorn app:app --reload
 
 You can now visit ``http://localhost:8000/`` and ``http://localhost:8000/books/1`` in your browser and
-you should see the JSON responses of your two endpoints:
+you should see the responses of your two endpoints:
 
-.. code-block:: json
+.. code-block:: text
 
    "Hello, world!"
 
@@ -301,9 +301,24 @@ Example Applications
     :caption: Documentation
     :hidden:
 
-    tutorials/index
     usage/index
     reference/index
-    topics/index
-    migration/index
     benchmarks
+
+.. toctree::
+    :titlesonly:
+    :caption: Guides
+    :hidden:
+
+    migration/index
+    topics/index
+    tutorials/index
+
+.. toctree::
+    :titlesonly:
+    :caption: Contributing
+    :hidden:
+
+    contribution-guide
+    Available Issues <https://github.com/search?q=user%3Alitestar-org+state%3Aopen+label%3A%22good+first+issue%22+++no%3Aassignee+&type=issues=>
+    Code of Conduct <https://github.com/litestar-org/.github?tab=coc-ov-file#readme>

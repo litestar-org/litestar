@@ -34,7 +34,7 @@ class ImmutableState(Mapping[str, Any]):
              deep_copy: Whether to 'deepcopy' the passed in state.
 
         Examples:
-            .. code-block: python
+            .. code-block:: python
 
                 from litestar.datastructures import ImmutableState
 
@@ -127,7 +127,7 @@ class ImmutableState(Mapping[str, Any]):
 
         Customizes how the builtin "copy" function will work.
         """
-        return self.__class__(self._state, deep_copy=self._deep_copy)
+        return self.__class__(self._state, deep_copy=self._deep_copy)  # pyright: ignore
 
     def mutable_copy(self) -> State:
         """Return a mutable copy of the state object.
@@ -189,7 +189,7 @@ class State(ImmutableState, MutableMapping[str, Any]):
              deep_copy: Whether to 'deepcopy' the passed in state.
 
         Examples:
-        .. code-block: python
+        .. code-block:: python
 
             from litestar.datastructures import State
 
@@ -302,7 +302,7 @@ class State(ImmutableState, MutableMapping[str, Any]):
         Returns:
             A ``State``
         """
-        return self.__class__(self.dict(), deep_copy=self._deep_copy)
+        return self.__class__(self.dict(), deep_copy=self._deep_copy)  # pyright: ignore
 
     def immutable_copy(self) -> ImmutableState:
         """Return a shallow copy of the state object, setting it to be frozen.

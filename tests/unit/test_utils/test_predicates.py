@@ -1,5 +1,5 @@
 from collections import defaultdict, deque
-from dataclasses import MISSING
+from dataclasses import MISSING, dataclass
 from functools import partial
 from inspect import Signature
 from typing import (
@@ -11,6 +11,7 @@ from typing import (
     Deque,
     Dict,
     FrozenSet,
+    Generic,
     Iterable,
     List,
     Mapping,
@@ -19,6 +20,7 @@ from typing import (
     Sequence,
     Set,
     Tuple,
+    TypeVar,
     Union,
     cast,
 )
@@ -32,6 +34,7 @@ from litestar.types import Empty
 from litestar.utils import is_any, is_async_callable, is_class_and_subclass, is_optional_union, is_union
 from litestar.utils.predicates import (
     is_class_var,
+    is_dataclass_class,
     is_generic,
     is_mapping,
     is_non_string_iterable,
@@ -62,8 +65,8 @@ class Sub(C):
     "args, expected",
     (
         ((Sub, C), True),
-        ((Signature.from_callable(cast("Any", naive_handler.fn.value)).return_annotation, C), False),
-        ((Signature.from_callable(cast("Any", response_handler.fn.value)).return_annotation, Response), True),
+        ((Signature.from_callable(cast("Any", naive_handler.fn)).return_annotation, C), False),
+        ((Signature.from_callable(cast("Any", response_handler.fn)).return_annotation, Response), True),
         ((Dict[str, Any], C), False),
         ((C(), C), False),
     ),
@@ -273,3 +276,28 @@ def test_not_undefined_sentinel() -> None:
     assert is_undefined_sentinel([]) is False
     assert is_undefined_sentinel({}) is False
     assert is_undefined_sentinel(None) is False
+
+
+T = TypeVar("T")
+
+
+@dataclass
+class NonGenericDataclass:
+    foo: int
+
+
+@dataclass
+class GenericDataclass(Generic[T]):
+    foo: T
+
+
+class NonDataclass:
+    ...
+
+
+@pytest.mark.parametrize(
+    ("cls", "expected"),
+    ((NonGenericDataclass, True), (GenericDataclass, True), (GenericDataclass[int], True), (NonDataclass, False)),
+)
+def test_is_dataclass_class(cls: Any, expected: bool) -> None:
+    assert is_dataclass_class(cls) is expected

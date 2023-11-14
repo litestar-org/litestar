@@ -19,10 +19,11 @@ Here's the updated code:
 .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_init_plugin.py
     :language: python
     :linenos:
-    :emphasize-lines: 11,29,77,84
+    :emphasize-lines: 10-11,29,77-79,86
 
 The most notable difference is that we no longer need the ``db_connection()`` lifespan context manager - the plugin
-handles this for us.
+handles this for us. It also handles the creation of the tables in our database if we supply our metadata and
+set ``create_all=True`` when creating a ``SQLAlchemyAsyncConfig`` instance.
 
 Additionally, we have a new ``db_session`` dependency available to us, which we use in our ``provide_transaction()``
 dependency provider, instead of creating our own session.

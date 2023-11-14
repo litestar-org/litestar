@@ -1,7 +1,7 @@
-from json import dumps
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+import msgspec
 from yaml import dump as dump_yaml
 
 from litestar import Litestar
@@ -9,6 +9,7 @@ from litestar._openapi.typescript_converter.converter import (
     convert_openapi_to_typescript,
 )
 from litestar.cli._utils import JSBEAUTIFIER_INSTALLED, RICH_CLICK_INSTALLED, LitestarCLIException, LitestarGroup
+from litestar.serialization import encode_json, get_serializer
 
 if TYPE_CHECKING or not RICH_CLICK_INSTALLED:  # pragma: no cover
     from click import Path as ClickPath
@@ -31,6 +32,27 @@ def schema_group() -> None:
     """Manage server-side OpenAPI schemas."""
 
 
+def _generate_openapi_schema(app: Litestar, output: Path) -> None:
+    """Generate an OpenAPI Schema."""
+    serializer = get_serializer(app.type_encoders)
+    if output.suffix in (".yml", ".yaml"):
+        content = dump_yaml(
+            msgspec.to_builtins(app.openapi_schema.to_schema(), enc_hook=serializer),
+            default_flow_style=False,
+            encoding="utf-8",
+        )
+    else:
+        content = msgspec.json.format(
+            encode_json(app.openapi_schema.to_schema(), serializer=serializer),
+            indent=4,
+        )
+
+    try:
+        output.write_bytes(content)
+    except OSError as e:  # pragma: no cover
+        raise LitestarCLIException(f"failed to write schema to path {output}") from e
+
+
 @schema_group.command("openapi")  # type: ignore
 @option(
     "--output",
@@ -41,15 +63,7 @@ def schema_group() -> None:
 )
 def generate_openapi_schema(app: Litestar, output: Path) -> None:
     """Generate an OpenAPI Schema."""
-    if output.suffix in (".yml", ".yaml"):
-        content = dump_yaml(app.openapi_schema.to_schema(), default_flow_style=False)
-    else:
-        content = dumps(app.openapi_schema.to_schema(), indent=4)
-
-    try:
-        output.write_text(content)
-    except OSError as e:  # pragma: no cover
-        raise LitestarCLIException(f"failed to write schema to path {output}") from e
+    _generate_openapi_schema(app, output)
 
 
 @schema_group.command("typescript")  # type: ignore

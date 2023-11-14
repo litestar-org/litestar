@@ -40,3 +40,6 @@ __pypackages__/
 .tool-versions
 .python-version
 /.dmypy.json
+
+# test certificates
+certs/

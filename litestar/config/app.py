@@ -159,7 +159,7 @@ class AppConfig:
     """An optional subclass of :class:`Request <.connection.Request>` to use for http connections."""
     response_class: ResponseType | None = field(default=None)
     """A custom subclass of :class:`Response <.response.Response>` to be used as the app's default response."""
-    response_cookies: ResponseCookies = field(default_factory=list)  # type: ignore
+    response_cookies: ResponseCookies = field(default_factory=list)
     """A list of :class:`Cookie <.datastructures.Cookie>`."""
     response_headers: Sequence[ResponseHeader] = field(default_factory=list)
     """A string keyed dictionary mapping :class:`ResponseHeader <.datastructures.ResponseHeader>`."""

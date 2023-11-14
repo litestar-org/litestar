@@ -7,11 +7,9 @@ import msgspec
 import pytest
 from hypothesis import given, settings
 from hypothesis.strategies import dictionaries, integers, none, one_of, sampled_from, text, timedeltas
-from pydantic import BaseModel, Field
 
 from litestar import Litestar, Request, Response, get
-from litestar.contrib.jwt import JWTAuth, JWTCookieAuth, OAuth2PasswordBearerAuth, Token
-from litestar.contrib.pydantic import _model_dump
+from litestar.security.jwt import JWTAuth, JWTCookieAuth, OAuth2PasswordBearerAuth, Token
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_401_UNAUTHORIZED
 from litestar.stores.memory import MemoryStore
 from litestar.testing import create_test_client
@@ -302,6 +300,7 @@ async def test_path_exclusion() -> None:
 def test_jwt_auth_openapi() -> None:
     jwt_auth = JWTAuth[Any](token_secret="abc123", retrieve_user_handler=lambda _: None)  # type: ignore
     assert jwt_auth.openapi_components.to_schema() == {
+        "schemas": {},
         "securitySchemes": {
             "BearerToken": {
                 "type": "http",
@@ -310,7 +309,7 @@ def test_jwt_auth_openapi() -> None:
                 "scheme": "Bearer",
                 "bearerFormat": "JWT",
             }
-        }
+        },
     }
     assert jwt_auth.security_requirement == {"BearerToken": []}
     app = Litestar(on_app_init=[jwt_auth.on_app_init])
@@ -347,7 +346,9 @@ async def test_oauth2_password_bearer_auth_openapi(mock_db: "MemoryStore") -> No
         return await mock_db.get(token.sub)
 
     jwt_auth = OAuth2PasswordBearerAuth(
-        token_url="/login", token_secret="abc123", retrieve_user_handler=retrieve_user_handler  # type: ignore
+        token_url="/login",
+        token_secret="abc123",
+        retrieve_user_handler=retrieve_user_handler,  # type: ignore
     )
 
     @get("/login")
@@ -365,6 +366,7 @@ async def test_oauth2_password_bearer_auth_openapi(mock_db: "MemoryStore") -> No
         assert response.content != response_custom.content
 
     assert jwt_auth.openapi_components.to_schema() == {
+        "schemas": {},
         "securitySchemes": {
             "BearerToken": {
                 "type": "oauth2",
@@ -407,22 +409,23 @@ async def test_oauth2_password_bearer_auth_openapi(mock_db: "MemoryStore") -> No
 def test_type_encoders() -> None:
     # see: https://github.com/litestar-org/litestar/issues/1136
 
-    class User(BaseModel):
-        id: str = Field(..., alias="_id")
+    class CustomUser:
+        def __init__(self, id: str) -> None:
+            self.id = id
 
-    async def retrieve_user_handler(token: Token, connection: "ASGIConnection[Any, Any, Any, Any]") -> User:
-        return User(_id=token.sub)
+    async def retrieve_user_handler(token: Token, connection: "ASGIConnection[Any, Any, Any, Any]") -> CustomUser:
+        return CustomUser(id=token.sub)
 
     jwt_cookie_auth = JWTCookieAuth[User](
         retrieve_user_handler=retrieve_user_handler,
         token_secret="abc1234",
         exclude=["/"],
-        type_encoders={BaseModel: lambda m: _model_dump(m, by_alias=True)},
+        type_encoders={CustomUser: lambda u: {"id": u.id}},
     )
 
     @get()
     def handler() -> Response[User]:
-        data = User(_id="1")
+        data = CustomUser(id="1")
         return jwt_cookie_auth.login(identifier=str(data.id), response_body=data)
 
     with create_test_client([handler]) as client:

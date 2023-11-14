@@ -34,6 +34,7 @@ from litestar.enums import ParamType, RequestEncodingType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import BodyKwarg, ParameterKwarg
 from litestar.typing import FieldDefinition
+from litestar.utils.helpers import get_exception_group
 
 __all__ = ("KwargsModel",)
 
@@ -44,6 +45,8 @@ if TYPE_CHECKING:
     from litestar.di import Provide
     from litestar.dto import AbstractDTO
     from litestar.utils.signature import ParsedSignature
+
+_ExceptionGroup = get_exception_group()
 
 
 class KwargsModel:
@@ -390,9 +393,13 @@ class KwargsModel:
             if len(batch) == 1:
                 await resolve_dependency(next(iter(batch)), connection, kwargs, cleanup_group)
             else:
-                async with create_task_group() as task_group:
-                    for dependency in batch:
-                        task_group.start_soon(resolve_dependency, dependency, connection, kwargs, cleanup_group)
+                try:
+                    async with create_task_group() as task_group:
+                        for dependency in batch:
+                            task_group.start_soon(resolve_dependency, dependency, connection, kwargs, cleanup_group)
+                except _ExceptionGroup as excgroup:
+                    raise excgroup.exceptions[0] from excgroup  # type: ignore[attr-defined]
+
         return cleanup_group
 
     @classmethod

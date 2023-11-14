@@ -9,7 +9,7 @@ from litestar.enums import ScopeType
 from litestar.exceptions import TooManyRequestsException
 from litestar.middleware.base import AbstractMiddleware, DefineMiddleware
 from litestar.serialization import decode_json, encode_json
-from litestar.utils import AsyncCallable
+from litestar.utils import ensure_async_callable
 
 __all__ = ("CacheObject", "RateLimitConfig", "RateLimitMiddleware")
 
@@ -242,14 +242,14 @@ class RateLimitConfig:
 
     def __post_init__(self) -> None:
         if self.check_throttle_handler:
-            self.check_throttle_handler = AsyncCallable(self.check_throttle_handler)  # type: ignore
+            self.check_throttle_handler = ensure_async_callable(self.check_throttle_handler)  # type: ignore
 
     @property
     def middleware(self) -> DefineMiddleware:
         """Use this property to insert the config into a middleware list on one of the application layers.
 
         Examples:
-            .. code-block: python
+            .. code-block::  python
 
                 from litestar import Litestar, Request, get
                 from litestar.middleware.rate_limit import RateLimitConfig

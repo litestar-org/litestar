@@ -5,27 +5,10 @@ from msgspec import Struct
 
 from litestar import post
 from litestar.testing import create_test_client
-from tests.models import (
-    AttrsPerson,
-    DataclassPerson,
-    MsgSpecStructPerson,
-    PydanticDataclassPerson,
-    PydanticPerson,
-    TypedDictPerson,
-)
+from tests.models import DataclassPerson, MsgSpecStructPerson, TypedDictPerson
 
 
-@pytest.mark.parametrize(
-    "cls",
-    (
-        PydanticPerson,
-        DataclassPerson,
-        PydanticDataclassPerson,
-        TypedDictPerson,
-        MsgSpecStructPerson,
-        AttrsPerson,
-    ),
-)
+@pytest.mark.parametrize("cls", (DataclassPerson, TypedDictPerson, MsgSpecStructPerson))
 def test_spec_generation(cls: Any) -> None:
     @post("/")
     def handler(data: cls) -> cls:

@@ -51,13 +51,3 @@ def maybe_async_cm(obj: ContextManager[T] | AsyncContextManager[T]) -> AsyncCont
     if isinstance(obj, AbstractContextManager):
         return cast(AsyncContextManager[T], _AsyncContextManagerWrapper(obj))
     return obj
-
-
-def get_exception_group() -> type[BaseException]:
-    """Get the exception group class with version compatibility."""
-    try:
-        return cast("type[BaseException]", ExceptionGroup)  # type:ignore[name-defined]
-    except NameError:
-        from exceptiongroup import ExceptionGroup as _ExceptionGroup
-
-        return _ExceptionGroup
