@@ -33,6 +33,7 @@ class InitPluginProtocol(Protocol):
 
         Examples:
             .. code-block:: python
+
                 from litestar import Litestar, get
                 from litestar.di import Provide
                 from litestar.plugins import InitPluginProtocol
