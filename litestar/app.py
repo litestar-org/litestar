@@ -3,7 +3,12 @@ from __future__ import annotations
 import inspect
 import logging
 import os
-from contextlib import AbstractAsyncContextManager, AsyncExitStack, asynccontextmanager, suppress
+from contextlib import (
+    AbstractAsyncContextManager,
+    AsyncExitStack,
+    asynccontextmanager,
+    suppress,
+)
 from datetime import date, datetime, time, timedelta
 from functools import partial
 from itertools import chain
@@ -36,6 +41,7 @@ from litestar.plugins import (
     PluginRegistry,
     SerializationPluginProtocol,
 )
+from litestar.plugins.base import CLIPlugin
 from litestar.router import Router
 from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from litestar.static_files.base import StaticFiles
@@ -130,6 +136,7 @@ class Litestar(Router):
 
     __slots__ = (
         "_lifespan_managers",
+        "_server_lifespan_managers",
         "_debug",
         "_openapi_schema",
         "plugins",
@@ -374,20 +381,18 @@ class Litestar(Router):
             (p.on_app_init for p in config.plugins if isinstance(p, InitPluginProtocol)),
         ):
             config = handler(config)  # pyright: ignore
-
         self.plugins = PluginRegistry(config.plugins)
 
         self._openapi_schema: OpenAPI | None = None
         self._debug: bool = True
         self._lifespan_managers = config.lifespan
+        self._server_lifespan_managers = [p.server_lifespan for p in config.plugins or [] if isinstance(p, CLIPlugin)]
         self.experimental_features = frozenset(config.experimental_features or [])
-
         self.get_logger: GetLogger = get_logger_placeholder
         self.logger: Logger | None = None
         self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = []
         self.asgi_router = ASGIRouter(app=self)
 
-        self.allowed_hosts = cast("AllowedHostsConfig | None", config.allowed_hosts)
         self.after_exception = [ensure_async_callable(h) for h in config.after_exception]
         self.allowed_hosts = cast("AllowedHostsConfig | None", config.allowed_hosts)
         self.before_send = [ensure_async_callable(h) for h in config.before_send]

@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any, Iterator, Protocol, TypeVar, Union, cast, runtime_checkable
 
 if TYPE_CHECKING:
     from click import Group
 
     from litestar._openapi.schema_generation import SchemaCreator
+    from litestar.app import Litestar
     from litestar.config.app import AppConfig
     from litestar.dto import AbstractDTO
     from litestar.openapi.spec import Schema
@@ -17,6 +19,7 @@ __all__ = (
     "OpenAPISchemaPluginProtocol",
     "OpenAPISchemaPlugin",
     "PluginProtocol",
+    "CLIPlugin",
     "CLIPluginProtocol",
     "PluginRegistry",
 )
@@ -70,6 +73,8 @@ class InitPluginProtocol(Protocol):
 class CLIPluginProtocol(Protocol):
     """Plugin protocol to extend the CLI."""
 
+    __slots__ = ()
+
     def on_cli_init(self, cli: Group) -> None:
         """Called when the CLI is initialized.
 
@@ -95,6 +100,19 @@ class CLIPluginProtocol(Protocol):
 
                 app = Litestar(plugins=[CLIPlugin()])
         """
+
+
+class CLIPlugin(CLIPluginProtocol):
+    """Plugin protocol to extend the CLI Server Lifespan."""
+
+    __slots__ = ()
+
+    def on_cli_init(self, cli: Group) -> None:
+        return super().on_cli_init(cli)
+
+    @contextmanager
+    def server_lifespan(self, app: Litestar) -> Iterator[None]:
+        yield
 
 
 @runtime_checkable
@@ -179,6 +197,7 @@ PluginProtocol = Union[
     OpenAPISchemaPluginProtocol,
     OpenAPISchemaPlugin,
     CLIPluginProtocol,
+    CLIPlugin,
 ]
 
 PluginT = TypeVar("PluginT", bound=PluginProtocol)
