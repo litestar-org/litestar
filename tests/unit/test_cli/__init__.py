@@ -55,9 +55,10 @@ def func():
 
 APP_FACTORY_FILE_CONTENT_SERVER_LIFESPAN_PLUGIN = """
 from contextlib import contextmanager
-from typing import Any, Generator
+from typing import Generator
 
 from litestar import Litestar
+from litestar.config.app import AppConfig
 from litestar.plugins.base import CLIPlugin
 
 
@@ -71,7 +72,7 @@ class StartupPrintPlugin(CLIPlugin):
         finally:
             print("i_run_after_shutdown_plugin")  # noqa: T201
 
-
 def create_app() -> Litestar:
     return Litestar(route_handlers=[], plugins=[StartupPrintPlugin()])
+
 """

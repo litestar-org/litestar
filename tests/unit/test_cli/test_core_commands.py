@@ -309,6 +309,8 @@ def test_run_command_with_server_lifespan_plugin(
     assert result.exit_code == 0
     assert "i_run_before_startup_plugin" in result.stdout
     assert "i_run_after_shutdown_plugin" in result.stdout
+    assert result.stdout.find("i_run_before_startup_plugin") < result.stdout.find("i_run_after_shutdown_plugin")
+
     mock_uvicorn_run.assert_called_once_with(
         app=str(app_path),
         host="127.0.0.1",
