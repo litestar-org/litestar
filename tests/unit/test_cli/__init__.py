@@ -62,8 +62,9 @@ from litestar.plugins.base import CLIPlugin
 
 
 class StartupPrintPlugin(CLIPlugin):
+
     @contextmanager
-    def server_lifespan(self) -> Generator[None, None, None]:
+    def server_lifespan(self, app: Litestar) -> Generator[None, None, None]:
         print("i_run_before_startup_plugin")  # noqa: T201
         try:
             yield
@@ -72,5 +73,5 @@ class StartupPrintPlugin(CLIPlugin):
 
 
 def create_app() -> Litestar:
-    return Litestar(route_handlers=[], plugins=[StartupPrintPlugin])
+    return Litestar(route_handlers=[], plugins=[StartupPrintPlugin()])
 """
