@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from contextlib import contextmanager
-from typing import TYPE_CHECKING, Any, Generator, Iterator, Protocol, TypeVar, Union, cast, runtime_checkable
+from typing import TYPE_CHECKING, Any, Iterator, Protocol, TypeVar, Union, cast, runtime_checkable
 
 if TYPE_CHECKING:
     from click import Group
@@ -19,7 +19,7 @@ __all__ = (
     "OpenAPISchemaPluginProtocol",
     "OpenAPISchemaPlugin",
     "PluginProtocol",
-    "ServerLifespanPluginProtocol",
+    "CLIPlugin",
     "CLIPluginProtocol",
     "PluginRegistry",
 )
@@ -104,14 +104,13 @@ class CLIPluginProtocol(Protocol):
 class CLIPlugin(CLIPluginProtocol):
     """Plugin protocol to extend the CLI Server Lifespan."""
 
-   __slots__ = ()
-    
-   def on_cli_init(self, cli: Group) -> None:
-      """Called when the CLI is initialized. 
+    __slots__ = ()
 
     @contextmanager
-    def server_lifespan(self, app: Litestar) -> Generator[None, None, None]:
+    def server_lifespan(self, app: Litestar) -> Iterator[None]:
         yield
+
+
 @runtime_checkable
 class SerializationPluginProtocol(Protocol):
     """Protocol used to define a serialization plugin for DTOs."""
@@ -194,7 +193,7 @@ PluginProtocol = Union[
     OpenAPISchemaPluginProtocol,
     OpenAPISchemaPlugin,
     CLIPluginProtocol,
-    ServerLifespanPluginProtocol,
+    CLIPlugin,
 ]
 
 PluginT = TypeVar("PluginT", bound=PluginProtocol)
@@ -218,7 +217,6 @@ class PluginRegistry:
         self.init = tuple(p for p in plugins if isinstance(p, InitPluginProtocol))
         self.openapi = tuple(p for p in plugins if isinstance(p, OpenAPISchemaPluginProtocol))
         self.serialization = tuple(p for p in plugins if isinstance(p, SerializationPluginProtocol))
-        self.server_lifespan = tuple(p for p in plugins if isinstance(p, ServerLifespanPluginProtocol))
         self.cli = tuple(p for p in plugins if isinstance(p, CLIPluginProtocol))
 
     def get(self, type_: type[PluginT]) -> PluginT:

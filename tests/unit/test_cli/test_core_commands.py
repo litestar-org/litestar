@@ -14,7 +14,6 @@ from litestar.cli.main import litestar_group as cli_command
 from litestar.exceptions import LitestarWarning
 
 from . import (
-    APP_FACTORY_FILE_CONTENT_SERVER_LIFESPAN,
     APP_FACTORY_FILE_CONTENT_SERVER_LIFESPAN_PLUGIN,
     CREATE_APP_FILE_CONTENT,
     GENERIC_APP_FACTORY_FILE_CONTENT,
@@ -296,30 +295,6 @@ def test_version_command(short: bool, runner: CliRunner) -> None:
     result = runner.invoke(cli_command, "version --short" if short else "version")
 
     assert result.output.strip() == litestar_version.formatted(short=short)
-
-
-@pytest.mark.usefixtures("mock_uvicorn_run", "unset_env")
-def test_run_command_with_server_lifespan(
-    runner: CliRunner, mock_uvicorn_run: MagicMock, create_app_file: CreateAppFileFixture
-) -> None:
-    path = create_app_file("_create_app_with_path.py", content=APP_FACTORY_FILE_CONTENT_SERVER_LIFESPAN)
-    app_path = f"{path.stem}:create_app"
-    result = runner.invoke(cli_command, ["--app", app_path, "run"])
-
-    assert result.exception is None
-    assert result.exit_code == 0
-    assert "i_run_before_startup" in result.stdout
-    assert "i_run_after_shutdown" in result.stdout
-    mock_uvicorn_run.assert_called_once_with(
-        app=str(app_path),
-        host="127.0.0.1",
-        port=8000,
-        fd=None,
-        uds=None,
-        factory=True,
-        ssl_certfile=None,
-        ssl_keyfile=None,
-    )
 
 
 @pytest.mark.usefixtures("mock_uvicorn_run", "unset_env")

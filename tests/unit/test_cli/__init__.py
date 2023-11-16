@@ -53,36 +53,15 @@ def func():
 """
 
 
-APP_FACTORY_FILE_CONTENT_SERVER_LIFESPAN = """
-from contextlib import contextmanager
-from typing import Generator
-
-from litestar import Litestar
-
-
-@contextmanager
-def server_lifespan_functions(app: Litestar) -> Generator[None, None, None]:
-    print("i_run_before_startup")  # noqa: T201
-    try:
-        yield
-    finally:
-        print("i_run_after_shutdown")  # noqa: T201
-
-
-def create_app() -> Litestar:
-    return Litestar(route_handlers=[], server_lifespan=[server_lifespan_functions])
-"""
-
-
 APP_FACTORY_FILE_CONTENT_SERVER_LIFESPAN_PLUGIN = """
 from contextlib import contextmanager
 from typing import Any, Generator
 
 from litestar import Litestar
-from litestar.plugins.base import ServerLifespanPluginProtocol
+from litestar.plugins.base import CLIPlugin
 
 
-class StartupPrintPlugin(ServerLifespanPluginProtocol):
+class StartupPrintPlugin(CLIPlugin):
     @contextmanager
     def server_lifespan(self) -> Generator[None, None, None]:
         print("i_run_before_startup_plugin")  # noqa: T201

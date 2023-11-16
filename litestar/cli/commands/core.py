@@ -5,7 +5,8 @@ import multiprocessing
 import os
 import subprocess
 import sys
-from typing import TYPE_CHECKING, Any
+from contextlib import AbstractContextManager, ExitStack, contextmanager
+from typing import TYPE_CHECKING, Any, Iterator
 
 from rich.tree import Tree
 
@@ -35,6 +36,21 @@ __all__ = ("info_command", "routes_command", "run_command")
 
 if TYPE_CHECKING:
     from litestar import Litestar
+
+
+@contextmanager
+def _server_lifespan(app: Litestar) -> Iterator[None]:
+    """Context manager handling the ASGI server lifespan.
+
+    It will be entered just before the ASGI server is started through the CLI.
+    """
+    with ExitStack() as exit_stack:
+        for manager in app._server_lifespan_managers:
+            if not isinstance(manager, AbstractContextManager):
+                manager = manager(app)  # type: ignore[assignment]
+            exit_stack.enter_context(manager)  # type: ignore[arg-type]
+
+        yield
 
 
 def _convert_uvicorn_args(args: dict[str, Any]) -> list[str]:
@@ -205,7 +221,7 @@ def run_command(
     console.rule("[yellow]Starting server process", align="left")
 
     show_app_info(app)
-    with app.server_lifespan():
+    with _server_lifespan(app):
         if workers == 1 and not reload:
             # A guard statement at the beginning of this function prevents uvicorn from being unbound
             # See "reportUnboundVariable in:
