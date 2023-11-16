@@ -204,7 +204,6 @@ class PluginRegistry:
         "init": "Plugins that implement the InitPluginProtocol",
         "openapi": "Plugins that implement the OpenAPISchemaPluginProtocol",
         "serialization": "Plugins that implement the SerializationPluginProtocol",
-        "server_lifespan": "Plugins that implement the ServerLifespanPluginProtocol",
         "cli": "Plugins that implement the CLIPluginProtocol",
         "_plugins_by_type": None,
         "_plugins": None,

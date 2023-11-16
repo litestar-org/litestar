@@ -1,4 +1,5 @@
 from litestar.plugins.base import (
+    CLIPlugin,
     CLIPluginProtocol,
     InitPluginProtocol,
     OpenAPISchemaPlugin,
@@ -6,12 +7,11 @@ from litestar.plugins.base import (
     PluginProtocol,
     PluginRegistry,
     SerializationPluginProtocol,
-    ServerLifespanPluginProtocol,
 )
 
 __all__ = (
     "SerializationPluginProtocol",
-    "ServerLifespanPluginProtocol",
+    "CLIPlugin",
     "InitPluginProtocol",
     "OpenAPISchemaPluginProtocol",
     "OpenAPISchemaPlugin",
