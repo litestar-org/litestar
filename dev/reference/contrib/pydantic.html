@@ -1553,6 +1553,30 @@ document.write(`
 <dd><p>Receive the <a class="reference internal" href="../config.html#litestar.config.app.AppConfig" title="litestar.config.app.AppConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></a> instance after <cite>on_app_init</cite> hooks have been called.</p>
 <div class="admonition-examples admonition">
 <p class="admonition-title">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
+<span class="kn">from</span> <span class="nn">litestar.plugins</span> <span class="kn">import</span> <span class="n">InitPluginProtocol</span>
+
+
+<span class="k">def</span> <span class="nf">get_name</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="s2">&quot;world&quot;</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/my-path&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">my_route_handler</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">}</span>
+
+
+<span class="k">class</span> <span class="nc">MyPlugin</span><span class="p">(</span><span class="n">InitPluginProtocol</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">on_app_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app_config</span><span class="p">:</span> <span class="n">AppConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AppConfig</span><span class="p">:</span>
+        <span class="n">app_config</span><span class="o">.</span><span class="n">dependencies</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Provide</span><span class="p">(</span><span class="n">get_name</span><span class="p">)</span>
+        <span class="n">app_config</span><span class="o">.</span><span class="n">route_handlers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">my_route_handler</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">app_config</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">MyPlugin</span><span class="p">()])</span>
+</pre></div>
+</div>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
