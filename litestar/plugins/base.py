@@ -101,17 +101,17 @@ class CLIPluginProtocol(Protocol):
         """
 
 
-@runtime_checkable
-class ServerLifespanPluginProtocol(Protocol):
+class CLIPlugin(CLIPluginProtocol):
     """Plugin protocol to extend the CLI Server Lifespan."""
 
-    __slots__ = ()
+   __slots__ = ()
+    
+   def on_cli_init(self, cli: Group) -> None:
+      """Called when the CLI is initialized. 
 
     @contextmanager
     def server_lifespan(self, app: Litestar) -> Generator[None, None, None]:
         yield
-
-
 @runtime_checkable
 class SerializationPluginProtocol(Protocol):
     """Protocol used to define a serialization plugin for DTOs."""
