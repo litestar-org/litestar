@@ -1532,6 +1532,43 @@ document.write(`
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="litestar.plugins.CLIPlugin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.</span></span><span class="sig-name descname"><span class="pre">CLIPlugin</span></span><a class="headerlink" href="#litestar.plugins.CLIPlugin" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#litestar.plugins.CLIPluginProtocol" title="litestar.plugins.base.CLIPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">CLIPluginProtocol</span></code></a></p>
+<p>Plugin protocol to extend the CLI Server Lifespan.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.plugins.CLIPlugin.on_cli_init">
+<span class="sig-name descname"><span class="pre">on_cli_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cli</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Group</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.plugins.CLIPlugin.on_cli_init" title="Permalink to this definition">#</a></dt>
+<dd><p>Called when the CLI is initialized.</p>
+<p>This can be used to extend or override existing commands.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cli</strong> – The root <a class="reference external" href="https://click.palletsprojects.com/en/8.1.x/api/#click.Group" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Group</span></code></a> of the Litestar CLI</p>
+</dd>
+</dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+<span class="kn">from</span> <span class="nn">litestar.plugins</span> <span class="kn">import</span> <span class="n">CLIPluginProtocol</span>
+<span class="kn">from</span> <span class="nn">click</span> <span class="kn">import</span> <span class="n">Group</span>
+
+
+<span class="k">class</span> <span class="nc">CLIPlugin</span><span class="p">(</span><span class="n">CLIPluginProtocol</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">on_cli_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cli</span><span class="p">:</span> <span class="n">Group</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nd">@cli</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+        <span class="k">def</span> <span class="nf">is_debug_mode</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">debug</span><span class="p">)</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">CLIPlugin</span><span class="p">()])</span>
+</pre></div>
+</div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="litestar.plugins.InitPluginProtocol">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.</span></span><span class="sig-name descname"><span class="pre">InitPluginProtocol</span></span><a class="headerlink" href="#litestar.plugins.InitPluginProtocol" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a></p>
@@ -1738,6 +1775,10 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.SerializationPluginProtocol.supports_type"><code class="docutils literal notranslate"><span class="pre">SerializationPluginProtocol.supports_type()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.SerializationPluginProtocol.create_dto_for_type"><code class="docutils literal notranslate"><span class="pre">SerializationPluginProtocol.create_dto_for_type()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.SerializationPluginProtocol.__init__"><code class="docutils literal notranslate"><span class="pre">SerializationPluginProtocol.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.CLIPlugin"><code class="docutils literal notranslate"><span class="pre">CLIPlugin</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.CLIPlugin.on_cli_init"><code class="docutils literal notranslate"><span class="pre">CLIPlugin.on_cli_init()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.InitPluginProtocol"><code class="docutils literal notranslate"><span class="pre">InitPluginProtocol</span></code></a><ul class="visible nav section-nav flex-column">
