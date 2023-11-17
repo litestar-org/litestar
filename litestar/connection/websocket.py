@@ -11,7 +11,7 @@ from litestar.connection.base import (
     empty_send,
 )
 from litestar.datastructures.headers import Headers
-from litestar.exceptions import WebSocketDisconnect, WebSocketException
+from litestar.exceptions import WebSocketDisconnect
 from litestar.serialization import decode_json, decode_msgpack, default_serializer, encode_json, encode_msgpack
 from litestar.status_codes import WS_1000_NORMAL_CLOSURE
 
@@ -72,7 +72,7 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
 
         async def wrapped_receive() -> ReceiveMessage:
             if self.connection_state == "disconnect":
-                raise WebSocketException(detail=DISCONNECT_MESSAGE)
+                raise WebSocketDisconnect(detail=DISCONNECT_MESSAGE)
             message = await receive()
             if message["type"] == "websocket.connect":
                 self.connection_state = "connect"
@@ -167,8 +167,6 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
         event = cast("WebSocketReceiveEvent | WebSocketDisconnectEvent", await self.receive())
         if event["type"] == "websocket.disconnect":
             raise WebSocketDisconnect(detail="disconnect event", code=event["code"])
-        if self.connection_state == "disconnect":
-            raise WebSocketDisconnect(detail=DISCONNECT_MESSAGE)  # pragma: no cover
         return event.get("text") or "" if mode == "text" else event.get("bytes") or b""
 
     @overload
