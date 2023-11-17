@@ -36,11 +36,11 @@ def test_mini_jinja_template_render_raises_template_not_found(tmp_path: Path) ->
 def test_mini_jinja_template_render_string_raises_template_not_found(tmp_path: Path) -> None:
     template_engine = MiniJinjaTemplateEngine(engine_instance=Environment())
 
-    good_template = template_engine.render_string("template as a string")
+    good_template = template_engine.render_string("template as a string", context={})
     assert good_template == "template as a string"
 
     with pytest.raises(TemplateNotFoundException):
-        template_engine.render_string(None)  # type: ignore[arg-type]
+        template_engine.render_string(None, context={})  # type: ignore[arg-type]
 
 
 def test_from_environment() -> None:

@@ -174,7 +174,7 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
         """
         self.engine.add_global(key, pass_state(template_callable))
 
-    def render_string(self, template_string: str, context: Mapping[str, Any] | None = None) -> str:
+    def render_string(self, template_string: str, context: Mapping[str, Any]) -> str:
         """Render a template from a string with the given context.
 
         Args:
@@ -187,7 +187,6 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
         Raises:
             TemplateNotFoundException: if no template is found.
         """
-        context = context or {}
 
         if template_string is None:
             raise TemplateNotFoundException("No template string provided", template_name="template_from_string")
