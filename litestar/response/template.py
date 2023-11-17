@@ -135,7 +135,7 @@ class Template(Response[bytes]):
 
         if self.template_str is not None:
             body = self._render_from_string(self.template_str, request)
-            media_type = "text/html" if media_type == MediaType.TEXT else media_type
+            media_type = media_type or "text/html"
         else:
             if not self.template_name:
                 raise ValueError("Template name cannot be None when not using template_str")
