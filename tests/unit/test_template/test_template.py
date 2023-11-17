@@ -151,7 +151,7 @@ test_cases = [
 
 
 @pytest.mark.parametrize("engine", (JinjaTemplateEngine, MakoTemplateEngine, MiniJinjaTemplateEngine))
-@pytest.mark.parametrize("test_case", test_cases, ids=[case["name"] for case in test_cases])
+@pytest.mark.parametrize("test_case", test_cases, ids=[case["name"] for case in test_cases])  # type: ignore[index]
 def test_template_scenarios(tmp_path: Path, engine: TemplateEngineProtocol, test_case: dict) -> None:
     if test_case["template_name"]:
         template_loc = tmp_path / test_case["template_name"]
