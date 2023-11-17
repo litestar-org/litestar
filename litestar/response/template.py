@@ -169,6 +169,3 @@ class Template(Response[bytes]):
         """
         context = self.create_template_context(request)
         return request.app.template_engine.render_string(template_str, context).encode(self.encoding)
-
-    def test(self) -> str:
-        return f"Template(template_name={self.template_name}, context={self.context})"
