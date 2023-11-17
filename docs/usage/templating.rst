@@ -209,24 +209,6 @@ for small templates or :doc:`HTMX </usage/htmx>` responses for example.
                     template_string = "{{ hello }}"
                     return Template(template_str=template_string, context={"hello": "world"})
 
-    .. tab-item:: File name and string
-
-            .. code-block:: python
-                :caption: When defining both, string will take precedence
-
-                @get()
-                async def example() -> Template:
-                    template_string = "{{ hello }}"
-                    return Template(
-                        template_name="test.html",
-                        template_str=template_string,
-                        context={"hello": "world"},
-                    )
-
-
-.. warning:: If you pass both ``template_str`` and ``template_name``, the ``template_str`` will
-    take precedence.
-
 Template context
 ----------------
 
