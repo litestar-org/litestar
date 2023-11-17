@@ -141,6 +141,18 @@ class TemplateEngineProtocol(Protocol[TemplateType_co, ContextType_co]):
         """
         raise NotImplementedError
 
+    def render_string(self, template_string: str, context: Mapping[str, Any]) -> str:
+        """Render a template from a string with the given context.
+
+        Args:
+            template_string: The template string to render.
+            context: A dictionary of variables to pass to the template.
+
+        Returns:
+            The rendered template as a string.
+        """
+        raise NotImplementedError
+
     def register_template_callable(
         self, key: str, template_callable: TemplateCallableType[ContextType_co, P, R]
     ) -> None:
