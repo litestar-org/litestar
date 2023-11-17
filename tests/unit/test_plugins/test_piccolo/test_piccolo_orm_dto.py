@@ -8,21 +8,29 @@ from polyfactory.utils.predicates import is_annotated
 from typing_extensions import get_args
 
 from litestar import Litestar
+from litestar.plugins.piccolo import PiccoloPlugin
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 
 try:
-    import piccolo  # noqa: F401
+    from piccolo.columns import Column, column_types
+    from piccolo.conf.apps import Finder
+    from piccolo.table import Table, create_db_tables, drop_db_tables
 except ImportError:
     pytest.skip("Piccolo not installed", allow_module_level=True)
 
-from piccolo.columns import Column, column_types
-from piccolo.conf.apps import Finder
-from piccolo.table import Table, create_db_tables, drop_db_tables
 
-from litestar.contrib.piccolo import PiccoloDTO
+from litestar.plugins.piccolo import PiccoloDTO
 
-from .endpoints import create_concert, retrieve_studio, retrieve_venues, studio, venues
+from .endpoints import (
+    create_concert,
+    retrieve_studio,
+    retrieve_studio_plugin,
+    retrieve_venues,
+    retrieve_venues_plugin,
+    studio,
+    venues,
+)
 from .tables import RecordingStudio, Venue
 
 
@@ -36,16 +44,30 @@ async def scaffold_piccolo() -> AsyncGenerator:
     await drop_db_tables(*tables)
 
 
-def test_serializing_single_piccolo_table(scaffold_piccolo: Callable) -> None:
+def test_dto_serializing_single_piccolo_table(scaffold_piccolo: Callable) -> None:
     with create_test_client(route_handlers=[retrieve_studio]) as client:
         response = client.get("/studio")
         assert response.status_code == HTTP_200_OK
         assert str(RecordingStudio(**response.json()).querystring) == str(studio.querystring)
 
 
-def test_serializing_multiple_piccolo_tables(scaffold_piccolo: Callable) -> None:
+def test_dto_serializing_multiple_piccolo_tables(scaffold_piccolo: Callable) -> None:
     with create_test_client(route_handlers=[retrieve_venues]) as client:
         response = client.get("/venues")
+        assert response.status_code == HTTP_200_OK
+        assert [str(Venue(**value).querystring) for value in response.json()] == [str(v.querystring) for v in venues]
+
+
+def test_plugin_serializing_single_piccolo_table(scaffold_piccolo: Callable) -> None:
+    with create_test_client(route_handlers=[retrieve_studio_plugin], plugins=[PiccoloPlugin()]) as client:
+        response = client.get("/plugin/studio")
+        assert response.status_code == HTTP_200_OK
+        assert str(RecordingStudio(**response.json()).querystring) == str(studio.querystring)
+
+
+def test_plugin_serializing_multiple_piccolo_tables(scaffold_piccolo: Callable) -> None:
+    with create_test_client(route_handlers=[retrieve_venues_plugin], plugins=[PiccoloPlugin()]) as client:
+        response = client.get("/plugin/venues")
         assert response.status_code == HTTP_200_OK
         assert [str(Venue(**value).querystring) for value in response.json()] == [str(v.querystring) for v in venues]
 

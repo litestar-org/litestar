@@ -21,10 +21,20 @@ from piccolo.columns import Column, column_types
 from piccolo.table import Table
 
 from litestar.typing import FieldDefinition
+from litestar.utils import warn_deprecation
 
 T = TypeVar("T", bound=Table)
 
 __all__ = ("PiccoloDTO",)
+
+
+warn_deprecation(
+    deprecated_name="litestar.contrib.piccolo",
+    version="2.3.2",
+    kind="import",
+    removal_in="3.0",
+    info="importing from 'litestar.contrib.piccolo' is deprecated, please import from 'litestar.plugins.piccolo' instead",
+)
 
 
 def _parse_piccolo_type(column: Column, extra: dict[str, Any]) -> FieldDefinition:
