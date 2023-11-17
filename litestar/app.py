@@ -46,7 +46,6 @@ from litestar.router import Router
 from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from litestar.static_files.base import StaticFiles
 from litestar.stores.registry import StoreRegistry
-from litestar.template import TemplateEngineProtocol
 from litestar.types import Empty, TypeDecodersSequence
 from litestar.types.internal_types import PathParameterDefinition
 from litestar.utils import deprecated, ensure_async_callable, join_paths, unique
@@ -69,6 +68,7 @@ if TYPE_CHECKING:
     from litestar.openapi.spec.open_api import OpenAPI
     from litestar.static_files.config import StaticFilesConfig
     from litestar.stores.base import Store
+    from litestar.template import TemplateEngineProtocol
     from litestar.template.config import TemplateConfig
     from litestar.types import (
         AfterExceptionHookHandler,

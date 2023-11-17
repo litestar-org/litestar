@@ -8,7 +8,6 @@ from litestar.config.allowed_hosts import AllowedHostsConfig
 from litestar.config.response_cache import ResponseCacheConfig
 from litestar.datastructures import State
 from litestar.events.emitter import SimpleEventEmitter
-from litestar.template import TemplateEngineProtocol
 from litestar.types.empty import Empty
 
 if TYPE_CHECKING:
@@ -31,6 +30,7 @@ if TYPE_CHECKING:
     from litestar.static_files.config import StaticFilesConfig
     from litestar.stores.base import Store
     from litestar.stores.registry import StoreRegistry
+    from litestar.template import TemplateEngineProtocol
     from litestar.template.config import TemplateConfig
     from litestar.types import (
         AfterExceptionHookHandler,

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import TYPE_CHECKING, Optional, Type, Union
+from typing import TYPE_CHECKING
 
 import pytest
 
@@ -31,8 +31,8 @@ def test_handler_raise_for_no_template_engine() -> None:
         assert response.json() == {"detail": "Internal Server Error", "status_code": 500}
 
 
-def test_engine_passed_to_callback(tmp_path: "Path") -> None:
-    received_engine: Optional[JinjaTemplateEngine] = None
+def test_engine_passed_to_callback(tmp_path: Path) -> None:
+    received_engine: JinjaTemplateEngine | None = None
 
     def callback(engine: TemplateEngineProtocol) -> None:
         nonlocal received_engine
@@ -53,7 +53,7 @@ def test_engine_passed_to_callback(tmp_path: "Path") -> None:
 
 
 @pytest.mark.parametrize("engine", (JinjaTemplateEngine, MakoTemplateEngine, MiniJinjaTemplateEngine))
-def test_engine_instance(engine: Type["TemplateEngineProtocol"], tmp_path: "Path") -> None:
+def test_engine_instance(engine: type[TemplateEngineProtocol], tmp_path: Path) -> None:
     engine_instance = engine(directory=tmp_path, engine_instance=None)
     if isinstance(engine_instance, JinjaTemplateEngine):
         assert engine_instance.engine.autoescape is True
@@ -66,19 +66,19 @@ def test_engine_instance(engine: Type["TemplateEngineProtocol"], tmp_path: "Path
 
 
 @pytest.mark.parametrize("engine", (JinjaTemplateEngine, MakoTemplateEngine, MiniJinjaTemplateEngine))
-def test_directory_validation(engine: Type["TemplateEngineProtocol"], tmp_path: "Path") -> None:
+def test_directory_validation(engine: type[TemplateEngineProtocol], tmp_path: Path) -> None:
     with pytest.raises(ImproperlyConfiguredException):
         TemplateConfig(engine=engine)
 
 
 @pytest.mark.parametrize("engine", (JinjaTemplateEngine, MakoTemplateEngine, MiniJinjaTemplateEngine))
-def test_instance_and_directory_validation(engine: Type["TemplateEngineProtocol"], tmp_path: "Path") -> None:
+def test_instance_and_directory_validation(engine: type[TemplateEngineProtocol], tmp_path: Path) -> None:
     with pytest.raises(ImproperlyConfiguredException):
         TemplateConfig(engine=engine, instance=engine(directory=tmp_path, engine_instance=None))
 
 
 @pytest.mark.parametrize("media_type", [MediaType.HTML, MediaType.TEXT, "text/arbitrary"])
-def test_media_type(media_type: Union[MediaType, str], tmp_path: Path) -> None:
+def test_media_type(media_type: MediaType | str, tmp_path: Path) -> None:
     (tmp_path / "hello.tpl").write_text("hello")
 
     @get("/", media_type=media_type)
@@ -129,7 +129,7 @@ def test_media_type_inferred(extension: str, expected_type: MediaType, tmp_path:
 def test_before_request_handler_content_type(tmp_path: Path) -> None:
     template_loc = tmp_path / "about.html"
 
-    def before_request_handler(_: "Request") -> None:
+    def before_request_handler(_: Request) -> None:
         template_loc.write_text("before request")
 
     @get("/", before_request=before_request_handler)
