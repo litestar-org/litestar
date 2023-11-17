@@ -137,8 +137,8 @@ class Template(Response[bytes]):
             body = self._render_from_string(self.template_str, request)
             media_type = media_type or "text/html"
         else:
-            if not self.template_name:
-                raise ValueError("Template name cannot be None when not using template_str")
+            if not self.template_name and not self.template_str:
+                raise ValueError("Either template_name or template_str must be provided")
 
             template = request.app.template_engine.get_template(self.template_name)
             context = self.create_template_context(request)

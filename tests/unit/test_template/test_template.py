@@ -10,12 +10,12 @@ from litestar.contrib.mako import MakoTemplateEngine
 from litestar.contrib.minijinja import MiniJinjaTemplateEngine
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.response.template import Template
+from litestar.template import TemplateEngineProtocol
 from litestar.template.config import TemplateConfig
 from litestar.testing import create_test_client
 
 if TYPE_CHECKING:
     from litestar import Request
-    from litestar.template import TemplateEngineProtocol
 
 
 def test_handler_raise_for_no_template_engine() -> None:
@@ -140,3 +140,17 @@ def test_before_request_handler_content_type(tmp_path: Path) -> None:
         assert res.status_code == 200
         assert res.headers["content-type"].startswith(MediaType.HTML.value)
         assert res.text == "before request"
+
+
+@pytest.mark.parametrize("engine", (JinjaTemplateEngine, MakoTemplateEngine, MiniJinjaTemplateEngine))
+def test_template_without_name_or_string(tmp_path: Path, engine: TemplateEngineProtocol) -> None:
+    """Test all template engines with a template that has no name or string."""
+
+    @get("/")
+    def index() -> Template:
+        return Template()
+
+    with create_test_client([index], template_config=TemplateConfig(directory=tmp_path, engine=engine)) as client:
+        response = client.get("/")
+        assert response.status_code == 500
+        assert "Either template_name or template_str must be provided" in response.text

@@ -6,7 +6,7 @@ from docs.examples.templating.returning_templates_minijinja import app as miniji
 from litestar.testing import TestClient
 
 
-@pytest.mark.parametrize("template_type", ["file", "string"])
+@pytest.mark.parametrize("template_type", ["file", "string", ""])
 def test_returning_templates_jinja(template_type):
     with TestClient(jinja_app) as client:
         response = client.get(f"/{template_type}", params={"name": "Jinja"})
