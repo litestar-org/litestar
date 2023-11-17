@@ -6,4 +6,4 @@ contrib
 
 
     sqlalchemy/index
-    piccolo 
+    piccolo
