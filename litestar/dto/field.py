@@ -34,7 +34,7 @@ class DTOField:
     """Mark the field as read-only, or private."""
 
 
-def dto_field(mark: Literal["read-only", "private"] | Mark) -> dict[str, DTOField]:
+def dto_field(mark: Literal["read-only", "write-only", "private"] | Mark) -> dict[str, DTOField]:
     """Create a field metadata mapping.
 
     Args:
