@@ -6,7 +6,7 @@ from docs.examples.templating.returning_templates_minijinja import app as miniji
 from litestar.testing import TestClient
 
 
-@pytest.mark.parametrize("template_type", ["file", "string", ""])
+@pytest.mark.parametrize("template_type", ["file", "string", None])
 def test_returning_templates_jinja(template_type):
     with TestClient(jinja_app) as client:
         response = client.get(f"/{template_type}", params={"name": "Jinja"})
@@ -14,6 +14,9 @@ def test_returning_templates_jinja(template_type):
             assert response.text == "Hello <strong>Jinja</strong>"
         elif template_type == "string":
             assert response.text == "Hello <strong>Jinja</strong> using strings"
+        elif template_type is None:
+            assert response.status_code == 500
+            assert response.json() == {"detail": "Internal Server Error", "status_code": 500}
 
 
 @pytest.mark.parametrize("template_type", ["file", "string"])
@@ -24,6 +27,9 @@ def test_returning_templates_mako(template_type):
             assert response.text == "Hello <strong>Mako</strong>\n"
         elif template_type == "string":
             assert response.text.strip() == "Hello <strong>Mako</strong> using strings"
+        elif template_type is None:
+            assert response.status_code == 500
+            assert response.json() == {"detail": "Internal Server Error", "status_code": 500}
 
 
 @pytest.mark.parametrize("template_type", ["file", "string"])
@@ -34,3 +40,6 @@ def test_returning_templates_minijinja(template_type):
             assert response.text == "Hello <strong>Minijinja</strong>"
         elif template_type == "string":
             assert response.text.strip() == "Hello <strong>Minijinja</strong> using strings"
+        elif template_type is None:
+            assert response.status_code == 500
+            assert response.json() == {"detail": "Internal Server Error", "status_code": 500}

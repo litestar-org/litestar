@@ -52,7 +52,7 @@ class Template(Response[bytes]):
 
         Args:
             template_name: Path-like name for the template to be rendered, e.g. ``index.html``.
-            template_str: A string representing the template.
+            template_str: A string representing the template, e.g. ``tmpl = "Hello <strong>World</strong>"``.
             background: A :class:`BackgroundTask <.background_tasks.BackgroundTask>` instance or
                 :class:`BackgroundTasks <.background_tasks.BackgroundTasks>` to execute after the response is finished.
                 Defaults to ``None``.
