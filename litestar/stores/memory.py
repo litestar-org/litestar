@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 
 class MemoryStore(Store):
-    """In memory, thread-safe, asynchronous key/value store."""
+    """In memory, atomic, asynchronous key/value store."""
 
     __slots__ = ("_store", "_lock")
 

@@ -28,6 +28,7 @@ API reference
     pagination
     params
     plugins
+    repository/index
     response/index
     router
     routes
@@ -36,7 +37,6 @@ API reference
     static_files
     status_codes
     stores/index
-    repository/index
     template
     testing
     types

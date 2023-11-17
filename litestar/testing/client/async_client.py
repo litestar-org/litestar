@@ -475,7 +475,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
             A dictionary containing session data.
 
         Examples:
-            .. code-block: python
+            .. code-block:: python
 
                 from litestar import Litestar, post
                 from litestar.middleware.session.memory_backend import MemoryBackendConfig
@@ -509,7 +509,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
             None
 
         Examples:
-            .. code-block: python
+            .. code-block:: python
 
                 from litestar import Litestar, get
                 from litestar.middleware.session.memory_backend import MemoryBackendConfig

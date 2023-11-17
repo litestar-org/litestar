@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Any, Iterator
 
 from litestar.enums import MediaType
 from litestar.exceptions import HTTPException, ValidationException
-from litestar.openapi.spec import OpenAPIResponse
+from litestar.openapi.spec import Example, OpenAPIResponse
 from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
 from litestar.openapi.spec.header import OpenAPIHeader
 from litestar.openapi.spec.media_type import OpenAPIMediaType
@@ -214,7 +214,9 @@ def create_error_responses(exceptions: list[type[HTTPException]]) -> Iterator[tu
                         ),
                     },
                     description=pascal_case_to_text(get_name(exc)),
-                    examples=[{"status_code": status_code, "detail": example_detail, "extra": {}}],
+                    examples={
+                        exc.__name__: Example(value={"status_code": status_code, "detail": example_detail, "extra": {}})
+                    },
                 )
             )
         if len(exceptions_schemas) > 1:  # noqa: SIM108

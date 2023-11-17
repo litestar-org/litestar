@@ -72,7 +72,7 @@ def test_create_parameters(person_controller: Type[Controller]) -> None:
     assert page_size.required
     assert page_size.description == "Page Size Description"
     assert page_size.schema.examples
-    assert page_size.schema.examples[0].value == 1
+    assert next(iter(page_size.schema.examples.values())).value == 1
 
     assert name.param_in == ParamType.QUERY
     assert name.name == "name"
@@ -107,19 +107,19 @@ def test_create_parameters(person_controller: Type[Controller]) -> None:
             Schema(
                 type=OpenAPIType.STRING,
                 enum=["M", "F", "O", "A"],
-                examples=[Example(description="Example  value", value="M")],
+                examples={"gender-example-1": Example(description="Example  value", value="M")},
             ),
             Schema(
                 type=OpenAPIType.ARRAY,
                 items=Schema(
                     type=OpenAPIType.STRING,
                     enum=["M", "F", "O", "A"],
-                    examples=[Example(description="Example  value", value="F")],
+                    examples={"gender-example-1": Example(description="Example  value", value="F")},
                 ),
-                examples=[Example(description="Example  value", value=["A"])],
+                examples={"list-example-1": Example(description="Example  value", value=["A"])},
             ),
         ],
-        examples=[Example(value="M"), Example(value=["M", "O"])],
+        examples={"gender-example-1": Example(value="M"), "gender-example-2": Example(value=["M", "O"])},
     )
     assert not gender.required
 
@@ -323,5 +323,5 @@ def test_parameter_examples() -> None:
     ) as client:
         response = client.get("/schema/openapi.json")
         assert response.json()["paths"]["/"]["get"]["parameters"][0]["examples"] == {
-            "text-example-0": {"summary": "example summary", "value": "example value"}
+            "text-example-1": {"summary": "example summary", "value": "example value"}
         }

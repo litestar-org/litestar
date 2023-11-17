@@ -61,7 +61,7 @@ version = "2.3.2"
 [project.urls]
 Blog = "https://blog.litestar.dev"
 Changelog = "https://github.com/litestar-org/litestar/releases/"
-Discord = "https://discord.gg/MmcwxztmQb"
+Discord = "https://discord.gg/litestar-919193495116337154"
 Documentation = "https://docs.litestar.dev/"
 Homepage = "https://litestar.dev/"
 "Issue Tracker" = "https://github.com/litestar-org/litestar/issues?q=is%3Aissue+is%3Aopen+sort%3Aupdated-desc"
@@ -93,7 +93,7 @@ standard = ["jinja2", "jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0; sys_
 structlog = ["structlog"]
 
 [tool.pdm]
-ignore_package_warnings = true
+ignore_package_warnings = ["sphinx", "slotscheck"]
 
 [tool.pdm.dev-dependencies]
 dev = [
@@ -180,10 +180,10 @@ skip = 'pdm.lock,docs/examples/contrib/sqlalchemy/us_state_lookup.json'
 
 [tool.coverage.run]
 concurrency = ["multiprocessing", "thread"]
-omit = ["*/tests/*"]
+omit = ["*/tests/*", "*/litestar/plugins/sqlalchemy.py"]
 parallel = true
 plugins = ["covdefaults"]
-source  = ["litestar"]
+source = ["litestar"]
 
 [tool.coverage.report]
 exclude_lines = [
@@ -234,12 +234,12 @@ warn_unused_configs = true
 warn_unused_ignores = true
 
 [[tool.mypy.overrides]]
-module = ["tests.examples.*", "tests.docker_service_fixtures"]
 ignore_errors = true
+module = ["tests.examples.*", "tests.docker_service_fixtures"]
 
 [[tool.mypy.overrides]]
-module = ["tests.unit.test_kwargs.test_reserved_kwargs_injection"]
 disallow_untyped_decorators = false
+module = ["tests.unit.test_kwargs.test_reserved_kwargs_injection"]
 
 [[tool.mypy.overrides]]
 module = ["tests.unit.test_contrib.test_repository"]
@@ -270,7 +270,7 @@ exclude = [
   "tests/docker_service_fixtures.py",
   "litestar/contrib/pydantic/pydantic_dto_factory.py",
   "litestar/contrib/pydantic/pydantic_init_plugin.py",
-  "tests/unit/test_contrib/test_sqlalchemy.py"
+  "tests/unit/test_contrib/test_sqlalchemy.py",
 ]
 include = ["litestar", "tests"]
 pythonVersion = "3.8"
