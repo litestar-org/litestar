@@ -187,10 +187,6 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
         Raises:
             TemplateNotFoundException: if no template is found.
         """
-
-        if template_string is None:
-            raise TemplateNotFoundException("No template string provided", template_name="template_from_string")
-
         try:
             return self.engine.render_str(template_string, **context)  # type: ignore[no-any-return]
         except MiniJinjaTemplateNotFound as err:
