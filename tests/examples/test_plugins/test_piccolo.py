@@ -10,7 +10,7 @@ try:
 except ImportError:
     pytest.skip("Piccolo not installed", allow_module_level=True)
 
-from docs.examples.contrib.piccolo.app import DB, Task, app
+from docs.examples.plugins.piccolo.app import DB, Task, app
 from piccolo.testing.model_builder import ModelBuilder
 
 pytestmark = [
