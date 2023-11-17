@@ -13,7 +13,7 @@ apps_with_expected_responses = [
 
 
 @pytest.mark.parametrize("app, app_name, file_response, string_response", apps_with_expected_responses)
-@pytest.mark.parametrize("template_type", ["file", "string", None])
+@pytest.mark.parametrize("template_type", ["file", "string"])
 def test_returning_templates(app, app_name, file_response, string_response, template_type):
     with TestClient(app) as client:
         response = client.get(f"/{template_type}", params={"name": app_name})
@@ -21,7 +21,3 @@ def test_returning_templates(app, app_name, file_response, string_response, temp
             assert response.text == file_response
         elif template_type == "string":
             assert response.text.strip() == string_response
-        else:
-            # Test the scenario where template_type is None
-            assert response.status_code == 500
-            assert response.json() == {"detail": "Internal Server Error", "status_code": 500}

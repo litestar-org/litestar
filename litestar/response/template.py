@@ -47,9 +47,6 @@ class Template(Response[bytes]):
     ) -> None:
         """Handle the rendering of a given template into a bytes string.
 
-            .. note:: Either ``template_name`` or ``template_str`` must be provided.
-                If both are provided, ``template_str`` will be used.
-
         Args:
             template_name: Path-like name for the template to be rendered, e.g. ``index.html``.
             template_str: A string representing the template, e.g. ``tmpl = "Hello <strong>World</strong>"``.
@@ -65,6 +62,9 @@ class Template(Response[bytes]):
                 the media type based on the template name. If this fails, fall back to ``text/plain``.
             status_code: A value for the response HTTP status code.
         """
+        if template_name and template_str:
+            raise ValueError("Either template_name or template_str must be provided, not both.")
+
         super().__init__(
             background=background,
             content=b"",

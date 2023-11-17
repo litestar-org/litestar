@@ -142,15 +142,40 @@ def test_before_request_handler_content_type(tmp_path: Path) -> None:
         assert res.text == "before request"
 
 
+test_cases = [
+    {"name": "both", "template_name": "dummy.html", "template_str": "Dummy", "raises": ValueError},
+    {"name": "none", "template_name": None, "template_str": None, "status_code": 500},
+    {"name": "name_only", "template_name": "dummy.html", "template_str": None, "status_code": 200},
+    {"name": "str_only", "template_name": None, "template_str": "Dummy", "status_code": 200},
+]
+
+
 @pytest.mark.parametrize("engine", (JinjaTemplateEngine, MakoTemplateEngine, MiniJinjaTemplateEngine))
-def test_template_without_name_or_string(tmp_path: Path, engine: TemplateEngineProtocol) -> None:
-    """Test all template engines with a template that has no name or string."""
+@pytest.mark.parametrize("test_case", test_cases, ids=[case["name"] for case in test_cases])
+def test_template_scenarios(tmp_path: Path, engine: TemplateEngineProtocol, test_case: dict) -> None:
+    if test_case["template_name"]:
+        template_loc = tmp_path / test_case["template_name"]
+        template_loc.write_text("Test content for template")
 
     @get("/")
     def index() -> Template:
-        return Template()
+        return Template(template_name=test_case["template_name"], template_str=test_case["template_str"])
 
     with create_test_client([index], template_config=TemplateConfig(directory=tmp_path, engine=engine)) as client:
-        response = client.get("/")
-        assert response.status_code == 500
-        assert "Either template_name or template_str must be provided" in response.text
+        if "raises" in test_case and test_case["raises"] is ValueError:
+            response = client.get("/")
+            assert response.status_code == 500
+            assert "ValueError" in response.text
+
+        else:
+            response = client.get("/")
+            assert response.status_code == test_case["status_code"]
+
+            if test_case["status_code"] == 200:
+                if test_case["template_str"]:
+                    assert response.text == test_case["template_str"]
+                else:
+                    assert response.text == "Test content for template"
+
+            elif test_case["status_code"] == 500:
+                assert "Either template_name or template_str must be provided" in response.text
