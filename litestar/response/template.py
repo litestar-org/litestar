@@ -3,7 +3,7 @@ from __future__ import annotations
 import itertools
 from mimetypes import guess_type
 from pathlib import PurePath
-from typing import TYPE_CHECKING, Any, Iterable
+from typing import TYPE_CHECKING, Any, Iterable, cast
 
 from litestar.constants import SCOPE_STATE_CSRF_TOKEN_KEY
 from litestar.enums import MediaType
@@ -62,6 +62,9 @@ class Template(Response[bytes]):
                 the media type based on the template name. If this fails, fall back to ``text/plain``.
             status_code: A value for the response HTTP status code.
         """
+        if not (template_name or template_str):
+            raise ValueError("Either template_name or template_str must be provided.")
+
         if template_name and template_str:
             raise ValueError("Either template_name or template_str must be provided, not both.")
 
@@ -117,31 +120,32 @@ class Template(Response[bytes]):
                 alternative="request.app",
             )
 
-        if not request.app.template_engine:
+        if not (template_engine := request.app.template_engine):
             raise ImproperlyConfiguredException("Template engine is not configured")
 
         headers = {**headers, **self.headers} if headers is not None else self.headers
         cookies = self.cookies if cookies is None else itertools.chain(self.cookies, cookies)
 
         media_type = self.media_type or media_type
-        if not media_type and self.template_name:
-            suffixes = PurePath(self.template_name).suffixes
-            for suffix in suffixes:
-                if _type := guess_type(f"name{suffix}")[0]:
-                    media_type = _type
-                    break
+        if not media_type:
+            if self.template_name:
+                suffixes = PurePath(self.template_name).suffixes
+                for suffix in suffixes:
+                    if _type := guess_type(f"name{suffix}")[0]:
+                        media_type = _type
+                        break
+                else:
+                    media_type = MediaType.TEXT
             else:
-                media_type = MediaType.TEXT
+                media_type = MediaType.HTML
+
+        context = self.create_template_context(request)
 
         if self.template_str is not None:
-            body = self._render_from_string(self.template_str, request)
-            media_type = media_type or MediaType.HTML
+            body = template_engine.render_string(self.template_str, context)
         else:
-            if not self.template_name and not self.template_str:
-                raise ValueError("Either template_name or template_str must be provided")
-
-            template = request.app.template_engine.get_template(self.template_name)
-            context = self.create_template_context(request)
+            # cast to str b/c we know that either template_name cannot be None if template_str is None
+            template = template_engine.get_template(cast("str", self.template_name))
             body = template.render(**context).encode(self.encoding)
 
         return ASGIResponse(
@@ -156,8 +160,3 @@ class Template(Response[bytes]):
             media_type=media_type,
             status_code=self.status_code or status_code,
         )
-
-    def _render_from_string(self, template_str: str, request: Request) -> bytes:
-        """Render the template from a string."""
-        context = self.create_template_context(request)
-        return request.app.template_engine.render_string(template_str, context).encode(self.encoding)
