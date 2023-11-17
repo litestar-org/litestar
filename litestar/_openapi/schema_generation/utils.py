@@ -99,7 +99,7 @@ def _get_normalized_schema_key(type_annotation_str: str) -> str:
     # Use a regular expression to replace non-alphanumeric characters with underscores
     return re.sub(TYPE_NAME_NORMALIZATION_REGEX, "_", type_annotation_str)
 
-  
+
 def get_formatted_examples(field_definition: FieldDefinition, examples: Sequence[Example]) -> Mapping[str, Example]:
     """Format the examples into the OpenAPI schema format."""
 
