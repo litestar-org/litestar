@@ -607,7 +607,7 @@ class Model(BaseModel):
     SchemaCreator(schemas=schemas, plugins=[PydanticSchemaPlugin()]).for_field_definition(
         FieldDefinition.from_annotation(module.Model)
     )
-    schema = schemas["Model"]
+    schema = schemas[f"_class__{module.__name__}_Model__"]
     assert schema.properties
     assert "dict_default" in schema.properties
     assert "dict_default_in_field" in schema.properties
