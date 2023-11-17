@@ -184,9 +184,7 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
         Returns:
             The rendered template as a string.
         """
-
-        if context is None:
-            context = {}
+        context = context or {}
 
         try:
             return self.engine.render_str(template_string, **context)

@@ -131,8 +131,7 @@ class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate, Mapping[str, Any]]
         Returns:
             The rendered template as a string.
         """
-        if context is None:
-            context = {}
+        context = context or {}
         template = _MakoTemplate(template_string)
         return template.render(**context)
 

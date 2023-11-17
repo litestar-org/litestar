@@ -98,8 +98,7 @@ class JinjaTemplateEngine(TemplateEngineProtocol["JinjaTemplate", Mapping[str, A
         Returns:
             The rendered template as a string.
         """
-        if context is None:
-            context = {}
+        context = context or {}
         template = self.engine.from_string(template_string)
         return template.render(context)
 
