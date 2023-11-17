@@ -8,8 +8,8 @@ from piccolo_admin.endpoints import create_admin  # pyright: ignore
 from piccolo_api.session_auth.tables import SessionsBase
 
 from litestar import Litestar, asgi, delete, get, patch, post
-from litestar.contrib.piccolo_orm import PiccoloORMPlugin
 from litestar.exceptions import NotFoundException
+from litestar.plugins.piccolo import PiccoloPlugin
 
 if TYPE_CHECKING:
     from litestar.types import Receive, Scope, Send
@@ -79,7 +79,7 @@ app = Litestar(
         update_task,
         delete_task,
     ],
-    plugins=[PiccoloORMPlugin()],
+    plugins=[PiccoloPlugin()],
 )
 
 if __name__ == "__main__":

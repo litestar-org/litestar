@@ -4,9 +4,9 @@ from piccolo.columns import Boolean, Varchar
 from piccolo.table import Table, create_db_tables
 
 from litestar import Litestar, MediaType, delete, get, patch, post
-from litestar.contrib.piccolo import PiccoloDTO
 from litestar.dto import DTOConfig, DTOData
 from litestar.exceptions import NotFoundException
+from litestar.plugins.piccolo import PiccoloDTO, PiccoloPlugin
 
 from .piccolo_conf import DB
 
@@ -28,7 +28,6 @@ class PatchDTO(PiccoloDTO[Task]):
 
 @get(
     "/tasks",
-    return_dto=PiccoloDTO[Task],
     media_type=MediaType.JSON,
     tags=["Task"],
 )
@@ -38,8 +37,6 @@ async def tasks() -> List[Task]:
 
 @post(
     "/tasks",
-    dto=PiccoloDTO[Task],
-    return_dto=PiccoloDTO[Task],
     media_type=MediaType.JSON,
     tags=["Task"],
 )
@@ -73,11 +70,10 @@ async def delete_task(task_id: int) -> None:
     await task.remove()
 
 
-async def on_startup():
+async def on_startup() -> None:
     await create_db_tables(Task, if_not_exists=True)
 
 
 app = Litestar(
-    route_handlers=[tasks, create_task, delete_task, update_task],
-    on_startup=[on_startup],
+    route_handlers=[tasks, create_task, delete_task, update_task], on_startup=[on_startup], plugins=[PiccoloPlugin()]
 )
