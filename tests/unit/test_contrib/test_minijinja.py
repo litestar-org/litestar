@@ -39,7 +39,7 @@ def test_mini_jinja_template_render_string_raises_template_not_found(tmp_path: P
     good_template = template_engine.render_string("template as a string", context={})
     assert good_template == "template as a string"
 
-    with pytest.raises(TemplateNotFoundException):
+    with pytest.raises(TypeError):
         template_engine.render_string(None, context={})  # type: ignore[arg-type]
 
 
