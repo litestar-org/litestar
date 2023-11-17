@@ -187,7 +187,7 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
         context = context or {}
 
         try:
-            return self.engine.render_str(template_string, **context)
+            return self.engine.render_str(template_string, **context)  # type: ignore[no-any-return]
 
         except MiniJinjaTemplateNotFound as err:
             raise TemplateNotFoundException(

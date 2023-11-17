@@ -133,7 +133,7 @@ class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate, Mapping[str, Any]]
         """
         context = context or {}
         template = _MakoTemplate(template_string)
-        return template.render(**context)
+        return template.render(**context)  # type: ignore[no-any-return]
 
     @classmethod
     def from_template_lookup(cls, template_lookup: TemplateLookup) -> MakoTemplateEngine:

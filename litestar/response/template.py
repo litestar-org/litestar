@@ -168,4 +168,4 @@ class Template(Response[bytes]):
             Rendered content as bytes.
         """
         context = self.create_template_context(request)
-        return request.app.template_engine.render_string(template_str, context).encode(self.encoding)
+        return request.app.template_engine.render_string(template_str, context).encode(self.encoding)  # type: ignore[no-any-return]
