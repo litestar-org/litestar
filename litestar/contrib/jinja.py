@@ -38,7 +38,7 @@ class JinjaTemplateEngine(TemplateEngineProtocol["JinjaTemplate", Mapping[str, A
         directory: Path | list[Path] | None = None,
         engine_instance: Environment | None = None,
     ) -> None:
-        """Jinja based TemplateEngine.
+        """Jinja-based TemplateEngine.
 
         Args:
             directory: Direct path or list of directory paths from which to serve templates.
@@ -87,6 +87,21 @@ class JinjaTemplateEngine(TemplateEngineProtocol["JinjaTemplate", Mapping[str, A
             None
         """
         self.engine.globals[key] = pass_context(template_callable)
+
+    def render_string(self, template_string: str, context: Mapping[str, Any] | None = None) -> str:
+        """Render a template from a string with the given context.
+
+        Args:
+            template_string: The template string to render.
+            context: A dictionary of variables to pass to the template.
+
+        Returns:
+            The rendered template as a string.
+        """
+        if context is None:
+            context = {}
+        template = self.engine.from_string(template_string)
+        return template.render(context)
 
     @classmethod
     def from_environment(cls, jinja_environment: Environment) -> JinjaTemplateEngine:

@@ -28,13 +28,15 @@ class Template(Response[bytes]):
 
     __slots__ = (
         "template_name",
+        "template_str",
         "context",
     )
 
     def __init__(
         self,
-        template_name: str,
+        template_name: str | None = None,
         *,
+        template_str: str | None = None,
         background: BackgroundTask | BackgroundTasks | None = None,
         context: dict[str, Any] | None = None,
         cookies: ResponseCookies | None = None,
@@ -45,8 +47,11 @@ class Template(Response[bytes]):
     ) -> None:
         """Handle the rendering of a given template into a bytes string.
 
+            .. note:: Either ``template_name`` or ``template_str`` must be provided, but not both.
+
         Args:
             template_name: Path-like name for the template to be rendered, e.g. ``index.html``.
+            template_str: A string representing the template.
             background: A :class:`BackgroundTask <.background_tasks.BackgroundTask>` instance or
                 :class:`BackgroundTasks <.background_tasks.BackgroundTasks>` to execute after the response is finished.
                 Defaults to ``None``.
@@ -70,6 +75,7 @@ class Template(Response[bytes]):
         )
         self.context = context or {}
         self.template_name = template_name
+        self.template_str = template_str
 
     def create_template_context(self, request: Request) -> dict[str, Any]:
         """Create a context object for the template.
@@ -117,7 +123,7 @@ class Template(Response[bytes]):
         cookies = self.cookies if cookies is None else itertools.chain(self.cookies, cookies)
 
         media_type = self.media_type or media_type
-        if not media_type:
+        if not media_type and self.template_name:
             suffixes = PurePath(self.template_name).suffixes
             for suffix in suffixes:
                 if _type := guess_type(f"name{suffix}")[0]:
@@ -126,9 +132,16 @@ class Template(Response[bytes]):
             else:
                 media_type = MediaType.TEXT
 
-        template = request.app.template_engine.get_template(self.template_name)
-        context = self.create_template_context(request)
-        body = template.render(**context).encode(self.encoding)
+        if self.template_str is not None:
+            body = self._render_from_string(self.template_str, request)
+            media_type = "text/html"
+        else:
+            if not self.template_name:
+                raise ValueError("Template name cannot be None when not using template_str")
+
+            template = request.app.template_engine.get_template(self.template_name)
+            context = self.create_template_context(request)
+            body = template.render(**context).encode(self.encoding)
 
         return ASGIResponse(
             background=self.background or background,
@@ -142,3 +155,19 @@ class Template(Response[bytes]):
             media_type=media_type,
             status_code=self.status_code or status_code,
         )
+
+    def _render_from_string(self, template_str: str, request: Request) -> bytes:
+        """Render the template from a string.
+
+        Args:
+            template_str: A string representing the template.
+            request: A :class:`Request <.connection.Request>` instance.
+
+        Returns:
+            Rendered content as bytes.
+        """
+        context = self.create_template_context(request)
+        return request.app.template_engine.render_string(template_str, context).encode(self.encoding)
+
+    def test(self) -> str:
+        return f"Template(template_name={self.template_name}, context={self.context})"
