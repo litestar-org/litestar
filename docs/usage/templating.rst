@@ -2,8 +2,8 @@ Templating
 ==========
 
 Litestar has built-in support for `Jinja2 <https://jinja.palletsprojects.com/en/3.0.x/>`_
-, `Mako <https://www.makotemplates.org/>`_ and `Minijinja <https://github.com/mitsuhiko/minijinja/tree/main/minijinja-py>`_ template engines, as well as abstractions to
-make use of any template engine you wish.
+, `Mako <https://www.makotemplates.org/>`_ and `Minijinja <https://github.com/mitsuhiko/minijinja/tree/main/minijinja-py>`_
+template engines, as well as abstractions to make use of any template engine you wish.
 
 Template engines
 ----------------
@@ -186,7 +186,7 @@ Template Files vs. Strings
 
 When you define a template response, you can either pass a template file name or a string
 containing the template. The latter is useful if you want to define the template inline
-for small templates or :class:`HTMX <litestar.contrib.htmx>` responses for example.
+for small templates or :doc:`HTMX </usage/htmx>` responses for example.
 
 .. tab-set::
 
