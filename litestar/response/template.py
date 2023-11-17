@@ -47,7 +47,8 @@ class Template(Response[bytes]):
     ) -> None:
         """Handle the rendering of a given template into a bytes string.
 
-            .. note:: Either ``template_name`` or ``template_str`` must be provided, but not both.
+            .. note:: Either ``template_name`` or ``template_str`` must be provided.
+                If both are provided, ``template_str`` will be used.
 
         Args:
             template_name: Path-like name for the template to be rendered, e.g. ``index.html``.
