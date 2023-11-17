@@ -68,6 +68,7 @@ if TYPE_CHECKING:
     from litestar.openapi.spec.open_api import OpenAPI
     from litestar.static_files.config import StaticFilesConfig
     from litestar.stores.base import Store
+    from litestar.template import TemplateEngineProtocol
     from litestar.template.config import TemplateConfig
     from litestar.types import (
         AfterExceptionHookHandler,
@@ -216,7 +217,7 @@ class Litestar(Router):
         static_files_config: Sequence[StaticFilesConfig] | None = None,
         stores: StoreRegistry | dict[str, Store] | None = None,
         tags: Sequence[str] | None = None,
-        template_config: TemplateConfig | None = None,
+        template_config: TemplateConfig[TemplateEngineProtocol] | None = None,
         type_encoders: TypeEncodersMap | None = None,
         type_decoders: TypeDecodersSequence | None = None,
         websocket_class: type[WebSocket] | None = None,

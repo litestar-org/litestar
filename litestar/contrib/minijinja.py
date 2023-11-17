@@ -174,6 +174,27 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
         """
         self.engine.add_global(key, pass_state(template_callable))
 
+    def render_string(self, template_string: str, context: Mapping[str, Any]) -> str:
+        """Render a template from a string with the given context.
+
+        Args:
+            template_string: The template string to render.
+            context: A dictionary of variables to pass to the template.
+
+        Returns:
+            The rendered template as a string.
+
+        Raises:
+            TemplateNotFoundException: if no template is found.
+        """
+        try:
+            return self.engine.render_str(template_string, **context)  # type: ignore[no-any-return]
+        except MiniJinjaTemplateNotFound as err:
+            raise TemplateNotFoundException(
+                f"Error rendering template from string: {err}",
+                template_name="template_from_string",
+            ) from err
+
     @classmethod
     def from_environment(cls, minijinja_environment: Environment) -> MiniJinjaTemplateEngine:
         """Create a MiniJinjaTemplateEngine from an existing minijinja Environment instance.
