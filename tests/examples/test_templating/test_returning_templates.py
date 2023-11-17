@@ -1,7 +1,7 @@
 import pytest
 from docs.examples.templating.returning_templates_jinja import app as jinja_app
-from docs.examples.templating.returning_templates_jinja import app as minijinja_app
 from docs.examples.templating.returning_templates_mako import app as mako_app
+from docs.examples.templating.returning_templates_minijinja import app as minijinja_app
 
 from litestar.testing import TestClient
 
