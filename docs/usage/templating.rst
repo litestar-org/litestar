@@ -2,8 +2,8 @@ Templating
 ==========
 
 Litestar has built-in support for `Jinja2 <https://jinja.palletsprojects.com/en/3.0.x/>`_
-, `Mako <https://www.makotemplates.org/>`_ and `Minijinja <https://github.com/mitsuhiko/minijinja/tree/main/minijinja-py>`_ template engines, as well as abstractions to
-make use of any template engine you wish.
+, `Mako <https://www.makotemplates.org/>`_ and `Minijinja <https://github.com/mitsuhiko/minijinja/tree/main/minijinja-py>`_
+template engines, as well as abstractions to make use of any template engine you wish.
 
 Template engines
 ----------------
@@ -12,10 +12,28 @@ To stay lightweight, a Litestar installation does not include the *Jinja*, *Mako
 libraries themselves. Before you can start using them, you have to install it via the
 respective extra:
 
+.. tab-set::
 
-* ``pip install litestar[jinja]`` for Jinja2
-* ``pip install litestar[mako]`` for Mako
-* ``pip install litestar[minijinja]`` for Minijinja
+    .. tab-item:: Jinja
+        :sync: jinja
+
+        .. code-block:: shell
+
+            pip install litestar[jinja]
+
+    .. tab-item:: Mako
+        :sync: mako
+
+        .. code-block:: shell
+
+            pip install litestar[mako]
+
+    .. tab-item:: MiniJinja
+        :sync: minijinja
+
+        .. code-block:: shell
+
+            pip install litestar[minijinja]
 
 .. tip::
 
@@ -162,6 +180,34 @@ your route handlers:
   exception will be raised.
 * ``context`` is a dictionary containing arbitrary data that will be passed to the template
   engine's ``render`` method. For Jinja and Mako, this data will be available in the `template context <#template-context>`_
+
+Template Files vs. Strings
+--------------------------
+
+When you define a template response, you can either pass a template file name or a string
+containing the template. The latter is useful if you want to define the template inline
+for small templates or :doc:`HTMX </usage/htmx>` responses for example.
+
+.. tab-set::
+
+    .. tab-item:: File name
+
+            .. code-block:: python
+                :caption: Template via file
+
+                @get()
+                async def example() -> Template:
+                    return Template(template_name="test.html", context={"hello": "world"})
+
+    .. tab-item:: String
+
+            .. code-block:: python
+                :caption: Template via string
+
+                @get()
+                async def example() -> Template:
+                    template_string = "{{ hello }}"
+                    return Template(template_str=template_string, context={"hello": "world"})
 
 Template context
 ----------------
