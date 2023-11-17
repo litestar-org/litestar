@@ -158,14 +158,6 @@ class Template(Response[bytes]):
         )
 
     def _render_from_string(self, template_str: str, request: Request) -> bytes:
-        """Render the template from a string.
-
-        Args:
-            template_str: A string representing the template.
-            request: A :class:`Request <.connection.Request>` instance.
-
-        Returns:
-            Rendered content as bytes.
-        """
+        """Render the template from a string."""
         context = self.create_template_context(request)
-        return request.app.template_engine.render_string(template_str, context).encode(self.encoding)  # type: ignore[no-any-return]
+        return request.app.template_engine.render_string(template_str, context).encode(self.encoding)

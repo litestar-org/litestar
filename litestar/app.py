@@ -46,6 +46,7 @@ from litestar.router import Router
 from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from litestar.static_files.base import StaticFiles
 from litestar.stores.registry import StoreRegistry
+from litestar.template import TemplateEngineProtocol
 from litestar.types import Empty, TypeDecodersSequence
 from litestar.types.internal_types import PathParameterDefinition
 from litestar.utils import deprecated, ensure_async_callable, join_paths, unique
@@ -216,7 +217,7 @@ class Litestar(Router):
         static_files_config: Sequence[StaticFilesConfig] | None = None,
         stores: StoreRegistry | dict[str, Store] | None = None,
         tags: Sequence[str] | None = None,
-        template_config: TemplateConfig | None = None,
+        template_config: TemplateConfig[TemplateEngineProtocol] | None = None,
         type_encoders: TypeEncodersMap | None = None,
         type_decoders: TypeDecodersSequence | None = None,
         websocket_class: type[WebSocket] | None = None,

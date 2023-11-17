@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import sys
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional, Type, Union
@@ -32,8 +34,9 @@ def test_handler_raise_for_no_template_engine() -> None:
 def test_engine_passed_to_callback(tmp_path: "Path") -> None:
     received_engine: Optional[JinjaTemplateEngine] = None
 
-    def callback(engine: JinjaTemplateEngine) -> None:
+    def callback(engine: TemplateEngineProtocol) -> None:
         nonlocal received_engine
+        assert isinstance(engine, JinjaTemplateEngine), "Engine must be a JinjaTemplateEngine"
         received_engine = engine
 
     app = Litestar(

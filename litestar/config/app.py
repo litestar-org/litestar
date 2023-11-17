@@ -8,6 +8,7 @@ from litestar.config.allowed_hosts import AllowedHostsConfig
 from litestar.config.response_cache import ResponseCacheConfig
 from litestar.datastructures import State
 from litestar.events.emitter import SimpleEventEmitter
+from litestar.template import TemplateEngineProtocol
 from litestar.types.empty import Empty
 
 if TYPE_CHECKING:
@@ -196,7 +197,7 @@ class AppConfig:
     """
     tags: list[str] = field(default_factory=list)
     """A list of string tags that will be appended to the schema of all route handlers under the application."""
-    template_config: TemplateConfig | None = field(default=None)
+    template_config: TemplateConfig[TemplateEngineProtocol] | None = field(default=None)
     """An instance of :class:`TemplateConfig <.template.TemplateConfig>`."""
     type_encoders: TypeEncodersMap | None = field(default=None)
     """A mapping of types to callables that transform them into types supported for serialization."""
