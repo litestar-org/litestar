@@ -9,7 +9,7 @@ from hypothesis import given, settings
 from hypothesis.strategies import dictionaries, integers, none, one_of, sampled_from, text, timedeltas
 
 from litestar import Litestar, Request, Response, get
-from litestar.contrib.jwt import JWTAuth, JWTCookieAuth, OAuth2PasswordBearerAuth, Token
+from litestar.security.jwt import JWTAuth, JWTCookieAuth, OAuth2PasswordBearerAuth, Token
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_401_UNAUTHORIZED
 from litestar.stores.memory import MemoryStore
 from litestar.testing import create_test_client
@@ -346,7 +346,9 @@ async def test_oauth2_password_bearer_auth_openapi(mock_db: "MemoryStore") -> No
         return await mock_db.get(token.sub)
 
     jwt_auth = OAuth2PasswordBearerAuth(
-        token_url="/login", token_secret="abc123", retrieve_user_handler=retrieve_user_handler  # type: ignore
+        token_url="/login",
+        token_secret="abc123",
+        retrieve_user_handler=retrieve_user_handler,  # type: ignore
     )
 
     @get("/login")

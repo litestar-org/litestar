@@ -1,4 +1,4 @@
-Contribution guide
+Contribution Guide
 ==================
 
 Setting up the environment

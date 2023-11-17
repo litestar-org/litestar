@@ -21,9 +21,10 @@ Built-in stores
 ---------------
 
 :class:`MemoryStore <litestar.stores.memory.MemoryStore>`
-    A simple in-memory store, using a dictionary to hold data. This store offers no persistence but is suitable for
-    basic applications such as caching and has generally the lowest overhead. This is the default store used by Litestar
-    internally.
+    A simple in-memory store, using a dictionary to hold data. This store offers no persistence and is not thread or multiprocess safe,
+    but it is suitable for basic applications such as caching and has generally the lowest overhead. This is the default store used by
+    Litestar internally. If you plan to enable :ref:`multiple web workers<cli-run-options>` and you need inter-process communication
+    across multiple worker processes, you should use one of the other non-memory stores instead.
 
 :class:`FileStore <litestar.stores.file.FileStore>`
     A store that saves data as files on disk. Persistence is built in, and data is easy to extract and back up.

@@ -5,6 +5,7 @@ from typing import Any
 from typing_extensions import Annotated
 
 from litestar._openapi.schema_generation.schema import SchemaCreator, _get_type_schema_name
+from litestar._openapi.schema_generation.utils import get_formatted_examples
 from litestar.contrib.pydantic.utils import (
     is_pydantic_2_model,
     is_pydantic_constrained_field,
@@ -231,9 +232,7 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
         return PYDANTIC_TYPE_MAP[field_definition.annotation]  # pragma: no cover
 
     @classmethod
-    def for_pydantic_model(
-        cls, field_definition: FieldDefinition, schema_creator: SchemaCreator
-    ) -> Schema:  # pyright: ignore
+    def for_pydantic_model(cls, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:  # pyright: ignore
         """Create a schema object for a given pydantic model class.
 
         Args:
@@ -265,9 +264,7 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
         }
 
         field_definitions = {
-            f.alias
-            if f.alias and schema_creator.prefer_alias
-            else k: FieldDefinition.from_kwarg(
+            f.alias if f.alias and schema_creator.prefer_alias else k: FieldDefinition.from_kwarg(
                 annotation=Annotated[annotation_hints[k], f, f.metadata]  # type: ignore[union-attr]
                 if is_v2_model
                 else Annotated[annotation_hints[k], f],  # pyright: ignore
@@ -282,5 +279,9 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
             properties={k: schema_creator.for_field_definition(f) for k, f in field_definitions.items()},
             type=OpenAPIType.OBJECT,
             title=title or _get_type_schema_name(field_definition),
-            examples=[Example(example)] if example else None,  # type: ignore[arg-type]
+            examples=get_formatted_examples(
+                field_definition, [Example(description=f"Example {field_definition.name} value", value=example)]
+            )
+            if example
+            else None,
         )

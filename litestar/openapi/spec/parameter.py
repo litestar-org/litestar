@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Mapping
 
 from litestar.openapi.spec.base import BaseSchemaObject
 
@@ -117,7 +117,7 @@ class Parameter(BaseSchemaObject):
     necessary.
     """
 
-    examples: dict[str, Example | Reference] | None = None
+    examples: Mapping[str, Example | Reference] | None = None
     """Examples of the parameter's potential value. Each example SHOULD contain a value in the correct format as
     specified in the parameter encoding. The ``examples`` field is mutually exclusive of the ``example`` field.
     Furthermore, if referencing a ``schema`` that contains an example, the ``examples`` value SHALL _override_ the

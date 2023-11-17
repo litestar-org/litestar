@@ -457,10 +457,10 @@ class OpenAPIController(Controller):
           </head>
         """
 
-        body = f"""
+        body = """
           <body>
             <elements-api
-                apiDescriptionUrl="{self.path}/openapi.json"
+                apiDescriptionUrl="openapi.json"
                 router="hash"
                 layout="sidebar"
             />
@@ -489,9 +489,9 @@ class OpenAPIController(Controller):
           </head>
         """
 
-        body = f"""
+        body = """
           <body>
-            <rapi-doc spec-url="{self.path}/openapi.json" />
+            <rapi-doc spec-url="openapi.json" />
           </body>
         """
 

@@ -158,8 +158,8 @@ def pydantic_get_unwrapped_annotation_and_type_hints(annotation: Any) -> tuple[A
 def is_pydantic_2_model(
     obj: type[pydantic_v1.BaseModel | pydantic_v2.BaseModel],  # pyright: ignore
 ) -> TypeGuard[pydantic_v2.BaseModel]:  # pyright: ignore
-    return issubclass(obj, pydantic_v2.BaseModel)  # pyright: ignore
+    return pydantic_v2 is not Empty and issubclass(obj, pydantic_v2.BaseModel)  # type: ignore[comparison-overlap]
 
 
 def is_pydantic_undefined(value: Any) -> bool:
-    return value in PYDANTIC_UNDEFINED_SENTINELS
+    return any(v is value for v in PYDANTIC_UNDEFINED_SENTINELS)

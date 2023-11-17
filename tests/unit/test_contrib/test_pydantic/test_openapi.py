@@ -384,7 +384,7 @@ def test_schema_generation_v1(create_examples: bool) -> None:
         assert response.status_code == HTTP_200_OK
         assert response.json()["components"]["schemas"][key_name]["properties"]["id"] == {
             "description": "A unique identifier",
-            "examples": [{"value": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"}],
+            "examples": {"id-example-1": {"value": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"}},
             "maxLength": 16,
             "minLength": 12,
             "type": "string",
@@ -424,7 +424,7 @@ def test_schema_generation_v2(create_examples: bool) -> None:
         )
         assert response.json()["components"]["schemas"][key_name]["properties"]["id"] == {
             "description": "A unique identifier",
-            "examples": [{"value": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"}],
+            "examples": {"id-example-1": {"value": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"}},
             "maxLength": 16,
             "minLength": 12,
             "type": "string",
@@ -515,7 +515,10 @@ def test_schema_by_alias_plugin_override(base_model: AnyBaseModelType, pydantic_
 def test_create_schema_for_field_v1() -> None:
     class Model(pydantic_v1.BaseModel):
         value: str = pydantic_v1.Field(
-            title="title", description="description", example="example", max_length=16  # pyright: ignore
+            title="title",
+            description="description",
+            example="example",
+            max_length=16,  # pyright: ignore
         )
 
     schemas: Dict[str, Schema] = {}
@@ -525,9 +528,14 @@ def test_create_schema_for_field_v1() -> None:
         "_class__tests_unit_test_contrib_test_pydantic_test_openapi_test_create_schema_for_field_v1__locals__Model__"
     ]
 
-    assert schema.properties["value"].description == "description"  # type: ignore
-    assert schema.properties["value"].title == "title"  # type: ignore
-    assert schema.properties["value"].examples == [Example(value="example")]  # type: ignore
+    assert schema.properties
+
+    value = schema.properties["value"]
+
+    assert isinstance(value, Schema)
+    assert value.description == "description"
+    assert value.title == "title"
+    assert value.examples == {"value-example-1": Example(value="example")}
 
 
 def test_create_schema_for_field_v2() -> None:
@@ -543,9 +551,14 @@ def test_create_schema_for_field_v2() -> None:
         "_class__tests_unit_test_contrib_test_pydantic_test_openapi_test_create_schema_for_field_v2__locals__Model__"
     ]
 
-    assert schema.properties["value"].description == "description"  # type: ignore
-    assert schema.properties["value"].title == "title"  # type: ignore
-    assert schema.properties["value"].examples == [Example(value="example")]  # type: ignore
+    assert schema.properties
+
+    value = schema.properties["value"]
+
+    assert isinstance(value, Schema)
+    assert value.description == "description"
+    assert value.title == "title"
+    assert value.examples == {"value-example-1": Example(value="example")}
 
 
 @pytest.mark.parametrize("with_future_annotations", [True, False])
@@ -570,3 +583,35 @@ class Foo(BaseModel):
     key_name = _get_normalized_schema_key(str(module.Foo))
     schema = schemas[key_name]
     assert schema.properties and "foo" in schema.properties
+
+
+def test_create_schema_for_pydantic_model_with_unhashable_literal_default(
+    create_module: "Callable[[str], ModuleType]",
+) -> None:
+    """Test that a model with unhashable literal defaults is correctly handled."""
+    module = create_module(
+        """
+from pydantic import BaseModel, Field
+
+class Model(BaseModel):
+    id: int
+    dict_default: dict = {}
+    dict_default_in_field: dict = Field(default={})
+    dict_default_in_factory: dict = Field(default_factory=dict)
+    list_default: list = []
+    list_default_in_field: list = Field(default=[])
+    list_default_in_factory: list = Field(default_factory=list)
+"""
+    )
+    schemas: Dict[str, Schema] = {}
+    SchemaCreator(schemas=schemas, plugins=[PydanticSchemaPlugin()]).for_field_definition(
+        FieldDefinition.from_annotation(module.Model)
+    )
+    schema = schemas["Model"]
+    assert schema.properties
+    assert "dict_default" in schema.properties
+    assert "dict_default_in_field" in schema.properties
+    assert "dict_default_in_factory" in schema.properties
+    assert "list_default" in schema.properties
+    assert "list_default_in_field" in schema.properties
+    assert "list_default_in_factory" in schema.properties

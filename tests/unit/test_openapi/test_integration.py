@@ -173,7 +173,7 @@ def test_msgspec_schema_generation(create_examples: bool) -> None:
             "_class__tests_unit_test_openapi_test_integration_test_msgspec_schema_generation__locals__Lookup__"
         ]["properties"]["id"] == {
             "description": "A unique identifier",
-            "examples": [{"value": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"}],
+            "examples": {"id-example-1": {"value": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"}},
             "maxLength": 16,
             "minLength": 12,
             "type": "string",

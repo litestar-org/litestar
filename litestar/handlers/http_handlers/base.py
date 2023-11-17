@@ -381,7 +381,9 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
         if self._resolved_after_response is Empty:
             after_response_handlers: list[AsyncAnyCallable] = [
-                layer.after_response for layer in self.ownership_layers if layer.after_response  # type: ignore[misc]
+                layer.after_response  # type: ignore[misc]
+                for layer in self.ownership_layers
+                if layer.after_response
             ]
             self._resolved_after_response = after_response_handlers[-1] if after_response_handlers else None
 
@@ -417,7 +419,9 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
         if self._response_handler_mapping["default_handler"] is Empty:
             after_request_handlers: list[AsyncAnyCallable] = [
-                layer.after_request for layer in self.ownership_layers if layer.after_request  # type: ignore[misc]
+                layer.after_request  # type: ignore[misc]
+                for layer in self.ownership_layers
+                if layer.after_request
             ]
             after_request = cast(
                 "AfterRequestHookHandler | None",
@@ -504,7 +508,7 @@ class HTTPRouteHandler(BaseRouteHandler):
 
         if return_type.annotation is Empty:
             raise ImproperlyConfiguredException(
-                "A return value of a route handler function should be type annotated."
+                "A return value of a route handler function should be type annotated. "
                 "If your function doesn't return a value, annotate it as returning 'None'."
             )
 
@@ -512,7 +516,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             self.status_code < 200 or self.status_code in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED}
         ) and not return_type.is_subclass_of(NoneType):
             raise ImproperlyConfiguredException(
-                "A status code 204, 304 or in the range below 200 does not support a response body."
+                "A status code 204, 304 or in the range below 200 does not support a response body. "
                 "If the function should return a value, change the route handler status code to an appropriate value.",
             )
 

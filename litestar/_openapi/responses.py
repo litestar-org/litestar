@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Any, Iterator
 
 from litestar.enums import MediaType
 from litestar.exceptions import HTTPException, ValidationException
-from litestar.openapi.spec import OpenAPIResponse
+from litestar.openapi.spec import Example, OpenAPIResponse
 from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
 from litestar.openapi.spec.header import OpenAPIHeader
 from litestar.openapi.spec.media_type import OpenAPIMediaType
@@ -214,7 +214,9 @@ def create_error_responses(exceptions: list[type[HTTPException]]) -> Iterator[tu
                         ),
                     },
                     description=pascal_case_to_text(get_name(exc)),
-                    examples=[{"status_code": status_code, "detail": example_detail, "extra": {}}],
+                    examples={
+                        exc.__name__: Example(value={"status_code": status_code, "detail": example_detail, "extra": {}})
+                    },
                 )
             )
         if len(exceptions_schemas) > 1:  # noqa: SIM108
@@ -226,9 +228,12 @@ def create_error_responses(exceptions: list[type[HTTPException]]) -> Iterator[tu
             with contextlib.suppress(Exception):
                 group_description = HTTPStatus(status_code).description
 
-        yield str(status_code), OpenAPIResponse(
-            description=group_description,
-            content={MediaType.JSON: OpenAPIMediaType(schema=schema)},
+        yield (
+            str(status_code),
+            OpenAPIResponse(
+                description=group_description,
+                content={MediaType.JSON: OpenAPIMediaType(schema=schema)},
+            ),
         )
 
 
@@ -245,9 +250,12 @@ def create_additional_responses(
         schema = schema_creator.for_field_definition(
             FieldDefinition.from_annotation(additional_response.data_container)
         )
-        yield str(status_code), OpenAPIResponse(
-            description=additional_response.description,
-            content={additional_response.media_type: OpenAPIMediaType(schema=schema)},
+        yield (
+            str(status_code),
+            OpenAPIResponse(
+                description=additional_response.description,
+                content={additional_response.media_type: OpenAPIMediaType(schema=schema)},
+            ),
         )
 
 

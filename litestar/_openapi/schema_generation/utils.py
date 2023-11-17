@@ -2,9 +2,14 @@ from __future__ import annotations
 
 import re
 from enum import Enum
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Mapping
+
+from litestar.utils.helpers import get_name
 
 if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from litestar.openapi.spec import Example
     from litestar.typing import FieldDefinition
 
 __all__ = (
@@ -93,3 +98,12 @@ def _get_normalized_schema_key(type_annotation_str: str) -> str:
     """
     # Use a regular expression to replace non-alphanumeric characters with underscores
     return re.sub(TYPE_NAME_NORMALIZATION_REGEX, "_", type_annotation_str)
+
+  
+def get_formatted_examples(field_definition: FieldDefinition, examples: Sequence[Example]) -> Mapping[str, Example]:
+    """Format the examples into the OpenAPI schema format."""
+
+    name = field_definition.name or get_name(field_definition.type_)
+    name = name.lower()
+
+    return {f"{name}-example-{i}": example for i, example in enumerate(examples, 1)}

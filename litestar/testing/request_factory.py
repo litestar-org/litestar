@@ -83,7 +83,7 @@ class RequestFactory:
              handler_kwargs: Kwargs to pass to the route handler created for the request
 
         Examples:
-            .. code-block: python
+            .. code-block:: python
 
                 from litestar import Litestar
                 from litestar.enums import RequestEncodingType
@@ -291,7 +291,9 @@ class RequestFactory:
             if request_media_type == RequestEncodingType.JSON:
                 encoding_headers, stream = httpx_encode_json(data)
             elif request_media_type == RequestEncodingType.MULTI_PART:
-                encoding_headers, stream = encode_multipart_data(cast("dict[str, Any]", data), files=files or [], boundary=None)  # type: ignore[assignment]
+                encoding_headers, stream = encode_multipart_data(  # type: ignore[assignment]
+                    cast("dict[str, Any]", data), files=files or [], boundary=None
+                )
             else:
                 encoding_headers, stream = encode_urlencoded_data(decode_json(value=encode_json(data)))
             headers.update(encoding_headers)
