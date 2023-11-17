@@ -1,6 +1,5 @@
-from __future__ import annotations
-
 from pathlib import Path
+from typing import Optional
 
 from litestar import Litestar, get
 from litestar.contrib.jinja import JinjaTemplateEngine
@@ -9,7 +8,7 @@ from litestar.template.config import TemplateConfig
 
 
 @get(path="/{template_type: str}", sync_to_thread=False)
-def index(name: str, template_type: str | None) -> Template:
+def index(name: str, template_type: Optional[str]) -> Template:
     if template_type == "file":
         return Template(template_name="hello.html.jinja2", context={"name": name})
     elif template_type == "string":

@@ -5,41 +5,23 @@ from docs.examples.templating.returning_templates_minijinja import app as miniji
 
 from litestar.testing import TestClient
 
+apps_with_expected_responses = [
+    (jinja_app, "Jinja", "Hello <strong>Jinja</strong>", "Hello <strong>Jinja</strong> using strings"),
+    (mako_app, "Mako", "Hello <strong>Mako</strong>\n", "Hello <strong>Mako</strong> using strings"),
+    (minijinja_app, "Minijinja", "Hello <strong>Minijinja</strong>", "Hello <strong>Minijinja</strong> using strings"),
+]
 
+
+@pytest.mark.parametrize("app, app_name, file_response, string_response", apps_with_expected_responses)
 @pytest.mark.parametrize("template_type", ["file", "string", None])
-def test_returning_templates_jinja(template_type):
-    with TestClient(jinja_app) as client:
-        response = client.get(f"/{template_type}", params={"name": "Jinja"})
+def test_returning_templates(app, app_name, file_response, string_response, template_type):
+    with TestClient(app) as client:
+        response = client.get(f"/{template_type}", params={"name": app_name})
         if template_type == "file":
-            assert response.text == "Hello <strong>Jinja</strong>"
+            assert response.text == file_response
         elif template_type == "string":
-            assert response.text == "Hello <strong>Jinja</strong> using strings"
-        elif template_type is None:
-            assert response.status_code == 500
-            assert response.json() == {"detail": "Internal Server Error", "status_code": 500}
-
-
-@pytest.mark.parametrize("template_type", ["file", "string"])
-def test_returning_templates_mako(template_type):
-    with TestClient(mako_app) as client:
-        response = client.get(f"/{template_type}", params={"name": "Mako"})
-        if template_type == "file":
-            assert response.text == "Hello <strong>Mako</strong>\n"
-        elif template_type == "string":
-            assert response.text.strip() == "Hello <strong>Mako</strong> using strings"
-        elif template_type is None:
-            assert response.status_code == 500
-            assert response.json() == {"detail": "Internal Server Error", "status_code": 500}
-
-
-@pytest.mark.parametrize("template_type", ["file", "string"])
-def test_returning_templates_minijinja(template_type):
-    with TestClient(minijinja_app) as client:
-        response = client.get(f"/{template_type}", params={"name": "Minijinja"})
-        if template_type == "file":
-            assert response.text == "Hello <strong>Minijinja</strong>"
-        elif template_type == "string":
-            assert response.text.strip() == "Hello <strong>Minijinja</strong> using strings"
-        elif template_type is None:
+            assert response.text.strip() == string_response
+        else:
+            # Test the scenario where template_type is None
             assert response.status_code == 500
             assert response.json() == {"detail": "Internal Server Error", "status_code": 500}
