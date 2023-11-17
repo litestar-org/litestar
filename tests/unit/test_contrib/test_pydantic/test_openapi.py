@@ -339,7 +339,7 @@ def test_spec_generation(cls: Any) -> None:
                     "oneOf": [
                         {"type": "null"},
                         {
-                            "items": {"$ref": "#/components/schemas/_class__tests_models_DataclassPet__"},
+                            "items": {"$ref": "#/components/schemas/tests_models_DataclassPet"},
                             "type": "array",
                         },
                     ]
@@ -378,9 +378,7 @@ def test_schema_generation_v1(create_examples: bool) -> None:
         signature_namespace={"Lookup": Lookup},
     ) as client:
         response = client.get("/schema/openapi.json")
-        key_name = (
-            "_class__tests_unit_test_contrib_test_pydantic_test_openapi_test_schema_generation_v1__locals__Lookup__"
-        )
+        key_name = "tests_unit_test_contrib_test_pydantic_test_openapi_test_schema_generation_v1_locals_Lookup"
         assert response.status_code == HTTP_200_OK
         assert response.json()["components"]["schemas"][key_name]["properties"]["id"] == {
             "description": "A unique identifier",
@@ -419,9 +417,7 @@ def test_schema_generation_v2(create_examples: bool) -> None:
     ) as client:
         response = client.get("/schema/openapi.json")
         assert response.status_code == HTTP_200_OK
-        key_name = (
-            "_class__tests_unit_test_contrib_test_pydantic_test_openapi_test_schema_generation_v2__locals__Lookup__"
-        )
+        key_name = "tests_unit_test_contrib_test_pydantic_test_openapi_test_schema_generation_v2_locals_Lookup"
         assert response.json()["components"]["schemas"][key_name]["properties"]["id"] == {
             "description": "A unique identifier",
             "examples": {"id-example-1": {"value": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"}},
@@ -448,7 +444,7 @@ def test_schema_by_alias(base_model: AnyBaseModelType, pydantic_version: Pydanti
     schemas = app.openapi_schema.to_schema()["components"]["schemas"]
     request_key = "second"
     assert schemas[
-        "_class__tests_unit_test_contrib_test_pydantic_test_openapi_test_schema_by_alias__locals__RequestWithAlias__"
+        "tests_unit_test_contrib_test_pydantic_test_openapi_test_schema_by_alias_locals_RequestWithAlias"
     ] == {
         "properties": {request_key: {"type": "string"}},
         "type": "object",
@@ -457,7 +453,7 @@ def test_schema_by_alias(base_model: AnyBaseModelType, pydantic_version: Pydanti
     }
     response_key = "first"
     assert schemas[
-        "_class__tests_unit_test_contrib_test_pydantic_test_openapi_test_schema_by_alias__locals__ResponseWithAlias__"
+        "tests_unit_test_contrib_test_pydantic_test_openapi_test_schema_by_alias_locals_ResponseWithAlias"
     ] == {
         "properties": {response_key: {"type": "string"}},
         "type": "object",
@@ -490,7 +486,7 @@ def test_schema_by_alias_plugin_override(base_model: AnyBaseModelType, pydantic_
     schemas = app.openapi_schema.to_schema()["components"]["schemas"]
     request_key = "second"
     assert schemas[
-        "_class__tests_unit_test_contrib_test_pydantic_test_openapi_test_schema_by_alias_plugin_override__locals__RequestWithAlias__"
+        "tests_unit_test_contrib_test_pydantic_test_openapi_test_schema_by_alias_plugin_override_locals_RequestWithAlias"
     ] == {
         "properties": {request_key: {"type": "string"}},
         "type": "object",
@@ -499,7 +495,7 @@ def test_schema_by_alias_plugin_override(base_model: AnyBaseModelType, pydantic_
     }
     response_key = "second"
     assert schemas[
-        "_class__tests_unit_test_contrib_test_pydantic_test_openapi_test_schema_by_alias_plugin_override__locals__ResponseWithAlias__"
+        "tests_unit_test_contrib_test_pydantic_test_openapi_test_schema_by_alias_plugin_override_locals_ResponseWithAlias"
     ] == {
         "properties": {response_key: {"type": "string"}},
         "type": "object",
@@ -524,9 +520,7 @@ def test_create_schema_for_field_v1() -> None:
     schemas: Dict[str, Schema] = {}
     field_definition = FieldDefinition.from_kwarg(name="Model", annotation=Model)
     SchemaCreator(schemas=schemas, plugins=[PydanticSchemaPlugin()]).for_field_definition(field_definition)
-    schema = schemas[
-        "_class__tests_unit_test_contrib_test_pydantic_test_openapi_test_create_schema_for_field_v1__locals__Model__"
-    ]
+    schema = schemas["tests_unit_test_contrib_test_pydantic_test_openapi_test_create_schema_for_field_v1_locals_Model"]
 
     assert schema.properties
 
@@ -547,9 +541,7 @@ def test_create_schema_for_field_v2() -> None:
     schemas: Dict[str, Schema] = {}
     field_definition = FieldDefinition.from_kwarg(name="Model", annotation=Model)
     SchemaCreator(schemas=schemas, plugins=[PydanticSchemaPlugin()]).for_field_definition(field_definition)
-    schema = schemas[
-        "_class__tests_unit_test_contrib_test_pydantic_test_openapi_test_create_schema_for_field_v2__locals__Model__"
-    ]
+    schema = schemas["tests_unit_test_contrib_test_pydantic_test_openapi_test_create_schema_for_field_v2_locals_Model"]
 
     assert schema.properties
 
@@ -607,7 +599,7 @@ class Model(BaseModel):
     SchemaCreator(schemas=schemas, plugins=[PydanticSchemaPlugin()]).for_field_definition(
         FieldDefinition.from_annotation(module.Model)
     )
-    schema = schemas[f"_class__{module.__name__}_Model__"]
+    schema = schemas[f"{module.__name__}_Model"]
     assert schema.properties
     assert "dict_default" in schema.properties
     assert "dict_default_in_field" in schema.properties

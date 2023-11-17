@@ -170,7 +170,7 @@ def test_msgspec_schema_generation(create_examples: bool) -> None:
         response = client.get("/schema/openapi.json")
         assert response.status_code == HTTP_200_OK
         assert response.json()["components"]["schemas"][
-            "_class__tests_unit_test_openapi_test_integration_test_msgspec_schema_generation__locals__Lookup__"
+            "tests_unit_test_openapi_test_integration_test_msgspec_schema_generation_locals_Lookup"
         ]["properties"]["id"] == {
             "description": "A unique identifier",
             "examples": {"id-example-1": {"value": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"}},
@@ -244,7 +244,7 @@ def test_with_generic_class() -> None:
                                 "content": {
                                     "application/json": {
                                         "schema": {
-                                            "$ref": "#/components/schemas/tests_unit_test_openapi_test_integration_Foo_str_"
+                                            "$ref": "#/components/schemas/tests_unit_test_openapi_test_integration_Foo_str"
                                         }
                                     }
                                 },
@@ -264,7 +264,7 @@ def test_with_generic_class() -> None:
                                 "content": {
                                     "application/json": {
                                         "schema": {
-                                            "$ref": "#/components/schemas/tests_unit_test_openapi_test_integration_Foo_int_"
+                                            "$ref": "#/components/schemas/tests_unit_test_openapi_test_integration_Foo_int"
                                         }
                                     }
                                 },
@@ -276,13 +276,13 @@ def test_with_generic_class() -> None:
             },
             "components": {
                 "schemas": {
-                    "tests_unit_test_openapi_test_integration_Foo_str_": {
+                    "tests_unit_test_openapi_test_integration_Foo_str": {
                         "properties": {"foo": {"type": "string"}},
                         "type": "object",
                         "required": ["foo"],
                         "title": "Foo[str]",
                     },
-                    "tests_unit_test_openapi_test_integration_Foo_int_": {
+                    "tests_unit_test_openapi_test_integration_Foo_int": {
                         "properties": {"foo": {"type": "integer"}},
                         "type": "object",
                         "required": ["foo"],

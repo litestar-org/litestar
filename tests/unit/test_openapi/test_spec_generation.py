@@ -37,7 +37,7 @@ def test_spec_generation(cls: Any) -> None:
                     "oneOf": [
                         {"type": "null"},
                         {
-                            "items": {"$ref": "#/components/schemas/_class__tests_models_DataclassPet__"},
+                            "items": {"$ref": "#/components/schemas/tests_models_DataclassPet"},
                             "type": "array",
                         },
                     ]
@@ -63,7 +63,7 @@ def test_msgspec_schema() -> None:
         assert schema
 
         assert schema.to_schema()["components"]["schemas"][
-            "_class__tests_unit_test_openapi_test_spec_generation_test_msgspec_schema__locals__CamelizedStruct__"
+            "tests_unit_test_openapi_test_spec_generation_test_msgspec_schema_locals_CamelizedStruct"
         ] == {
             "properties": {"fieldOne": {"type": "integer"}, "fieldTwo": {"type": "number"}},
             "required": ["fieldOne", "fieldTwo"],

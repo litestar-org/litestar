@@ -90,23 +90,23 @@ def test_get_normalized_schema_key() -> None:
         id: str
 
     assert (
-        "_class__tests_unit_test_openapi_test_schema_test_get_normalized_schema_key__locals__LocalClass__"
+        "tests_unit_test_openapi_test_schema_test_get_normalized_schema_key_locals_LocalClass"
         == _get_normalized_schema_key(str(LocalClass))
     )
 
-    assert "_class__tests_models_DataclassPerson__" == _get_normalized_schema_key(str(DataclassPerson))
+    assert "tests_models_DataclassPerson" == _get_normalized_schema_key(str(DataclassPerson))
 
     builtin_dict = Dict[str, List[int]]
-    assert "typing_Dict_str__typing_List_int__" == _get_normalized_schema_key(str(builtin_dict))
+    assert "typing_Dict_str_typing_List_int" == _get_normalized_schema_key(str(builtin_dict))
 
     builtin_with_custom = Dict[str, DataclassPerson]
-    assert "typing_Dict_str__tests_models_DataclassPerson_" == _get_normalized_schema_key(str(builtin_with_custom))
+    assert "typing_Dict_str_tests_models_DataclassPerson" == _get_normalized_schema_key(str(builtin_with_custom))
 
     class LocalGeneric(Generic[T]):
         pass
 
     assert (
-        "_class__tests_unit_test_openapi_test_schema_test_get_normalized_schema_key__locals__LocalGeneric__"
+        "tests_unit_test_openapi_test_schema_test_get_normalized_schema_key_locals_LocalGeneric"
         == _get_normalized_schema_key(str(LocalGeneric))
     )
 
@@ -114,12 +114,12 @@ def test_get_normalized_schema_key() -> None:
     generic_str = LocalGeneric[str]
 
     assert (
-        "tests_unit_test_openapi_test_schema_test_get_normalized_schema_key__locals__LocalGeneric_int_"
+        "tests_unit_test_openapi_test_schema_test_get_normalized_schema_key_locals_LocalGeneric_int"
         == _get_normalized_schema_key(str(generic_int))
     )
 
     assert (
-        "tests_unit_test_openapi_test_schema_test_get_normalized_schema_key__locals__LocalGeneric_str_"
+        "tests_unit_test_openapi_test_schema_test_get_normalized_schema_key_locals_LocalGeneric_str"
         == _get_normalized_schema_key(str(generic_str))
     )
 
@@ -192,9 +192,7 @@ def test_handling_of_literals() -> None:
     )
     assert isinstance(result, Reference)
 
-    schema = schemas[
-        "_class__tests_unit_test_openapi_test_schema_test_handling_of_literals__locals__DataclassWithLiteral__"
-    ]
+    schema = schemas["tests_unit_test_openapi_test_schema_test_handling_of_literals_locals_DataclassWithLiteral"]
     assert isinstance(schema, Schema)
     assert schema.properties
 
@@ -228,10 +226,10 @@ def test_title_validation() -> None:
     schema_creator = SchemaCreator(schemas=schemas)
 
     schema_creator.for_field_definition(FieldDefinition.from_kwarg(name="Person", annotation=DataclassPerson))
-    assert schemas.get("_class__tests_models_DataclassPerson__")
+    assert schemas.get("tests_models_DataclassPerson")
 
     schema_creator.for_field_definition(FieldDefinition.from_kwarg(name="Pet", annotation=DataclassPet))
-    assert schemas.get("_class__tests_models_DataclassPet__")
+    assert schemas.get("tests_models_DataclassPet")
 
 
 @pytest.mark.parametrize("with_future_annotations", [True, False])
@@ -287,9 +285,7 @@ def test_create_schema_from_msgspec_annotated_type() -> None:
 
     schemas: Dict[str, Schema] = {}
     SchemaCreator(schemas=schemas).for_field_definition(FieldDefinition.from_kwarg(name="Lookup", annotation=Lookup))
-    schema = schemas[
-        "_class__tests_unit_test_openapi_test_schema_test_create_schema_from_msgspec_annotated_type__locals__Lookup__"
-    ]
+    schema = schemas["tests_unit_test_openapi_test_schema_test_create_schema_from_msgspec_annotated_type_locals_Lookup"]
 
     assert schema.properties["id"].type == OpenAPIType.STRING  # type: ignore
     assert schema.properties["id"].examples == {"id-example-1": Example(value="example")}  # type: ignore
@@ -317,7 +313,7 @@ def test_annotated_types() -> None:
     SchemaCreator(schemas=schemas).for_field_definition(
         FieldDefinition.from_kwarg(name="MyDataclass", annotation=MyDataclass)
     )
-    schema = schemas["_class__tests_unit_test_openapi_test_schema_test_annotated_types__locals__MyDataclass__"]
+    schema = schemas["tests_unit_test_openapi_test_schema_test_annotated_types_locals_MyDataclass"]
 
     assert schema.properties["constrained_int"].exclusive_minimum == 1  # type: ignore
     assert schema.properties["constrained_int"].exclusive_maximum == 10  # type: ignore
@@ -406,7 +402,7 @@ def test_schema_generation_with_generic_classes_constrained() -> None:
     schemas: Dict[str, Schema] = {}
     SchemaCreator(schemas=schemas).for_field_definition(field_definition)
 
-    properties = schemas["_class__tests_unit_test_openapi_test_schema_ConstrainedGenericDataclass__"].properties
+    properties = schemas["tests_unit_test_openapi_test_schema_ConstrainedGenericDataclass"].properties
 
     assert properties
     assert properties["bound"] == Schema(type=OpenAPIType.INTEGER)

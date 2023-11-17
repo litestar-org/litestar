@@ -21,7 +21,7 @@ def test_schema_generation() -> None:
                                 "content": {
                                     "application/json": {
                                         "schema": {
-                                            "$ref": "#/components/schemas/_class__docs_examples_openapi_customize_pydantic_model_name_IdModel__"
+                                            "$ref": "#/components/schemas/docs_examples_openapi_customize_pydantic_model_name_IdModel"
                                         }
                                     }
                                 },
@@ -33,7 +33,7 @@ def test_schema_generation() -> None:
             },
             "components": {
                 "schemas": {
-                    "_class__docs_examples_openapi_customize_pydantic_model_name_IdModel__": {
+                    "docs_examples_openapi_customize_pydantic_model_name_IdModel": {
                         "properties": {"id": {"type": "string", "format": "uuid", "description": "Any UUID string"}},
                         "type": "object",
                         "required": ["id"],
