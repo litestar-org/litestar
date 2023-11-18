@@ -8,7 +8,7 @@ from inspect import Signature, getmembers, isclass, ismethod
 from itertools import chain
 from typing import Any, Union
 
-from typing_extensions import Self, get_args, get_origin, get_type_hints
+from typing_extensions import Annotated, Self, get_args, get_origin, get_type_hints
 
 from litestar import connection, datastructures, types
 from litestar.exceptions import ImproperlyConfiguredException
@@ -52,7 +52,28 @@ def _unwrap_implicit_optional_hints(defaults: dict[str, Any], hints: dict[str, A
     """Unwrap implicit optional hints.
 
     On Python<3.11, if a function parameter annotation has a ``None`` default, it is unconditionally wrapped in an
-    ``Optional`` type. This function reverses that process.
+    ``Optional`` type.
+
+    If the annotation is not annotated, then any nested unions are flattened, e.g.,:
+
+    .. code-block:: python
+
+        def foo(a: Optional[Union[str, int]] = None):
+            ...
+
+    ...will become `Union[str, int, NoneType]`.
+
+    However, if the annotation is annotated, then we end up with an optional union around the annotated type, e.g.,:
+
+    .. code-block:: python
+
+        def foo(a: Annotated[Optional[Union[str, int]], ...] = None):
+            ...
+
+    ... becomes `Union[Annotated[Union[str, int, NoneType], ...], NoneType]`
+
+    This function makes the latter case consistent with the former by either removing the outer union if it is redundant
+    or flattening the union if it is not. The latter case would become `Annotated[Union[str, int, NoneType], ...]`.
 
     Args:
         defaults: Mapping of names to default values.
@@ -62,7 +83,7 @@ def _unwrap_implicit_optional_hints(defaults: dict[str, Any], hints: dict[str, A
         Mapping of names to types.
     """
 
-    def _is_two_arg_optional(origin: Any, args: Any) -> bool:
+    def _is_two_arg_optional(origin_: Any, args_: Any) -> bool:
         """Check if a type is a two-argument optional type.
 
         If the type has been wrapped in `Optional` by `get_type_hints()` it will always be a union of a type and
@@ -70,9 +91,9 @@ def _unwrap_implicit_optional_hints(defaults: dict[str, Any], hints: dict[str, A
 
         See: https://github.com/litestar-org/litestar/pull/2516
         """
-        return origin is Union and len(args) == 2 and args[1] is type(None)
+        return origin_ is Union and len(args_) == 2 and args_[1] is type(None)
 
-    def _is_any_optional(origin: Any, args: Any) -> bool:
+    def _is_any_optional(origin_: Any, args_: tuple[Any, ...]) -> bool:
         """Detect if a type is a union with `NoneType`.
 
         After detecting that a type is a two-argument optional type, this function can be used to detect if the
@@ -80,7 +101,7 @@ def _unwrap_implicit_optional_hints(defaults: dict[str, Any], hints: dict[str, A
 
         We only want to perform the unwrapping of the optional union if the inner type is optional as well.
         """
-        return origin is Union and any(arg is type(None) for arg in args)
+        return origin_ is Union and any(arg is type(None) for arg in args_)
 
     for name, default in defaults.items():
         if default is not None:
@@ -91,10 +112,24 @@ def _unwrap_implicit_optional_hints(defaults: dict[str, Any], hints: dict[str, A
         args = get_args(hint)
 
         if _is_two_arg_optional(origin, args):
-            unwrapped_inner, _, _ = unwrap_annotation(args[0])
-            if not _is_any_optional(get_origin(unwrapped_inner), get_args(unwrapped_inner)):
+            unwrapped_inner, meta, wrappers = unwrap_annotation(args[0])
+
+            if Annotated not in wrappers:
                 continue
 
+            inner_args = get_args(unwrapped_inner)
+
+            if not _is_any_optional(get_origin(unwrapped_inner), inner_args):
+                # this is where hint is like `Union[Annotated[Union[str, int], ...], NoneType]`, we add the outer union
+                # into the inner one, and re-wrap with Annotated
+                union_args = (*(inner_args or (unwrapped_inner,)), type(None))
+                # calling `__class_getitem__` directly as in earlier py vers it is a syntax error to unpack into
+                # the getitem brackets, e.g., Annotated[T, *meta].
+                hints[name] = Annotated.__class_getitem__((Union[union_args], *meta))  # type: ignore[attr-defined]
+                continue
+
+            # this is where hint is like `Union[Annotated[Union[str, NoneType], ...], NoneType]`, we remove the
+            # redundant outer union
             hints[name] = args[0]
     return hints
 
