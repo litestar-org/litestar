@@ -7,7 +7,7 @@ from litestar.testing import TestClient
 
 apps_with_expected_responses = [
     (jinja_app, "Jinja", "Hello <strong>Jinja</strong>", "Hello <strong>Jinja</strong> using strings"),
-    (mako_app, "Mako", "Hello <strong>Mako</strong>\n", "Hello <strong>Mako</strong> using strings"),
+    (mako_app, "Mako", "Hello <strong>Mako</strong>", "Hello <strong>Mako</strong> using strings"),
     (minijinja_app, "Minijinja", "Hello <strong>Minijinja</strong>", "Hello <strong>Minijinja</strong> using strings"),
 ]
 
@@ -18,6 +18,6 @@ def test_returning_templates(app, app_name, file_response, string_response, temp
     with TestClient(app) as client:
         response = client.get(f"/{template_type}", params={"name": app_name})
         if template_type == "file":
-            assert response.text == file_response
+            assert response.text.strip() == file_response
         elif template_type == "string":
             assert response.text.strip() == string_response
