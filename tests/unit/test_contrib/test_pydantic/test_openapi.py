@@ -607,3 +607,11 @@ class Model(BaseModel):
     assert "list_default" in schema.properties
     assert "list_default_in_field" in schema.properties
     assert "list_default_in_factory" in schema.properties
+
+
+@pytest.mark.parametrize("field_type", [pydantic_v2.AnyUrl, pydantic_v2.AnyHttpUrl, pydantic_v2.HttpUrl])
+def test_create_for_url_v2(field_type: Any) -> None:
+    field_definition = FieldDefinition.from_annotation(field_type)
+    schema = SchemaCreator(plugins=[PydanticSchemaPlugin()]).for_field_definition(field_definition)
+    assert schema.type == OpenAPIType.STRING  # type: ignore[union-attr]
+    assert schema.format == OpenAPIFormat.URL  # type: ignore[union-attr]
