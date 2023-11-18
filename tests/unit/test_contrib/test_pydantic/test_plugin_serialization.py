@@ -90,6 +90,9 @@ class ModelV1(pydantic_v1.BaseModel):
 
     conint: pydantic_v1.conint(ge=0)  # type: ignore[valid-type]
 
+    url: pydantic_v1.AnyUrl
+    http_url: pydantic_v1.HttpUrl
+
 
 class ModelV2(pydantic_v2.BaseModel):
     model_config = {"arbitrary_types_allowed": True}
@@ -114,6 +117,9 @@ class ModelV2(pydantic_v2.BaseModel):
     confloat: pydantic_v2.confloat(ge=0)  # type: ignore[valid-type]
 
     conint: pydantic_v2.conint(ge=0)  # type: ignore[valid-type]
+
+    url: pydantic_v2.AnyUrl
+    http_url: pydantic_v2.HttpUrl
 
 
 serializer = partial(default_serializer, type_encoders=PydanticInitPlugin.encoders())
@@ -145,6 +151,8 @@ def model(pydantic_version: PydanticVersion) -> ModelV1 | ModelV2:
             confrozenset=frozenset([1]),
             conint=1,
             conlist=[1],
+            url="some://example.org/",
+            http_url="http://example.org/",
         )
     return ModelV2(
         path=Path("example"),
@@ -164,6 +172,8 @@ def model(pydantic_version: PydanticVersion) -> ModelV1 | ModelV2:
         confrozenset=frozenset([1]),
         conint=1,
         conlist=[1],
+        url="some://example.org/",
+        http_url="http://example.org/",
     )
 
 
@@ -185,6 +195,8 @@ def model(pydantic_version: PydanticVersion) -> ModelV1 | ModelV2:
         ("conset", {1}),
         ("confrozenset", frozenset([1])),
         ("conint", 1),
+        ("url", "some://example.org/"),
+        ("http_url", "http://example.org/"),
     ],
 )
 def test_default_serializer(model: ModelV1 | ModelV2, attribute_name: str, expected: Any) -> None:

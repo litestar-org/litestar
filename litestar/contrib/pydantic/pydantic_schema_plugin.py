@@ -188,6 +188,7 @@ if pydantic_v2 is not None:  # pragma: no cover
             pydantic_v2.NameEmail: Schema(
                 type=OpenAPIType.STRING, format=OpenAPIFormat.EMAIL, description="Name and email"
             ),
+            pydantic_v2.AnyUrl: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URL),
         }
     )
 
