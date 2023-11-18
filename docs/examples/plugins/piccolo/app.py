@@ -1,12 +1,12 @@
 from typing import List
 
+from litestar_piccolo import PiccoloDTO, PiccoloPlugin
 from piccolo.columns import Boolean, Varchar
 from piccolo.table import Table, create_db_tables
 
 from litestar import Litestar, MediaType, delete, get, patch, post
 from litestar.dto import DTOConfig, DTOData
 from litestar.exceptions import NotFoundException
-from litestar.plugins.piccolo import PiccoloDTO, PiccoloPlugin
 
 from .piccolo_conf import DB
 
@@ -32,7 +32,7 @@ class PatchDTO(PiccoloDTO[Task]):
     tags=["Task"],
 )
 async def tasks() -> List[Task]:
-    return await Task.select().order_by(Task.id, ascending=False)
+    return await Task.select().order_by(Task.id, ascending=False)  # type: ignore
 
 
 @post(
@@ -54,7 +54,7 @@ async def create_task(data: Task) -> Task:
     tags=["Task"],
 )
 async def update_task(task_id: int, data: DTOData[Task]) -> Task:
-    task = await Task.objects().get(Task.id == task_id)
+    task = await Task.objects().get(Task.id == task_id)  # type: ignore[attr-defined]
     if not task:
         raise NotFoundException("Task does not exist")
     result = data.update_instance(task)
@@ -64,7 +64,7 @@ async def update_task(task_id: int, data: DTOData[Task]) -> Task:
 
 @delete("/tasks/{task_id:int}", tags=["Task"])
 async def delete_task(task_id: int) -> None:
-    task = await Task.objects().get(Task.id == task_id)
+    task = await Task.objects().get(Task.id == task_id)  # type: ignore[attr-defined]
     if not task:
         raise NotFoundException("Task does not exist")
     await task.remove()

@@ -3,13 +3,13 @@ from typing import TYPE_CHECKING, List
 
 from home.piccolo_app import APP_CONFIG
 from home.tables import Task
+from litestar_piccolo import PiccoloPlugin
 from piccolo.apps.user.tables import BaseUser
 from piccolo_admin.endpoints import create_admin  # pyright: ignore
 from piccolo_api.session_auth.tables import SessionsBase
 
 from litestar import Litestar, asgi, delete, get, patch, post
 from litestar.exceptions import NotFoundException
-from litestar.plugins.piccolo import PiccoloPlugin
 
 if TYPE_CHECKING:
     from litestar.types import Receive, Scope, Send
@@ -22,7 +22,7 @@ async def admin(scope: "Scope", receive: "Receive", send: "Send") -> None:
 
 @get("/tasks", tags=["Task"])
 async def tasks() -> List[Task]:
-    return await Task.select().order_by(Task.id, ascending=False)
+    return await Task.select().order_by(Task.id, ascending=False)  # type: ignore
 
 
 @post("/tasks", tags=["Task"])
@@ -60,7 +60,7 @@ async def main() -> None:
 
     # Creating admin user
     if not await BaseUser.exists().where(BaseUser.email == "admin@test.com"):
-        user = BaseUser(
+        user = BaseUser(  # type: ignore
             username="piccolo",
             password="piccolo123",
             email="admin@test.com",
