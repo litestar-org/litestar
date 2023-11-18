@@ -8,6 +8,4 @@ except ImportError as e:
     raise MissingDependencyException("litestar-piccolo") from e
 
 
-
 __all__ = ("PiccoloDTO", "PiccoloSerializationPlugin", "PiccoloPlugin")
-
