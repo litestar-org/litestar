@@ -288,11 +288,10 @@ class ChannelsPlugin(InitPluginProtocol, AbstractAsyncContextManager):
             if self._handler_should_send_history:
                 await self.put_subscriber_history(subscriber, channels=channel_name, limit=self._history_limit)
 
-            # use the background task, so we can receive(), raising a WebSocketDisconnect
-            # when a connection closes, breaking the loop
+            # use the background task, so we can block on receive(), breaking the loop when a connection closes
             async with subscriber.run_in_background(on_event):
-                while True:
-                    await socket.receive()
+                while (await socket.receive())["type"] != "websocket.disconnect":
+                    continue
 
     def _create_ws_handler_func(self, channel_name: str) -> Callable[[WebSocket], Awaitable[None]]:
         async def ws_handler_func(socket: WebSocket) -> None:

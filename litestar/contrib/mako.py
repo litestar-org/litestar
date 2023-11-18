@@ -18,13 +18,12 @@ from litestar.template.base import (
 try:
     from mako.exceptions import TemplateLookupException as MakoTemplateNotFound  # type: ignore[import-untyped]
     from mako.lookup import TemplateLookup  # type: ignore[import-untyped]
+    from mako.template import Template as _MakoTemplate  # type: ignore[import-untyped]
 except ImportError as e:
     raise MissingDependencyException("mako") from e
 
 if TYPE_CHECKING:
     from pathlib import Path
-
-    from mako.template import Template as _MakoTemplate  # type: ignore[import-untyped]
 
 __all__ = ("MakoTemplate", "MakoTemplateEngine")
 
@@ -64,7 +63,7 @@ class MakoTemplate(TemplateProtocol):
 
 
 class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate, Mapping[str, Any]]):
-    """Mako based TemplateEngine."""
+    """Mako-based TemplateEngine."""
 
     def __init__(self, directory: Path | list[Path] | None = None, engine_instance: Any | None = None) -> None:
         """Initialize template engine.
@@ -120,6 +119,20 @@ class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate, Mapping[str, Any]]
             None
         """
         self._template_callables.append((key, template_callable))
+
+    @staticmethod
+    def render_string(template_string: str, context: Mapping[str, Any]) -> str:
+        """Render a template from a string with the given context.
+
+        Args:
+            template_string: The template string to render.
+            context: A dictionary of variables to pass to the template.
+
+        Returns:
+            The rendered template as a string.
+        """
+        template = _MakoTemplate(template_string)
+        return template.render(**context)  # type: ignore[no-any-return]
 
     @classmethod
     def from_template_lookup(cls, template_lookup: TemplateLookup) -> MakoTemplateEngine:
