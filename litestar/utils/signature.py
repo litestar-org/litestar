@@ -120,14 +120,16 @@ def _unwrap_implicit_optional_hints(defaults: dict[str, Any], hints: dict[str, A
             inner_args = get_args(unwrapped_inner)
 
             if not _is_any_optional(get_origin(unwrapped_inner), inner_args):
-                # this is where hint is like `Union[Union[str, int], NoneType]`, we flatten it
+                # this is where hint is like `Union[Annotated[Union[str, int], ...], NoneType]`, we add the outer union
+                # into the inner one, and re-wrap with Annotated
                 union_args = (*(inner_args or (unwrapped_inner,)), type(None))
                 # calling `__class_getitem__` directly as in earlier py vers it is a syntax error to unpack into
                 # the getitem brackets, e.g., Annotated[T, *meta].
                 hints[name] = Annotated.__class_getitem__((Union[union_args], *meta))  # type: ignore[attr-defined]
                 continue
 
-            # this is where hint is like `Union[Union[str, NoneType], NoneType]`, we remove the redundant outer union
+            # this is where hint is like `Union[Annotated[Union[str, NoneType], ...], NoneType]`, we remove the
+            # redundant outer union
             hints[name] = args[0]
     return hints
 
