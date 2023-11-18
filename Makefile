@@ -6,7 +6,7 @@ SHELL := /bin/bash
 .DEFAULT_GOAL:=help
 .ONESHELL:
 USING_PDM		=	$(shell grep "tool.pdm" pyproject.toml && echo "yes")
-ENV_PREFIX		=	$(shell python3 -c "if __import__('pathlib').Path('.venv/bin/pip').exists(): print('.venv/bin/')")
+ENV_PREFIX		=  .venv/bin/
 VENV_EXISTS		=	$(shell python3 -c "if __import__('pathlib').Path('.venv/bin/activate').exists(): print('yes')")
 PDM_OPTS 		?=
 PDM 			?= 	pdm $(PDM_OPTS)
@@ -23,7 +23,7 @@ upgrade:       										## Upgrade all dependencies to the latest stable versio
 	@echo "=> Updating all dependencies"
 	@if [ "$(USING_PDM)" ]; then $(PDM) update; fi
 	@echo "=> Dependencies Updated"
-	@$(ENV_PREFIX)pre-commit autoupdate
+	@$(PDM) run pre-commit autoupdate
 	@echo "=> Updated Pre-commit"
 
 # =============================================================================
@@ -33,16 +33,17 @@ upgrade:       										## Upgrade all dependencies to the latest stable versio
 install-pdm: 										## Install latest version of PDM
 	@curl -sSLO https://pdm.fming.dev/install-pdm.py && \
 	curl -sSL https://pdm.fming.dev/install-pdm.py.sha256 | shasum -a 256 -c - && \
-	python3 install-pdm.py
+	python3 install-pdm.py && \
+	rm install-pdm.py
 
 .PHONY: install
-install:											## Install the project, dependencies, and pre-commit for local development
+install: clean										## Install the project, dependencies, and pre-commit for local development
 	@if ! $(PDM) --version > /dev/null; then echo '=> Installing PDM'; $(MAKE) install-pdm; fi
 	@if [ "$(VENV_EXISTS)" ]; then echo "=> Removing existing virtual environment"; fi
 	if [ "$(VENV_EXISTS)" ]; then $(MAKE) destroy; fi
 	if [ "$(VENV_EXISTS)" ]; then $(MAKE) clean; fi
-	@if [ "$(USING_PDM)" ]; then $(PDM) config venv.in_project true && python3 -m venv --copies .venv && . $(ENV_PREFIX)/activate && $(ENV_PREFIX)/pip install --quiet -U wheel setuptools cython pip; fi
-	@if [ "$(USING_PDM)" ]; then $(PDM) install -G:all; fi
+	@if [ "$(USING_PDM)" ]; then $(PDM) config venv.in_project true && python3 -m venv --copies .venv && . $(ENV_PREFIX)/activate && $(ENV_PREFIX)/pip install --quiet -U wheel setuptools cython mypy pip; fi
+	@if [ "$(USING_PDM)" ]; then $(PDM) install -dG:all; fi
 	@echo "=> Install complete! Note: If you want to re-install re-run 'make install'"
 
 .PHONY: clean
@@ -77,19 +78,19 @@ lock:                                             ## Rebuild lockfiles from scra
 .PHONY: mypy
 mypy:                                               ## Run mypy
 	@echo "=> Running mypy"
-	@$(ENV_PREFIX)dmypy run
+	@$(PDM) run dmypy run
 	@echo "=> mypy complete"
 
 .PHONY: mypy-nocache
 mypy-nocache:                                       ## Run Mypy without cache
 	@echo "=> Running mypy without a cache"
-	@$(ENV_PREFIX)dmypy run -- --cache-dir=/dev/null
+	@$(PDM) run dmypy run -- --cache-dir=/dev/null
 	@echo "=> mypy complete"
 
 .PHONY: pyright
 pyright:                                            ## Run pyright
 	@echo "=> Running pyright"
-	@$(ENV_PREFIX)pyright
+	@$(PDM) run pyright
 	@echo "=> pyright complete"
 
 .PHONY: type-check
@@ -98,7 +99,7 @@ type-check: mypy pyright                            ## Run all type checking
 .PHONY: pre-commit
 pre-commit: 										## Runs pre-commit hooks; includes ruff formatting and linting, codespell
 	@echo "=> Running pre-commit process"
-	@$(ENV_PREFIX)pre-commit run --all-files
+	@$(PDM) run pre-commit run --all-files
 	@echo "=> Pre-commit complete"
 
 .PHONY: lint
@@ -107,20 +108,20 @@ lint: pre-commit type-check 						## Run all linting
 .PHONY: coverage
 coverage:  											## Run the tests and generate coverage report
 	@echo "=> Running tests with coverage"
-	@$(ENV_PREFIX)pytest tests --cov -n auto
-	@$(ENV_PREFIX)coverage html
-	@$(ENV_PREFIX)coverage xml
+	@$(PDM) run pytest tests --cov -n auto
+	@$(PDM) run coverage html
+	@$(PDM) run coverage xml
 	@echo "=> Coverage report generated"
 
 .PHONY: test
 test:  												## Run the tests
 	@echo "=> Running test cases"
-	@$(ENV_PREFIX)pytest tests -n auto
+	@$(PDM) run pytest tests
 	@echo "=> Tests complete"
 
 .PHONY: test-examples
 test-examples:            			              	## Run the examples tests
-	pytest docs/examples
+	@$(PDM) run pytest docs/examples
 
 .PHONY: test-all
 test-all: test test-examples 						## Run all tests
@@ -130,7 +131,7 @@ check-all: lint test-all coverage                   ## Run all linting, tests, a
 
 .PHONY: sourcery
 sourcery:                                           ## Run sourcery AI
-	pdm run sourcery review --fix .
+	@$(PDM) run sourcery review --fix .
 
 # =============================================================================
 # Docs
@@ -148,16 +149,16 @@ docs-clean: 										## Dump the existing built docs
 
 docs-serve: docs-clean 								## Serve the docs locally
 	@echo "=> Serving documentation"
-	$(ENV_PREFIX)sphinx-autobuild docs docs/_build/ -j auto --watch polyfactory --watch docs --watch tests --watch CONTRIBUTING.rst --port 8002
+	$(PDM) run sphinx-autobuild docs docs/_build/ -j auto --watch polyfactory --watch docs --watch tests --watch CONTRIBUTING.rst --port 8002
 
 docs: docs-clean 									## Dump the existing built docs and rebuild them
 	@echo "=> Building documentation"
-	@$(ENV_PREFIX)sphinx-build -M html docs docs/_build/ -E -a -j auto --keep-going
+	@$(PDM) run sphinx-build -M html docs docs/_build/ -E -a -j auto --keep-going
 
 .PHONY: docs-linkcheck
 docs-linkcheck: 									## Run the link check on the docs
-	sphinx-build -b linkcheck ./docs ./docs/_build -D linkcheck_ignore='http://.*','https://.*'
+	@$(PDM) run sphinx-build -b linkcheck ./docs ./docs/_build -D linkcheck_ignore='http://.*','https://.*'
 
 .PHONY: docs-linkcheck-full
 docs-linkcheck-full: 									## Run the full link check on the docs
-	sphinx-build -b linkcheck ./docs ./docs/_build -D linkcheck_anchors=0
+	@$(PDM) run sphinx-build -b linkcheck ./docs ./docs/_build -D linkcheck_anchors=0
