@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import inspect
+import sys
 from inspect import Parameter
 from typing import Any, List, Optional, TypeVar, Union
 
@@ -68,6 +69,7 @@ def test_get_fn_type_hints_with_none_default() -> None:
         f: Union[str, None] = None,
         g: Union[str, int, None] = None,
         h: Optional[Union[str, int]] = None,
+        i: Union[str, int] = None,  # type: ignore[assignment]  # noqa: RUF013  # linters don't like, but we support it
     ) -> None:
         ...
 
@@ -81,6 +83,7 @@ def test_get_fn_type_hints_with_none_default() -> None:
         "f": Union[str, NoneType],
         "g": Union[str, int, NoneType],
         "h": Union[str, int, NoneType],
+        "i": Union[str, int, NoneType] if sys.version_info < (3, 11) else Union[str, int],
         "return": NoneType,
     }
 

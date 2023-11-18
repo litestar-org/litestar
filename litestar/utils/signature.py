@@ -62,7 +62,7 @@ def _unwrap_implicit_optional_hints(defaults: dict[str, Any], hints: dict[str, A
         Mapping of names to types.
     """
 
-    def _is_two_arg_optional(origin: Any, args: Any) -> bool:
+    def _is_two_arg_optional(origin_: Any, args_: Any) -> bool:
         """Check if a type is a two-argument optional type.
 
         If the type has been wrapped in `Optional` by `get_type_hints()` it will always be a union of a type and
@@ -70,9 +70,9 @@ def _unwrap_implicit_optional_hints(defaults: dict[str, Any], hints: dict[str, A
 
         See: https://github.com/litestar-org/litestar/pull/2516
         """
-        return origin is Union and len(args) == 2 and args[1] is type(None)
+        return origin_ is Union and len(args_) == 2 and args_[1] is type(None)
 
-    def _is_any_optional(origin: Any, args: Any) -> bool:
+    def _is_any_optional(args_: tuple[Any, ...]) -> bool:
         """Detect if a type is a union with `NoneType`.
 
         After detecting that a type is a two-argument optional type, this function can be used to detect if the
@@ -80,7 +80,7 @@ def _unwrap_implicit_optional_hints(defaults: dict[str, Any], hints: dict[str, A
 
         We only want to perform the unwrapping of the optional union if the inner type is optional as well.
         """
-        return origin is Union and any(arg is type(None) for arg in args)
+        return any(arg is type(None) for arg in args_)
 
     for name, default in defaults.items():
         if default is not None:
@@ -92,9 +92,17 @@ def _unwrap_implicit_optional_hints(defaults: dict[str, Any], hints: dict[str, A
 
         if _is_two_arg_optional(origin, args):
             unwrapped_inner, _, _ = unwrap_annotation(args[0])
-            if not _is_any_optional(get_origin(unwrapped_inner), get_args(unwrapped_inner)):
+
+            if get_origin(unwrapped_inner) is not Union:
+                # this is where hint is like `Union[str, NoneType]`, we keep it as is
                 continue
 
+            if not _is_any_optional(inner_args := get_args(unwrapped_inner)):
+                # this is where hint is like `Union[Union[str, int], NoneType]`, we flatten it
+                hints[name] = Union[(*inner_args, type(None))]  # pyright: ignore
+                continue
+
+            # this is where hint is like `Union[Union[str, NoneType], NoneType]`, we remove the redundant outer union
             hints[name] = args[0]
     return hints
 
