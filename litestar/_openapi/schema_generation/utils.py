@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from enum import Enum
 from typing import TYPE_CHECKING, Any, Mapping
 
@@ -15,6 +16,7 @@ __all__ = (
     "_type_or_first_not_none_inner_type",
     "_should_create_enum_schema",
     "_should_create_literal_schema",
+    "_get_normalized_schema_key",
 )
 
 
@@ -79,6 +81,25 @@ def _should_create_literal_schema(field_definition: FieldDefinition) -> bool:
         field_definition.is_literal
         or field_definition.is_optional
         and all(inner.is_literal for inner in field_definition.inner_types if not inner.is_none_type)
+    )
+
+
+TYPE_NAME_NORMALIZATION_SUB_REGEX = re.compile(r"[^a-zA-Z0-9]+")
+TYPE_NAME_NORMALIZATION_TRIM_REGEX = re.compile(r"^(_+class_+|_+)|_+$")
+
+
+def _get_normalized_schema_key(type_annotation_str: str) -> str:
+    """Normalize a type annotation, replacing all non-alphanumeric with underscores. Existing underscores will be left as-is
+
+    Args:
+        type_annotation_str (str): A string representing a type annotation (i.e. 'typing.Dict[str, typing.Any]' or '<class 'model.Foo'>')
+
+    Returns:
+        str: A normalized version of the input string
+    """
+    # Use a regular expression to replace non-alphanumeric characters with underscores
+    return re.sub(
+        TYPE_NAME_NORMALIZATION_TRIM_REGEX, "", re.sub(TYPE_NAME_NORMALIZATION_SUB_REGEX, "_", type_annotation_str)
     )
 
 

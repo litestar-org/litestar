@@ -120,7 +120,10 @@ def test_classic_pagination_openapi_schema(paginator: Any) -> None:
         assert spec == {
             "schema": {
                 "properties": {
-                    "items": {"items": {"$ref": "#/components/schemas/DataclassPerson"}, "type": "array"},
+                    "items": {
+                        "items": {"$ref": "#/components/schemas/tests_models_DataclassPerson"},
+                        "type": "array",
+                    },
                     "page_size": {"type": "integer", "description": "Number of items per page."},
                     "current_page": {"type": "integer", "description": "Current page number."},
                     "total_pages": {"type": "integer", "description": "Total number of pages."},
@@ -174,7 +177,10 @@ def test_limit_offset_pagination_openapi_schema(paginator: Any) -> None:
         assert spec == {
             "schema": {
                 "properties": {
-                    "items": {"items": {"$ref": "#/components/schemas/DataclassPerson"}, "type": "array"},
+                    "items": {
+                        "items": {"$ref": "#/components/schemas/tests_models_DataclassPerson"},
+                        "type": "array",
+                    },
                     "limit": {"type": "integer", "description": "Maximal number of items to send."},
                     "offset": {"type": "integer", "description": "Offset from the beginning of the query."},
                     "total": {"type": "integer", "description": "Total number of items."},
@@ -251,7 +257,10 @@ def test_cursor_pagination_openapi_schema(paginator: Any) -> None:
         assert spec == {
             "schema": {
                 "properties": {
-                    "items": {"items": {"$ref": "#/components/schemas/DataclassPerson"}, "type": "array"},
+                    "items": {
+                        "items": {"$ref": "#/components/schemas/tests_models_DataclassPerson"},
+                        "type": "array",
+                    },
                     "cursor": {
                         "type": "string",
                         "description": "Unique ID, designating the last identifier in the given data set. This value can be used to request the 'next' batch of records.",

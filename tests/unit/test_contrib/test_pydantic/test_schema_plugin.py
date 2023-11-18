@@ -10,8 +10,8 @@ from typing_extensions import Annotated
 
 from litestar._openapi.schema_generation.schema import (
     SchemaCreator,
-    _get_type_schema_name,
 )
+from litestar._openapi.schema_generation.utils import _get_normalized_schema_key
 from litestar.contrib.pydantic.pydantic_schema_plugin import PydanticSchemaPlugin
 from litestar.openapi.spec import OpenAPIType
 from litestar.openapi.spec.schema import Schema
@@ -41,7 +41,7 @@ def test_schema_generation_with_generic_classes(model: Type[Union[PydanticV1Gene
     schemas: Dict[str, Schema] = {}
     SchemaCreator(schemas=schemas, plugins=[PydanticSchemaPlugin()]).for_field_definition(field_definition)
 
-    name = _get_type_schema_name(field_definition)
+    name = _get_normalized_schema_key(str(field_definition.annotation))
     properties = schemas[name].properties
     expected_foo_schema = Schema(type=OpenAPIType.INTEGER)
     expected_optional_foo_schema = Schema(one_of=[Schema(type=OpenAPIType.NULL), Schema(type=OpenAPIType.INTEGER)])

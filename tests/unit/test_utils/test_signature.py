@@ -3,13 +3,12 @@
 from __future__ import annotations
 
 import inspect
-import sys
 from inspect import Parameter
 from types import ModuleType
 from typing import Any, Callable, List, Optional, TypeVar, Union
 
 import pytest
-from typing_extensions import Annotated, NotRequired, Required, TypedDict, get_type_hints, get_args
+from typing_extensions import Annotated, NotRequired, Required, TypedDict, get_args, get_type_hints
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.file_system import BaseLocalFileSystem
@@ -60,21 +59,26 @@ def test_get_fn_type_hints_class_no_init() -> None:
     assert get_fn_type_hints(C) == {}
 
 
-@pytest.mark.parametrize(("hint",), [
-    ("Optional[str]",),
-    ("Union[str, None]",),
-    ("Union[str, int, None]",),
-    ("Optional[Union[str, int]]",),
-    ("Union[str, int]",),
-    ("str",),
-])
+@pytest.mark.parametrize(
+    ("hint",),
+    [
+        ("Optional[str]",),
+        ("Union[str, None]",),
+        ("Union[str, int, None]",),
+        ("Optional[Union[str, int]]",),
+        ("Union[str, int]",),
+        ("str",),
+    ],
+)
 def test_get_fn_type_hints_with_none_default(hint: str, create_module: Callable[[str], ModuleType]) -> None:
-    mod = create_module(f"""
+    mod = create_module(
+        f"""
 from typing import *
 from typing_extensions import Annotated
 
 def fn(plain: {hint} = None, annotated: Annotated[{hint}, ...] = None) -> None: ...
-    """)
+    """
+    )
     hints = get_fn_type_hints(mod.fn)
     assert hints["plain"] == get_args(hints["annotated"])[0]
 

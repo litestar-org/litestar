@@ -43,12 +43,13 @@ from litestar._openapi.schema_generation.constrained_fields import (
     create_string_constrained_field_schema,
 )
 from litestar._openapi.schema_generation.utils import (
+    _get_normalized_schema_key,
     _should_create_enum_schema,
     _should_create_literal_schema,
     _type_or_first_not_none_inner_type,
     get_formatted_examples,
 )
-from litestar.datastructures.upload_file import UploadFile
+from litestar.datastructures import UploadFile
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec import Reference
 from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
@@ -56,7 +57,6 @@ from litestar.openapi.spec.schema import Schema, SchemaDataContainer
 from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
 from litestar.params import BodyKwarg, ParameterKwarg
 from litestar.plugins import OpenAPISchemaPlugin
-from litestar.serialization import encode_json
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
 from litestar.utils.helpers import get_name
@@ -652,15 +652,11 @@ class SchemaCreator:
             schema.examples = get_formatted_examples(field, create_examples_for_field(field))
 
         if schema.title and schema.type in (OpenAPIType.OBJECT, OpenAPIType.ARRAY):
-            if schema.title in self.schemas and hash(self.schemas[schema.title]) != hash(schema):
-                raise ImproperlyConfiguredException(
-                    f"Two different schemas with the title {schema.title} have been defined.\n\n"
-                    f"first: {encode_json(self.schemas[schema.title].to_schema()).decode()}\n"
-                    f"second: {encode_json(schema.to_schema()).decode()}\n\n"
-                    f"To fix this issue, either rename the base classes from which these titles are derived or manually"
-                    f"set a 'title' kwarg in the route handler."
-                )
+            class_name = _get_normalized_schema_key(str(field.annotation))
 
-            self.schemas[schema.title] = schema
-            return Reference(ref=f"#/components/schemas/{schema.title}")
+            if class_name in self.schemas:
+                return Reference(ref=f"#/components/schemas/{class_name}", description=schema.description)
+
+            self.schemas[class_name] = schema
+            return Reference(ref=f"#/components/schemas/{class_name}")
         return schema
