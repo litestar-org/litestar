@@ -5,10 +5,11 @@ from __future__ import annotations
 import inspect
 import sys
 from inspect import Parameter
-from typing import Any, List, Optional, TypeVar, Union
+from types import ModuleType
+from typing import Any, Callable, List, Optional, TypeVar, Union
 
 import pytest
-from typing_extensions import Annotated, NotRequired, Required, TypedDict, get_type_hints
+from typing_extensions import Annotated, NotRequired, Required, TypedDict, get_type_hints, get_args
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.file_system import BaseLocalFileSystem
@@ -59,33 +60,23 @@ def test_get_fn_type_hints_class_no_init() -> None:
     assert get_fn_type_hints(C) == {}
 
 
-def test_get_fn_type_hints_with_none_default() -> None:
-    def fn(
-        a: Annotated[Optional[str], ...] = None,
-        b: Annotated[Union[str, None], ...] = None,
-        c: Annotated[Union[str, int, None], ...] = None,
-        d: Annotated[Optional[Union[str, int]], ...] = None,
-        e: Optional[str] = None,
-        f: Union[str, None] = None,
-        g: Union[str, int, None] = None,
-        h: Optional[Union[str, int]] = None,
-        i: Union[str, int] = None,  # type: ignore[assignment]  # noqa: RUF013  # linters don't like, but we support it
-    ) -> None:
-        ...
+@pytest.mark.parametrize(("hint",), [
+    ("Optional[str]",),
+    ("Union[str, None]",),
+    ("Union[str, int, None]",),
+    ("Optional[Union[str, int]]",),
+    ("Union[str, int]",),
+    ("str",),
+])
+def test_get_fn_type_hints_with_none_default(hint: str, create_module: Callable[[str], ModuleType]) -> None:
+    mod = create_module(f"""
+from typing import *
+from typing_extensions import Annotated
 
-    hints = get_fn_type_hints(fn)
-    assert hints == {
-        "a": Annotated[Union[str, NoneType], ...],
-        "b": Annotated[Union[str, NoneType], ...],
-        "c": Annotated[Union[str, int, NoneType], ...],
-        "d": Annotated[Union[str, int, NoneType], ...],
-        "e": Union[str, NoneType],
-        "f": Union[str, NoneType],
-        "g": Union[str, int, NoneType],
-        "h": Union[str, int, NoneType],
-        "i": Union[str, int, NoneType] if sys.version_info < (3, 11) else Union[str, int],
-        "return": NoneType,
-    }
+def fn(plain: {hint} = None, annotated: Annotated[{hint}, ...] = None) -> None: ...
+    """)
+    hints = get_fn_type_hints(mod.fn)
+    assert hints["plain"] == get_args(hints["annotated"])[0]
 
 
 class _TD(TypedDict):
