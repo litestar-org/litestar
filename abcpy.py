@@ -144,8 +144,10 @@ def v1_model_info(model: str) -> None:
 )
 def admin_add_key(id: str) -> dict[str, str]:
     key_gen = f"ht-{secrets.token_urlsafe(35)}"
-    key_check = check_id_key(id)
-    if not key_check:
+    if key_check := check_id_key(id):
+        """Returns that a key already exists for an ID."""
+        return {"error": "The key for the specified ID already exists."}
+    else:
         keys.append({"id": id, "key": key_gen})
 
         with open("data/keys.json", "w") as keysFile:
@@ -153,9 +155,6 @@ def admin_add_key(id: str) -> dict[str, str]:
 
         """Returns that the key was generated along side the key."""
         return {"success": "Successfully generated key.", "api_key": key_gen}
-    else:
-        """Returns that a key already exists for an ID."""
-        return {"error": "The key for the specified ID already exists."}
 
 
 @litestar.route(
@@ -164,15 +163,15 @@ def admin_add_key(id: str) -> dict[str, str]:
     http_method=["GET", "POST", "DELETE", "PATCH", "PUT"],
 )
 def admin_check_key(id: str) -> dict[str, str]:
-    key_check = check_id_key(id)
-    if not key_check:
-        """Returns if a key is not present."""
-        return {"present": False}
-    else:
+    if key_check := check_id_key(id):
         for data in keylist["keys"]:
             if data["id"] == id:
                 """Returns if a key is present."""
                 return {"present": True, "api_key": data["key"]}
+
+    else:
+        """Returns if a key is not present."""
+        return {"present": False}
 
 
 @litestar.route(
@@ -181,11 +180,7 @@ def admin_check_key(id: str) -> dict[str, str]:
     http_method=["GET", "POST", "DELETE", "PATCH", "PUT"],
 )
 def admin_revoke_key(id: str) -> dict[str, str]:
-    key_check = check_id_key(id)
-    if not key_check:
-        """Returns if a key does not exist for an ID."""
-        return {"error": "The key for the specified ID does not exist."}
-    else:
+    if key_check := check_id_key(id):
         cooldown_info = next((info for info in keylist if info[0] == id), None)
 
         keys.remove({"id": id, "key": cooldown_info[1]})
@@ -195,6 +190,9 @@ def admin_revoke_key(id: str) -> dict[str, str]:
 
         """Returns if the specified ID's key was deleted."""
         return {"success": "Successfully revoked key."}
+    else:
+        """Returns if a key does not exist for an ID."""
+        return {"error": "The key for the specified ID does not exist."}
 
 
 @litestar.post(sync_to_thread=True, path="/rp/chat/completions")
@@ -331,7 +329,8 @@ def v1_chat_completions(request: Request, data: dict) -> dict:
     completion_timestamp = int(time.time())
 
     if stream:
-        json_data = {
+        """Returns the streaming response."""
+        return {
             "id": f"chatcmpl-{completion_id}",
             "object": "chat.completion.chunk",
             "created": completion_timestamp,
@@ -346,38 +345,33 @@ def v1_chat_completions(request: Request, data: dict) -> dict:
                 }
             ],
         }
+    prompt_tokens, _ = tokenize(text=messages[0]["content"], model="gpt-4")
+    completion_tokens, _ = tokenize(text=response["choices"][0]["delta"]["content"], model="gpt-4")
 
-        """Returns the streaming response."""
-        return json_data
+    json_data = {
+        "id": f"chatcmpl-{completion_id}",
+        "object": "chat.completion",
+        "created": completion_timestamp,
+        "model": model,
+        "choices": [
+            {
+                "index": 0,
+                "message": {
+                    "role": "assistant",
+                    "content": response["choices"][0]["delta"]["content"],
+                },
+                "finish_reason": "stop",
+            }
+        ],
+        "usage": {
+            "prompt_tokens": prompt_tokens,
+            "completion_tokens": completion_tokens,
+            "total_tokens": prompt_tokens + completion_tokens,
+        },
+    }
 
-    if not stream:
-        prompt_tokens, _ = tokenize(text=messages[0]["content"], model="gpt-4")
-        completion_tokens, _ = tokenize(text=response["choices"][0]["delta"]["content"], model="gpt-4")
-
-        json_data = {
-            "id": f"chatcmpl-{completion_id}",
-            "object": "chat.completion",
-            "created": completion_timestamp,
-            "model": model,
-            "choices": [
-                {
-                    "index": 0,
-                    "message": {
-                        "role": "assistant",
-                        "content": response["choices"][0]["delta"]["content"],
-                    },
-                    "finish_reason": "stop",
-                }
-            ],
-            "usage": {
-                "prompt_tokens": prompt_tokens,
-                "completion_tokens": completion_tokens,
-                "total_tokens": prompt_tokens + completion_tokens,
-            },
-        }
-
-        """Returns the normal response."""
-        return json_data
+    """Returns the normal response."""
+    return json_data
 
 
 # Defines the app variable
