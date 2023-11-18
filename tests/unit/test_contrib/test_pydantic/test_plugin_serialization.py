@@ -151,8 +151,8 @@ def model(pydantic_version: PydanticVersion) -> ModelV1 | ModelV2:
             confrozenset=frozenset([1]),
             conint=1,
             conlist=[1],
-            url="some://example.org/",
-            http_url="http://example.org/",
+            url="some://example.org/",  # type: ignore[arg-type]
+            http_url="http://example.org/",  # type: ignore[arg-type]
         )
     return ModelV2(
         path=Path("example"),
@@ -172,8 +172,8 @@ def model(pydantic_version: PydanticVersion) -> ModelV1 | ModelV2:
         confrozenset=frozenset([1]),
         conint=1,
         conlist=[1],
-        url="some://example.org/",
-        http_url="http://example.org/",
+        url="some://example.org/",  # type: ignore[arg-type]
+        http_url="http://example.org/",  # type: ignore[arg-type]
     )
 
 

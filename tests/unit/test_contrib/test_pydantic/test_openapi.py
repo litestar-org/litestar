@@ -613,5 +613,5 @@ class Model(BaseModel):
 def test_create_for_url_v2(field_type: Any) -> None:
     field_definition = FieldDefinition.from_annotation(field_type)
     schema = SchemaCreator(plugins=[PydanticSchemaPlugin()]).for_field_definition(field_definition)
-    assert schema.type == OpenAPIType.STRING
-    assert schema.format == OpenAPIFormat.URL
+    assert schema.type == OpenAPIType.STRING  # type: ignore[union-attr]
+    assert schema.format == OpenAPIFormat.URL  # type: ignore[union-attr]
