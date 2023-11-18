@@ -226,7 +226,8 @@ def test_create_success_response_with_response_class() -> None:
     assert isinstance(reference, Reference)
     key = reference.ref.split("/")[-1]
     assert isinstance(schemas[key], Schema)
-    assert key == DataclassPerson.__name__
+
+    assert key == "tests_models_DataclassPerson"
 
 
 def test_create_success_response_with_stream() -> None:

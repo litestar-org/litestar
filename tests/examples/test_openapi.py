@@ -19,7 +19,11 @@ def test_schema_generation() -> None:
                                 "description": "Request fulfilled, document follows",
                                 "headers": {},
                                 "content": {
-                                    "application/json": {"schema": {"$ref": "#/components/schemas/IdContainer"}}
+                                    "application/json": {
+                                        "schema": {
+                                            "$ref": "#/components/schemas/docs_examples_openapi_customize_pydantic_model_name_IdModel"
+                                        }
+                                    }
                                 },
                             }
                         },
@@ -29,7 +33,7 @@ def test_schema_generation() -> None:
             },
             "components": {
                 "schemas": {
-                    "IdContainer": {
+                    "docs_examples_openapi_customize_pydantic_model_name_IdModel": {
                         "properties": {"id": {"type": "string", "format": "uuid", "description": "Any UUID string"}},
                         "type": "object",
                         "required": ["id"],
