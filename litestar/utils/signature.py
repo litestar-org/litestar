@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
     from litestar.types import AnyCallable
 
-if sys.version_info < (3, 11):  # pragma: no cover
+if sys.version_info < (3, 11):
     from typing import _get_defaults  # type: ignore[attr-defined]
 else:
 
