@@ -100,9 +100,7 @@ def _get_normalized_schema_key(type_annotation_str: str) -> str:
         A normalized version of the input string
     """
     # Use a regular expression to replace non-alphanumeric characters with underscores
-    return TYPE_NAME_NORMALIZATION_TRIM_REGEX.sub(
-        "", TYPE_NAME_NORMALIZATION_SUB_REGEX.sub("_", type_annotation_str)
-    )
+    return TYPE_NAME_NORMALIZATION_TRIM_REGEX.sub("", TYPE_NAME_NORMALIZATION_SUB_REGEX.sub("_", type_annotation_str))
 
 
 def get_formatted_examples(field_definition: FieldDefinition, examples: Sequence[Example]) -> Mapping[str, Example]:
