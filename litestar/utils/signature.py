@@ -6,7 +6,7 @@ from copy import deepcopy
 from dataclasses import dataclass, replace
 from inspect import Signature, getmembers, isclass, ismethod
 from itertools import chain
-from typing import Any, Union
+from typing import TYPE_CHECKING, Any, Union
 
 from typing_extensions import Annotated, Self, get_args, get_origin, get_type_hints
 
@@ -16,7 +16,7 @@ from litestar.types import Empty
 from litestar.typing import FieldDefinition
 from litestar.utils.typing import unwrap_annotation
 
-if typing.TYPE_CHECKING:
+if TYPE_CHECKING:
     from typing import Sequence
 
     from litestar.types import AnyCallable
