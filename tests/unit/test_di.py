@@ -129,6 +129,14 @@ def test_async_callable_with_sync_to_thread_warns(sync_to_thread: bool) -> None:
         Provide(func, sync_to_thread=sync_to_thread)
 
 
+def test_generator_with_sync_to_thread_warns() -> None:
+    def func() -> Generator[int, None, None]:
+        yield 1
+
+    with pytest.warns(LitestarWarning, match="Use of generator"):
+        Provide(func, sync_to_thread=True)
+
+
 @pytest.mark.parametrize(
     ("dep", "exp"),
     [
