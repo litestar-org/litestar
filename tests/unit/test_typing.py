@@ -364,11 +364,14 @@ def test_field_definition_bound_type() -> None:
     assert FieldDefinition.from_annotation(T).bound_types is None
 
     bound_types = FieldDefinition.from_annotation(bound).bound_types
+
+    assert bound_types
     assert len(bound_types) == 1
     assert isinstance(bound_types[0], FieldDefinition)
     assert bound_types[0].raw is Foo
 
     bound_types_union = FieldDefinition.from_annotation(multiple_bounds).bound_types
+    assert bound_types_union
     assert len(bound_types_union) == 2
     assert bound_types_union[0].raw is Foo
     assert bound_types_union[1].raw is Bar
@@ -387,15 +390,18 @@ def test_nested_generic_types() -> None:
         pass
 
     fd_simple = FieldDefinition.from_annotation(Foo)
+    assert fd_simple.generic_types
     assert len(fd_simple.generic_types) == 1
     assert fd_simple.generic_types[0].raw == T
 
     fd_union = FieldDefinition.from_annotation(Bar)
+    assert fd_union.generic_types
     assert len(fd_union.generic_types) == 2
     assert fd_union.generic_types[0].raw == T
     assert fd_union.generic_types[1].raw == V
 
     fd_nested = FieldDefinition.from_annotation(Baz)
+    assert fd_nested.generic_types
     assert len(fd_nested.generic_types) == 3
     assert fd_nested.generic_types[0].raw == T
     assert fd_nested.generic_types[1].raw == T
