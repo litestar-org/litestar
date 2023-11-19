@@ -183,17 +183,8 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
 
         Returns:
             The rendered template as a string.
-
-        Raises:
-            TemplateNotFoundException: if no template is found.
         """
-        try:
-            return self.engine.render_str(template_string, **context)  # type: ignore[no-any-return]
-        except MiniJinjaTemplateNotFound as err:
-            raise TemplateNotFoundException(
-                f"Error rendering template from string: {err}",
-                template_name="template_from_string",
-            ) from err
+        return self.engine.render_str(template_string, **context)  # type: ignore[no-any-return]
 
     @classmethod
     def from_environment(cls, minijinja_environment: Environment) -> MiniJinjaTemplateEngine:
