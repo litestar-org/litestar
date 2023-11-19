@@ -21,6 +21,7 @@ from litestar.utils.predicates import (
     is_generic,
     is_non_string_iterable,
     is_non_string_sequence,
+    is_union,
 )
 from litestar.utils.typing import (
     get_instantiable_origin,
@@ -125,7 +126,7 @@ def _traverse_metadata(
 
     Args:
         metadata: A list of metadata values from annotation, namely anything stored under Annotated[x, metadata...]
-        is_sequence_container: Whether or not the container is a sequence container (list, tuple etc...)
+        is_sequence_container: Whether the container is a sequence container (list, tuple etc...)
         extra: Extra key values to parse.
 
     Returns:
@@ -392,8 +393,8 @@ class FieldDefinition:
     def bound_types(self) -> tuple[FieldDefinition, ...] | None:
         """A tuple of bound types - if the annotation is a TypeVar with bound types, otherwise None."""
         if self.is_type_var and (bound := getattr(self.annotation, "__bound__", None)):
-            if is_non_string_sequence(bound):
-                return tuple(FieldDefinition.from_annotation(t) for t in bound)
+            if is_union(bound):
+                return tuple(FieldDefinition.from_annotation(t) for t in get_args(bound))
             return (FieldDefinition.from_annotation(bound),)
         return None
 
@@ -505,8 +506,11 @@ class FieldDefinition:
             if isinstance(kwargs.get("default"), (KwargDefinition, DependencyKwarg)):
                 kwargs["kwarg_definition"] = kwargs.pop("default")
             elif any(isinstance(v, (KwargDefinition, DependencyKwarg)) for v in metadata):
-                kwargs["kwarg_definition"] = next(
-                    v for v in metadata if isinstance(v, (KwargDefinition, DependencyKwarg))
+                kwargs["kwarg_definition"] = next(  # pragma: no cover
+                    # see https://github.com/nedbat/coveragepy/issues/475
+                    v
+                    for v in metadata
+                    if isinstance(v, (KwargDefinition, DependencyKwarg))
                 )
                 metadata = tuple(v for v in metadata if not isinstance(v, (KwargDefinition, DependencyKwarg)))
             elif (extra := kwargs.get("extra", {})) and "kwarg_definition" in extra:
@@ -517,7 +521,7 @@ class FieldDefinition:
                     name=kwargs.get("name", ""),
                     default=kwargs.get("default", Empty),
                     metadata=metadata,
-                    extra=kwargs.get("extra", {}),
+                    extra=kwargs.get("extra"),
                 )
 
         kwargs.setdefault("annotation", unwrapped)

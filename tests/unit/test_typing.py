@@ -2,12 +2,15 @@ from __future__ import annotations
 
 import sys
 from dataclasses import dataclass
-from typing import Any, ForwardRef, Generic, List, Optional, Tuple, Union
+from typing import Any, ForwardRef, Generic, List, Optional, Tuple, TypeVar, Union, get_type_hints
 
+import annotated_types
+import msgspec
 import pytest
-from typing_extensions import Annotated, TypedDict
+from typing_extensions import Annotated, NotRequired, Required, TypedDict
 
-from litestar.typing import FieldDefinition
+from litestar.params import DependencyKwarg, KwargDefinition, ParameterKwarg
+from litestar.typing import FieldDefinition, _unpack_predicate
 
 from .test_utils.test_signature import T, _check_field_definition, field_definition_int, test_type_hints
 
@@ -142,6 +145,25 @@ def test_field_definition_from_annotation(annotation: Any, expected: dict[str, A
     _check_field_definition(FieldDefinition.from_annotation(annotation), expected)
 
 
+def test_field_definition_kwarg_definition_from_extras() -> None:
+    kwarg_definition = KwargDefinition()
+    assert (
+        FieldDefinition.from_annotation(int, extra={"kwarg_definition": kwarg_definition}).kwarg_definition
+        is kwarg_definition
+    )
+
+
+@pytest.mark.parametrize("kwarg_definition", [KwargDefinition(), DependencyKwarg()])
+def test_field_definition_kwarg_definition_from_kwargs(kwarg_definition: KwargDefinition | DependencyKwarg) -> None:
+    assert FieldDefinition.from_annotation(int, kwarg_definition=kwarg_definition).kwarg_definition is kwarg_definition
+
+
+def test_field_definition_with_annotated_kwarg_definition() -> None:
+    kwarg_definition = KwargDefinition()
+    fd = FieldDefinition.from_annotation(Annotated[str, kwarg_definition])
+    assert fd.kwarg_definition is kwarg_definition
+
+
 def test_field_definition_from_union_annotation() -> None:
     """Test FieldDefinition.from_annotation for Union."""
     annotation = Union[int, List[int]]
@@ -267,6 +289,119 @@ def test_field_definition_equality() -> None:
     assert FieldDefinition.from_annotation(Optional[str]) == FieldDefinition.from_annotation(Union[str, None])
 
 
+def test_field_definition_hash() -> None:
+    assert hash(FieldDefinition.from_annotation(int)) == hash(FieldDefinition.from_annotation(int))
+    assert hash(FieldDefinition.from_annotation(Annotated[int, False])) == hash(
+        FieldDefinition.from_annotation(Annotated[int, False])
+    )
+    assert hash(FieldDefinition.from_annotation(Annotated[int, False])) != hash(
+        FieldDefinition.from_annotation(Annotated[int, True])
+    )
+    assert hash(FieldDefinition.from_annotation(Union[str, int])) != hash(
+        FieldDefinition.from_annotation(Union[int, str])
+    )
+
+
+def test_is_required() -> None:
+    class Foo(TypedDict):
+        required: Required[str]
+        not_required: NotRequired[str]
+
+    class Bar(msgspec.Struct):
+        unset: Union[str, msgspec.UnsetType] = msgspec.UNSET  # noqa: UP007
+        with_default: str = ""
+        with_none_default: Union[str, None] = None  # noqa: UP007
+
+    assert FieldDefinition.from_annotation(get_type_hints(Foo)["required"]).is_required is True
+    assert FieldDefinition.from_annotation(get_type_hints(Foo)["not_required"]).is_required is False
+    assert FieldDefinition.from_annotation(get_type_hints(Bar)["unset"]).is_required is False
+
+    assert (
+        FieldDefinition.from_kwarg(
+            name="foo", kwarg_definition=ParameterKwarg(required=False), annotation=str
+        ).is_required
+        is False
+    )
+    assert (
+        FieldDefinition.from_kwarg(
+            name="foo", kwarg_definition=ParameterKwarg(required=True), annotation=str
+        ).is_required
+        is True
+    )
+    assert (
+        FieldDefinition.from_kwarg(
+            name="foo", kwarg_definition=ParameterKwarg(required=None, default=""), annotation=str
+        ).is_required
+        is False
+    )
+    assert (
+        FieldDefinition.from_kwarg(
+            name="foo", kwarg_definition=ParameterKwarg(required=None), annotation=str
+        ).is_required
+        is True
+    )
+
+    assert FieldDefinition.from_annotation(Optional[str]).is_required is False
+    assert FieldDefinition.from_annotation(str).is_required is True
+
+    assert FieldDefinition.from_annotation(Any).is_required is False
+
+    assert FieldDefinition.from_annotation(get_type_hints(Bar)["with_default"]).is_required is True
+    assert FieldDefinition.from_annotation(get_type_hints(Bar)["with_none_default"]).is_required is False
+
+
+def test_field_definition_bound_type() -> None:
+    class Foo:
+        pass
+
+    class Bar:
+        pass
+
+    bound = TypeVar("bound", bound=Foo)
+    multiple_bounds = TypeVar("multiple_bounds", bound=Union[Foo, Bar])
+
+    assert FieldDefinition.from_annotation(str).bound_types is None
+    assert FieldDefinition.from_annotation(T).bound_types is None
+
+    bound_types = FieldDefinition.from_annotation(bound).bound_types
+    assert len(bound_types) == 1
+    assert isinstance(bound_types[0], FieldDefinition)
+    assert bound_types[0].raw is Foo
+
+    bound_types_union = FieldDefinition.from_annotation(multiple_bounds).bound_types
+    assert len(bound_types_union) == 2
+    assert bound_types_union[0].raw is Foo
+    assert bound_types_union[1].raw is Bar
+
+
+def test_nested_generic_types() -> None:
+    V = TypeVar("V")
+
+    class Foo(Generic[T]):
+        pass
+
+    class Bar(Generic[T, V]):
+        pass
+
+    class Baz(Generic[T], Bar[T, str]):
+        pass
+
+    fd_simple = FieldDefinition.from_annotation(Foo)
+    assert len(fd_simple.generic_types) == 1
+    assert fd_simple.generic_types[0].raw == T
+
+    fd_union = FieldDefinition.from_annotation(Bar)
+    assert len(fd_union.generic_types) == 2
+    assert fd_union.generic_types[0].raw == T
+    assert fd_union.generic_types[1].raw == V
+
+    fd_nested = FieldDefinition.from_annotation(Baz)
+    assert len(fd_nested.generic_types) == 3
+    assert fd_nested.generic_types[0].raw == T
+    assert fd_nested.generic_types[1].raw == T
+    assert fd_nested.generic_types[2].raw == str
+
+
 @dataclass
 class GenericDataclass(Generic[T]):
     foo: T
@@ -286,3 +421,30 @@ def test_field_definition_get_type_hints(annotation: Any, expected_type_hints: d
         FieldDefinition.from_annotation(annotation).get_type_hints(include_extras=True, resolve_generics=True)
         == expected_type_hints
     )
+
+
+@pytest.mark.parametrize(
+    ("annotation", "expected_type_hints"),
+    ((GenericDataclass[str], {"foo": T}), (GenericDataclass, {"foo": T}), (NormalDataclass, {"foo": int})),
+)
+def test_field_definition_get_type_hints_dont_resolve_generics(
+    annotation: Any, expected_type_hints: dict[str, Any]
+) -> None:
+    assert (
+        FieldDefinition.from_annotation(annotation).get_type_hints(include_extras=True, resolve_generics=False)
+        == expected_type_hints
+    )
+
+
+@pytest.mark.parametrize(
+    "predicate, expected_meta",
+    [
+        (annotated_types.LowerCase.__metadata__[0], {"lower_case": True}),
+        (annotated_types.UpperCase.__metadata__[0], {"upper_case": True}),
+        (annotated_types.IsAscii.__metadata__[0], {"pattern": "[[:ascii:]]"}),
+        (annotated_types.IsDigits.__metadata__[0], {"pattern": "[[:digit:]]"}),
+        (object(), {}),
+    ],
+)
+def test_unpack_predicate(predicate: Any, expected_meta: dict[str, Any]) -> None:
+    assert _unpack_predicate(predicate) == expected_meta
