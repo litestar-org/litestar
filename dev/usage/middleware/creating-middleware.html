@@ -1574,7 +1574,7 @@ and await it. This is what’s happening in the above example with: <code class=
 explore another example - redirecting the request to a different url from a middleware:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.types</span> <span class="kn">import</span> <span class="n">ASGIApp</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
 
-<span class="kn">from</span> <span class="nn">litestar.response</span> <span class="kn">import</span> <span class="n">Redirect</span>
+<span class="kn">from</span> <span class="nn">litestar.response.redirect</span> <span class="kn">import</span> <span class="n">ASGIRedirectResponse</span>
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Request</span>
 <span class="kn">from</span> <span class="nn">litestar.middleware.base</span> <span class="kn">import</span> <span class="n">MiddlewareProtocol</span>
 
@@ -1586,14 +1586,14 @@ explore another example - redirecting the request to a different url from a midd
 
     <span class="k">async</span> <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">Request</span><span class="p">(</span><span class="n">scope</span><span class="p">)</span><span class="o">.</span><span class="n">session</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">response</span> <span class="o">=</span> <span class="n">Redirect</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/login&quot;</span><span class="p">)</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">ASGIRedirectResponse</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/login&quot;</span><span class="p">)</span>
             <span class="k">await</span> <span class="n">response</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>As you can see in the above, given some condition (request.session being None) we create a
-<a class="reference internal" href="../../reference/response/index.html#litestar.response.Redirect" title="litestar.response.Redirect"><code class="xref py py-class docutils literal notranslate"><span class="pre">Redirect</span></code></a> and then await it. Otherwise, we await <code class="docutils literal notranslate"><span class="pre">self.app</span></code></p>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIRedirectResponse</span></code> and then await it. Otherwise, we await <code class="docutils literal notranslate"><span class="pre">self.app</span></code></p>
 </section>
 <section id="modifying-asgi-requests-and-responses-using-the-middlewareprotocol">
 <h3>Modifying ASGI Requests and Responses using the MiddlewareProtocol<a class="headerlink" href="#modifying-asgi-requests-and-responses-using-the-middlewareprotocol" title="Permalink to this heading">#</a></h3>
