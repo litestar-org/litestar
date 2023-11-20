@@ -226,7 +226,7 @@ def test_invalid_input_dataclass() -> None:
         assert data["extra"] == [
             {"message": "Expected `int`, got `str`", "key": "child.val", "source": "body"},
             {"message": "Expected `int`, got `str`", "key": "int_param", "source": "query"},
-            {"message": "Expected `int`, got `str`", "key": "length_param", "source": "query"},
+            {"message": "Expected `str` of length >= 2", "key": "length_param", "source": "query"},
             {"message": "Expected `int`, got `str`", "key": "int_header", "source": "header"},
             {"message": "Expected `int`, got `str`", "key": "int_cookie", "source": "cookie"},
         ]
@@ -271,7 +271,7 @@ def test_invalid_input_typed_dict() -> None:
         assert data["extra"] == [
             {"message": "Expected `int`, got `str`", "key": "child.val", "source": "body"},
             {"message": "Expected `int`, got `str`", "key": "int_param", "source": "query"},
-            {"message": "Expected `int`, got `str`", "key": "length_param", "source": "query"},
+            {"message": "Expected `str` of length >= 2", "key": "length_param", "source": "query"},
             {"message": "Expected `int`, got `str`", "key": "int_header", "source": "header"},
             {"message": "Expected `int`, got `str`", "key": "int_cookie", "source": "cookie"},
         ]
