@@ -85,7 +85,7 @@ def _should_create_literal_schema(field_definition: FieldDefinition) -> bool:
 
 
 TYPE_NAME_NORMALIZATION_SUB_REGEX = re.compile(r"[^a-zA-Z0-9]+")
-TYPE_NAME_NORMALIZATION_TRIM_REGEX = re.compile(r"^(_+class_+|_+)|(_+)$")
+TYPE_NAME_NORMALIZATION_TRIM_REGEX = re.compile(r"^_+(class_+)?|_+$")
 
 
 def _get_normalized_schema_key(type_annotation_str: str) -> str:
