@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
-from litestar.connection import ASGIConnection
 from litestar.enums import ScopeType
 from litestar.routes.base import BaseRoute
 
@@ -48,7 +47,6 @@ class ASGIRoute(BaseRoute):
         """
 
         if self.route_handler.resolve_guards():
-            connection = ASGIConnection["ASGIRouteHandler", Any, Any, Any](scope=scope, receive=receive)
-            await self.route_handler.authorize_connection(connection=connection)
+            await self.route_handler.authorize_connection(connection=scope["connection"])
 
         await self.route_handler.fn(scope=scope, receive=receive, send=send)

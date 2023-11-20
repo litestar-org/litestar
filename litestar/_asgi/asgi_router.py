@@ -49,13 +49,14 @@ def _set_scope_connection(scope: Scope, receive: Receive, send: Send) -> None:
     Returns:
         None
     """
-    from litestar.connection import ASGIConnection, Request, WebSocket
+    from litestar.connection import ASGIConnection
     from litestar.handlers import HTTPRouteHandler, WebsocketRouteHandler
 
-    if isinstance(scope["route_handler"], HTTPRouteHandler):
-        scope["connection"] = Request(scope=scope, receive=receive, send=send)
-    elif isinstance(scope["route_handler"], WebsocketRouteHandler):
-        scope["connection"] = WebSocket(scope=scope, receive=receive, send=send)
+    route_handler = scope.get("route_handler")
+    if isinstance(route_handler, HTTPRouteHandler):
+        scope["connection"] = scope["app"].request_class(scope=scope, receive=receive, send=send)
+    elif isinstance(route_handler, WebsocketRouteHandler):
+        scope["connection"] = scope["app"].websocket_class(scope=scope, receive=receive, send=send)
     else:
         scope["connection"] = ASGIConnection(scope=scope, receive=receive, send=send)
 
@@ -100,10 +101,13 @@ class ASGIRouter:
         """
         scope.setdefault("path_params", {})
         normalized_path = normalize_path(scope["path"])
-        asgi_app, scope["route_handler"], scope["path"], scope["path_params"] = self.handle_routing(
-            path=normalized_path, method=scope.get("method")
-        )
-        _set_scope_connection(scope=scope, receive=receive, send=send)
+        try:
+            asgi_app, scope["route_handler"], scope["path"], scope["path_params"] = self.handle_routing(
+                path=normalized_path, method=scope.get("method")
+            )
+        finally:
+            # even if handle routing raises 404 etc, we still want to set the connection on scope
+            _set_scope_connection(scope=scope, receive=receive, send=send)
         await asgi_app(scope, receive, send)
 
     @lru_cache(1024)  # noqa: B019

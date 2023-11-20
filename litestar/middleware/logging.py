@@ -29,7 +29,7 @@ __all__ = ("LoggingMiddleware", "LoggingMiddlewareConfig")
 
 
 if TYPE_CHECKING:
-    from litestar.connection import Request
+    from litestar.connection import ASGIConnection
     from litestar.types import (
         ASGIApp,
         Logger,
@@ -126,7 +126,7 @@ class LoggingMiddleware(AbstractMiddleware):
         Returns:
             None
         """
-        extracted_data = await self.extract_request_data(request=scope["app"].request_class(scope, receive))
+        extracted_data = await self.extract_request_data(request=scope["connection"])
         self.log_message(values=extracted_data)
 
     def log_response(self, scope: Scope) -> None:
@@ -163,7 +163,7 @@ class LoggingMiddleware(AbstractMiddleware):
             value = encode_json(value, serializer)
         return value.decode("utf-8", errors="backslashreplace") if isinstance(value, bytes) else value
 
-    async def extract_request_data(self, request: Request) -> dict[str, Any]:
+    async def extract_request_data(self, request: ASGIConnection) -> dict[str, Any]:
         """Create a dictionary of values for the message.
 
         Args:

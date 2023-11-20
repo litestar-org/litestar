@@ -4,7 +4,6 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Sequence
 
-from litestar.connection import ASGIConnection
 from litestar.enums import HttpMethod, ScopeType
 from litestar.middleware._utils import (
     build_exclude_path_pattern,
@@ -15,6 +14,7 @@ __all__ = ("AbstractAuthenticationMiddleware", "AuthenticationResult")
 
 
 if TYPE_CHECKING:
+    from litestar.connection import ASGIConnection
     from litestar.types import ASGIApp, Method, Receive, Scope, Scopes, Send
 
 
@@ -84,7 +84,7 @@ class AbstractAuthenticationMiddleware(ABC):
             scope=scope,
             scopes=self.scopes,
         ):
-            auth_result = await self.authenticate_request(ASGIConnection(scope))
+            auth_result = await self.authenticate_request(scope["connection"])
             scope["user"] = auth_result.user
             scope["auth"] = auth_result.auth
         await self.app(scope, receive, send)

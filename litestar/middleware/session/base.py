@@ -12,7 +12,6 @@ from typing import (
     cast,
 )
 
-from litestar.connection import ASGIConnection
 from litestar.enums import ScopeType
 from litestar.middleware.base import AbstractMiddleware, DefineMiddleware
 from litestar.serialization import decode_json, encode_json
@@ -22,6 +21,7 @@ __all__ = ("BaseBackendConfig", "BaseSessionBackend", "SessionMiddleware")
 
 
 if TYPE_CHECKING:
+    from litestar.connection import ASGIConnection
     from litestar.types import ASGIApp, Message, Receive, Scope, Scopes, ScopeSession, Send
 
 ONE_DAY_IN_SECONDS = 60 * 60 * 24
@@ -239,7 +239,7 @@ class SessionMiddleware(AbstractMiddleware, Generic[BaseSessionBackendT]):
             None
         """
 
-        connection = ASGIConnection[Any, Any, Any, Any](scope, receive=receive, send=send)
+        connection = scope["connection"]
         scope["session"] = await self.backend.load_from_connection(connection)
 
         await self.app(scope, receive, self.create_send_wrapper(connection))
