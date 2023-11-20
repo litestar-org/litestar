@@ -3,11 +3,12 @@ from typing import List, Optional
 
 import pytest
 from attr import define
-from typing_extensions import TypedDict
+from typing_extensions import Annotated, TypedDict
 
 from litestar import get, post
 from litestar._signature import SignatureModel
 from litestar.di import Provide
+from litestar.enums import ParamType
 from litestar.exceptions import ImproperlyConfiguredException, ValidationException
 from litestar.params import Dependency, Parameter
 from litestar.status_codes import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
@@ -225,7 +226,7 @@ def test_invalid_input_dataclass() -> None:
         assert data["extra"] == [
             {"message": "Expected `int`, got `str`", "key": "child.val", "source": "body"},
             {"message": "Expected `int`, got `str`", "key": "int_param", "source": "query"},
-            {"message": "Expected `int`, got `str`", "key": "length_param", "source": "query"},
+            {"message": "Expected `str` of length >= 2", "key": "length_param", "source": "query"},
             {"message": "Expected `int`, got `str`", "key": "int_header", "source": "header"},
             {"message": "Expected `int`, got `str`", "key": "int_cookie", "source": "cookie"},
         ]
@@ -270,7 +271,27 @@ def test_invalid_input_typed_dict() -> None:
         assert data["extra"] == [
             {"message": "Expected `int`, got `str`", "key": "child.val", "source": "body"},
             {"message": "Expected `int`, got `str`", "key": "int_param", "source": "query"},
-            {"message": "Expected `int`, got `str`", "key": "length_param", "source": "query"},
+            {"message": "Expected `str` of length >= 2", "key": "length_param", "source": "query"},
             {"message": "Expected `int`, got `str`", "key": "int_header", "source": "header"},
             {"message": "Expected `int`, got `str`", "key": "int_cookie", "source": "cookie"},
         ]
+
+
+def test_parse_values_from_connection_kwargs_with_multiple_errors() -> None:
+    def fn(a: Annotated[int, Parameter(gt=5)], b: Annotated[int, Parameter(lt=5)]) -> None:
+        pass
+
+    model = SignatureModel.create(
+        dependency_name_set=set(),
+        fn=fn,
+        data_dto=None,
+        parsed_signature=ParsedSignature.from_fn(fn, {}),
+        type_decoders=[],
+    )
+    with pytest.raises(ValidationException) as exc:
+        model.parse_values_from_connection_kwargs(connection=RequestFactory().get(), a=0, b=9)
+
+    assert exc.value.extra == [
+        {"message": "Expected `int` >= 6", "key": "a", "source": ParamType.QUERY},
+        {"message": "Expected `int` <= 4", "key": "b", "source": ParamType.QUERY},
+    ]

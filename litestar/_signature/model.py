@@ -198,7 +198,7 @@ class SignatureModel(Struct):
             for field_name, exc in cls._collect_errors(deserializer=deserializer, **kwargs):  # type: ignore[assignment]
                 match = ERR_RE.search(str(exc))
                 keys = [field_name, str(match.group(1))] if match else [field_name]
-                message = cls._build_error_message(keys=keys, exc_msg=str(e), connection=connection)
+                message = cls._build_error_message(keys=keys, exc_msg=str(exc), connection=connection)
                 messages.append(message)
             raise cls._create_exception(messages=messages, connection=connection) from e
 
