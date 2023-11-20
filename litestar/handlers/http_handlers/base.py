@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING, AnyStr, Mapping, TypedDict, cast
+from typing import TYPE_CHECKING, AnyStr, Mapping, TypedDict, cast, Optional
 
 from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
 from litestar.datastructures.cookie import Cookie
@@ -57,7 +57,7 @@ if TYPE_CHECKING:
     from litestar.dto import AbstractDTO
     from litestar.openapi.datastructures import ResponseSpec
     from litestar.openapi.spec import SecurityRequirement
-    from litestar.types.callable_types import AsyncAnyCallable, OperationIDCreator
+    from litestar.types.callable_types import AsyncAnyCallable, OperationIDCreator, OperationCallable
 
 __all__ = ("HTTPRouteHandler", "route")
 
@@ -96,6 +96,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         "media_type",
         "operation_class",
         "operation_id",
+        "operation_callable",
         "raises",
         "response_class",
         "response_cookies",
@@ -147,6 +148,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         include_in_schema: bool | EmptyType = Empty,
         operation_class: type[Operation] = Operation,
         operation_id: str | OperationIDCreator | None = None,
+        operation_callable: OperationCallable | None = None,
         raises: Sequence[type[HTTPException]] | None = None,
         response_description: str | None = None,
         responses: Mapping[int, ResponseSpec] | None = None,
@@ -269,6 +271,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.include_in_schema = include_in_schema
         self.operation_class = operation_class
         self.operation_id = operation_id
+        self.operation_callable = operation_callable
         self.raises = raises
         self.response_description = response_description
         self.summary = summary

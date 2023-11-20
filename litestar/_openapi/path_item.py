@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from inspect import cleandoc
-from typing import TYPE_CHECKING, Iterable
+from typing import TYPE_CHECKING, Iterable, Callable
 
 from litestar._openapi.parameters import create_parameter_for_handler
 from litestar._openapi.request_body import create_request_body
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from litestar.openapi.spec import Schema, SecurityRequirement
     from litestar.plugins import OpenAPISchemaPluginProtocol
     from litestar.routes import HTTPRoute
-    from litestar.types.callable_types import OperationIDCreator
+    from litestar.types.callable_types import OperationIDCreator, OperationCallable
 
 
 def get_description_for_handler(route_handler: HTTPRouteHandler, use_handler_docstrings: bool) -> str | None:
@@ -135,7 +135,12 @@ def create_path_item(
                 parameters=parameters,  # type: ignore[arg-type]
                 security=security,
             )
-            operation_ids.append(operation_id)
-            setattr(path_item, http_method.lower(), operation)
+            if type(route_handler.operation_callable) is OperationCallable:
+                route_handler.operation_callable(operation, route_handler)
+            
+            # INFO: add the ability to not include the route in the openapi docs generated after the operation_callable runs and sets include_in_schema to false
+            if route_handler.include_in_schema:
+                operation_ids.append(operation_id)
+                setattr(path_item, http_method.lower(), operation)
 
     return path_item, operation_ids

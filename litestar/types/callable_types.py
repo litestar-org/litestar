@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Awaitable, Callable, Generator, TypeVar
+from litestar.openapi.spec.operation import Operation
 
 if TYPE_CHECKING:
     from typing_extensions import TypeAlias
@@ -18,6 +19,7 @@ if TYPE_CHECKING:
     from litestar.types.protocols import Logger
 
 ExceptionT = TypeVar("ExceptionT", bound=Exception)
+OperationT = TypeVar("OperationT", bound=Operation)
 
 AfterExceptionHookHandler: TypeAlias = "Callable[[ExceptionT, Scope], SyncOrAsyncUnion[None]]"
 AfterRequestHookHandler: TypeAlias = (
@@ -37,4 +39,5 @@ Guard: TypeAlias = "Callable[[ASGIConnection, BaseRouteHandler], SyncOrAsyncUnio
 LifespanHook: TypeAlias = "Callable[[Litestar], SyncOrAsyncUnion[Any]] | Callable[[], SyncOrAsyncUnion[Any]]"
 OnAppInitHandler: TypeAlias = "Callable[[AppConfig], AppConfig]"
 OperationIDCreator: TypeAlias = "Callable[[HTTPRouteHandler, Method, list[str | PathParameterDefinition]], str]"
+OperationCallable: TypeAlias = "Callable[[OperationT, HTTPRouteHandler], None]"
 Serializer: TypeAlias = Callable[[Any], Any]
