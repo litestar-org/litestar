@@ -94,7 +94,7 @@ __all__ = (
 )
 
 if TYPE_CHECKING:
-    from typing_extensions import NotRequired, TypeAlias
+    from typing_extensions import TypeAlias
 
     from litestar.app import Litestar
     from litestar.connection import ASGIConnection
@@ -141,7 +141,7 @@ class BaseScope(HeaderScope):
     session: ScopeSession
     state: dict[str, Any]
     user: Any
-    connection: NotRequired[ASGIConnection]
+    connection: ASGIConnection
 
 
 class HTTPScope(BaseScope):

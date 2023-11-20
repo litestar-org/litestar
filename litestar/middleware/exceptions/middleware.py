@@ -230,7 +230,7 @@ class ExceptionHandlerMiddleware:
             send = cors_middleware.send_wrapper(send=send, origin=origin, has_cookie="cookie" in headers)
 
         exception_handler = get_exception_handler(self.exception_handlers, exc) or self.default_http_exception_handler
-        request: Request[Any, Any, Any] = litestar_app.request_class(scope=scope, receive=receive, send=send)
+        request = cast("Request[Any, Any, Any]", scope["connection"])
         response = exception_handler(request, exc)
         await response.to_asgi_response(app=None, request=request)(scope=scope, receive=receive, send=send)
 

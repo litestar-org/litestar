@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Any, cast
 
 from msgspec.msgpack import encode as encode_msgpack
 
-from litestar import Request
 from litestar.constants import HTTP_RESPONSE_BODY, HTTP_RESPONSE_START, SCOPE_STATE_DO_CACHE, SCOPE_STATE_IS_CACHED
 from litestar.enums import ScopeType
 from litestar.utils import get_litestar_scope_state, set_litestar_scope_state
@@ -13,6 +12,7 @@ from .base import AbstractMiddleware
 
 if TYPE_CHECKING:
     from litestar.config.response_cache import ResponseCacheConfig
+    from litestar.connection import Request
     from litestar.handlers import HTTPRouteHandler
     from litestar.types import ASGIApp, HTTPScope, Message, Receive, Scope, Send
 
@@ -46,7 +46,9 @@ class ResponseCacheMiddleware(AbstractMiddleware):
                     messages.append(message)
 
                 if messages and message["type"] == HTTP_RESPONSE_BODY and not message["more_body"]:
-                    key = (route_handler.cache_key_builder or self.config.key_builder)(Request(scope))
+                    key = (route_handler.cache_key_builder or self.config.key_builder)(
+                        cast("Request[Any, Any, Any]", scope["connection"])
+                    )
                     store = self.config.get_store_from_app(scope["app"])
                     await store.set(key, encode_msgpack(messages), expires_in=expires_in)
             await send(message)

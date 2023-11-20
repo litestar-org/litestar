@@ -58,12 +58,12 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         """
         super().__init__(scope, receive, send)
         self.is_connected: bool = True
-        self._body: Any = scope.get("_body", Empty)
-        self._form: Any = scope.get("_form", Empty)
-        self._json: Any = scope.get("_json", Empty)
-        self._msgpack: Any = scope.get("_msgpack", Empty)
-        self._content_type: Any = scope.get("_content_type", Empty)
-        self._accept: Any = scope.get("_accept", Empty)
+        self._body: Any = Empty
+        self._form: Any = Empty
+        self._json: Any = Empty
+        self._msgpack: Any = Empty
+        self._content_type: Any = Empty
+        self._accept: Any = Empty
 
     @property
     def method(self) -> Method:
@@ -82,9 +82,12 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
             A tuple with the parsed value and a dictionary containing any options send in it.
         """
         if self._content_type is Empty:
-            self._content_type = self.scope["_content_type"] = parse_content_header(  # type: ignore[typeddict-unknown-key]
-                self.headers.get("Content-Type", "")
-            )
+            if "_content_type" in self.scope:
+                self._content_type = self.scope["_content_type"]  # type: ignore[typeddict-item]
+            else:
+                self._content_type = self.scope["_content_type"] = parse_content_header(  # type: ignore[typeddict-unknown-key]
+                    self.headers.get("Content-Type", "")
+                )
         return cast("tuple[str, dict[str, str]]", self._content_type)
 
     @property
@@ -95,7 +98,10 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
             An :class:`Accept <litestar.datastructures.headers.Accept>` instance, representing the list of acceptable media types.
         """
         if self._accept is Empty:
-            self._accept = self.scope["_accept"] = Accept(self.headers.get("Accept", "*/*"))  # type: ignore[typeddict-unknown-key]
+            if "_accept" in self.scope:
+                self._accept = self.scope["_accept"]  # type: ignore[typeddict-item]
+            else:
+                self._accept = self.scope["_accept"] = Accept(self.headers.get("Accept", "*/*"))  # type: ignore[typeddict-unknown-key]
         return cast("Accept", self._accept)
 
     async def json(self) -> Any:
@@ -105,10 +111,13 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
             An arbitrary value
         """
         if self._json is Empty:
-            body = await self.body()
-            self._json = self.scope["_json"] = decode_json(  # type: ignore[typeddict-unknown-key]
-                body or b"null", type_decoders=self.route_handler.resolve_type_decoders()
-            )
+            if "_json" in self.scope:
+                self._json = self.scope["_json"]  # type: ignore[typeddict-item]
+            else:
+                body = await self.body()
+                self._json = self.scope["_json"] = decode_json(  # type: ignore[typeddict-unknown-key]
+                    body or b"null", type_decoders=self.route_handler.resolve_type_decoders()
+                )
         return self._json
 
     async def msgpack(self) -> Any:
@@ -118,6 +127,8 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
             An arbitrary value
         """
         if self._msgpack is Empty:
+            if "_msgpack" in self.scope:
+                self._json = self.scope["_msgpack"]  # type: ignore[typeddict-item]
             body = await self.body()
             self._msgpack = self.scope["_msgpack"] = decode_msgpack(  # type: ignore[typeddict-unknown-key]
                 body or b"\xc0", type_decoders=self.route_handler.resolve_type_decoders()
@@ -162,7 +173,10 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
             A byte-string representing the body of the request.
         """
         if self._body is Empty:
-            self._body = self.scope["_body"] = b"".join([c async for c in self.stream()])  # type: ignore[typeddict-unknown-key]
+            if "_body" in self.scope:
+                self._body = self.scope["_body"]  # type: ignore[typeddict-item]
+            else:
+                self._body = self.scope["_body"] = b"".join([c async for c in self.stream()])  # type: ignore[typeddict-unknown-key]
         return cast("bytes", self._body)
 
     async def form(self) -> FormMultiDict:
@@ -176,19 +190,22 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         if self._form is not Empty:
             return FormMultiDict(self._form)
         content_type, options = self.content_type
-        if content_type == RequestEncodingType.MULTI_PART:
-            self._form = self.scope["_form"] = form_values = parse_multipart_form(  # type: ignore[typeddict-unknown-key]
-                body=await self.body(),
-                boundary=options.get("boundary", "").encode(),
-                multipart_form_part_limit=self.app.multipart_form_part_limit,
-            )
-            return FormMultiDict(form_values)
-        if content_type == RequestEncodingType.URL_ENCODED:
-            self._form = self.scope["_form"] = form_values = parse_url_encoded_form_data(  # type: ignore[typeddict-unknown-key]
-                await self.body(),
-            )
-            return FormMultiDict(form_values)
-        return FormMultiDict()
+        if "_form" in self.scope:
+            self._form = form_values = self.scope["_form"]  # type: ignore[typeddict-item]
+        else:
+            if content_type == RequestEncodingType.MULTI_PART:
+                self._form = self.scope["_form"] = form_values = parse_multipart_form(  # type: ignore[typeddict-unknown-key]
+                    body=await self.body(),
+                    boundary=options.get("boundary", "").encode(),
+                    multipart_form_part_limit=self.app.multipart_form_part_limit,
+                )
+            elif content_type == RequestEncodingType.URL_ENCODED:
+                self._form = self.scope["_form"] = form_values = parse_url_encoded_form_data(  # type: ignore[typeddict-unknown-key]
+                    await self.body(),
+                )
+            else:
+                form_values = {}
+        return FormMultiDict(form_values)
 
     async def send_push_promise(self, path: str) -> None:
         """Send a push promise.

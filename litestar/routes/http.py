@@ -72,7 +72,7 @@ class HTTPRoute(BaseRoute):
         Returns:
             None
         """
-        request: Request[Any, Any, Any] = scope["app"].request_class(scope=scope, receive=receive, send=send)
+        request = cast("Request", scope["connection"])
         route_handler, parameter_model = self.route_handler_map[scope["method"]]
 
         if route_handler.resolve_guards():

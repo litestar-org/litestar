@@ -75,10 +75,10 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         self.scope = scope
         self.receive = receive
         self.send = send
-        self._base_url: Any = scope.get("_base_url", Empty)
-        self._url: Any = scope.get("_url", Empty)
-        self._parsed_query: Any = scope.get("_parsed_query", Empty)
-        self._cookies: Any = scope.get("_cookies", Empty)
+        self._base_url: Any = Empty
+        self._url: Any = Empty
+        self._parsed_query: Any = Empty
+        self._cookies: Any = Empty
 
     @property
     def app(self) -> Litestar:
@@ -115,7 +115,10 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
             A URL instance constructed from the request's scope.
         """
         if self._url is Empty:
-            self._url = self.scope["_url"] = URL.from_scope(self.scope)  # type: ignore[typeddict-unknown-key]
+            if "_url" in self.scope:
+                self._url = self.scope["_url"]  # type: ignore[typeddict-item]
+            else:
+                self._url = self.scope["_url"] = URL.from_scope(self.scope)  # type: ignore[typeddict-unknown-key]
 
         return cast("URL", self._url)
 
@@ -128,13 +131,16 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
             (host + domain + prefix) of the request.
         """
         if self._base_url is Empty:
-            scope = {
-                **self.scope,
-                "path": "/",
-                "query_string": b"",
-                "root_path": self.scope.get("app_root_path") or self.scope.get("root_path", ""),
-            }
-            self._base_url = self.scope["_base_url"] = URL.from_scope(cast("Scope", scope))  # type: ignore[typeddict-unknown-key]
+            if "_base_url" in self.scope:
+                self._base_url = self.scope["_base_url"]  # type: ignore[typeddict-item]
+            else:
+                scope = {
+                    **self.scope,
+                    "path": "/",
+                    "query_string": b"",
+                    "root_path": self.scope.get("app_root_path") or self.scope.get("root_path", ""),
+                }
+                self._base_url = self.scope["_base_url"] = URL.from_scope(cast("Scope", scope))  # type: ignore[typeddict-unknown-key]
 
         return cast("URL", self._base_url)
 
@@ -155,7 +161,12 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
             A normalized dict of query parameters. Multiple values for the same key are returned as a list.
         """
         if self._parsed_query is Empty:
-            self._parsed_query = self.scope["_parsed_query"] = parse_query_string(self.scope.get("query_string", b""))  # type: ignore
+            if "_parsed_query" in self.scope:
+                self._parsed_query = self.scope["_parsed_query"]  # type: ignore[typeddict-item]
+            else:
+                self._parsed_query = self.scope["_parsed_query"] = parse_query_string(  # type: ignore[typeddict-unknown-key]
+                    self.scope.get("query_string", b"")
+                )
 
         return MultiDict(self._parsed_query)
 
@@ -176,11 +187,14 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
             Returns any cookies stored in the header as a parsed dictionary.
         """
         if self._cookies is Empty:
-            cookies: dict[str, str] = {}
-            if cookie_header := self.headers.get("cookie"):
-                cookies = parse_cookie_string(cookie_header)
+            if "_cookies" in self.scope:
+                self._cookies = self.scope["_cookies"]  # type: ignore[typeddict-item]
+            else:
+                cookies: dict[str, str] = {}
+                if cookie_header := self.headers.get("cookie"):
+                    cookies = parse_cookie_string(cookie_header)
 
-            self._cookies = self.scope["_cookies"] = cookies  # type: ignore[typeddict-unknown-key]
+                self._cookies = self.scope["_cookies"] = cookies  # type: ignore[typeddict-unknown-key]
 
         return cast("dict[str, str]", self._cookies)
 

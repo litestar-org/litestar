@@ -69,9 +69,8 @@ class RateLimitMiddleware(AbstractMiddleware):
         Returns:
             None
         """
-        app = scope["app"]
-        request: Request[Any, Any, Any] = app.request_class(scope)
-        store = self.config.get_store_from_app(app)
+        request = cast("Request[Any, Any, Any]", scope["connection"])
+        store = self.config.get_store_from_app(scope["app"])
         if await self.should_check_request(request=request):
             key = self.cache_key_from_request(request=request)
             cache_object = await self.retrieve_cached_history(key, store)

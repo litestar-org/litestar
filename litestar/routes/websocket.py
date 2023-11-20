@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 from litestar.enums import ScopeType
 from litestar.exceptions import ImproperlyConfiguredException
@@ -54,7 +54,7 @@ class WebSocketRoute(BaseRoute):
         Returns:
             None
         """
-        websocket: WebSocket[Any, Any, Any] = scope["app"].websocket_class(scope=scope, receive=receive, send=send)
+        websocket: WebSocket[Any, Any, Any] = cast("WebSocket", scope["connection"])
 
         if not self.handler_parameter_model:  # pragma: no cover
             raise ImproperlyConfiguredException("handler parameter model not defined")
