@@ -1,7 +1,7 @@
 Docker
 ===========
 
-This uses the default python container.
+This uses the default python container https://hub.docker.com/_/python
 
 Dockerfile
 -----------

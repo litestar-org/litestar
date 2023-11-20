@@ -136,7 +136,7 @@ Using the `watch` command lets you monitor the realtime output of your applicati
 Updating your application
 ---------------------------
 
-A cool tip that the whole alias brings to the table is that if you include your supervisor conf file and the alias in your code base, you can do something like this for for updating your entire application
+A cool tip that the whole alias brings to the table is that if you include your supervisor conf file and the alias in your code base, you can do something like this for for updating your entire application.
 
 .. code-block:: sh
 
