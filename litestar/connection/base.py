@@ -190,10 +190,11 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
             if "_cookies" in self.scope:
                 self._cookies = self.scope["_cookies"]  # type: ignore[typeddict-item]
             else:
-                cookies: dict[str, str] = {}
-                if cookie_header := self.headers.get("cookie"):
-                    cookies = parse_cookie_string(cookie_header)
-
+                cookies = (
+                    parse_cookie_string(cookie_header)
+                    if (cookie_header := self.headers.get("cookie"))
+                    else {}
+                )
                 self._cookies = self.scope["_cookies"] = cookies  # type: ignore[typeddict-unknown-key]
 
         return cast("dict[str, str]", self._cookies)
