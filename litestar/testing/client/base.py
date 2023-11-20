@@ -51,7 +51,7 @@ def fake_asgi_connection(app: ASGIApp, cookies: dict[str, str]) -> ASGIConnectio
         "app": app,  # type: ignore[typeddict-item]
         "state": {},
         "path_params": {},
-        "route_handler": None,  # type: ignore[typeddict-item]
+        "route_handler": None,  # type ignore[typeddict-item]
         "asgi": {"version": "3.0", "spec_version": "2.1"},
         "auth": None,
         "session": None,

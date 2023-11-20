@@ -6,7 +6,7 @@ their API.
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Callable, Dict, Generator
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -23,7 +23,7 @@ from litestar.testing import TestClient, create_test_client
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from litestar.types import ASGIApp, Receive, Scope, Send
+    from litestar.types import ASGIApp, HTTPReceiveMessage, Receive, Scope, Send
 
 
 @get("/", sync_to_thread=False)
@@ -504,3 +504,21 @@ def test_state() -> None:
     ) as client:
         response = client.get("/")
         assert response.json() == {"state": 2}
+
+
+async def test_multiple_request_object_data_caching(create_scope: Callable[..., Scope], mock: MagicMock) -> None:
+    """Test that accessing the request data on multiple request objects only attempts to await `receive()` once.
+
+    https://github.com/litestar-org/litestar/issues/2727
+    """
+
+    async def test_receive() -> HTTPReceiveMessage:
+        mock()
+        return {"type": "http.request", "body": b"abc", "more_body": False}
+
+    scope = create_scope()
+    request_1 = Request[Any, Any, Any](scope, test_receive)
+    request_2 = Request[Any, Any, Any](scope, test_receive)
+    assert (await request_1.body()) == b"abc"
+    assert (await request_2.body()) == b"abc"
+    assert mock.call_count == 1

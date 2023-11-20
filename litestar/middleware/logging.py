@@ -126,7 +126,7 @@ class LoggingMiddleware(AbstractMiddleware):
         Returns:
             None
         """
-        extracted_data = await self.extract_request_data(request=scope["app"].request_class(scope, receive=receive))
+        extracted_data = await self.extract_request_data(request=scope["app"].request_class(scope, receive))
         self.log_message(values=extracted_data)
 
     def log_response(self, scope: Scope) -> None:
