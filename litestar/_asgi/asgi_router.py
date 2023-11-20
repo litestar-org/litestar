@@ -11,7 +11,9 @@ from litestar._asgi.routing_trie.mapping import add_route_to_trie
 from litestar._asgi.routing_trie.traversal import parse_path_to_route
 from litestar._asgi.routing_trie.types import create_node
 from litestar._asgi.utils import get_route_handlers
+from litestar.connection import ASGIConnection, Request, WebSocket
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.handlers import HTTPRouteHandler, WebsocketRouteHandler
 from litestar.utils import normalize_path
 
 __all__ = ("ASGIRouter",)
@@ -36,6 +38,25 @@ if TYPE_CHECKING:
         Scope,
         Send,
     )
+
+
+def _set_scope_connection(scope: Scope, receive: Receive, send: Send) -> None:
+    """Set the connection on the scope.
+
+    Args:
+        scope: The ASGI scope.
+        receive: The ASGI receive function.
+        send: The ASGI send function.
+
+    Returns:
+        None
+    """
+    if isinstance(scope["route_handler"], HTTPRouteHandler):
+        scope["connection"] = Request(scope=scope, receive=receive, send=send)
+    elif isinstance(scope["route_handler"], WebsocketRouteHandler):
+        scope["connection"] = WebSocket(scope=scope, receive=receive, send=send)
+    else:
+        scope["connection"] = ASGIConnection(scope=scope, receive=receive, send=send)
 
 
 class ASGIRouter:
@@ -81,6 +102,7 @@ class ASGIRouter:
         asgi_app, scope["route_handler"], scope["path"], scope["path_params"] = self.handle_routing(
             path=normalized_path, method=scope.get("method")
         )
+        _set_scope_connection(scope=scope, receive=receive, send=send)
         await asgi_app(scope, receive, send)
 
     @lru_cache(1024)  # noqa: B019
