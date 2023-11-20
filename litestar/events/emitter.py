@@ -8,7 +8,7 @@ from contextlib import AsyncExitStack
 from contextvars import copy_context
 from dataclasses import dataclass
 from functools import partial
-from typing import TYPE_CHECKING, Any, Sequence
+from typing import TYPE_CHECKING, Any, Sequence, cast
 
 if sys.version_info < (3, 9):
     from typing import AsyncContextManager
@@ -29,14 +29,15 @@ if TYPE_CHECKING:
     from anyio.streams.memory import MemoryObjectReceiveStream, MemoryObjectSendStream
 
     from litestar.events.listener import EventListener
-    from litestar.utils import AsyncCallable
+    from litestar.types.callable_types import AsyncAnyCallable
+    from litestar.utils.sync import AsyncCallable
 
 
 @dataclass
 class EventMessage:
     """Event message to send to the event emitter."""
 
-    fn: "AsyncCallable"
+    fn: AsyncAnyCallable
     args: Sequence[Any]
     kwargs: dict[str, Any]
     ctx: Context | None
@@ -101,6 +102,8 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
         async with receive_stream, anyio.create_task_group() as task_group:
             async for item in receive_stream:
                 fn = partial(item.fn, **item.kwargs) if item.kwargs else item.fn
+                # mypy doesn't infer `fn` type correctly, explicitly cast it
+                fn = cast("AsyncCallable", fn)
 
                 if item.ctx:
                     item.ctx.run(task_group.start_soon, fn, *item.args)
