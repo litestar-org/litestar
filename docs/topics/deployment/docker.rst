@@ -22,7 +22,7 @@ This copies the `src` folder on your machine to the `/code` in the docker contai
 
 
 Docker-compose
---------------
+---------------
 
 If you want to run the container as part of a docker-compose setup then you can simply use this compose file
 
