@@ -11,9 +11,7 @@ from litestar._asgi.routing_trie.mapping import add_route_to_trie
 from litestar._asgi.routing_trie.traversal import parse_path_to_route
 from litestar._asgi.routing_trie.types import create_node
 from litestar._asgi.utils import get_route_handlers
-from litestar.connection import ASGIConnection, Request, WebSocket
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.handlers import HTTPRouteHandler, WebsocketRouteHandler
 from litestar.utils import normalize_path
 
 __all__ = ("ASGIRouter",)
@@ -51,6 +49,9 @@ def _set_scope_connection(scope: Scope, receive: Receive, send: Send) -> None:
     Returns:
         None
     """
+    from litestar.connection import ASGIConnection, Request, WebSocket
+    from litestar.handlers import HTTPRouteHandler, WebsocketRouteHandler
+
     if isinstance(scope["route_handler"], HTTPRouteHandler):
         scope["connection"] = Request(scope=scope, receive=receive, send=send)
     elif isinstance(scope["route_handler"], WebsocketRouteHandler):

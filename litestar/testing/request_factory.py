@@ -305,7 +305,8 @@ class RequestFactory:
         set_litestar_scope_state(scope, SCOPE_STATE_BODY_KEY, body)
         self._create_cookie_header(headers, cookies)
         scope["headers"] = self._build_headers(headers)
-        return Request(scope=scope)
+        request = scope["connection"] = Request(scope=scope)
+        return request
 
     def get(
         self,
