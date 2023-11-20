@@ -3,8 +3,9 @@
 https://github.com/encode/starlette/blob/master/tests/test_requests.py. And are meant to ensure our compatibility with
 their API.
 """
+from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, Generator, Optional
+from typing import TYPE_CHECKING, Any, Callable, Dict, Generator
 from unittest.mock import patch
 
 import pytest
@@ -30,42 +31,47 @@ def _route_handler() -> None:
     pass
 
 
-async def test_request_empty_body_to_json(anyio_backend: str) -> None:
+@pytest.fixture(name="scope")
+def scope_fixture(create_scope: Callable[..., Scope]) -> Scope:
+    return create_scope(type="http", route_handler=_route_handler)
+
+
+async def test_request_empty_body_to_json(anyio_backend: str, scope: Scope) -> None:
     with patch.object(Request, "body", return_value=b""):
-        request_empty_payload: Request = Request(scope={"type": "http", "route_handler": _route_handler})  # type: ignore
+        request_empty_payload: Request = Request(scope=scope)
         request_json = await request_empty_payload.json()
         assert request_json is None
 
 
-async def test_request_invalid_body_to_json(anyio_backend: str) -> None:
+async def test_request_invalid_body_to_json(anyio_backend: str, scope: Scope) -> None:
     with patch.object(Request, "body", return_value=b"invalid"), pytest.raises(SerializationException):
-        request_empty_payload: Request = Request(scope={"type": "http", "route_handler": _route_handler})  # type: ignore
+        request_empty_payload: Request = Request(scope=scope)
         await request_empty_payload.json()
 
 
-async def test_request_valid_body_to_json(anyio_backend: str) -> None:
+async def test_request_valid_body_to_json(anyio_backend: str, scope: Scope) -> None:
     with patch.object(Request, "body", return_value=b'{"test": "valid"}'):
-        request_empty_payload: Request = Request(scope={"type": "http", "route_handler": _route_handler})  # type: ignore
+        request_empty_payload: Request = Request(scope=scope)
         request_json = await request_empty_payload.json()
         assert request_json == {"test": "valid"}
 
 
-async def test_request_empty_body_to_msgpack(anyio_backend: str) -> None:
+async def test_request_empty_body_to_msgpack(anyio_backend: str, scope: Scope) -> None:
     with patch.object(Request, "body", return_value=b""):
-        request_empty_payload: Request = Request(scope={"type": "http", "route_handler": _route_handler})  # type: ignore
+        request_empty_payload: Request = Request(scope=scope)
         request_msgpack = await request_empty_payload.msgpack()
         assert request_msgpack is None
 
 
-async def test_request_invalid_body_to_msgpack(anyio_backend: str) -> None:
+async def test_request_invalid_body_to_msgpack(anyio_backend: str, scope: Scope) -> None:
     with patch.object(Request, "body", return_value=b"invalid"), pytest.raises(SerializationException):
-        request_empty_payload: Request = Request(scope={"type": "http", "route_handler": _route_handler})  # type: ignore
+        request_empty_payload: Request = Request(scope=scope)
         await request_empty_payload.msgpack()
 
 
-async def test_request_valid_body_to_msgpack(anyio_backend: str) -> None:
+async def test_request_valid_body_to_msgpack(anyio_backend: str, scope: Scope) -> None:
     with patch.object(Request, "body", return_value=encode_msgpack({"test": "valid"})):
-        request_empty_payload: Request = Request(scope={"type": "http", "route_handler": _route_handler})  # type: ignore
+        request_empty_payload: Request = Request(scope=scope)
         request_msgpack = await request_empty_payload.msgpack()
         assert request_msgpack == {"test": "valid"}
 
@@ -75,12 +81,12 @@ def test_request_url_for() -> None:
     def proxy() -> None:
         pass
 
-    @get(path="/test")
-    def root(request: Request) -> Dict[str, str]:
+    @get(path="/test", signature_namespace={"dict": Dict})
+    def root(request: Request) -> dict[str, str]:
         return {"url": request.url_for("proxy")}
 
-    @get(path="/test-none")
-    def test_none(request: Request) -> Dict[str, str]:
+    @get(path="/test-none", signature_namespace={"dict": Dict})
+    def test_none(request: Request) -> dict[str, str]:
         return {"url": request.url_for("none")}
 
     with create_test_client(route_handlers=[proxy, root, test_none]) as client:
@@ -91,13 +97,13 @@ def test_request_url_for() -> None:
         assert response.status_code == 500
 
 
-def test_request_asset_url(tmp_path: "Path") -> None:
-    @get(path="/resolver")
-    def resolver(request: Request) -> Dict[str, str]:
+def test_request_asset_url(tmp_path: Path) -> None:
+    @get(path="/resolver", signature_namespace={"dict": Dict})
+    def resolver(request: Request) -> dict[str, str]:
         return {"url": request.url_for_static_asset("js", "main.js")}
 
-    @get(path="/resolver-none")
-    def resolver_none(request: Request) -> Dict[str, str]:
+    @get(path="/resolver-none", signature_namespace={"dict": Dict})
+    def resolver_none(request: Request) -> dict[str, str]:
         return {"url": request.url_for_static_asset("none", "main.js")}
 
     with create_test_client(
@@ -131,7 +137,7 @@ def test_custom_request_class() -> None:
             super().__init__(*args, **kwargs)
             self.scope["called"] = True  # type: ignore
 
-    @get("/")
+    @get("/", signature_types=[MyRequest])
     def handler(request: MyRequest) -> None:
         value["called"] = request.scope.get("called")
 
@@ -141,7 +147,7 @@ def test_custom_request_class() -> None:
 
 
 def test_request_url() -> None:
-    async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def app(scope: Scope, receive: Receive, send: Send) -> None:
         request = Request[Any, Any, Any](scope, receive)
         data = {"method": request.method, "url": str(request.url)}
         response = ASGIResponse(body=encode_json(data))
@@ -156,7 +162,7 @@ def test_request_url() -> None:
 
 
 def test_request_query_params() -> None:
-    async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def app(scope: Scope, receive: Receive, send: Send) -> None:
         request = Request[Any, Any, Any](scope, receive)
         params = dict(request.query_params)
         response = ASGIResponse(body=encode_json({"params": params}))
@@ -168,7 +174,7 @@ def test_request_query_params() -> None:
 
 
 def test_request_headers() -> None:
-    async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def app(scope: Scope, receive: Receive, send: Send) -> None:
         request = Request[Any, Any, Any](scope, receive)
         headers = dict(request.headers)
         response = ASGIResponse(body=encode_json({"headers": headers}))
@@ -188,7 +194,7 @@ def test_request_headers() -> None:
 
 
 def test_request_accept_header() -> None:
-    async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def app(scope: Scope, receive: Receive, send: Send) -> None:
         request = Request[Any, Any, Any](scope, receive)
         response = ASGIResponse(body=encode_json({"accepted_types": list(request.accept)}))
         await response(scope, receive, send)
@@ -199,20 +205,26 @@ def test_request_accept_header() -> None:
 
 
 @pytest.mark.parametrize(
-    "scope,expected_client",
+    "scope_values,expected_client",
     (
         ({"type": "http", "route_handler": _route_handler, "client": ["client", 42]}, Address("client", 42)),
         ({"type": "http", "route_handler": _route_handler, "client": None}, None),
         ({"type": "http", "route_handler": _route_handler}, None),
     ),
 )
-def test_request_client(scope: "Scope", expected_client: Optional[Address]) -> None:
+def test_request_client(
+    scope_values: dict[str, Any], expected_client: Address | None, create_scope: Callable[..., Scope]
+) -> None:
+    scope = create_scope()
+    scope.update(scope_values)  # type: ignore[typeddict-item]
+    if "client" not in scope_values:
+        del scope["client"]  # type: ignore[misc]
     client = Request[Any, Any, Any](scope).client
     assert client == expected_client
 
 
 def test_request_body() -> None:
-    async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def app(scope: Scope, receive: Receive, send: Send) -> None:
         request = Request[Any, Any, Any](scope, receive)
         body = await request.body()
         response = ASGIResponse(body=encode_json({"body": body.decode()}))
@@ -231,7 +243,7 @@ def test_request_body() -> None:
 
 
 def test_request_stream() -> None:
-    async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def app(scope: Scope, receive: Receive, send: Send) -> None:
         request = Request[Any, Any, Any](scope, receive)
         body = b""
         async for chunk in request.stream():
@@ -252,7 +264,7 @@ def test_request_stream() -> None:
 
 
 def test_request_form_urlencoded() -> None:
-    async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def app(scope: Scope, receive: Receive, send: Send) -> None:
         request = Request[Any, Any, Any](scope, receive)
         form = await request.form()
         response = ASGIResponse(body=encode_json({"form": dict(form)}))
@@ -265,7 +277,7 @@ def test_request_form_urlencoded() -> None:
 
 
 def test_request_body_then_stream() -> None:
-    async def app(scope: "Any", receive: "Receive", send: "Send") -> None:
+    async def app(scope: Any, receive: Receive, send: Send) -> None:
         request = Request[Any, Any, Any](scope, receive)
         body = await request.body()
         chunks = b""
@@ -281,7 +293,7 @@ def test_request_body_then_stream() -> None:
 
 
 def test_request_stream_then_body() -> None:
-    async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def app(scope: Scope, receive: Receive, send: Send) -> None:
         request = Request[Any, Any, Any](scope, receive)
         chunks = b""
         async for chunk in request.stream():
@@ -301,7 +313,7 @@ def test_request_stream_then_body() -> None:
 
 def test_request_json() -> None:
     @asgi("/")
-    async def handler(scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def handler(scope: Scope, receive: Receive, send: Send) -> None:
         request = Request[Any, Any, Any](scope, receive)
         data = await request.json()
         response = ASGIResponse(body=encode_json({"json": data}))
@@ -313,7 +325,7 @@ def test_request_json() -> None:
 
 
 def test_request_raw_path() -> None:
-    async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def app(scope: Scope, receive: Receive, send: Send) -> None:
         request = Request[Any, Any, Any](scope, receive)
         path = str(request.scope["path"])
         raw_path = str(request.scope["raw_path"])
@@ -328,7 +340,7 @@ def test_request_raw_path() -> None:
 def test_request_without_setting_receive() -> None:
     """If Request is instantiated without the 'receive' channel, then .body() is not available."""
 
-    async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def app(scope: Scope, receive: Receive, send: Send) -> None:
         request = Request[Any, Any, Any](scope)
         try:
             data = await request.json()
@@ -342,10 +354,10 @@ def test_request_without_setting_receive() -> None:
     assert response.json() == {"json": "Receive channel not available"}
 
 
-async def test_request_disconnect() -> None:
+async def test_request_disconnect(create_scope: Callable[..., Scope]) -> None:
     """If a client disconnect occurs while reading request body then InternalServerException should be raised."""
 
-    async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def app(scope: Scope, receive: Receive, send: Send) -> None:
         request = Request[Any, Any, Any](scope, receive)
         await request.body()
 
@@ -354,26 +366,26 @@ async def test_request_disconnect() -> None:
 
     with pytest.raises(InternalServerException):
         await app(
-            {"type": "http", "route_handler": _route_handler, "method": "POST", "path": "/"},  # type: ignore[arg-type]
+            create_scope(type="http", route_handler=_route_handler, method="POST", path="/"),
             receiver,  # type: ignore[arg-type]
             empty_send,
         )
 
 
 def test_request_state() -> None:
-    @get("/")
-    def handler(request: Request[Any, Any, Any]) -> Dict[Any, Any]:
+    @get("/", signature_namespace={"dict": Dict})
+    def handler(request: Request[Any, Any, Any]) -> dict[Any, Any]:
         request.state.test = 1
         assert request.state.test == 1
         return request.state.dict()  # type: ignore
 
     with create_test_client(handler) as client:
         response = client.get("/")
-        assert response.json() == {"test": 1}
+        assert response.json()["test"] == 1
 
 
 def test_request_cookies() -> None:
-    async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def app(scope: Scope, receive: Receive, send: Send) -> None:
         request = Request[Any, Any, Any](scope, receive)
         mycookie = request.cookies.get("mycookie")
         if mycookie:
@@ -395,7 +407,7 @@ def test_request_cookies() -> None:
 
 
 def test_chunked_encoding() -> None:
-    async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def app(scope: Scope, receive: Receive, send: Send) -> None:
         request = Request[Any, Any, Any](scope, receive)
         body = await request.body()
         response = ASGIResponse(body=encode_json({"body": body.decode()}))
@@ -412,7 +424,7 @@ def test_chunked_encoding() -> None:
 
 
 def test_request_send_push_promise() -> None:
-    async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def app(scope: Scope, receive: Receive, send: Send) -> None:
         # the server is push-enabled
         scope["extensions"]["http.response.push"] = {}  # type: ignore
 
@@ -433,7 +445,7 @@ def test_request_send_push_promise_without_push_extension() -> None:
     .send_push_promise() does nothing.
     """
 
-    async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def app(scope: Scope, receive: Receive, send: Send) -> None:
         request = Request[Any, Any, Any](scope)
         await request.send_push_promise("/style.css")
 
@@ -451,7 +463,7 @@ def test_request_send_push_promise_without_setting_send() -> None:
     .send_push_promise() is not available.
     """
 
-    async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def app(scope: Scope, receive: Receive, send: Send) -> None:
         # the server is push-enabled
         scope["extensions"]["http.response.push"] = {}  # type: ignore
 
@@ -470,10 +482,10 @@ def test_request_send_push_promise_without_setting_send() -> None:
 
 
 class BeforeRequestMiddleWare(MiddlewareProtocol):
-    def __init__(self, app: "ASGIApp") -> None:
+    def __init__(self, app: ASGIApp) -> None:
         self.app = app
 
-    async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         scope["state"]["main"] = 1
         await self.app(scope, receive, send)
 
@@ -483,8 +495,8 @@ def test_state() -> None:
         assert request.state.main == 1
         request.state.main = 2
 
-    @get(path="/")
-    async def get_state(request: Request) -> Dict[str, str]:
+    @get(path="/", signature_namespace={"dict": Dict})
+    async def get_state(request: Request) -> dict[str, str]:
         return {"state": request.state.main}
 
     with create_test_client(

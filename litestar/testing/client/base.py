@@ -6,20 +6,25 @@ from typing import TYPE_CHECKING, Any, Generator, Generic, Mapping, TypeVar, cas
 from warnings import warn
 
 from anyio.from_thread import BlockingPortal, start_blocking_portal
+from httpx import Cookies, Request, Response
 
+from litestar import Litestar
 from litestar.connection import ASGIConnection
+from litestar.constants import SCOPE_STATE_COOKIES_KEY
 from litestar.datastructures import MutableScopeHeaders
+from litestar.enums import ScopeType
 from litestar.exceptions import (
     ImproperlyConfiguredException,
 )
 from litestar.types import AnyIOBackend, ASGIApp, HTTPResponseStartEvent
+from litestar.utils.scope import set_litestar_scope_state
 
 if TYPE_CHECKING:
     from httpx._types import CookieTypes
 
     from litestar.middleware.session.base import BaseBackendConfig, BaseSessionBackend
     from litestar.middleware.session.client_side import ClientSideSessionBackend
-from httpx import Cookies, Request, Response
+    from litestar.types.asgi_types import HTTPScope, Receive, Scope, Send
 
 T = TypeVar("T", bound=ASGIApp)
 
@@ -30,8 +35,8 @@ def fake_http_send_message(headers: MutableScopeHeaders) -> HTTPResponseStartEve
 
 
 def fake_asgi_connection(app: ASGIApp, cookies: dict[str, str]) -> ASGIConnection[Any, Any, Any, Any]:
-    scope = {
-        "type": "http",
+    scope: HTTPScope = {
+        "type": ScopeType.HTTP,
         "path": "/",
         "raw_path": b"/",
         "root_path": "",
@@ -39,18 +44,29 @@ def fake_asgi_connection(app: ASGIApp, cookies: dict[str, str]) -> ASGIConnectio
         "query_string": b"",
         "client": ("testclient", 50000),
         "server": ("testserver", 80),
+        "headers": [],
         "method": "GET",
         "http_version": "1.1",
         "extensions": {"http.response.template": {}},
-        "app": app,
+        "app": app,  # type: ignore[typeddict-item]
         "state": {},
         "path_params": {},
-        "route_handler": None,
-        "_cookies": cookies,
+        "route_handler": None,  # type: ignore[typeddict-item]
+        "asgi": {"version": "3.0", "spec_version": "2.1"},
+        "auth": None,
+        "session": None,
+        "user": None,
     }
-    return ASGIConnection[Any, Any, Any, Any](
-        scope=scope,  # type: ignore[arg-type]
-    )
+    set_litestar_scope_state(scope, SCOPE_STATE_COOKIES_KEY, cookies)
+    return ASGIConnection[Any, Any, Any, Any](scope=scope)
+
+
+def _add_state_app(app: ASGIApp) -> ASGIApp:
+    async def wrapped(scope: Scope, receive: Receive, send: Send) -> None:
+        scope["state"] = {}
+        await app(scope, receive, send)
+
+    return wrapped
 
 
 class BaseTestClient(Generic[T]):
@@ -83,10 +99,16 @@ class BaseTestClient(Generic[T]):
                 UserWarning,
                 stacklevel=1,
             )
+
         self._session_backend: BaseSessionBackend | None = None
         if session_config:
             self._session_backend = session_config._backend_class(config=session_config)
-        self.app = app
+
+        if not isinstance(app, Litestar):
+            app = _add_state_app(app)  # type: ignore[assignment]
+
+        self.app = cast("T", app)  # type: ignore[redundant-cast]  # pyright needs this
+
         self.base_url = base_url
         self.backend = backend
         self.backend_options = backend_options
