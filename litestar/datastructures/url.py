@@ -7,11 +7,13 @@ from urllib.parse import SplitResult, urlencode, urlsplit, urlunsplit
 from litestar._parsers import parse_query_string
 from litestar.datastructures import MultiDict
 from litestar.types import Empty
+from litestar.types.empty import _EMPTY
 
 if TYPE_CHECKING:
     from typing_extensions import Self
 
     from litestar.types import EmptyType, Scope
+    from litestar.types.empty import _LiteralEmpty
 
 __all__ = ("Address", "URL")
 
@@ -60,7 +62,7 @@ class URL:
         "username",
     )
 
-    _query_params: EmptyType | MultiDict
+    _query_params: _LiteralEmpty | MultiDict
     _parsed_url: str | None
 
     scheme: str
@@ -111,7 +113,7 @@ class URL:
         instance.password = result.password
         instance.port = result.port
         instance.hostname = result.hostname
-        instance._query_params = Empty
+        instance._query_params = _EMPTY
 
         return instance
 
@@ -245,9 +247,9 @@ class URL:
                 If you want to modify query parameters, make  modifications in the
                 multidict and pass them back to :meth:`with_replacements`
         """
-        if self._query_params is Empty:
+        if self._query_params is _EMPTY:
             self._query_params = MultiDict(parse_query_string(query_string=self.query.encode()))
-        return cast("MultiDict", self._query_params)
+        return self._query_params
 
     def __str__(self) -> str:
         return self._url

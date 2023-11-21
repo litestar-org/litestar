@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Generic, cast
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Generic
 
 from litestar._multipart import parse_content_header, parse_multipart_form
 from litestar._parsers import parse_url_encoded_form_data
@@ -25,16 +25,15 @@ from litestar.datastructures.multi_dicts import FormMultiDict
 from litestar.enums import RequestEncodingType
 from litestar.exceptions import InternalServerException
 from litestar.serialization import decode_json, decode_msgpack
-from litestar.types import Empty
+from litestar.types.empty import _EMPTY
 from litestar.utils.scope import get_litestar_scope_state, set_litestar_scope_state
-
-__all__ = ("Request",)
-
 
 if TYPE_CHECKING:
     from litestar.handlers.http_handlers import HTTPRouteHandler  # noqa: F401
     from litestar.types.asgi_types import HTTPScope, Method, Receive, Scope, Send
+    from litestar.types.empty import _LiteralEmpty
 
+__all__ = ("Request",)
 
 SERVER_PUSH_HEADERS = {
     "accept",
@@ -67,12 +66,14 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         """
         super().__init__(scope, receive, send)
         self.is_connected: bool = True
-        self._body = get_litestar_scope_state(scope, SCOPE_STATE_BODY_KEY, Empty)
-        self._form = get_litestar_scope_state(scope, SCOPE_STATE_FORM_KEY, Empty)
-        self._json = get_litestar_scope_state(scope, SCOPE_STATE_JSON_KEY, Empty)
-        self._msgpack = get_litestar_scope_state(scope, SCOPE_STATE_MSGPACK_KEY, Empty)
-        self._content_type = get_litestar_scope_state(scope, SCOPE_STATE_CONTENT_TYPE_KEY, Empty)
-        self._accept = get_litestar_scope_state(scope, SCOPE_STATE_ACCEPT_KEY, Empty)
+        self._body: bytes | _LiteralEmpty = get_litestar_scope_state(scope, SCOPE_STATE_BODY_KEY, _EMPTY)
+        self._form: dict[str, Any] | _LiteralEmpty = get_litestar_scope_state(scope, SCOPE_STATE_FORM_KEY, _EMPTY)
+        self._json: Any | _LiteralEmpty = get_litestar_scope_state(scope, SCOPE_STATE_JSON_KEY, _EMPTY)
+        self._msgpack: Any | _LiteralEmpty = get_litestar_scope_state(scope, SCOPE_STATE_MSGPACK_KEY, _EMPTY)
+        self._content_type: tuple[str, dict[str, str]] | _LiteralEmpty = get_litestar_scope_state(
+            scope, SCOPE_STATE_CONTENT_TYPE_KEY, _EMPTY
+        )
+        self._accept: Accept | _LiteralEmpty = get_litestar_scope_state(scope, SCOPE_STATE_ACCEPT_KEY, _EMPTY)
 
     @property
     def method(self) -> Method:
@@ -90,10 +91,10 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         Returns:
             A tuple with the parsed value and a dictionary containing any options send in it.
         """
-        if self._content_type is Empty:
+        if self._content_type is _EMPTY:
             self._content_type = parse_content_header(self.headers.get("Content-Type", ""))
             set_litestar_scope_state(self.scope, SCOPE_STATE_CONTENT_TYPE_KEY, self._content_type)
-        return cast("tuple[str, dict[str, str]]", self._content_type)
+        return self._content_type
 
     @property
     def accept(self) -> Accept:
@@ -102,10 +103,10 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         Returns:
             An :class:`Accept <litestar.datastructures.headers.Accept>` instance, representing the list of acceptable media types.
         """
-        if self._accept is Empty:
+        if self._accept is _EMPTY:
             self._accept = Accept(self.headers.get("Accept", "*/*"))
             set_litestar_scope_state(self.scope, SCOPE_STATE_ACCEPT_KEY, self._accept)
-        return cast("Accept", self._accept)
+        return self._accept
 
     async def json(self) -> Any:
         """Retrieve the json request body from the request.
@@ -113,7 +114,7 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         Returns:
             An arbitrary value
         """
-        if self._json is Empty:
+        if self._json is _EMPTY:
             body = await self.body()
             self._json = decode_json(body or b"null", type_decoders=self.route_handler.resolve_type_decoders())
             set_litestar_scope_state(self.scope, SCOPE_STATE_JSON_KEY, self._json)
@@ -125,7 +126,7 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         Returns:
             An arbitrary value
         """
-        if self._msgpack is Empty:
+        if self._msgpack is _EMPTY:
             body = await self.body()
             self._msgpack = decode_msgpack(body or b"\xc0", type_decoders=self.route_handler.resolve_type_decoders())
             set_litestar_scope_state(self.scope, SCOPE_STATE_MSGPACK_KEY, self._msgpack)
@@ -140,7 +141,7 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         Raises:
             RuntimeError: if the stream is already consumed
         """
-        if self._body is Empty:
+        if self._body is _EMPTY:
             if not self.is_connected:
                 raise InternalServerException("stream consumed")
             while event := await self.receive():
@@ -168,10 +169,10 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         Returns:
             A byte-string representing the body of the request.
         """
-        if self._body is Empty:
+        if self._body is _EMPTY:
             self._body = b"".join([c async for c in self.stream()])
             set_litestar_scope_state(self.scope, SCOPE_STATE_BODY_KEY, self._body)
-        return cast("bytes", self._body)
+        return self._body
 
     async def form(self) -> FormMultiDict:
         """Retrieve form data from the request. If the request is either a 'multipart/form-data' or an
@@ -181,7 +182,7 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         Returns:
             A FormMultiDict instance
         """
-        if self._form is Empty:
+        if self._form is _EMPTY:
             content_type, options = self.content_type
             if content_type == RequestEncodingType.MULTI_PART:
                 self._form = parse_multipart_form(

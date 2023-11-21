@@ -14,7 +14,7 @@ from litestar.datastructures.multi_dicts import MultiDict
 from litestar.datastructures.state import State
 from litestar.datastructures.url import URL, Address, make_absolute_url
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.types.empty import Empty
+from litestar.types.empty import _EMPTY, Empty
 from litestar.utils.scope import get_litestar_scope_state, set_litestar_scope_state
 
 if TYPE_CHECKING:
@@ -23,6 +23,7 @@ if TYPE_CHECKING:
     from litestar.app import Litestar
     from litestar.types import DataContainerType, EmptyType
     from litestar.types.asgi_types import Message, Receive, Scope, Send
+    from litestar.types.empty import _LiteralEmpty
     from litestar.types.protocols import Logger
 
 __all__ = ("ASGIConnection", "empty_receive", "empty_send")
@@ -81,14 +82,14 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         self.scope = scope
         self.receive = receive
         self.send = send
-        self._base_url = cast("URL | EmptyType", get_litestar_scope_state(scope, SCOPE_STATE_BASE_URL_KEY, Empty))
-        self._url = cast("URL | EmptyType", get_litestar_scope_state(scope, SCOPE_STATE_URL_KEY, Empty))
+        self._base_url = cast("URL | _LiteralEmpty", get_litestar_scope_state(scope, SCOPE_STATE_BASE_URL_KEY, _EMPTY))
+        self._url = cast("URL | _LiteralEmpty", get_litestar_scope_state(scope, SCOPE_STATE_URL_KEY, _EMPTY))
         self._parsed_query = cast(
-            "tuple[tuple[str, str], ...] | EmptyType",
-            get_litestar_scope_state(scope, SCOPE_STATE_PARSED_QUERY_KEY, Empty),
+            "tuple[tuple[str, str], ...] | _LiteralEmpty",
+            get_litestar_scope_state(scope, SCOPE_STATE_PARSED_QUERY_KEY, _EMPTY),
         )
         self._cookies = cast(
-            "dict[str, str] | EmptyType", get_litestar_scope_state(scope, SCOPE_STATE_COOKIES_KEY, Empty)
+            "dict[str, str] | _LiteralEmpty", get_litestar_scope_state(scope, SCOPE_STATE_COOKIES_KEY, _EMPTY)
         )
 
     @property
@@ -125,11 +126,11 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         Returns:
             A URL instance constructed from the request's scope.
         """
-        if self._url is Empty:
+        if self._url is _EMPTY:
             self._url = URL.from_scope(self.scope)
             set_litestar_scope_state(self.scope, SCOPE_STATE_URL_KEY, self._url)
 
-        return cast("URL", self._url)
+        return self._url
 
     @property
     def base_url(self) -> URL:
@@ -139,7 +140,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
             A URL instance constructed from the request's scope, representing only the base part
             (host + domain + prefix) of the request.
         """
-        if self._base_url is Empty:
+        if self._base_url is _EMPTY:
             scope = cast(
                 "Scope",
                 {
@@ -151,7 +152,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
             )
             self._base_url = URL.from_scope(scope)
             set_litestar_scope_state(self.scope, SCOPE_STATE_BASE_URL_KEY, self._base_url)
-        return cast("URL", self._base_url)
+        return self._base_url
 
     @property
     def headers(self) -> Headers:
@@ -169,10 +170,10 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         Returns:
             A normalized dict of query parameters. Multiple values for the same key are returned as a list.
         """
-        if self._parsed_query is Empty:
+        if self._parsed_query is _EMPTY:
             self._parsed_query = parse_query_string(self.scope.get("query_string", b""))
             set_litestar_scope_state(self.scope, SCOPE_STATE_PARSED_QUERY_KEY, self._parsed_query)
-        return MultiDict(cast("tuple[tuple[str, str], ...]", self._parsed_query))
+        return MultiDict(self._parsed_query)
 
     @property
     def path_params(self) -> dict[str, Any]:
@@ -190,11 +191,11 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         Returns:
             Returns any cookies stored in the header as a parsed dictionary.
         """
-        if self._cookies is Empty:
+        if self._cookies is _EMPTY:
             self._cookies = parse_cookie_string(cookie_header) if (cookie_header := self.headers.get("cookie")) else {}
             set_litestar_scope_state(self.scope, SCOPE_STATE_COOKIES_KEY, self._cookies)
 
-        return cast("dict[str, str]", self._cookies)
+        return self._cookies
 
     @property
     def client(self) -> Address | None:

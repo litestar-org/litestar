@@ -15,7 +15,7 @@ from litestar.datastructures.upload_file import UploadFile
 from litestar.enums import ParamType, RequestEncodingType
 from litestar.exceptions import ValidationException
 from litestar.params import BodyKwarg
-from litestar.types import Empty
+from litestar.types.empty import _EMPTY
 from litestar.utils.scope import set_litestar_scope_state
 
 if TYPE_CHECKING:
@@ -149,12 +149,12 @@ def parse_connection_query_params(connection: ASGIConnection, kwargs_model: Kwar
     """
     parsed_query = (
         connection._parsed_query
-        if connection._parsed_query is not Empty
+        if connection._parsed_query is not _EMPTY
         else parse_query_string(connection.scope.get("query_string", b""))
     )
     set_litestar_scope_state(connection.scope, SCOPE_STATE_PARSED_QUERY_KEY, parsed_query)
     return create_query_default_dict(
-        parsed_query=parsed_query,  # type: ignore[arg-type]
+        parsed_query=parsed_query,
         sequence_query_parameter_names=kwargs_model.sequence_query_parameter_names,
     )
 
