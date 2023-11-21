@@ -222,3 +222,40 @@ def test_operation_override() -> None:
 
     operation_schema = CustomOperation().to_schema()
     assert "x-codeSamples" in operation_schema
+
+def test_operation_override_callable() -> None:
+    @dataclass
+    class CustomOperation(Operation):
+        x_my_value: Optional[str] = field(default=None, metadata={"alias": "x-my-value"})
+        x_default_value: Optional[str] = field(default=None, metadata={"alias": "x-default-value"})
+        
+        def __post_init__(self) -> None:
+            self.tags = ["test"]
+            self.x_my_value = "post_init_x_my_value"
+            self.x_default_value = "post_init_x_default_value"
+
+
+    def custom_operation_callable(operation: CustomOperation, route: HTTPRouteHandler):
+        operation.x_my_value = "callable_set_x_my_value"
+        operation.tags = ["callable_tag"]
+        operation.description = route.opt.get("value_from_opts")
+        
+
+    @get(path="/1", operation_class=CustomOperation, operation_callable=custom_operation_callable, value_from_opts="value_from_opt")
+    def handler_1() -> None:
+        ...
+
+    app = Litestar(route_handlers=[handler_1])
+
+   
+    assert app.openapi_schema.paths["/1"]
+    assert app.openapi_schema.paths["/1"].get
+    assert isinstance(app.openapi_schema.paths["/1"].get, CustomOperation)
+    assert app.openapi_schema.paths["/1"].get.tags == ["callable_tag"]
+    assert app.openapi_schema.paths["/1"].get.description == "value_from_opt"
+    assert app.openapi_schema.paths["/1"].get.x_my_value == "callable_set_x_my_value"
+    assert app.openapi_schema.paths["/1"].get.x_default_value == "post_init_x_default_value"
+
+    operation_schema = CustomOperation().to_schema()
+    assert "x-my-value" in operation_schema
+    assert "x-default-value" in operation_schema

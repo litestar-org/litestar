@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Awaitable, Callable, Generator, TypeVar
-from litestar.openapi.spec.operation import Operation
 
 if TYPE_CHECKING:
     from typing_extensions import TypeAlias
@@ -17,9 +16,10 @@ if TYPE_CHECKING:
     from litestar.types.helper_types import SyncOrAsyncUnion
     from litestar.types.internal_types import PathParameterDefinition
     from litestar.types.protocols import Logger
+    from litestar.openapi.spec.operation import Operation
 
 ExceptionT = TypeVar("ExceptionT", bound=Exception)
-OperationT = TypeVar("OperationT", bound=Operation)
+OperationT = TypeVar("OperationT", bound="Operation")
 
 AfterExceptionHookHandler: TypeAlias = "Callable[[ExceptionT, Scope], SyncOrAsyncUnion[None]]"
 AfterRequestHookHandler: TypeAlias = (

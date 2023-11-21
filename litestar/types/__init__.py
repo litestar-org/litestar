@@ -57,6 +57,7 @@ from .callable_types import (
     LifespanHook,
     OnAppInitHandler,
     OperationIDCreator,
+	OperationCallable,
     Serializer,
 )
 from .composite_types import (
