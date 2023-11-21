@@ -147,15 +147,15 @@ def parse_connection_query_params(connection: ASGIConnection, kwargs_model: Kwar
     Returns:
         A dictionary of parsed values.
     """
-    parsed_query = cast(
-        "tuple[tuple[str, str], ...]",
+    parsed_query = (
         connection._parsed_query
         if connection._parsed_query is not Empty
-        else parse_query_string(connection.scope.get("query_string", b"")),
+        else parse_query_string(connection.scope.get("query_string", b""))
     )
     set_litestar_scope_state(connection.scope, SCOPE_STATE_PARSED_QUERY_KEY, parsed_query)
     return create_query_default_dict(
-        parsed_query=parsed_query, sequence_query_parameter_names=kwargs_model.sequence_query_parameter_names
+        parsed_query=parsed_query,  # type: ignore[arg-type]
+        sequence_query_parameter_names=kwargs_model.sequence_query_parameter_names,
     )
 
 
