@@ -532,10 +532,11 @@ class Litestar(Router):
         Returns:
             None
         """
-        scope["app"] = self
         if scope["type"] == "lifespan":
             await self.asgi_router.lifespan(receive=receive, send=send)  # type: ignore[arg-type]
             return
+
+        scope["app"] = self
         scope["state"] = {}
         await self.asgi_handler(scope, receive, self._wrap_send(send=send, scope=scope))  # type: ignore[arg-type]
 
