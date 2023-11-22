@@ -373,7 +373,7 @@ class Response(Generic[T]):
             return content
 
         if content is Empty:
-            raise RuntimeError("Empty response content is not supported")
+            raise RuntimeError("The `Empty` sentinel cannot be used as response content")
 
         try:
             if media_type.startswith("text/") and not content:
