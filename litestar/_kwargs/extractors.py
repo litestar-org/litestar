@@ -154,7 +154,7 @@ def parse_connection_query_params(connection: ASGIConnection, kwargs_model: Kwar
     )
     set_litestar_scope_state(connection.scope, SCOPE_STATE_PARSED_QUERY_KEY, parsed_query)
     return create_query_default_dict(
-        parsed_query=parsed_query,  # type: ignore[arg-type]
+        parsed_query=parsed_query,
         sequence_query_parameter_names=kwargs_model.sequence_query_parameter_names,
     )
 

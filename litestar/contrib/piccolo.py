@@ -84,7 +84,7 @@ class PiccoloDTO(AbstractDTO[T], Generic[T]):
                     field_definition=_parse_piccolo_type(column, _create_column_extra(column)),
                     dto_field=DTOField(mark=Mark.READ_ONLY if column._meta.primary_key else None),
                     model_name=model_type.__name__,
-                    default_factory=Empty,
+                    default_factory=None,
                 ),
                 default=Empty if column._meta.required else None,
                 name=column._meta.name,
