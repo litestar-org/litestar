@@ -120,9 +120,7 @@ class LitestarEnv:
             import dotenv
 
             dotenv.load_dotenv()
-        app_path = app_path or getenv("LITESTAR_APP")
-        if app_path and getenv("LITESTAR_APP") is None:
-            os.environ["LITESTAR_APP"] = app_path
+        app_path = os.environ["LITESTAR_APP"] = app_path or getenv("LITESTAR_APP")
         if app_path:
             console.print(f"Using Litestar app from env: [bright_blue]{app_path!r}")
             loaded_app = _load_app_from_path(app_path)
