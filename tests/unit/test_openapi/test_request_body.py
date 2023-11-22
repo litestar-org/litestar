@@ -62,9 +62,10 @@ def test_upload_file_request_body_generation() -> None:
         "items": {"type": "string", "contentMediaType": "application/octet-stream"},
         "type": "array",
     }
+
     assert components == {
         "schemas": {
-            "FormData": {
+            "tests_unit_test_openapi_test_request_body_FormData": {
                 "properties": {
                     "cv": {
                         "type": "string",

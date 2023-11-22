@@ -155,6 +155,7 @@ class PydanticInitPlugin(InitPluginProtocol):
             pydantic_v1.color.Color: str,
             pydantic_v1.ConstrainedBytes: lambda val: val.decode("utf-8"),
             pydantic_v1.ConstrainedDate: lambda val: val.isoformat(),
+            pydantic_v1.AnyUrl: str,
         }
 
     @staticmethod
@@ -163,6 +164,7 @@ class PydanticInitPlugin(InitPluginProtocol):
             pydantic_v2.BaseModel: lambda model: model.model_dump(mode="json", by_alias=prefer_alias),
             pydantic_v2.types.SecretStr: lambda val: "**********" if val else "",
             pydantic_v2.types.SecretBytes: lambda val: "**********" if val else "",
+            pydantic_v2.AnyUrl: str,
         }
 
         with suppress(ImportError):

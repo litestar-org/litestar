@@ -8,11 +8,12 @@ from litestar._parsers import parse_query_string
 from litestar.datastructures import MultiDict
 from litestar.types import Empty
 
-__all__ = ("Address", "URL")
-
-
 if TYPE_CHECKING:
+    from typing_extensions import Self
+
     from litestar.types import EmptyType, Scope
+
+__all__ = ("Address", "URL")
 
 _DEFAULT_SCHEME_PORTS = {"http": 80, "https": 443, "ftp": 21, "ws": 80, "wss": 443}
 
@@ -81,13 +82,17 @@ class URL:
     hostname: str | None
     """Hostname if specified."""
 
-    @lru_cache  # type: ignore[misc]  # noqa: B019
     def __new__(cls, url: str | SplitResult) -> URL:
         """Create a new instance.
 
         Args:
             url: url string or split result to represent.
         """
+        return cls._new(url=url)
+
+    @classmethod
+    @lru_cache
+    def _new(cls, url: str | SplitResult) -> URL:
         instance = super().__new__(cls)
         instance._parsed_url = None
 
@@ -135,7 +140,7 @@ class URL:
         path: str = "",
         fragment: str = "",
         query: str = "",
-    ) -> URL:
+    ) -> Self:
         """Create a new URL from components.
 
         Args:
@@ -148,7 +153,7 @@ class URL:
         Returns:
             A new URL with the given components
         """
-        return cls(  # type: ignore[no-any-return]
+        return cls(
             SplitResult(
                 scheme=scheme,
                 netloc=netloc,
@@ -159,7 +164,7 @@ class URL:
         )
 
     @classmethod
-    def from_scope(cls, scope: Scope) -> URL:
+    def from_scope(cls, scope: Scope) -> Self:
         """Construct a URL from a :class:`Scope <.types.Scope>`
 
         Args:
@@ -202,7 +207,7 @@ class URL:
         path: str = "",
         query: str | MultiDict | None | EmptyType = Empty,
         fragment: str = "",
-    ) -> URL:
+    ) -> Self:
         """Create a new URL, replacing the given components.
 
         Args:
@@ -217,13 +222,13 @@ class URL:
         """
         if isinstance(query, MultiDict):
             query = urlencode(query=query)
-        query = (query if query is not Empty else self.query) or ""
+        query_str = cast("str", (query if query is not Empty else self.query) or "")
 
-        return URL.from_components(  # type: ignore[no-any-return]
+        return type(self).from_components(
             scheme=scheme or self.scheme,
             netloc=netloc or self.netloc,
             path=path or self.path,
-            query=query,
+            query=query_str,
             fragment=fragment or self.fragment,
         )
 
@@ -250,7 +255,7 @@ class URL:
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, (str, URL)):
             return str(self) == str(other)
-        return NotImplemented  # type: ignore[unreachable]  # pragma: no cover
+        return NotImplemented  # pragma: no cover
 
     def __repr__(self) -> str:
         return f"{type(self).__name__}({self._url!r})"
