@@ -1,6 +1,5 @@
 default_language_version:
   python: "3.8"
-default_stages: ["pre-push"]
 repos:
   - repo: https://github.com/compilerla/conventional-pre-commit
     rev: v2.4.0

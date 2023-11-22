@@ -85,22 +85,22 @@ def _should_create_literal_schema(field_definition: FieldDefinition) -> bool:
 
 
 TYPE_NAME_NORMALIZATION_SUB_REGEX = re.compile(r"[^a-zA-Z0-9]+")
-TYPE_NAME_NORMALIZATION_TRIM_REGEX = re.compile(r"^(_+class_+|_+)|_+$")
+TYPE_NAME_NORMALIZATION_TRIM_REGEX = re.compile(r"^_+(class_+)?|_+$")
 
 
 def _get_normalized_schema_key(type_annotation_str: str) -> str:
-    """Normalize a type annotation, replacing all non-alphanumeric with underscores. Existing underscores will be left as-is
+    """Normalize a type annotation, replacing all non-alphanumeric with underscores.
+    Existing underscores will be left as-is
 
     Args:
-        type_annotation_str (str): A string representing a type annotation (i.e. 'typing.Dict[str, typing.Any]' or '<class 'model.Foo'>')
+        type_annotation_str: A string representing a type annotation
+            (i.e. 'typing.Dict[str, typing.Any]' or '<class 'model.Foo'>')
 
     Returns:
-        str: A normalized version of the input string
+        A normalized version of the input string
     """
     # Use a regular expression to replace non-alphanumeric characters with underscores
-    return re.sub(
-        TYPE_NAME_NORMALIZATION_TRIM_REGEX, "", re.sub(TYPE_NAME_NORMALIZATION_SUB_REGEX, "_", type_annotation_str)
-    )
+    return TYPE_NAME_NORMALIZATION_TRIM_REGEX.sub("", TYPE_NAME_NORMALIZATION_SUB_REGEX.sub("_", type_annotation_str))
 
 
 def get_formatted_examples(field_definition: FieldDefinition, examples: Sequence[Example]) -> Mapping[str, Example]:
