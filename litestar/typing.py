@@ -234,8 +234,6 @@ class FieldDefinition:
     def _extract_metadata(
         cls, annotation: Any, name: str | None, default: Any, metadata: tuple[Any, ...], extra: dict[str, Any] | None
     ) -> tuple[KwargDefinition | None, dict[str, Any]]:
-        from litestar.dto.base_dto import AbstractDTO
-
         model = BodyKwarg if name == "data" else ParameterKwarg
 
         for extractor in _KWARG_META_EXTRACTORS:
@@ -246,9 +244,6 @@ class FieldDefinition:
                     annotation=annotation,
                     extra=extra,
                 )
-
-        if isinstance(annotation, AbstractDTO):
-            return _create_metadata_from_type(metadata=[annotation], model=model, annotation=annotation, extra=extra)
 
         if any(isinstance(arg, KwargDefinition) for arg in get_args(annotation)):
             return next(arg for arg in get_args(annotation) if isinstance(arg, KwargDefinition)), extra or {}
