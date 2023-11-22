@@ -25,13 +25,16 @@ T = TypeVar("T", bound=Table)
 
 __all__ = ("PiccoloDTO",)
 
-warn_deprecation(
-    deprecated_name="litestar.contrib.piccolo",
-    version="2.3.2",
-    kind="import",
-    removal_in="3.0",
-    info="importing from 'litestar.contrib.piccolo' is deprecated and will be removed in 3.0, please import from 'litestar_piccolo' package directly instead",
-)
+
+def __getattr__(name: str) -> Any:
+    warn_deprecation(
+        deprecated_name=f"litestar.contrib.piccolo.{name}",
+        version="2.3.2",
+        kind="import",
+        removal_in="3.0.0",
+        info="importing from 'litestar.contrib.piccolo' is deprecated and will be removed in 3.0, please import from 'litestar_piccolo' package directly instead",
+    )
+    return getattr(name, name)
 
 
 def _parse_piccolo_type(column: Column, extra: dict[str, Any]) -> FieldDefinition:
