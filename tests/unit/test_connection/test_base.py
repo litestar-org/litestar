@@ -1,9 +1,10 @@
 from typing import Any
 
-from litestar import Litestar, get
+from litestar import Litestar, constants, get
 from litestar.connection import ASGIConnection
 from litestar.logging.config import LoggingConfig
 from litestar.testing import RequestFactory
+from litestar.utils.scope import get_litestar_scope_state
 
 
 def test_connection_base_properties() -> None:
@@ -22,21 +23,21 @@ def test_connection_base_properties() -> None:
     assert connection.app is app
     assert connection.route_handler is handler
     assert connection.state is not None
-    assert not scope.get("_url")
+    assert not get_litestar_scope_state(scope, constants.SCOPE_STATE_URL_KEY)
     assert connection.url
-    assert scope.get("_url")
-    assert not scope.get("_base_url")
+    assert get_litestar_scope_state(scope, constants.SCOPE_STATE_URL_KEY)
+    assert not get_litestar_scope_state(scope, constants.SCOPE_STATE_BASE_URL_KEY)
     assert connection.base_url
-    assert scope.get("_base_url")
+    assert get_litestar_scope_state(scope, constants.SCOPE_STATE_BASE_URL_KEY)
     assert not scope.get("_headers")
     assert connection.headers is not None
     assert scope.get("_headers") is not None
-    assert not scope.get("_parsed_query")
+    assert not get_litestar_scope_state(scope, constants.SCOPE_STATE_PARSED_QUERY_KEY)
     assert connection.query_params is not None
-    assert scope.get("_parsed_query") is not None
-    assert not scope.get("_cookies")
+    assert get_litestar_scope_state(scope, constants.SCOPE_STATE_PARSED_QUERY_KEY) is not None
+    assert not get_litestar_scope_state(scope, constants.SCOPE_STATE_COOKIES_KEY)
     assert connection.cookies is not None
-    assert scope.get("_cookies") is not None
+    assert get_litestar_scope_state(scope, constants.SCOPE_STATE_COOKIES_KEY) is not None
     assert connection.client
     assert connection.user is user
     assert connection.auth is auth

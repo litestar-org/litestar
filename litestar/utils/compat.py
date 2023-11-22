@@ -23,5 +23,5 @@ except NameError:
             return await gen.__anext__()
         except StopAsyncIteration as exc:
             if default is not Empty:
-                return default  # type: ignore[return-value]
+                return default
             raise exc

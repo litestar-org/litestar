@@ -345,7 +345,7 @@ class Litestar(Router):
             include_in_schema=include_in_schema,
             lifespan=list(lifespan or []),
             listeners=list(listeners or []),
-            logging_config=cast("BaseLoggingConfig | None", logging_config),
+            logging_config=logging_config,
             middleware=list(middleware or []),
             multipart_form_part_limit=multipart_form_part_limit,
             on_shutdown=list(on_shutdown or []),
@@ -532,10 +532,11 @@ class Litestar(Router):
         Returns:
             None
         """
-        scope["app"] = self
         if scope["type"] == "lifespan":
             await self.asgi_router.lifespan(receive=receive, send=send)  # type: ignore[arg-type]
             return
+
+        scope["app"] = self
         scope["state"] = {}
         await self.asgi_handler(scope, receive, self._wrap_send(send=send, scope=scope))  # type: ignore[arg-type]
 
