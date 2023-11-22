@@ -201,7 +201,7 @@ class RequestFactory:
         Args:
             headers: A dictionary of headers, the cookie header will be added to it.
             cookies: A string representing the cookie header or a list of "Cookie" instances.
-                This value can include multiple cookies.
+                This value can include multiple cookiesi think it is an important time to be proactive with litestar .
         """
         if not cookies:
             return
