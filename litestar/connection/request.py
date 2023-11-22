@@ -181,27 +181,24 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         Returns:
             A FormMultiDict instance
         """
-        if self._form is not Empty:
-            return FormMultiDict(self._form)
-        content_type, options = self.content_type
-        if content_type == RequestEncodingType.MULTI_PART:
-            form_values = parse_multipart_form(
-                body=await self.body(),
-                boundary=options.get("boundary", "").encode(),
-                multipart_form_part_limit=self.app.multipart_form_part_limit,
-            )
-        elif content_type == RequestEncodingType.URL_ENCODED:
-            form_values = parse_url_encoded_form_data(
-                await self.body(),
-            )
-        else:
-            form_values = {}
+        if self._form is Empty:
+            content_type, options = self.content_type
+            if content_type == RequestEncodingType.MULTI_PART:
+                self._form = parse_multipart_form(
+                    body=await self.body(),
+                    boundary=options.get("boundary", "").encode(),
+                    multipart_form_part_limit=self.app.multipart_form_part_limit,
+                )
+            elif content_type == RequestEncodingType.URL_ENCODED:
+                self._form = parse_url_encoded_form_data(
+                    await self.body(),
+                )
+            else:
+                self._form = {}
 
-        if form_values:
-            self._form = form_values
             set_litestar_scope_state(self.scope, SCOPE_STATE_FORM_KEY, self._form)
 
-        return FormMultiDict(form_values)
+        return FormMultiDict(self._form)
 
     async def send_push_promise(self, path: str) -> None:
         """Send a push promise.
