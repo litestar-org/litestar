@@ -61,7 +61,25 @@ def fake_asgi_connection(app: ASGIApp, cookies: dict[str, str]) -> ASGIConnectio
     return ASGIConnection[Any, Any, Any, Any](scope=scope)
 
 
-def _add_state_app(app: ASGIApp) -> ASGIApp:
+def _wrap_app_to_add_state(app: ASGIApp) -> ASGIApp:
+    """Wrap an ASGI app to add state to the scope.
+
+    Litestar depends on `state` being present in the ASGI connection scope. Scope state is optional in the ASGI spec,
+    however, the Litestar app always ensures it is present so that it can be depended on internally.
+
+    When the ASGI app that is passed to the test client is _not_ a Litestar app, we need to add
+    state to the scope, because httpx does not do this for us.
+
+    This assists us in testing Litestar components that rely on state being present in the scope, without having
+    to create a Litestar app for every test case.
+
+    Args:
+        app: The ASGI app to wrap.
+
+    Returns:
+        The wrapped ASGI app.
+    """
+
     async def wrapped(scope: Scope, receive: Receive, send: Send) -> None:
         scope["state"] = {}
         await app(scope, receive, send)
@@ -105,7 +123,7 @@ class BaseTestClient(Generic[T]):
             self._session_backend = session_config._backend_class(config=session_config)
 
         if not isinstance(app, Litestar):
-            app = _add_state_app(app)  # type: ignore[assignment]
+            app = _wrap_app_to_add_state(app)  # type: ignore[assignment]
 
         self.app = cast("T", app)  # type: ignore[redundant-cast]  # pyright needs this
 
