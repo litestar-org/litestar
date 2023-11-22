@@ -447,10 +447,10 @@ def test_field_definition_get_type_hints_dont_resolve_generics(
 @pytest.mark.parametrize(
     "predicate, expected_meta",
     [
-        (annotated_types.LowerCase.__metadata__[0], {"lower_case": True}),
-        (annotated_types.UpperCase.__metadata__[0], {"upper_case": True}),
-        (annotated_types.IsAscii.__metadata__[0], {"pattern": "[[:ascii:]]"}),
-        (annotated_types.IsDigits.__metadata__[0], {"pattern": "[[:digit:]]"}),
+        (annotated_types.LowerCase.__metadata__[0], {"lower_case": True}),  # pyright: ignore
+        (annotated_types.UpperCase.__metadata__[0], {"upper_case": True}),  # pyright: ignore
+        (annotated_types.IsAscii.__metadata__[0], {"pattern": "[[:ascii:]]"}),  # pyright: ignore
+        (annotated_types.IsDigits.__metadata__[0], {"pattern": "[[:digit:]]"}),  # pyright: ignore
         (object(), {}),
     ],
 )
