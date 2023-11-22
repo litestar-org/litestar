@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import sys
 from dataclasses import dataclass
-from typing import Any, ForwardRef, Generic, List, Optional, Tuple, TypeVar, Union, get_type_hints
+from typing import Any, ForwardRef, Generic, List, Optional, Tuple, TypeVar, Union
 
 import annotated_types
 import msgspec
 import pytest
-from typing_extensions import Annotated, NotRequired, Required, TypedDict
+from typing_extensions import Annotated, NotRequired, Required, TypedDict, get_type_hints
 
 from litestar.params import DependencyKwarg, KwargDefinition, ParameterKwarg
 from litestar.typing import FieldDefinition, _unpack_predicate
@@ -312,9 +312,11 @@ def test_is_required() -> None:
         with_default: str = ""
         with_none_default: Union[str, None] = None  # noqa: UP007
 
-    assert FieldDefinition.from_annotation(get_type_hints(Foo)["required"]).is_required is True
-    assert FieldDefinition.from_annotation(get_type_hints(Foo)["not_required"]).is_required is False
-    assert FieldDefinition.from_annotation(get_type_hints(Bar)["unset"]).is_required is False
+    assert FieldDefinition.from_annotation(get_type_hints(Foo, include_extras=True)["required"]).is_required is True
+    assert (
+        FieldDefinition.from_annotation(get_type_hints(Foo, include_extras=True)["not_required"]).is_required is False
+    )
+    assert FieldDefinition.from_annotation(get_type_hints(Bar, include_extras=True)["unset"]).is_required is False
 
     assert (
         FieldDefinition.from_kwarg(
