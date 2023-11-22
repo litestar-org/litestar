@@ -30,7 +30,7 @@ warn_deprecation(
     version="2.3.2",
     kind="import",
     removal_in="3.0",
-    info="importing from 'litestar.contrib.piccolo' is deprecated, please import from 'litestar_piccolo' package directly instead",
+    info="importing from 'litestar.contrib.piccolo' is deprecated and will be removed in 3.0, please import from 'litestar_piccolo' package directly instead",
 )
 
 
