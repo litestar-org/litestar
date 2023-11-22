@@ -97,7 +97,7 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
                     model_name=model_type.__name__,
                     default_factory=field_info.default_factory
                     if field_info.default_factory and not is_pydantic_undefined(field_info.default_factory)
-                    else Empty,
+                    else None,
                 ),
                 default=default,
                 name=field_name,
@@ -107,4 +107,4 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
     def detect_nested_field(cls, field_definition: FieldDefinition) -> bool:
         if pydantic_v2 is not Empty:  # type: ignore[comparison-overlap]
             return field_definition.is_subclass_of((pydantic_v1.BaseModel, pydantic_v2.BaseModel))
-        return field_definition.is_subclass_of(pydantic_v1.BaseModel)
+        return field_definition.is_subclass_of(pydantic_v1.BaseModel)  # type: ignore[unreachable]

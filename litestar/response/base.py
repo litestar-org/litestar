@@ -9,6 +9,7 @@ from litestar.enums import MediaType, OpenAPIMediaType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.serialization import default_serializer, encode_json, encode_msgpack, get_serializer
 from litestar.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED
+from litestar.types.empty import Empty
 from litestar.utils.deprecation import deprecated, warn_deprecation
 from litestar.utils.helpers import get_enum_string_value
 
@@ -370,6 +371,9 @@ class Response(Generic[T]):
         """
         if isinstance(content, bytes):
             return content
+
+        if content is Empty:
+            raise RuntimeError("The `Empty` sentinel cannot be used as response content")
 
         try:
             if media_type.startswith("text/") and not content:

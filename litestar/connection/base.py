@@ -129,7 +129,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
             self._url = URL.from_scope(self.scope)
             set_litestar_scope_state(self.scope, SCOPE_STATE_URL_KEY, self._url)
 
-        return cast("URL", self._url)
+        return self._url
 
     @property
     def base_url(self) -> URL:
@@ -151,7 +151,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
             )
             self._base_url = URL.from_scope(scope)
             set_litestar_scope_state(self.scope, SCOPE_STATE_BASE_URL_KEY, self._base_url)
-        return cast("URL", self._base_url)
+        return self._base_url
 
     @property
     def headers(self) -> Headers:
@@ -172,7 +172,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         if self._parsed_query is Empty:
             self._parsed_query = parse_query_string(self.scope.get("query_string", b""))
             set_litestar_scope_state(self.scope, SCOPE_STATE_PARSED_QUERY_KEY, self._parsed_query)
-        return MultiDict(cast("tuple[tuple[str, str], ...]", self._parsed_query))
+        return MultiDict(self._parsed_query)
 
     @property
     def path_params(self) -> dict[str, Any]:
@@ -194,7 +194,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
             self._cookies = parse_cookie_string(cookie_header) if (cookie_header := self.headers.get("cookie")) else {}
             set_litestar_scope_state(self.scope, SCOPE_STATE_COOKIES_KEY, self._cookies)
 
-        return cast("dict[str, str]", self._cookies)
+        return self._cookies
 
     @property
     def client(self) -> Address | None:

@@ -259,7 +259,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
                 parsed_signature=self.parsed_fn_signature,
                 type_decoders=self.resolve_type_decoders(),
             )
-        return cast("type[SignatureModel]", self._signature_model)
+        return self._signature_model
 
     @asynccontextmanager
     async def default_connection_lifespan(
@@ -297,12 +297,12 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
     def resolve_receive_handler(self) -> Callable[[WebSocket], Any]:
         if self._receive_handler is Empty:
             self._receive_handler = create_handle_receive(self)
-        return cast("Callable[[WebSocket], Any]", self._receive_handler)
+        return self._receive_handler
 
     def resolve_send_handler(self) -> Callable[[WebSocket, Any], Coroutine[None, None, None]]:
         if self._send_handler is Empty:
             self._send_handler = create_handle_send(self)
-        return cast("Callable[[WebSocket, Any], Coroutine[None, None, None]]", self._send_handler)
+        return self._send_handler
 
 
 websocket_listener = WebsocketListenerRouteHandler

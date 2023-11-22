@@ -29,7 +29,7 @@ class RedisStore(NamespacedStore):
                 ``None``. This will make :meth:`.delete_all` unavailable.
         """
         self._redis = redis
-        self.namespace: str | None = "LITESTAR" if namespace is Empty else namespace  # type: ignore[assignment]
+        self.namespace: str | None = "LITESTAR" if namespace is Empty else namespace
 
         # script to get and renew a key in one atomic step
         self._get_and_renew_script = self._redis.register_script(

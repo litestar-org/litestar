@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from functools import lru_cache
-from typing import TYPE_CHECKING, Any, NamedTuple, cast
+from typing import TYPE_CHECKING, Any, NamedTuple
 from urllib.parse import SplitResult, urlencode, urlsplit, urlunsplit
 
 from litestar._parsers import parse_query_string
@@ -222,13 +222,14 @@ class URL:
         """
         if isinstance(query, MultiDict):
             query = urlencode(query=query)
-        query_str = cast("str", (query if query is not Empty else self.query) or "")
+
+        query = (query if query is not Empty else self.query) or ""
 
         return type(self).from_components(
             scheme=scheme or self.scheme,
             netloc=netloc or self.netloc,
             path=path or self.path,
-            query=query_str,
+            query=query,
             fragment=fragment or self.fragment,
         )
 
@@ -247,7 +248,7 @@ class URL:
         """
         if self._query_params is Empty:
             self._query_params = MultiDict(parse_query_string(query_string=self.query.encode()))
-        return cast("MultiDict", self._query_params)
+        return self._query_params
 
     def __str__(self) -> str:
         return self._url
