@@ -3,6 +3,7 @@ from __future__ import annotations
 import contextlib
 import importlib
 import inspect
+import os
 import sys
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
@@ -120,6 +121,8 @@ class LitestarEnv:
 
             dotenv.load_dotenv()
         app_path = app_path or getenv("LITESTAR_APP")
+        if app_path and getenv("LITESTAR_APP") is None:
+            os.environ["LITESTAR_APP"] = app_path
         if app_path:
             console.print(f"Using Litestar app from env: [bright_blue]{app_path!r}")
             loaded_app = _load_app_from_path(app_path)
@@ -345,11 +348,13 @@ def _autodiscover_app(cwd: Path) -> LoadedApp:
         ):
             if isinstance(value, Litestar):
                 app_string = f"{import_path}:{attr}"
+                os.environ["LITESTAR_APP"] = app_string
                 console.print(f"Using Litestar app from [bright_blue]{app_string}")
                 return LoadedApp(app=value, app_path=app_string, is_factory=False)
 
         if hasattr(module, "create_app"):
             app_string = f"{import_path}:create_app"
+            os.environ["LITESTAR_APP"] = app_string
             console.print(f"Using Litestar factory [bright_blue]{app_string}")
             return LoadedApp(app=module.create_app(), app_path=app_string, is_factory=True)
 
@@ -363,6 +368,7 @@ def _autodiscover_app(cwd: Path) -> LoadedApp:
                 continue
             if return_annotation in ("Litestar", Litestar):
                 app_string = f"{import_path}:{attr}"
+                os.environ["LITESTAR_APP"] = app_string
                 console.print(f"Using Litestar factory [bright_blue]{app_string}")
                 return LoadedApp(app=value(), app_path=f"{app_string}", is_factory=True)
 

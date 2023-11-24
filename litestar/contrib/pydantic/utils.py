@@ -1,3 +1,4 @@
+# mypy: strict-equality=False
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
@@ -52,13 +53,15 @@ def is_pydantic_model_class(
     Returns:
         A typeguard determining whether the type is :data:`BaseModel pydantic.BaseModel>`.
     """
-    if pydantic_v1 is Empty:  # type: ignore[comparison-overlap] # pragma: no cover
-        return False
+    tests: list[bool] = []
 
-    if pydantic_v2 is Empty:  # type: ignore[comparison-overlap] # pragma: no cover
-        return is_class_and_subclass(annotation, pydantic_v1.BaseModel)
+    if pydantic_v1 is not Empty:  # pragma: no cover
+        tests.append(is_class_and_subclass(annotation, pydantic_v1.BaseModel))
 
-    return is_class_and_subclass(annotation, (pydantic_v1.BaseModel, pydantic_v2.BaseModel))
+    if pydantic_v2 is not Empty:  # pragma: no cover
+        tests.append(is_class_and_subclass(annotation, pydantic_v2.BaseModel))
+
+    return any(tests)
 
 
 def is_pydantic_model_instance(
@@ -72,13 +75,15 @@ def is_pydantic_model_instance(
     Returns:
         A typeguard determining whether the type is :data:`BaseModel pydantic.BaseModel>`.
     """
-    if pydantic_v1 is Empty:  # type: ignore[comparison-overlap] # pragma: no cover
-        return False
+    tests: list[bool] = []
 
-    if pydantic_v2 is Empty:  # type: ignore[comparison-overlap] # pragma: no cover
-        return isinstance(annotation, pydantic_v1.BaseModel)
+    if pydantic_v1 is not Empty:  # pragma: no cover
+        tests.append(isinstance(annotation, pydantic_v1.BaseModel))
 
-    return isinstance(annotation, (pydantic_v1.BaseModel, pydantic_v2.BaseModel))
+    if pydantic_v2 is not Empty:  # pragma: no cover
+        tests.append(isinstance(annotation, pydantic_v2.BaseModel))
+
+    return any(tests)
 
 
 def is_pydantic_constrained_field(annotation: Any) -> bool:
@@ -90,8 +95,8 @@ def is_pydantic_constrained_field(annotation: Any) -> bool:
     Returns:
         True if pydantic is installed and the type is a constrained type, otherwise False.
     """
-    if pydantic_v1 is Empty:  # type: ignore[comparison-overlap] # pragma: no cover
-        return False
+    if pydantic_v1 is Empty:  # pragma: no cover
+        return False  # type: ignore[unreachable]
 
     return any(
         is_class_and_subclass(annotation, constrained_type)  # pyright: ignore
@@ -110,7 +115,7 @@ def is_pydantic_constrained_field(annotation: Any) -> bool:
 
 
 def pydantic_unwrap_and_get_origin(annotation: Any) -> Any | None:
-    if pydantic_v2 is Empty or is_class_and_subclass(annotation, pydantic_v1.BaseModel):  # type: ignore[comparison-overlap]
+    if pydantic_v2 is Empty or (pydantic_v1 is not Empty and is_class_and_subclass(annotation, pydantic_v1.BaseModel)):
         return get_origin_or_inner_type(annotation)
 
     origin = annotation.__pydantic_generic_metadata__["origin"]
@@ -123,7 +128,7 @@ def pydantic_get_type_hints_with_generics_resolved(
     localns: dict[str, Any] | None = None,
     include_extras: bool = False,
 ) -> dict[str, Any]:
-    if pydantic_v2 is Empty or is_class_and_subclass(annotation, pydantic_v1.BaseModel):  # type: ignore[comparison-overlap]
+    if pydantic_v2 is Empty or (pydantic_v1 is not Empty and is_class_and_subclass(annotation, pydantic_v1.BaseModel)):
         return get_type_hints_with_generics_resolved(annotation)
 
     origin = pydantic_unwrap_and_get_origin(annotation)
@@ -158,7 +163,7 @@ def pydantic_get_unwrapped_annotation_and_type_hints(annotation: Any) -> tuple[A
 def is_pydantic_2_model(
     obj: type[pydantic_v1.BaseModel | pydantic_v2.BaseModel],  # pyright: ignore
 ) -> TypeGuard[pydantic_v2.BaseModel]:  # pyright: ignore
-    return pydantic_v2 is not Empty and issubclass(obj, pydantic_v2.BaseModel)  # type: ignore[comparison-overlap]
+    return pydantic_v2 is not Empty and issubclass(obj, pydantic_v2.BaseModel)
 
 
 def is_pydantic_undefined(value: Any) -> bool:

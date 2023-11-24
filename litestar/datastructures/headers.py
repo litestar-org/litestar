@@ -27,9 +27,6 @@ from litestar._multipart import parse_content_header
 from litestar.datastructures.multi_dicts import MultiMixin
 from litestar.dto.base_dto import AbstractDTO
 from litestar.exceptions import ImproperlyConfiguredException, ValidationException
-
-__all__ = ("Accept", "CacheControlHeader", "ETag", "Header", "Headers", "MutableScopeHeaders")
-
 from litestar.typing import FieldDefinition
 from litestar.utils.dataclass import simple_asdict
 
@@ -40,6 +37,8 @@ if TYPE_CHECKING:
         RawHeaders,
         RawHeadersList,
     )
+
+__all__ = ("Accept", "CacheControlHeader", "ETag", "Header", "Headers", "MutableScopeHeaders")
 
 ETAG_RE = re.compile(r'([Ww]/)?"(.+)"')
 PRINTABLE_ASCII_RE: Pattern[str] = re.compile(r"^[ -~]+$")

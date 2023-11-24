@@ -2,15 +2,15 @@ from __future__ import annotations
 
 __all__ = ("Empty", "EmptyType")
 
-from typing import TYPE_CHECKING, Type, final
-
-if TYPE_CHECKING:
-    from typing_extensions import TypeAlias
+from enum import Enum
+from typing import Final, Literal
 
 
-@final
-class Empty:
-    """A sentinel class used as placeholder."""
+class _EmptyEnum(Enum):
+    """A sentinel enum used as placeholder."""
+
+    EMPTY = 0
 
 
-EmptyType: TypeAlias = Type[Empty]
+EmptyType = Literal[_EmptyEnum.EMPTY]
+Empty: Final = _EmptyEnum.EMPTY

@@ -46,13 +46,6 @@ def get_serializer_from_scope(scope: Scope) -> Serializer:
 def get_litestar_scope_state(scope: Scope, key: str, default: Any = None, pop: bool = False) -> Any:
     """Get an internal value from connection scope state.
 
-    Note:
-        If called with a default value, this method behaves like to `dict.set_default()`, both setting the key in the
-        namespace to the default value, and returning it.
-
-        If called without a default value, the method behaves like `dict.get()`, returning ``None`` if the key does not
-        exist.
-
     Args:
         scope: The connection scope.
         key: Key to get from internal namespace in scope state.

@@ -47,7 +47,7 @@ from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from litestar.static_files.base import StaticFiles
 from litestar.stores.registry import StoreRegistry
 from litestar.types import Empty, TypeDecodersSequence
-from litestar.types.internal_types import PathParameterDefinition
+from litestar.types.internal_types import PathParameterDefinition, TemplateConfigType
 from litestar.utils import deprecated, ensure_async_callable, join_paths, unique
 from litestar.utils.dataclass import extract_dataclass_items
 from litestar.utils.predicates import is_async_callable
@@ -68,8 +68,6 @@ if TYPE_CHECKING:
     from litestar.openapi.spec.open_api import OpenAPI
     from litestar.static_files.config import StaticFilesConfig
     from litestar.stores.base import Store
-    from litestar.template import TemplateEngineProtocol
-    from litestar.template.config import TemplateConfig
     from litestar.types import (
         AfterExceptionHookHandler,
         AfterRequestHookHandler,
@@ -217,7 +215,7 @@ class Litestar(Router):
         static_files_config: Sequence[StaticFilesConfig] | None = None,
         stores: StoreRegistry | dict[str, Store] | None = None,
         tags: Sequence[str] | None = None,
-        template_config: TemplateConfig[TemplateEngineProtocol] | None = None,
+        template_config: TemplateConfigType | None = None,
         type_encoders: TypeEncodersMap | None = None,
         type_decoders: TypeDecodersSequence | None = None,
         websocket_class: type[WebSocket] | None = None,
@@ -347,7 +345,7 @@ class Litestar(Router):
             include_in_schema=include_in_schema,
             lifespan=list(lifespan or []),
             listeners=list(listeners or []),
-            logging_config=cast("BaseLoggingConfig | None", logging_config),
+            logging_config=logging_config,
             middleware=list(middleware or []),
             multipart_form_part_limit=multipart_form_part_limit,
             on_shutdown=list(on_shutdown or []),
@@ -534,10 +532,11 @@ class Litestar(Router):
         Returns:
             None
         """
-        scope["app"] = self
         if scope["type"] == "lifespan":
             await self.asgi_router.lifespan(receive=receive, send=send)  # type: ignore[arg-type]
             return
+
+        scope["app"] = self
         scope["state"] = {}
         await self.asgi_handler(scope, receive, self._wrap_send(send=send, scope=scope))  # type: ignore[arg-type]
 

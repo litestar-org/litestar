@@ -11,12 +11,14 @@ from httpx._content import encode_multipart_data, encode_urlencoded_data
 from litestar import delete, patch, post, put
 from litestar.app import Litestar
 from litestar.connection import Request
+from litestar.constants import SCOPE_STATE_BODY_KEY
 from litestar.enums import HttpMethod, ParamType, RequestEncodingType, ScopeType
 from litestar.handlers.http_handlers import get
 from litestar.serialization import decode_json, default_serializer, encode_json
 from litestar.types import DataContainerType, HTTPScope, RouteHandlerType
 from litestar.types.asgi_types import ASGIVersion
 from litestar.utils import get_serializer_from_scope
+from litestar.utils.scope import set_litestar_scope_state
 
 if TYPE_CHECKING:
     from httpx._types import FileTypes
@@ -285,6 +287,7 @@ class RequestFactory:
         )
 
         headers = headers or {}
+        body = b""
         if data:
             data = json.loads(encode_json(data, serializer=get_serializer_from_scope(scope)))
 
@@ -297,12 +300,9 @@ class RequestFactory:
             else:
                 encoding_headers, stream = encode_urlencoded_data(decode_json(value=encode_json(data)))
             headers.update(encoding_headers)
-            body = b""
             for chunk in stream:
                 body += chunk
-            scope["_body"] = body  # type: ignore[typeddict-unknown-key]
-        else:
-            scope["_body"] = b""  # type: ignore[typeddict-unknown-key]
+        set_litestar_scope_state(scope, SCOPE_STATE_BODY_KEY, body)
         self._create_cookie_header(headers, cookies)
         scope["headers"] = self._build_headers(headers)
         return Request(scope=scope)
