@@ -7,6 +7,8 @@ from typing import TYPE_CHECKING, Any, Iterable
 from litestar.constants import (
     HTTP_RESPONSE_BODY,
     HTTP_RESPONSE_START,
+    SCOPE_STATE_HTTP_RESPONSE_BODY_KEY,
+    SCOPE_STATE_HTTP_RESPONSE_START_KEY,
     SCOPE_STATE_RESPONSE_COMPRESSED,
 )
 from litestar.data_extractors import (
@@ -19,9 +21,10 @@ from litestar.enums import ScopeType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.middleware.base import AbstractMiddleware, DefineMiddleware
 from litestar.serialization import encode_json
-from litestar.utils import (
+from litestar.utils.scope import (
     get_litestar_scope_state,
     get_serializer_from_scope,
+    pop_litestar_scope_state,
     set_litestar_scope_state,
 )
 
@@ -196,8 +199,8 @@ class LoggingMiddleware(AbstractMiddleware):
         serializer = get_serializer_from_scope(scope)
         extracted_data = self.response_extractor(
             messages=(
-                get_litestar_scope_state(scope, HTTP_RESPONSE_START, pop=True),
-                get_litestar_scope_state(scope, HTTP_RESPONSE_BODY, pop=True),
+                pop_litestar_scope_state(scope, SCOPE_STATE_HTTP_RESPONSE_START_KEY),
+                pop_litestar_scope_state(scope, SCOPE_STATE_HTTP_RESPONSE_BODY_KEY),
             ),
         )
         response_body_compressed = get_litestar_scope_state(scope, SCOPE_STATE_RESPONSE_COMPRESSED, default=False)
@@ -224,9 +227,9 @@ class LoggingMiddleware(AbstractMiddleware):
 
         async def send_wrapper(message: Message) -> None:
             if message["type"] == HTTP_RESPONSE_START:
-                set_litestar_scope_state(scope, HTTP_RESPONSE_START, message)
+                set_litestar_scope_state(scope, SCOPE_STATE_HTTP_RESPONSE_START_KEY, message)
             elif message["type"] == HTTP_RESPONSE_BODY:
-                set_litestar_scope_state(scope, HTTP_RESPONSE_BODY, message)
+                set_litestar_scope_state(scope, SCOPE_STATE_HTTP_RESPONSE_BODY_KEY, message)
                 self.log_response(scope=scope)
             await send(message)
 

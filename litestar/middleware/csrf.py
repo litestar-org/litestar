@@ -121,7 +121,8 @@ class CSRFMiddleware(MiddlewareProtocol):
             set_litestar_scope_state(scope=scope, key=SCOPE_STATE_CSRF_TOKEN_KEY, value=token)
             await self.app(scope, receive, self.create_send_wrapper(send=send, csrf_cookie=csrf_cookie, token=token))
         elif self._csrf_tokens_match(existing_csrf_token, csrf_cookie):
-            set_litestar_scope_state(scope=scope, key=SCOPE_STATE_CSRF_TOKEN_KEY, value=existing_csrf_token)
+            if existing_csrf_token:
+                set_litestar_scope_state(scope=scope, key=SCOPE_STATE_CSRF_TOKEN_KEY, value=existing_csrf_token)
             await self.app(scope, receive, send)
         else:
             raise PermissionDeniedException("CSRF token verification failed")
