@@ -82,9 +82,10 @@ def test_upload_file_request_body_generation() -> None:
     assert paths["/file-upload"]["post"]["requestBody"]["content"]["multipart/form-data"]["schema"] == {
         "type": "string",
         "contentMediaType": "application/octet-stream",
+        "format": "binary",
     }
     assert paths["/file-list-upload"]["post"]["requestBody"]["content"]["multipart/form-data"]["schema"] == {
-        "items": {"type": "string", "contentMediaType": "application/octet-stream"},
+        "items": {"type": "string", "contentMediaType": "application/octet-stream", "format": "binary"},
         "type": "array",
     }
 
@@ -92,14 +93,8 @@ def test_upload_file_request_body_generation() -> None:
         "schemas": {
             "FormData": {
                 "properties": {
-                    "cv": {
-                        "type": "string",
-                        "contentMediaType": "application/octet-stream",
-                    },
-                    "image": {
-                        "type": "string",
-                        "contentMediaType": "application/octet-stream",
-                    },
+                    "cv": {"type": "string", "contentMediaType": "application/octet-stream", "format": "binary"},
+                    "image": {"type": "string", "contentMediaType": "application/octet-stream", "format": "binary"},
                 },
                 "type": "object",
                 "required": ["cv", "image"],
