@@ -124,7 +124,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         """
         if self._url is Empty:
             if url := get_litestar_scope_state(self.scope, SCOPE_STATE_URL_KEY):
-                self._url = cast("URL", url)
+                self._url = url
             else:
                 self._url = URL.from_scope(self.scope)
                 set_litestar_scope_state(self.scope, SCOPE_STATE_URL_KEY, self._url)
@@ -141,7 +141,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         """
         if self._base_url is Empty:
             if base_url := get_litestar_scope_state(self.scope, SCOPE_STATE_BASE_URL_KEY):
-                self._base_url = cast("URL", base_url)
+                self._base_url = base_url
             else:
                 scope = cast(
                     "Scope",
@@ -174,7 +174,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         """
         if self._parsed_query is Empty:
             if (parsed_query := get_litestar_scope_state(self.scope, SCOPE_STATE_PARSED_QUERY_KEY, Empty)) is not Empty:
-                self._parsed_query = cast("tuple[tuple[str, str], ...]", parsed_query)
+                self._parsed_query = parsed_query
             else:
                 self._parsed_query = parse_query_string(self.scope.get("query_string", b""))
                 set_litestar_scope_state(self.scope, SCOPE_STATE_PARSED_QUERY_KEY, self._parsed_query)
@@ -198,7 +198,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         """
         if self._cookies is Empty:
             if (cookies := get_litestar_scope_state(self.scope, SCOPE_STATE_COOKIES_KEY, Empty)) is not Empty:
-                self._cookies = cast("dict[str, str]", cookies)
+                self._cookies = cookies
             else:
                 self._cookies = (
                     parse_cookie_string(cookie_header) if (cookie_header := self.headers.get("cookie")) else {}
