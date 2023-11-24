@@ -61,7 +61,7 @@ def test_csrf_input(engine: Any, template: str, tmp_path: Path) -> None:
 
     @get(path="/", media_type=MediaType.HTML)
     def handler(scope: Scope) -> Template:
-        token["value"] = get_litestar_scope_state(scope, SCOPE_STATE_CSRF_TOKEN_KEY)
+        token["value"] = get_litestar_scope_state(scope, SCOPE_STATE_CSRF_TOKEN_KEY, "")
         return Template(template_name="abc.html")
 
     csrf_config = CSRFConfig(secret="yaba daba do")

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Generic, cast
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Generic
 
 from litestar._multipart import parse_content_header, parse_multipart_form
 from litestar._parsers import parse_url_encoded_form_data
@@ -93,7 +93,7 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         """
         if self._content_type is Empty:
             if (content_type := get_litestar_scope_state(self.scope, SCOPE_STATE_CONTENT_TYPE_KEY, Empty)) is not Empty:
-                self._content_type = cast("tuple[str, dict[str, str]]", content_type)
+                self._content_type = content_type
             else:
                 self._content_type = parse_content_header(self.headers.get("Content-Type", ""))
                 set_litestar_scope_state(self.scope, SCOPE_STATE_CONTENT_TYPE_KEY, self._content_type)
@@ -108,7 +108,7 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         """
         if self._accept is Empty:
             if accept := get_litestar_scope_state(self.scope, SCOPE_STATE_ACCEPT_KEY):
-                self._accept = cast("Accept", accept)
+                self._accept = accept
             else:
                 self._accept = Accept(self.headers.get("Accept", "*/*"))
                 set_litestar_scope_state(self.scope, SCOPE_STATE_ACCEPT_KEY, self._accept)
@@ -185,7 +185,7 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         """
         if self._body is Empty:
             if (body := get_litestar_scope_state(self.scope, SCOPE_STATE_BODY_KEY)) is not None:
-                self._body = cast("bytes", body)
+                self._body = body
             else:
                 self._body = b"".join([c async for c in self.stream()])
                 set_litestar_scope_state(self.scope, SCOPE_STATE_BODY_KEY, self._body)
@@ -201,7 +201,7 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         """
         if self._form is Empty:
             if (form := get_litestar_scope_state(self.scope, SCOPE_STATE_FORM_KEY, Empty)) is not Empty:
-                self._form = cast("dict[str, str | list[str]]", form)
+                self._form = form
             else:
                 content_type, options = self.content_type
                 if content_type == RequestEncodingType.MULTI_PART:

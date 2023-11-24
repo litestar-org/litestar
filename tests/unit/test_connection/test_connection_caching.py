@@ -8,6 +8,7 @@ import pytest
 from litestar import Request, constants
 from litestar.testing import RequestFactory
 from litestar.types import Empty, HTTPReceiveMessage, Scope
+from litestar.types.scope import ScopeStateKeyType
 from litestar.utils import get_litestar_scope_state, set_litestar_scope_state
 
 
@@ -44,11 +45,11 @@ def create_connection_fixture(
     get_mock: MagicMock, set_mock: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> Callable[..., Request]:
     def create_connection(body_type: str = "json") -> Request:
-        def wrapped_get_litestar_scope_state(scope_: Scope, key: str, default: Any = None) -> Any:
+        def wrapped_get_litestar_scope_state(scope_: Scope, key: ScopeStateKeyType, default: Any = None) -> Any:
             get_mock(key)
             return get_litestar_scope_state(scope_, key, default)
 
-        def wrapped_set_litestar_scope_state(scope_: Scope, key: str, value: Any) -> None:
+        def wrapped_set_litestar_scope_state(scope_: Scope, key: ScopeStateKeyType, value: Any) -> None:
             set_mock(key, value)
             set_litestar_scope_state(scope_, key, value)
 
@@ -110,7 +111,7 @@ caching_tests = [
 
 @pytest.mark.parametrize(("state_key", "prop_name", "cache_attr_name", "is_coro"), caching_tests)
 async def test_connection_cached_properties_no_scope_or_connection_caching(
-    state_key: str,
+    state_key: ScopeStateKeyType,
     prop_name: str,
     cache_attr_name: str,
     is_coro: bool,
@@ -157,7 +158,7 @@ async def test_connection_cached_properties_no_scope_or_connection_caching(
 
 @pytest.mark.parametrize(("state_key", "prop_name", "cache_attr_name", "is_coro"), caching_tests)
 async def test_connection_cached_properties_cached_in_scope(
-    state_key: str,
+    state_key: ScopeStateKeyType,
     prop_name: str,
     cache_attr_name: str,
     is_coro: bool,
@@ -169,7 +170,7 @@ async def test_connection_cached_properties_cached_in_scope(
     # set the value in the scope and ensure empty on connection
     connection = create_connection()
 
-    set_litestar_scope_state(connection.scope, state_key, {"a": "b"})
+    set_litestar_scope_state(connection.scope, state_key, {"a": "b"})  # type: ignore[arg-type]
     setattr(connection, cache_attr_name, Empty)
 
     await get_value(connection, prop_name, is_coro)
