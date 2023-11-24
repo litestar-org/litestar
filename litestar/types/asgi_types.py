@@ -133,12 +133,12 @@ class BaseScope(HeaderScope):
     path_params: dict[str, str]
     query_string: bytes
     raw_path: bytes
+    state: dict[str, Any]
     root_path: str
     route_handler: RouteHandlerType
     scheme: str
     server: tuple[str, int | None] | None
     session: ScopeSession
-    state: dict[str, Any]
     user: Any
 
 

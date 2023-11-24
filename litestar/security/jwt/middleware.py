@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Awaitable, Callable, Sequence
 
-from litestar.contrib.jwt.jwt_token import Token
 from litestar.exceptions import NotAuthorizedException
 from litestar.middleware.authentication import (
     AbstractAuthenticationMiddleware,
     AuthenticationResult,
 )
+from litestar.security.jwt.token import Token
 
 __all__ = ("JWTAuthenticationMiddleware", "JWTCookieAuthenticationMiddleware")
 

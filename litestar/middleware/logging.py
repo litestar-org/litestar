@@ -7,9 +7,6 @@ from typing import TYPE_CHECKING, Any, Iterable
 from litestar.constants import (
     HTTP_RESPONSE_BODY,
     HTTP_RESPONSE_START,
-    SCOPE_STATE_HTTP_RESPONSE_BODY_KEY,
-    SCOPE_STATE_HTTP_RESPONSE_START_KEY,
-    SCOPE_STATE_RESPONSE_COMPRESSED,
 )
 from litestar.data_extractors import (
     ConnectionDataExtractor,
@@ -17,16 +14,13 @@ from litestar.data_extractors import (
     ResponseDataExtractor,
     ResponseExtractorField,
 )
+from litestar.datastructures.internal import ConnectionState
 from litestar.enums import ScopeType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.middleware.base import AbstractMiddleware, DefineMiddleware
 from litestar.serialization import encode_json
-from litestar.utils.scope import (
-    get_litestar_scope_state,
-    get_serializer_from_scope,
-    pop_litestar_scope_state,
-    set_litestar_scope_state,
-)
+from litestar.utils.empty import not_empty
+from litestar.utils.scope import get_serializer_from_scope
 
 __all__ = ("LoggingMiddleware", "LoggingMiddlewareConfig")
 
@@ -197,13 +191,14 @@ class LoggingMiddleware(AbstractMiddleware):
         """
         data: dict[str, Any] = {"message": self.config.response_log_message}
         serializer = get_serializer_from_scope(scope)
+        connection_state = ConnectionState.from_scope(scope)
         extracted_data = self.response_extractor(
             messages=(
-                pop_litestar_scope_state(scope, SCOPE_STATE_HTTP_RESPONSE_START_KEY),
-                pop_litestar_scope_state(scope, SCOPE_STATE_HTTP_RESPONSE_BODY_KEY),
+                connection_state.log_context.pop(HTTP_RESPONSE_START),
+                connection_state.log_context.pop(HTTP_RESPONSE_BODY),
             ),
         )
-        response_body_compressed = get_litestar_scope_state(scope, SCOPE_STATE_RESPONSE_COMPRESSED, default=False)
+        response_body_compressed = not_empty(connection_state.response_compressed, False)
         for key in self.config.response_log_fields:
             value: Any
             value = extracted_data.get(key)
@@ -224,12 +219,13 @@ class LoggingMiddleware(AbstractMiddleware):
         Returns:
             An ASGI send function.
         """
+        connection_state = ConnectionState.from_scope(scope)
 
         async def send_wrapper(message: Message) -> None:
             if message["type"] == HTTP_RESPONSE_START:
-                set_litestar_scope_state(scope, SCOPE_STATE_HTTP_RESPONSE_START_KEY, message)
+                connection_state.log_context[HTTP_RESPONSE_START] = message
             elif message["type"] == HTTP_RESPONSE_BODY:
-                set_litestar_scope_state(scope, SCOPE_STATE_HTTP_RESPONSE_BODY_KEY, message)
+                connection_state.log_context[HTTP_RESPONSE_BODY] = message
                 self.log_response(scope=scope)
             await send(message)
 

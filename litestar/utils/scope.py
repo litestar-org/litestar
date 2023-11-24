@@ -1,25 +1,14 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from litestar.constants import SCOPE_STATE_NAMESPACE
 from litestar.serialization import get_serializer
 
-from .get import get_litestar_scope_state
-from .pop import pop_litestar_scope_state
-from .set import set_litestar_scope_state
-
 if TYPE_CHECKING:
     from litestar.types import Scope, Serializer
-    from litestar.types.scope import ScopeStateKeyType
 
-__all__ = (
-    "delete_litestar_scope_state",
-    "get_serializer_from_scope",
-    "get_litestar_scope_state",
-    "pop_litestar_scope_state",
-    "set_litestar_scope_state",
-)
+__all__ = ("get_serializer_from_scope",)
 
 
 def get_serializer_from_scope(scope: Scope) -> Serializer:
@@ -49,7 +38,34 @@ def get_serializer_from_scope(scope: Scope) -> Serializer:
     return get_serializer(type_encoders)
 
 
-def delete_litestar_scope_state(scope: Scope, key: ScopeStateKeyType) -> None:
+def get_litestar_scope_state(scope: Scope, key: str, default: Any = None, pop: bool = False) -> Any:
+    """Get an internal value from connection scope state.
+
+    Args:
+        scope: The connection scope.
+        key: Key to get from internal namespace in scope state.
+        default: Default value to return.
+        pop: Boolean flag dictating whether the value should be deleted from the state.
+
+    Returns:
+        Value mapped to ``key`` in internal connection scope namespace.
+    """
+    namespace = scope["state"].setdefault(SCOPE_STATE_NAMESPACE, {})
+    return namespace.pop(key, default) if pop else namespace.get(key, default)
+
+
+def set_litestar_scope_state(scope: Scope, key: str, value: Any) -> None:
+    """Set an internal value in connection scope state.
+
+    Args:
+        scope: The connection scope.
+        key: Key to set under internal namespace in scope state.
+        value: Value for key.
+    """
+    scope["state"].setdefault(SCOPE_STATE_NAMESPACE, {})[key] = value
+
+
+def delete_litestar_scope_state(scope: Scope, key: str) -> None:
     """Delete an internal value from connection scope state.
 
     Args:
