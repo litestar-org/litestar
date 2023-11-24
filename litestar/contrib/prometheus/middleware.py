@@ -134,7 +134,7 @@ class PrometheusMiddleware(AbstractMiddleware):
             None
         """
 
-        request = Request[Any, Any, Any](scope, receive)
+        request = cast("Request[Any, Any, Any]", scope["connection"])
 
         if self._config.excluded_http_methods and request.method in self._config.excluded_http_methods:
             await self.app(scope, receive, send)
