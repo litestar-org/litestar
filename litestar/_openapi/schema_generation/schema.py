@@ -137,6 +137,7 @@ TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
     UploadFile: Schema(
         type=OpenAPIType.STRING,
         content_media_type="application/octet-stream",
+        format=OpenAPIFormat.BINARY,
     ),
 }
 
