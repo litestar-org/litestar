@@ -83,9 +83,7 @@ def get_value_fixture() -> Callable[[Request, str, bool], Awaitable[Any]]:
     async def get_value_(connection: Request, prop_name: str, is_coro: bool) -> Any:
         """Helper to get the value of the tested cached property."""
         value = getattr(connection, prop_name)
-        if is_coro:
-            return await value()
-        return value
+        return await value() if is_coro else value
 
     return get_value_
 
