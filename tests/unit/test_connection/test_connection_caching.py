@@ -115,9 +115,9 @@ async def test_connection_cached_properties_no_scope_or_connection_caching(
         For certain properties, we call `get_litestar_scope_state()` twice, once for the property and once for the
         body. For these cases, we check that the mock was called twice.
         """
-        if state_key in ("json", "msgpack"):
+        if state_key in {"json", "msgpack"}:
             get_mock.assert_has_calls([call(state_key), call("body")])
-        elif state_key in ("accept", "cookies", "content_type"):
+        elif state_key in {"accept", "cookies", "content_type"}:
             get_mock.assert_has_calls([call(state_key), call("headers")])
         elif state_key == "form":
             get_mock.assert_has_calls([call(state_key), call("content_type")])
@@ -130,11 +130,11 @@ async def test_connection_cached_properties_no_scope_or_connection_caching(
         For certain properties, we call `set_litestar_scope_state()` twice, once for the property and once for the
         body. For these cases, we check that the mock was called twice.
         """
-        if state_key in ("json", "msgpack"):
+        if state_key in {"json", "msgpack"}:
             set_mock.assert_has_calls([call("body", ANY), call(state_key, ANY)])
         elif state_key == "form":
             set_mock.assert_has_calls([call("content_type", ANY), call(state_key, ANY)])
-        elif state_key in ("accept", "cookies", "content_type"):
+        elif state_key in {"accept", "cookies", "content_type"}:
             set_mock.assert_has_calls([call("headers", ANY), call(state_key, ANY)])
         else:
             set_mock.assert_called_once_with(state_key, ANY)
