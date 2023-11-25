@@ -86,7 +86,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         self._url: URL | EmptyType = Empty
         self._parsed_query: tuple[tuple[str, str], ...] | EmptyType = Empty
         self._cookies: dict[str, str] | EmptyType = Empty
-        self._server_extensions = scope.get("extensions", {})
+        self._server_extensions = scope.get("extensions") or {}  # extensions may be None
 
     @property
     def app(self) -> Litestar:
