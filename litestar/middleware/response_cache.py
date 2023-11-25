@@ -8,7 +8,7 @@ from litestar import Request
 from litestar.constants import HTTP_RESPONSE_BODY, HTTP_RESPONSE_START
 from litestar.enums import ScopeType
 from litestar.utils.empty import not_empty
-from litestar.utils.scope.state import ConnectionState
+from litestar.utils.scope.state import ScopeState
 
 from .base import AbstractMiddleware
 
@@ -34,7 +34,7 @@ class ResponseCacheMiddleware(AbstractMiddleware):
         elif route_handler.cache is not False and isinstance(route_handler.cache, int):
             expires_in = route_handler.cache
 
-        connection_state = ConnectionState.from_scope(scope)
+        connection_state = ScopeState.from_scope(scope)
 
         messages: list[Message] = []
 

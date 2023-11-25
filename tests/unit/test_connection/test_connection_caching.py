@@ -8,7 +8,7 @@ import pytest
 from litestar import Request
 from litestar.testing import RequestFactory
 from litestar.types import Empty, HTTPReceiveMessage, Scope
-from litestar.utils.scope.state import ConnectionState
+from litestar.utils.scope.state import ScopeState
 
 
 async def test_multiple_request_object_data_caching(create_scope: Callable[..., Scope], mock: MagicMock) -> None:
@@ -43,7 +43,7 @@ def set_mock_fixture() -> MagicMock:
 def create_connection_fixture(
     get_mock: MagicMock, set_mock: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> Callable[..., Request]:
-    class MockConnectionState(ConnectionState):
+    class MockScopeState(ScopeState):
         def __getattribute__(self, key: str) -> Any:
             get_mock(key)
             return object.__getattribute__(self, key)
@@ -53,7 +53,7 @@ def create_connection_fixture(
             super().__setattr__(key, value)
 
     def create_connection(body_type: str = "json") -> Request:
-        monkeypatch.setattr("litestar.connection.base.ConnectionState", MockConnectionState)
+        monkeypatch.setattr("litestar.connection.base.ScopeState", MockScopeState)
         connection = RequestFactory().get()
 
         async def fake_receive() -> HTTPReceiveMessage:
@@ -165,7 +165,7 @@ async def test_connection_cached_properties_cached_in_scope(
 ) -> None:
     # set the value in the scope and ensure empty on connection
     connection = create_connection()
-    connection_state = ConnectionState.from_scope(connection.scope)
+    connection_state = ScopeState.from_scope(connection.scope)
 
     setattr(connection_state, state_key, {"not": "empty"})
     setattr(connection, cache_attr_name, Empty)

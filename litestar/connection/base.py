@@ -9,7 +9,7 @@ from litestar.datastructures.state import State
 from litestar.datastructures.url import URL, Address, make_absolute_url
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types.empty import Empty
-from litestar.utils.scope.state import ConnectionState
+from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
     from typing import NoReturn
@@ -75,7 +75,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         self.scope = scope
         self.receive = receive
         self.send = send
-        self._connection_state = ConnectionState.from_scope(scope)
+        self._connection_state = ScopeState.from_scope(scope)
         self._base_url: URL | EmptyType = Empty
         self._url: URL | EmptyType = Empty
         self._parsed_query: tuple[tuple[str, str], ...] | EmptyType = Empty

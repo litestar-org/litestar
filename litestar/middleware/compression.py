@@ -9,7 +9,7 @@ from litestar.enums import CompressionEncoding, ScopeType
 from litestar.exceptions import MissingDependencyException
 from litestar.middleware.base import AbstractMiddleware
 from litestar.utils.empty import not_empty
-from litestar.utils.scope.state import ConnectionState
+from litestar.utils.scope.state import ScopeState
 
 __all__ = ("CompressionFacade", "CompressionMiddleware")
 
@@ -178,7 +178,7 @@ class CompressionMiddleware(AbstractMiddleware):
 
         _own_encoding = compression_encoding.encode("latin-1")
 
-        connection_state = ConnectionState.from_scope(scope)
+        connection_state = ScopeState.from_scope(scope)
 
         async def send_wrapper(message: Message) -> None:
             """Handle and compresses the HTTP Message with brotli.

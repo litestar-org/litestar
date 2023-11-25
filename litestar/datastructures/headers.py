@@ -30,7 +30,7 @@ from litestar.exceptions import ImproperlyConfiguredException, ValidationExcepti
 from litestar.types.empty import Empty
 from litestar.typing import FieldDefinition
 from litestar.utils.dataclass import simple_asdict
-from litestar.utils.scope.state import ConnectionState
+from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
     from litestar.types.asgi_types import (
@@ -89,7 +89,7 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):
         if "state" not in scope:
             return cls(scope["headers"])
 
-        connection_state = ConnectionState.from_scope(scope)  # type: ignore[arg-type]
+        connection_state = ScopeState.from_scope(scope)  # type: ignore[arg-type]
         if (headers := connection_state.headers) is Empty:
             headers = connection_state.headers = cls(scope["headers"])
         return headers
