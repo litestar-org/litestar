@@ -352,12 +352,11 @@ def create_multipart_extractor(
 
         if field_definition.is_non_string_sequence:
             values = list(form_values.values())
-            if field_definition.inner_types[0].annotation is UploadFile:
-                if isinstance(values[0], list):
-                    return values[0]
-                return values
+            if field_definition.inner_types[0].annotation is UploadFile and isinstance(values[0], list):
+                return values[0]
 
             return values
+
         if field_definition.is_simple_type and field_definition.annotation is UploadFile and form_values:
             return next(v for v in form_values.values() if isinstance(v, UploadFile))
 
