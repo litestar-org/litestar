@@ -1,4 +1,4 @@
-from litestar import get, Router
+from litestar import Router, get
 from litestar.app import Litestar
 from litestar.config.cors import CORSConfig
 from litestar.params import Parameter
@@ -29,7 +29,7 @@ app = Litestar(
 def test_header_params_with_options_request() -> None:
     with create_test_client(app) as client:
         response = client.options(
-            f"/test",
+            "/test",
             headers={},
         )
         assert response.status_code == HTTP_204_NO_CONTENT
