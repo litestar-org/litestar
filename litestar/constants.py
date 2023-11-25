@@ -34,12 +34,12 @@ _SCOPE_STATE_DO_CACHE: Final = "do_cache"
 _SCOPE_STATE_IS_CACHED: Final = "is_cached"
 
 _deprecated_names = {
-    "CSRF_TOKEN_KEY": _SCOPE_STATE_CSRF_TOKEN_KEY,
-    "DEPENDENCY_CACHE": _SCOPE_STATE_DEPENDENCY_CACHE,
-    "NAMESPACE": _SCOPE_STATE_NAMESPACE,
-    "RESPONSE_COMPRESSED": _SCOPE_STATE_RESPONSE_COMPRESSED,
-    "DO_CACHE": _SCOPE_STATE_DO_CACHE,
-    "IS_CACHED": _SCOPE_STATE_IS_CACHED,
+    "SCOPE_STATE_CSRF_TOKEN_KEY": _SCOPE_STATE_CSRF_TOKEN_KEY,
+    "SCOPE_STATE_DEPENDENCY_CACHE": _SCOPE_STATE_DEPENDENCY_CACHE,
+    "SCOPE_STATE_NAMESPACE": _SCOPE_STATE_NAMESPACE,
+    "SCOPE_STATE_RESPONSE_COMPRESSED": _SCOPE_STATE_RESPONSE_COMPRESSED,
+    "SCOPE_STATE_DO_CACHE": _SCOPE_STATE_DO_CACHE,
+    "SCOPE_STATE_IS_CACHED": _SCOPE_STATE_IS_CACHED,
 }
 
 
@@ -51,8 +51,8 @@ def __getattr__(name: str) -> Any:
             kind="import",
             removal_in="3.0",
             info=f"'{name}' from 'litestar.constants' is deprecated and will be removed in 3.0. "
-            "Direct access to Litestar scope state is not recommended."
+            "Direct access to Litestar scope state is not recommended.",
         )
 
-        return globals()[_deprecated_names[name]]
+        return globals()["_deprecated_names"][name]
     raise AttributeError(f"module {__name__} has no attribute {name}")

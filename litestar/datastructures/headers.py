@@ -24,13 +24,13 @@ from multidict import CIMultiDict, CIMultiDictProxy, MultiMapping
 from typing_extensions import get_type_hints
 
 from litestar._multipart import parse_content_header
-from litestar.datastructures.internal import ConnectionState
 from litestar.datastructures.multi_dicts import MultiMixin
 from litestar.dto.base_dto import AbstractDTO
 from litestar.exceptions import ImproperlyConfiguredException, ValidationException
 from litestar.types.empty import Empty
 from litestar.typing import FieldDefinition
 from litestar.utils.dataclass import simple_asdict
+from litestar.utils.scope.state import ConnectionState
 
 if TYPE_CHECKING:
     from litestar.types.asgi_types import (

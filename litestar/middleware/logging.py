@@ -14,13 +14,13 @@ from litestar.data_extractors import (
     ResponseDataExtractor,
     ResponseExtractorField,
 )
-from litestar.datastructures.internal import ConnectionState
 from litestar.enums import ScopeType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.middleware.base import AbstractMiddleware, DefineMiddleware
 from litestar.serialization import encode_json
 from litestar.utils.empty import not_empty
 from litestar.utils.scope import get_serializer_from_scope
+from litestar.utils.scope.state import ConnectionState
 
 __all__ = ("LoggingMiddleware", "LoggingMiddlewareConfig")
 

@@ -10,12 +10,12 @@ from litestar._parsers import (
     parse_url_encoded_form_data,
 )
 from litestar.datastructures import Headers
-from litestar.datastructures.internal import ConnectionState
 from litestar.datastructures.upload_file import UploadFile
 from litestar.enums import ParamType, RequestEncodingType
 from litestar.exceptions import ValidationException
 from litestar.params import BodyKwarg
 from litestar.types import Empty
+from litestar.utils.scope.state import ConnectionState
 
 if TYPE_CHECKING:
     from litestar._kwargs import KwargsModel

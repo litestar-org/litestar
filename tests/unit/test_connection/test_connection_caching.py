@@ -6,9 +6,9 @@ from unittest.mock import ANY, MagicMock, call
 import pytest
 
 from litestar import Request
-from litestar.datastructures.internal import ConnectionState
 from litestar.testing import RequestFactory
 from litestar.types import Empty, HTTPReceiveMessage, Scope
+from litestar.utils.scope.state import ConnectionState
 
 
 async def test_multiple_request_object_data_caching(create_scope: Callable[..., Scope], mock: MagicMock) -> None:

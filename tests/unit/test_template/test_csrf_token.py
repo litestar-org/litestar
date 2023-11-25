@@ -9,13 +9,13 @@ from litestar.config.csrf import CSRFConfig
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.contrib.mako import MakoTemplateEngine
 from litestar.contrib.minijinja import MiniJinjaTemplateEngine
-from litestar.datastructures.internal import ConnectionState
 from litestar.middleware.csrf import generate_csrf_token
 from litestar.response.template import Template
 from litestar.template.config import TemplateConfig
 from litestar.testing import create_test_client
 from litestar.types import Scope
 from litestar.utils.empty import not_empty
+from litestar.utils.scope.state import ConnectionState
 
 
 @pytest.mark.parametrize(

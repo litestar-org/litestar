@@ -7,7 +7,6 @@ from msgspec.msgpack import decode as _decode_msgpack_plain
 
 from litestar.constants import DEFAULT_ALLOWED_CORS_HEADERS
 from litestar.datastructures.headers import Headers
-from litestar.datastructures.internal import ConnectionState
 from litestar.datastructures.upload_file import UploadFile
 from litestar.enums import HttpMethod, MediaType, ScopeType
 from litestar.exceptions import ClientException, ImproperlyConfiguredException, SerializationException
@@ -15,6 +14,7 @@ from litestar.handlers.http_handlers import HTTPRouteHandler
 from litestar.response import Response
 from litestar.routes.base import BaseRoute
 from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
+from litestar.utils.scope.state import ConnectionState
 
 if TYPE_CHECKING:
     from litestar._kwargs import KwargsModel

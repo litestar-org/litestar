@@ -5,13 +5,13 @@ from mimetypes import guess_type
 from pathlib import PurePath
 from typing import TYPE_CHECKING, Any, Iterable, cast
 
-from litestar.datastructures.internal import ConnectionState
 from litestar.enums import MediaType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.response.base import ASGIResponse, Response
 from litestar.status_codes import HTTP_200_OK
 from litestar.utils.deprecation import warn_deprecation
 from litestar.utils.empty import not_empty
+from litestar.utils.scope.state import ConnectionState
 
 if TYPE_CHECKING:
     from litestar.app import Litestar

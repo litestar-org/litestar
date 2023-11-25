@@ -6,9 +6,9 @@ from msgspec.msgpack import encode as encode_msgpack
 
 from litestar import Request
 from litestar.constants import HTTP_RESPONSE_BODY, HTTP_RESPONSE_START
-from litestar.datastructures.internal import ConnectionState
 from litestar.enums import ScopeType
 from litestar.utils.empty import not_empty
+from litestar.utils.scope.state import ConnectionState
 
 from .base import AbstractMiddleware
 

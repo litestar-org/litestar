@@ -11,12 +11,12 @@ from httpx import Cookies, Request, Response
 from litestar import Litestar
 from litestar.connection import ASGIConnection
 from litestar.datastructures import MutableScopeHeaders
-from litestar.datastructures.internal import ConnectionState
 from litestar.enums import ScopeType
 from litestar.exceptions import (
     ImproperlyConfiguredException,
 )
 from litestar.types import AnyIOBackend, ASGIApp, HTTPResponseStartEvent
+from litestar.utils.scope.state import ConnectionState
 
 if TYPE_CHECKING:
     from httpx._types import CookieTypes

@@ -4,12 +4,12 @@ from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast
 
 from litestar._parsers import parse_cookie_string, parse_query_string
 from litestar.datastructures.headers import Headers
-from litestar.datastructures.internal import ConnectionState
 from litestar.datastructures.multi_dicts import MultiDict
 from litestar.datastructures.state import State
 from litestar.datastructures.url import URL, Address, make_absolute_url
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types.empty import Empty
+from litestar.utils.scope.state import ConnectionState
 
 if TYPE_CHECKING:
     from typing import NoReturn

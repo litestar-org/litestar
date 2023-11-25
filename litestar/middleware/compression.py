@@ -5,11 +5,11 @@ from io import BytesIO
 from typing import TYPE_CHECKING, Any, Literal
 
 from litestar.datastructures import Headers, MutableScopeHeaders
-from litestar.datastructures.internal import ConnectionState
 from litestar.enums import CompressionEncoding, ScopeType
 from litestar.exceptions import MissingDependencyException
 from litestar.middleware.base import AbstractMiddleware
 from litestar.utils.empty import not_empty
+from litestar.utils.scope.state import ConnectionState
 
 __all__ = ("CompressionFacade", "CompressionMiddleware")
 

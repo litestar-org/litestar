@@ -2,10 +2,10 @@ from typing import Any
 
 from litestar import Litestar, get
 from litestar.connection import ASGIConnection
-from litestar.datastructures.internal import ConnectionState
 from litestar.logging.config import LoggingConfig
 from litestar.testing import RequestFactory
 from litestar.types.empty import Empty
+from litestar.utils.scope.state import ConnectionState
 
 
 def test_connection_base_properties() -> None:

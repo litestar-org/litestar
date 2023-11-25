@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING, Any
 
 from litestar.datastructures import MutableScopeHeaders
 from litestar.datastructures.cookie import Cookie
-from litestar.datastructures.internal import ConnectionState
 from litestar.enums import RequestEncodingType, ScopeType
 from litestar.exceptions import PermissionDeniedException
 from litestar.middleware._utils import (
@@ -16,6 +15,7 @@ from litestar.middleware._utils import (
     should_bypass_middleware,
 )
 from litestar.middleware.base import MiddlewareProtocol
+from litestar.utils.scope.state import ConnectionState
 
 if TYPE_CHECKING:
     from litestar.config.csrf import CSRFConfig

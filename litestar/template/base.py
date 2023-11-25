@@ -4,9 +4,9 @@ from typing import TYPE_CHECKING, Any, Callable, Mapping, Protocol, TypedDict, T
 
 from typing_extensions import Concatenate, ParamSpec, TypeAlias
 
-from litestar.datastructures.internal import ConnectionState
 from litestar.utils.deprecation import warn_deprecation
 from litestar.utils.empty import not_empty
+from litestar.utils.scope.state import ConnectionState
 
 if TYPE_CHECKING:
     from pathlib import Path
