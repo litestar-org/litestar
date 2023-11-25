@@ -44,7 +44,10 @@ from litestar.types import (
 from litestar.types.builtin_types import NoneType
 from litestar.utils import ensure_async_callable
 from litestar.utils.predicates import is_async_callable
-from litestar.utils.warnings import warn_implicit_sync_to_thread, warn_sync_to_thread_with_async_callable
+from litestar.utils.warnings import (
+    warn_implicit_sync_to_thread,
+    warn_sync_to_thread_with_async_callable,
+)
 
 if TYPE_CHECKING:
     from typing import Any, Awaitable, Callable, Sequence
@@ -54,10 +57,12 @@ if TYPE_CHECKING:
     from litestar.config.response_cache import CACHE_FOREVER
     from litestar.connection import Request
     from litestar.datastructures import CacheControlHeader, ETag
+    from litestar.di import Provide
     from litestar.dto import AbstractDTO
     from litestar.openapi.datastructures import ResponseSpec
     from litestar.openapi.spec import SecurityRequirement
     from litestar.types.callable_types import AsyncAnyCallable, OperationIDCreator
+    from litestar.typing import FieldDefinition
 
 __all__ = ("HTTPRouteHandler", "route")
 
@@ -278,7 +283,10 @@ class HTTPRouteHandler(BaseRouteHandler):
         # memoized attributes, defaulted to Empty
         self._resolved_after_response: AsyncAnyCallable | None | EmptyType = Empty
         self._resolved_before_request: AsyncAnyCallable | None | EmptyType = Empty
-        self._response_handler_mapping: ResponseHandlerMap = {"default_handler": Empty, "response_type_handler": Empty}
+        self._response_handler_mapping: ResponseHandlerMap = {
+            "default_handler": Empty,
+            "response_type_handler": Empty,
+        }
         self._resolved_include_in_schema: bool | EmptyType = Empty
 
     def __call__(self, fn: AnyCallable) -> HTTPRouteHandler:
@@ -534,3 +542,11 @@ class HTTPRouteHandler(BaseRouteHandler):
 
 
 route = HTTPRouteHandler
+
+
+class AutoOptionsHttpRouteHandler(HTTPRouteHandler):
+    def resolve_layered_parameters(self) -> dict[str, FieldDefinition]:
+        return {}
+
+    def resolve_dependencies(self) -> dict[str, Provide]:
+        return {}

@@ -9,8 +9,12 @@ from litestar.constants import DEFAULT_ALLOWED_CORS_HEADERS, SCOPE_STATE_IS_CACH
 from litestar.datastructures.headers import Headers
 from litestar.datastructures.upload_file import UploadFile
 from litestar.enums import HttpMethod, MediaType, ScopeType
-from litestar.exceptions import ClientException, ImproperlyConfiguredException, SerializationException
-from litestar.handlers.http_handlers import HTTPRouteHandler
+from litestar.exceptions import (
+    ClientException,
+    ImproperlyConfiguredException,
+    SerializationException,
+)
+from litestar.handlers.http_handlers.base import AutoOptionsHttpRouteHandler
 from litestar.response import Response
 from litestar.routes.base import BaseRoute
 from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
@@ -20,6 +24,7 @@ if TYPE_CHECKING:
     from litestar._kwargs import KwargsModel
     from litestar._kwargs.cleanup import DependencyCleanupGroup
     from litestar.connection import Request
+    from litestar.handlers.http_handlers import HTTPRouteHandler
     from litestar.types import ASGIApp, HTTPScope, Method, Receive, Scope, Send
 
 
@@ -79,7 +84,10 @@ class HTTPRoute(BaseRoute):
             await route_handler.authorize_connection(connection=request)
 
         response = await self._get_response_for_request(
-            scope=scope, request=request, route_handler=route_handler, parameter_model=parameter_model
+            scope=scope,
+            request=request,
+            route_handler=route_handler,
+            parameter_model=parameter_model,
         )
 
         await response(scope, receive, send)
@@ -131,11 +139,18 @@ class HTTPRoute(BaseRoute):
             return response
 
         return await self._call_handler_function(
-            scope=scope, request=request, parameter_model=parameter_model, route_handler=route_handler
+            scope=scope,
+            request=request,
+            parameter_model=parameter_model,
+            route_handler=route_handler,
         )
 
     async def _call_handler_function(
-        self, scope: Scope, request: Request, parameter_model: KwargsModel, route_handler: HTTPRouteHandler
+        self,
+        scope: Scope,
+        request: Request,
+        parameter_model: KwargsModel,
+        route_handler: HTTPRouteHandler,
     ) -> ASGIApp:
         """Call the before request handlers, retrieve any data required for the route handler, and call the route
         handler's ``to_response`` method.
@@ -151,7 +166,9 @@ class HTTPRoute(BaseRoute):
 
         if not response_data:
             response_data, cleanup_group = await self._get_response_data(
-                route_handler=route_handler, parameter_model=parameter_model, request=request
+                route_handler=route_handler,
+                parameter_model=parameter_model,
+                request=request,
             )
 
         response: ASGIApp = await route_handler.to_response(app=scope["app"], data=response_data, request=request)
@@ -307,7 +324,7 @@ class HTTPRoute(BaseRoute):
                 media_type=MediaType.TEXT,
             )
 
-        return HTTPRouteHandler(
+        return AutoOptionsHttpRouteHandler(
             path=path,
             http_method=[HttpMethod.OPTIONS],
             include_in_schema=False,

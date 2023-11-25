@@ -53,7 +53,7 @@ class ParamMappings(NamedTuple):
     alias_to_param: dict[str, ParameterDefinition]
 
 
-def _create_param_mappings(expected_params: set[ParameterDefinition], connection: ASGIConnection) -> ParamMappings:
+def _create_param_mappings(expected_params: set[ParameterDefinition]) -> ParamMappings:
     alias_and_key_tuples = []
     alias_defaults = {}
     alias_to_params: dict[str, ParameterDefinition] = {}
@@ -66,8 +66,6 @@ def _create_param_mappings(expected_params: set[ParameterDefinition], connection
 
         if not (param.is_required or param.default is Ellipsis):
             alias_defaults[alias] = param.default
-        elif connection.scope.get("method") == "OPTIONS" and param.param_type == ParamType.HEADER and param.is_required:
-            alias_defaults[alias] = None
 
         alias_to_params[alias] = param
 
@@ -96,8 +94,9 @@ def create_connection_value_extractor(
         An extractor function.
     """
 
+    alias_and_key_tuples, alias_defaults, alias_to_params = _create_param_mappings(expected_params)
+
     def extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
-        alias_and_key_tuples, alias_defaults, alias_to_params = _create_param_mappings(expected_params, connection)
         data = parser(connection, kwargs_model) if parser else getattr(connection, connection_key, {})
 
         try:
@@ -116,8 +115,7 @@ def create_connection_value_extractor(
 
 @lru_cache(1024)
 def create_query_default_dict(
-    parsed_query: tuple[tuple[str, str], ...],
-    sequence_query_parameter_names: tuple[str, ...],
+    parsed_query: tuple[tuple[str, str], ...], sequence_query_parameter_names: tuple[str, ...]
 ) -> defaultdict[str, list[str] | str]:
     """Transform a list of tuples into a default dict. Ensures non-list values are not wrapped in a list.
 
@@ -317,9 +315,7 @@ async def msgpack_extractor(connection: Request[Any, Any, Any]) -> Any:
 
 
 def create_multipart_extractor(
-    field_definition: FieldDefinition,
-    is_data_optional: bool,
-    data_dto: type[AbstractDTO] | None,
+    field_definition: FieldDefinition, is_data_optional: bool, data_dto: type[AbstractDTO] | None
 ) -> Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]:
     """Create a multipart form-data extractor.
 
@@ -369,10 +365,7 @@ def create_multipart_extractor(
 
         return data_dto(connection).decode_builtins(form_values) if data_dto else form_values
 
-    return cast(
-        "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]",
-        extract_multipart,
-    )
+    return cast("Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", extract_multipart)
 
 
 def create_url_encoded_data_extractor(
@@ -403,14 +396,11 @@ def create_url_encoded_data_extractor(
         return data_dto(connection).decode_builtins(form_values) if data_dto else form_values
 
     return cast(
-        "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]",
-        extract_url_encoded_extractor,
+        "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", extract_url_encoded_extractor
     )
 
 
-def create_data_extractor(
-    kwargs_model: KwargsModel,
-) -> Callable[[dict[str, Any], ASGIConnection], None]:
+def create_data_extractor(kwargs_model: KwargsModel) -> Callable[[dict[str, Any], ASGIConnection], None]:
     """Create an extractor for a request's body.
 
     Args:
@@ -436,15 +426,13 @@ def create_data_extractor(
             )
     elif kwargs_model.expected_msgpack_data:
         data_extractor = cast(
-            "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]",
-            msgpack_extractor,
+            "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", msgpack_extractor
         )
     elif kwargs_model.expected_data_dto:
         data_extractor = create_dto_extractor(data_dto=kwargs_model.expected_data_dto)
     else:
         data_extractor = cast(
-            "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]",
-            json_extractor,
+            "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", json_extractor
         )
 
     def extractor(
