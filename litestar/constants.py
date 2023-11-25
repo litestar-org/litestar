@@ -1,30 +1,12 @@
 from dataclasses import MISSING
 from inspect import Signature
-from typing import Final
+from typing import Any, Final
 
 from msgspec import UnsetType
 
 from litestar.enums import MediaType
 from litestar.types import Empty
-from litestar.types.scope import (
-    AcceptKey,
-    BaseUrlKey,
-    BodyKey,
-    ContentTypeKey,
-    CookiesKey,
-    CsrfTokenKey,
-    DependencyCacheKey,
-    DoCacheKey,
-    FormKey,
-    HttpResponseBodyKey,
-    HttpResponseStartKey,
-    IsCachedKey,
-    JsonKey,
-    MsgpackKey,
-    ParsedQueryKey,
-    ResponseCompressedKey,
-    UrlKey,
-)
+from litestar.utils.deprecation import warn_deprecation
 
 DEFAULT_ALLOWED_CORS_HEADERS: Final = {"Accept", "Accept-Language", "Content-Language", "Content-Type"}
 DEFAULT_CHUNK_SIZE: Final = 1024 * 128  # 128KB
@@ -41,23 +23,35 @@ UNDEFINED_SENTINELS: Final = {Signature.empty, Empty, Ellipsis, MISSING, UnsetTy
 WEBSOCKET_CLOSE: Final = "websocket.close"
 WEBSOCKET_DISCONNECT: Final = "websocket.disconnect"
 
-# keys for internal stuff that we store in the "__litestar__" namespace of the scope state
-SCOPE_STATE_NAMESPACE: Final = "__litestar__"
 
-SCOPE_STATE_ACCEPT_KEY: AcceptKey = "accept"
-SCOPE_STATE_BASE_URL_KEY: BaseUrlKey = "base_url"
-SCOPE_STATE_BODY_KEY: BodyKey = "body"
-SCOPE_STATE_CONTENT_TYPE_KEY: ContentTypeKey = "content_type"
-SCOPE_STATE_COOKIES_KEY: CookiesKey = "cookies"
-SCOPE_STATE_CSRF_TOKEN_KEY: CsrfTokenKey = "csrf_token"  # possible hardcoded password
-SCOPE_STATE_DEPENDENCY_CACHE: DependencyCacheKey = "dependency_cache"
-SCOPE_STATE_DO_CACHE: DoCacheKey = "do_cache"
-SCOPE_STATE_FORM_KEY: FormKey = "form"
-SCOPE_STATE_HTTP_RESPONSE_BODY_KEY: HttpResponseBodyKey = "http_response_body"
-SCOPE_STATE_HTTP_RESPONSE_START_KEY: HttpResponseStartKey = "http_response_start"
-SCOPE_STATE_IS_CACHED: IsCachedKey = "is_cached"
-SCOPE_STATE_JSON_KEY: JsonKey = "json"
-SCOPE_STATE_MSGPACK_KEY: MsgpackKey = "msgpack"
-SCOPE_STATE_PARSED_QUERY_KEY: ParsedQueryKey = "parsed_query"
-SCOPE_STATE_RESPONSE_COMPRESSED: ResponseCompressedKey = "response_compressed"
-SCOPE_STATE_URL_KEY: UrlKey = "url"
+# deprecated constants
+_SCOPE_STATE_CSRF_TOKEN_KEY = "csrf_token"  # noqa: S105  # possible hardcoded password
+_SCOPE_STATE_DEPENDENCY_CACHE: Final = "dependency_cache"
+_SCOPE_STATE_NAMESPACE: Final = "__litestar__"
+_SCOPE_STATE_RESPONSE_COMPRESSED: Final = "response_compressed"
+_SCOPE_STATE_DO_CACHE: Final = "do_cache"
+_SCOPE_STATE_IS_CACHED: Final = "is_cached"
+
+_deprecated_names = {
+    "CSRF_TOKEN_KEY": _SCOPE_STATE_CSRF_TOKEN_KEY,
+    "DEPENDENCY_CACHE": _SCOPE_STATE_DEPENDENCY_CACHE,
+    "NAMESPACE": _SCOPE_STATE_NAMESPACE,
+    "RESPONSE_COMPRESSED": _SCOPE_STATE_RESPONSE_COMPRESSED,
+    "DO_CACHE": _SCOPE_STATE_DO_CACHE,
+    "IS_CACHED": _SCOPE_STATE_IS_CACHED,
+}
+
+
+def __getattr__(name: str) -> Any:
+    if name in _deprecated_names:
+        warn_deprecation(
+            deprecated_name=f"litestar.constants.{name}",
+            version="2.4",
+            kind="import",
+            removal_in="3.0",
+            info=f"'{name}' from 'litestar.constants' is deprecated and will be removed in 3.0. "
+            "Direct access to Litestar scope state is not recommended."
+        )
+
+        return globals()[_deprecated_names[name]]
+    raise AttributeError(f"module {__name__} has no attribute {name}")
