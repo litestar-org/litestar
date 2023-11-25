@@ -20,7 +20,7 @@ from litestar.middleware.base import AbstractMiddleware, DefineMiddleware
 from litestar.serialization import encode_json
 from litestar.utils.empty import not_empty
 from litestar.utils.scope import get_serializer_from_scope
-from litestar.utils.scope.state import ConnectionState
+from litestar.utils.scope.state import ScopeState
 
 __all__ = ("LoggingMiddleware", "LoggingMiddlewareConfig")
 
@@ -191,7 +191,7 @@ class LoggingMiddleware(AbstractMiddleware):
         """
         data: dict[str, Any] = {"message": self.config.response_log_message}
         serializer = get_serializer_from_scope(scope)
-        connection_state = ConnectionState.from_scope(scope)
+        connection_state = ScopeState.from_scope(scope)
         extracted_data = self.response_extractor(
             messages=(
                 connection_state.log_context.pop(HTTP_RESPONSE_START),
@@ -219,7 +219,7 @@ class LoggingMiddleware(AbstractMiddleware):
         Returns:
             An ASGI send function.
         """
-        connection_state = ConnectionState.from_scope(scope)
+        connection_state = ScopeState.from_scope(scope)
 
         async def send_wrapper(message: Message) -> None:
             if message["type"] == HTTP_RESPONSE_START:

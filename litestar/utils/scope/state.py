@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 
 @dataclass
-class ConnectionState:
+class ScopeState:
     """An object for storing connection state.
 
     This is an internal API, and subject to change without notice.

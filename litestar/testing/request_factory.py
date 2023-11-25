@@ -17,7 +17,7 @@ from litestar.serialization import decode_json, default_serializer, encode_json
 from litestar.types import DataContainerType, HTTPScope, RouteHandlerType
 from litestar.types.asgi_types import ASGIVersion
 from litestar.utils import get_serializer_from_scope
-from litestar.utils.scope.state import ConnectionState
+from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
     from httpx._types import FileTypes
@@ -301,7 +301,7 @@ class RequestFactory:
             headers.update(encoding_headers)
             for chunk in stream:
                 body += chunk
-        ConnectionState.from_scope(scope).body = body
+        ScopeState.from_scope(scope).body = body
         self._create_cookie_header(headers, cookies)
         scope["headers"] = self._build_headers(headers)
         return Request(scope=scope)

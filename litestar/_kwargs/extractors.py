@@ -15,7 +15,7 @@ from litestar.enums import ParamType, RequestEncodingType
 from litestar.exceptions import ValidationException
 from litestar.params import BodyKwarg
 from litestar.types import Empty
-from litestar.utils.scope.state import ConnectionState
+from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
     from litestar._kwargs import KwargsModel
@@ -151,7 +151,7 @@ def parse_connection_query_params(connection: ASGIConnection, kwargs_model: Kwar
         if connection._parsed_query is not Empty
         else parse_query_string(connection.scope.get("query_string", b""))
     )
-    ConnectionState.from_scope(connection.scope).parsed_query = parsed_query
+    ScopeState.from_scope(connection.scope).parsed_query = parsed_query
     return create_query_default_dict(
         parsed_query=parsed_query,
         sequence_query_parameter_names=kwargs_model.sequence_query_parameter_names,

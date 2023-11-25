@@ -11,7 +11,7 @@ from litestar.response.base import ASGIResponse, Response
 from litestar.status_codes import HTTP_200_OK
 from litestar.utils.deprecation import warn_deprecation
 from litestar.utils.empty import not_empty
-from litestar.utils.scope.state import ConnectionState
+from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
     from litestar.app import Litestar
@@ -90,7 +90,7 @@ class Template(Response[bytes]):
         Returns:
             A dictionary holding the template context
         """
-        csrf_token = not_empty(ConnectionState.from_scope(request.scope).csrf_token, "")
+        csrf_token = not_empty(ScopeState.from_scope(request.scope).csrf_token, "")
         return {
             **self.context,
             "request": request,

@@ -15,7 +15,7 @@ from litestar.middleware._utils import (
     should_bypass_middleware,
 )
 from litestar.middleware.base import MiddlewareProtocol
-from litestar.utils.scope.state import ConnectionState
+from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
     from litestar.config.csrf import CSRFConfig
@@ -110,7 +110,7 @@ class CSRFMiddleware(MiddlewareProtocol):
             form = await request.form()
             existing_csrf_token = form.get("_csrf_token", None)
 
-        connection_state = ConnectionState.from_scope(scope)
+        connection_state = ScopeState.from_scope(scope)
         if request.method in self.config.safe_methods or should_bypass_middleware(
             scope=scope,
             scopes=self.scopes,

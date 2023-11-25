@@ -5,7 +5,7 @@ from litestar.connection import ASGIConnection
 from litestar.logging.config import LoggingConfig
 from litestar.testing import RequestFactory
 from litestar.types.empty import Empty
-from litestar.utils.scope.state import ConnectionState
+from litestar.utils.scope.state import ScopeState
 
 
 def test_connection_base_properties() -> None:
@@ -19,7 +19,7 @@ def test_connection_base_properties() -> None:
     session = {"session": "abc"}
     scope = RequestFactory(app=app).get(route_handler=handler, user=user, auth=auth, session=session).scope
     connection = ASGIConnection[Any, Any, Any, Any](scope)
-    connection_state = ConnectionState.from_scope(scope)
+    connection_state = ScopeState.from_scope(scope)
 
     assert connection.app
     assert connection.app is app

@@ -15,7 +15,7 @@ from litestar.template.config import TemplateConfig
 from litestar.testing import create_test_client
 from litestar.types import Scope
 from litestar.utils.empty import not_empty
-from litestar.utils.scope.state import ConnectionState
+from litestar.utils.scope.state import ScopeState
 
 
 @pytest.mark.parametrize(
@@ -61,7 +61,7 @@ def test_csrf_input(engine: Any, template: str, tmp_path: Path) -> None:
 
     @get(path="/", media_type=MediaType.HTML)
     def handler(scope: Scope) -> Template:
-        connection_state = ConnectionState.from_scope(scope)
+        connection_state = ScopeState.from_scope(scope)
         token["value"] = not_empty(connection_state.csrf_token, "")
         return Template(template_name="abc.html")
 
