@@ -17,7 +17,7 @@ from litestar.exceptions import (
     ImproperlyConfiguredException,
 )
 from litestar.types import AnyIOBackend, ASGIApp, HTTPResponseStartEvent
-from litestar.utils.scope import set_litestar_scope_state
+from litestar.utils.scope.state import ConnectionState
 
 if TYPE_CHECKING:
     from httpx._types import CookieTypes
@@ -57,7 +57,7 @@ def fake_asgi_connection(app: ASGIApp, cookies: dict[str, str]) -> ASGIConnectio
         "session": None,
         "user": None,
     }
-    set_litestar_scope_state(scope, SCOPE_STATE_COOKIES_KEY, cookies)
+    ConnectionState.from_scope(scope).cookies = cookies
     return ASGIConnection[Any, Any, Any, Any](scope=scope)
 
 

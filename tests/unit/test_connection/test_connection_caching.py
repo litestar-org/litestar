@@ -5,11 +5,10 @@ from unittest.mock import ANY, MagicMock, call
 
 import pytest
 
-from litestar import Request, constants
+from litestar import Request
 from litestar.testing import RequestFactory
 from litestar.types import Empty, HTTPReceiveMessage, Scope
-from litestar.types.scope import ScopeStateKeyType
-from litestar.utils import get_litestar_scope_state, set_litestar_scope_state
+from litestar.utils.scope.state import ConnectionState
 
 
 async def test_multiple_request_object_data_caching(create_scope: Callable[..., Scope], mock: MagicMock) -> None:
@@ -44,20 +43,17 @@ def set_mock_fixture() -> MagicMock:
 def create_connection_fixture(
     get_mock: MagicMock, set_mock: MagicMock, monkeypatch: pytest.MonkeyPatch
 ) -> Callable[..., Request]:
-    def create_connection(body_type: str = "json") -> Request:
-        def wrapped_get_litestar_scope_state(scope_: Scope, key: ScopeStateKeyType, default: Any = None) -> Any:
+    class MockConnectionState(ConnectionState):
+        def __getattribute__(self, key: str) -> Any:
             get_mock(key)
-            return get_litestar_scope_state(scope_, key, default)
+            return object.__getattribute__(self, key)
 
-        def wrapped_set_litestar_scope_state(scope_: Scope, key: ScopeStateKeyType, value: Any) -> None:
+        def __setattr__(self, key: str, value: Any) -> None:
             set_mock(key, value)
-            set_litestar_scope_state(scope_, key, value)
+            super().__setattr__(key, value)
 
-        monkeypatch.setattr("litestar.connection.base.get_litestar_scope_state", wrapped_get_litestar_scope_state)
-        monkeypatch.setattr("litestar.connection.base.set_litestar_scope_state", wrapped_set_litestar_scope_state)
-        monkeypatch.setattr("litestar.connection.request.get_litestar_scope_state", wrapped_get_litestar_scope_state)
-        monkeypatch.setattr("litestar.connection.request.set_litestar_scope_state", wrapped_set_litestar_scope_state)
-
+    def create_connection(body_type: str = "json") -> Request:
+        monkeypatch.setattr("litestar.connection.base.ConnectionState", MockConnectionState)
         connection = RequestFactory().get()
 
         async def fake_receive() -> HTTPReceiveMessage:
@@ -89,27 +85,22 @@ def get_value_fixture() -> Callable[[Request, str, bool], Awaitable[Any]]:
 
 
 caching_tests = [
-    (constants.SCOPE_STATE_URL_KEY, "url", "_url", False),
-    (constants.SCOPE_STATE_BASE_URL_KEY, "base_url", "_base_url", False),
-    (
-        constants.SCOPE_STATE_PARSED_QUERY_KEY,
-        "query_params",
-        "_parsed_query",
-        False,
-    ),
-    (constants.SCOPE_STATE_COOKIES_KEY, "cookies", "_cookies", False),
-    (constants.SCOPE_STATE_BODY_KEY, "body", "_body", True),
-    (constants.SCOPE_STATE_FORM_KEY, "form", "_form", True),
-    (constants.SCOPE_STATE_MSGPACK_KEY, "msgpack", "_msgpack", True),
-    (constants.SCOPE_STATE_JSON_KEY, "json", "_json", True),
-    (constants.SCOPE_STATE_ACCEPT_KEY, "accept", "_accept", False),
-    (constants.SCOPE_STATE_CONTENT_TYPE_KEY, "content_type", "_content_type", False),
+    ("url", "url", "_url", False),
+    ("base_url", "base_url", "_base_url", False),
+    ("parsed_query", "query_params", "_parsed_query", False),
+    ("cookies", "cookies", "_cookies", False),
+    ("body", "body", "_body", True),
+    ("form", "form", "_form", True),
+    ("msgpack", "msgpack", "_msgpack", True),
+    ("json", "json", "_json", True),
+    ("accept", "accept", "_accept", False),
+    ("content_type", "content_type", "_content_type", False),
 ]
 
 
 @pytest.mark.parametrize(("state_key", "prop_name", "cache_attr_name", "is_coro"), caching_tests)
 async def test_connection_cached_properties_no_scope_or_connection_caching(
-    state_key: ScopeStateKeyType,
+    state_key: str,
     prop_name: str,
     cache_attr_name: str,
     is_coro: bool,
@@ -149,10 +140,13 @@ async def test_connection_cached_properties_no_scope_or_connection_caching(
             set_mock.assert_called_once_with(state_key, ANY)
 
     connection = create_connection("msgpack" if state_key == "msgpack" else "json")
+    connection_state = connection._connection_state
 
-    assert get_litestar_scope_state(connection.scope, state_key, Empty) is Empty
+    assert getattr(connection_state, state_key) is Empty
     setattr(connection, cache_attr_name, Empty)
 
+    get_mock.reset_mock()
+    set_mock.reset_mock()
     await get_value(connection, prop_name, is_coro)
     check_get_mock()
     check_set_mock()
@@ -160,7 +154,7 @@ async def test_connection_cached_properties_no_scope_or_connection_caching(
 
 @pytest.mark.parametrize(("state_key", "prop_name", "cache_attr_name", "is_coro"), caching_tests)
 async def test_connection_cached_properties_cached_in_scope(
-    state_key: ScopeStateKeyType,
+    state_key: str,
     prop_name: str,
     cache_attr_name: str,
     is_coro: bool,
@@ -171,10 +165,13 @@ async def test_connection_cached_properties_cached_in_scope(
 ) -> None:
     # set the value in the scope and ensure empty on connection
     connection = create_connection()
+    connection_state = ConnectionState.from_scope(connection.scope)
 
-    set_litestar_scope_state(connection.scope, state_key, {"a": "b"})  # type: ignore[arg-type]
+    setattr(connection_state, state_key, {"not": "empty"})
     setattr(connection, cache_attr_name, Empty)
 
+    get_mock.reset_mock()
+    set_mock.reset_mock()
     await get_value(connection, prop_name, is_coro)
     get_mock.assert_called_once_with(state_key)
     set_mock.assert_not_called()
@@ -193,7 +190,9 @@ async def test_connection_cached_properties_cached_on_connection(
 ) -> None:
     connection = create_connection()
     # set the value on the connection
-    setattr(connection, cache_attr_name, {"a": "b"})
+    setattr(connection, cache_attr_name, {"not": "empty"})
+    get_mock.reset_mock()
+    set_mock.reset_mock()
     await get_value(connection, prop_name, is_coro)
     get_mock.assert_not_called()
     set_mock.assert_not_called()

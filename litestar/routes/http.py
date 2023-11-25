@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, cast
 
 from msgspec.msgpack import decode as _decode_msgpack_plain
 
-from litestar.constants import DEFAULT_ALLOWED_CORS_HEADERS, SCOPE_STATE_IS_CACHED
+from litestar.constants import DEFAULT_ALLOWED_CORS_HEADERS
 from litestar.datastructures.headers import Headers
 from litestar.datastructures.upload_file import UploadFile
 from litestar.enums import HttpMethod, MediaType, ScopeType
@@ -14,7 +14,7 @@ from litestar.handlers.http_handlers import HTTPRouteHandler
 from litestar.response import Response
 from litestar.routes.base import BaseRoute
 from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
-from litestar.utils import set_litestar_scope_state
+from litestar.utils.scope.state import ConnectionState
 
 if TYPE_CHECKING:
     from litestar._kwargs import KwargsModel
@@ -226,7 +226,7 @@ class HTTPRoute(BaseRoute):
         messages = _decode_msgpack_plain(cached_response_data)
 
         async def cached_response(scope: Scope, receive: Receive, send: Send) -> None:
-            set_litestar_scope_state(scope, SCOPE_STATE_IS_CACHED, True)
+            ConnectionState.from_scope(scope).is_cached = True
             for message in messages:
                 await send(message)
 
