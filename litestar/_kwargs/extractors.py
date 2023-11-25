@@ -332,8 +332,8 @@ def create_multipart_extractor(
         body_kwarg_multipart_form_part_limit = field_definition.kwarg_definition.multipart_form_part_limit
 
     async def extract_multipart(
-        connection: Request[Any, Any, Any],
-    ) -> Any:
+            connection: Request[Any, Any, Any],
+        ) -> Any:
         multipart_form_part_limit = (
             body_kwarg_multipart_form_part_limit
             if body_kwarg_multipart_form_part_limit is not None
@@ -353,10 +353,7 @@ def create_multipart_extractor(
         if field_definition.is_non_string_sequence:
             values = list(form_values.values())
             if field_definition.inner_types[0].annotation is UploadFile:
-                if isinstance(values[0], list):
-                    return values[0]
-                return values
-
+                return values[0] if isinstance(values[0], list) else values
             return values
         if field_definition.is_simple_type and field_definition.annotation is UploadFile and form_values:
             return next(v for v in form_values.values() if isinstance(v, UploadFile))
