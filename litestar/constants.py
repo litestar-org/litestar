@@ -1,11 +1,12 @@
 from dataclasses import MISSING
 from inspect import Signature
-from typing import Final
+from typing import Any, Final
 
 from msgspec import UnsetType
 
 from litestar.enums import MediaType
 from litestar.types import Empty
+from litestar.utils.deprecation import warn_deprecation
 
 CONNECTION_STATE_KEY: Final = "_connection_state"
 DEFAULT_ALLOWED_CORS_HEADERS: Final = {"Accept", "Accept-Language", "Content-Language", "Content-Type"}
@@ -18,8 +19,40 @@ OPENAPI_NOT_INITIALIZED: Final = "Litestar has not been instantiated with OpenAP
 REDIRECT_STATUS_CODES: Final = {301, 302, 303, 307, 308}
 REDIRECT_ALLOWED_MEDIA_TYPES: Final = {MediaType.TEXT, MediaType.HTML, MediaType.JSON}
 RESERVED_KWARGS: Final = {"state", "headers", "cookies", "request", "socket", "data", "query", "scope", "body"}
-SCOPE_STATE_NAMESPACE: Final = "__litestar__"
 SKIP_VALIDATION_NAMES: Final = {"request", "socket", "scope", "receive", "send"}
 UNDEFINED_SENTINELS: Final = {Signature.empty, Empty, Ellipsis, MISSING, UnsetType}
 WEBSOCKET_CLOSE: Final = "websocket.close"
 WEBSOCKET_DISCONNECT: Final = "websocket.disconnect"
+
+
+# deprecated constants
+_SCOPE_STATE_CSRF_TOKEN_KEY = "csrf_token"  # noqa: S105  # possible hardcoded password
+_SCOPE_STATE_DEPENDENCY_CACHE: Final = "dependency_cache"
+_SCOPE_STATE_NAMESPACE: Final = "__litestar__"
+_SCOPE_STATE_RESPONSE_COMPRESSED: Final = "response_compressed"
+_SCOPE_STATE_DO_CACHE: Final = "do_cache"
+_SCOPE_STATE_IS_CACHED: Final = "is_cached"
+
+_deprecated_names = {
+    "CSRF_TOKEN_KEY": _SCOPE_STATE_CSRF_TOKEN_KEY,
+    "DEPENDENCY_CACHE": _SCOPE_STATE_DEPENDENCY_CACHE,
+    "NAMESPACE": _SCOPE_STATE_NAMESPACE,
+    "RESPONSE_COMPRESSED": _SCOPE_STATE_RESPONSE_COMPRESSED,
+    "DO_CACHE": _SCOPE_STATE_DO_CACHE,
+    "IS_CACHED": _SCOPE_STATE_IS_CACHED,
+}
+
+
+def __getattr__(name: str) -> Any:
+    if name in _deprecated_names:
+        warn_deprecation(
+            deprecated_name=f"litestar.constants.{name}",
+            version="2.4",
+            kind="import",
+            removal_in="3.0",
+            info=f"'{name}' from 'litestar.constants' is deprecated and will be removed in 3.0. "
+            "Direct access to Litestar scope state is not recommended."
+        )
+
+        return globals()[_deprecated_names[name]]
+    raise AttributeError(f"module {__name__} has no attribute {name}")
