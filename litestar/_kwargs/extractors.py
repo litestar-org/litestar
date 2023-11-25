@@ -16,6 +16,7 @@ from litestar.enums import ParamType, RequestEncodingType
 from litestar.exceptions import ValidationException
 from litestar.params import BodyKwarg
 from litestar.types import Empty
+from litestar.types.asgi_types import HTTPScope
 from litestar.utils.scope import set_litestar_scope_state
 
 if TYPE_CHECKING:
@@ -53,7 +54,9 @@ class ParamMappings(NamedTuple):
     alias_to_param: dict[str, ParameterDefinition]
 
 
-def _create_param_mappings(expected_params: set[ParameterDefinition]) -> ParamMappings:
+def _create_param_mappings(
+    expected_params: set[ParameterDefinition], connection: ASGIConnection
+) -> ParamMappings:
     alias_and_key_tuples = []
     alias_defaults = {}
     alias_to_params: dict[str, ParameterDefinition] = {}
@@ -66,6 +69,12 @@ def _create_param_mappings(expected_params: set[ParameterDefinition]) -> ParamMa
 
         if not (param.is_required or param.default is Ellipsis):
             alias_defaults[alias] = param.default
+        elif (
+            connection.scope.get("method") == "OPTIONS"
+            and param.param_type == ParamType.HEADER
+            and param.is_required
+        ):
+            alias_defaults[alias] = None
 
         alias_to_params[alias] = param
 
@@ -94,14 +103,20 @@ def create_connection_value_extractor(
         An extractor function.
     """
 
-    alias_and_key_tuples, alias_defaults, alias_to_params = _create_param_mappings(expected_params)
-
     def extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
-        data = parser(connection, kwargs_model) if parser else getattr(connection, connection_key, {})
+        alias_and_key_tuples, alias_defaults, alias_to_params = _create_param_mappings(
+            expected_params, connection
+        )
+        data = (
+            parser(connection, kwargs_model)
+            if parser
+            else getattr(connection, connection_key, {})
+        )
 
         try:
             connection_mapping: dict[str, Any] = {
-                key: data[alias] if alias in data else alias_defaults[alias] for alias, key in alias_and_key_tuples
+                key: data[alias] if alias in data else alias_defaults[alias]
+                for alias, key in alias_and_key_tuples
             }
             values.update(connection_mapping)
         except KeyError as e:
@@ -115,7 +130,8 @@ def create_connection_value_extractor(
 
 @lru_cache(1024)
 def create_query_default_dict(
-    parsed_query: tuple[tuple[str, str], ...], sequence_query_parameter_names: tuple[str, ...]
+    parsed_query: tuple[tuple[str, str], ...],
+    sequence_query_parameter_names: tuple[str, ...],
 ) -> defaultdict[str, list[str] | str]:
     """Transform a list of tuples into a default dict. Ensures non-list values are not wrapped in a list.
 
@@ -137,7 +153,9 @@ def create_query_default_dict(
     return output
 
 
-def parse_connection_query_params(connection: ASGIConnection, kwargs_model: KwargsModel) -> dict[str, Any]:
+def parse_connection_query_params(
+    connection: ASGIConnection, kwargs_model: KwargsModel
+) -> dict[str, Any]:
     """Parse query params and cache the result in scope.
 
     Args:
@@ -152,7 +170,9 @@ def parse_connection_query_params(connection: ASGIConnection, kwargs_model: Kwar
         if connection._parsed_query is not Empty
         else parse_query_string(connection.scope.get("query_string", b""))
     )
-    set_litestar_scope_state(connection.scope, SCOPE_STATE_PARSED_QUERY_KEY, parsed_query)
+    set_litestar_scope_state(
+        connection.scope, SCOPE_STATE_PARSED_QUERY_KEY, parsed_query
+    )
     return create_query_default_dict(
         parsed_query=parsed_query,
         sequence_query_parameter_names=kwargs_model.sequence_query_parameter_names,
@@ -315,7 +335,9 @@ async def msgpack_extractor(connection: Request[Any, Any, Any]) -> Any:
 
 
 def create_multipart_extractor(
-    field_definition: FieldDefinition, is_data_optional: bool, data_dto: type[AbstractDTO] | None
+    field_definition: FieldDefinition,
+    is_data_optional: bool,
+    data_dto: type[AbstractDTO] | None,
 ) -> Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]:
     """Create a multipart form-data extractor.
 
@@ -328,8 +350,12 @@ def create_multipart_extractor(
         An extractor function.
     """
     body_kwarg_multipart_form_part_limit: int | None = None
-    if field_definition.kwarg_definition and isinstance(field_definition.kwarg_definition, BodyKwarg):
-        body_kwarg_multipart_form_part_limit = field_definition.kwarg_definition.multipart_form_part_limit
+    if field_definition.kwarg_definition and isinstance(
+        field_definition.kwarg_definition, BodyKwarg
+    ):
+        body_kwarg_multipart_form_part_limit = (
+            field_definition.kwarg_definition.multipart_form_part_limit
+        )
 
     async def extract_multipart(
         connection: Request[Any, Any, Any],
@@ -352,20 +378,33 @@ def create_multipart_extractor(
 
         if field_definition.is_non_string_sequence:
             values = list(form_values.values())
-            if field_definition.inner_types[0].annotation is UploadFile and isinstance(values[0], list):
+            if field_definition.inner_types[0].annotation is UploadFile and isinstance(
+                values[0], list
+            ):
                 return values[0]
 
             return values
 
-        if field_definition.is_simple_type and field_definition.annotation is UploadFile and form_values:
+        if (
+            field_definition.is_simple_type
+            and field_definition.annotation is UploadFile
+            and form_values
+        ):
             return next(v for v in form_values.values() if isinstance(v, UploadFile))
 
         if not form_values and is_data_optional:
             return None
 
-        return data_dto(connection).decode_builtins(form_values) if data_dto else form_values
+        return (
+            data_dto(connection).decode_builtins(form_values)
+            if data_dto
+            else form_values
+        )
 
-    return cast("Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", extract_multipart)
+    return cast(
+        "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]",
+        extract_multipart,
+    )
 
 
 def create_url_encoded_data_extractor(
@@ -393,14 +432,21 @@ def create_url_encoded_data_extractor(
         if not form_values and is_data_optional:
             return None
 
-        return data_dto(connection).decode_builtins(form_values) if data_dto else form_values
+        return (
+            data_dto(connection).decode_builtins(form_values)
+            if data_dto
+            else form_values
+        )
 
     return cast(
-        "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", extract_url_encoded_extractor
+        "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]",
+        extract_url_encoded_extractor,
     )
 
 
-def create_data_extractor(kwargs_model: KwargsModel) -> Callable[[dict[str, Any], ASGIConnection], None]:
+def create_data_extractor(
+    kwargs_model: KwargsModel,
+) -> Callable[[dict[str, Any], ASGIConnection], None]:
     """Create an extractor for a request's body.
 
     Args:
@@ -426,13 +472,15 @@ def create_data_extractor(kwargs_model: KwargsModel) -> Callable[[dict[str, Any]
             )
     elif kwargs_model.expected_msgpack_data:
         data_extractor = cast(
-            "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", msgpack_extractor
+            "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]",
+            msgpack_extractor,
         )
     elif kwargs_model.expected_data_dto:
         data_extractor = create_dto_extractor(data_dto=kwargs_model.expected_data_dto)
     else:
         data_extractor = cast(
-            "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", json_extractor
+            "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]",
+            json_extractor,
         )
 
     def extractor(
