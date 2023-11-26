@@ -12,36 +12,36 @@ DefaultT = TypeVar("DefaultT")
 
 
 @overload
-def not_empty(value: EmptyType) -> NoReturn:
+def raise_if_empty(value: EmptyType) -> NoReturn:
     ...
 
 
 @overload
-def not_empty(value: EmptyType, default: EmptyType) -> NoReturn:
+def raise_if_empty(value: ValueT | EmptyType) -> ValueT:
     ...
 
 
-@overload
-def not_empty(value: ValueT | EmptyType) -> ValueT:
-    ...
+def raise_if_empty(value: ValueT | EmptyType) -> ValueT:
+    """Raise an exception if `value` is `Empty`.
+
+    Args:
+        value: The value to check.
+
+    Returns:
+        The value.
+
+    Raises:
+        Exception: When `value` is `Empty`.
+    """
+    if value is Empty:
+        raise ValueError("value cannot be Empty")
+    return value
 
 
-@overload
-def not_empty(value: ValueT | EmptyType, default: EmptyType) -> ValueT:
-    ...
-
-
-@overload
-def not_empty(value: ValueT | EmptyType, default: DefaultT) -> ValueT | DefaultT:
-    ...
-
-
-def not_empty(value: ValueT | EmptyType, default: DefaultT | EmptyType = Empty) -> ValueT | DefaultT:
+def value_or_default(value: ValueT | EmptyType, default: DefaultT) -> ValueT | DefaultT:
     """Return `value` handling the case where it is empty.
 
-    If default is provided, it is returned when `value` is `Empty`.
-
-    If default is not provided, raises a `ValueError` when `value` is `Empty`.
+    If `value` is `Empty`, `default` is returned.
 
     Args:
         value: The value to check.
@@ -49,12 +49,7 @@ def not_empty(value: ValueT | EmptyType, default: DefaultT | EmptyType = Empty) 
 
     Returns:
         The value or default value.
-
-    Raises:
-        ValueError: When `value` is `Empty` and `default` is not provided.
     """
     if value is Empty:
-        if default is Empty:
-            raise ValueError("value cannot be Empty")
         return default
     return value

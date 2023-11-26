@@ -10,7 +10,7 @@ from litestar.exceptions import ImproperlyConfiguredException
 from litestar.response.base import ASGIResponse, Response
 from litestar.status_codes import HTTP_200_OK
 from litestar.utils.deprecation import warn_deprecation
-from litestar.utils.empty import not_empty
+from litestar.utils.empty import value_or_default
 from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
@@ -90,7 +90,7 @@ class Template(Response[bytes]):
         Returns:
             A dictionary holding the template context
         """
-        csrf_token = not_empty(ScopeState.from_scope(request.scope).csrf_token, "")
+        csrf_token = value_or_default(ScopeState.from_scope(request.scope).csrf_token, "")
         return {
             **self.context,
             "request": request,

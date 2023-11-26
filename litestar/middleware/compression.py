@@ -8,11 +8,8 @@ from litestar.datastructures import Headers, MutableScopeHeaders
 from litestar.enums import CompressionEncoding, ScopeType
 from litestar.exceptions import MissingDependencyException
 from litestar.middleware.base import AbstractMiddleware
-from litestar.utils.empty import not_empty
+from litestar.utils.empty import value_or_default
 from litestar.utils.scope.state import ScopeState
-
-__all__ = ("CompressionFacade", "CompressionMiddleware")
-
 
 if TYPE_CHECKING:
     from litestar.config.compression import CompressionConfig
@@ -29,6 +26,8 @@ if TYPE_CHECKING:
         from brotli import Compressor
     except ImportError:
         Compressor = Any
+
+__all__ = ("CompressionFacade", "CompressionMiddleware")
 
 
 class CompressionFacade:
@@ -193,7 +192,7 @@ class CompressionMiddleware(AbstractMiddleware):
                 initial_message = message
                 return
 
-            if initial_message is not None and not_empty(connection_state.is_cached, False):
+            if initial_message is not None and value_or_default(connection_state.is_cached, False):
                 await send(initial_message)
                 await send(message)
                 return

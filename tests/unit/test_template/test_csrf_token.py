@@ -14,7 +14,7 @@ from litestar.response.template import Template
 from litestar.template.config import TemplateConfig
 from litestar.testing import create_test_client
 from litestar.types import Scope
-from litestar.utils.empty import not_empty
+from litestar.utils.empty import value_or_default
 from litestar.utils.scope.state import ScopeState
 
 
@@ -62,7 +62,7 @@ def test_csrf_input(engine: Any, template: str, tmp_path: Path) -> None:
     @get(path="/", media_type=MediaType.HTML)
     def handler(scope: Scope) -> Template:
         connection_state = ScopeState.from_scope(scope)
-        token["value"] = not_empty(connection_state.csrf_token, "")
+        token["value"] = value_or_default(connection_state.csrf_token, "")
         return Template(template_name="abc.html")
 
     csrf_config = CSRFConfig(secret="yaba daba do")
