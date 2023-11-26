@@ -25,6 +25,7 @@ if TYPE_CHECKING:
     from litestar.types.asgi_types import Message, Receive, Scope, Send
     from litestar.types.protocols import Logger
 
+
 __all__ = ("ASGIConnection", "empty_receive", "empty_send")
 
 UserT = TypeVar("UserT")
@@ -61,7 +62,7 @@ async def empty_send(_: Message) -> NoReturn:  # pragma: no cover
 class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
     """The base ASGI connection container."""
 
-    __slots__ = ("scope", "receive", "send", "_base_url", "_url", "_parsed_query", "_cookies")
+    __slots__ = ("scope", "receive", "send", "_base_url", "_url", "_parsed_query", "_cookies", "_server_extensions")
 
     scope: Scope
     """The ASGI scope attached to the connection."""
@@ -85,6 +86,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         self._url: URL | EmptyType = Empty
         self._parsed_query: tuple[tuple[str, str], ...] | EmptyType = Empty
         self._cookies: dict[str, str] | EmptyType = Empty
+        self._server_extensions = scope.get("extensions") or {}  # extensions may be None
 
     @property
     def app(self) -> Litestar:

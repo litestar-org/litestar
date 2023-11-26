@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Generic, cast
 
 from litestar._multipart import parse_content_header, parse_multipart_form
@@ -22,8 +23,12 @@ from litestar.constants import (
 )
 from litestar.datastructures.headers import Accept
 from litestar.datastructures.multi_dicts import FormMultiDict
-from litestar.enums import RequestEncodingType
-from litestar.exceptions import InternalServerException
+from litestar.enums import ASGIExtension, RequestEncodingType
+from litestar.exceptions import (
+    InternalServerException,
+    LitestarException,
+    LitestarWarning,
+)
 from litestar.serialization import decode_json, decode_msgpack
 from litestar.types import Empty
 from litestar.utils.scope import get_litestar_scope_state, set_litestar_scope_state
@@ -49,7 +54,16 @@ SERVER_PUSH_HEADERS = {
 class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", UserT, AuthT, StateT]):
     """The Litestar Request class."""
 
-    __slots__ = ("_json", "_form", "_body", "_msgpack", "_content_type", "_accept", "is_connected")
+    __slots__ = (
+        "_json",
+        "_form",
+        "_body",
+        "_msgpack",
+        "_content_type",
+        "_accept",
+        "is_connected",
+        "supports_push_promise",
+    )
 
     scope: HTTPScope
     """The ASGI scope attached to the connection."""
@@ -74,6 +88,7 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         self._msgpack: Any = Empty
         self._content_type: tuple[str, dict[str, str]] | EmptyType = Empty
         self._accept: Accept | EmptyType = Empty
+        self.supports_push_promise = ASGIExtension.SERVER_PUSH in self._server_extensions
 
     @property
     def method(self) -> Method:
@@ -221,22 +236,38 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
 
         return FormMultiDict(self._form)
 
-    async def send_push_promise(self, path: str) -> None:
+    async def send_push_promise(self, path: str, raise_if_unavailable: bool = False) -> None:
         """Send a push promise.
 
         This method requires the `http.response.push` extension to be sent from the ASGI server.
 
         Args:
             path: Path to send the promise to.
+            raise_if_unavailable: Raise an exception if server push is not supported by
+                the server
 
         Returns:
             None
         """
-        extensions: dict[str, dict[Any, Any]] = self.scope.get("extensions") or {}
-        if "http.response.push" in extensions:
-            raw_headers: list[tuple[bytes, bytes]] = []
-            for name in SERVER_PUSH_HEADERS:
-                raw_headers.extend(
-                    (name.encode("latin-1"), value.encode("latin-1")) for value in self.headers.getall(name, [])
-                )
-            await self.send({"type": "http.response.push", "path": path, "headers": raw_headers})
+        if not self.supports_push_promise:
+            if raise_if_unavailable:
+                raise LitestarException("Attempted to send a push promise but the server does not support it")
+
+            warnings.warn(
+                "Attempted to send a push promise but the server does not support it. In a future version, this will "
+                "raise an exception. To enable this behaviour in the current version, set raise_if_unavailable=True. "
+                "To prevent this behaviour, make sure that the server you are using supports the 'http.response.push' "
+                "ASGI extension, or check this dynamically via "
+                ":attr:`~litestar.connection.Request.supports_push_promise`",
+                stacklevel=2,
+                category=LitestarWarning,
+            )
+
+            return
+
+        raw_headers = [
+            (header_name.encode("latin-1"), value.encode("latin-1"))
+            for header_name in (self.headers.keys() & SERVER_PUSH_HEADERS)
+            for value in self.headers.getall(header_name, [])
+        ]
+        await self.send({"type": "http.response.push", "path": path, "headers": raw_headers})
