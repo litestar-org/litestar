@@ -127,6 +127,10 @@ For example:
 
 .. tip::
 
+    If your parameters collide with any of the reserved keyword arguments above, you can :doc:`provide an alternative name <usage/routing/parameters:Alternative names and constraints>`
+
+.. tip::
+
     You can define a custom typing for your application state and then use it as a type instead of just using the
     State class from Litestar
 
