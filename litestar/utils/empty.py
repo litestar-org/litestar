@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, NoReturn, TypeVar, overload
+from typing import TYPE_CHECKING, TypeVar
 
 from litestar.types.empty import Empty
 
