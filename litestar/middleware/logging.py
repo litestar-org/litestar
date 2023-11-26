@@ -18,7 +18,7 @@ from litestar.enums import ScopeType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.middleware.base import AbstractMiddleware, DefineMiddleware
 from litestar.serialization import encode_json
-from litestar.utils.empty import not_empty
+from litestar.utils.empty import value_or_default
 from litestar.utils.scope import get_serializer_from_scope
 from litestar.utils.scope.state import ScopeState
 
@@ -198,7 +198,7 @@ class LoggingMiddleware(AbstractMiddleware):
                 connection_state.log_context.pop(HTTP_RESPONSE_BODY),
             ),
         )
-        response_body_compressed = not_empty(connection_state.response_compressed, False)
+        response_body_compressed = value_or_default(connection_state.response_compressed, False)
         for key in self.config.response_log_fields:
             value: Any
             value = extracted_data.get(key)

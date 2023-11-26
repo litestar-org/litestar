@@ -7,7 +7,7 @@ from msgspec.msgpack import encode as encode_msgpack
 from litestar import Request
 from litestar.constants import HTTP_RESPONSE_BODY, HTTP_RESPONSE_START
 from litestar.enums import ScopeType
-from litestar.utils.empty import not_empty
+from litestar.utils.empty import value_or_default
 from litestar.utils.scope.state import ScopeState
 
 from .base import AbstractMiddleware
@@ -39,14 +39,14 @@ class ResponseCacheMiddleware(AbstractMiddleware):
         messages: list[Message] = []
 
         async def wrapped_send(message: Message) -> None:
-            if not not_empty(connection_state.is_cached, False):
+            if not value_or_default(connection_state.is_cached, False):
                 if message["type"] == HTTP_RESPONSE_START:
                     do_cache = connection_state.do_cache = self.config.cache_response_filter(
                         cast("HTTPScope", scope), message["status"]
                     )
                     if do_cache:
                         messages.append(message)
-                elif not_empty(connection_state.do_cache, False):
+                elif value_or_default(connection_state.do_cache, False):
                     messages.append(message)
 
                 if messages and message["type"] == HTTP_RESPONSE_BODY and not message["more_body"]:
