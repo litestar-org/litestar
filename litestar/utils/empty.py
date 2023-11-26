@@ -23,6 +23,4 @@ def value_or_default(value: ValueT | EmptyType, default: DefaultT) -> ValueT | D
     Returns:
         The value or default value.
     """
-    if value is Empty:
-        return default
-    return value
+    return default if value is Empty else value
