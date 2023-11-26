@@ -97,6 +97,7 @@ def test_renamed_field_nested(use_experimental_dto_backend: bool, create_module:
     module = create_module(
         """
 from dataclasses import dataclass
+from typing import List
 
 @dataclass
 class Bar:
@@ -106,13 +107,15 @@ class Bar:
 class Foo:
     id: str
     bar: Bar
+    bars: List[Bar]
 """
     )
 
     Foo = module.Foo
 
     config = DTOConfig(
-        rename_fields={"id": "foo_id", "bar.id": "bar_id"}, experimental_codegen_backend=use_experimental_dto_backend
+        rename_fields={"id": "foo_id", "bar.id": "bar_id", "bars.0.id": "bars_id"},
+        experimental_codegen_backend=use_experimental_dto_backend,
     )
     dto = DataclassDTO[Annotated[Foo, config]]  # type: ignore[valid-type]
 
@@ -121,8 +124,8 @@ class Foo:
         return data
 
     with create_test_client(route_handlers=[handler]) as client:
-        response = client.post("/", json={"foo_id": "1", "bar": {"bar_id": "2"}})
-        assert response.json() == {"foo_id": "1", "bar": {"bar_id": "2"}}
+        response = client.post("/", json={"foo_id": "1", "bar": {"bar_id": "2"}, "bars": [{"bars_id": "3"}]})
+        assert response.json() == {"foo_id": "1", "bar": {"bar_id": "2"}, "bars": [{"bars_id": "3"}]}
 
 
 @dataclass
