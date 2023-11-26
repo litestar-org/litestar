@@ -22,7 +22,7 @@ from .predicates import (
     is_undefined_sentinel,
     is_union,
 )
-from .scope import (
+from .scope import (  # type: ignore[attr-defined]
     _delete_litestar_scope_state,
     _get_litestar_scope_state,
     _set_litestar_scope_state,

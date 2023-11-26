@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 @pytest.fixture()
 def scope(create_scope: "Callable[..., Scope]") -> "Scope":
-    return create_scope()  # type:ignore[typeddict-item]
+    return create_scope()
 
 
 def test_get_litestar_scope_state_removes_value_from_state(scope: "Scope") -> None:
