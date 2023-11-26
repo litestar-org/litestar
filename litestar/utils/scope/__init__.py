@@ -1,25 +1,17 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
-from litestar.constants import SCOPE_STATE_NAMESPACE
 from litestar.serialization import get_serializer
-
-from .get import get_litestar_scope_state
-from .pop import pop_litestar_scope_state
-from .set import set_litestar_scope_state
+from litestar.utils.deprecation import warn_deprecation
+from litestar.utils.scope.state import delete_litestar_scope_state as _delete_litestar_scope_state
+from litestar.utils.scope.state import get_litestar_scope_state as _get_litestar_scope_state
+from litestar.utils.scope.state import set_litestar_scope_state as _set_litestar_scope_state
 
 if TYPE_CHECKING:
     from litestar.types import Scope, Serializer
-    from litestar.types.scope import ScopeStateKeyType
 
-__all__ = (
-    "delete_litestar_scope_state",
-    "get_serializer_from_scope",
-    "get_litestar_scope_state",
-    "pop_litestar_scope_state",
-    "set_litestar_scope_state",
-)
+__all__ = ("get_serializer_from_scope",)
 
 
 def get_serializer_from_scope(scope: Scope) -> Serializer:
@@ -49,11 +41,22 @@ def get_serializer_from_scope(scope: Scope) -> Serializer:
     return get_serializer(type_encoders)
 
 
-def delete_litestar_scope_state(scope: Scope, key: ScopeStateKeyType) -> None:
-    """Delete an internal value from connection scope state.
+_deprecated_names = {
+    "get_litestar_scope_state": _get_litestar_scope_state,
+    "set_litestar_scope_state": _set_litestar_scope_state,
+    "delete_litestar_scope_state": _delete_litestar_scope_state,
+}
 
-    Args:
-        scope: The connection scope.
-        key: Key to set under internal namespace in scope state.
-    """
-    del scope["state"][SCOPE_STATE_NAMESPACE][key]
+
+def __getattr__(name: str) -> Any:
+    if name in _deprecated_names:
+        warn_deprecation(
+            deprecated_name=f"litestar.utils.scope.{name}",
+            version="2.4",
+            kind="import",
+            removal_in="3.0",
+            info=f"'litestar.utils.scope.{name}' is deprecated. The Litestar scope state is private and should not be used."
+            "Plugin authors should maintain their own scope state namespace.",
+        )
+        return globals()["_deprecated_names"][name]
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
