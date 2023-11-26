@@ -3,25 +3,26 @@ from typing import Any, Dict, Optional
 import pytest
 
 from litestar import Controller, Request, Response, Router, get
+from litestar.datastructures import State
 from litestar.testing import create_test_client
 from litestar.types import AnyCallable, BeforeRequestHookHandler
 
 
-def sync_before_request_handler_with_return_value(request: Request[Any, Any, Any]) -> Dict[str, str]:
+def sync_before_request_handler_with_return_value(request: Request[Any, Any, State]) -> Dict[str, str]:
     assert isinstance(request, Request)
     return {"hello": "moon"}
 
 
-async def async_before_request_handler_with_return_value(request: Request[Any, Any, Any]) -> Dict[str, str]:
+async def async_before_request_handler_with_return_value(request: Request[Any, Any, State]) -> Dict[str, str]:
     assert isinstance(request, Request)
     return {"hello": "moon"}
 
 
-def sync_before_request_handler_without_return_value(request: Request[Any, Any, Any]) -> None:
+def sync_before_request_handler_without_return_value(request: Request[Any, Any, State]) -> None:
     assert isinstance(request, Request)
 
 
-async def async_before_request_handler_without_return_value(request: Request[Any, Any, Any]) -> None:
+async def async_before_request_handler_without_return_value(request: Request[Any, Any, State]) -> None:
     assert isinstance(request, Request)
 
 

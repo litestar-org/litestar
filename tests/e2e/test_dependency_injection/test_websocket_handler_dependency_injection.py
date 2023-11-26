@@ -5,6 +5,7 @@ import pytest
 
 from litestar import Controller, websocket
 from litestar.connection import WebSocket
+from litestar.datastructures import State
 from litestar.di import Provide
 from litestar.exceptions import WebSocketDisconnect
 from litestar.testing import create_test_client
@@ -90,7 +91,7 @@ def test_function_dependency_injection() -> None:
             "third": Provide(local_method_second_dependency, sync_to_thread=False),
         },
     )
-    async def test_function(socket: WebSocket[Any, Any, Any], first: int, second: bool, third: str) -> None:
+    async def test_function(socket: WebSocket[Any, Any, State], first: int, second: bool, third: str) -> None:
         await socket.accept()
         assert socket
         msg = await socket.receive_json()
