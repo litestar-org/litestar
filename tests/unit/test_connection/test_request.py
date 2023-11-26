@@ -11,8 +11,8 @@ from unittest.mock import patch
 import pytest
 
 from litestar import MediaType, Request, asgi, get
-from litestar.connection.base import empty_send
-from litestar.datastructures import Address, Cookie
+from litestar.connection.base import AuthT, StateT, UserT, empty_send
+from litestar.datastructures import Address, Cookie, State
 from litestar.exceptions import (
     InternalServerException,
     LitestarException,
@@ -43,40 +43,40 @@ def scope_fixture(create_scope: Callable[..., Scope]) -> Scope:
 
 async def test_request_empty_body_to_json(anyio_backend: str, scope: Scope) -> None:
     with patch.object(Request, "body", return_value=b""):
-        request_empty_payload: Request = Request(scope=scope)
+        request_empty_payload: Request[Any, Any, Any] = Request(scope=scope)
         request_json = await request_empty_payload.json()
         assert request_json is None
 
 
 async def test_request_invalid_body_to_json(anyio_backend: str, scope: Scope) -> None:
     with patch.object(Request, "body", return_value=b"invalid"), pytest.raises(SerializationException):
-        request_empty_payload: Request = Request(scope=scope)
+        request_empty_payload: Request[Any, Any, Any] = Request(scope=scope)
         await request_empty_payload.json()
 
 
 async def test_request_valid_body_to_json(anyio_backend: str, scope: Scope) -> None:
     with patch.object(Request, "body", return_value=b'{"test": "valid"}'):
-        request_empty_payload: Request = Request(scope=scope)
+        request_empty_payload: Request[Any, Any, Any] = Request(scope=scope)
         request_json = await request_empty_payload.json()
         assert request_json == {"test": "valid"}
 
 
 async def test_request_empty_body_to_msgpack(anyio_backend: str, scope: Scope) -> None:
     with patch.object(Request, "body", return_value=b""):
-        request_empty_payload: Request = Request(scope=scope)
+        request_empty_payload: Request[Any, Any, Any] = Request(scope=scope)
         request_msgpack = await request_empty_payload.msgpack()
         assert request_msgpack is None
 
 
 async def test_request_invalid_body_to_msgpack(anyio_backend: str, scope: Scope) -> None:
     with patch.object(Request, "body", return_value=b"invalid"), pytest.raises(SerializationException):
-        request_empty_payload: Request = Request(scope=scope)
+        request_empty_payload: Request[Any, Any, Any] = Request(scope=scope)
         await request_empty_payload.msgpack()
 
 
 async def test_request_valid_body_to_msgpack(anyio_backend: str, scope: Scope) -> None:
     with patch.object(Request, "body", return_value=encode_msgpack({"test": "valid"})):
-        request_empty_payload: Request = Request(scope=scope)
+        request_empty_payload: Request[Any, Any, Any] = Request(scope=scope)
         request_msgpack = await request_empty_payload.msgpack()
         assert request_msgpack == {"test": "valid"}
 
@@ -87,11 +87,11 @@ def test_request_url_for() -> None:
         pass
 
     @get(path="/test", signature_namespace={"dict": Dict})
-    def root(request: Request) -> dict[str, str]:
+    def root(request: Request[Any, Any, Any]) -> dict[str, str]:
         return {"url": request.url_for("proxy")}
 
     @get(path="/test-none", signature_namespace={"dict": Dict})
-    def test_none(request: Request) -> dict[str, str]:
+    def test_none(request: Request[Any, Any, Any]) -> dict[str, str]:
         return {"url": request.url_for("none")}
 
     with create_test_client(route_handlers=[proxy, root, test_none]) as client:
@@ -104,11 +104,11 @@ def test_request_url_for() -> None:
 
 def test_request_asset_url(tmp_path: Path) -> None:
     @get(path="/resolver", signature_namespace={"dict": Dict})
-    def resolver(request: Request) -> dict[str, str]:
+    def resolver(request: Request[Any, Any, Any]) -> dict[str, str]:
         return {"url": request.url_for_static_asset("js", "main.js")}
 
     @get(path="/resolver-none", signature_namespace={"dict": Dict})
-    def resolver_none(request: Request) -> dict[str, str]:
+    def resolver_none(request: Request[Any, Any, Any]) -> dict[str, str]:
         return {"url": request.url_for_static_asset("none", "main.js")}
 
     with create_test_client(
@@ -126,7 +126,7 @@ def test_route_handler_property() -> None:
     value: Any = {}
 
     @get("/")
-    def handler(request: Request) -> None:
+    def handler(request: Request[Any, Any, Any]) -> None:
         value["handler"] = request.route_handler
 
     with create_test_client(route_handlers=[handler]) as client:
@@ -137,13 +137,13 @@ def test_route_handler_property() -> None:
 def test_custom_request_class() -> None:
     value: Any = {}
 
-    class MyRequest(Request):
+    class MyRequest(Request[UserT, AuthT, StateT]):
         def __init__(self, *args: Any, **kwargs: Any) -> None:
             super().__init__(*args, **kwargs)
             self.scope["called"] = True  # type: ignore
 
     @get("/", signature_types=[MyRequest])
-    def handler(request: MyRequest) -> None:
+    def handler(request: MyRequest[Any, Any, Any]) -> None:
         value["called"] = request.scope.get("called")
 
     with create_test_client(route_handlers=[handler], request_class=MyRequest) as client:
@@ -366,7 +366,7 @@ async def test_request_disconnect(create_scope: Callable[..., Scope]) -> None:
         request = Request[Any, Any, Any](scope, receive)
         await request.body()
 
-    async def receiver() -> dict:
+    async def receiver() -> dict[str, str]:
         return {"type": "http.disconnect"}
 
     with pytest.raises(InternalServerException):
@@ -516,12 +516,12 @@ class BeforeRequestMiddleWare(MiddlewareProtocol):
 
 
 def test_state() -> None:
-    def before_request(request: Request) -> None:
+    def before_request(request: Request[Any, Any, State]) -> None:
         assert request.state.main == 1
         request.state.main = 2
 
     @get(path="/", signature_namespace={"dict": Dict})
-    async def get_state(request: Request) -> dict[str, str]:
+    async def get_state(request: Request[Any, Any, State]) -> dict[str, str]:
         return {"state": request.state.main}
 
     with create_test_client(

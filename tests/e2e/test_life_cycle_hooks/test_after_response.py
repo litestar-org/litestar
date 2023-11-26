@@ -1,8 +1,9 @@
-from typing import TYPE_CHECKING, Dict
+from typing import TYPE_CHECKING, Any, Dict
 
 import pytest
 
 from litestar import Controller, Request, Router, get
+from litestar.datastructures import State
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 
@@ -13,14 +14,14 @@ if TYPE_CHECKING:
 
 
 def create_sync_test_handler(msg: str) -> "AfterResponseHookHandler":
-    def handler(_: Request) -> None:
+    def handler(_: Request[Any, Any, State]) -> None:
         state["msg"] = msg
 
     return handler
 
 
 def create_async_test_handler(msg: str) -> "AfterResponseHookHandler":
-    async def handler(_: Request) -> None:
+    async def handler(_: Request[Any, Any, State]) -> None:
         state["msg"] = msg
 
     return handler
