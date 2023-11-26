@@ -1,7 +1,7 @@
 import gzip
 import random
 from datetime import timedelta
-from typing import TYPE_CHECKING, Optional, Type, Union
+from typing import TYPE_CHECKING, Any, Optional, Type, TypeVar, Union
 from unittest.mock import MagicMock
 from uuid import uuid4
 
@@ -22,13 +22,15 @@ from litestar.types import HTTPScope
 if TYPE_CHECKING:
     from time_machine import Coordinates
 
+T = TypeVar("T")
+
 
 @pytest.fixture()
 def mock() -> MagicMock:
     return MagicMock(return_value=str(random.random()))
 
 
-def after_request_handler(response: "Response") -> "Response":
+def after_request_handler(response: "Response[T]") -> "Response[T]":
     response.headers["unique-identifier"] = str(uuid4())
     return response
 
@@ -132,7 +134,7 @@ def test_cache_forever(memory_store: MemoryStore) -> None:
 
 @pytest.mark.parametrize("sync_to_thread", (True, False))
 async def test_custom_cache_key(sync_to_thread: bool, anyio_backend: str, mock: MagicMock) -> None:
-    def custom_cache_key_builder(request: Request) -> str:
+    def custom_cache_key_builder(request: Request[Any, Any, Any]) -> str:
         return f"{request.url.path}:::cached"
 
     @get("/cached", sync_to_thread=sync_to_thread, cache=True, cache_key_builder=custom_cache_key_builder)
@@ -262,7 +264,7 @@ def test_default_do_response_cache_predicate(
     mock: MagicMock, response: Union[int, Type[RuntimeError]], should_cache: bool
 ) -> None:
     @get("/", cache=True)
-    def handler() -> Response:
+    def handler() -> Response[None]:
         mock()
         if isinstance(response, int):
             return Response(None, status_code=response)

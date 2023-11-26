@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 @pytest.mark.parametrize("mode", ["text", "binary"])
 def test_websocket_send_receive_json(mode: Literal["text", "binary"]) -> None:
     @websocket(path="/")
-    async def websocket_handler(socket: WebSocket) -> None:
+    async def websocket_handler(socket: WebSocket[Any, Any, Any]) -> None:
         await socket.accept()
         recv = await socket.receive_json(mode=mode)
         await socket.send_json({"message": recv}, mode=mode)
@@ -43,7 +43,7 @@ def test_route_handler_property() -> None:
     value: Any = {}
 
     @websocket("/")
-    async def handler(socket: WebSocket) -> None:
+    async def handler(socket: WebSocket[Any, Any, Any]) -> None:
         await socket.accept()
         value["handler"] = socket.route_handler
         await socket.close()
@@ -57,7 +57,7 @@ def test_route_handler_property() -> None:
 )
 async def test_accept_set_headers(headers: Any) -> None:
     @websocket("/")
-    async def handler(socket: WebSocket) -> None:
+    async def handler(socket: WebSocket[Any, Any, Any]) -> None:
         await socket.accept(headers=headers)
         await socket.send_text("abc")
         await socket.close()
@@ -86,7 +86,7 @@ async def test_custom_request_class() -> None:
 
 def test_websocket_url() -> None:
     @websocket("/123")
-    async def handler(socket: WebSocket) -> None:
+    async def handler(socket: WebSocket[Any, Any, Any]) -> None:
         await socket.accept()
         await socket.send_json({"url": str(socket.url)})
         await socket.close()
@@ -108,7 +108,7 @@ def test_websocket_url_respects_custom_base_url() -> None:
 
 def test_websocket_binary_json() -> None:
     @websocket("/123")
-    async def handler(socket: WebSocket) -> None:
+    async def handler(socket: WebSocket[Any, Any, Any]) -> None:
         await socket.accept()
         message = await socket.receive_json(mode="binary")
         await socket.send_json(message, mode="binary")
@@ -121,7 +121,7 @@ def test_websocket_binary_json() -> None:
 
 def test_websocket_query_params() -> None:
     @websocket("/")
-    async def handler(socket: WebSocket) -> None:
+    async def handler(socket: WebSocket[Any, Any, Any]) -> None:
         query_params = dict(socket.query_params)
         await socket.accept()
         await socket.send_json({"params": query_params})
@@ -133,7 +133,7 @@ def test_websocket_query_params() -> None:
 
 def test_websocket_headers() -> None:
     @websocket("/")
-    async def handler(socket: WebSocket) -> None:
+    async def handler(socket: WebSocket[Any, Any, Any]) -> None:
         headers = dict(socket.headers)
         await socket.accept()
         await socket.send_json({"headers": headers})
@@ -154,7 +154,7 @@ def test_websocket_headers() -> None:
 
 def test_websocket_port() -> None:
     @websocket("/123")
-    async def handler(socket: WebSocket) -> None:
+    async def handler(socket: WebSocket[Any, Any, Any]) -> None:
         await socket.accept()
         await socket.send_json({"port": socket.url.port})
         await socket.close()
@@ -165,7 +165,7 @@ def test_websocket_port() -> None:
 
 def test_websocket_send_and_receive_text() -> None:
     @websocket("/")
-    async def handler(socket: WebSocket) -> None:
+    async def handler(socket: WebSocket[Any, Any, Any]) -> None:
         await socket.accept()
         data = await socket.receive_text()
         await socket.send_text(f"Message was: {data}")
@@ -178,7 +178,7 @@ def test_websocket_send_and_receive_text() -> None:
 
 def test_websocket_send_and_receive_bytes() -> None:
     @websocket("/")
-    async def handler(socket: WebSocket) -> None:
+    async def handler(socket: WebSocket[Any, Any, Any]) -> None:
         await socket.accept()
         data = await socket.receive_bytes()
         await socket.send_bytes(b"Message was: " + data)
@@ -191,7 +191,7 @@ def test_websocket_send_and_receive_bytes() -> None:
 
 def test_websocket_send_and_receive_json() -> None:
     @websocket("/")
-    async def handler(socket: WebSocket) -> None:
+    async def handler(socket: WebSocket[Any, Any, Any]) -> None:
         await socket.accept()
         data = await socket.receive_json()
         await socket.send_json({"message": data})
@@ -206,7 +206,7 @@ def test_send_msgpack() -> None:
     test_data = {"message": "hello, world"}
 
     @websocket("/")
-    async def handler(socket: WebSocket) -> None:
+    async def handler(socket: WebSocket[Any, Any, Any]) -> None:
         await socket.accept()
         await socket.send_msgpack(test_data)
         await socket.close()
@@ -221,7 +221,7 @@ def test_receive_msgpack() -> None:
     callback = MagicMock()
 
     @websocket("/")
-    async def handler(socket: WebSocket) -> None:
+    async def handler(socket: WebSocket[Any, Any, Any]) -> None:
         await socket.accept()
         data = await socket.receive_msgpack()
         callback(data)
@@ -249,7 +249,7 @@ def test_iter_data(mode: WebSocketMode, data: list[str | bytes]) -> None:
     values = []
 
     @websocket("/")
-    async def handler(socket: WebSocket) -> None:
+    async def handler(socket: WebSocket[Any, Any, Any]) -> None:
         await socket.accept()
         values.extend(await consume_gen(socket.iter_data(mode=mode), 2))
         await socket.close()
@@ -267,7 +267,7 @@ def test_iter_json(mode: WebSocketMode) -> None:
     values = []
 
     @websocket("/")
-    async def handler(socket: WebSocket) -> None:
+    async def handler(socket: WebSocket[Any, Any, Any]) -> None:
         await socket.accept()
         values.extend(await consume_gen(socket.iter_json(mode=mode), 2))
         await socket.close()
@@ -284,7 +284,7 @@ def test_iter_msgpack() -> None:
     values = []
 
     @websocket("/")
-    async def handler(socket: WebSocket) -> None:
+    async def handler(socket: WebSocket[Any, Any, Any]) -> None:
         await socket.accept()
         values.extend(await consume_gen(socket.iter_msgpack(), 2))
         await socket.close()
@@ -310,7 +310,7 @@ def test_websocket_concurrency_pattern() -> None:
                 await socket.send_json(message)
 
     @websocket("/")
-    async def handler(socket: WebSocket) -> None:
+    async def handler(socket: WebSocket[Any, Any, Any]) -> None:
         await socket.accept()
         async with anyio.create_task_group() as task_group:
             task_group.start_soon(reader, socket)
@@ -327,7 +327,7 @@ def test_client_close() -> None:
     close_code = None
 
     @websocket("/")
-    async def handler(socket: WebSocket) -> None:
+    async def handler(socket: WebSocket[Any, Any, Any]) -> None:
         nonlocal close_code
         await socket.accept()
         try:
@@ -342,7 +342,7 @@ def test_client_close() -> None:
 
 def test_application_close() -> None:
     @websocket("/")
-    async def handler(socket: WebSocket) -> None:
+    async def handler(socket: WebSocket[Any, Any, Any]) -> None:
         await socket.accept()
         await socket.close(WS_1001_GOING_AWAY)
 
@@ -353,7 +353,7 @@ def test_application_close() -> None:
 
 def test_rejected_connection() -> None:
     @websocket("/")
-    async def handler(socket: WebSocket) -> None:
+    async def handler(socket: WebSocket[Any, Any, Any]) -> None:
         await socket.close(WS_1001_GOING_AWAY)
 
     with pytest.raises(WebSocketDisconnect) as exc, create_test_client(handler).websocket_connect("/"):
@@ -363,7 +363,7 @@ def test_rejected_connection() -> None:
 
 def test_subprotocol() -> None:
     @websocket("/")
-    async def handler(socket: WebSocket) -> None:
+    async def handler(socket: WebSocket[Any, Any, Any]) -> None:
         assert socket.scope["subprotocols"] == ["soap", "wamp"]
         await socket.accept(subprotocols="wamp")
         await socket.close()
@@ -374,7 +374,7 @@ def test_subprotocol() -> None:
 
 def test_additional_headers() -> None:
     @websocket("/")
-    async def handler(socket: WebSocket) -> None:
+    async def handler(socket: WebSocket[Any, Any, Any]) -> None:
         await socket.accept(headers=[(b"additional", b"header")])
         await socket.close()
 
@@ -384,7 +384,7 @@ def test_additional_headers() -> None:
 
 def test_no_additional_headers() -> None:
     @websocket("/")
-    async def handler(socket: WebSocket) -> None:
+    async def handler(socket: WebSocket[Any, Any, Any]) -> None:
         await socket.accept()
         await socket.close()
 
@@ -414,7 +414,7 @@ def test_duplicate_disconnect() -> None:
 
 def test_websocket_close_reason() -> None:
     @websocket("/")
-    async def handler(socket: WebSocket) -> None:
+    async def handler(socket: WebSocket[Any, Any, Any]) -> None:
         await socket.accept()
         await socket.close(code=WS_1001_GOING_AWAY, reason="Going Away")
 

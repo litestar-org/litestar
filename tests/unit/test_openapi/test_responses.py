@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from http import HTTPStatus
 from pathlib import Path
 from types import ModuleType
-from typing import Any, Callable, Dict, TypedDict
+from typing import Any, Callable, Dict, TypedDict, TypeVar
 from unittest.mock import MagicMock
 
 import pytest
@@ -31,7 +31,6 @@ from litestar.openapi.datastructures import ResponseSpec
 from litestar.openapi.spec import Example, OpenAPIHeader, OpenAPIMediaType, Reference, Schema
 from litestar.openapi.spec.enums import OpenAPIType
 from litestar.response import File, Redirect, Stream, Template
-from litestar.response.base import T
 from litestar.routes import HTTPRoute
 from litestar.status_codes import (
     HTTP_200_OK,
@@ -43,6 +42,9 @@ from litestar.status_codes import (
 from litestar.typing import FieldDefinition
 from tests.models import DataclassPerson, DataclassPersonFactory
 from tests.unit.test_openapi.utils import PetException
+
+T = TypeVar("T")
+
 
 CreateFactoryFixture: TypeAlias = "Callable[..., ResponseFactory]"
 
@@ -59,6 +61,7 @@ def create_factory() -> CreateFactoryFixture:
         )
 
     return _create_factory
+
 
 
 def get_registered_route_handler(handler: HTTPRouteHandler | type[Controller], name: str) -> HTTPRouteHandler:

@@ -7,6 +7,7 @@ from litestar import Controller, get
 from litestar.di import Provide
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
+from litestar.types.builtin_types import EmptyDict
 
 if TYPE_CHECKING:
     from litestar.connection import Request
@@ -21,12 +22,12 @@ async def router_second_dependency() -> bool:
     return False
 
 
-def controller_first_dependency(headers: Dict[str, Any]) -> dict:
+def controller_first_dependency(headers: Dict[str, Any]) -> EmptyDict:
     assert headers
     return {}
 
 
-async def controller_second_dependency(request: "Request") -> dict:
+async def controller_second_dependency(request: "Request[Any, Any, Any]") -> EmptyDict:
     assert request
     await sleep(0)
     return {}
@@ -60,7 +61,7 @@ def first_controller() -> Type[Controller]:
                 "first": Provide(local_method_first_dependency, sync_to_thread=False),
             },
         )
-        def test_method(self, first: int, second: dict, third: bool) -> None:
+        def test_method(self, first: int, second: Dict[Any, Any], third: bool) -> None:
             assert isinstance(first, int)
             assert isinstance(second, dict)
             assert not third
@@ -109,7 +110,7 @@ def test_dependency_isolation(first_controller: Type[Controller]) -> None:
         path = "/second"
 
         @get()
-        def test_method(self, first: dict) -> None:
+        def test_method(self, first: Dict[Any, Any]) -> None:
             pass
 
     with create_test_client([first_controller, SecondController]) as client:
