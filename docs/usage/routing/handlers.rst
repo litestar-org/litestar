@@ -127,7 +127,7 @@ For example:
 
 .. tip::
 
-    If your parameters collide with any of the reserved keyword arguments above, you can :doc:`provide an alternative name <usage/routing/parameters:Alternative names and constraints>`
+    If your parameters collide with any of the reserved keyword arguments above, you can :ref:`provide an alternative name <usage/routing/parameters:Alternative names and constraints>`
 
 .. tip::
 
