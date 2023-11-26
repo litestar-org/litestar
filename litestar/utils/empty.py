@@ -11,33 +11,6 @@ ValueT = TypeVar("ValueT")
 DefaultT = TypeVar("DefaultT")
 
 
-@overload
-def raise_if_empty(value: EmptyType) -> NoReturn:
-    ...
-
-
-@overload
-def raise_if_empty(value: ValueT | EmptyType) -> ValueT:
-    ...
-
-
-def raise_if_empty(value: ValueT | EmptyType) -> ValueT:
-    """Raise an exception if `value` is `Empty`.
-
-    Args:
-        value: The value to check.
-
-    Returns:
-        The value.
-
-    Raises:
-        Exception: When `value` is `Empty`.
-    """
-    if value is Empty:
-        raise ValueError("value cannot be Empty")
-    return value
-
-
 def value_or_default(value: ValueT | EmptyType, default: DefaultT) -> ValueT | DefaultT:
     """Return `value` handling the case where it is empty.
 
