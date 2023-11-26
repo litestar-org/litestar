@@ -1460,6 +1460,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "marcuslimdw",
+      "name": "Marcus Lim",
+      "avatar_url": "https://avatars.githubusercontent.com/u/42759889?v=4",
+      "profile": "https://gitlab.com/marcuslimdw/",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
