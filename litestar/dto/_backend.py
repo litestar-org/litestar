@@ -576,7 +576,11 @@ def _filter_nested_field(field_name_set: AbstractSet[str], field_name: str) -> A
 
 def _filter_nested_field_mapping(field_name_mapping: Mapping[str, str], field_name: str) -> dict[str, str]:
     """Filter a nested field name."""
-    return {split[1]: v for s, v in field_name_mapping.items() if (split := s.split(".", 1))[0] == field_name and len(split) > 1}
+    return {
+        split[1]: v
+        for s, v in field_name_mapping.items()
+        if (split := s.split(".", 1))[0] == field_name and len(split) > 1
+    }
 
 
 def _transfer_data(
