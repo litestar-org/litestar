@@ -11,6 +11,7 @@ import pytest
 from litestar import Litestar, Request, Response, get, post
 from litestar.config.compression import CompressionConfig
 from litestar.config.response_cache import CACHE_FOREVER, ResponseCacheConfig
+from litestar.datastructures import State
 from litestar.enums import CompressionEncoding
 from litestar.middleware.response_cache import ResponseCacheMiddleware
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
@@ -134,7 +135,7 @@ def test_cache_forever(memory_store: MemoryStore) -> None:
 
 @pytest.mark.parametrize("sync_to_thread", (True, False))
 async def test_custom_cache_key(sync_to_thread: bool, anyio_backend: str, mock: MagicMock) -> None:
-    def custom_cache_key_builder(request: Request[Any, Any, Any]) -> str:
+    def custom_cache_key_builder(request: Request[Any, Any, State]) -> str:
         return f"{request.url.path}:::cached"
 
     @get("/cached", sync_to_thread=sync_to_thread, cache=True, cache_key_builder=custom_cache_key_builder)

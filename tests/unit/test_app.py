@@ -258,7 +258,7 @@ def test_using_custom_http_exception_handler() -> None:
     @get("/{param:int}")
     def my_route_handler(param: int) -> None: ...
 
-    def my_custom_handler(_: Request[Any, Any, Any], __: Exception) -> Response[str]:
+    def my_custom_handler(_: Request[Any, Any, State], __: Exception) -> Response[str]:
         return Response(content="custom message", media_type=MediaType.TEXT, status_code=HTTP_400_BAD_REQUEST)
 
     with create_test_client(my_route_handler, exception_handlers={NotFoundException: my_custom_handler}) as client:

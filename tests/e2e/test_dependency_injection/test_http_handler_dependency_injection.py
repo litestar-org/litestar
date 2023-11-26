@@ -11,6 +11,7 @@ from litestar.types.builtin_types import EmptyDict
 
 if TYPE_CHECKING:
     from litestar.connection import Request
+    from litestar.datastructures.state import State
 
 
 def router_first_dependency() -> bool:
@@ -27,7 +28,7 @@ def controller_first_dependency(headers: Dict[str, Any]) -> EmptyDict:
     return {}
 
 
-async def controller_second_dependency(request: "Request[Any, Any, Any]") -> EmptyDict:
+async def controller_second_dependency(request: "Request[Any, Any, State]") -> EmptyDict:
     assert request
     await sleep(0)
     return {}
