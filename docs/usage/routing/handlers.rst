@@ -106,6 +106,8 @@ Additionally, you can specify the following special kwargs, what's called "reser
 * ``state`` : injects a copy of the application :class:`State <.datastructures.state.State>`.
 * ``body`` : the raw request body. Available only for `http route handlers`_
 
+Note that if your parameters collide with any of the reserved keyword arguments above, you can :ref:`provide an alternative name <usage/routing/parameters:Alternative names and constraints>`.
+
 For example:
 
 .. code-block:: python
@@ -124,10 +126,6 @@ For example:
        cookies: Dict[str, Any],
    ) -> None:
        ...
-
-.. tip::
-
-    If your parameters collide with any of the reserved keyword arguments above, you can :ref:`provide an alternative name <usage/routing/parameters:Alternative names and constraints>`
 
 .. tip::
 
