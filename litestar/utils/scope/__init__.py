@@ -2,8 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from litestar.constants import SCOPE_STATE_NAMESPACE
 from litestar.serialization import get_serializer
+from litestar.utils.deprecation import warn_deprecation
+from litestar.utils.scope.state import delete_litestar_scope_state as _delete_litestar_scope_state
+from litestar.utils.scope.state import get_litestar_scope_state as _get_litestar_scope_state
+from litestar.utils.scope.state import set_litestar_scope_state as _set_litestar_scope_state
 
 if TYPE_CHECKING:
     from litestar.types import Scope, Serializer
@@ -38,38 +41,22 @@ def get_serializer_from_scope(scope: Scope) -> Serializer:
     return get_serializer(type_encoders)
 
 
-def get_litestar_scope_state(scope: Scope, key: str, default: Any = None, pop: bool = False) -> Any:
-    """Get an internal value from connection scope state.
-
-    Args:
-        scope: The connection scope.
-        key: Key to get from internal namespace in scope state.
-        default: Default value to return.
-        pop: Boolean flag dictating whether the value should be deleted from the state.
-
-    Returns:
-        Value mapped to ``key`` in internal connection scope namespace.
-    """
-    namespace = scope["state"].setdefault(SCOPE_STATE_NAMESPACE, {})
-    return namespace.pop(key, default) if pop else namespace.get(key, default)
+_deprecated_names = {
+    "get_litestar_scope_state": _get_litestar_scope_state,
+    "set_litestar_scope_state": _set_litestar_scope_state,
+    "delete_litestar_scope_state": _delete_litestar_scope_state,
+}
 
 
-def set_litestar_scope_state(scope: Scope, key: str, value: Any) -> None:
-    """Set an internal value in connection scope state.
-
-    Args:
-        scope: The connection scope.
-        key: Key to set under internal namespace in scope state.
-        value: Value for key.
-    """
-    scope["state"].setdefault(SCOPE_STATE_NAMESPACE, {})[key] = value
-
-
-def delete_litestar_scope_state(scope: Scope, key: str) -> None:
-    """Delete an internal value from connection scope state.
-
-    Args:
-        scope: The connection scope.
-        key: Key to set under internal namespace in scope state.
-    """
-    del scope["state"][SCOPE_STATE_NAMESPACE][key]
+def __getattr__(name: str) -> Any:
+    if name in _deprecated_names:
+        warn_deprecation(
+            deprecated_name=f"litestar.utils.scope.{name}",
+            version="2.4",
+            kind="import",
+            removal_in="3.0",
+            info=f"'litestar.utils.scope.{name}' is deprecated. The Litestar scope state is private and should not be used."
+            "Plugin authors should maintain their own scope state namespace.",
+        )
+        return globals()["_deprecated_names"][name]
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
