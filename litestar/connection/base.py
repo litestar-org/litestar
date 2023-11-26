@@ -55,7 +55,17 @@ async def empty_send(_: Message) -> NoReturn:  # pragma: no cover
 class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
     """The base ASGI connection container."""
 
-    __slots__ = ("scope", "receive", "send", "_base_url", "_url", "_parsed_query", "_cookies", "_server_extensions", "_connection_state")
+    __slots__ = (
+        "scope",
+        "receive",
+        "send",
+        "_base_url",
+        "_url",
+        "_parsed_query",
+        "_cookies",
+        "_server_extensions",
+        "_connection_state",
+    )
 
     scope: Scope
     """The ASGI scope attached to the connection."""

@@ -10,7 +10,6 @@ from httpx import Cookies, Request, Response
 
 from litestar import Litestar
 from litestar.connection import ASGIConnection
-from litestar.constants import SCOPE_STATE_COOKIES_KEY
 from litestar.datastructures import MutableScopeHeaders
 from litestar.enums import ScopeType
 from litestar.exceptions import (

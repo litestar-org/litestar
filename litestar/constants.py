@@ -8,6 +8,7 @@ from litestar.enums import MediaType
 from litestar.types import Empty
 from litestar.utils.deprecation import warn_deprecation
 
+CONNECTION_STATE_KEY: Final = "_connection_state"
 DEFAULT_ALLOWED_CORS_HEADERS: Final = {"Accept", "Accept-Language", "Content-Language", "Content-Type"}
 DEFAULT_CHUNK_SIZE: Final = 1024 * 128  # 128KB
 HTTP_DISCONNECT: Final = "http.disconnect"
