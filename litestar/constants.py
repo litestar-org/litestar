@@ -54,4 +54,4 @@ def __getattr__(name: str) -> Any:
         )
 
         return globals()["_deprecated_names"][name]
-    raise AttributeError(f"module {__name__} has no attribute {name}")
+    raise AttributeError(f"module {__name__} has no attribute {name}")  # pragma: no cover

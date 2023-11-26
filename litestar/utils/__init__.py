@@ -84,4 +84,4 @@ def __getattr__(name: str) -> Any:
             "Plugin authors should maintain their own scope state namespace.",
         )
         return globals()["_deprecated_names"][name]
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")  # pragma: no cover
