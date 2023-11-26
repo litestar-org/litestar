@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
+
+from msgspec import Struct
 
 from litestar.constants import CONNECTION_STATE_KEY
 from litestar.types import Empty, EmptyType
@@ -14,74 +15,25 @@ if TYPE_CHECKING:
     from litestar.types.asgi_types import Scope
 
 
-@dataclass
-class ScopeState:
-    """An object for storing connection state.
-
-    This is an internal API, and subject to change without notice.
-
-    All types are a union with `EmptyType` and are seeded with the `Empty` value.
-    """
-
-    __slots__ = (
-        "accept",
-        "base_url",
-        "body",
-        "content_type",
-        "cookies",
-        "csrf_token",
-        "dependency_cache",
-        "do_cache",
-        "form",
-        "headers",
-        "is_cached",
-        "json",
-        "log_context",
-        "msgpack",
-        "parsed_query",
-        "response_compressed",
-        "url",
-        "_compat_ns",
-    )
-
-    def __init__(self) -> None:
-        self.accept = Empty
-        self.base_url = Empty
-        self.body = Empty
-        self.content_type = Empty
-        self.cookies = Empty
-        self.csrf_token = Empty
-        self.dependency_cache = Empty
-        self.do_cache = Empty
-        self.form = Empty
-        self.headers = Empty
-        self.is_cached = Empty
-        self.json = Empty
-        self.log_context: dict[str, Any] = {}
-        self.msgpack = Empty
-        self.parsed_query = Empty
-        self.response_compressed = Empty
-        self.url = Empty
-        self._compat_ns: dict[str, Any] = {}
-
-    accept: Accept | EmptyType
-    base_url: URL | EmptyType
-    body: bytes | EmptyType
-    content_type: tuple[str, dict[str, str]] | EmptyType
-    cookies: dict[str, str] | EmptyType
-    csrf_token: str | EmptyType
-    dependency_cache: dict[str, Any] | EmptyType
-    do_cache: bool | EmptyType
-    form: dict[str, str | list[str]] | EmptyType
-    headers: Headers | EmptyType
-    is_cached: bool | EmptyType
-    json: Any | EmptyType
-    log_context: dict[str, Any]
-    msgpack: Any | EmptyType
-    parsed_query: tuple[tuple[str, str], ...] | EmptyType
-    response_compressed: bool | EmptyType
-    url: URL | EmptyType
-    _compat_ns: dict[str, Any]
+class ScopeState(Struct):
+    accept: Accept | EmptyType = Empty
+    base_url: URL | EmptyType = Empty
+    body: bytes | EmptyType = Empty
+    content_type: tuple[str, dict[str, str]] | EmptyType = Empty
+    cookies: dict[str, str] | EmptyType = Empty
+    csrf_token: str | EmptyType = Empty
+    dependency_cache: dict[str, Any] | EmptyType = Empty
+    do_cache: bool | EmptyType = Empty
+    form: dict[str, str | list[str]] | EmptyType = Empty
+    headers: Headers | EmptyType = Empty
+    is_cached: bool | EmptyType = Empty
+    json: Any | EmptyType = Empty
+    log_context: dict[str, Any] = {}
+    msgpack: Any | EmptyType = Empty
+    parsed_query: tuple[tuple[str, str], ...] | EmptyType = Empty
+    response_compressed: bool | EmptyType = Empty
+    url: URL | EmptyType = Empty
+    _compat_ns: dict[str, Any] = {}
 
     @classmethod
     def from_scope(cls, scope: Scope) -> Self:
