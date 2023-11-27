@@ -1,15 +1,17 @@
 Adding Additional Features to the Repository
 --------------------------------------------
 While most of the functionality you need is built into the repository, there are still
-cases where you need to add in additional functionality.  Let's explore ways that we
+cases where you need to add in additional functionality. Let's explore ways that we
 can add functionality on top of the repository pattern.
+
+.. tip:: The full code for this tutorial can be found below in the :ref:`Full Code <04-repo-full-code>` section.
 
 Slug Fields
 -----------
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_extension.py
     :language: python
     :caption: app.py
-    :emphasize-lines: 12,33-40,101-106
+    :lines: 12,33-40,101-106
     :linenos:
 
 In this example, we are using a ``BlogPost`` model to hold blog post titles and
@@ -30,7 +32,7 @@ to have the slugified value of "follow-the-yellow-brick-road".
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_extension.py
     :language: python
     :caption: app.py
-    :emphasize-lines: 43-98
+    :lines: 43-98
     :linenos:
 
 Since the ``BlogPost.title`` field is not marked as unique, this means that we'll have
@@ -40,7 +42,7 @@ a random set of digits are appended to the end of the slug to make it unique.
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_extension.py
     :language: python
     :caption: app.py
-    :emphasize-lines: 171,172,173
+    :lines: 171,172,173
     :linenos:
 
 We are all set to use this in our routes now.  First, we'll convert our incoming
@@ -51,3 +53,16 @@ Finally, we insert the model with the added slug.
 
     Using this method does introduce an additional query on each insert. This should be
     considered when determining which fields actually need this type of functionality.
+
+.. _04-repo-full-code:
+
+Full Code
+---------
+
+.. dropdown:: Full Code (click to expand)
+
+    .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_extension.py
+        :language: python
+        :caption: app.py
+        :lines: 12,33-40,101-106, 43-98, 171,172,173
+        :linenos:
