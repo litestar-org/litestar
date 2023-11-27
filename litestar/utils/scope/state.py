@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Final
 
-from litestar.constants import CONNECTION_STATE_KEY
 from litestar.types import Empty, EmptyType
 from litestar.utils.empty import value_or_default
 
@@ -12,6 +11,8 @@ if TYPE_CHECKING:
 
     from litestar.datastructures import URL, Accept, Headers
     from litestar.types.asgi_types import Scope
+
+CONNECTION_STATE_KEY: Final = "_ls_connection_state"
 
 
 @dataclass
