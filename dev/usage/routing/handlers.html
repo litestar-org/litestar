@@ -1593,6 +1593,7 @@ which is a case-insensitive mapping.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">state</span></code> : injects a copy of the application <a class="reference internal" href="../../reference/datastructures.html#litestar.datastructures.State" title="litestar.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">body</span></code> : the raw request body. Available only for <a class="reference internal" href="#http-route-handlers">http route handlers</a></p></li>
 </ul>
+<p>Note that if your parameters collide with any of the reserved keyword arguments above, you can <a class="reference internal" href="parameters.html#alternative-names-and-constraints"><span class="std std-ref">provide an alternative name</span></a>.</p>
 <p>For example:</p>
 <div class="sd-tab-set docutils">
 <input id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
