@@ -119,7 +119,7 @@ def test_request_factory_create_with_default_params() -> None:
     assert isinstance(request.app, Litestar)
     assert request.url == request.base_url == _DEFAULT_REQUEST_FACTORY_URL
     assert request.method == HttpMethod.GET
-    assert request.state.keys() == {"__litestar__"}
+    assert request.state.keys() == {"_ls_connection_state"}
     assert not request.query_params
     assert not request.path_params
     assert request.route_handler

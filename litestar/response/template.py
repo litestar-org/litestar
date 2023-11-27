@@ -5,13 +5,13 @@ from mimetypes import guess_type
 from pathlib import PurePath
 from typing import TYPE_CHECKING, Any, Iterable, cast
 
-from litestar.constants import SCOPE_STATE_CSRF_TOKEN_KEY
 from litestar.enums import MediaType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.response.base import ASGIResponse, Response
 from litestar.status_codes import HTTP_200_OK
-from litestar.utils import get_litestar_scope_state
 from litestar.utils.deprecation import warn_deprecation
+from litestar.utils.empty import value_or_default
+from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
     from litestar.app import Litestar
@@ -90,7 +90,7 @@ class Template(Response[bytes]):
         Returns:
             A dictionary holding the template context
         """
-        csrf_token = get_litestar_scope_state(scope=request.scope, key=SCOPE_STATE_CSRF_TOKEN_KEY, default="")
+        csrf_token = value_or_default(ScopeState.from_scope(request.scope).csrf_token, "")
         return {
             **self.context,
             "request": request,
