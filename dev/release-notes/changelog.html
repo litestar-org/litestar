@@ -1486,9 +1486,174 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.4.0">
+<h2>2.4.0<a class="headerlink" href="#2.4.0" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2023/11/27<section id="2.4.0-feature">
+<h3>Features<a class="headerlink" href="#2.4.0-feature" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Add <code class="docutils literal notranslate"><span class="pre">server_lifespan</span></code> hook<a class="headerlink reference internal" href="#2.4.0-add" id="2.4.0-add">#</a></dt><dd><div class="changelog-change docutils container">
+<p>A new <code class="docutils literal notranslate"><span class="pre">server_lifespan</span></code> hook is now available on <a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a>.
+This hook works similar to the regular <code class="docutils literal notranslate"><span class="pre">lifespan</span></code> context manager, with the
+difference being is that it is only called once for the entire server lifespan,
+not for each application startup phase. Note that these only differ when running
+with an ASGI server that’s using multiple worker processes.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2658">litestar-org/litestar#2658</a></span></p>
+</div>
+</dd>
+<dt>Allow rendering templates directly from strings<a class="headerlink reference internal" href="#2.4.0-allow rendering templates directly from strings" id="2.4.0-allow rendering templates directly from strings">#</a></dt><dd><div class="changelog-change docutils container">
+<p>A new <code class="docutils literal notranslate"><span class="pre">template_string</span></code> parameter was added to <code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code>,
+allowing to render templates directly from strings.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../usage/templating.html#template-files-vs-strings"><span class="std std-ref">Template Files vs. Strings</span></a></p>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2687">litestar-org/litestar#2687</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2689">litestar-org/litestar#2689</a></span></p>
+</div>
+</dd>
+<dt>Support nested DTO field renaming<a class="headerlink reference internal" href="#2.4.0-support nested dto field renaming" id="2.4.0-support nested dto field renaming">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Using similar semantics as for exclusion/inclusion, nested DTO fields can now
+also be renamed:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Bar</span><span class="p">:</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">bars</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Bar</span><span class="p">]</span>
+
+
+<span class="n">FooDTO</span> <span class="o">=</span> <span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="n">Foo</span><span class="p">,</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">rename_fields</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;bars.0.id&quot;</span><span class="p">:</span> <span class="s2">&quot;bar_id&quot;</span><span class="p">})]]</span>
+</pre></div>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2721">litestar-org/litestar#2721</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2764">litestar-org/litestar#2764</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+<section id="2.4.0-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.4.0-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Fix <code class="docutils literal notranslate"><span class="pre">HTTPException</span></code> handling during concurrent dependency resolving<a class="headerlink reference internal" href="#2.4.0-fix" id="2.4.0-fix">#</a></dt><dd><div class="changelog-change docutils container">
+<p>An issue was fixed that would lead to <code class="xref py py-exc docutils literal notranslate"><span class="pre">HTTPExceptions</span></code> not being re-raised
+properly when they occurred within the resolution of nested dependencies during
+the request lifecycle.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2594">litestar-org/litestar#2594</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2596">litestar-org/litestar#2596</a></span></p>
+</div>
+</dd>
+<dt>Fix OpenAPI examples format<a class="headerlink reference internal" href="#2.4.0-fix openapi examples format" id="2.4.0-fix openapi examples format">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix the OpenAPI examples format by removing the wrapping object.</p>
+<p>Before the change, for a given model</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
+    <span class="n">foo</span><span class="p">:</span> <span class="nb">int</span>
+</pre></div>
+</div>
+<p>The following example would be generated:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Example value&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;foo&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">7906</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>After the fix, this is now:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;foo&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">7906</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2272">litestar-org/litestar#2272</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2660">litestar-org/litestar#2660</a></span></p>
+</div>
+</dd>
+<dt>Fix CLI plugin commands not showing up in command list<a class="headerlink reference internal" href="#2.4.0-fix cli plugin commands not showing up in command list" id="2.4.0-fix cli plugin commands not showing up in command list">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug where commands registered by CLI plugins were available, but would not
+show up in the commands list</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2441">litestar-org/litestar#2441</a></span></p>
+</div>
+</dd>
+<dt>Fix missing <code class="docutils literal notranslate"><span class="pre">write-only</span></code> mark in <code class="docutils literal notranslate"><span class="pre">dto_field()</span></code> signature<a class="headerlink reference internal" href="#2.4.0-fix missing" id="2.4.0-fix missing">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix the missing <code class="docutils literal notranslate"><span class="pre">write-only</span></code> string literal in the <code class="docutils literal notranslate"><span class="pre">mark</span></code> parameter of
+<a class="reference internal" href="../reference/dto/field.html#litestar.dto.field.dto_field" title="litestar.dto.field.dto_field"><code class="xref py py-func docutils literal notranslate"><span class="pre">dto_field()</span></code></a></p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2684">litestar-org/litestar#2684</a></span></p>
+</div>
+</dd>
+<dt>Fix OpenAPI schemas incorrectly flagged as duplicates<a class="headerlink reference internal" href="#2.4.0-fix openapi schemas incorrectly flagged as duplicates" id="2.4.0-fix openapi schemas incorrectly flagged as duplicates">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix an issue that would lead to OpenAPI schemas being incorrectly considered
+duplicates, resulting in an <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.ImproperlyConfiguredException" title="litestar.exceptions.ImproperlyConfiguredException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ImproperlyConfiguredException</span></code></a> being raised.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2471">litestar-org/litestar#2471</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2475">litestar-org/litestar#2475</a></span></p>
+</div>
+</dd>
+<dt>Fix Pydantic URL type support in OpenAPI and serialization<a class="headerlink reference internal" href="#2.4.0-fix pydantic url type support in openapi and serialization" id="2.4.0-fix pydantic url type support in openapi and serialization">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Add missing support for Pydantic’s URL types (<code class="docutils literal notranslate"><span class="pre">AnyUrl</span></code> and its descendants)
+for both serialization and OpenAPI schema generation. These types were only
+partially supported previously; Serialization support was lacking for v1 and v2,
+and OpenAPI support was missing for v2.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2664">litestar-org/litestar#2664</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2701">litestar-org/litestar#2701</a></span></p>
+</div>
+</dd>
+<dt>Fix incorrect <code class="docutils literal notranslate"><span class="pre">ValidationException</span></code> message when multiple errors were encountered<a class="headerlink reference internal" href="#2.4.0-fix incorrect" id="2.4.0-fix incorrect">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug where <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.ValidationException" title="litestar.exceptions.ValidationException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValidationException</span></code></a> could contain duplicated messages in
+<code class="docutils literal notranslate"><span class="pre">extra</span></code> field, when multiple errors were encountered during validation</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2714">litestar-org/litestar#2714</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2716">litestar-org/litestar#2716</a></span></p>
+</div>
+</dd>
+<dt>Fix DTO renaming renames all fields of the same name in nested DTOs<a class="headerlink reference internal" href="#2.4.0-fix dto renaming renames all fields of the same name in nested dtos" id="2.4.0-fix dto renaming renames all fields of the same name in nested dtos">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix an issue with nested field renaming in DTOs that would lead to all fields
+with a given name to be renamed in a nested structure.</p>
+<p>In the below example, both <code class="docutils literal notranslate"><span class="pre">Foo.id</span></code> and <code class="docutils literal notranslate"><span class="pre">Bar.id</span></code> would have been renamed to
+<code class="docutils literal notranslate"><span class="pre">foo_id</span></code></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Bar</span><span class="p">:</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">bar</span><span class="p">:</span> <span class="n">Bar</span>
+
+
+<span class="n">FooDTO</span> <span class="o">=</span> <span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="n">Foo</span><span class="p">,</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">rename_fields</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="s2">&quot;foo_id&quot;</span><span class="p">})]]</span>
+</pre></div>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2721">litestar-org/litestar#2721</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2764">litestar-org/litestar#2764</a></span></p>
+</div>
+</dd>
+<dt>Fix handling of DTO objects nested in mappings<a class="headerlink reference internal" href="#2.4.0-fix handling of dto objects nested in mappings" id="2.4.0-fix handling of dto objects nested in mappings">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug where DTOs nested in a <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a> type would fail to
+serialize correctly.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2737">litestar-org/litestar#2737</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2775">litestar-org/litestar#2775</a></span></p>
+</div>
+</dd>
+<dt>Fix inconsistent sequence union parameter errors<a class="headerlink reference internal" href="#2.4.0-fix inconsistent sequence union parameter errors" id="2.4.0-fix inconsistent sequence union parameter errors">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug where unions of collection types would result in different errors
+depending on whether the union included <a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a> or not.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2600">litestar-org/litestar#2600</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2776">litestar-org/litestar#2776</a></span></p>
+</div>
+</dd>
+<dt>Fix graceful handling of WebSocket disconnect in channels WebSockets handlers<a class="headerlink reference internal" href="#2.4.0-fix graceful handling of websocket disconnect in channels websockets handlers" id="2.4.0-fix graceful handling of websocket disconnect in channels websockets handlers">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix the behaviour of WebSocket disconnect handling within the WebSocket handlers
+provided by <a class="reference internal" href="../usage/channels.html"><span class="doc">channels</span></a>, that would sometimes lead to
+a <code class="docutils literal notranslate"><span class="pre">RuntimeError:</span> <span class="pre">Unexpected</span> <span class="pre">ASGI</span> <span class="pre">message</span> <span class="pre">'websocket.close',</span> <span class="pre">after</span> <span class="pre">sending</span> <span class="pre">'websocket.close'.</span></code>
+exception being raised upon the closing of a WebSocket connection.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2691">litestar-org/litestar#2691</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.3.2">
 <h2>2.3.2<a class="headerlink" href="#2.3.2" title="Permalink to this heading">#</a></h2>
-<strong>Released: </strong>2023/11706<section id="2.3.2-bugfix">
+<strong>Released: </strong>2023/11/06<section id="2.3.2-bugfix">
 <h3>Bugfixes<a class="headerlink" href="#2.3.2-bugfix" title="Permalink to this heading">#</a></h3>
 <dl>
 <dt>Fix recursion error when re-using the path of a route handler for static files<a class="headerlink reference internal" href="#2.3.2-fix recursion error when re-using the path of a route handler for static files" id="2.3.2-fix recursion error when re-using the path of a route handler for static files">#</a></dt><dd><div class="changelog-change docutils container">
@@ -4359,6 +4524,11 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.4.0">2.4.0</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.4.0-feature">Features</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.4.0-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.3.2">2.3.2</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.3.2-bugfix">Bugfixes</a></li>
 </ul>
