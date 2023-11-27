@@ -1451,6 +1451,24 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "cesarmg1980",
+      "name": "Cesar Giulietti",
+      "avatar_url": "https://avatars.githubusercontent.com/u/38872121?v=4",
+      "profile": "https://github.com/cesarmg1980",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "marcuslimdw",
+      "name": "Marcus Lim",
+      "avatar_url": "https://avatars.githubusercontent.com/u/42759889?v=4",
+      "profile": "https://gitlab.com/marcuslimdw/",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,

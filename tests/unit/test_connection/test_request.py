@@ -13,7 +13,12 @@ import pytest
 from litestar import MediaType, Request, asgi, get
 from litestar.connection.base import empty_send
 from litestar.datastructures import Address, Cookie
-from litestar.exceptions import InternalServerException, SerializationException
+from litestar.exceptions import (
+    InternalServerException,
+    LitestarException,
+    LitestarWarning,
+    SerializationException,
+)
 from litestar.middleware import MiddlewareProtocol
 from litestar.response.base import ASGIResponse
 from litestar.serialization import encode_json, encode_msgpack
@@ -447,7 +452,9 @@ def test_request_send_push_promise_without_push_extension() -> None:
 
     async def app(scope: Scope, receive: Receive, send: Send) -> None:
         request = Request[Any, Any, Any](scope)
-        await request.send_push_promise("/style.css")
+
+        with pytest.warns(LitestarWarning, match="Attempted to send a push promise"):
+            await request.send_push_promise("/style.css")
 
         response = ASGIResponse(body=encode_json({"json": "OK"}))
         await response(scope, receive, send)
@@ -455,6 +462,24 @@ def test_request_send_push_promise_without_push_extension() -> None:
     client = TestClient(app)
     response = client.get("/")
     assert response.json() == {"json": "OK"}
+
+
+def test_request_send_push_promise_without_push_extension_raises() -> None:
+    """If server does not support the `http.response.push` extension,
+
+    .send_push_promise() does nothing.
+    """
+
+    async def app(scope: Scope, receive: Receive, send: Send) -> None:
+        request = Request[Any, Any, Any](scope)
+
+        with pytest.raises(LitestarException, match="Attempted to send a push promise"):
+            await request.send_push_promise("/style.css", raise_if_unavailable=True)
+
+        response = ASGIResponse(body=encode_json({"json": "OK"}))
+        await response(scope, receive, send)
+
+    TestClient(app).get("/")
 
 
 def test_request_send_push_promise_without_setting_send() -> None:

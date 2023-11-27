@@ -27,8 +27,10 @@ from litestar._multipart import parse_content_header
 from litestar.datastructures.multi_dicts import MultiMixin
 from litestar.dto.base_dto import AbstractDTO
 from litestar.exceptions import ImproperlyConfiguredException, ValidationException
+from litestar.types.empty import Empty
 from litestar.typing import FieldDefinition
 from litestar.utils.dataclass import simple_asdict
+from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
     from litestar.types.asgi_types import (
@@ -36,6 +38,7 @@ if TYPE_CHECKING:
         Message,
         RawHeaders,
         RawHeadersList,
+        Scope,
     )
 
 __all__ = ("Accept", "CacheControlHeader", "ETag", "Header", "Headers", "MutableScopeHeaders")
@@ -71,7 +74,7 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):
         self._header_list: Optional[RawHeadersList] = None
 
     @classmethod
-    def from_scope(cls, scope: "HeaderScope") -> "Headers":
+    def from_scope(cls, scope: "Scope") -> "Headers":
         """Create headers from a send-message.
 
         Args:
@@ -83,10 +86,10 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):
         Raises:
             ValueError: If the message does not have a ``headers`` key
         """
-        if (headers := scope.get("_headers")) is None:
-            headers = scope["_headers"] = cls(scope["headers"])  # type: ignore[typeddict-unknown-key]
-
-        return cast("Headers", headers)
+        connection_state = ScopeState.from_scope(scope)
+        if (headers := connection_state.headers) is Empty:
+            headers = connection_state.headers = cls(scope["headers"])
+        return headers
 
     def to_header_list(self) -> "RawHeadersList":
         """Raw header value.
