@@ -74,7 +74,7 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):
         self._header_list: Optional[RawHeadersList] = None
 
     @classmethod
-    def from_scope(cls, scope: "Scope | HeaderScope") -> "Headers":
+    def from_scope(cls, scope: "Scope") -> "Headers":
         """Create headers from a send-message.
 
         Args:
@@ -86,10 +86,7 @@ class Headers(CIMultiDictProxy[str], MultiMixin[str]):
         Raises:
             ValueError: If the message does not have a ``headers`` key
         """
-        if "state" not in scope:
-            return cls(scope["headers"])
-
-        connection_state = ScopeState.from_scope(scope)  # type: ignore[arg-type]
+        connection_state = ScopeState.from_scope(scope)
         if (headers := connection_state.headers) is Empty:
             headers = connection_state.headers = cls(scope["headers"])
         return headers
