@@ -117,7 +117,10 @@ def get_litestar_scope_state(scope: Scope, key: str, default: Any = None, pop: b
     """
     scope_state = ScopeState.from_scope(scope)
     try:
-        return value_or_default(getattr(scope_state, key), default)
+        val = value_or_default(getattr(scope_state, key), default)
+        if pop:
+            setattr(scope_state, key, Empty)
+        return val
     except AttributeError:
         if pop:
             return scope_state._compat_ns.pop(key, default)
