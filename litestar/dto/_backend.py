@@ -18,7 +18,6 @@ from typing import (
 )
 
 from msgspec import UNSET, Struct, UnsetType, convert, defstruct, field
-from typing_extensions import get_origin
 
 from litestar.dto._types import (
     CollectionType,
@@ -38,7 +37,6 @@ from litestar.serialization import decode_json, decode_msgpack
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
 from litestar.utils import unique_name_for_scope
-from litestar.utils.typing import safe_generic_origin_map
 
 if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
@@ -119,11 +117,9 @@ class DTOBackend:
         self.override_serialization_name: bool = False
         if field_definition.is_subclass_of(DTOData):
             self.dto_data_type = field_definition.annotation
-            annotation = self.field_definition.inner_types[0].annotation
-        else:
-            annotation = field_definition.annotation
+            field_definition = self.field_definition.inner_types[0]
 
-        self.annotation = _maybe_wrap_in_generic_annotation(annotation, self.transfer_model_type)
+        self.annotation = build_annotation_for_backend(model_type, field_definition, self.transfer_model_type)
 
     def parse_model(
         self,
@@ -605,17 +601,32 @@ def _transfer_data(
     Returns:
         Data parsed into ``destination_type``.
     """
-    if field_definition.is_non_string_collection and not field_definition.is_mapping:
-        return field_definition.instantiable_origin(
-            _transfer_data(
-                destination_type=destination_type,
-                source_data=item,
-                field_definitions=field_definitions,
-                field_definition=field_definition.inner_types[0],
-                is_data_field=is_data_field,
-                override_serialization_name=override_serialization_name,
+    if field_definition.is_non_string_collection:
+        if not field_definition.is_mapping:
+            return field_definition.instantiable_origin(
+                _transfer_data(
+                    destination_type=destination_type,
+                    source_data=item,
+                    field_definitions=field_definitions,
+                    field_definition=field_definition.inner_types[0],
+                    is_data_field=is_data_field,
+                    override_serialization_name=override_serialization_name,
+                )
+                for item in source_data
             )
-            for item in source_data
+        return field_definition.instantiable_origin(
+            (
+                key,
+                _transfer_data(
+                    destination_type=destination_type,
+                    source_data=value,
+                    field_definitions=field_definitions,
+                    field_definition=field_definition.inner_types[1],
+                    is_data_field=is_data_field,
+                    override_serialization_name=override_serialization_name,
+                ),
+            )
+            for key, value in source_data.items()  # type: ignore[union-attr]
         )
 
     return _transfer_instance_data(
@@ -796,20 +807,30 @@ def _create_struct_for_field_definitions(
     return defstruct(model_name, struct_fields, frozen=True, kw_only=True)
 
 
-def _maybe_wrap_in_generic_annotation(annotation: Any, model: Any) -> Any:
+def build_annotation_for_backend(
+    model_type: type[Any], field_definition: FieldDefinition, transfer_model: type[Struct]
+) -> Any:
     """A helper to re-build a generic outer type with new inner type.
 
     Args:
-        annotation: The original annotation on the handler signature
-        model: The data container type
+        model_type: The original model type.
+        field_definition: The parsed type that represents the handler annotation for which the DTO is being applied.
+        transfer_model: The transfer model generated to represent the model type.
 
     Returns:
         Annotation with new inner type if applicable.
     """
-    if (origin := get_origin(annotation)) and origin in safe_generic_origin_map:
-        return safe_generic_origin_map[origin][model]  # type: ignore[index]
+    if not field_definition.inner_types:
+        if field_definition.is_subclass_of(model_type):
+            return transfer_model
+        return field_definition.annotation
 
-    return origin[model] if (origin := get_origin(annotation)) else model
+    inner_types = tuple(
+        build_annotation_for_backend(model_type, inner_type, transfer_model)
+        for inner_type in field_definition.inner_types
+    )
+
+    return field_definition.safe_generic_origin[inner_types]
 
 
 def _should_mark_private(field_definition: DTOFieldDefinition, underscore_fields_private: bool) -> bool:

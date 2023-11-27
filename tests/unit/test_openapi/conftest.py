@@ -61,7 +61,7 @@ def create_person_controller() -> Type[Controller]:
 
         @post(path="/bulk", dto=PartialDataclassPersonDTO)
         def bulk_create_person(
-            self, data: List[DTOData[DataclassPerson]], secret_header: str = Parameter(header="secret")
+            self, data: DTOData[List[DataclassPerson]], secret_header: str = Parameter(header="secret")
         ) -> List[DataclassPerson]:
             return []
 
@@ -73,7 +73,7 @@ def create_person_controller() -> Type[Controller]:
 
         @patch(path="/bulk", dto=PartialDataclassPersonDTO)
         def bulk_partial_update_person(
-            self, data: List[DTOData[DataclassPerson]], secret_header: str = Parameter(header="secret")
+            self, data: DTOData[List[DataclassPerson]], secret_header: str = Parameter(header="secret")
         ) -> List[DataclassPerson]:
             return []
 
