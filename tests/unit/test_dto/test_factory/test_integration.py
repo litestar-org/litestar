@@ -805,3 +805,21 @@ def test_dto_with_msgspec_with_bound_generic_and_inherited_models(use_experiment
             headers={"Content-Type": "application/json; charset=utf-8"},
         )
         assert msgspec.json.decode(received.content, type=Superuser) == data
+
+
+def test_dto_returning_mapping(use_experimental_dto_backend: bool) -> None:
+    @dataclass
+    class Lexeme:
+        id: int
+        name: str
+
+    class LexemeDTO(DataclassDTO[Lexeme]):
+        config = DTOConfig(exclude={"id"}, experimental_codegen_backend=use_experimental_dto_backend)
+
+    @get(return_dto=LexemeDTO, signature_types=[Lexeme])
+    async def get_definition() -> Dict[str, Lexeme]:
+        return {"hello": Lexeme(id=1, name="hello"), "world": Lexeme(id=2, name="world")}
+
+    with create_test_client(route_handlers=[get_definition]) as client:
+        response = client.get("/")
+        assert response.json() == {"hello": {"name": "hello"}, "world": {"name": "world"}}
