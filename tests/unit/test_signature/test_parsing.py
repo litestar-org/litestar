@@ -154,3 +154,30 @@ def test_union_constraint_handling() -> None:
 
     assert response.status_code == 200
     mock.assert_called_once_with("foo")
+
+
+@pytest.mark.parametrize(("with_optional",), [(True,), (False,)])
+def test_collection_union_struct_fields(with_optional: bool) -> None:
+    """Test consistent behavior between optional and non-optional collection unions.
+
+    Issue: https://github.com/litestar-org/litestar/issues/2600 identified that where a union
+    of collection types was optional, it would result in a 400 error when the handler was called,
+    whereas a non-optional union would result in a 500 error.
+
+    This test ensures that both optional and non-optional unions of collection types result in
+    the same error.
+    """
+
+    annotation = Union[List[str], List[int]]
+
+    if with_optional:
+        annotation = Optional[annotation]  # type: ignore[misc]
+
+    @get("/", signature_namespace={"annotation": annotation})
+    def handler(param: annotation) -> None:  # pyright: ignore
+        return None
+
+    with create_test_client([handler]) as client:
+        response = client.get("/?param=foo&param=bar&param=123")
+        assert response.status_code == 500
+        assert "TypeError: Type unions may not contain more than one array-like" in response.text
