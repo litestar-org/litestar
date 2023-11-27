@@ -146,9 +146,16 @@ def create_transfer_type(
     field_name: str = "name",
     unique_name: str = "some_module.SomeModel.name",
     nested_depth: int = 0,
+    rename_fields: dict[str, str] | None = None,
 ) -> TransferType:
     return backend._create_transfer_type(
-        field_definition, exclude or set(), include or set(), field_name, unique_name, nested_depth
+        field_definition=field_definition,
+        exclude=exclude or set(),
+        include=include or set(),
+        field_name=field_name,
+        unique_name=unique_name,
+        nested_depth=nested_depth,
+        rename_fields=rename_fields or {},
     )
 
 

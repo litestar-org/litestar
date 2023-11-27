@@ -6,6 +6,7 @@ import pytest
 
 from litestar.types.empty import Empty
 from litestar.utils import (
+    delete_litestar_scope_state,
     get_litestar_scope_state,
     set_litestar_scope_state,
 )
@@ -55,3 +56,17 @@ def test_set_litestar_scope_state_defined_value(scope: Scope) -> None:
     connection_state = ScopeState.from_scope(scope)
     set_litestar_scope_state(scope, "is_cached", True)
     assert connection_state.is_cached is True
+
+
+def test_delete_litestar_scope_state_arbitrary_value(scope: Scope) -> None:
+    connection_state = ScopeState.from_scope(scope)
+    connection_state._compat_ns["key"] = "value"
+    delete_litestar_scope_state(scope, "key")
+    assert "key" not in connection_state._compat_ns
+
+
+def test_delete_litestar_scope_state_defined_value(scope: Scope) -> None:
+    connection_state = ScopeState.from_scope(scope)
+    connection_state.is_cached = True
+    delete_litestar_scope_state(scope, "is_cached")
+    assert connection_state.is_cached is Empty  # type: ignore[comparison-overlap]
