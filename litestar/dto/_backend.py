@@ -4,7 +4,18 @@ back again, to bytes.
 from __future__ import annotations
 
 from dataclasses import replace
-from typing import TYPE_CHECKING, AbstractSet, Any, Callable, ClassVar, Collection, Final, Mapping, Union, cast
+from typing import (
+    TYPE_CHECKING,
+    AbstractSet,
+    Any,
+    ClassVar,
+    Collection,
+    Final,
+    Mapping,
+    Protocol,
+    Union,
+    cast,
+)
 
 from msgspec import UNSET, Struct, UnsetType, convert, defstruct, field
 from typing_extensions import get_origin
@@ -35,6 +46,19 @@ if TYPE_CHECKING:
     from litestar.types.serialization import LitestarEncodableType
 
 __all__ = ("DTOBackend",)
+
+
+class CompositeTypeHandler(Protocol):
+    def __call__(
+        self,
+        field_definition: FieldDefinition,
+        exclude: AbstractSet[str],
+        include: AbstractSet[str],
+        rename_fields: dict[str, str],
+        unique_name: str,
+        nested_depth: int,
+    ) -> CompositeType:
+        ...
 
 
 class DTOBackend:
@@ -70,7 +94,7 @@ class DTOBackend:
             dto_factory: The DTO factory class calling this backend.
             field_definition: Parsed type.
             handler_id: The name of the handler that this backend is for.
-            is_data_field: Whether or not the field is a subclass of DTOData.
+            is_data_field: Whether the field is a subclass of DTOData.
             model_type: Model type.
             wrapper_attribute_name: If the data that DTO should operate upon is wrapped in a generic datastructure, this is the name of the attribute that the data is stored in.
         """
@@ -82,7 +106,10 @@ class DTOBackend:
         self.wrapper_attribute_name: Final[str | None] = wrapper_attribute_name
 
         self.parsed_field_definitions = self.parse_model(
-            model_type=model_type, exclude=self.dto_factory.config.exclude, include=self.dto_factory.config.include
+            model_type=model_type,
+            exclude=self.dto_factory.config.exclude,
+            include=self.dto_factory.config.include,
+            rename_fields=self.dto_factory.config.rename_fields,
         )
         self.transfer_model_type = self.create_transfer_model_type(
             model_name=model_type.__name__, field_definitions=self.parsed_field_definitions
@@ -99,7 +126,12 @@ class DTOBackend:
         self.annotation = _maybe_wrap_in_generic_annotation(annotation, self.transfer_model_type)
 
     def parse_model(
-        self, model_type: Any, exclude: AbstractSet[str], include: AbstractSet[str], nested_depth: int = 0
+        self,
+        model_type: Any,
+        exclude: AbstractSet[str],
+        include: AbstractSet[str],
+        rename_fields: dict[str, str],
+        nested_depth: int = 0,
     ) -> tuple[TransferDTOFieldDefinition, ...]:
         """Reduce :attr:`model_type` to a tuple :class:`TransferDTOFieldDefinition` instances.
 
@@ -123,6 +155,7 @@ class DTOBackend:
                     field_definition=field_definition,
                     exclude=exclude,
                     include=include,
+                    rename_fields=rename_fields,
                     field_name=field_definition.name,
                     unique_name=field_definition.model_name,
                     nested_depth=nested_depth,
@@ -130,7 +163,7 @@ class DTOBackend:
             except RecursionError:
                 continue
 
-            if rename := self.dto_factory.config.rename_fields.get(field_definition.name):
+            if rename := rename_fields.get(field_definition.name):
                 serialization_name = rename
             elif self.dto_factory.config.rename_strategy:
                 serialization_name = _rename_field(
@@ -342,9 +375,7 @@ class DTOBackend:
             ),
         )
 
-    def _get_handler_for_field_definition(
-        self, field_definition: FieldDefinition
-    ) -> Callable[[FieldDefinition, AbstractSet[str], AbstractSet[str], str, int], CompositeType] | None:
+    def _get_handler_for_field_definition(self, field_definition: FieldDefinition) -> CompositeTypeHandler | None:
         if field_definition.is_union:
             return self._create_union_type
 
@@ -365,15 +396,24 @@ class DTOBackend:
         field_definition: FieldDefinition,
         exclude: AbstractSet[str],
         include: AbstractSet[str],
+        rename_fields: dict[str, str],
         field_name: str,
         unique_name: str,
         nested_depth: int,
     ) -> CompositeType | SimpleType:
         exclude = _filter_nested_field(exclude, field_name)
         include = _filter_nested_field(include, field_name)
+        rename_fields = _filter_nested_field_mapping(rename_fields, field_name)
 
         if composite_type_handler := self._get_handler_for_field_definition(field_definition):
-            return composite_type_handler(field_definition, exclude, include, unique_name, nested_depth)
+            return composite_type_handler(
+                field_definition=field_definition,
+                exclude=exclude,
+                include=include,
+                rename_fields=rename_fields,
+                unique_name=unique_name,
+                nested_depth=nested_depth,
+            )
 
         transfer_model: NestedFieldInfo | None = None
 
@@ -382,7 +422,11 @@ class DTOBackend:
                 raise RecursionError
 
             nested_field_definitions = self.parse_model(
-                model_type=field_definition.annotation, exclude=exclude, include=include, nested_depth=nested_depth + 1
+                model_type=field_definition.annotation,
+                exclude=exclude,
+                include=include,
+                rename_fields=rename_fields,
+                nested_depth=nested_depth + 1,
             )
 
             transfer_model = NestedFieldInfo(
@@ -397,6 +441,7 @@ class DTOBackend:
         field_definition: FieldDefinition,
         exclude: AbstractSet[str],
         include: AbstractSet[str],
+        rename_fields: dict[str, str],
         unique_name: str,
         nested_depth: int,
     ) -> CollectionType:
@@ -408,6 +453,7 @@ class DTOBackend:
             field_name="0",
             unique_name=f"{unique_name}_0",
             nested_depth=nested_depth,
+            rename_fields=rename_fields,
         )
         return CollectionType(
             field_definition=field_definition, inner_type=inner_type, has_nested=inner_type.has_nested
@@ -418,6 +464,7 @@ class DTOBackend:
         field_definition: FieldDefinition,
         exclude: AbstractSet[str],
         include: AbstractSet[str],
+        rename_fields: dict[str, str],
         unique_name: str,
         nested_depth: int,
     ) -> MappingType:
@@ -429,6 +476,7 @@ class DTOBackend:
             field_name="0",
             unique_name=f"{unique_name}_0",
             nested_depth=nested_depth,
+            rename_fields=rename_fields,
         )
         value_type = self._create_transfer_type(
             field_definition=inner_types[1] if inner_types else FieldDefinition.from_annotation(Any),
@@ -437,6 +485,7 @@ class DTOBackend:
             field_name="1",
             unique_name=f"{unique_name}_1",
             nested_depth=nested_depth,
+            rename_fields=rename_fields,
         )
         return MappingType(
             field_definition=field_definition,
@@ -450,6 +499,7 @@ class DTOBackend:
         field_definition: FieldDefinition,
         exclude: AbstractSet[str],
         include: AbstractSet[str],
+        rename_fields: dict[str, str],
         unique_name: str,
         nested_depth: int,
     ) -> TupleType:
@@ -461,6 +511,7 @@ class DTOBackend:
                 field_name=str(i),
                 unique_name=f"{unique_name}_{i}",
                 nested_depth=nested_depth,
+                rename_fields=rename_fields,
             )
             for i, inner_type in enumerate(field_definition.inner_types)
         )
@@ -475,6 +526,7 @@ class DTOBackend:
         field_definition: FieldDefinition,
         exclude: AbstractSet[str],
         include: AbstractSet[str],
+        rename_fields: dict[str, str],
         unique_name: str,
         nested_depth: int,
     ) -> UnionType:
@@ -486,6 +538,7 @@ class DTOBackend:
                 field_name=str(i),
                 unique_name=f"{unique_name}_{i}",
                 nested_depth=nested_depth,
+                rename_fields=rename_fields,
             )
             for i, inner_type in enumerate(field_definition.inner_types)
         )
@@ -519,6 +572,15 @@ def _rename_field(name: str, strategy: RenameStrategy) -> str:
 def _filter_nested_field(field_name_set: AbstractSet[str], field_name: str) -> AbstractSet[str]:
     """Filter a nested field name."""
     return {split[1] for s in field_name_set if (split := s.split(".", 1))[0] == field_name and len(split) > 1}
+
+
+def _filter_nested_field_mapping(field_name_mapping: Mapping[str, str], field_name: str) -> dict[str, str]:
+    """Filter a nested field name."""
+    return {
+        split[1]: v
+        for s, v in field_name_mapping.items()
+        if (split := s.split(".", 1))[0] == field_name and len(split) > 1
+    }
 
 
 def _transfer_data(
