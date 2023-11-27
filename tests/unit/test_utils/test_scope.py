@@ -43,7 +43,7 @@ def test_get_litestar_scope_state_defined_value(pop: bool, scope: Scope) -> None
     if pop:
         assert connection_state.is_cached is Empty  # type: ignore[comparison-overlap]
     else:
-        assert connection_state.is_cached is True
+        assert connection_state.is_cached
 
 
 def test_set_litestar_scope_state_arbitrary_value(scope: Scope) -> None:
