@@ -382,7 +382,7 @@ def test_request_state() -> None:
     def handler(request: Request[Any, Any, State]) -> dict[Any, Any]:
         request.state.test = 1
         assert request.state.test == 1
-        return request.state.dict()  # type: ignore
+        return request.state.dict()
 
     with create_test_client(handler) as client:
         response = client.get("/")

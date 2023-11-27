@@ -2,10 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Dict, Type, Union
 
-from typing_extensions import (
-    Never,
-    _TypedDictMeta,  # type: ignore
-)
+from typing_extensions import Never, _TypedDictMeta  # type: ignore
 
 if TYPE_CHECKING:
     from typing_extensions import TypeAlias
