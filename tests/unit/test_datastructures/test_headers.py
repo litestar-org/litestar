@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, List, Optional, Union
+from typing import TYPE_CHECKING, Callable, List, Optional, Union
 
 import pytest
 from pytest import FixtureRequest
@@ -18,7 +18,7 @@ from litestar.types.asgi_types import HTTPResponseBodyEvent, HTTPResponseStartEv
 from litestar.utils.dataclass import simple_asdict
 
 if TYPE_CHECKING:
-    from litestar.types.asgi_types import RawHeaders, RawHeadersList
+    from litestar.types.asgi_types import RawHeaders, RawHeadersList, Scope
 
 
 @pytest.fixture
@@ -74,10 +74,8 @@ def test_headers_from_raw_tuple() -> None:
     assert headers.getall("foo") == ["bar", "baz"]
 
 
-def test_headers_from_scope() -> None:
-    headers = Headers.from_scope(
-        HTTPResponseStartEvent(type="http.response.start", status=200, headers=[(b"foo", b"bar"), (b"buzz", b"bup")])
-    )
+def test_headers_from_scope(create_scope: "Callable[..., Scope]") -> None:
+    headers = Headers.from_scope(create_scope(headers=[(b"foo", b"bar"), (b"buzz", b"bup")]))
     assert headers["foo"] == "bar"
     assert headers["buzz"] == "bup"
 

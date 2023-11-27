@@ -10,14 +10,13 @@ from httpx import Cookies, Request, Response
 
 from litestar import Litestar
 from litestar.connection import ASGIConnection
-from litestar.constants import SCOPE_STATE_COOKIES_KEY
 from litestar.datastructures import MutableScopeHeaders
 from litestar.enums import ScopeType
 from litestar.exceptions import (
     ImproperlyConfiguredException,
 )
 from litestar.types import AnyIOBackend, ASGIApp, HTTPResponseStartEvent
-from litestar.utils.scope import set_litestar_scope_state
+from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
     from httpx._types import CookieTypes
@@ -57,7 +56,7 @@ def fake_asgi_connection(app: ASGIApp, cookies: dict[str, str]) -> ASGIConnectio
         "session": None,
         "user": None,
     }
-    set_litestar_scope_state(scope, SCOPE_STATE_COOKIES_KEY, cookies)
+    ScopeState.from_scope(scope).cookies = cookies
     return ASGIConnection[Any, Any, Any, Any](scope=scope)
 
 

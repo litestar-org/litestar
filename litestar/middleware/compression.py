@@ -4,15 +4,12 @@ from gzip import GzipFile
 from io import BytesIO
 from typing import TYPE_CHECKING, Any, Literal
 
-from litestar.constants import SCOPE_STATE_IS_CACHED, SCOPE_STATE_RESPONSE_COMPRESSED
 from litestar.datastructures import Headers, MutableScopeHeaders
 from litestar.enums import CompressionEncoding, ScopeType
 from litestar.exceptions import MissingDependencyException
 from litestar.middleware.base import AbstractMiddleware
-from litestar.utils import get_litestar_scope_state, set_litestar_scope_state
-
-__all__ = ("CompressionFacade", "CompressionMiddleware")
-
+from litestar.utils.empty import value_or_default
+from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
     from litestar.config.compression import CompressionConfig
@@ -29,6 +26,8 @@ if TYPE_CHECKING:
         from brotli import Compressor
     except ImportError:
         Compressor = Any
+
+__all__ = ("CompressionFacade", "CompressionMiddleware")
 
 
 class CompressionFacade:
@@ -178,6 +177,8 @@ class CompressionMiddleware(AbstractMiddleware):
 
         _own_encoding = compression_encoding.encode("latin-1")
 
+        connection_state = ScopeState.from_scope(scope)
+
         async def send_wrapper(message: Message) -> None:
             """Handle and compresses the HTTP Message with brotli.
 
@@ -191,7 +192,7 @@ class CompressionMiddleware(AbstractMiddleware):
                 initial_message = message
                 return
 
-            if initial_message and get_litestar_scope_state(scope, SCOPE_STATE_IS_CACHED):
+            if initial_message is not None and value_or_default(connection_state.is_cached, False):
                 await send(initial_message)
                 await send(message)
                 return
@@ -207,7 +208,7 @@ class CompressionMiddleware(AbstractMiddleware):
                         headers["Content-Encoding"] = compression_encoding
                         headers.extend_header_value("vary", "Accept-Encoding")
                         del headers["Content-Length"]
-                        set_litestar_scope_state(scope, SCOPE_STATE_RESPONSE_COMPRESSED, True)
+                        connection_state.response_compressed = True
 
                         facade.write(body)
 
@@ -227,7 +228,7 @@ class CompressionMiddleware(AbstractMiddleware):
                         headers["Content-Length"] = str(len(body))
                         headers.extend_header_value("vary", "Accept-Encoding")
                         message["body"] = body
-                        set_litestar_scope_state(scope, SCOPE_STATE_RESPONSE_COMPRESSED, True)
+                        connection_state.response_compressed = True
 
                         await send(initial_message)
                         await send(message)
