@@ -3,6 +3,26 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.4.1
+    :date: 2023/11/28
+
+    .. change:: Fix circular import when importing from ``litestar.security.jwt``
+        :type: bugfix
+        :pr: 2784
+        :issue: 2782
+
+        An :exc:`ImportError` was raised when trying to import from ``litestar.security.jwt``. This was fixed
+        by removing the imports from the deprecated ``litestar.contrib.jwt`` within ``litesetar.security.jwt``.
+
+    .. change:: Raise config error when generator dependencies are cached
+        :type: bugfix
+        :pr: 2780
+        :issue: 2771
+
+        Previously, an :exc:`InternalServerError` was raised when attempting to use
+        `use_cache=True` with generator dependencies. This will now raise a configuration
+        error during application startup.
+
 .. changelog:: 2.4.0
     :date: 2023/11/27
 
