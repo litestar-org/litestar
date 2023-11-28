@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from docs.examples.contrib.jwt.using_oauth2_password_bearer import app
+from docs.examples.security.jwt import app
 
 from litestar.status_codes import HTTP_201_CREATED, HTTP_401_UNAUTHORIZED
 from litestar.testing import TestClient
