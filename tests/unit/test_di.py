@@ -129,6 +129,14 @@ def test_async_callable_with_sync_to_thread_warns(sync_to_thread: bool) -> None:
         Provide(func, sync_to_thread=sync_to_thread)
 
 
+def test_generator_with_sync_to_thread_warns() -> None:
+    def func() -> Generator[int, None, None]:
+        yield 1
+
+    with pytest.warns(LitestarWarning, match="Use of generator"):
+        Provide(func, sync_to_thread=True)
+
+
 @pytest.mark.parametrize(
     ("dep", "exp"),
     [
@@ -145,3 +153,15 @@ def test_dependency_has_async_callable(dep: Any, exp: bool) -> None:
 def test_raises_when_dependency_is_not_callable() -> None:
     with pytest.raises(ImproperlyConfiguredException):
         Provide(123)  # type: ignore
+
+
+@pytest.mark.parametrize(
+    ("dep",),
+    [
+        (generator_func,),
+        (async_generator_func,),
+    ],
+)
+def test_raises_when_generator_dependency_is_cached(dep: Any) -> None:
+    with pytest.raises(ImproperlyConfiguredException):
+        Provide(dep, use_cache=True)

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from enum import Enum
 from typing import TYPE_CHECKING, Any, Mapping
 
@@ -15,6 +16,7 @@ __all__ = (
     "_type_or_first_not_none_inner_type",
     "_should_create_enum_schema",
     "_should_create_literal_schema",
+    "_get_normalized_schema_key",
 )
 
 
@@ -80,6 +82,37 @@ def _should_create_literal_schema(field_definition: FieldDefinition) -> bool:
         or field_definition.is_optional
         and all(inner.is_literal for inner in field_definition.inner_types if not inner.is_none_type)
     )
+
+
+TYPE_NAME_NORMALIZATION_SUB_REGEX = re.compile(r"[^a-zA-Z0-9]+")
+TYPE_NAME_EXTRACTION_REGEX = re.compile(r"<\w+ '(.+)'")
+
+
+def _replace_non_alphanumeric_match(match: re.Match) -> str:
+    # we don't want to introduce leading or trailing underscores, so we only replace a
+    # char with an underscore if we're not at the beginning or at the end of the
+    # matchable string
+    if match.start() == 0 or match.end() == match.endpos:
+        return ""
+    return "_"
+
+
+def _get_normalized_schema_key(type_annotation_str: str) -> str:
+    """Normalize a type annotation, replacing all non-alphanumeric with underscores.
+    Existing underscores will be left as-is
+
+    Args:
+        type_annotation_str: A string representing a type annotation
+            (i.e. 'typing.Dict[str, typing.Any]' or '<class 'model.Foo'>')
+
+    Returns:
+        A normalized version of the input string
+    """
+    # extract names from repr() style annotations like <class 'foo.bar.Baz'>
+    normalized_name = TYPE_NAME_EXTRACTION_REGEX.sub(r"\g<1>", type_annotation_str)
+    # replace all non-alphanumeric characters with underscores, ensuring no leading or
+    # trailing underscores
+    return TYPE_NAME_NORMALIZATION_SUB_REGEX.sub(_replace_non_alphanumeric_match, normalized_name)
 
 
 def get_formatted_examples(field_definition: FieldDefinition, examples: Sequence[Example]) -> Mapping[str, Example]:

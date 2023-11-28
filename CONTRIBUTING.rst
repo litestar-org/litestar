@@ -107,7 +107,7 @@ enforce type safety. You can run them with:
 
 - ``make mypy``
 - ``make pyright``
-- ``make typecheck`` to run both
+- ``make type-check`` to run both
 - ``make lint`` to run pre-commit hooks and type checkers.
 
 Our type checkers are run on Python 3.8 in CI, so you should make sure to run them on the same version locally as well.

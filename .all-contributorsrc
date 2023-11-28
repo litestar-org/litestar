@@ -1433,6 +1433,42 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "jdglaser",
+      "name": "Jarred Glaser",
+      "avatar_url": "https://avatars.githubusercontent.com/u/32422167?v=4",
+      "profile": "http://jarredglaser.com",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "hunterjsb",
+      "name": "Hunter Boyd",
+      "avatar_url": "https://avatars.githubusercontent.com/u/69213737?v=4",
+      "profile": "https://github.com/hunterjsb",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "cesarmg1980",
+      "name": "Cesar Giulietti",
+      "avatar_url": "https://avatars.githubusercontent.com/u/38872121?v=4",
+      "profile": "https://github.com/cesarmg1980",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "marcuslimdw",
+      "name": "Marcus Lim",
+      "avatar_url": "https://avatars.githubusercontent.com/u/42759889?v=4",
+      "profile": "https://gitlab.com/marcuslimdw/",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,

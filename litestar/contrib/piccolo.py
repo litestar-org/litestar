@@ -11,20 +11,30 @@ from litestar.dto import AbstractDTO, DTOField, Mark
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.exceptions import MissingDependencyException
 from litestar.types import Empty
+from litestar.typing import FieldDefinition
+from litestar.utils import warn_deprecation
 
 try:
-    import piccolo  # noqa: F401
+    from piccolo.columns import Column, column_types
+    from piccolo.table import Table
 except ImportError as e:
     raise MissingDependencyException("piccolo") from e
 
-from piccolo.columns import Column, column_types
-from piccolo.table import Table
-
-from litestar.typing import FieldDefinition
 
 T = TypeVar("T", bound=Table)
 
 __all__ = ("PiccoloDTO",)
+
+
+def __getattr__(name: str) -> Any:
+    warn_deprecation(
+        deprecated_name=f"litestar.contrib.piccolo.{name}",
+        version="2.3.2",
+        kind="import",
+        removal_in="3.0.0",
+        info="importing from 'litestar.contrib.piccolo' is deprecated and will be removed in 3.0, please import from 'litestar_piccolo' package directly instead",
+    )
+    return getattr(name, name)
 
 
 def _parse_piccolo_type(column: Column, extra: dict[str, Any]) -> FieldDefinition:
@@ -74,7 +84,7 @@ class PiccoloDTO(AbstractDTO[T], Generic[T]):
                     field_definition=_parse_piccolo_type(column, _create_column_extra(column)),
                     dto_field=DTOField(mark=Mark.READ_ONLY if column._meta.primary_key else None),
                     model_name=model_type.__name__,
-                    default_factory=Empty,
+                    default_factory=None,
                 ),
                 default=Empty if column._meta.required else None,
                 name=column._meta.name,

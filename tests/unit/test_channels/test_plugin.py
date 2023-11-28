@@ -119,6 +119,27 @@ def test_create_ws_route_handlers(
 
 
 @pytest.mark.flaky(reruns=5)
+def test_ws_route_handlers_receive_arbitrary_message(channels_backend: ChannelsBackend) -> None:
+    """The websocket handlers await `WebSocket.receive()` to detect disconnection and stop the subscription.
+
+    This test ensures that the subscription is only stopped in the case of receiving a `websocket.disconnect` message.
+    """
+    channels_plugin = ChannelsPlugin(
+        backend=channels_backend,
+        create_ws_route_handlers=True,
+        channels=["something"],
+    )
+    app = Litestar(plugins=[channels_plugin])
+
+    with TestClient(app) as client, client.websocket_connect("/something") as ws:
+        channels_plugin.publish(["foo"], "something")
+        # send some arbitrary message
+        ws.send("bar")
+        # the subscription should still be alive
+        assert ws.receive_json(timeout=2) == ["foo"]
+
+
+@pytest.mark.flaky(reruns=5)
 async def test_create_ws_route_handlers_arbitrary_channels_allowed(channels_backend: ChannelsBackend) -> None:
     channels_plugin = ChannelsPlugin(
         backend=channels_backend,

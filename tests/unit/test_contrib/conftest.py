@@ -8,7 +8,6 @@ import pytest
 
 from litestar.dto import DTOField, Mark
 from litestar.dto.data_structures import DTOFieldDefinition
-from litestar.types.empty import Empty
 from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
@@ -29,7 +28,7 @@ def expected_field_defs(int_factory: Callable[[], int]) -> list[DTOFieldDefiniti
                 name="a",
             ),
             model_name=ANY,
-            default_factory=Empty,
+            default_factory=None,
             dto_field=DTOField(),
         ),
         replace(
@@ -39,7 +38,7 @@ def expected_field_defs(int_factory: Callable[[], int]) -> list[DTOFieldDefiniti
                     name="b",
                 ),
                 model_name=ANY,
-                default_factory=Empty,
+                default_factory=None,
                 dto_field=DTOField(mark=Mark.READ_ONLY),
             ),
             metadata=ANY,
@@ -54,7 +53,7 @@ def expected_field_defs(int_factory: Callable[[], int]) -> list[DTOFieldDefiniti
                     name="c",
                 ),
                 model_name=ANY,
-                default_factory=Empty,
+                default_factory=None,
                 dto_field=DTOField(),
             ),
             metadata=ANY,
@@ -70,7 +69,7 @@ def expected_field_defs(int_factory: Callable[[], int]) -> list[DTOFieldDefiniti
                     default=1,
                 ),
                 model_name=ANY,
-                default_factory=Empty,
+                default_factory=None,
                 dto_field=DTOField(),
             ),
             metadata=ANY,

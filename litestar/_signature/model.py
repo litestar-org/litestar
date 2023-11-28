@@ -198,7 +198,7 @@ class SignatureModel(Struct):
             for field_name, exc in cls._collect_errors(deserializer=deserializer, **kwargs):  # type: ignore[assignment]
                 match = ERR_RE.search(str(exc))
                 keys = [field_name, str(match.group(1))] if match else [field_name]
-                message = cls._build_error_message(keys=keys, exc_msg=str(e), connection=connection)
+                message = cls._build_error_message(keys=keys, exc_msg=str(exc), connection=connection)
                 messages.append(message)
             raise cls._create_exception(messages=messages, connection=connection) from e
 
@@ -291,9 +291,10 @@ class SignatureModel(Struct):
                     type_decoders=type_decoders,
                     meta_data=meta_data,
                 )
-                for inner_type in (t for t in field_definition.inner_types if t.annotation is not type(None))
+                for inner_type in field_definition.inner_types
+                if not inner_type.is_none_type
             ]
-            return Optional[types[0]] if field_definition.is_optional else Union[tuple(types)]  # pyright: ignore
+            return Optional[Union[tuple(types)]] if field_definition.is_optional else Union[tuple(types)]  # pyright: ignore
 
         if decoder := _get_decoder_for_type(annotation, type_decoders=type_decoders):
             # FIXME: temporary (hopefully) hack, see: https://github.com/jcrist/msgspec/issues/497

@@ -98,7 +98,7 @@ explore another example - redirecting the request to a different url from a midd
 
    from litestar.types import ASGIApp, Receive, Scope, Send
 
-   from litestar.response import Redirect
+   from litestar.response.redirect import ASGIRedirectResponse
    from litestar import Request
    from litestar.middleware.base import MiddlewareProtocol
 
@@ -110,13 +110,13 @@ explore another example - redirecting the request to a different url from a midd
 
        async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
            if Request(scope).session is None:
-               response = Redirect(path="/login")
+               response = ASGIRedirectResponse(path="/login")
                await response(scope, receive, send)
            else:
                await self.app(scope, receive, send)
 
 As you can see in the above, given some condition (request.session being None) we create a
-:class:`Redirect <litestar.response.Redirect>` and then await it. Otherwise, we await ``self.app``
+:class:`ASGIRedirectResponse <litestar.response.ASGIRedirectResponse>` and then await it. Otherwise, we await ``self.app``
 
 
 Modifying ASGI Requests and Responses using the MiddlewareProtocol

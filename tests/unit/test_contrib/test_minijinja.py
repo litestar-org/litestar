@@ -33,6 +33,13 @@ def test_mini_jinja_template_render_raises_template_not_found(tmp_path: Path) ->
         tmpl.render()
 
 
+def test_mini_jinja_template_render_string(tmp_path: Path) -> None:
+    template_engine = MiniJinjaTemplateEngine(engine_instance=Environment())
+
+    good_template = template_engine.render_string("template as a {{value}}", context={"value": "string"})
+    assert good_template == "template as a string"
+
+
 def test_from_environment() -> None:
     engine = Environment()
     template_engine = MiniJinjaTemplateEngine.from_environment(engine)

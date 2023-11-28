@@ -30,7 +30,6 @@ if TYPE_CHECKING:
     from litestar.static_files.config import StaticFilesConfig
     from litestar.stores.base import Store
     from litestar.stores.registry import StoreRegistry
-    from litestar.template.config import TemplateConfig
     from litestar.types import (
         AfterExceptionHookHandler,
         AfterRequestHookHandler,
@@ -50,6 +49,7 @@ if TYPE_CHECKING:
     from litestar.types.callable_types import LifespanHook
     from litestar.types.composite_types import TypeDecodersSequence
     from litestar.types.empty import EmptyType
+    from litestar.types.internal_types import TemplateConfigType
 
 
 __all__ = (
@@ -196,7 +196,7 @@ class AppConfig:
     """
     tags: list[str] = field(default_factory=list)
     """A list of string tags that will be appended to the schema of all route handlers under the application."""
-    template_config: TemplateConfig | None = field(default=None)
+    template_config: TemplateConfigType | None = field(default=None)
     """An instance of :class:`TemplateConfig <.template.TemplateConfig>`."""
     type_encoders: TypeEncodersMap | None = field(default=None)
     """A mapping of types to callables that transform them into types supported for serialization."""

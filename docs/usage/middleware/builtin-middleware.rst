@@ -186,7 +186,7 @@ To use the rate limit middleware, use the :class:`RateLimitConfig <litestar.midd
     :language: python
 
 The only required configuration kwarg is ``rate_limit``, which expects a tuple containing a time-unit (``second``,
-``minute``, ``hour``, ``day``\ ) and a value for the request quota (integer). For the other configuration options.
+``minute``, ``hour``, ``day``\ ) and a value for the request quota (integer).
 
 
 Logging Middleware

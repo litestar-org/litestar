@@ -4,9 +4,9 @@ from typing import TYPE_CHECKING, Any, Callable, Mapping, Protocol, TypedDict, T
 
 from typing_extensions import Concatenate, ParamSpec, TypeAlias
 
-from litestar.constants import SCOPE_STATE_CSRF_TOKEN_KEY
-from litestar.utils import get_litestar_scope_state
 from litestar.utils.deprecation import warn_deprecation
+from litestar.utils.empty import value_or_default
+from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -67,7 +67,7 @@ def csrf_token(context: Mapping[str, Any], /) -> str:
         A CSRF token if the app level ``csrf_config`` is set, otherwise an empty string.
     """
     scope = _get_request_from_context(context).scope
-    return cast("str", get_litestar_scope_state(scope=scope, key=SCOPE_STATE_CSRF_TOKEN_KEY, default=""))
+    return value_or_default(ScopeState.from_scope(scope).csrf_token, "")
 
 
 def url_for_static_asset(context: Mapping[str, Any], /, name: str, file_path: str) -> str:
@@ -138,6 +138,18 @@ class TemplateEngineProtocol(Protocol[TemplateType_co, ContextType_co]):
 
         Raises:
             TemplateNotFoundException: if no template is found.
+        """
+        raise NotImplementedError
+
+    def render_string(self, template_string: str, context: Mapping[str, Any]) -> str:
+        """Render a template from a string with the given context.
+
+        Args:
+            template_string: The template string to render.
+            context: A dictionary of variables to pass to the template.
+
+        Returns:
+            The rendered template as a string.
         """
         raise NotImplementedError
 

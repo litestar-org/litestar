@@ -56,7 +56,7 @@ maintainers = [
 name = "litestar"
 readme = "README.md"
 requires-python = ">=3.8,<4.0"
-version = "2.3.2"
+version = "2.4.1"
 
 [project.urls]
 Blog = "https://blog.litestar.dev"
@@ -180,10 +180,10 @@ skip = 'pdm.lock,docs/examples/contrib/sqlalchemy/us_state_lookup.json'
 
 [tool.coverage.run]
 concurrency = ["multiprocessing", "thread"]
-omit = ["*/tests/*"]
+omit = ["*/tests/*", "*/litestar/plugins/sqlalchemy.py"]
 parallel = true
 plugins = ["covdefaults"]
-source  = ["litestar"]
+source = ["litestar"]
 
 [tool.coverage.report]
 exclude_lines = [
@@ -234,12 +234,12 @@ warn_unused_configs = true
 warn_unused_ignores = true
 
 [[tool.mypy.overrides]]
-module = ["tests.examples.*", "tests.docker_service_fixtures"]
 ignore_errors = true
+module = ["tests.examples.*", "tests.docker_service_fixtures"]
 
 [[tool.mypy.overrides]]
-module = ["tests.unit.test_kwargs.test_reserved_kwargs_injection"]
 disallow_untyped_decorators = false
+module = ["tests.unit.test_kwargs.test_reserved_kwargs_injection"]
 
 [[tool.mypy.overrides]]
 module = ["tests.unit.test_contrib.test_repository"]
@@ -270,7 +270,7 @@ exclude = [
   "tests/docker_service_fixtures.py",
   "litestar/contrib/pydantic/pydantic_dto_factory.py",
   "litestar/contrib/pydantic/pydantic_init_plugin.py",
-  "tests/unit/test_contrib/test_sqlalchemy.py"
+  "tests/unit/test_contrib/test_sqlalchemy.py",
 ]
 include = ["litestar", "tests"]
 pythonVersion = "3.8"
