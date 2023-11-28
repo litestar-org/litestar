@@ -1486,6 +1486,27 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.4.1">
+<h2>2.4.1<a class="headerlink" href="#2.4.1" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2023/11/28<section id="2.4.1-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.4.1-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Fix circular import when importing from <code class="docutils literal notranslate"><span class="pre">litestar.security.jwt</span></code><a class="headerlink reference internal" href="#2.4.1-fix circular import when importing from" id="2.4.1-fix circular import when importing from">#</a></dt><dd><div class="changelog-change docutils container">
+<p>An <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ImportError" title="(in Python v3.12)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ImportError</span></code></a> was raised when trying to import from <code class="docutils literal notranslate"><span class="pre">litestar.security.jwt</span></code>. This was fixed
+by removing the imports from the deprecated <code class="docutils literal notranslate"><span class="pre">litestar.contrib.jwt</span></code> within <code class="docutils literal notranslate"><span class="pre">litesetar.security.jwt</span></code>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2782">litestar-org/litestar#2782</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2784">litestar-org/litestar#2784</a></span></p>
+</div>
+</dd>
+<dt>Raise config error when generator dependencies are cached<a class="headerlink reference internal" href="#2.4.1-raise config error when generator dependencies are cached" id="2.4.1-raise config error when generator dependencies are cached">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Previously, an <code class="xref py py-exc docutils literal notranslate"><span class="pre">InternalServerError</span></code> was raised when attempting to use
+<cite>use_cache=True</cite> with generator dependencies. This will now raise a configuration
+error during application startup.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2771">litestar-org/litestar#2771</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2780">litestar-org/litestar#2780</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.4.0">
 <h2>2.4.0<a class="headerlink" href="#2.4.0" title="Permalink to this heading">#</a></h2>
 <strong>Released: </strong>2023/11/27<section id="2.4.0-feature">
@@ -4524,6 +4545,10 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.4.1">2.4.1</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.4.1-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.4.0">2.4.0</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.4.0-feature">Features</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.4.0-bugfix">Bugfixes</a></li>
