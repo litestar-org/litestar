@@ -138,3 +138,11 @@ def test_utils_scope_deprecations() -> None:
             get_litestar_scope_state,
             set_litestar_scope_state,
         )
+
+
+def test_is_sync_or_async_generator_deprecation() -> None:
+    with pytest.warns(DeprecationWarning):
+        from litestar.utils.predicates import is_sync_or_async_generator  # noqa: F401
+
+    with pytest.warns(DeprecationWarning):
+        from litestar.utils import is_sync_or_async_generator as _  # noqa: F401

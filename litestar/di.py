@@ -1,24 +1,23 @@
 from __future__ import annotations
 
-from inspect import isclass
+from inspect import isasyncgenfunction, isclass, isgeneratorfunction
 from typing import TYPE_CHECKING, Any
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Empty
 from litestar.utils import ensure_async_callable
-from litestar.utils.predicates import is_async_callable, is_sync_or_async_generator
+from litestar.utils.predicates import is_async_callable
 from litestar.utils.warnings import (
     warn_implicit_sync_to_thread,
     warn_sync_to_thread_with_async_callable,
     warn_sync_to_thread_with_generator,
 )
 
-__all__ = ("Provide",)
-
-
 if TYPE_CHECKING:
     from litestar._signature import SignatureModel
     from litestar.types import AnyCallable
+
+__all__ = ("Provide",)
 
 
 class Provide:
@@ -27,7 +26,8 @@ class Provide:
     __slots__ = (
         "dependency",
         "has_sync_callable",
-        "has_class_dependency",
+        "has_sync_generator_dependency",
+        "has_async_generator_dependency",
         "signature_model",
         "sync_to_thread",
         "use_cache",
@@ -39,7 +39,7 @@ class Provide:
 
     def __init__(
         self,
-        dependency: AnyCallable | type,
+        dependency: AnyCallable | type[Any],
         use_cache: bool = False,
         sync_to_thread: bool | None = None,
     ) -> None:
@@ -53,14 +53,28 @@ class Provide:
         if not callable(dependency):
             raise ImproperlyConfiguredException("Provider dependency must a callable value")
 
-        has_sync_callable = isclass(dependency) or not is_async_callable(dependency)
+        is_class_dependency = isclass(dependency)
+        self.has_sync_generator_dependency = isgeneratorfunction(
+            dependency if not is_class_dependency else dependency.__call__  # type: ignore[operator]
+        )
+        self.has_async_generator_dependency = isasyncgenfunction(
+            dependency if not is_class_dependency else dependency.__call__  # type: ignore[operator]
+        )
+        has_generator_dependency = self.has_sync_generator_dependency or self.has_async_generator_dependency
+
+        if has_generator_dependency and use_cache is True:
+            raise ImproperlyConfiguredException(
+                "Cannot cache generator dependency, consider using Lifespan Context instead."
+            )
+
+        has_sync_callable = is_class_dependency or not is_async_callable(dependency)
 
         if sync_to_thread is not None:
-            if is_sync_or_async_generator(dependency):
-                warn_sync_to_thread_with_generator(dependency, stacklevel=3)
+            if has_generator_dependency:
+                warn_sync_to_thread_with_generator(dependency, stacklevel=3)  # type: ignore[arg-type]
             elif not has_sync_callable:
                 warn_sync_to_thread_with_async_callable(dependency, stacklevel=3)  # pyright: ignore
-        elif has_sync_callable and not is_sync_or_async_generator(dependency):
+        elif has_sync_callable and not has_generator_dependency:
             warn_implicit_sync_to_thread(dependency, stacklevel=3)
 
         if sync_to_thread and has_sync_callable:
