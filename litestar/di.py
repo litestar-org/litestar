@@ -62,7 +62,7 @@ class Provide:
         )
         has_generator_dependency = self.has_sync_generator_dependency or self.has_async_generator_dependency
 
-        if has_generator_dependency and use_cache is True:
+        if has_generator_dependency and use_cache:
             raise ImproperlyConfiguredException(
                 "Cannot cache generator dependency, consider using Lifespan Context instead."
             )
