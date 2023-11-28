@@ -5,6 +5,7 @@ from litestar.utils.deprecation import deprecated, warn_deprecation
 from .helpers import get_enum_string_value, get_name, unique_name_for_scope, url_quote
 from .path import join_paths, normalize_path
 from .predicates import (
+    _is_sync_or_async_generator,
     is_annotated_type,
     is_any,
     is_async_callable,
@@ -18,7 +19,6 @@ from .predicates import (
     is_non_string_iterable,
     is_non_string_sequence,
     is_optional_union,
-    is_sync_or_async_generator,
     is_undefined_sentinel,
     is_union,
 )
@@ -54,7 +54,6 @@ __all__ = (
     "is_non_string_iterable",
     "is_non_string_sequence",
     "is_optional_union",
-    "is_sync_or_async_generator",
     "is_undefined_sentinel",
     "is_union",
     "join_paths",
@@ -70,6 +69,7 @@ _deprecated_names = {
     "get_litestar_scope_state": _get_litestar_scope_state,
     "set_litestar_scope_state": _set_litestar_scope_state,
     "delete_litestar_scope_state": _delete_litestar_scope_state,
+    "is_sync_or_async_generator": _is_sync_or_async_generator,
 }
 
 
@@ -80,8 +80,7 @@ def __getattr__(name: str) -> Any:
             version="2.4",
             kind="import",
             removal_in="3.0",
-            info=f"'litestar.utils.{name}' is deprecated. The Litestar scope state is private and should not be used."
-            "Plugin authors should maintain their own scope state namespace.",
+            info=f"'litestar.utils.{name}' is deprecated.",
         )
         return globals()["_deprecated_names"][name]
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")  # pragma: no cover
