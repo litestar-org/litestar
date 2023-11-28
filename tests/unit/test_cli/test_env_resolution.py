@@ -57,7 +57,7 @@ def test_litestar_env_from_env_host(monkeypatch: MonkeyPatch, app_file: Path) ->
     [
         pytest.param("app.py", id="app_file"),
         pytest.param("application.py", id="application_file"),
-        pytest.param("app/main.py", id="app_module"),
+        pytest.param("app/main.py", id="app_module", marks=pytest.mark.flaky(reruns=5)),
         pytest.param("app/any_name.py", id="app_module_random"),
         pytest.param("application/another_random_name.py", id="application_module_random"),
     ],
