@@ -70,7 +70,7 @@ jobs:
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
 
       - name: Test
-        run: python -m unittest test_apps/pydantic_1_app.py
+        run: pdm run python -m unittest test_apps/pydantic_1_app.py
 
   publish-release:
     name: upload release to PyPI
