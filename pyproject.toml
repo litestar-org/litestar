@@ -262,6 +262,7 @@ warn_untyped_fields = true
 
 [tool.pyright]
 disableBytesTypePromotions = true
+reportUnnecessaryTypeIgnoreComments = true
 exclude = [
   "test_apps",
   "tools",
