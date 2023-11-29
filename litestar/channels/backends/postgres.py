@@ -52,5 +52,5 @@ class PostgresChannelsBackend(ChannelsBackend):
 
     def _listener(self, connection: asyncpg.Connection, pid: int, channel: str, payload: object) -> None:
         if not isinstance(payload, str):
-            raise RuntimeError()
+            raise RuntimeError("Invalid data received")
         self._queue.put_nowait((channel, payload.encode("utf-8")))
