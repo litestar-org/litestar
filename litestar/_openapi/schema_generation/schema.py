@@ -77,22 +77,22 @@ if TYPE_CHECKING:
     from litestar.plugins import OpenAPISchemaPluginProtocol
 
 KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP: dict[str, str] = {
-    "content_encoding": "contentEncoding",
+    "content_encoding": "content_encoding",
     "default": "default",
     "description": "description",
     "enum": "enum",
     "examples": "examples",
-    "external_docs": "externalDocs",
+    "external_docs": "external_docs",
     "format": "format",
     "ge": "minimum",
-    "gt": "exclusiveMinimum",
+    "gt": "exclusive_minimum",
     "le": "maximum",
-    "lt": "exclusiveMaximum",
-    "max_items": "maxItems",
-    "max_length": "maxLength",
-    "min_items": "minItems",
-    "min_length": "minLength",
-    "multiple_of": "multipleOf",
+    "lt": "exclusive_maximum",
+    "max_items": "max_items",
+    "max_length": "max_length",
+    "min_items": "min_items",
+    "min_length": "min_length",
+    "multiple_of": "multiple_of",
     "pattern": "pattern",
     "title": "title",
 }
@@ -644,7 +644,14 @@ class SchemaCreator:
                     if schema_key == "examples":
                         value = get_formatted_examples(field, cast("list[Example]", value))
 
-                    setattr(schema, schema_key, value)
+                    # we only want to transfer values from the `KwargDefinition` to `Schema` if the schema object
+                    # doesn't already have a value for that property. For example, if a field is a constrained date,
+                    # by this point, we have already set the `exclusive_minimum` and/or `exclusive_maximum` fields
+                    # to floating point timestamp values on the schema object. However, the original `date` objects
+                    # that define those constraints on `KwargDefinition` are still `date` objects. We don't want to
+                    # overwrite them here.
+                    if getattr(schema, schema_key, None) is None:
+                        setattr(schema, schema_key, value)
 
         if not schema.examples and self.generate_examples:
             from litestar._openapi.schema_generation.examples import create_examples_for_field
