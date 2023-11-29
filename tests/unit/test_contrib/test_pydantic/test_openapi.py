@@ -18,7 +18,7 @@ from litestar._openapi.schema_generation.schema import SchemaCreator
 from litestar._openapi.schema_generation.utils import _get_normalized_schema_key
 from litestar.contrib.pydantic import PydanticPlugin, PydanticSchemaPlugin
 from litestar.openapi import OpenAPIConfig
-from litestar.openapi.spec import Example, Schema
+from litestar.openapi.spec import Example, Reference, Schema
 from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
 from litestar.params import KwargDefinition
 from litestar.status_codes import HTTP_200_OK
@@ -615,3 +615,28 @@ def test_create_for_url_v2(field_type: Any) -> None:
     schema = SchemaCreator(plugins=[PydanticSchemaPlugin()]).for_field_definition(field_definition)
     assert schema.type == OpenAPIType.STRING  # type: ignore[union-attr]
     assert schema.format == OpenAPIFormat.URL  # type: ignore[union-attr]
+
+
+def test_create_for_computed_field() -> None:
+    class Sample(pydantic_v2.BaseModel):
+        property_one: str
+
+        @pydantic_v2.computed_field(description="a description", title="a title")
+        def property_two(self) -> bool:
+            return True
+
+    field_definition = FieldDefinition.from_annotation(Sample)
+    schema_creator = SchemaCreator(plugins=[PydanticSchemaPlugin()])
+    ref = schema_creator.for_field_definition(field_definition)
+    assert isinstance(ref, Reference)
+    assert len(schema_creator.schemas) == 1
+    schema = next(iter(schema_creator.schemas.values()))
+    properties = schema.properties
+    assert properties is not None
+    assert properties.keys() == {"property_one", "property_two"}
+    property_two = properties["property_two"]
+    assert isinstance(property_two, Schema)
+    assert property_two.type == OpenAPIType.BOOLEAN
+    assert property_two.description == "a description"
+    assert property_two.title == "a title"
+    assert property_two.read_only

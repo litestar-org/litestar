@@ -7,6 +7,7 @@ from typing_extensions import Annotated
 from litestar._openapi.schema_generation.schema import SchemaCreator, _get_type_schema_name
 from litestar._openapi.schema_generation.utils import get_formatted_examples
 from litestar.contrib.pydantic.utils import (
+    create_field_definitions_for_computed_fields,
     is_pydantic_2_model,
     is_pydantic_constrained_field,
     is_pydantic_model_class,
@@ -247,7 +248,8 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
         annotation = field_definition.annotation
         unwrapped_annotation, annotation_hints = pydantic_get_unwrapped_annotation_and_type_hints(annotation)
 
-        if is_pydantic_2_model(annotation):
+        pydantic_2_model = is_pydantic_2_model(annotation)
+        if pydantic_2_model:
             model_config = annotation.model_config
             model_field_info = unwrapped_annotation.model_fields
             title = model_config.get("title")
@@ -274,6 +276,11 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
             )
             for k, f in model_fields.items()
         }
+
+        computed_field_definitions = create_field_definitions_for_computed_fields(
+            annotation, schema_creator.prefer_alias
+        )
+        field_definitions.update(computed_field_definitions)
 
         return Schema(
             required=sorted(f.name for f in field_definitions.values() if f.is_required),
