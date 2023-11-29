@@ -25,7 +25,8 @@ from .util import get_from_stream
     params=[
         pytest.param("redis_pub_sub_backend", id="redis:pubsub", marks=pytest.mark.xdist_group("redis")),
         pytest.param("redis_stream_backend", id="redis:stream", marks=pytest.mark.xdist_group("redis")),
-        pytest.param("postgres_asyncpg_backend", id="postgres", marks=pytest.mark.xdist_group("postgres")),
+        pytest.param("postgres_asyncpg_backend", id="postgres:asyncpg", marks=pytest.mark.xdist_group("postgres")),
+        pytest.param("postgres_psycopg_backend", id="postgres:psycopg", marks=pytest.mark.xdist_group("postgres")),
         pytest.param("memory_backend", id="memory"),
     ]
 )

@@ -4,11 +4,12 @@ import asyncio
 from typing import AsyncGenerator, Iterable
 
 import asyncpg
+import psycopg
 
 from .base import ChannelsBackend
 
 
-class PostgresChannelsBackend(ChannelsBackend):
+class AsyncPgChannelsBackend(ChannelsBackend):
     def __init__(self, url: str) -> None:
         self._pg_url = url
         self._listener_conn: asyncpg.Connection
@@ -54,3 +55,40 @@ class PostgresChannelsBackend(ChannelsBackend):
         if not isinstance(payload, str):
             raise RuntimeError("Invalid data received")
         self._queue.put_nowait((channel, payload.encode("utf-8")))
+
+
+class PsycoPgChannelsBackend(ChannelsBackend):
+    def __init__(self, url: str) -> None:
+        self._pg_url = url
+        self._listener_conn: psycopg.AsyncConnection
+        self._subscribed_channels: set[str] = set()
+
+    async def on_startup(self) -> None:
+        self._listener_conn = await psycopg.AsyncConnection.connect(self._pg_url, autocommit=True)
+
+    async def on_shutdown(self) -> None:
+        await self._listener_conn.close()
+        del self._listener_conn
+
+    async def publish(self, data: bytes, channels: Iterable[str]) -> None:
+        dec_data = data.decode("utf-8")
+        async with await psycopg.AsyncConnection.connect(self._pg_url) as conn:
+            for channel in channels:
+                await conn.execute("SELECT pg_notify(%s, %s);", (channel, dec_data))
+
+    async def subscribe(self, channels: Iterable[str]) -> None:
+        for channel in set(channels) - self._subscribed_channels:
+            await self._listener_conn.execute(f"LISTEN {channel}")
+            self._subscribed_channels.add(channel)
+
+    async def unsubscribe(self, channels: Iterable[str]) -> None:
+        for channel in channels:
+            await self._listener_conn.execute(f"UNLISTEN {channel}")
+        self._subscribed_channels = self._subscribed_channels - set(channels)
+
+    async def stream_events(self) -> AsyncGenerator[tuple[str, bytes], None]:
+        async for notify in self._listener_conn.notifies():
+            yield notify.channel, notify.payload.encode("utf-8")
+
+    async def get_history(self, channel: str, limit: int | None = None) -> list[bytes]:
+        raise NotImplementedError()

@@ -4,7 +4,7 @@ import pytest
 from redis.asyncio import Redis as AsyncRedis
 
 from litestar.channels.backends.memory import MemoryChannelsBackend
-from litestar.channels.backends.postgres import PostgresChannelsBackend
+from litestar.channels.backends.postgres import AsyncPgChannelsBackend, PsycoPgChannelsBackend
 from litestar.channels.backends.redis import RedisChannelsPubSubBackend, RedisChannelsStreamBackend
 
 
@@ -41,5 +41,10 @@ def memory_backend() -> MemoryChannelsBackend:
 
 
 @pytest.fixture()
-def postgres_asyncpg_backend(postgres_service: None, docker_ip: str) -> PostgresChannelsBackend:
-    return PostgresChannelsBackend(f"postgres://postgres:super-secret@{docker_ip}:5423")
+def postgres_asyncpg_backend(postgres_service: None, docker_ip: str) -> AsyncPgChannelsBackend:
+    return AsyncPgChannelsBackend(f"postgres://postgres:super-secret@{docker_ip}:5423")
+
+
+@pytest.fixture()
+def postgres_psycopg_backend(postgres_service: None, docker_ip: str) -> PsycoPgChannelsBackend:
+    return PsycoPgChannelsBackend(f"postgres://postgres:super-secret@{docker_ip}:5423")
