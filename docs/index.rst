@@ -128,6 +128,7 @@ and
     * ``http://localhost:8000/schema`` (for `ReDoc <https://redocly.com/redoc>`_),
     * ``http://localhost:8000/schema/swagger`` (for `Swagger UI <https://swagger.io/>`_),
     * ``http://localhost:8000/schema/elements`` (for `Stoplight Elements <https://stoplight.io/open-source/elements/>`_)
+    * ``http://localhost:8000/schema/rapidoc`` (for `RapiDoc <https://rapidocweb.com/>`_)
 
 You can check out a more in-depth tutorial in the :doc:`/tutorials/todo-app/index` section!
 
@@ -287,12 +288,13 @@ Example Applications
 --------------------
 
 
-* `litestar-pg-redis-docker <https://github.com/litestar-org/starlite-pg-redis-docker>`_ : In addition to Litestar, this
+* `litestar-pg-redis-docker <https://github.com/litestar-org/litestar-pg-redis-docker>`_ : In addition to Litestar, this
   demonstrates a pattern of application modularity, SQLAlchemy 2.0 ORM, Redis cache connectivity, and more. Like all
   Litestar projects, this application is open to contributions, big and small.
-* `litestar-fullstack <https://github.com/litestar-org/litestar-fullstack>`_ : A reference application that features a
-  Litestar app configured with best practices, SQLAlchemy 2.0 and SAQ, a frontend integrated with Vitejs and Jinja2
-  templates. Docker, and more.
+* `litestar-fullstack <https://github.com/litestar-org/litestar-fullstack>`_ : A fully-capable, production-ready fullstack
+  Litestar web application configured with best practices. It includes SQLAlchemy 2.0, VueJS, `Vite <https://vitejs.dev/>`_,
+  :doc:`SAQ job queue <https://saq-py.readthedocs.io/en/latest/>`_, ``Jinja`` templates and more.
+  `Read more <https://litestar-org.github.io/litestar-fullstack/latest/>`_.
 * `litestar-hello-world <https://github.com/litestar-org/litestar-hello-world>`_: A bare-minimum application setup.
   Great for testing and POC work.
 
