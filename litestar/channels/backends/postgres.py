@@ -20,7 +20,7 @@ class PostgresChannelsBackend(ChannelsBackend):
 
     async def on_shutdown(self) -> None:
         await self._listener_conn.close()
-        self._listener_conn = None
+        del self._listener_conn
 
     async def publish(self, data: bytes, channels: Iterable[str]) -> None:
         dec_data = data.decode("utf-8")
@@ -34,12 +34,12 @@ class PostgresChannelsBackend(ChannelsBackend):
 
     async def subscribe(self, channels: Iterable[str]) -> None:
         for channel in set(channels) - self._subscribed_channels:
-            await self._listener_conn.add_listener(channel, self._listener)
+            await self._listener_conn.add_listener(channel, self._listener)  # type: ignore[arg-type]
             self._subscribed_channels.add(channel)
 
     async def unsubscribe(self, channels: Iterable[str]) -> None:
         for channel in channels:
-            await self._listener_conn.remove_listener(channel, self._listener)
+            await self._listener_conn.remove_listener(channel, self._listener)  # type: ignore[arg-type]
         self._subscribed_channels = self._subscribed_channels - set(channels)
 
     async def stream_events(self) -> AsyncGenerator[tuple[str, bytes], None]:
@@ -48,9 +48,9 @@ class PostgresChannelsBackend(ChannelsBackend):
             self._queue.task_done()
 
     async def get_history(self, channel: str, limit: int | None = None) -> list[bytes]:
-        pass
+        raise NotImplementedError()
 
-    def _listener(self, connection: asyncpg.Connection, pid: int, channel: str, payload: object) -> None:
+    def _listener(self, /, connection: asyncpg.Connection, pid: int, channel: str, payload: object) -> None:
         if not isinstance(payload, str):
             raise RuntimeError("Invalid data received")
         self._queue.put_nowait((channel, payload.encode("utf-8")))
