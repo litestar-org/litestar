@@ -248,8 +248,7 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
         annotation = field_definition.annotation
         unwrapped_annotation, annotation_hints = pydantic_get_unwrapped_annotation_and_type_hints(annotation)
 
-        pydantic_2_model = is_pydantic_2_model(annotation)
-        if pydantic_2_model:
+        if is_pydantic_2_model(annotation):
             model_config = annotation.model_config
             model_field_info = unwrapped_annotation.model_fields
             title = model_config.get("title")
