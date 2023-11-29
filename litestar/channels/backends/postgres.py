@@ -11,34 +11,35 @@ from .base import ChannelsBackend
 class PostgresChannelsBackend(ChannelsBackend):
     def __init__(self, url: str) -> None:
         self._pg_url = url
-        self._connection: asyncpg.Connection
+        self._listener_conn: asyncpg.Connection
         self._queue: asyncio.Queue[tuple[str, bytes]] = asyncio.Queue()
         self._subscribed_channels: set[str] = set()
 
     async def on_startup(self) -> None:
-        self._connection = await asyncpg.connect(self._pg_url)
+        self._listener_conn = await asyncpg.connect(self._pg_url)
 
     async def on_shutdown(self) -> None:
-        await self._connection.close()
-        self._connection = None
+        await self._listener_conn.close()
+        self._listener_conn = None
 
     async def publish(self, data: bytes, channels: Iterable[str]) -> None:
-        while not self._connection._listeners:
-            await asyncio.sleep(0.001)
-
         dec_data = data.decode("utf-8")
 
-        for channel in channels:
-            await self._connection.execute("SELECT pg_notify($1, $2);", channel, dec_data)
+        conn = await asyncpg.connect(self._pg_url)
+        try:
+            for channel in channels:
+                await conn.execute("SELECT pg_notify($1, $2);", channel, dec_data)
+        finally:
+            await conn.close()
 
     async def subscribe(self, channels: Iterable[str]) -> None:
         for channel in set(channels) - self._subscribed_channels:
-            await self._connection.add_listener(channel, self._listener)
+            await self._listener_conn.add_listener(channel, self._listener)
             self._subscribed_channels.add(channel)
 
     async def unsubscribe(self, channels: Iterable[str]) -> None:
         for channel in channels:
-            await self._connection.remove_listener(channel, self._listener)
+            await self._listener_conn.remove_listener(channel, self._listener)
         self._subscribed_channels = self._subscribed_channels - set(channels)
 
     async def stream_events(self) -> AsyncGenerator[tuple[str, bytes], None]:
