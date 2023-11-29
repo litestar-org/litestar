@@ -1592,8 +1592,8 @@ explore another example - redirecting the request to a different url from a midd
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>As you can see in the above, given some condition (request.session being None) we create a
-<code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIRedirectResponse</span></code> and then await it. Otherwise, we await <code class="docutils literal notranslate"><span class="pre">self.app</span></code></p>
+<p>As you can see in the above, given some condition (<code class="docutils literal notranslate"><span class="pre">request.session</span></code> being None) we create a
+<a class="reference internal" href="../../reference/response/redirect.html#litestar.response.redirect.ASGIRedirectResponse" title="litestar.response.redirect.ASGIRedirectResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIRedirectResponse</span></code></a> and then await it. Otherwise, we await <code class="docutils literal notranslate"><span class="pre">self.app</span></code></p>
 </section>
 <section id="modifying-asgi-requests-and-responses-using-the-middlewareprotocol">
 <h3>Modifying ASGI Requests and Responses using the MiddlewareProtocol<a class="headerlink" href="#modifying-asgi-requests-and-responses-using-the-middlewareprotocol" title="Permalink to this heading">#</a></h3>
