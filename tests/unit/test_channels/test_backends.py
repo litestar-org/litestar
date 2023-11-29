@@ -10,6 +10,7 @@ from redis.asyncio.client import Redis
 
 from litestar.channels import ChannelsBackend
 from litestar.channels.backends.memory import MemoryChannelsBackend
+from litestar.channels.backends.postgres import PostgresChannelsBackend
 from litestar.channels.backends.redis import RedisChannelsPubSubBackend, RedisChannelsStreamBackend
 from litestar.utils.compat import async_next
 
@@ -18,6 +19,7 @@ from litestar.utils.compat import async_next
     params=[
         pytest.param("redis_pub_sub_backend", id="redis:pubsub", marks=pytest.mark.xdist_group("redis")),
         pytest.param("redis_stream_backend", id="redis:stream", marks=pytest.mark.xdist_group("redis")),
+        pytest.param("postgres_asyncpg_backend", id="postgres", marks=pytest.mark.xdist_group("postgres")),
         pytest.param("memory_backend", id="memory"),
     ]
 )
@@ -82,7 +84,7 @@ async def test_unsubscribe_without_subscription(channels_backend: ChannelsBacken
 async def test_get_history(
     channels_backend: ChannelsBackend, history_limit: int | None, expected_history_length: int
 ) -> None:
-    if isinstance(channels_backend, RedisChannelsPubSubBackend):
+    if isinstance(channels_backend, (RedisChannelsPubSubBackend, PostgresChannelsBackend)):
         pytest.skip("Redis pub/sub backend does not support history")
 
     messages = [str(i).encode() for i in range(100)]
@@ -97,7 +99,7 @@ async def test_get_history(
 
 
 async def test_discards_history_entries(channels_backend: ChannelsBackend) -> None:
-    if isinstance(channels_backend, RedisChannelsPubSubBackend):
+    if isinstance(channels_backend, (RedisChannelsPubSubBackend, PostgresChannelsBackend)):
         pytest.skip("Redis pub/sub backend does not support history")
 
     for _ in range(20):

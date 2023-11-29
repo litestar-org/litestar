@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import time
 from secrets import token_hex
 from typing import cast
 from unittest.mock import AsyncMock, MagicMock
@@ -24,6 +25,7 @@ from .util import get_from_stream
     params=[
         pytest.param("redis_pub_sub_backend", id="redis:pubsub", marks=pytest.mark.xdist_group("redis")),
         pytest.param("redis_stream_backend", id="redis:stream", marks=pytest.mark.xdist_group("redis")),
+        pytest.param("postgres_asyncpg_backend", id="postgres", marks=pytest.mark.xdist_group("postgres")),
         pytest.param("memory_backend", id="memory"),
     ]
 )
