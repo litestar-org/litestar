@@ -617,11 +617,14 @@ def test_create_for_url_v2(field_type: Any) -> None:
     assert schema.format == OpenAPIFormat.URL  # type: ignore[union-attr]
 
 
-def test_create_for_computed_field() -> None:
+@pytest.mark.parametrize("prefer_alias", [True, False])
+def test_create_for_computed_field(prefer_alias: bool) -> None:
     class Sample(pydantic_v2.BaseModel):
         property_one: str
 
-        @pydantic_v2.computed_field(description="a description", title="a title")
+        @pydantic_v2.computed_field(
+            description="a description", title="a title", alias="prop_two" if prefer_alias else None
+        )
         def property_two(self) -> bool:
             return True
 
@@ -631,11 +634,11 @@ def test_create_for_computed_field() -> None:
     assert isinstance(ref, Reference)
     assert len(schema_creator.schemas) == 1
     schema = next(iter(schema_creator.schemas.values()))
-    assert schema.required == ["property_one", "property_two"]
+    assert schema.required == ["property_one", "property_two"] if not prefer_alias else ["property_one", "prop_two"]
     properties = schema.properties
     assert properties is not None
-    assert properties.keys() == {"property_one", "property_two"}
-    property_two = properties["property_two"]
+    assert properties.keys() == {"property_one", "property_two"} if not prefer_alias else {"property_one", "prop_two"}
+    property_two = properties["property_two"] if not prefer_alias else properties["prop_two"]
     assert isinstance(property_two, Schema)
     assert property_two.type == OpenAPIType.BOOLEAN
     assert property_two.description == "a description"
