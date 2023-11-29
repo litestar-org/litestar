@@ -234,7 +234,7 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
         return PYDANTIC_TYPE_MAP[field_definition.annotation]  # pragma: no cover
 
     @classmethod
-    def for_pydantic_model(cls, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:  # pyright: ignore
+    def for_pydantic_model(cls, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:    # pyright: ignore
         """Create a schema object for a given pydantic model class.
 
         Args:
@@ -248,8 +248,7 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
         annotation = field_definition.annotation
         unwrapped_annotation, annotation_hints = pydantic_get_unwrapped_annotation_and_type_hints(annotation)
 
-        pydantic_2_model = is_pydantic_2_model(annotation)
-        if pydantic_2_model:
+        if pydantic_2_model := is_pydantic_2_model(annotation):
             model_config = annotation.model_config
             model_field_info = unwrapped_annotation.model_fields
             title = model_config.get("title")
