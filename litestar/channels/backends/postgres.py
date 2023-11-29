@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import asyncio
-import time
 from typing import AsyncGenerator, Iterable
 
 import asyncpg
@@ -48,9 +49,7 @@ class PostgresChannelsBackend(ChannelsBackend):
     async def get_history(self, channel: str, limit: int | None = None) -> list[bytes]:
         pass
 
-    def _listener(
-        self, connection: asyncpg.Connection, pid: int, channel: str, payload: object
-    ) -> None:
+    def _listener(self, connection: asyncpg.Connection, pid: int, channel: str, payload: object) -> None:
         if not isinstance(payload, str):
             raise RuntimeError()
         self._queue.put_nowait((channel, payload.encode("utf-8")))

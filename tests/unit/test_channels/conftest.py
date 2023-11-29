@@ -4,8 +4,8 @@ import pytest
 from redis.asyncio import Redis as AsyncRedis
 
 from litestar.channels.backends.memory import MemoryChannelsBackend
-from litestar.channels.backends.redis import RedisChannelsPubSubBackend, RedisChannelsStreamBackend
 from litestar.channels.backends.postgres import PostgresChannelsBackend
+from litestar.channels.backends.redis import RedisChannelsPubSubBackend, RedisChannelsStreamBackend
 
 
 def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item]) -> None:

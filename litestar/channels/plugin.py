@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import time
 from asyncio import CancelledError, Queue, Task, create_task
 from contextlib import AbstractAsyncContextManager, asynccontextmanager, suppress
 from functools import partial
