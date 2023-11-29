@@ -141,7 +141,7 @@ def test_ws_route_handlers_receive_arbitrary_message(channels_backend: ChannelsB
         assert ws.receive_json(timeout=2) == ["foo"]
 
 
-@pytest.mark.flaky(reruns=5)
+# @pytest.mark.flaky(reruns=5)
 async def test_create_ws_route_handlers_arbitrary_channels_allowed(channels_backend: ChannelsBackend) -> None:
     channels_plugin = ChannelsPlugin(
         backend=channels_backend,
@@ -156,6 +156,8 @@ async def test_create_ws_route_handlers_arbitrary_channels_allowed(channels_back
         with client.websocket_connect("/ws/foo") as ws:
             channels_plugin.publish("something", "foo")
             assert ws.receive_text(timeout=2) == "something"
+
+        time.sleep(0.001)
 
         with client.websocket_connect("/ws/bar") as ws:
             channels_plugin.publish("something else", "bar")

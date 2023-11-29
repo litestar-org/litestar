@@ -1,4 +1,5 @@
 import asyncio
+import time
 from typing import AsyncGenerator, Iterable
 
 import asyncpg
@@ -11,6 +12,7 @@ class PostgresChannelsBackend(ChannelsBackend):
         self._pg_url = url
         self._connection: asyncpg.Connection
         self._queue: asyncio.Queue[tuple[str, bytes]] = asyncio.Queue()
+        self._subscribed_channels: set[str] = set()
 
     async def on_startup(self) -> None:
         self._connection = await asyncpg.connect(self._pg_url)
@@ -20,18 +22,23 @@ class PostgresChannelsBackend(ChannelsBackend):
         self._connection = None
 
     async def publish(self, data: bytes, channels: Iterable[str]) -> None:
+        while not self._connection._listeners:
+            await asyncio.sleep(0.001)
+
         dec_data = data.decode("utf-8")
 
         for channel in channels:
             await self._connection.execute("SELECT pg_notify($1, $2);", channel, dec_data)
 
     async def subscribe(self, channels: Iterable[str]) -> None:
-        for channel in channels:
+        for channel in set(channels) - self._subscribed_channels:
             await self._connection.add_listener(channel, self._listener)
+            self._subscribed_channels.add(channel)
 
     async def unsubscribe(self, channels: Iterable[str]) -> None:
         for channel in channels:
             await self._connection.remove_listener(channel, self._listener)
+        self._subscribed_channels = self._subscribed_channels - set(channels)
 
     async def stream_events(self) -> AsyncGenerator[tuple[str, bytes], None]:
         while self._queue:
