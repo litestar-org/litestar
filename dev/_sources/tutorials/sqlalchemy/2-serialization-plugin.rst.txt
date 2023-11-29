@@ -10,7 +10,7 @@ Here's the code:
 .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_serialization_plugin.py
     :language: python
     :linenos:
-    :emphasize-lines: 10,77-78,82,84,88,92,99
+    :emphasize-lines: 11,78-79,83-84,89,91-92,100
 
 We've simply imported the plugin and added it to our app's plugins list, and now we can receive and return our
 SQLAlchemy data models directly to and from our handler.

@@ -13,7 +13,7 @@ Here is our final application:
 .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_plugin.py
     :language: python
     :linenos:
-    :emphasize-lines: 9,80
+    :emphasize-lines: 11,79
 
 Recap
 =====
