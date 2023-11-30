@@ -3,8 +3,9 @@ from __future__ import annotations
 import pytest
 from redis.asyncio import Redis as AsyncRedis
 
+from litestar.channels.backends.asyncpg import AsyncPgChannelsBackend
 from litestar.channels.backends.memory import MemoryChannelsBackend
-from litestar.channels.backends.postgres import AsyncPgChannelsBackend, PsycoPgChannelsBackend
+from litestar.channels.backends.psycopg import PsycoPgChannelsBackend
 from litestar.channels.backends.redis import RedisChannelsPubSubBackend, RedisChannelsStreamBackend
 
 

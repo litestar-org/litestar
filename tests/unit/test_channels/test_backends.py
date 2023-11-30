@@ -3,14 +3,17 @@ from __future__ import annotations
 import asyncio
 from datetime import timedelta
 from typing import AsyncGenerator, cast
+from unittest.mock import AsyncMock
 
+import asyncpg
 import pytest
 from _pytest.fixtures import FixtureRequest
 from redis.asyncio.client import Redis
 
 from litestar.channels import ChannelsBackend
+from litestar.channels.backends.asyncpg import AsyncPgChannelsBackend
 from litestar.channels.backends.memory import MemoryChannelsBackend
-from litestar.channels.backends.postgres import AsyncPgChannelsBackend, PsycoPgChannelsBackend
+from litestar.channels.backends.psycopg import PsycoPgChannelsBackend
 from litestar.channels.backends.redis import RedisChannelsPubSubBackend, RedisChannelsStreamBackend
 from litestar.utils.compat import async_next
 
@@ -136,3 +139,22 @@ async def test_memory_publish_not_initialized_raises() -> None:
 
     with pytest.raises(RuntimeError):
         await backend.publish(b"foo", ["something"])
+
+
+async def test_asyncpg_get_history(postgres_asyncpg_backend: AsyncPgChannelsBackend) -> None:
+    with pytest.raises(NotImplementedError):
+        await postgres_asyncpg_backend.get_history("something")
+
+
+async def test_psycopg_get_history(postgres_psycopg_backend: PsycoPgChannelsBackend) -> None:
+    with pytest.raises(NotImplementedError):
+        await postgres_psycopg_backend.get_history("something")
+
+
+async def test_asyncpg_make_connection() -> None:
+    make_connection = AsyncMock()
+
+    backend = AsyncPgChannelsBackend(make_connection=make_connection)
+    await backend.on_startup()
+
+    make_connection.assert_awaited_once()

@@ -122,7 +122,7 @@ def test_create_ws_route_handlers(
 
 
 @pytest.mark.flaky(reruns=5)
-def test_ws_route_handlers_receive_arbitrary_message(channels_backend: ChannelsBackend) -> None:
+async def test_ws_route_handlers_receive_arbitrary_message(channels_backend: ChannelsBackend) -> None:
     """The websocket handlers await `WebSocket.receive()` to detect disconnection and stop the subscription.
 
     This test ensures that the subscription is only stopped in the case of receiving a `websocket.disconnect` message.
