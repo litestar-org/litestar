@@ -15,10 +15,7 @@ from sqlalchemy.types import String
 from litestar import Litestar, get, post
 from litestar.contrib.sqlalchemy.base import UUIDAuditBase
 from litestar.contrib.sqlalchemy.plugins import AsyncSessionConfig, SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
-from litestar.contrib.sqlalchemy.repository import (
-    ModelT,
-    SQLAlchemyAsyncRepository,
-)
+from litestar.contrib.sqlalchemy.repository import ModelT, SQLAlchemyAsyncRepository
 from litestar.di import Provide
 
 if TYPE_CHECKING:
