@@ -140,11 +140,13 @@ async def test_memory_publish_not_initialized_raises() -> None:
         await backend.publish(b"foo", ["something"])
 
 
+@pytest.mark.xdist_group("postgres")
 async def test_asyncpg_get_history(postgres_asyncpg_backend: AsyncPgChannelsBackend) -> None:
     with pytest.raises(NotImplementedError):
         await postgres_asyncpg_backend.get_history("something")
 
 
+@pytest.mark.xdist_group("postgres")
 async def test_psycopg_get_history(postgres_psycopg_backend: PsycoPgChannelsBackend) -> None:
     with pytest.raises(NotImplementedError):
         await postgres_psycopg_backend.get_history("something")
