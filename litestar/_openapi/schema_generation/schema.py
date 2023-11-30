@@ -260,7 +260,7 @@ def create_schema_for_annotation(annotation: Any) -> Schema:
 
 
 class SchemaCreator:
-    __slots__ = ("generate_examples", "plugins", "schemas", "prefer_alias", "dto_for", "_keyed_schemas")
+    __slots__ = ("generate_examples", "plugins", "schemas", "prefer_alias", "dto_for")
 
     def __init__(
         self,
