@@ -19,7 +19,7 @@ send the JWT token using the same header key.
 JWT Cookie Auth Backend
 -----------------------
 
-This backend inherits from the :class:`JWTAuth <litestar.contrib.jwt.JWTAuth>` backend, with the difference being that instead
+This backend inherits from the :class:`JWTAuth <litestar.security.jwt.JWTAuth>` backend, with the difference being that instead
 of using a header for the JWT Token, it uses a cookie.
 
 .. literalinclude:: /examples/security/jwt/using_jwt_cookie_auth.py

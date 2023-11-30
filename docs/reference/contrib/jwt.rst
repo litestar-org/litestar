@@ -1,5 +1,4 @@
 jwt
 ===
 
-.. automodule:: litestar.contrib.jwt
-    :members:
+This page has moved to :doc:`/reference/security/jwt`
