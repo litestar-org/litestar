@@ -1343,6 +1343,14 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../reference/router.html">router</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/routes.html">routes</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/security/jwt.html"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth</span></code></a></li>
+
+
+
+
+
+
+
 <li class="toctree-l3"><a class="reference internal" href="../../reference/security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
@@ -1506,21 +1514,19 @@ can add functionality on top of the repository pattern.</p>
 <h1>Slug Fields<a class="headerlink" href="#slug-fields" title="Permalink to this heading">#</a></h1>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">declarative_mixin</span>
-<span class="linenos"> 2</span>
-<span class="linenos"> 3</span><span class="c1"># we are going to add a simple &quot;slug&quot; to our model that is a URL safe surrogate key to</span>
-<span class="linenos"> 4</span><span class="c1"># our database record.</span>
-<span class="linenos"> 5</span><span class="nd">@declarative_mixin</span>
-<span class="linenos"> 6</span><span class="k">class</span> <span class="nc">SlugKey</span><span class="p">:</span>
-<span class="linenos"> 7</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Slug unique Field Model Mixin.&quot;&quot;&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">declarative_mixin</span><span class="p">,</span> <span class="n">mapped_column</span>
+<span class="linenos"> 2</span><span class="nd">@declarative_mixin</span>
+<span class="linenos"> 3</span><span class="k">class</span> <span class="nc">SlugKey</span><span class="p">:</span>
+<span class="linenos"> 4</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Slug unique Field Model Mixin.&quot;&quot;&quot;</span>
+<span class="linenos"> 5</span>
+<span class="linenos"> 6</span>    <span class="n">__abstract__</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="linenos"> 7</span>    <span class="n">slug</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=-</span><span class="mi">9</span><span class="p">)</span>
 <span class="linenos"> 8</span>
-<span class="linenos"> 9</span>    <span class="n">__abstract__</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="linenos">10</span>
-<span class="linenos">11</span><span class="c1"># The `AuditBase` class includes the same UUID` based primary key (`id`) and 2</span>
-<span class="linenos">12</span><span class="c1"># additional columns: `created` and `updated`. `created` is a timestamp of when the</span>
-<span class="linenos">13</span><span class="c1"># record created, and `updated` is the last time the record was modified.</span>
-<span class="linenos">14</span><span class="k">class</span> <span class="nc">BlogPost</span><span class="p">(</span><span class="n">UUIDAuditBase</span><span class="p">,</span> <span class="n">SlugKey</span><span class="p">):</span>
-<span class="linenos">15</span>    <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span><span class="c1"># record created, and `updated` is the last time the record was modified.</span>
+<span class="linenos">11</span><span class="k">class</span> <span class="nc">BlogPost</span><span class="p">(</span><span class="n">UUIDAuditBase</span><span class="p">,</span> <span class="n">SlugKey</span><span class="p">):</span>
+<span class="linenos">12</span>    <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+<span class="linenos">13</span>    <span class="n">content</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 </pre></div>
 </div>
 </div>
@@ -1539,61 +1545,60 @@ accomplish, we want a record that has a blog title of “Follow the Yellow Brick
 to have the slugified value of “follow-the-yellow-brick-road”.</p>
 <div class="literal-block-wrapper docutils container" id="id2">
 <div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="c1"># this class can be re-used with any model that has the `SlugKey` Mixin</span>
-<span class="linenos"> 2</span><span class="k">class</span> <span class="nc">SQLAlchemyAsyncSlugRepository</span><span class="p">(</span><span class="n">SQLAlchemyAsyncRepository</span><span class="p">[</span><span class="n">ModelT</span><span class="p">]):</span>
-<span class="linenos"> 3</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Extends the repository to include slug model features..&quot;&quot;&quot;</span>
-<span class="linenos"> 4</span>
-<span class="linenos"> 5</span>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_available_slug</span><span class="p">(</span>
-<span class="linenos"> 6</span>        <span class="bp">self</span><span class="p">,</span>
-<span class="linenos"> 7</span>        <span class="n">value_to_slugify</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-<span class="linenos"> 8</span>        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-<span class="linenos"> 9</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="linenos">10</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a unique slug for the supplied value.</span>
-<span class="linenos">11</span>
-<span class="linenos">12</span><span class="sd">        If the value is found to exist, a random 4 digit character is appended to the end.</span>
-<span class="linenos">13</span><span class="sd">        There may be a better way to do this, but I wanted to limit the number of</span>
-<span class="linenos">14</span><span class="sd">        additional database calls.</span>
-<span class="linenos">15</span>
-<span class="linenos">16</span><span class="sd">        Args:</span>
-<span class="linenos">17</span><span class="sd">            value_to_slugify (str): A string that should be converted to a unique slug.</span>
-<span class="linenos">18</span><span class="sd">            **kwargs: stuff</span>
-<span class="linenos">19</span>
-<span class="linenos">20</span><span class="sd">        Returns:</span>
-<span class="linenos">21</span><span class="sd">            str: a unique slug for the supplied value. This is safe for URLs and other</span>
-<span class="linenos">22</span><span class="sd">            unique identifiers.</span>
-<span class="linenos">23</span><span class="sd">        &quot;&quot;&quot;</span>
-<span class="linenos">24</span>        <span class="n">slug</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_slugify</span><span class="p">(</span><span class="n">value_to_slugify</span><span class="p">)</span>
-<span class="linenos">25</span>        <span class="k">if</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_slug_unique</span><span class="p">(</span><span class="n">slug</span><span class="p">):</span>
-<span class="linenos">26</span>            <span class="k">return</span> <span class="n">slug</span>
-<span class="linenos">27</span>        <span class="c1"># generate a random 4 digit alphanumeric string to make the slug unique and</span>
-<span class="linenos">28</span>        <span class="c1"># avoid another DB lookup.</span>
-<span class="linenos">29</span>        <span class="n">random_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">choices</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_lowercase</span> <span class="o">+</span> <span class="n">string</span><span class="o">.</span><span class="n">digits</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
-<span class="linenos">30</span>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">slug</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">random_string</span><span class="si">}</span><span class="s2">&quot;</span>
-<span class="linenos">31</span>
-<span class="linenos">32</span>    <span class="nd">@staticmethod</span>
-<span class="linenos">33</span>    <span class="k">def</span> <span class="nf">_slugify</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="linenos">34</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;slugify.</span>
-<span class="linenos">35</span>
-<span class="linenos">36</span><span class="sd">        Convert to ASCII if &#39;allow_unicode&#39; is False. Convert spaces or repeated</span>
-<span class="linenos">37</span><span class="sd">        dashes to single dashes. Remove characters that aren&#39;t alphanumerics,</span>
-<span class="linenos">38</span><span class="sd">        underscores, or hyphens. Convert to lowercase. Also strip leading and</span>
-<span class="linenos">39</span><span class="sd">        trailing whitespace, dashes, and underscores.</span>
-<span class="linenos">40</span>
-<span class="linenos">41</span><span class="sd">        Args:</span>
-<span class="linenos">42</span><span class="sd">            value (str): the string to slugify</span>
-<span class="linenos">43</span>
-<span class="linenos">44</span><span class="sd">        Returns:</span>
-<span class="linenos">45</span><span class="sd">            str: a slugified string of the value parameter</span>
-<span class="linenos">46</span><span class="sd">        &quot;&quot;&quot;</span>
-<span class="linenos">47</span>        <span class="n">value</span> <span class="o">=</span> <span class="n">unicodedata</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="s2">&quot;NFKD&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">,</span> <span class="s2">&quot;ignore&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span>
-<span class="linenos">48</span>        <span class="n">value</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[^\w\s-]&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
-<span class="linenos">49</span>        <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[-\s]+&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;-_&quot;</span><span class="p">)</span>
-<span class="linenos">50</span>
-<span class="linenos">51</span>    <span class="k">async</span> <span class="k">def</span> <span class="nf">_is_slug_unique</span><span class="p">(</span>
-<span class="linenos">52</span>        <span class="bp">self</span><span class="p">,</span>
-<span class="linenos">53</span>        <span class="n">slug</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-<span class="linenos">54</span>        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-<span class="linenos">55</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Extends the repository to include slug model features..&quot;&quot;&quot;</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_available_slug</span><span class="p">(</span>
+<span class="linenos"> 4</span>        <span class="bp">self</span><span class="p">,</span>
+<span class="linenos"> 5</span>        <span class="n">value_to_slugify</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="linenos"> 6</span>        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="linenos"> 7</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="linenos"> 8</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a unique slug for the supplied value.</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span><span class="sd">        If the value is found to exist, a random 4 digit character is appended to the end.</span>
+<span class="linenos">11</span><span class="sd">        There may be a better way to do this, but I wanted to limit the number of</span>
+<span class="linenos">12</span><span class="sd">        additional database calls.</span>
+<span class="linenos">13</span>
+<span class="linenos">14</span><span class="sd">        Args:</span>
+<span class="linenos">15</span><span class="sd">            value_to_slugify (str): A string that should be converted to a unique slug.</span>
+<span class="linenos">16</span><span class="sd">            **kwargs: stuff</span>
+<span class="linenos">17</span>
+<span class="linenos">18</span><span class="sd">        Returns:</span>
+<span class="linenos">19</span><span class="sd">            str: a unique slug for the supplied value. This is safe for URLs and other</span>
+<span class="linenos">20</span><span class="sd">            unique identifiers.</span>
+<span class="linenos">21</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">22</span>        <span class="n">slug</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_slugify</span><span class="p">(</span><span class="n">value_to_slugify</span><span class="p">)</span>
+<span class="linenos">23</span>        <span class="k">if</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_slug_unique</span><span class="p">(</span><span class="n">slug</span><span class="p">):</span>
+<span class="linenos">24</span>            <span class="k">return</span> <span class="n">slug</span>
+<span class="linenos">25</span>        <span class="c1"># generate a random 4 digit alphanumeric string to make the slug unique and</span>
+<span class="linenos">26</span>        <span class="c1"># avoid another DB lookup.</span>
+<span class="linenos">27</span>        <span class="n">random_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">choices</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_lowercase</span> <span class="o">+</span> <span class="n">string</span><span class="o">.</span><span class="n">digits</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+<span class="linenos">28</span>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">slug</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">random_string</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="linenos">29</span>
+<span class="linenos">30</span>    <span class="nd">@staticmethod</span>
+<span class="linenos">31</span>    <span class="k">def</span> <span class="nf">_slugify</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="linenos">32</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;slugify.</span>
+<span class="linenos">33</span>
+<span class="linenos">34</span><span class="sd">        Convert to ASCII if &#39;allow_unicode&#39; is False. Convert spaces or repeated</span>
+<span class="linenos">35</span><span class="sd">        dashes to single dashes. Remove characters that aren&#39;t alphanumerics,</span>
+<span class="linenos">36</span><span class="sd">        underscores, or hyphens. Convert to lowercase. Also strip leading and</span>
+<span class="linenos">37</span><span class="sd">        trailing whitespace, dashes, and underscores.</span>
+<span class="linenos">38</span>
+<span class="linenos">39</span><span class="sd">        Args:</span>
+<span class="linenos">40</span><span class="sd">            value (str): the string to slugify</span>
+<span class="linenos">41</span>
+<span class="linenos">42</span><span class="sd">        Returns:</span>
+<span class="linenos">43</span><span class="sd">            str: a slugified string of the value parameter</span>
+<span class="linenos">44</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">45</span>        <span class="n">value</span> <span class="o">=</span> <span class="n">unicodedata</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="s2">&quot;NFKD&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">,</span> <span class="s2">&quot;ignore&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span>
+<span class="linenos">46</span>        <span class="n">value</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[^\w\s-]&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+<span class="linenos">47</span>        <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[-\s]+&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;-_&quot;</span><span class="p">)</span>
+<span class="linenos">48</span>
+<span class="linenos">49</span>    <span class="k">async</span> <span class="k">def</span> <span class="nf">_is_slug_unique</span><span class="p">(</span>
+<span class="linenos">50</span>        <span class="bp">self</span><span class="p">,</span>
+<span class="linenos">51</span>        <span class="n">slug</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="linenos">52</span>        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="linenos">53</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="linenos">54</span>        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_one_or_none</span><span class="p">(</span><span class="n">slug</span><span class="o">=</span><span class="n">slug</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
 </pre></div>
 </div>
 </div>
@@ -1602,9 +1607,9 @@ to test the slug value for uniqueness before the insert.  If the initial slug is
 a random set of digits are appended to the end of the slug to make it unique.</p>
 <div class="literal-block-wrapper docutils container" id="id3">
 <div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>    <span class="n">blog_post_repo</span><span class="p">:</span> <span class="n">BlogPostRepository</span><span class="p">,</span>
-<span class="linenos">2</span>    <span class="n">data</span><span class="p">:</span> <span class="n">BlogPostCreate</span><span class="p">,</span>
-<span class="linenos">3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BlogPostDTO</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a new blog post.&quot;&quot;&quot;</span>
+<span class="linenos">2</span>    <span class="n">_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude_unset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">by_alias</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">3</span>    <span class="n">_data</span><span class="p">[</span><span class="s2">&quot;slug&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="k">await</span> <span class="n">blog_post_repo</span><span class="o">.</span><span class="n">get_available_slug</span><span class="p">(</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1629,79 +1634,79 @@ Full Code (click to expand)<div class="sd-summary-down docutils">
 <div class="literal-block-wrapper docutils container" id="id4">
 <div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">declarative_mixin</span><span class="p">,</span> <span class="n">mapped_column</span>
-<span class="linenos"> 2</span>
-<span class="linenos"> 3</span><span class="c1"># we are going to add a simple &quot;slug&quot; to our model that is a URL safe surrogate key to</span>
-<span class="linenos"> 4</span><span class="c1"># our database record.</span>
-<span class="linenos"> 5</span><span class="nd">@declarative_mixin</span>
-<span class="linenos"> 6</span><span class="k">class</span> <span class="nc">SlugKey</span><span class="p">:</span>
-<span class="linenos"> 7</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Slug unique Field Model Mixin.&quot;&quot;&quot;</span>
+<span class="linenos"> 2</span><span class="nd">@declarative_mixin</span>
+<span class="linenos"> 3</span><span class="k">class</span> <span class="nc">SlugKey</span><span class="p">:</span>
+<span class="linenos"> 4</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Slug unique Field Model Mixin.&quot;&quot;&quot;</span>
+<span class="linenos"> 5</span>
+<span class="linenos"> 6</span>    <span class="n">__abstract__</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="linenos"> 7</span>    <span class="n">slug</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=-</span><span class="mi">9</span><span class="p">)</span>
 <span class="linenos"> 8</span>
-<span class="linenos"> 9</span>    <span class="n">__abstract__</span> <span class="o">=</span> <span class="kc">True</span>
-<span class="linenos">10</span>
-<span class="linenos">11</span><span class="c1"># The `AuditBase` class includes the same UUID` based primary key (`id`) and 2</span>
-<span class="linenos">12</span><span class="c1"># additional columns: `created` and `updated`. `created` is a timestamp of when the</span>
-<span class="linenos">13</span><span class="c1"># record created, and `updated` is the last time the record was modified.</span>
-<span class="linenos">14</span><span class="k">class</span> <span class="nc">BlogPost</span><span class="p">(</span><span class="n">UUIDAuditBase</span><span class="p">,</span> <span class="n">SlugKey</span><span class="p">):</span>
-<span class="linenos">15</span>    <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-<span class="linenos">16</span>
-<span class="linenos">17</span><span class="c1"># this class can be re-used with any model that has the `SlugKey` Mixin</span>
-<span class="linenos">18</span><span class="k">class</span> <span class="nc">SQLAlchemyAsyncSlugRepository</span><span class="p">(</span><span class="n">SQLAlchemyAsyncRepository</span><span class="p">[</span><span class="n">ModelT</span><span class="p">]):</span>
-<span class="linenos">19</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Extends the repository to include slug model features..&quot;&quot;&quot;</span>
-<span class="linenos">20</span>
-<span class="linenos">21</span>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_available_slug</span><span class="p">(</span>
-<span class="linenos">22</span>        <span class="bp">self</span><span class="p">,</span>
-<span class="linenos">23</span>        <span class="n">value_to_slugify</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-<span class="linenos">24</span>        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-<span class="linenos">25</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="linenos">26</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a unique slug for the supplied value.</span>
-<span class="linenos">27</span>
-<span class="linenos">28</span><span class="sd">        If the value is found to exist, a random 4 digit character is appended to the end.</span>
-<span class="linenos">29</span><span class="sd">        There may be a better way to do this, but I wanted to limit the number of</span>
-<span class="linenos">30</span><span class="sd">        additional database calls.</span>
-<span class="linenos">31</span>
-<span class="linenos">32</span><span class="sd">        Args:</span>
-<span class="linenos">33</span><span class="sd">            value_to_slugify (str): A string that should be converted to a unique slug.</span>
-<span class="linenos">34</span><span class="sd">            **kwargs: stuff</span>
-<span class="linenos">35</span>
-<span class="linenos">36</span><span class="sd">        Returns:</span>
-<span class="linenos">37</span><span class="sd">            str: a unique slug for the supplied value. This is safe for URLs and other</span>
-<span class="linenos">38</span><span class="sd">            unique identifiers.</span>
-<span class="linenos">39</span><span class="sd">        &quot;&quot;&quot;</span>
-<span class="linenos">40</span>        <span class="n">slug</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_slugify</span><span class="p">(</span><span class="n">value_to_slugify</span><span class="p">)</span>
-<span class="linenos">41</span>        <span class="k">if</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_slug_unique</span><span class="p">(</span><span class="n">slug</span><span class="p">):</span>
-<span class="linenos">42</span>            <span class="k">return</span> <span class="n">slug</span>
-<span class="linenos">43</span>        <span class="c1"># generate a random 4 digit alphanumeric string to make the slug unique and</span>
-<span class="linenos">44</span>        <span class="c1"># avoid another DB lookup.</span>
-<span class="linenos">45</span>        <span class="n">random_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">choices</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_lowercase</span> <span class="o">+</span> <span class="n">string</span><span class="o">.</span><span class="n">digits</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
-<span class="linenos">46</span>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">slug</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">random_string</span><span class="si">}</span><span class="s2">&quot;</span>
-<span class="linenos">47</span>
-<span class="linenos">48</span>    <span class="nd">@staticmethod</span>
-<span class="linenos">49</span>    <span class="k">def</span> <span class="nf">_slugify</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="linenos">50</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;slugify.</span>
-<span class="linenos">51</span>
-<span class="linenos">52</span><span class="sd">        Convert to ASCII if &#39;allow_unicode&#39; is False. Convert spaces or repeated</span>
-<span class="linenos">53</span><span class="sd">        dashes to single dashes. Remove characters that aren&#39;t alphanumerics,</span>
-<span class="linenos">54</span><span class="sd">        underscores, or hyphens. Convert to lowercase. Also strip leading and</span>
-<span class="linenos">55</span><span class="sd">        trailing whitespace, dashes, and underscores.</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span><span class="c1"># record created, and `updated` is the last time the record was modified.</span>
+<span class="linenos">11</span><span class="k">class</span> <span class="nc">BlogPost</span><span class="p">(</span><span class="n">UUIDAuditBase</span><span class="p">,</span> <span class="n">SlugKey</span><span class="p">):</span>
+<span class="linenos">12</span>    <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+<span class="linenos">13</span>    <span class="n">content</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+<span class="linenos">14</span>
+<span class="linenos">15</span>
+<span class="linenos">16</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Extends the repository to include slug model features..&quot;&quot;&quot;</span>
+<span class="linenos">17</span>
+<span class="linenos">18</span>    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_available_slug</span><span class="p">(</span>
+<span class="linenos">19</span>        <span class="bp">self</span><span class="p">,</span>
+<span class="linenos">20</span>        <span class="n">value_to_slugify</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="linenos">21</span>        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="linenos">22</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="linenos">23</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a unique slug for the supplied value.</span>
+<span class="linenos">24</span>
+<span class="linenos">25</span><span class="sd">        If the value is found to exist, a random 4 digit character is appended to the end.</span>
+<span class="linenos">26</span><span class="sd">        There may be a better way to do this, but I wanted to limit the number of</span>
+<span class="linenos">27</span><span class="sd">        additional database calls.</span>
+<span class="linenos">28</span>
+<span class="linenos">29</span><span class="sd">        Args:</span>
+<span class="linenos">30</span><span class="sd">            value_to_slugify (str): A string that should be converted to a unique slug.</span>
+<span class="linenos">31</span><span class="sd">            **kwargs: stuff</span>
+<span class="linenos">32</span>
+<span class="linenos">33</span><span class="sd">        Returns:</span>
+<span class="linenos">34</span><span class="sd">            str: a unique slug for the supplied value. This is safe for URLs and other</span>
+<span class="linenos">35</span><span class="sd">            unique identifiers.</span>
+<span class="linenos">36</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">37</span>        <span class="n">slug</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_slugify</span><span class="p">(</span><span class="n">value_to_slugify</span><span class="p">)</span>
+<span class="linenos">38</span>        <span class="k">if</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_slug_unique</span><span class="p">(</span><span class="n">slug</span><span class="p">):</span>
+<span class="linenos">39</span>            <span class="k">return</span> <span class="n">slug</span>
+<span class="linenos">40</span>        <span class="c1"># generate a random 4 digit alphanumeric string to make the slug unique and</span>
+<span class="linenos">41</span>        <span class="c1"># avoid another DB lookup.</span>
+<span class="linenos">42</span>        <span class="n">random_string</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">choices</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_lowercase</span> <span class="o">+</span> <span class="n">string</span><span class="o">.</span><span class="n">digits</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">4</span><span class="p">))</span>
+<span class="linenos">43</span>        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">slug</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">random_string</span><span class="si">}</span><span class="s2">&quot;</span>
+<span class="linenos">44</span>
+<span class="linenos">45</span>    <span class="nd">@staticmethod</span>
+<span class="linenos">46</span>    <span class="k">def</span> <span class="nf">_slugify</span><span class="p">(</span><span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="linenos">47</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;slugify.</span>
+<span class="linenos">48</span>
+<span class="linenos">49</span><span class="sd">        Convert to ASCII if &#39;allow_unicode&#39; is False. Convert spaces or repeated</span>
+<span class="linenos">50</span><span class="sd">        dashes to single dashes. Remove characters that aren&#39;t alphanumerics,</span>
+<span class="linenos">51</span><span class="sd">        underscores, or hyphens. Convert to lowercase. Also strip leading and</span>
+<span class="linenos">52</span><span class="sd">        trailing whitespace, dashes, and underscores.</span>
+<span class="linenos">53</span>
+<span class="linenos">54</span><span class="sd">        Args:</span>
+<span class="linenos">55</span><span class="sd">            value (str): the string to slugify</span>
 <span class="linenos">56</span>
-<span class="linenos">57</span><span class="sd">        Args:</span>
-<span class="linenos">58</span><span class="sd">            value (str): the string to slugify</span>
-<span class="linenos">59</span>
-<span class="linenos">60</span><span class="sd">        Returns:</span>
-<span class="linenos">61</span><span class="sd">            str: a slugified string of the value parameter</span>
-<span class="linenos">62</span><span class="sd">        &quot;&quot;&quot;</span>
-<span class="linenos">63</span>        <span class="n">value</span> <span class="o">=</span> <span class="n">unicodedata</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="s2">&quot;NFKD&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">,</span> <span class="s2">&quot;ignore&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span>
-<span class="linenos">64</span>        <span class="n">value</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[^\w\s-]&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
-<span class="linenos">65</span>        <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[-\s]+&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;-_&quot;</span><span class="p">)</span>
-<span class="linenos">66</span>
-<span class="linenos">67</span>    <span class="k">async</span> <span class="k">def</span> <span class="nf">_is_slug_unique</span><span class="p">(</span>
-<span class="linenos">68</span>        <span class="bp">self</span><span class="p">,</span>
-<span class="linenos">69</span>        <span class="n">slug</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-<span class="linenos">70</span>        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
-<span class="linenos">71</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="linenos">72</span>    <span class="n">blog_post_repo</span><span class="p">:</span> <span class="n">BlogPostRepository</span><span class="p">,</span>
-<span class="linenos">73</span>    <span class="n">data</span><span class="p">:</span> <span class="n">BlogPostCreate</span><span class="p">,</span>
-<span class="linenos">74</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BlogPostDTO</span><span class="p">:</span>
+<span class="linenos">57</span><span class="sd">        Returns:</span>
+<span class="linenos">58</span><span class="sd">            str: a slugified string of the value parameter</span>
+<span class="linenos">59</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">60</span>        <span class="n">value</span> <span class="o">=</span> <span class="n">unicodedata</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="s2">&quot;NFKD&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">,</span> <span class="s2">&quot;ignore&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">)</span>
+<span class="linenos">61</span>        <span class="n">value</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[^\w\s-]&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+<span class="linenos">62</span>        <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;[-\s]+&quot;</span><span class="p">,</span> <span class="s2">&quot;-&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s2">&quot;-_&quot;</span><span class="p">)</span>
+<span class="linenos">63</span>
+<span class="linenos">64</span>    <span class="k">async</span> <span class="k">def</span> <span class="nf">_is_slug_unique</span><span class="p">(</span>
+<span class="linenos">65</span>        <span class="bp">self</span><span class="p">,</span>
+<span class="linenos">66</span>        <span class="n">slug</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<span class="linenos">67</span>        <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+<span class="linenos">68</span>    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="linenos">69</span>        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_one_or_none</span><span class="p">(</span><span class="n">slug</span><span class="o">=</span><span class="n">slug</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span>
+<span class="linenos">70</span>
+<span class="linenos">71</span>
+<span class="linenos">72</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a new blog post.&quot;&quot;&quot;</span>
+<span class="linenos">73</span>    <span class="n">_data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">exclude_unset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">by_alias</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">exclude_none</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">74</span>    <span class="n">_data</span><span class="p">[</span><span class="s2">&quot;slug&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="k">await</span> <span class="n">blog_post_repo</span><span class="o">.</span><span class="n">get_available_slug</span><span class="p">(</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>

@@ -1341,6 +1341,14 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/router.html">router</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/routes.html">routes</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/security/jwt.html"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth</span></code></a></li>
+
+
+
+
+
+
+
 <li class="toctree-l3"><a class="reference internal" href="../reference/security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
@@ -2119,8 +2127,8 @@ This was fixed by leaving the default value as <a class="reference external" hre
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2138">litestar-org/litestar#2138</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2189">litestar-org/litestar#2189</a></span></p>
 </div>
 </dd>
-<dt>Add <a class="reference internal" href="../reference/config.html#litestar.config.app.AppConfig.include_in_schema" title="litestar.config.app.AppConfig.include_in_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">include_in_schema()</span></code></a> option for all layers<a class="headerlink reference internal" href="#2.1.0-add" id="2.1.0-add">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Adds the <a class="reference internal" href="../reference/config.html#litestar.config.app.AppConfig.include_in_schema" title="litestar.config.app.AppConfig.include_in_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">include_in_schema()</span></code></a> option to all layers, allowing to include/exclude
+<dt>Add <a class="reference internal" href="../reference/controller.html#litestar.controller.Controller.include_in_schema" title="litestar.controller.Controller.include_in_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">include_in_schema()</span></code></a> option for all layers<a class="headerlink reference internal" href="#2.1.0-add" id="2.1.0-add">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Adds the <a class="reference internal" href="../reference/controller.html#litestar.controller.Controller.include_in_schema" title="litestar.controller.Controller.include_in_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">include_in_schema()</span></code></a> option to all layers, allowing to include/exclude
 specific routes from the generated OpenAPI schema.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2267">litestar-org/litestar#2267</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2295">litestar-org/litestar#2295</a></span></p>
 </div>
@@ -2132,7 +2140,7 @@ it is unused and redundant due to <code class="docutils literal notranslate"><sp
 </div>
 </dd>
 <dt>Authentication: Add parameters to set the JWT <code class="docutils literal notranslate"><span class="pre">extras</span></code> field<a class="headerlink reference internal" href="#2.1.0-authentication: add parameters to set the jwt" id="2.1.0-authentication: add parameters to set the jwt">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Adds <code class="docutils literal notranslate"><span class="pre">token_extras</span></code> to both <a class="reference internal" href="../reference/contrib/jwt.html#litestar.contrib.jwt.BaseJWTAuth.login" title="litestar.contrib.jwt.BaseJWTAuth.login"><code class="xref py py-func docutils literal notranslate"><span class="pre">BaseJWTAuth.login()</span></code></a> and <a class="reference internal" href="../reference/contrib/jwt.html#litestar.contrib.jwt.BaseJWTAuth.create_token" title="litestar.contrib.jwt.BaseJWTAuth.create_token"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BaseJWTAuth.create_token()</span></code></a> methods,
+<p>Adds <code class="docutils literal notranslate"><span class="pre">token_extras</span></code> to both <a class="reference internal" href="../reference/security/jwt.html#litestar.security.jwt.BaseJWTAuth.login" title="litestar.security.jwt.BaseJWTAuth.login"><code class="xref py py-func docutils literal notranslate"><span class="pre">BaseJWTAuth.login()</span></code></a> and <a class="reference internal" href="../reference/security/jwt.html#litestar.security.jwt.BaseJWTAuth.create_token" title="litestar.security.jwt.BaseJWTAuth.create_token"><code class="xref py py-meth docutils literal notranslate"><span class="pre">BaseJWTAuth.create_token()</span></code></a> methods,
 to allow the definition of the <code class="docutils literal notranslate"><span class="pre">extras</span></code> JWT field.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2313">litestar-org/litestar#2313</a></span></p>
 </div>
@@ -2393,7 +2401,7 @@ that does not support JSON with the SQLAlchemy repositories.</p>
 </dd>
 <dt>JWT | Regression: <code class="docutils literal notranslate"><span class="pre">OPTIONS</span></code> and <code class="docutils literal notranslate"><span class="pre">HEAD</span></code> being authenticated by default<a class="headerlink reference internal" href="#2.0.0-jwt | regression:" id="2.0.0-jwt | regression:">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fix a regression that would make
-<a class="reference internal" href="../reference/contrib/jwt.html#litestar.contrib.jwt.JWTAuthenticationMiddleware" title="litestar.contrib.jwt.JWTAuthenticationMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWTAuthenticationMiddleware</span></code></a> authenticate
+<code class="docutils literal notranslate"><span class="pre">litestar.contrib.jwt.JWTAuthenticationMiddleware</span></code> authenticate
 <code class="docutils literal notranslate"><span class="pre">OPTIONS</span></code> and <code class="docutils literal notranslate"><span class="pre">HEAD</span></code> requests by default.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2160">litestar-org/litestar#2160</a></span></p>
 </div>
@@ -2934,8 +2942,8 @@ given directory.</p>
 </div>
 </dd>
 <dt>Allow extra attributes on JWTs via <code class="docutils literal notranslate"><span class="pre">extras</span></code> attribute<a class="headerlink reference internal" href="#2.0.0beta1-allow extra attributes on jwts via" id="2.0.0beta1-allow extra attributes on jwts via">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Add the <a class="reference internal" href="../reference/contrib/jwt.html#litestar.contrib.jwt.Token.extras" title="litestar.contrib.jwt.Token.extras"><code class="xref py py-attr docutils literal notranslate"><span class="pre">extras</span></code></a> attribute, containing
-extra attributes found on the JWT.</p>
+<p>Add the <code class="docutils literal notranslate"><span class="pre">litestar.contrib.jwt.Token.extras</span></code> attribute, containing extra
+attributes found on the JWT.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1695">litestar-org/litestar#1695</a></span></p>
 </div>
 </dd>
