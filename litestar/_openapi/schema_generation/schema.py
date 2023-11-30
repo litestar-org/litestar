@@ -44,6 +44,7 @@ from litestar._openapi.schema_generation.constrained_fields import (
 )
 from litestar._openapi.schema_generation.utils import (
     _get_normalized_schema_key,
+    _get_schema_key,
     _should_create_enum_schema,
     _should_create_literal_schema,
     _type_or_first_not_none_inner_type,
@@ -234,7 +235,7 @@ def create_schema_for_annotation(annotation: Any) -> Schema:
 
 
 class SchemaCreator:
-    __slots__ = ("generate_examples", "plugins", "schemas", "prefer_alias", "dto_for")
+    __slots__ = ("generate_examples", "plugins", "schemas", "prefer_alias", "dto_for", "_keyed_schemas")
 
     def __init__(
         self,
@@ -255,6 +256,7 @@ class SchemaCreator:
         self.plugins = plugins if plugins is not None else []
         self.schemas = schemas if schemas is not None else {}
         self.prefer_alias = prefer_alias
+        self._keyed_schemas = {}
 
     @property
     def not_generating_examples(self) -> SchemaCreator:
@@ -659,6 +661,8 @@ class SchemaCreator:
             schema.examples = get_formatted_examples(field, create_examples_for_field(field))
 
         if schema.title and schema.type in (OpenAPIType.OBJECT, OpenAPIType.ARRAY):
+            class_key = _get_schema_key(str(field.annotation))
+            self._keyed_schemas[class_key] = schema
             class_name = _get_normalized_schema_key(str(field.annotation))
 
             if class_name in self.schemas:

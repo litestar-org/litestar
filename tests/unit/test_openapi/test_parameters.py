@@ -4,8 +4,8 @@ import pytest
 from typing_extensions import Annotated
 
 from litestar import Controller, Litestar, Router, get
-from litestar._openapi.parameters import create_parameter_for_handler
-from litestar._openapi.schema_generation import SchemaCreator
+from litestar._openapi.factory import OpenAPIContext
+from litestar._openapi.parameters import ParameterFactory
 from litestar._openapi.schema_generation.examples import ExampleFactory
 from litestar._openapi.typescript_converter.schema_parsing import is_schema_value
 from litestar._signature import SignatureModel
@@ -23,7 +23,18 @@ if TYPE_CHECKING:
     from litestar.openapi.spec.parameter import Parameter as OpenAPIParameter
 
 
-def _create_parameters(app: Litestar, path: str) -> List["OpenAPIParameter"]:
+@pytest.fixture()
+def factory() -> ParameterFactory:
+    return ParameterFactory(
+        OpenAPIContext(
+            openapi_config=OpenAPIConfig(title="Test API", version="1.0.0", create_examples=True),
+            plugins=[],
+            schemas={},
+        )
+    )
+
+
+def _create_parameters(app: Litestar, path: str, factory: ParameterFactory) -> List["OpenAPIParameter"]:
     index = find_index(app.routes, lambda x: x.path_format == path)
     route = app.routes[index]
     route_handler = route.route_handler_map["GET"][0]  # type: ignore
@@ -39,15 +50,15 @@ def _create_parameters(app: Litestar, path: str) -> List["OpenAPIParameter"]:
         type_decoders=[],
     )._fields
 
-    return create_parameter_for_handler(
-        route_handler, handler_fields, route.path_parameters, SchemaCreator(generate_examples=True)
-    )
+    return factory.create_parameter_for_handler(route_handler, handler_fields, route.path_parameters)
 
 
-def test_create_parameters(person_controller: Type[Controller]) -> None:
+def test_create_parameters(person_controller: Type[Controller], factory: ParameterFactory) -> None:
     ExampleFactory.seed_random(10)
 
-    parameters = _create_parameters(app=Litestar(route_handlers=[person_controller]), path="/{service_id}/person")
+    parameters = _create_parameters(
+        app=Litestar(route_handlers=[person_controller]), path="/{service_id}/person", factory=factory
+    )
     assert len(parameters) == 9
     page, name, service_id, page_size, from_date, to_date, gender, secret_header, cookie_value = tuple(parameters)
 
@@ -223,7 +234,7 @@ def test_non_dependency_in_doc_params_if_not_provided() -> None:
     assert "param" in param_name_set
 
 
-def test_layered_parameters() -> None:
+def test_layered_parameters(factory: ParameterFactory) -> None:
     class MyController(Controller):
         path = "/controller"
         parameters = {
@@ -263,6 +274,7 @@ def test_layered_parameters() -> None:
             },
         ),
         path="/router/controller/{local}",
+        factory=factory,
     )
     local, app3, controller1, router1, router3, app4, app2, controller3 = tuple(parameters)
 

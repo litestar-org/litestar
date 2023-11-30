@@ -17,6 +17,7 @@ __all__ = (
     "_should_create_enum_schema",
     "_should_create_literal_schema",
     "_get_normalized_schema_key",
+    "_get_schema_key",
 )
 
 
@@ -113,6 +114,19 @@ def _get_normalized_schema_key(type_annotation_str: str) -> str:
     # replace all non-alphanumeric characters with underscores, ensuring no leading or
     # trailing underscores
     return TYPE_NAME_NORMALIZATION_SUB_REGEX.sub(_replace_non_alphanumeric_match, normalized_name)
+
+
+def _get_schema_key(type_annotation_str: str) -> tuple[str, ...]:
+    """Get a schema key for a type annotation.
+
+    Args:
+        type_annotation_str: A string representing a type annotation
+            (i.e. 'typing.Dict[str, typing.Any]' or '<class 'model.Foo'>')
+
+    Returns:
+        A tuple of strings representing the schema key
+    """
+    return tuple(_get_normalized_schema_key(type_annotation_str).split("_"))
 
 
 def get_formatted_examples(field_definition: FieldDefinition, examples: Sequence[Example]) -> Mapping[str, Example]:
