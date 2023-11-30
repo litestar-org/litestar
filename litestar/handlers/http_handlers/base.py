@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING, AnyStr, Mapping, TypedDict, cast
+from typing import TYPE_CHECKING, AnyStr, Mapping, Sequence, TypedDict, cast
 
 from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
 from litestar.datastructures.cookie import Cookie
@@ -47,7 +47,7 @@ from litestar.utils.predicates import is_async_callable
 from litestar.utils.warnings import warn_implicit_sync_to_thread, warn_sync_to_thread_with_async_callable
 
 if TYPE_CHECKING:
-    from typing import Any, Awaitable, Callable, Sequence
+    from typing import Any, Awaitable, Callable
 
     from litestar.app import Litestar
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
@@ -78,6 +78,8 @@ class HTTPRouteHandler(BaseRouteHandler):
         "_resolved_before_request",
         "_response_handler_mapping",
         "_resolved_include_in_schema",
+        "_resolved_tags",
+        "_resolved_security",
         "after_request",
         "after_response",
         "background",
@@ -280,6 +282,8 @@ class HTTPRouteHandler(BaseRouteHandler):
         self._resolved_before_request: AsyncAnyCallable | None | EmptyType = Empty
         self._response_handler_mapping: ResponseHandlerMap = {"default_handler": Empty, "response_type_handler": Empty}
         self._resolved_include_in_schema: bool | EmptyType = Empty
+        self._resolved_security: list[SecurityRequirement] | EmptyType = Empty
+        self._resolved_tags: list[str] | EmptyType = Empty
 
     def __call__(self, fn: AnyCallable) -> HTTPRouteHandler:
         """Replace a function with itself."""
@@ -405,6 +409,40 @@ class HTTPRouteHandler(BaseRouteHandler):
             self._resolved_include_in_schema = include_in_schemas[-1] if include_in_schemas else True
 
         return self._resolved_include_in_schema
+
+    def resolve_security(self) -> list[SecurityRequirement]:
+        """Resolve the security property by starting from the route handler and moving up.
+
+        Security requirements are additive, so the security requirements of the route handler are the sum of all
+        security requirements of the ownership layers.
+
+        Returns:
+            list[SecurityRequirement]: The resolved security property.
+        """
+        if self._resolved_security is Empty:
+            self._resolved_security = []
+            for layer in self.ownership_layers:
+                if isinstance(layer.security, Sequence):
+                    self._resolved_security.extend(layer.security)
+
+        return self._resolved_security
+
+    def resolve_tags(self) -> list[str]:
+        """Resolve the tags property by starting from the route handler and moving up.
+
+        Tags are additive, so the tags of the route handler are the sum of all tags of the ownership layers.
+
+        Returns:
+            list[str]: The resolved tags property.
+        """
+        if self._resolved_tags is Empty:
+            tag_set = set()
+            for layer in self.ownership_layers:
+                for tag in layer.tags or []:
+                    tag_set.add(tag)
+            self._resolved_tags = sorted(tag_set)
+
+        return self._resolved_tags
 
     def get_response_handler(self, is_response_type_data: bool = False) -> Callable[[Any], Awaitable[ASGIApp]]:
         """Resolve the response_handler function for the route handler.
