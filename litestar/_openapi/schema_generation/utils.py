@@ -93,9 +93,7 @@ def _replace_non_alphanumeric_match(match: re.Match) -> str:
     # we don't want to introduce leading or trailing underscores, so we only replace a
     # char with an underscore if we're not at the beginning or at the end of the
     # matchable string
-    if match.start() == 0 or match.end() == match.endpos:
-        return ""
-    return "_"
+    return "" if match.start() == 0 or match.end() == match.endpos else "_"
 
 
 def _get_normalized_schema_key(type_annotation_str: str) -> str:
