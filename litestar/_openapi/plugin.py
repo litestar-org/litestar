@@ -41,6 +41,7 @@ class OpenAPIPlugin(InitPluginProtocol, ReceiveRoutePlugin):
         openapi.paths = {
             route.path_format or "/": create_path_item_for_route(context, route) for route in self.included_routes
         }
+        openapi.components.schemas = context.schema_registry.generate_components_schemas()
         return openapi
 
     def provide_openapi(self) -> OpenAPI:

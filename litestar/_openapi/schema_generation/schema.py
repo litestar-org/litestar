@@ -37,6 +37,7 @@ from msgspec import Struct
 from msgspec.structs import fields as msgspec_struct_fields
 from typing_extensions import NotRequired, Required, Self, get_args
 
+from litestar._openapi.datastructures import SchemaRegistry
 from litestar._openapi.schema_generation.constrained_fields import (
     create_date_constrained_field_schema,
     create_numerical_constrained_field_schema,
@@ -260,7 +261,7 @@ def create_schema_for_annotation(annotation: Any) -> Schema:
 
 
 class SchemaCreator:
-    __slots__ = ("generate_examples", "plugins", "schemas", "prefer_alias", "dto_for")
+    __slots__ = ("generate_examples", "plugins", "schemas", "prefer_alias", "dto_for", "schema_registry")
 
     def __init__(
         self,
@@ -268,6 +269,7 @@ class SchemaCreator:
         plugins: Iterable[OpenAPISchemaPluginProtocol] | None = None,
         schemas: dict[str, Schema] | None = None,
         prefer_alias: bool = True,
+        schema_registry: SchemaRegistry | None = None,
     ) -> None:
         """Instantiate a SchemaCreator.
 
@@ -276,17 +278,20 @@ class SchemaCreator:
             plugins: A list of plugins.
             schemas: A mapping of namespaces to schemas - this mapping is used in the OA components section.
             prefer_alias: Whether to prefer the alias name for the schema.
+            schema_registry: A SchemaRegistry instance.
         """
         self.generate_examples = generate_examples
         self.plugins = plugins if plugins is not None else []
         self.schemas = schemas if schemas is not None else {}
         self.prefer_alias = prefer_alias
+        self.schema_registry = schema_registry or SchemaRegistry()
 
     @classmethod
     def from_openapi_context(cls, context: OpenAPIContext, prefer_alias: bool = True, **kwargs: Any) -> Self:
         kwargs.setdefault("generate_examples", context.openapi_config.create_examples)
         kwargs.setdefault("plugins", context.plugins)
         kwargs.setdefault("schemas", context.schemas)
+        kwargs.setdefault("schema_registry", context.schema_registry)
         return cls(**kwargs, prefer_alias=prefer_alias)
 
     @property
@@ -691,10 +696,13 @@ class SchemaCreator:
 
         if schema.title and schema.type in (OpenAPIType.OBJECT, OpenAPIType.ARRAY):
             class_name = _get_normalized_schema_key(str(field.annotation))
+            if class_name not in self.schemas:
+                self.schemas[class_name] = schema
 
-            if class_name in self.schemas:
-                return Reference(ref=f"#/components/schemas/{class_name}", description=schema.description)
+            class_key = tuple(class_name.split("_"))
+            ref = Reference(ref=f"#/components/schemas/{class_name}", description=schema.description)
 
-            self.schemas[class_name] = schema
-            return Reference(ref=f"#/components/schemas/{class_name}")
+            self.schema_registry.register(class_key, schema, ref)
+
+            return ref
         return schema

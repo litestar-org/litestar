@@ -91,7 +91,7 @@ def test_upload_file_request_body_generation() -> None:
 
     assert components == {
         "schemas": {
-            "tests_unit_test_openapi_test_request_body_FormData": {
+            "FormData": {
                 "properties": {
                     "cv": {
                         "type": "string",

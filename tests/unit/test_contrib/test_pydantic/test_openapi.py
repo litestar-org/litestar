@@ -320,9 +320,8 @@ def test_spec_generation(cls: Any) -> None:
     with create_test_client(handler) as client:
         schema = client.app.openapi_schema
         assert schema
-        key_name = _get_normalized_schema_key(str(cls))
 
-        assert schema.to_schema()["components"]["schemas"][key_name] == {
+        assert schema.to_schema()["components"]["schemas"][cls.__name__] == {
             "properties": {
                 "first_name": {"type": "string"},
                 "last_name": {"type": "string"},
@@ -339,7 +338,7 @@ def test_spec_generation(cls: Any) -> None:
                     "oneOf": [
                         {"type": "null"},
                         {
-                            "items": {"$ref": "#/components/schemas/tests_models_DataclassPet"},
+                            "items": {"$ref": "#/components/schemas/DataclassPet"},
                             "type": "array",
                         },
                     ]
@@ -378,9 +377,8 @@ def test_schema_generation_v1(create_examples: bool) -> None:
         signature_namespace={"Lookup": Lookup},
     ) as client:
         response = client.get("/schema/openapi.json")
-        key_name = "tests_unit_test_contrib_test_pydantic_test_openapi_test_schema_generation_v1_locals_Lookup"
         assert response.status_code == HTTP_200_OK
-        assert response.json()["components"]["schemas"][key_name]["properties"]["id"] == {
+        assert response.json()["components"]["schemas"]["Lookup"]["properties"]["id"] == {
             "description": "A unique identifier",
             "examples": {"id-example-1": {"value": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"}},
             "maxLength": 16,
@@ -417,8 +415,7 @@ def test_schema_generation_v2(create_examples: bool) -> None:
     ) as client:
         response = client.get("/schema/openapi.json")
         assert response.status_code == HTTP_200_OK
-        key_name = "tests_unit_test_contrib_test_pydantic_test_openapi_test_schema_generation_v2_locals_Lookup"
-        assert response.json()["components"]["schemas"][key_name]["properties"]["id"] == {
+        assert response.json()["components"]["schemas"]["Lookup"]["properties"]["id"] == {
             "description": "A unique identifier",
             "examples": {"id-example-1": {"value": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"}},
             "maxLength": 16,
@@ -443,18 +440,14 @@ def test_schema_by_alias(base_model: AnyBaseModelType, pydantic_version: Pydanti
     assert app.openapi_schema
     schemas = app.openapi_schema.to_schema()["components"]["schemas"]
     request_key = "second"
-    assert schemas[
-        "tests_unit_test_contrib_test_pydantic_test_openapi_test_schema_by_alias_locals_RequestWithAlias"
-    ] == {
+    assert schemas["RequestWithAlias"] == {
         "properties": {request_key: {"type": "string"}},
         "type": "object",
         "required": [request_key],
         "title": "RequestWithAlias",
     }
     response_key = "first"
-    assert schemas[
-        "tests_unit_test_contrib_test_pydantic_test_openapi_test_schema_by_alias_locals_ResponseWithAlias"
-    ] == {
+    assert schemas["ResponseWithAlias"] == {
         "properties": {response_key: {"type": "string"}},
         "type": "object",
         "required": [response_key],
@@ -485,18 +478,14 @@ def test_schema_by_alias_plugin_override(base_model: AnyBaseModelType, pydantic_
     assert app.openapi_schema
     schemas = app.openapi_schema.to_schema()["components"]["schemas"]
     request_key = "second"
-    assert schemas[
-        "tests_unit_test_contrib_test_pydantic_test_openapi_test_schema_by_alias_plugin_override_locals_RequestWithAlias"
-    ] == {
+    assert schemas["RequestWithAlias"] == {
         "properties": {request_key: {"type": "string"}},
         "type": "object",
         "required": [request_key],
         "title": "RequestWithAlias",
     }
     response_key = "second"
-    assert schemas[
-        "tests_unit_test_contrib_test_pydantic_test_openapi_test_schema_by_alias_plugin_override_locals_ResponseWithAlias"
-    ] == {
+    assert schemas["ResponseWithAlias"] == {
         "properties": {response_key: {"type": "string"}},
         "type": "object",
         "required": [response_key],

@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Generic, Optional, TypeVar, cast
+from types import ModuleType
+from typing import Callable, Generic, Optional, TypeVar, cast
 
 import msgspec
 import pytest
@@ -9,6 +10,7 @@ import yaml
 from typing_extensions import Annotated
 
 from litestar import Controller, Litestar, get, post
+from litestar._openapi.plugin import OpenAPIPlugin
 from litestar.app import DEFAULT_OPENAPI_CONFIG
 from litestar.enums import MediaType, OpenAPIMediaType, ParamType
 from litestar.openapi import OpenAPIConfig, OpenAPIController
@@ -171,9 +173,7 @@ def test_msgspec_schema_generation(create_examples: bool) -> None:
     ) as client:
         response = client.get("/schema/openapi.json")
         assert response.status_code == HTTP_200_OK
-        assert response.json()["components"]["schemas"][
-            "tests_unit_test_openapi_test_integration_test_msgspec_schema_generation_locals_Lookup"
-        ]["properties"]["id"] == {
+        assert response.json()["components"]["schemas"]["Lookup"]["properties"]["id"] == {
             "description": "A unique identifier",
             "examples": {"id-example-1": {"value": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"}},
             "maxLength": 16,
@@ -243,13 +243,7 @@ def test_with_generic_class() -> None:
                             "200": {
                                 "description": "Request fulfilled, document follows",
                                 "headers": {},
-                                "content": {
-                                    "application/json": {
-                                        "schema": {
-                                            "$ref": "#/components/schemas/tests_unit_test_openapi_test_integration_Foo_str"
-                                        }
-                                    }
-                                },
+                                "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Foo[str]"}}},
                             }
                         },
                         "deprecated": False,
@@ -263,13 +257,7 @@ def test_with_generic_class() -> None:
                             "200": {
                                 "description": "Request fulfilled, document follows",
                                 "headers": {},
-                                "content": {
-                                    "application/json": {
-                                        "schema": {
-                                            "$ref": "#/components/schemas/tests_unit_test_openapi_test_integration_Foo_int"
-                                        }
-                                    }
-                                },
+                                "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Foo[int]"}}},
                             }
                         },
                         "deprecated": False,
@@ -278,13 +266,13 @@ def test_with_generic_class() -> None:
             },
             "components": {
                 "schemas": {
-                    "tests_unit_test_openapi_test_integration_Foo_str": {
+                    "Foo[str]": {
                         "properties": {"foo": {"type": "string"}},
                         "type": "object",
                         "required": ["foo"],
                         "title": "Foo[str]",
                     },
-                    "tests_unit_test_openapi_test_integration_Foo_int": {
+                    "Foo[int]": {
                         "properties": {"foo": {"type": "integer"}},
                         "type": "object",
                         "required": ["foo"],
@@ -322,3 +310,43 @@ def test_allow_multiple_parameters_with_same_name_but_different_location() -> No
     params = cast("list[OpenAPIParameter]", parameters)
     assert all(param.name == "name" for param in params)
     assert tuple(param.param_in for param in params) == ("cookie", "header")
+
+
+def test_schema_name_collisions(create_module: Callable[[str], ModuleType]) -> None:
+    module_a = create_module(
+        """
+from dataclasses import dataclass
+
+@dataclass
+class Model:
+    a: str
+
+"""
+    )
+
+    module_b = create_module(
+        """
+from dataclasses import dataclass
+
+@dataclass
+class Model:
+    b: str
+
+"""
+    )
+
+    @get("/foo", sync_to_thread=False, signature_namespace={"module_a": module_a})
+    def handler_a() -> module_a.Model:  # type: ignore[name-defined]
+        return module_a.Model(a="")
+
+    @get("/bar", sync_to_thread=False, signature_namespace={"module_b": module_b})
+    def handler_b() -> module_b.Model:  # type: ignore[name-defined]
+        return module_b.Model(b="")
+
+    app = Litestar(route_handlers=[handler_a, handler_b], debug=True)
+    openapi_plugin = app.plugins.get(OpenAPIPlugin)
+    assert openapi_plugin.provide_openapi().components.schemas.keys() == {
+        f"{module_a.__name__}_Model",
+        f"{module_b.__name__}_Model",
+    }
+    # TODO: expand this test to cover more cases

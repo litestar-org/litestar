@@ -84,7 +84,7 @@ def _should_create_literal_schema(field_definition: FieldDefinition) -> bool:
     )
 
 
-TYPE_NAME_NORMALIZATION_SUB_REGEX = re.compile(r"[^a-zA-Z0-9]+")
+TYPE_NAME_NORMALIZATION_SUB_REGEX = re.compile(r"[^a-zA-Z0-9\[\]]+")
 TYPE_NAME_EXTRACTION_REGEX = re.compile(r"<\w+ '(.+)'")
 
 

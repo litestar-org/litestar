@@ -97,10 +97,10 @@ def test_get_normalized_schema_key() -> None:
     assert "tests_models_DataclassPerson" == _get_normalized_schema_key(str(DataclassPerson))
 
     builtin_dict = Dict[str, List[int]]
-    assert "typing_Dict_str_typing_List_int" == _get_normalized_schema_key(str(builtin_dict))
+    assert "typing_Dict[str_typing_List[int]]" == _get_normalized_schema_key(str(builtin_dict))
 
     builtin_with_custom = Dict[str, DataclassPerson]
-    assert "typing_Dict_str_tests_models_DataclassPerson" == _get_normalized_schema_key(str(builtin_with_custom))
+    assert "typing_Dict[str_tests_models_DataclassPerson]" == _get_normalized_schema_key(str(builtin_with_custom))
 
     class LocalGeneric(Generic[T]):
         pass
@@ -114,12 +114,12 @@ def test_get_normalized_schema_key() -> None:
     generic_str = LocalGeneric[str]
 
     assert (
-        "tests_unit_test_openapi_test_schema_test_get_normalized_schema_key_locals_LocalGeneric_int"
+        "tests_unit_test_openapi_test_schema_test_get_normalized_schema_key_locals_LocalGeneric[int]"
         == _get_normalized_schema_key(str(generic_int))
     )
 
     assert (
-        "tests_unit_test_openapi_test_schema_test_get_normalized_schema_key_locals_LocalGeneric_str"
+        "tests_unit_test_openapi_test_schema_test_get_normalized_schema_key_locals_LocalGeneric[str]"
         == _get_normalized_schema_key(str(generic_str))
     )
 
