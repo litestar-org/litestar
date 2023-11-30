@@ -6,8 +6,8 @@ from pydantic import BaseModel, EmailStr
 
 from litestar import Litestar, Request, Response, get, post
 from litestar.connection import ASGIConnection
-from litestar.contrib.jwt import JWTAuth, Token
 from litestar.openapi.config import OpenAPIConfig
+from litestar.security.jwt import JWTAuth, Token
 
 
 # Let's assume we have a User model that is a pydantic model.

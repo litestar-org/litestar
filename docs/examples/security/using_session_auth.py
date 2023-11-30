@@ -6,10 +6,7 @@ from pydantic import BaseModel, EmailStr, SecretStr
 from litestar import Litestar, Request, get, post
 from litestar.connection import ASGIConnection
 from litestar.exceptions import NotAuthorizedException
-from litestar.middleware.session.server_side import (
-    ServerSideSessionBackend,
-    ServerSideSessionConfig,
-)
+from litestar.middleware.session.server_side import ServerSideSessionBackend, ServerSideSessionConfig
 from litestar.openapi.config import OpenAPIConfig
 from litestar.security.session_auth import SessionAuth
 from litestar.stores.memory import MemoryStore
