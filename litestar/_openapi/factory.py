@@ -47,7 +47,7 @@ class OpenAPIFactory:
         return self.openapi_schema.paths
 
     @cached_property
-    def path_item_factory(self) -> PathItemFactory:
+    def path_item_builder(self) -> PathItemFactory:
         return PathItemFactory(
             OpenAPIContext(
                 openapi_config=self.openapi_config,
@@ -64,7 +64,7 @@ class OpenAPIFactory:
             any(route_handler.resolve_include_in_schema() for route_handler, _ in route.route_handler_map.values())
             and (route.path_format or "/") not in self.paths
         ):
-            path_item, created_operation_ids = self.path_item_factory.create_path_item(route=route)
+            path_item, created_operation_ids = self.path_item_builder.create_path_item(route=route)
             self.paths[route.path_format or "/"] = path_item
 
             for operation_id in created_operation_ids:
