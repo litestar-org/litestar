@@ -165,7 +165,7 @@ class Litestar(Router):
         "websocket_class",
         "pdb_on_exception",
         "experimental_features",
-        "_openapi_builder",
+        "_openapi_factory",
     )
 
     def __init__(
@@ -315,7 +315,7 @@ class Litestar(Router):
             experimental_features: An iterable of experimental features to enable
         """
 
-        self._openapi_builder = OpenAPIFactory(self)
+        self._openapi_factory = OpenAPIFactory(self)
 
         if logging_config is Empty:
             logging_config = LoggingConfig()
@@ -585,8 +585,8 @@ class Litestar(Router):
         Raises:
             ImproperlyConfiguredException: If the application ``openapi_config`` attribute is ``None``.
         """
-        self._openapi_builder.initialize()
-        return self._openapi_builder.openapi_schema
+        self._openapi_factory.initialize()
+        return self._openapi_factory.openapi_schema
 
     @classmethod
     def from_config(cls, config: AppConfig) -> Self:
@@ -622,7 +622,7 @@ class Litestar(Router):
 
             if isinstance(route, HTTPRoute):
                 route.create_handler_map()
-                self._openapi_builder.add_route(route)
+                self._openapi_factory.add_route(route)
 
             elif isinstance(route, WebSocketRoute):
                 route.handler_parameter_model = route.create_handler_kwargs_model(route.route_handler)
@@ -824,7 +824,7 @@ class Litestar(Router):
         Returns:
             None
         """
-        self._openapi_builder.initialize()
+        self._openapi_factory.initialize()
 
     def emit(self, event_id: str, *args: Any, **kwargs: Any) -> None:
         """Emit an event to all attached listeners.
