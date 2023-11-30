@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import time
 from secrets import token_hex
 from typing import cast
 from unittest.mock import AsyncMock, MagicMock
@@ -143,7 +142,7 @@ async def test_ws_route_handlers_receive_arbitrary_message(channels_backend: Cha
 
 
 @pytest.mark.flaky(reruns=5)
-async def test_create_ws_route_handlers_arbitrary_channels_allowed(channels_backend: ChannelsBackend) -> None:
+def test_create_ws_route_handlers_arbitrary_channels_allowed(channels_backend: ChannelsBackend) -> None:
     channels_plugin = ChannelsPlugin(
         backend=channels_backend,
         arbitrary_channels_allowed=True,
@@ -157,8 +156,6 @@ async def test_create_ws_route_handlers_arbitrary_channels_allowed(channels_back
         with client.websocket_connect("/ws/foo") as ws:
             channels_plugin.publish("something", "foo")
             assert ws.receive_text(timeout=2) == "something"
-
-        time.sleep(0.001)
 
         with client.websocket_connect("/ws/bar") as ws:
             channels_plugin.publish("something else", "bar")

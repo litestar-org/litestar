@@ -5,7 +5,6 @@ from datetime import timedelta
 from typing import AsyncGenerator, cast
 from unittest.mock import AsyncMock
 
-import asyncpg
 import pytest
 from _pytest.fixtures import FixtureRequest
 from redis.asyncio.client import Redis
