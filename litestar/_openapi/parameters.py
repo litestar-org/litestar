@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Iterable
+from typing import TYPE_CHECKING
 
 from litestar._openapi.schema_generation import SchemaCreator
 from litestar._openapi.schema_generation.utils import get_formatted_examples
@@ -68,11 +68,6 @@ class ParameterCollection:
             f"OpenAPI schema generation for handler `{self.route_handler}` detected multiple parameters named "
             f"'{parameter.name}' with different types."
         )
-
-    def extend(self, parameters: Iterable[Parameter]) -> None:
-        """Add multiple ``Parameter``'s to the collection."""
-        for parameter in parameters:
-            self.add(parameter)
 
     def list(self) -> list[Parameter]:
         """Return a list of all ``Parameter``'s in the collection."""
