@@ -74,7 +74,7 @@ from litestar.utils.typing import (
 if TYPE_CHECKING:
     from msgspec.structs import FieldInfo
 
-    from litestar._openapi.factory import OpenAPIContext
+    from litestar._openapi.datastructures import OpenAPIContext
     from litestar.openapi.spec import Example
     from litestar.plugins import OpenAPISchemaPluginProtocol
 

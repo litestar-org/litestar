@@ -31,7 +31,7 @@ from litestar.typing import FieldDefinition
 from litestar.utils import get_enum_string_value, get_name
 
 if TYPE_CHECKING:
-    from litestar._openapi.factory import OpenAPIContext
+    from litestar._openapi.datastructures import OpenAPIContext
     from litestar.datastructures.cookie import Cookie
     from litestar.handlers.http_handlers import HTTPRouteHandler
     from litestar.openapi.spec.responses import Responses

@@ -12,7 +12,7 @@ __all__ = ("RequestBodyFactory",)
 
 
 if TYPE_CHECKING:
-    from litestar._openapi.factory import OpenAPIContext
+    from litestar._openapi.datastructures import OpenAPIContext
     from litestar.handlers import BaseRouteHandler
     from litestar.typing import FieldDefinition
 

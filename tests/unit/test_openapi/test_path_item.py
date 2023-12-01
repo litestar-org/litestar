@@ -7,7 +7,7 @@ import pytest
 from typing_extensions import TypeAlias
 
 from litestar import Controller, Litestar, Request, Router, delete, get
-from litestar._openapi.factory import OpenAPIContext
+from litestar._openapi.datastructures import OpenAPIContext
 from litestar._openapi.path_item import PathItemFactory
 from litestar._openapi.utils import default_operation_id_creator
 from litestar.exceptions import ImproperlyConfiguredException

@@ -12,7 +12,7 @@ from litestar.openapi.spec import Operation, PathItem
 from litestar.utils.helpers import unwrap_partial
 
 if TYPE_CHECKING:
-    from litestar._openapi.factory import OpenAPIContext
+    from litestar._openapi.datastructures import OpenAPIContext
     from litestar.handlers.http_handlers import HTTPRouteHandler
     from litestar.routes import HTTPRoute
 

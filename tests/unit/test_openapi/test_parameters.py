@@ -4,7 +4,7 @@ import pytest
 from typing_extensions import Annotated
 
 from litestar import Controller, Litestar, Router, get
-from litestar._openapi.factory import OpenAPIContext
+from litestar._openapi.datastructures import OpenAPIContext
 from litestar._openapi.parameters import ParameterFactory
 from litestar._openapi.schema_generation.examples import ExampleFactory
 from litestar._openapi.typescript_converter.schema_parsing import is_schema_value

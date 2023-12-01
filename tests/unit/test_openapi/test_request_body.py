@@ -5,7 +5,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from litestar import Controller, Litestar, post
-from litestar._openapi.factory import OpenAPIContext
+from litestar._openapi.datastructures import OpenAPIContext
 from litestar._openapi.request_body import RequestBodyFactory
 from litestar.datastructures.upload_file import UploadFile
 from litestar.dto import AbstractDTO
