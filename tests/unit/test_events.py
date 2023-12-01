@@ -109,3 +109,36 @@ async def test_raises_when_not_listener_are_registered_for_an_event_id(async_lis
     with create_test_client(route_handlers=[], listeners=[async_listener]) as client:
         with pytest.raises(ImproperlyConfiguredException):
             client.app.emit("x")
+
+
+async def test_event_listener_raises_exception(async_listener: EventListener, mock: MagicMock) -> None:
+    """Test that an event listener that raises an exception does not prevent other listeners from being called.
+
+    https://github.com/litestar-org/litestar/issues/2809
+    """
+
+    error_mock = MagicMock()
+
+    @listener("error_event")
+    async def raising_listener(*args: Any, **kwargs: Any) -> None:
+        error_mock()
+        raise ValueError("test")
+
+    @get("/error")
+    def route_handler_1(request: Request[Any, Any, Any]) -> None:
+        request.app.emit("error_event")
+
+    @get("/no-error")
+    def route_handler_2(request: Request[Any, Any, Any]) -> None:
+        request.app.emit("test_event")
+
+    with create_test_client(
+        route_handlers=[route_handler_1, route_handler_2], listeners=[async_listener, raising_listener]
+    ) as client:
+        first_response = client.get("/error")
+        second_response = client.get("/no-error")
+        assert first_response.status_code == HTTP_200_OK
+        assert second_response.status_code == HTTP_200_OK
+
+    error_mock.assert_called()
+    mock.assert_called()
