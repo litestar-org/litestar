@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, Callable, cast
 import pytest
 from typing_extensions import TypeAlias
 
-from litestar import Controller, Litestar, Request, Router, get
+from litestar import Controller, Litestar, Request, Router, delete, get
 from litestar._openapi.factory import OpenAPIContext
 from litestar._openapi.path_item import PathItemFactory
 from litestar._openapi.utils import default_operation_id_creator
@@ -204,3 +204,21 @@ def test_operation_override() -> None:
 
     operation_schema = CustomOperation().to_schema()
     assert "x-codeSamples" in operation_schema
+
+
+def test_handler_excluded_from_schema(create_factory: CreateFactoryFixture) -> None:
+    @get("/", sync_to_thread=False)
+    def handler_1() -> None:
+        ...
+
+    @delete("/", include_in_schema=False, sync_to_thread=False)
+    def handler_2() -> None:
+        ...
+
+    app = Litestar(route_handlers=[handler_1, handler_2])
+    index = find_index(app.routes, lambda x: x.path_format == "/")
+    route_with_multiple_methods = cast("HTTPRoute", app.routes[index])
+    factory = create_factory(route_with_multiple_methods)
+    schema = factory.create_path_item()
+    assert schema.get
+    assert schema.delete is None
