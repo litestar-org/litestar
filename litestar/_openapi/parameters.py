@@ -75,12 +75,21 @@ class ParameterCollection:
 
 
 class ParameterFactory:
+    """Factory for creating OpenAPI Parameters for a given route handler."""
+
     def __init__(
         self,
         context: OpenAPIContext,
         route_handler: BaseRouteHandler,
         path_parameters: tuple[PathParameterDefinition, ...],
     ) -> None:
+        """Initialize ParameterFactory.
+
+        Args:
+            context: The OpenAPI context.
+            route_handler: The route handler.
+            path_parameters: The path parameters for the route.
+        """
         self.context = context
         self.schema_creator = SchemaCreator.from_openapi_context(self.context, prefer_alias=True)
         self.route_handler = route_handler
@@ -90,7 +99,12 @@ class ParameterFactory:
         self.path_parameters_names = {p.name for p in path_parameters}
 
     def create_parameter(self, field_definition: FieldDefinition, parameter_name: str) -> Parameter:
-        """Create an OpenAPI Parameter instance."""
+        """Create an OpenAPI Parameter instance for a field definition.
+
+        Args:
+            field_definition: The field definition.
+            parameter_name: The name of the parameter.
+        """
 
         result: Schema | Reference | None = None
         kwarg_definition = (
@@ -132,9 +146,11 @@ class ParameterFactory:
         )
 
     def get_layered_parameter(self, field_name: str, field_definition: FieldDefinition) -> Parameter:
-        """Create a layered parameter for a given signature model field.
+        """Create a parameter for a field definition that has a KwargDefinition defined on the layers.
 
-        Layer info is extracted from the provided ``layered_parameters`` dict and set as the field's ``field_info`` attribute.
+        Args:
+            field_name: The name of the field.
+            field_definition: The field definition.
         """
         layer_field = self.layered_parameters[field_name]
 
@@ -162,10 +178,14 @@ class ParameterFactory:
         return self.create_parameter(field_definition=field_definition, parameter_name=parameter_name)
 
     def create_parameters_for_field_definitions(self, fields: dict[str, FieldDefinition]) -> None:
+        """Add Parameter models to the handler's collection for the given field definitions.
+
+        Args:
+            fields: The field definitions.
+        """
         unique_handler_fields = (
             (k, v) for k, v in fields.items() if k not in RESERVED_KWARGS and k not in self.layered_parameters
         )
-
         unique_layered_fields = (
             (k, v) for k, v in self.layered_parameters.items() if k not in RESERVED_KWARGS and k not in fields
         )
