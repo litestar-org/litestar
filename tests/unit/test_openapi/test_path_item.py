@@ -53,7 +53,6 @@ def create_factory() -> CreateFactoryFixture:
                 schemas={},
             ),
             route,
-            set(),
         )
 
     return factory
