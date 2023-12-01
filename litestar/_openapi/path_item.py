@@ -9,7 +9,9 @@ from litestar._openapi.request_body import RequestBodyFactory
 from litestar._openapi.responses import create_responses
 from litestar._openapi.schema_generation import SchemaCreator
 from litestar._openapi.utils import SEPARATORS_CLEANUP_PATTERN
-from litestar.openapi.spec import PathItem
+from litestar.enums import HttpMethod
+from litestar.exceptions import ImproperlyConfiguredException
+from litestar.openapi.spec import Operation, PathItem
 from litestar.utils.helpers import unwrap_partial
 
 if TYPE_CHECKING:
@@ -21,9 +23,12 @@ __all__ = ("PathItemFactory",)
 
 
 class PathItemFactory:
-    def __init__(self, openapi_context: OpenAPIContext) -> None:
+    def __init__(self, openapi_context: OpenAPIContext, route: HTTPRoute, existing_operation_ids: set[str]) -> None:
         self.context = openapi_context
-        self.request_body_factory = RequestBodyFactory(self.context)
+        self.route = route
+        self.existing_operation_ids = existing_operation_ids
+        self.created_operation_ids: set[str] = set()
+        self._path_item = PathItem()
 
     @cached_property
     def response_schema_creator(self) -> SchemaCreator:
@@ -34,62 +39,73 @@ class PathItemFactory:
             prefer_alias=False,
         )
 
-    def create_path_item(self, route: HTTPRoute) -> tuple[PathItem, list[str]]:
+    def create_path_item(self) -> PathItem:
         """Create a PathItem for the given route parsing all http_methods into Operation Models.
 
-        Args:
-            route: An HTTPRoute instance.
-
         Returns:
-            A tuple containing the path item and a list of operation ids.
+            A PathItem instance.
         """
-        path_item = PathItem()
-        operation_ids: list[str] = []
-
-        for http_method, handler_tuple in route.route_handler_map.items():
+        for http_method, handler_tuple in self.route.route_handler_map.items():
             route_handler, _ = handler_tuple
 
+            if not route_handler.resolve_include_in_schema():
+                continue
+
+            operation = self.create_operation_for_handler_method(route_handler, HttpMethod(http_method))
+
             if route_handler.resolve_include_in_schema():
-                parameter_factory = ParameterFactory(self.context, route_handler, route.path_parameters)
-                parameters = parameter_factory.create_parameters_for_handler()
-                signature_fields = route_handler.signature_model._fields
-                raises_validation_error = bool("data" in signature_fields or path_item.parameters or parameters)
+                setattr(self._path_item, http_method.lower(), operation)
 
-                request_body = None
-                if data_field := signature_fields.get("data"):
-                    request_body = self.request_body_factory.create_request_body(
-                        route_handler=route_handler, field_definition=data_field
-                    )
+        return self._path_item
 
-                if isinstance(route_handler.operation_id, str):
-                    operation_id = route_handler.operation_id
-                elif callable(route_handler.operation_id):
-                    operation_id = route_handler.operation_id(route_handler, http_method, route.path_components)
-                else:
-                    operation_id = self.context.openapi_config.operation_id_creator(
-                        route_handler, http_method, route.path_components
-                    )
+    def create_operation_for_handler_method(
+        self, route_handler: HTTPRouteHandler, http_method: HttpMethod
+    ) -> Operation:
+        operation_id = self.create_operation_id(route_handler, http_method)
+        parameter_factory = ParameterFactory(self.context, route_handler, self.route.path_parameters)
+        parameters = parameter_factory.create_parameters_for_handler()
+        signature_fields = route_handler.signature_model._fields
+        raises_validation_error = bool("data" in signature_fields or self._path_item.parameters or parameters)
 
-                operation = route_handler.operation_class(
-                    operation_id=operation_id,
-                    tags=route_handler.resolve_tags() or None,
-                    summary=route_handler.summary
-                    or SEPARATORS_CLEANUP_PATTERN.sub("", route_handler.handler_name.title()),
-                    description=self.get_description_for_handler(route_handler),
-                    deprecated=route_handler.deprecated,
-                    responses=create_responses(
-                        route_handler=route_handler,
-                        raises_validation_error=raises_validation_error,
-                        schema_creator=self.response_schema_creator,
-                    ),
-                    request_body=request_body,
-                    parameters=parameters or None,  # type: ignore[arg-type]
-                    security=route_handler.resolve_security() or None,
-                )
-                operation_ids.append(operation_id)
-                setattr(path_item, http_method.lower(), operation)
+        request_body = None
+        if data_field := signature_fields.get("data"):
+            request_body = RequestBodyFactory(self.context).create_request_body(
+                route_handler=route_handler, field_definition=data_field
+            )
 
-        return path_item, operation_ids
+        return route_handler.operation_class(
+            operation_id=operation_id,
+            tags=route_handler.resolve_tags() or None,
+            summary=route_handler.summary or SEPARATORS_CLEANUP_PATTERN.sub("", route_handler.handler_name.title()),
+            description=self.get_description_for_handler(route_handler),
+            deprecated=route_handler.deprecated,
+            responses=create_responses(
+                route_handler=route_handler,
+                raises_validation_error=raises_validation_error,
+                schema_creator=self.response_schema_creator,
+            ),
+            request_body=request_body,
+            parameters=parameters or None,  # type: ignore[arg-type]
+            security=route_handler.resolve_security() or None,
+        )
+
+    def create_operation_id(self, route_handler: HTTPRouteHandler, http_method: HttpMethod) -> str:
+        if isinstance(route_handler.operation_id, str):
+            operation_id = route_handler.operation_id
+        elif callable(route_handler.operation_id):
+            operation_id = route_handler.operation_id(route_handler, http_method, self.route.path_components)
+        else:
+            operation_id = self.context.openapi_config.operation_id_creator(
+                route_handler, http_method, self.route.path_components
+            )
+
+        if operation_id in self.existing_operation_ids:
+            raise ImproperlyConfiguredException(
+                f"operation_ids must be unique, "
+                f"please ensure the value of 'operation_id' is either not set or unique for {operation_id}"
+            )
+        self.created_operation_ids.add(operation_id)
+        return operation_id
 
     def get_description_for_handler(self, route_handler: HTTPRouteHandler) -> str | None:
         """Produce the operation description for a route handler, either by using the description value if provided,

@@ -47,13 +47,11 @@ class OpenAPIFactory:
         return self.openapi_schema.paths
 
     @cached_property
-    def path_item_builder(self) -> PathItemFactory:
-        return PathItemFactory(
-            OpenAPIContext(
-                openapi_config=self.openapi_config,
-                plugins=self.app.plugins.openapi,
-                schemas=self.openapi_schema.components.schemas,
-            )
+    def openapi_context(self) -> OpenAPIContext:
+        return OpenAPIContext(
+            openapi_config=self.openapi_config,
+            plugins=self.app.plugins.openapi,
+            schemas=self.openapi_schema.components.schemas,
         )
 
     def add_route(self, route: HTTPRoute) -> None:
@@ -64,16 +62,10 @@ class OpenAPIFactory:
             any(route_handler.resolve_include_in_schema() for route_handler, _ in route.route_handler_map.values())
             and (route.path_format or "/") not in self.paths
         ):
-            path_item, created_operation_ids = self.path_item_builder.create_path_item(route=route)
+            path_item_factory = PathItemFactory(self.openapi_context, route, self._operation_ids)
+            path_item = path_item_factory.create_path_item()
             self.paths[route.path_format or "/"] = path_item
-
-            for operation_id in created_operation_ids:
-                if operation_id in self._operation_ids:
-                    raise ImproperlyConfiguredException(
-                        f"operation_ids must be unique, "
-                        f"please ensure the value of 'operation_id' is either not set or unique for {operation_id}"
-                    )
-                self._operation_ids.add(operation_id)
+            self._operation_ids |= path_item_factory.created_operation_ids
 
     def initialize(self) -> None:
         if self._initialized:
