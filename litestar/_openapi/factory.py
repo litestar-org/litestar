@@ -16,12 +16,27 @@ if TYPE_CHECKING:
 
 
 class OpenAPIContext:
+    """OpenAPI Context.
+
+    Context object used to support OpenAPI schema generation.
+    """
+    __slots__ = ("openapi_config", "plugins", "schemas", "operation_ids")
+
     def __init__(
         self, openapi_config: OpenAPIConfig, plugins: Sequence[OpenAPISchemaPluginProtocol], schemas: dict[str, Schema]
     ) -> None:
+        """Initialize OpenAPIContext.
+
+        Args:
+            openapi_config: OpenAPIConfig instance.
+            plugins: OpenAPI plugins.
+            schemas: Mapping of schema names to schema objects that will become the components.schemas section of the
+                OpenAPI schema.
+        """
         self.openapi_config = openapi_config
         self.plugins = plugins
         self.schemas = schemas
+        # used to track that operation ids are globally unique across the OpenAPI document
         self.operation_ids: set[str] = set()
 
     def add_operation_id(self, operation_id: str) -> None:
@@ -39,12 +54,22 @@ class OpenAPIContext:
 
 
 class OpenAPIFactory:
+    """OpenAPI Factory.
+
+    Factory class used to support OpenAPI schema generation.
+    """
     def __init__(self, app: Litestar) -> None:
+        """Initialize OpenAPIFactory.
+
+        Args:
+            app: The Litestar instance.
+        """
         self.app = app
         self._initialized = False
 
     @cached_property
     def openapi_schema(self) -> OpenAPI:
+        """Return the OpenAPI schema."""
         return self.openapi_config.to_openapi_schema()
 
     @cached_property
@@ -79,6 +104,13 @@ class OpenAPIFactory:
         )
 
     def add_route(self, route: HTTPRoute) -> None:
+        """Add a route to the OpenAPI schema.
+
+        Create a `PathItem` for the route and add it to the OpenAPI schema's `paths` attribute.
+
+        Args:
+            route: The route to add.
+        """
         if not self.app.openapi_config or not self._initialized:
             return
 
@@ -91,6 +123,12 @@ class OpenAPIFactory:
             self.paths[route.path_format or "/"] = path_item
 
     def initialize(self) -> None:
+        """Initialize the OpenAPIFactory.
+
+        This method is called by the Litestar instance on first access to the OpenAPI schema.
+
+        Before this method is called, any calls to add_route are a no-op.
+        """
         if self._initialized:
             return
 
