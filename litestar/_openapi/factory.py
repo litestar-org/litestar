@@ -49,12 +49,23 @@ class OpenAPIFactory:
 
     @cached_property
     def openapi_config(self) -> OpenAPIConfig:
+        """Return the OpenAPIConfig instance.
+
+        This property exists to narrow the type of the openapi config attribute on the Factory.
+        It returns the OpenAPIConfig instance, which is typed as Optional on the app, but shouldn't
+        ever be None by the time it is getting called in this context.
+        """
         if not self.app.openapi_config:
             raise ImproperlyConfiguredException(OPENAPI_NOT_INITIALIZED)
         return self.app.openapi_config
 
     @cached_property
     def paths(self) -> dict[str, PathItem]:
+        """Return the OpenAPI paths.
+
+        This property exists to narrow the type of the paths attribute on the OpenAPI schema,
+        which is typed as Optional, but shouldn't ever be None at this point.
+        """
         if self.openapi_schema.paths is None:
             raise ImproperlyConfiguredException(OPENAPI_NOT_INITIALIZED)
         return self.openapi_schema.paths
