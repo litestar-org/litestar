@@ -8,7 +8,6 @@ from litestar._openapi.request_body import RequestBodyFactory
 from litestar._openapi.responses import ResponseFactory
 from litestar._openapi.utils import SEPARATORS_CLEANUP_PATTERN
 from litestar.enums import HttpMethod
-from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec import Operation, PathItem
 from litestar.utils.helpers import unwrap_partial
 
@@ -21,11 +20,9 @@ __all__ = ("PathItemFactory",)
 
 
 class PathItemFactory:
-    def __init__(self, openapi_context: OpenAPIContext, route: HTTPRoute, existing_operation_ids: set[str]) -> None:
+    def __init__(self, openapi_context: OpenAPIContext, route: HTTPRoute) -> None:
         self.context = openapi_context
         self.route = route
-        self.existing_operation_ids = existing_operation_ids
-        self.created_operation_ids: set[str] = set()
         self._path_item = PathItem()
 
     def create_path_item(self) -> PathItem:
@@ -87,13 +84,7 @@ class PathItemFactory:
             operation_id = self.context.openapi_config.operation_id_creator(
                 route_handler, http_method, self.route.path_components
             )
-
-        if operation_id in self.existing_operation_ids:
-            raise ImproperlyConfiguredException(
-                f"operation_ids must be unique, "
-                f"please ensure the value of 'operation_id' is either not set or unique for {operation_id}"
-            )
-        self.created_operation_ids.add(operation_id)
+        self.context.add_operation_id(operation_id)
         return operation_id
 
     def get_description_for_handler(self, route_handler: HTTPRouteHandler) -> str | None:

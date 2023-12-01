@@ -22,12 +22,25 @@ class OpenAPIContext:
         self.openapi_config = openapi_config
         self.plugins = plugins
         self.schemas = schemas
+        self.operation_ids: set[str] = set()
+
+    def add_operation_id(self, operation_id: str) -> None:
+        """Add an operation ID to the context.
+
+        Args:
+            operation_id: Operation ID to add.
+        """
+        if operation_id in self.operation_ids:
+            raise ImproperlyConfiguredException(
+                f"operation_ids must be unique, "
+                f"please ensure the value of 'operation_id' is either not set or unique for {operation_id}"
+            )
+        self.operation_ids.add(operation_id)
 
 
 class OpenAPIFactory:
     def __init__(self, app: Litestar) -> None:
         self.app = app
-        self._operation_ids: set[str] = set()
         self._initialized = False
 
     @cached_property
@@ -62,10 +75,9 @@ class OpenAPIFactory:
             any(route_handler.resolve_include_in_schema() for route_handler, _ in route.route_handler_map.values())
             and (route.path_format or "/") not in self.paths
         ):
-            path_item_factory = PathItemFactory(self.openapi_context, route, self._operation_ids)
+            path_item_factory = PathItemFactory(self.openapi_context, route)
             path_item = path_item_factory.create_path_item()
             self.paths[route.path_format or "/"] = path_item
-            self._operation_ids |= path_item_factory.created_operation_ids
 
     def initialize(self) -> None:
         if self._initialized:
