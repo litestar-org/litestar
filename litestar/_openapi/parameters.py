@@ -182,7 +182,7 @@ class ParameterFactory:
                 continue
 
             if provider := self.dependency_providers.get(field_name):
-                self.create_parameters_for_field_definitions(fields=provider.signature_model._fields)
+                self.create_parameters_for_field_definitions(fields=provider.parsed_signature.parameters)
             else:
                 self.parameters.add(self.create_parameter(field_definition=field_definition, parameter_name=field_name))
 
@@ -194,6 +194,6 @@ class ParameterFactory:
 
     def create_parameters_for_handler(self) -> list[Parameter]:
         """Create a list of path/query/header Parameter models for the given PathHandler."""
-        handler_fields = self.route_handler.signature_model._fields if self.route_handler.signature_model else {}
+        handler_fields = self.route_handler.parsed_fn_signature.parameters
         self.create_parameters_for_field_definitions(handler_fields)
         return self.parameters.list()
