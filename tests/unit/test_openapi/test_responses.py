@@ -12,7 +12,7 @@ import pytest
 from typing_extensions import TypeAlias
 
 from litestar import Controller, Litestar, MediaType, Response, get, post
-from litestar._openapi.factory import OpenAPIContext
+from litestar._openapi.datastructures import OpenAPIContext
 from litestar._openapi.responses import (
     ResponseFactory,
     create_error_responses,

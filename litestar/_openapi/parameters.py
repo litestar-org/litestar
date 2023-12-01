@@ -14,7 +14,7 @@ from litestar.types import Empty
 from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
-    from litestar._openapi.factory import OpenAPIContext
+    from litestar._openapi.datastructures import OpenAPIContext
     from litestar.handlers.base import BaseRouteHandler
     from litestar.openapi.spec import Reference
     from litestar.types.internal_types import PathParameterDefinition
