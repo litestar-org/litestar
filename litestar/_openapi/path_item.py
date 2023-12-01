@@ -20,6 +20,7 @@ __all__ = ("PathItemFactory",)
 
 
 class PathItemFactory:
+    """Factory for creating a PathItem instance for a given route."""
     def __init__(self, openapi_context: OpenAPIContext, route: HTTPRoute) -> None:
         self.context = openapi_context
         self.route = route
@@ -46,10 +47,19 @@ class PathItemFactory:
     def create_operation_for_handler_method(
         self, route_handler: HTTPRouteHandler, http_method: HttpMethod
     ) -> Operation:
+        """Create an Operation instance for a given route handler and http method.
+
+        Args:
+            route_handler: A route handler instance.
+            http_method: An HttpMethod enum value.
+
+        Returns:
+            An Operation instance.
+        """
         operation_id = self.create_operation_id(route_handler, http_method)
         parameter_factory = ParameterFactory(self.context, route_handler, self.route.path_parameters)
         parameters = parameter_factory.create_parameters_for_handler()
-        signature_fields = route_handler.signature_model._fields
+        signature_fields = route_handler.parsed_fn_signature.parameters
 
         request_body = None
         if data_field := signature_fields.get("data"):
@@ -75,6 +85,17 @@ class PathItemFactory:
         )
 
     def create_operation_id(self, route_handler: HTTPRouteHandler, http_method: HttpMethod) -> str:
+        """Create an operation id for a given route handler and http method.
+
+        Adds the operation id to the context's operation id set, where it is checked for uniqueness.
+
+        Args:
+            route_handler: A route handler instance.
+            http_method: An HttpMethod enum value.
+
+        Returns:
+            An operation id string.
+        """
         if isinstance(route_handler.operation_id, str):
             operation_id = route_handler.operation_id
         elif callable(route_handler.operation_id):
@@ -87,9 +108,7 @@ class PathItemFactory:
         return operation_id
 
     def get_description_for_handler(self, route_handler: HTTPRouteHandler) -> str | None:
-        """Produce the operation description for a route handler, either by using the description value if provided,
-
-        or the docstring - if config is enabled.
+        """Produce the operation description for a route handler.
 
         Args:
             route_handler: A route handler instance.
