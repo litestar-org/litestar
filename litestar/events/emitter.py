@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import math
 import sys
 from abc import ABC, abstractmethod
@@ -17,15 +18,16 @@ import anyio
 
 from litestar.exceptions import ImproperlyConfiguredException
 
-__all__ = ("BaseEventEmitterBackend", "SimpleEventEmitter")
-
-
 if TYPE_CHECKING:
     from types import TracebackType
 
     from anyio.streams.memory import MemoryObjectReceiveStream, MemoryObjectSendStream
 
     from litestar.events.listener import EventListener
+
+__all__ = ("BaseEventEmitterBackend", "SimpleEventEmitter")
+
+logger = logging.getLogger(__name__)
 
 
 class BaseEventEmitterBackend(AsyncContextManager["BaseEventEmitterBackend"], ABC):
@@ -77,19 +79,25 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
         self._send_stream: MemoryObjectSendStream | None = None
         self._exit_stack: AsyncExitStack | None = None
 
-    @staticmethod
-    async def _worker(receive_stream: MemoryObjectReceiveStream) -> None:
+    async def _worker(self, receive_stream: MemoryObjectReceiveStream) -> None:
         """Run items from ``receive_stream`` in a task group.
 
         Returns:
             None
         """
-        async with receive_stream, anyio.create_task_group() as task_group:
+        async with receive_stream:
             async for item in receive_stream:
-                fn, args, kwargs = item
+                await self._run_listener_in_task_group(*item)
+
+    @staticmethod
+    async def _run_listener_in_task_group(fn: Any, args: tuple[Any], kwargs: dict[str, Any]) -> None:
+        try:
+            async with anyio.create_task_group() as task_group:
                 if kwargs:
                     fn = partial(fn, **kwargs)
                 task_group.start_soon(fn, *args)
+        except Exception as exc:
+            logger.exception("Error in event listener: %s", exc)
 
     async def __aenter__(self) -> SimpleEventEmitter:
         self._exit_stack = AsyncExitStack()
