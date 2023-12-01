@@ -67,14 +67,29 @@ def create_cookie_schema(cookie: Cookie) -> Schema:
 
 
 class ResponseFactory:
+    """Factory for creating a Response instance for a given route handler."""
+
     def __init__(self, context: OpenAPIContext, route_handler: HTTPRouteHandler) -> None:
+        """Initialize the factory.
+
+        Args:
+            context: An OpenAPIContext instance.
+            route_handler: An HTTPRouteHandler instance.
+        """
         self.context = context
         self.route_handler = route_handler
         self.field_definition = route_handler.parsed_fn_signature.return_type
         self.schema_creator = SchemaCreator.from_openapi_context(context, prefer_alias=False)
 
     def create_responses(self, raises_validation_error: bool) -> Responses | None:
-        """Create a Response model embedded in a `Responses` dictionary for the given RouteHandler or return None."""
+        """Create the schema for responses, if any.
+
+        Args:
+            raises_validation_error: Boolean flag indicating whether the handler raises a ValidationException.
+
+        Returns:
+            Responses
+        """
         responses: Responses = {
             str(self.route_handler.status_code): self.create_success_response(),
         }
@@ -92,6 +107,7 @@ class ResponseFactory:
         return responses or None
 
     def create_description(self) -> str:
+        """Create the description for a success response."""
         default_descriptions: dict[Any, str] = {
             Stream: "Stream Response",
             Redirect: "Redirect Response",
@@ -147,6 +163,7 @@ class ResponseFactory:
         return response
 
     def create_redirect_response(self) -> OpenAPIResponse:
+        """Create the schema for a redirect response."""
         return OpenAPIResponse(
             content=None,
             description=self.create_description(),
@@ -158,6 +175,7 @@ class ResponseFactory:
         )
 
     def create_file_response(self) -> OpenAPIResponse:
+        """Create the schema for a file/stream response."""
         return OpenAPIResponse(
             content={
                 self.route_handler.media_type: OpenAPIMediaType(
