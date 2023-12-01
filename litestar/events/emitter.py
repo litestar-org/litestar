@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import logging
 import math
 import sys
 from abc import ABC, abstractmethod
@@ -26,8 +25,6 @@ if TYPE_CHECKING:
     from litestar.events.listener import EventListener
 
 __all__ = ("BaseEventEmitterBackend", "SimpleEventEmitter")
-
-logger = logging.getLogger(__name__)
 
 
 class BaseEventEmitterBackend(AsyncContextManager["BaseEventEmitterBackend"], ABC):
@@ -85,19 +82,12 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
         Returns:
             None
         """
-        async with receive_stream:
+        async with receive_stream, anyio.create_task_group() as task_group:
             async for item in receive_stream:
-                await self._run_listener_in_task_group(*item)
-
-    @staticmethod
-    async def _run_listener_in_task_group(fn: Any, args: tuple[Any], kwargs: dict[str, Any]) -> None:
-        try:
-            async with anyio.create_task_group() as task_group:
+                fn, args, kwargs = item
                 if kwargs:
                     fn = partial(fn, **kwargs)
                 task_group.start_soon(fn, *args)
-        except Exception as exc:
-            logger.exception("Error in event listener: %s", exc)
 
     async def __aenter__(self) -> SimpleEventEmitter:
         self._exit_stack = AsyncExitStack()
