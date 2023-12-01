@@ -21,6 +21,7 @@ __all__ = ("PathItemFactory",)
 
 class PathItemFactory:
     """Factory for creating a PathItem instance for a given route."""
+
     def __init__(self, openapi_context: OpenAPIContext, route: HTTPRoute) -> None:
         self.context = openapi_context
         self.route = route
@@ -63,9 +64,9 @@ class PathItemFactory:
 
         request_body = None
         if data_field := signature_fields.get("data"):
-            request_body = RequestBodyFactory(self.context).create_request_body(
-                route_handler=route_handler, field_definition=data_field
-            )
+            request_body = RequestBodyFactory(
+                self.context, route_handler.handler_id, route_handler.resolve_data_dto(), data_field
+            ).create_request_body()
 
         raises_validation_error = bool("data" in signature_fields or self._path_item.parameters or parameters)
         responses = ResponseFactory(self.context, route_handler).create_responses(
