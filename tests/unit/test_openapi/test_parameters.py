@@ -290,13 +290,13 @@ def test_layered_parameters() -> None:
     assert router3.param_in == ParamType.HEADER
     assert router3.schema.type == OpenAPIType.NUMBER  # type: ignore
     assert router3.required
-    assert router3.schema.multipleOf == 5.0  # type: ignore
+    assert router3.schema.multiple_of == 5.0  # type: ignore
     assert router3.schema.examples  # type: ignore
 
     assert controller1.param_in == ParamType.QUERY
     assert controller1.schema.type == OpenAPIType.INTEGER  # type: ignore
     assert controller1.required
-    assert controller1.schema.exclusiveMaximum == 100.0  # type: ignore
+    assert controller1.schema.exclusive_maximum == 100.0  # type: ignore
     assert controller1.schema.examples  # type: ignore
 
     assert controller3.param_in == ParamType.QUERY

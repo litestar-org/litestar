@@ -115,9 +115,8 @@ explore another example - redirecting the request to a different url from a midd
            else:
                await self.app(scope, receive, send)
 
-As you can see in the above, given some condition (request.session being None) we create a
-:class:`ASGIRedirectResponse <litestar.response.ASGIRedirectResponse>` and then await it. Otherwise, we await ``self.app``
-
+As you can see in the above, given some condition (``request.session`` being None) we create a
+:class:`ASGIRedirectResponse <litestar.response.redirect.ASGIRedirectResponse>` and then await it. Otherwise, we await ``self.app``
 
 Modifying ASGI Requests and Responses using the MiddlewareProtocol
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from docs.examples.contrib.jwt.using_jwt_auth import app
+from docs.examples.security.jwt.using_jwt_auth import app
 
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_401_UNAUTHORIZED
 from litestar.testing import TestClient

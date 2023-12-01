@@ -104,7 +104,7 @@ serializable by Litestar.
     :language: python
     :linenos:
     :lines: 2-3,14-16,45-48,94-101
-    :emphasize-lines: 3,4,6,7,11,16
+    :emphasize-lines: 3,4,6,11
 
 Behavior
 ++++++++

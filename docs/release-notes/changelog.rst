@@ -1024,7 +1024,7 @@
         :pr: 2160
 
         Fix a regression that would make
-        :class:`~litestar.contrib.jwt.JWTAuthenticationMiddleware` authenticate
+        ``litestar.contrib.jwt.JWTAuthenticationMiddleware`` authenticate
         ``OPTIONS`` and ``HEAD`` requests by default.
 
     .. change:: SessionAuth | Regression: ``OPTIONS`` and ``HEAD`` being authenticated by default
@@ -1591,8 +1591,8 @@
         :type: feature
         :pr: 1695
 
-        Add the :attr:`extras <litestar.contrib.jwt.Token.extras>` attribute, containing
-        extra attributes found on the JWT.
+        Add the ``litestar.contrib.jwt.Token.extras`` attribute, containing extra
+        attributes found on the JWT.
 
     .. change:: Add default modes for ``Websocket.iter_json`` and ``WebSocket.iter_data``
         :type: feature
