@@ -8,14 +8,15 @@ from litestar._openapi.factory import OpenAPIContext
 from litestar._openapi.parameters import ParameterFactory
 from litestar._openapi.schema_generation.examples import ExampleFactory
 from litestar._openapi.typescript_converter.schema_parsing import is_schema_value
-from litestar._signature import SignatureModel
 from litestar.di import Provide
 from litestar.enums import ParamType
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.handlers import HTTPRouteHandler
 from litestar.openapi import OpenAPIConfig
 from litestar.openapi.spec import Example, OpenAPI, Schema
 from litestar.openapi.spec.enums import OpenAPIType
 from litestar.params import Dependency, Parameter
+from litestar.routes import BaseRoute
 from litestar.testing import create_test_client
 from litestar.utils import find_index
 
@@ -23,42 +24,31 @@ if TYPE_CHECKING:
     from litestar.openapi.spec.parameter import Parameter as OpenAPIParameter
 
 
-@pytest.fixture()
-def factory() -> ParameterFactory:
+def create_factory(route: BaseRoute, handler: HTTPRouteHandler) -> ParameterFactory:
     return ParameterFactory(
         OpenAPIContext(
             openapi_config=OpenAPIConfig(title="Test API", version="1.0.0", create_examples=True),
             plugins=[],
             schemas={},
-        )
+        ),
+        route_handler=handler,
+        path_parameters=route.path_parameters,
     )
 
 
-def _create_parameters(app: Litestar, path: str, factory: ParameterFactory) -> List["OpenAPIParameter"]:
+def _create_parameters(app: Litestar, path: str) -> List["OpenAPIParameter"]:
     index = find_index(app.routes, lambda x: x.path_format == path)
     route = app.routes[index]
     route_handler = route.route_handler_map["GET"][0]  # type: ignore
-
     handler = route_handler.fn
     assert callable(handler)
-
-    handler_fields = SignatureModel.create(
-        dependency_name_set=set(),
-        fn=handler,
-        data_dto=None,
-        parsed_signature=route_handler.parsed_fn_signature,
-        type_decoders=[],
-    )._fields
-
-    return factory.create_parameter_for_handler(route_handler, handler_fields, route.path_parameters)
+    return create_factory(route, route_handler).create_parameters_for_handler()
 
 
-def test_create_parameters(person_controller: Type[Controller], factory: ParameterFactory) -> None:
+def test_create_parameters(person_controller: Type[Controller]) -> None:
     ExampleFactory.seed_random(10)
 
-    parameters = _create_parameters(
-        app=Litestar(route_handlers=[person_controller]), path="/{service_id}/person", factory=factory
-    )
+    parameters = _create_parameters(app=Litestar(route_handlers=[person_controller]), path="/{service_id}/person")
     assert len(parameters) == 9
     page, name, service_id, page_size, from_date, to_date, gender, secret_header, cookie_value = tuple(parameters)
 
@@ -234,7 +224,7 @@ def test_non_dependency_in_doc_params_if_not_provided() -> None:
     assert "param" in param_name_set
 
 
-def test_layered_parameters(factory: ParameterFactory) -> None:
+def test_layered_parameters() -> None:
     class MyController(Controller):
         path = "/controller"
         parameters = {
@@ -274,7 +264,6 @@ def test_layered_parameters(factory: ParameterFactory) -> None:
             },
         ),
         path="/router/controller/{local}",
-        factory=factory,
     )
     local, app3, controller1, router1, router3, app4, app2, controller3 = tuple(parameters)
 

@@ -23,7 +23,6 @@ __all__ = ("PathItemFactory",)
 class PathItemFactory:
     def __init__(self, openapi_context: OpenAPIContext) -> None:
         self.context = openapi_context
-        self.parameter_factory = ParameterFactory(self.context)
         self.request_body_factory = RequestBodyFactory(self.context)
 
     @cached_property
@@ -51,18 +50,15 @@ class PathItemFactory:
             route_handler, _ = handler_tuple
 
             if route_handler.resolve_include_in_schema():
-                handler_fields = route_handler.signature_model._fields if route_handler.signature_model else {}
-                parameters = self.parameter_factory.create_parameter_for_handler(
-                    route_handler=route_handler,
-                    handler_fields=handler_fields,
-                    path_parameters=route.path_parameters,
-                )
-                raises_validation_error = bool("data" in handler_fields or path_item.parameters or parameters)
+                parameter_factory = ParameterFactory(self.context, route_handler, route.path_parameters)
+                parameters = parameter_factory.create_parameters_for_handler()
+                signature_fields = route_handler.signature_model._fields
+                raises_validation_error = bool("data" in signature_fields or path_item.parameters or parameters)
 
                 request_body = None
-                if "data" in handler_fields:
+                if data_field := signature_fields.get("data"):
                     request_body = self.request_body_factory.create_request_body(
-                        route_handler=route_handler, field_definition=handler_fields["data"]
+                        route_handler=route_handler, field_definition=data_field
                     )
 
                 if isinstance(route_handler.operation_id, str):
