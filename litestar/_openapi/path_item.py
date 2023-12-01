@@ -39,8 +39,7 @@ class PathItemFactory:
 
             operation = self.create_operation_for_handler_method(route_handler, HttpMethod(http_method))
 
-            if route_handler.resolve_include_in_schema():
-                setattr(self._path_item, http_method.lower(), operation)
+            setattr(self._path_item, http_method.lower(), operation)
 
         return self._path_item
 
