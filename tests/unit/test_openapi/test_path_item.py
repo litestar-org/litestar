@@ -1,7 +1,10 @@
+from __future__ import annotations
+
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Type, cast
+from typing import TYPE_CHECKING, Any, Callable, cast
 
 import pytest
+from typing_extensions import TypeAlias
 
 from litestar import Controller, Litestar, Request, Router, get
 from litestar._openapi.factory import OpenAPIContext
@@ -18,14 +21,14 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture()
-def route(person_controller: Type[Controller]) -> "HTTPRoute":
+def route(person_controller: type[Controller]) -> HTTPRoute:
     app = Litestar(route_handlers=[person_controller], openapi_config=None)
     index = find_index(app.routes, lambda x: x.path_format == "/{service_id}/person/{person_id}")
     return cast("HTTPRoute", app.routes[index])
 
 
 @pytest.fixture()
-def routes_with_router(person_controller: Type[Controller]) -> Tuple["HTTPRoute", "HTTPRoute"]:
+def routes_with_router(person_controller: type[Controller]) -> tuple[HTTPRoute, HTTPRoute]:
     class PersonControllerV2(person_controller):  # type: ignore
         pass
 
@@ -37,19 +40,27 @@ def routes_with_router(person_controller: Type[Controller]) -> Tuple["HTTPRoute"
     return cast("HTTPRoute", app.routes[index_v1]), cast("HTTPRoute", app.routes[index_v2])
 
 
+CreateFactoryFixture: TypeAlias = "Callable[[HTTPRoute], PathItemFactory]"
+
+
 @pytest.fixture()
-def factory() -> PathItemFactory:
-    return PathItemFactory(
-        OpenAPIContext(
-            openapi_config=OpenAPIConfig(title="Test", version="1.0.0", description="Test", create_examples=True),
-            plugins=[],
-            schemas={},
+def create_factory() -> CreateFactoryFixture:
+    def factory(route: HTTPRoute) -> PathItemFactory:
+        return PathItemFactory(
+            OpenAPIContext(
+                openapi_config=OpenAPIConfig(title="Test", version="1.0.0", description="Test", create_examples=True),
+                plugins=[],
+                schemas={},
+            ),
+            route,
+            set(),
         )
-    )
+
+    return factory
 
 
-def test_create_path_item(route: "HTTPRoute", factory: PathItemFactory) -> None:
-    schema, _ = factory.create_path_item(route=route)
+def test_create_path_item(route: HTTPRoute, create_factory: CreateFactoryFixture) -> None:
+    schema = create_factory(route).create_path_item()
     assert schema.delete
     assert schema.delete.operation_id == "ServiceIdPersonPersonIdDeletePerson"
     assert schema.delete.summary == "DeletePerson"
@@ -64,7 +75,7 @@ def test_create_path_item(route: "HTTPRoute", factory: PathItemFactory) -> None:
     assert schema.put.summary == "UpdatePerson"
 
 
-def test_unique_operation_ids_for_multiple_http_methods(factory: PathItemFactory) -> None:
+def test_unique_operation_ids_for_multiple_http_methods(create_factory: CreateFactoryFixture) -> None:
     class MultipleMethodsRouteController(Controller):
         path = "/"
 
@@ -75,7 +86,7 @@ def test_unique_operation_ids_for_multiple_http_methods(factory: PathItemFactory
     app = Litestar(route_handlers=[MultipleMethodsRouteController], openapi_config=None)
     index = find_index(app.routes, lambda x: x.path_format == "/")
     route_with_multiple_methods = cast("HTTPRoute", app.routes[index])
-    schema, _ = factory.create_path_item(route=route_with_multiple_methods)
+    schema = create_factory(route_with_multiple_methods).create_path_item()
     assert schema.get
     assert schema.get.operation_id
     assert schema.head
@@ -84,7 +95,7 @@ def test_unique_operation_ids_for_multiple_http_methods(factory: PathItemFactory
 
 
 def test_unique_operation_ids_for_multiple_http_methods_with_handler_level_operation_creator(
-    factory: PathItemFactory
+    create_factory: CreateFactoryFixture
 ) -> None:
     class MultipleMethodsRouteController(Controller):
         path = "/"
@@ -96,8 +107,9 @@ def test_unique_operation_ids_for_multiple_http_methods_with_handler_level_opera
     app = Litestar(route_handlers=[MultipleMethodsRouteController], openapi_config=None)
     index = find_index(app.routes, lambda x: x.path_format == "/")
     route_with_multiple_methods = cast("HTTPRoute", app.routes[index])
+    factory = create_factory(route_with_multiple_methods)
     factory.context.openapi_config.operation_id_creator = lambda x: "abc"  # type: ignore
-    schema, _ = factory.create_path_item(route=route_with_multiple_methods)
+    schema = create_factory(route_with_multiple_methods).create_path_item()
     assert schema.get
     assert schema.get.operation_id
     assert schema.head
@@ -106,28 +118,30 @@ def test_unique_operation_ids_for_multiple_http_methods_with_handler_level_opera
 
 
 def test_routes_with_different_paths_should_generate_unique_operation_ids(
-    routes_with_router: Tuple["HTTPRoute", "HTTPRoute"], factory: PathItemFactory
+    routes_with_router: tuple[HTTPRoute, HTTPRoute], create_factory: CreateFactoryFixture
 ) -> None:
     route_v1, route_v2 = routes_with_router
-    schema_v1, _ = factory.create_path_item(route=route_v1)
-    schema_v2, _ = factory.create_path_item(route=route_v2)
+    schema_v1 = create_factory(route_v1).create_path_item()
+    schema_v2 = create_factory(route_v2).create_path_item()
     assert schema_v1.get
     assert schema_v2.get
     assert schema_v1.get.operation_id != schema_v2.get.operation_id
 
 
-def test_create_path_item_use_handler_docstring_false(route: "HTTPRoute", factory: PathItemFactory) -> None:
+def test_create_path_item_use_handler_docstring_false(route: HTTPRoute, create_factory: CreateFactoryFixture) -> None:
+    factory = create_factory(route)
     assert not factory.context.openapi_config.use_handler_docstrings
-    schema, _ = factory.create_path_item(route=route)
+    schema = factory.create_path_item()
     assert schema.get
     assert schema.get.description is None
     assert schema.patch
     assert schema.patch.description == "Description in decorator"
 
 
-def test_create_path_item_use_handler_docstring_true(route: "HTTPRoute", factory: PathItemFactory) -> None:
+def test_create_path_item_use_handler_docstring_true(route: HTTPRoute, create_factory: CreateFactoryFixture) -> None:
+    factory = create_factory(route)
     factory.context.openapi_config.use_handler_docstrings = True
-    schema, _ = factory.create_path_item(route=route)
+    schema = factory.create_path_item()
     assert schema.get
     assert schema.get.description == "Description in docstring."
     assert schema.patch
@@ -159,7 +173,7 @@ def test_operation_id_validation() -> None:
 def test_operation_override() -> None:
     @dataclass
     class CustomOperation(Operation):
-        x_code_samples: Optional[List[Dict[str, str]]] = field(default=None, metadata={"alias": "x-codeSamples"})
+        x_code_samples: list[dict[str, str]] | None = field(default=None, metadata={"alias": "x-codeSamples"})
 
         def __post_init__(self) -> None:
             self.tags = ["test"]
