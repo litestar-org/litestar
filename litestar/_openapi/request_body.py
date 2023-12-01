@@ -20,12 +20,7 @@ if TYPE_CHECKING:
 class RequestBodyFactory:
     def __init__(self, context: OpenAPIContext) -> None:
         self.context = context
-        self.schema_creator = SchemaCreator(
-            generate_examples=self.context.openapi_config.create_examples,
-            plugins=self.context.plugins,
-            schemas=self.context.schemas,
-            prefer_alias=True,
-        )
+        self.schema_creator = SchemaCreator.from_openapi_context(context, prefer_alias=True)
 
     def create_request_body(
         self, route_handler: BaseRouteHandler, field_definition: FieldDefinition

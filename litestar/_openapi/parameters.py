@@ -87,12 +87,7 @@ class ParameterFactory:
         path_parameters: tuple[PathParameterDefinition, ...],
     ) -> None:
         self.context = context
-        self.schema_creator = SchemaCreator(
-            generate_examples=self.context.openapi_config.create_examples,
-            plugins=self.context.plugins,
-            schemas=self.context.schemas,
-            prefer_alias=True,
-        )
+        self.schema_creator = SchemaCreator.from_openapi_context(self.context, prefer_alias=True)
         self.route_handler = route_handler
         self.parameters = ParameterCollection(route_handler)
         self.dependency_providers = route_handler.resolve_dependencies()
