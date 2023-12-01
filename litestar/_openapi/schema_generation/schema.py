@@ -35,7 +35,7 @@ from uuid import UUID
 
 from msgspec import Struct
 from msgspec.structs import fields as msgspec_struct_fields
-from typing_extensions import NotRequired, Required, get_args
+from typing_extensions import NotRequired, Required, Self, get_args
 
 from litestar._openapi.schema_generation.constrained_fields import (
     create_date_constrained_field_schema,
@@ -73,6 +73,7 @@ from litestar.utils.typing import (
 if TYPE_CHECKING:
     from msgspec.structs import FieldInfo
 
+    from litestar._openapi.factory import OpenAPIContext
     from litestar.openapi.spec import Example
     from litestar.plugins import OpenAPISchemaPluginProtocol
 
@@ -256,14 +257,19 @@ class SchemaCreator:
         self.schemas = schemas if schemas is not None else {}
         self.prefer_alias = prefer_alias
 
+    @classmethod
+    def from_openapi_context(cls, context: OpenAPIContext, prefer_alias: bool = True, **kwargs: Any) -> Self:
+        kwargs.setdefault("generate_examples", context.openapi_config.create_examples)
+        kwargs.setdefault("plugins", context.plugins)
+        kwargs.setdefault("schemas", context.schemas)
+        return cls(**kwargs, prefer_alias=prefer_alias)
+
     @property
     def not_generating_examples(self) -> SchemaCreator:
         """Return a SchemaCreator with generate_examples set to False."""
         if not self.generate_examples:
             return self
-        new = copy(self)
-        new.generate_examples = False
-        return new
+        return type(self)(generate_examples=False, plugins=self.plugins, schemas=self.schemas, prefer_alias=False)
 
     def get_plugin_for(self, field_definition: FieldDefinition) -> OpenAPISchemaPluginProtocol | None:
         return next(

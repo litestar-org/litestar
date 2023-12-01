@@ -71,12 +71,7 @@ class ResponseFactory:
         self.context = context
         self.route_handler = route_handler
         self.field_definition = route_handler.parsed_fn_signature.return_type
-        self.schema_creator = SchemaCreator(
-            generate_examples=self.context.openapi_config.create_examples,
-            plugins=self.context.plugins,
-            schemas=self.context.schemas,
-            prefer_alias=False,
-        )
+        self.schema_creator = SchemaCreator.from_openapi_context(context, prefer_alias=False)
 
     def create_responses(self, raises_validation_error: bool) -> Responses | None:
         """Create a Response model embedded in a `Responses` dictionary for the given RouteHandler or return None."""
@@ -195,9 +190,7 @@ class ResponseFactory:
         if not self.schema_creator.generate_examples:
             schema_creator = self.schema_creator
         else:
-            schema_creator = SchemaCreator(
-                generate_examples=False, plugins=self.context.plugins, schemas=self.context.schemas
-            )
+            schema_creator = SchemaCreator.from_openapi_context(self.context, generate_examples=False)
 
         for response_header in self.route_handler.resolve_response_headers():
             header = OpenAPIHeader()
@@ -226,11 +219,10 @@ class ResponseFactory:
             return
 
         for status_code, additional_response in self.route_handler.responses.items():
-            schema_creator = SchemaCreator(
-                generate_examples=additional_response.generate_examples,
-                plugins=self.context.plugins,
-                schemas=self.context.schemas,
+            schema_creator = SchemaCreator.from_openapi_context(
+                self.context,
                 prefer_alias=False,
+                generate_examples=additional_response.generate_examples,
             )
             schema = schema_creator.for_field_definition(
                 FieldDefinition.from_annotation(additional_response.data_container)
