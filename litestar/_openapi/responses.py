@@ -5,10 +5,10 @@ import re
 from copy import copy
 from dataclasses import asdict
 from http import HTTPStatus
-from inspect import Signature
 from operator import attrgetter
 from typing import TYPE_CHECKING, Any, Iterator
 
+from litestar._openapi.schema_generation import SchemaCreator
 from litestar.enums import MediaType
 from litestar.exceptions import HTTPException, ValidationException
 from litestar.openapi.spec import Example, OpenAPIResponse
@@ -31,18 +31,16 @@ from litestar.typing import FieldDefinition
 from litestar.utils import get_enum_string_value, get_name
 
 if TYPE_CHECKING:
-    from litestar._openapi.schema_generation import SchemaCreator
+    from litestar._openapi.factory import OpenAPIContext
     from litestar.datastructures.cookie import Cookie
     from litestar.handlers.http_handlers import HTTPRouteHandler
     from litestar.openapi.spec.responses import Responses
 
 
 __all__ = (
-    "create_additional_responses",
+    "ResponseFactory",
     "create_cookie_schema",
     "create_error_responses",
-    "create_responses",
-    "create_success_response",
 )
 
 CAPITAL_LETTERS_PATTERN = re.compile(r"(?=[A-Z])")
@@ -68,56 +66,95 @@ def create_cookie_schema(cookie: Cookie) -> Schema:
     return Schema(description=cookie.description or "", example=value)
 
 
-def create_success_response(  # noqa: C901
-    route_handler: HTTPRouteHandler, schema_creator: SchemaCreator
-) -> OpenAPIResponse:
-    """Create the schema for a success response."""
-    field_definition = route_handler.parsed_fn_signature.return_type
-    return_annotation = field_definition.annotation
-    default_descriptions: dict[Any, str] = {
-        Stream: "Stream Response",
-        Redirect: "Redirect Response",
-        File: "File Download",
-    }
-    description = (
-        route_handler.response_description
-        or default_descriptions.get(return_annotation)
-        or HTTPStatus(route_handler.status_code).description
-    )
-
-    if return_annotation is not Signature.empty and not field_definition.is_subclass_of(
-        (NoneType, File, Redirect, Stream, ASGIResponse)
-    ):
-        media_type = route_handler.media_type
-
-        if return_annotation is Template:
-            return_annotation = str
-            media_type = media_type or MediaType.HTML
-
-        elif field_definition.is_subclass_of(LitestarResponse):
-            return_annotation = field_definition.inner_types[0].annotation if field_definition.inner_types else Any
-            media_type = media_type or MediaType.JSON
-
-        if dto := route_handler.resolve_return_dto():
-            result = dto.create_openapi_schema(
-                field_definition=field_definition, handler_id=route_handler.handler_id, schema_creator=schema_creator
-            )
-        else:
-            result = schema_creator.for_field_definition(FieldDefinition.from_annotation(return_annotation))
-
-        schema = result if isinstance(result, Schema) else schema_creator.schemas[result.value]
-
-        schema.content_encoding = route_handler.content_encoding
-        schema.content_media_type = route_handler.content_media_type
-
-        response = OpenAPIResponse(
-            content={get_enum_string_value(media_type): OpenAPIMediaType(schema=result)}, description=description
+class ResponseFactory:
+    def __init__(self, context: OpenAPIContext, route_handler: HTTPRouteHandler) -> None:
+        self.context = context
+        self.route_handler = route_handler
+        self.field_definition = route_handler.parsed_fn_signature.return_type
+        self.schema_creator = SchemaCreator(
+            generate_examples=self.context.openapi_config.create_examples,
+            plugins=self.context.plugins,
+            schemas=self.context.schemas,
+            prefer_alias=False,
         )
 
-    elif field_definition.is_subclass_of(Redirect):
-        response = OpenAPIResponse(
+    def create_responses(self, raises_validation_error: bool) -> Responses | None:
+        """Create a Response model embedded in a `Responses` dictionary for the given RouteHandler or return None."""
+        responses: Responses = {
+            str(self.route_handler.status_code): self.create_success_response(),
+        }
+
+        exceptions = list(self.route_handler.raises or [])
+        if raises_validation_error and ValidationException not in exceptions:
+            exceptions.append(ValidationException)
+
+        for status_code, response in create_error_responses(exceptions=exceptions):
+            responses[status_code] = response
+
+        for status_code, response in self.create_additional_responses():
+            responses[status_code] = response
+
+        return responses or None
+
+    def create_description(self) -> str:
+        default_descriptions: dict[Any, str] = {
+            Stream: "Stream Response",
+            Redirect: "Redirect Response",
+            File: "File Download",
+        }
+        return (
+            self.route_handler.response_description
+            or default_descriptions.get(self.field_definition.annotation)
+            or HTTPStatus(self.route_handler.status_code).description
+        )
+
+    def create_success_response(self) -> OpenAPIResponse:
+        """Create the schema for a success response."""
+        if self.field_definition.is_subclass_of((NoneType, ASGIResponse)):
+            response = OpenAPIResponse(content=None, description=self.create_description())
+        elif self.field_definition.is_subclass_of(Redirect):
+            response = self.create_redirect_response()
+        elif self.field_definition.is_subclass_of((File, Stream)):
+            response = self.create_file_response()
+        else:
+            media_type = self.route_handler.media_type
+
+            if dto := self.route_handler.resolve_return_dto():
+                result = dto.create_openapi_schema(
+                    field_definition=self.field_definition,
+                    handler_id=self.route_handler.handler_id,
+                    schema_creator=self.schema_creator,
+                )
+            else:
+                if self.field_definition.is_subclass_of(Template):
+                    field_def = FieldDefinition.from_annotation(str)
+                    media_type = media_type or MediaType.HTML
+                elif self.field_definition.is_subclass_of(LitestarResponse):
+                    field_def = (
+                        self.field_definition.inner_types[0]
+                        if self.field_definition.inner_types
+                        else FieldDefinition.from_annotation(Any)
+                    )
+                    media_type = media_type or MediaType.JSON
+                else:
+                    field_def = self.field_definition
+
+                result = self.schema_creator.for_field_definition(field_def)
+
+            schema = result if isinstance(result, Schema) else self.context.schemas[result.value]
+            schema.content_encoding = self.route_handler.content_encoding
+            schema.content_media_type = self.route_handler.content_media_type
+            response = OpenAPIResponse(
+                content={get_enum_string_value(media_type): OpenAPIMediaType(schema=result)},
+                description=self.create_description(),
+            )
+        self.set_success_response_headers(response)
+        return response
+
+    def create_redirect_response(self) -> OpenAPIResponse:
+        return OpenAPIResponse(
             content=None,
-            description=description,
+            description=self.create_description(),
             headers={
                 "location": OpenAPIHeader(
                     schema=Schema(type=OpenAPIType.STRING), description="target path for the redirect"
@@ -125,18 +162,18 @@ def create_success_response(  # noqa: C901
             },
         )
 
-    elif field_definition.is_subclass_of((File, Stream)):
-        response = OpenAPIResponse(
+    def create_file_response(self) -> OpenAPIResponse:
+        return OpenAPIResponse(
             content={
-                route_handler.media_type: OpenAPIMediaType(
+                self.route_handler.media_type: OpenAPIMediaType(
                     schema=Schema(
                         type=OpenAPIType.STRING,
-                        content_encoding=route_handler.content_encoding,
-                        content_media_type=route_handler.content_media_type or "application/octet-stream",
+                        content_encoding=self.route_handler.content_encoding,
+                        content_media_type=self.route_handler.content_media_type or "application/octet-stream",
                     ),
                 )
             },
-            description=description,
+            description=self.create_description(),
             headers={
                 "content-length": OpenAPIHeader(
                     schema=Schema(type=OpenAPIType.STRING), description="File size in bytes"
@@ -149,36 +186,62 @@ def create_success_response(  # noqa: C901
             },
         )
 
-    else:
-        response = OpenAPIResponse(
-            content=None,
-            description=description,
-        )
+    def set_success_response_headers(self, response: OpenAPIResponse) -> None:
+        """Set the schema for success response headers, if any."""
 
-    if response.headers is None:
-        response.headers = {}
+        if response.headers is None:
+            response.headers = {}
 
-    no_examples_schema_creator = schema_creator.not_generating_examples
-    for response_header in route_handler.resolve_response_headers():
-        header = OpenAPIHeader()
-        for attribute_name, attribute_value in ((k, v) for k, v in asdict(response_header).items() if v is not None):
-            if attribute_name == "value":
-                header.schema = no_examples_schema_creator.for_field_definition(
-                    FieldDefinition.from_annotation(type(attribute_value))
-                )
-            elif attribute_name != "documentation_only":
-                setattr(header, attribute_name, attribute_value)
-
-        response.headers[response_header.name] = header
-
-    if cookies := route_handler.resolve_response_cookies():
-        response.headers["Set-Cookie"] = OpenAPIHeader(
-            schema=Schema(
-                all_of=[create_cookie_schema(cookie=cookie) for cookie in sorted(cookies, key=attrgetter("key"))]
+        if not self.schema_creator.generate_examples:
+            schema_creator = self.schema_creator
+        else:
+            schema_creator = SchemaCreator(
+                generate_examples=False, plugins=self.context.plugins, schemas=self.context.schemas
             )
-        )
 
-    return response
+        for response_header in self.route_handler.resolve_response_headers():
+            header = OpenAPIHeader()
+            for attribute_name, attribute_value in (
+                (k, v) for k, v in asdict(response_header).items() if v is not None
+            ):
+                if attribute_name == "value":
+                    header.schema = schema_creator.for_field_definition(
+                        FieldDefinition.from_annotation(type(attribute_value))
+                    )
+                elif attribute_name != "documentation_only":
+                    setattr(header, attribute_name, attribute_value)
+
+            response.headers[response_header.name] = header
+
+        if cookies := self.route_handler.resolve_response_cookies():
+            response.headers["Set-Cookie"] = OpenAPIHeader(
+                schema=Schema(
+                    all_of=[create_cookie_schema(cookie=cookie) for cookie in sorted(cookies, key=attrgetter("key"))]
+                )
+            )
+
+    def create_additional_responses(self) -> Iterator[tuple[str, OpenAPIResponse]]:
+        """Create the schema for additional responses, if any."""
+        if not self.route_handler.responses:
+            return
+
+        for status_code, additional_response in self.route_handler.responses.items():
+            schema_creator = SchemaCreator(
+                generate_examples=additional_response.generate_examples,
+                plugins=self.context.plugins,
+                schemas=self.context.schemas,
+                prefer_alias=False,
+            )
+            schema = schema_creator.for_field_definition(
+                FieldDefinition.from_annotation(additional_response.data_container)
+            )
+            yield (
+                str(status_code),
+                OpenAPIResponse(
+                    description=additional_response.description,
+                    content={additional_response.media_type: OpenAPIMediaType(schema=schema)},
+                ),
+            )
 
 
 def create_error_responses(exceptions: list[type[HTTPException]]) -> Iterator[tuple[str, OpenAPIResponse]]:
@@ -235,45 +298,3 @@ def create_error_responses(exceptions: list[type[HTTPException]]) -> Iterator[tu
                 content={MediaType.JSON: OpenAPIMediaType(schema=schema)},
             ),
         )
-
-
-def create_additional_responses(
-    route_handler: HTTPRouteHandler, schema_creator: SchemaCreator
-) -> Iterator[tuple[str, OpenAPIResponse]]:
-    """Create the schema for additional responses, if any."""
-    if not route_handler.responses:
-        return
-
-    schema_creator = copy(schema_creator)
-    for status_code, additional_response in route_handler.responses.items():
-        schema_creator.generate_examples = additional_response.generate_examples
-        schema = schema_creator.for_field_definition(
-            FieldDefinition.from_annotation(additional_response.data_container)
-        )
-        yield (
-            str(status_code),
-            OpenAPIResponse(
-                description=additional_response.description,
-                content={additional_response.media_type: OpenAPIMediaType(schema=schema)},
-            ),
-        )
-
-
-def create_responses(
-    route_handler: HTTPRouteHandler, raises_validation_error: bool, schema_creator: SchemaCreator
-) -> Responses | None:
-    """Create a Response model embedded in a `Responses` dictionary for the given RouteHandler or return None."""
-    responses: Responses = {
-        str(route_handler.status_code): create_success_response(route_handler, schema_creator),
-    }
-
-    exceptions = list(route_handler.raises or [])
-    if raises_validation_error and ValidationException not in exceptions:
-        exceptions.append(ValidationException)
-    for status_code, response in create_error_responses(exceptions=exceptions):
-        responses[status_code] = response
-
-    for status_code, response in create_additional_responses(route_handler, schema_creator):
-        responses[status_code] = response
-
-    return responses or None
