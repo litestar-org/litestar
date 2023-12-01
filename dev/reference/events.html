@@ -1530,6 +1530,21 @@ event ids to listen to.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.events.EventListener.wrap_in_error_handler">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wrap_in_error_handler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="types.html#litestar.types.AsyncAnyCallable" title="litestar.types.AsyncAnyCallable"><span class="pre">AsyncAnyCallable</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="types.html#litestar.types.AsyncAnyCallable" title="litestar.types.AsyncAnyCallable"><span class="pre">AsyncAnyCallable</span></a></span></span><a class="headerlink" href="#litestar.events.EventListener.wrap_in_error_handler" title="Permalink to this definition">#</a></dt>
+<dd><p>Wrap a listener function to handle errors.</p>
+<p>Listeners are executed concurrently in a TaskGroup, so we need to ensure that exceptions do not propagate
+to the task group which results in any other unfinished listeners to be cancelled, and the receive stream to
+be closed.</p>
+<p>See <a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2809">litestar-org/litestar#2809</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fn</strong> – The listener function to wrap.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -1658,6 +1673,7 @@ event ids to listen to.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.events.EventListener"><code class="docutils literal notranslate"><span class="pre">EventListener</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.events.EventListener.__init__"><code class="docutils literal notranslate"><span class="pre">EventListener.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.events.EventListener.__call__"><code class="docutils literal notranslate"><span class="pre">EventListener.__call__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.events.EventListener.wrap_in_error_handler"><code class="docutils literal notranslate"><span class="pre">EventListener.wrap_in_error_handler()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.events.SimpleEventEmitter"><code class="docutils literal notranslate"><span class="pre">SimpleEventEmitter</span></code></a><ul class="visible nav section-nav flex-column">
