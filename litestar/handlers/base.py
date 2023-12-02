@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any, Callable, Mapping, Sequence, cast
 from litestar._signature import SignatureModel
 from litestar.config.app import ExperimentalFeatures
 from litestar.di import Provide
+from litestar.dto import DTOData
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.serialization import default_deserializer, default_serializer
 from litestar.types import (
@@ -196,7 +197,7 @@ class BaseRouteHandler:
                 data_dto=self.resolve_data_dto(),
                 type_decoders=self.resolve_type_decoders(),
             )
-        return cast("type[SignatureModel]", self._signature_model)
+        return self._signature_model
 
     @property
     def fn(self) -> AsyncAnyCallable:
@@ -226,19 +227,19 @@ class BaseRouteHandler:
                 unwrap_partial(self.fn), self.resolve_signature_namespace()
             )
 
-        return cast("ParsedSignature", self._parsed_fn_signature)
+        return self._parsed_fn_signature
 
     @property
     def parsed_return_field(self) -> FieldDefinition:
         if self._parsed_return_field is Empty:
             self._parsed_return_field = self.parsed_fn_signature.return_type
-        return cast("FieldDefinition", self._parsed_return_field)
+        return self._parsed_return_field
 
     @property
     def parsed_data_field(self) -> FieldDefinition | None:
         if self._parsed_data_field is Empty:
             self._parsed_data_field = self.parsed_fn_signature.parameters.get("data")
-        return cast("FieldDefinition | None", self._parsed_data_field)
+        return self._parsed_data_field
 
     @property
     def handler_name(self) -> str:
@@ -322,7 +323,7 @@ class BaseRouteHandler:
                 for key, parameter in parameter_kwargs.items()
             }
 
-        return cast("dict[str, FieldDefinition]", self._resolved_layered_parameters)
+        return self._resolved_layered_parameters
 
     def resolve_guards(self) -> list[Guard]:
         """Return all guards in the handlers scope, starting from highest to current layer."""
@@ -336,7 +337,7 @@ class BaseRouteHandler:
                 "list[Guard]", [ensure_async_callable(guard) for guard in self._resolved_guards]
             )
 
-        return self._resolved_guards  # type:ignore
+        return self._resolved_guards
 
     def resolve_dependencies(self) -> dict[str, Provide]:
         """Return all dependencies correlating to handler function's kwargs that exist in the handler's scope."""
@@ -364,7 +365,7 @@ class BaseRouteHandler:
                         )
 
                     self._resolved_dependencies[key] = provider
-        return cast("dict[str, Provide]", self._resolved_dependencies)
+        return self._resolved_dependencies
 
     def resolve_middleware(self) -> list[Middleware]:
         """Build the middleware stack for the RouteHandler and return it.
@@ -455,7 +456,7 @@ class BaseRouteHandler:
 
             self._resolved_data_dto = data_dto
 
-        return cast("type[AbstractDTO] | None", self._resolved_data_dto)
+        return self._resolved_data_dto
 
     def resolve_return_dto(self) -> type[AbstractDTO] | None:
         """Resolve the return_dto by starting from the route handler and moving up.
@@ -490,7 +491,7 @@ class BaseRouteHandler:
             else:
                 self._resolved_return_dto = None
 
-        return cast("type[AbstractDTO] | None", self._resolved_return_dto)
+        return self._resolved_return_dto
 
     async def authorize_connection(self, connection: ASGIConnection) -> None:
         """Ensure the connection is authorized by running all the route guards in scope."""
@@ -526,6 +527,15 @@ class BaseRouteHandler:
 
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once set by inspecting its return annotations."""
+        if (
+            self.parsed_data_field is not None
+            and self.parsed_data_field.is_subclass_of(DTOData)
+            and not self.resolve_data_dto()
+        ):
+            raise ImproperlyConfiguredException(
+                f"Handler function {self.handler_name} has a data parameter that is a subclass of DTOData but no "
+                "DTO has been registered for it."
+            )
 
     def __str__(self) -> str:
         """Return a unique identifier for the route handler.

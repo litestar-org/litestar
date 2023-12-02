@@ -85,7 +85,16 @@ def _should_create_literal_schema(field_definition: FieldDefinition) -> bool:
 
 
 TYPE_NAME_NORMALIZATION_SUB_REGEX = re.compile(r"[^a-zA-Z0-9]+")
-TYPE_NAME_NORMALIZATION_TRIM_REGEX = re.compile(r"^_+(class_+)?|_+$")
+TYPE_NAME_EXTRACTION_REGEX = re.compile(r"<\w+ '(.+)'")
+
+
+def _replace_non_alphanumeric_match(match: re.Match) -> str:
+    # we don't want to introduce leading or trailing underscores, so we only replace a
+    # char with an underscore if we're not at the beginning or at the end of the
+    # matchable string
+    if match.start() == 0 or match.end() == match.endpos:
+        return ""
+    return "_"
 
 
 def _get_normalized_schema_key(type_annotation_str: str) -> str:
@@ -99,8 +108,11 @@ def _get_normalized_schema_key(type_annotation_str: str) -> str:
     Returns:
         A normalized version of the input string
     """
-    # Use a regular expression to replace non-alphanumeric characters with underscores
-    return TYPE_NAME_NORMALIZATION_TRIM_REGEX.sub("", TYPE_NAME_NORMALIZATION_SUB_REGEX.sub("_", type_annotation_str))
+    # extract names from repr() style annotations like <class 'foo.bar.Baz'>
+    normalized_name = TYPE_NAME_EXTRACTION_REGEX.sub(r"\g<1>", type_annotation_str)
+    # replace all non-alphanumeric characters with underscores, ensuring no leading or
+    # trailing underscores
+    return TYPE_NAME_NORMALIZATION_SUB_REGEX.sub(_replace_non_alphanumeric_match, normalized_name)
 
 
 def get_formatted_examples(field_definition: FieldDefinition, examples: Sequence[Example]) -> Mapping[str, Example]:

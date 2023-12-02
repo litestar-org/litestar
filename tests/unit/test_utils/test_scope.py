@@ -1,44 +1,72 @@
-from typing import TYPE_CHECKING
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Callable
 
 import pytest
 
-from litestar.constants import SCOPE_STATE_NAMESPACE
+from litestar.types.empty import Empty
 from litestar.utils import (
+    delete_litestar_scope_state,
     get_litestar_scope_state,
     set_litestar_scope_state,
 )
+from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
-    from litestar.types.asgi_types import HTTPScope
+    from litestar.types.asgi_types import Scope
 
 
 @pytest.fixture()
-def scope() -> "HTTPScope":
-    return {"state": {}}  # type:ignore[typeddict-item]
+def scope(create_scope: Callable[..., Scope]) -> Scope:
+    return create_scope()
 
 
-def test_get_litestar_scope_state_without_default_does_not_set_key_in_scope_state(scope: "HTTPScope") -> None:
-    get_litestar_scope_state(scope, "key")
-    assert SCOPE_STATE_NAMESPACE in scope["state"]
-    assert "key" not in scope["state"][SCOPE_STATE_NAMESPACE]
-
-
-def test_get_litestar_scope_state_with_default_does_not_set_key_in_scope_state(scope: "HTTPScope") -> None:
-    value = get_litestar_scope_state(scope, "key", "value")
-    assert SCOPE_STATE_NAMESPACE in scope["state"]
-    assert value == "value"
-    assert "key" not in scope["state"][SCOPE_STATE_NAMESPACE]
-
-
-def test_get_litestar_scope_state_removes_value_from_state(scope: "HTTPScope") -> None:
+@pytest.mark.parametrize(("pop",), [(True,), (False,)])
+def test_get_litestar_scope_state_arbitrary_value(pop: bool, scope: Scope) -> None:
     key = "test"
     value = {"key": "value"}
-    scope["state"][SCOPE_STATE_NAMESPACE] = {key: value}
-    retrieved_value = get_litestar_scope_state(scope, key, pop=True)
+    connection_state = ScopeState.from_scope(scope)
+    connection_state._compat_ns[key] = value
+    retrieved_value = get_litestar_scope_state(scope, key, pop=pop)
     assert retrieved_value == value
-    assert key not in scope["state"][SCOPE_STATE_NAMESPACE]
+    if pop:
+        assert connection_state._compat_ns.get(key) is None
+    else:
+        assert connection_state._compat_ns.get(key) == value
 
 
-def test_set_litestar_scope_state(scope: "HTTPScope") -> None:
+@pytest.mark.parametrize(("pop",), [(True,), (False,)])
+def test_get_litestar_scope_state_defined_value(pop: bool, scope: Scope) -> None:
+    connection_state = ScopeState.from_scope(scope)
+    connection_state.is_cached = True
+    assert get_litestar_scope_state(scope, "is_cached", pop=pop) is True
+    if pop:
+        assert connection_state.is_cached is Empty  # type: ignore[comparison-overlap]
+    else:
+        assert connection_state.is_cached is True
+
+
+def test_set_litestar_scope_state_arbitrary_value(scope: Scope) -> None:
+    connection_state = ScopeState.from_scope(scope)
     set_litestar_scope_state(scope, "key", "value")
-    assert scope["state"][SCOPE_STATE_NAMESPACE]["key"] == "value"
+    assert connection_state._compat_ns["key"] == "value"
+
+
+def test_set_litestar_scope_state_defined_value(scope: Scope) -> None:
+    connection_state = ScopeState.from_scope(scope)
+    set_litestar_scope_state(scope, "is_cached", True)
+    assert connection_state.is_cached is True
+
+
+def test_delete_litestar_scope_state_arbitrary_value(scope: Scope) -> None:
+    connection_state = ScopeState.from_scope(scope)
+    connection_state._compat_ns["key"] = "value"
+    delete_litestar_scope_state(scope, "key")
+    assert "key" not in connection_state._compat_ns
+
+
+def test_delete_litestar_scope_state_defined_value(scope: Scope) -> None:
+    connection_state = ScopeState.from_scope(scope)
+    connection_state.is_cached = True
+    delete_litestar_scope_state(scope, "is_cached")
+    assert connection_state.is_cached is Empty  # type: ignore[comparison-overlap]

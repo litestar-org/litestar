@@ -9,9 +9,7 @@ from litestar.datastructures.state import State
 from litestar.datastructures.url import URL, Address, make_absolute_url
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types.empty import Empty
-
-__all__ = ("ASGIConnection", "empty_receive", "empty_send")
-
+from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
     from typing import NoReturn
@@ -20,6 +18,8 @@ if TYPE_CHECKING:
     from litestar.types import DataContainerType, EmptyType
     from litestar.types.asgi_types import Message, Receive, Scope, Send
     from litestar.types.protocols import Logger
+
+__all__ = ("ASGIConnection", "empty_receive", "empty_send")
 
 UserT = TypeVar("UserT")
 AuthT = TypeVar("AuthT")
@@ -55,7 +55,17 @@ async def empty_send(_: Message) -> NoReturn:  # pragma: no cover
 class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
     """The base ASGI connection container."""
 
-    __slots__ = ("scope", "receive", "send", "_base_url", "_url", "_parsed_query", "_cookies")
+    __slots__ = (
+        "scope",
+        "receive",
+        "send",
+        "_base_url",
+        "_url",
+        "_parsed_query",
+        "_cookies",
+        "_server_extensions",
+        "_connection_state",
+    )
 
     scope: Scope
     """The ASGI scope attached to the connection."""
@@ -75,10 +85,12 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         self.scope = scope
         self.receive = receive
         self.send = send
-        self._base_url: Any = scope.get("_base_url", Empty)
-        self._url: Any = scope.get("_url", Empty)
-        self._parsed_query: Any = scope.get("_parsed_query", Empty)
-        self._cookies: Any = scope.get("_cookies", Empty)
+        self._connection_state = ScopeState.from_scope(scope)
+        self._base_url: URL | EmptyType = Empty
+        self._url: URL | EmptyType = Empty
+        self._parsed_query: tuple[tuple[str, str], ...] | EmptyType = Empty
+        self._cookies: dict[str, str] | EmptyType = Empty
+        self._server_extensions = scope.get("extensions") or {}  # extensions may be None
 
     @property
     def app(self) -> Litestar:
@@ -115,9 +127,12 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
             A URL instance constructed from the request's scope.
         """
         if self._url is Empty:
-            self._url = self.scope["_url"] = URL.from_scope(self.scope)  # type: ignore[typeddict-unknown-key]
+            if (url := self._connection_state.url) is not Empty:
+                self._url = url
+            else:
+                self._connection_state.url = self._url = URL.from_scope(self.scope)
 
-        return cast("URL", self._url)
+        return self._url
 
     @property
     def base_url(self) -> URL:
@@ -128,15 +143,20 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
             (host + domain + prefix) of the request.
         """
         if self._base_url is Empty:
-            scope = {
-                **self.scope,
-                "path": "/",
-                "query_string": b"",
-                "root_path": self.scope.get("app_root_path") or self.scope.get("root_path", ""),
-            }
-            self._base_url = self.scope["_base_url"] = URL.from_scope(cast("Scope", scope))  # type: ignore[typeddict-unknown-key]
-
-        return cast("URL", self._base_url)
+            if (base_url := self._connection_state.base_url) is not Empty:
+                self._base_url = base_url
+            else:
+                scope = cast(
+                    "Scope",
+                    {
+                        **self.scope,
+                        "path": "/",
+                        "query_string": b"",
+                        "root_path": self.scope.get("app_root_path") or self.scope.get("root_path", ""),
+                    },
+                )
+                self._connection_state.base_url = self._base_url = URL.from_scope(scope)
+        return self._base_url
 
     @property
     def headers(self) -> Headers:
@@ -155,8 +175,12 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
             A normalized dict of query parameters. Multiple values for the same key are returned as a list.
         """
         if self._parsed_query is Empty:
-            self._parsed_query = self.scope["_parsed_query"] = parse_query_string(self.scope.get("query_string", b""))  # type: ignore
-
+            if (parsed_query := self._connection_state.parsed_query) is not Empty:
+                self._parsed_query = parsed_query
+            else:
+                self._connection_state.parsed_query = self._parsed_query = parse_query_string(
+                    self.scope.get("query_string", b"")
+                )
         return MultiDict(self._parsed_query)
 
     @property
@@ -176,13 +200,13 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
             Returns any cookies stored in the header as a parsed dictionary.
         """
         if self._cookies is Empty:
-            cookies: dict[str, str] = {}
-            if cookie_header := self.headers.get("cookie"):
-                cookies = parse_cookie_string(cookie_header)
-
-            self._cookies = self.scope["_cookies"] = cookies  # type: ignore[typeddict-unknown-key]
-
-        return cast("dict[str, str]", self._cookies)
+            if (cookies := self._connection_state.cookies) is not Empty:
+                self._cookies = cookies
+            else:
+                self._connection_state.cookies = self._cookies = (
+                    parse_cookie_string(cookie_header) if (cookie_header := self.headers.get("cookie")) else {}
+                )
+        return self._cookies
 
     @property
     def client(self) -> Address | None:

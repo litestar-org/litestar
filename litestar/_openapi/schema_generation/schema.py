@@ -58,6 +58,7 @@ from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagin
 from litestar.params import BodyKwarg, ParameterKwarg
 from litestar.plugins import OpenAPISchemaPlugin
 from litestar.types import Empty
+from litestar.types.builtin_types import NoneType
 from litestar.typing import FieldDefinition
 from litestar.utils.helpers import get_name
 from litestar.utils.predicates import (
@@ -77,24 +78,25 @@ if TYPE_CHECKING:
     from litestar.plugins import OpenAPISchemaPluginProtocol
 
 KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP: dict[str, str] = {
-    "content_encoding": "contentEncoding",
+    "content_encoding": "content_encoding",
     "default": "default",
     "description": "description",
     "enum": "enum",
     "examples": "examples",
-    "external_docs": "externalDocs",
+    "external_docs": "external_docs",
     "format": "format",
     "ge": "minimum",
-    "gt": "exclusiveMinimum",
+    "gt": "exclusive_minimum",
     "le": "maximum",
-    "lt": "exclusiveMaximum",
-    "max_items": "maxItems",
-    "max_length": "maxLength",
-    "min_items": "minItems",
-    "min_length": "minLength",
-    "multiple_of": "multipleOf",
+    "lt": "exclusive_maximum",
+    "max_items": "max_items",
+    "max_length": "max_length",
+    "min_items": "min_items",
+    "min_length": "min_length",
+    "multiple_of": "multiple_of",
     "pattern": "pattern",
     "title": "title",
+    "read_only": "read_only",
 }
 
 TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
@@ -115,6 +117,7 @@ TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
     MutableMapping: Schema(type=OpenAPIType.OBJECT),
     MutableSequence: Schema(type=OpenAPIType.ARRAY),
     None: Schema(type=OpenAPIType.NULL),
+    NoneType: Schema(type=OpenAPIType.NULL),
     OrderedDict: Schema(type=OpenAPIType.OBJECT),
     Path: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URI),
     Pattern: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.REGEX),
@@ -143,6 +146,29 @@ TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
         content_media_type="application/octet-stream",
     ),
 }
+
+
+def _types_in_list(lst: list[Any]) -> list[OpenAPIType] | OpenAPIType:
+    """Extract unique OpenAPITypes present in the values of a list.
+
+    Args:
+        lst: A list of values
+
+    Returns:
+        OpenAPIType in the given list. If more then one exists, return
+        a list of OpenAPITypes.
+    """
+    schema_types: list[OpenAPIType] = []
+    for item in lst:
+        schema_type = TYPE_MAP[type(item)].type
+        if isinstance(schema_type, OpenAPIType):
+            schema_types.append(schema_type)
+        elif schema_type is None:
+            raise RuntimeError("Item in TYPE_MAP must have a type that is not None")
+        else:
+            schema_types.extend(schema_type)
+    schema_types = list(set(schema_types))
+    return schema_types[0] if len(schema_types) == 1 else schema_types
 
 
 def _get_type_schema_name(field_definition: FieldDefinition) -> str:
@@ -177,10 +203,9 @@ def create_enum_schema(annotation: EnumMeta, include_null: bool = False) -> Sche
         A schema instance.
     """
     enum_values: list[str | int | None] = [v.value for v in annotation]  # type: ignore
-    if include_null:
+    if include_null and None not in enum_values:
         enum_values.append(None)
-    openapi_type = OpenAPIType.STRING if isinstance(enum_values[0], str) else OpenAPIType.INTEGER
-    return Schema(type=openapi_type, enum=enum_values)
+    return Schema(type=_types_in_list(enum_values), enum=enum_values)
 
 
 def _iter_flat_literal_args(annotation: Any) -> Iterable[Any]:
@@ -210,9 +235,9 @@ def create_literal_schema(annotation: Any, include_null: bool = False) -> Schema
         A schema instance.
     """
     args = list(_iter_flat_literal_args(annotation))
-    if include_null:
+    if include_null and None not in args:
         args.append(None)
-    schema = copy(TYPE_MAP[type(args[0])])
+    schema = Schema(type=_types_in_list(args))
     if len(args) > 1:
         schema.enum = args
     else:
@@ -644,7 +669,14 @@ class SchemaCreator:
                     if schema_key == "examples":
                         value = get_formatted_examples(field, cast("list[Example]", value))
 
-                    setattr(schema, schema_key, value)
+                    # we only want to transfer values from the `KwargDefinition` to `Schema` if the schema object
+                    # doesn't already have a value for that property. For example, if a field is a constrained date,
+                    # by this point, we have already set the `exclusive_minimum` and/or `exclusive_maximum` fields
+                    # to floating point timestamp values on the schema object. However, the original `date` objects
+                    # that define those constraints on `KwargDefinition` are still `date` objects. We don't want to
+                    # overwrite them here.
+                    if getattr(schema, schema_key, None) is None:
+                        setattr(schema, schema_key, value)
 
         if not schema.examples and self.generate_examples:
             from litestar._openapi.schema_generation.examples import create_examples_for_field
