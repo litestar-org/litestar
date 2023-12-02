@@ -419,7 +419,7 @@ implemented are:
 
 
 :class:`PsycoPgChannelsBackend <.psycopg.AsyncPgChannelsBackend>`
-    A postgres backend using the `psycopg3 <https://www.psycopg.org/psycopg3/docs/>`
+    A postgres backend using the `psycopg3 <https://www.psycopg.org/psycopg3/docs/>`_
     async driver
 
 
