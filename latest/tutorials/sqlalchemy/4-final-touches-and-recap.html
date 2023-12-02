@@ -1343,6 +1343,14 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../reference/router.html">router</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/routes.html">routes</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/security/jwt.html"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth</span></code></a></li>
+
+
+
+
+
+
+
 <li class="toctree-l3"><a class="reference internal" href="../../reference/security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
@@ -1513,10 +1521,10 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 6</span><span class="kn">from</span> <span class="nn">sqlalchemy.ext.asyncio</span> <span class="kn">import</span> <span class="n">AsyncSession</span>
 <span class="linenos"> 7</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">DeclarativeBase</span><span class="p">,</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span>
 <span class="linenos"> 8</span>
-<span class="hll"><span class="linenos"> 9</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">put</span>
-</span><span class="linenos">10</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.plugins</span> <span class="kn">import</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span> <span class="n">SQLAlchemyPlugin</span>
-<span class="linenos">11</span><span class="kn">from</span> <span class="nn">litestar.exceptions</span> <span class="kn">import</span> <span class="n">ClientException</span><span class="p">,</span> <span class="n">NotFoundException</span>
-<span class="linenos">12</span><span class="kn">from</span> <span class="nn">litestar.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_409_CONFLICT</span>
+<span class="linenos"> 9</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">put</span>
+<span class="linenos">10</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.plugins</span> <span class="kn">import</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span> <span class="n">SQLAlchemyPlugin</span>
+<span class="hll"><span class="linenos">11</span><span class="kn">from</span> <span class="nn">litestar.exceptions</span> <span class="kn">import</span> <span class="n">ClientException</span><span class="p">,</span> <span class="n">NotFoundException</span>
+</span><span class="linenos">12</span><span class="kn">from</span> <span class="nn">litestar.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_409_CONFLICT</span>
 <span class="linenos">13</span>
 <span class="linenos">14</span>
 <span class="linenos">15</span><span class="k">class</span> <span class="nc">Base</span><span class="p">(</span><span class="n">DeclarativeBase</span><span class="p">):</span>
@@ -1583,9 +1591,9 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="linenos">76</span>    <span class="n">metadata</span><span class="o">=</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="p">,</span>
 <span class="linenos">77</span>    <span class="n">create_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="linenos">78</span>    <span class="n">before_send_handler</span><span class="o">=</span><span class="n">autocommit_before_send_handler</span><span class="p">,</span>
-<span class="linenos">79</span><span class="p">)</span>
-<span class="hll"><span class="linenos">80</span>
-</span><span class="linenos">81</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+<span class="hll"><span class="linenos">79</span><span class="p">)</span>
+</span><span class="linenos">80</span>
+<span class="linenos">81</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
 <span class="linenos">82</span>    <span class="p">[</span><span class="n">get_list</span><span class="p">,</span> <span class="n">add_item</span><span class="p">,</span> <span class="n">update_item</span><span class="p">],</span>
 <span class="linenos">83</span>    <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;transaction&quot;</span><span class="p">:</span> <span class="n">provide_transaction</span><span class="p">},</span>
 <span class="linenos">84</span>    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemyPlugin</span><span class="p">(</span><span class="n">db_config</span><span class="p">)],</span>
@@ -1604,10 +1612,10 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 6</span><span class="kn">from</span> <span class="nn">sqlalchemy.exc</span> <span class="kn">import</span> <span class="n">IntegrityError</span><span class="p">,</span> <span class="n">NoResultFound</span>
 <span class="linenos"> 7</span><span class="kn">from</span> <span class="nn">sqlalchemy.ext.asyncio</span> <span class="kn">import</span> <span class="n">AsyncSession</span>
 <span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">DeclarativeBase</span><span class="p">,</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span>
-<span class="hll"><span class="linenos"> 9</span>
-</span><span class="linenos">10</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">put</span>
-<span class="linenos">11</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.plugins</span> <span class="kn">import</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span> <span class="n">SQLAlchemyPlugin</span>
-<span class="linenos">12</span><span class="kn">from</span> <span class="nn">litestar.exceptions</span> <span class="kn">import</span> <span class="n">ClientException</span><span class="p">,</span> <span class="n">NotFoundException</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">put</span>
+<span class="hll"><span class="linenos">11</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.plugins</span> <span class="kn">import</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span> <span class="n">SQLAlchemyPlugin</span>
+</span><span class="linenos">12</span><span class="kn">from</span> <span class="nn">litestar.exceptions</span> <span class="kn">import</span> <span class="n">ClientException</span><span class="p">,</span> <span class="n">NotFoundException</span>
 <span class="linenos">13</span><span class="kn">from</span> <span class="nn">litestar.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_409_CONFLICT</span>
 <span class="linenos">14</span>
 <span class="linenos">15</span>
@@ -1674,9 +1682,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="linenos">76</span>    <span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///todo.sqlite&quot;</span><span class="p">,</span>
 <span class="linenos">77</span>    <span class="n">metadata</span><span class="o">=</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="p">,</span>
 <span class="linenos">78</span>    <span class="n">create_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="linenos">79</span>    <span class="n">before_send_handler</span><span class="o">=</span><span class="n">autocommit_before_send_handler</span><span class="p">,</span>
-<span class="hll"><span class="linenos">80</span><span class="p">)</span>
-</span><span class="linenos">81</span>
+<span class="hll"><span class="linenos">79</span>    <span class="n">before_send_handler</span><span class="o">=</span><span class="n">autocommit_before_send_handler</span><span class="p">,</span>
+</span><span class="linenos">80</span><span class="p">)</span>
+<span class="linenos">81</span>
 <span class="linenos">82</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
 <span class="linenos">83</span>    <span class="p">[</span><span class="n">get_list</span><span class="p">,</span> <span class="n">add_item</span><span class="p">,</span> <span class="n">update_item</span><span class="p">],</span>
 <span class="linenos">84</span>    <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;transaction&quot;</span><span class="p">:</span> <span class="n">provide_transaction</span><span class="p">},</span>

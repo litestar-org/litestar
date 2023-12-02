@@ -1342,6 +1342,14 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="reference/router.html">router</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/routes.html">routes</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/security/jwt.html"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth</span></code></a></li>
+
+
+
+
+
+
+
 <li class="toctree-l3"><a class="reference internal" href="reference/security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
@@ -1570,6 +1578,7 @@ you should see the responses of your two endpoints:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">http://localhost:8000/schema</span></code> (for <a class="reference external" href="https://redocly.com/redoc">ReDoc</a>),</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">http://localhost:8000/schema/swagger</span></code> (for <a class="reference external" href="https://swagger.io/">Swagger UI</a>),</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">http://localhost:8000/schema/elements</span></code> (for <a class="reference external" href="https://stoplight.io/open-source/elements/">Stoplight Elements</a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">http://localhost:8000/schema/rapidoc</span></code> (for <a class="reference external" href="https://rapidocweb.com/">RapiDoc</a>)</p></li>
 </ul>
 </div>
 <p>You can check out a more in-depth tutorial in the <a class="reference internal" href="tutorials/todo-app/index.html"><span class="doc">Developing a basic TODO application</span></a> section!</p>
@@ -1842,12 +1851,13 @@ Django” (for example, it will never feature its own ORM), but its scope is not
 <section id="example-applications">
 <h2>Example Applications<a class="headerlink" href="#example-applications" title="Permalink to this heading">#</a></h2>
 <ul class="simple">
-<li><p><a class="reference external" href="https://github.com/litestar-org/starlite-pg-redis-docker">litestar-pg-redis-docker</a> : In addition to Litestar, this
+<li><p><a class="reference external" href="https://github.com/litestar-org/litestar-pg-redis-docker">litestar-pg-redis-docker</a> : In addition to Litestar, this
 demonstrates a pattern of application modularity, SQLAlchemy 2.0 ORM, Redis cache connectivity, and more. Like all
 Litestar projects, this application is open to contributions, big and small.</p></li>
-<li><p><a class="reference external" href="https://github.com/litestar-org/litestar-fullstack">litestar-fullstack</a> : A reference application that features a
-Litestar app configured with best practices, SQLAlchemy 2.0 and SAQ, a frontend integrated with Vitejs and Jinja2
-templates. Docker, and more.</p></li>
+<li><p><a class="reference external" href="https://github.com/litestar-org/litestar-fullstack">litestar-fullstack</a> : A fully-capable, production-ready fullstack
+Litestar web application configured with best practices. It includes SQLAlchemy 2.0, VueJS, <a class="reference external" href="https://vitejs.dev/">Vite</a>,
+<a href="#id2"><span class="problematic" id="id3">:doc:`SAQ job queue &lt;https://saq-py.readthedocs.io/en/latest/&gt;`_</span></a>, <code class="docutils literal notranslate"><span class="pre">Jinja</span></code> templates and more.
+<a class="reference external" href="https://litestar-org.github.io/litestar-fullstack/latest/">Read more</a>.</p></li>
 <li><p><a class="reference external" href="https://github.com/litestar-org/litestar-hello-world">litestar-hello-world</a>: A bare-minimum application setup.
 Great for testing and POC work.</p></li>
 </ul>

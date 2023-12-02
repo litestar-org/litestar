@@ -1343,6 +1343,14 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../reference/router.html">router</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/routes.html">routes</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/security/jwt.html"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth</span></code></a></li>
+
+
+
+
+
+
+
 <li class="toctree-l3"><a class="reference internal" href="../../reference/security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
@@ -1499,7 +1507,7 @@ and <code class="docutils literal notranslate"><span class="pre">cryptography</s
 <section id="jwt-auth-backend">
 <h2>JWT Auth Backend<a class="headerlink" href="#jwt-auth-backend" title="Permalink to this heading">#</a></h2>
 <p>This is the base JWT Auth backend. You can read about its particular API in
-the <a class="reference internal" href="../../reference/contrib/jwt.html#litestar.contrib.jwt.JWTAuth" title="litestar.contrib.jwt.JWTAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">API</span> <span class="pre">Reference</span></code></a>. It sends the JWT token using a header - and it expects requests to
+the <a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.JWTAuth" title="litestar.security.jwt.JWTAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">API</span> <span class="pre">Reference</span></code></a>. It sends the JWT token using a header - and it expects requests to
 send the JWT token using the same header key.</p>
 <div class="sd-tab-set docutils">
 <input id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
@@ -1515,8 +1523,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
 <span class="kn">from</span> <span class="nn">litestar.connection</span> <span class="kn">import</span> <span class="n">ASGIConnection</span>
-<span class="kn">from</span> <span class="nn">litestar.contrib.jwt</span> <span class="kn">import</span> <span class="n">JWTAuth</span><span class="p">,</span> <span class="n">Token</span>
 <span class="kn">from</span> <span class="nn">litestar.openapi.config</span> <span class="kn">import</span> <span class="n">OpenAPIConfig</span>
+<span class="kn">from</span> <span class="nn">litestar.security.jwt</span> <span class="kn">import</span> <span class="n">JWTAuth</span><span class="p">,</span> <span class="n">Token</span>
 
 
 <span class="c1"># Let&#39;s assume we have a User model that is a pydantic model.</span>
@@ -1600,8 +1608,8 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
 <span class="kn">from</span> <span class="nn">litestar.connection</span> <span class="kn">import</span> <span class="n">ASGIConnection</span>
-<span class="kn">from</span> <span class="nn">litestar.contrib.jwt</span> <span class="kn">import</span> <span class="n">JWTAuth</span><span class="p">,</span> <span class="n">Token</span>
 <span class="kn">from</span> <span class="nn">litestar.openapi.config</span> <span class="kn">import</span> <span class="n">OpenAPIConfig</span>
+<span class="kn">from</span> <span class="nn">litestar.security.jwt</span> <span class="kn">import</span> <span class="n">JWTAuth</span><span class="p">,</span> <span class="n">Token</span>
 
 
 <span class="c1"># Let&#39;s assume we have a User model that is a pydantic model.</span>
@@ -1676,7 +1684,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </section>
 <section id="jwt-cookie-auth-backend">
 <h2>JWT Cookie Auth Backend<a class="headerlink" href="#jwt-cookie-auth-backend" title="Permalink to this heading">#</a></h2>
-<p>This backend inherits from the <a class="reference internal" href="../../reference/contrib/jwt.html#litestar.contrib.jwt.JWTAuth" title="litestar.contrib.jwt.JWTAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWTAuth</span></code></a> backend, with the difference being that instead
+<p>This backend inherits from the <a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.JWTAuth" title="litestar.security.jwt.JWTAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWTAuth</span></code></a> backend, with the difference being that instead
 of using a header for the JWT Token, it uses a cookie.</p>
 <div class="sd-tab-set docutils">
 <input id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
@@ -1692,8 +1700,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
 <span class="kn">from</span> <span class="nn">litestar.connection</span> <span class="kn">import</span> <span class="n">ASGIConnection</span>
-<span class="kn">from</span> <span class="nn">litestar.contrib.jwt</span> <span class="kn">import</span> <span class="n">JWTCookieAuth</span><span class="p">,</span> <span class="n">Token</span>
 <span class="kn">from</span> <span class="nn">litestar.openapi.config</span> <span class="kn">import</span> <span class="n">OpenAPIConfig</span>
+<span class="kn">from</span> <span class="nn">litestar.security.jwt</span> <span class="kn">import</span> <span class="n">JWTCookieAuth</span><span class="p">,</span> <span class="n">Token</span>
 
 
 <span class="c1"># Let&#39;s assume we have a User model that is a pydantic model.</span>
@@ -1777,8 +1785,8 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
 <span class="kn">from</span> <span class="nn">litestar.connection</span> <span class="kn">import</span> <span class="n">ASGIConnection</span>
-<span class="kn">from</span> <span class="nn">litestar.contrib.jwt</span> <span class="kn">import</span> <span class="n">JWTCookieAuth</span><span class="p">,</span> <span class="n">Token</span>
 <span class="kn">from</span> <span class="nn">litestar.openapi.config</span> <span class="kn">import</span> <span class="n">OpenAPIConfig</span>
+<span class="kn">from</span> <span class="nn">litestar.security.jwt</span> <span class="kn">import</span> <span class="n">JWTCookieAuth</span><span class="p">,</span> <span class="n">Token</span>
 
 
 <span class="c1"># Let&#39;s assume we have a User model that is a pydantic model.</span>
@@ -1853,7 +1861,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </section>
 <section id="oauth2-bearer-password-flow">
 <h2>OAuth2 Bearer Password Flow<a class="headerlink" href="#oauth2-bearer-password-flow" title="Permalink to this heading">#</a></h2>
-<p>This backend inherits from the <a class="reference internal" href="../../reference/contrib/jwt.html#litestar.contrib.jwt.JWTCookieAuth" title="litestar.contrib.jwt.JWTCookieAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWTCookieAuth</span></code></a> backend. It works similarly to
+<p>This backend inherits from the <a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.JWTCookieAuth" title="litestar.security.jwt.JWTCookieAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWTCookieAuth</span></code></a> backend. It works similarly to
 the <code class="docutils literal notranslate"><span class="pre">JWTCookieAuth</span></code> backend, but is meant to be used for OAUTH2 Bearer password flows.</p>
 <div class="sd-tab-set docutils">
 <input id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
@@ -1869,8 +1877,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
 <span class="kn">from</span> <span class="nn">litestar.connection</span> <span class="kn">import</span> <span class="n">ASGIConnection</span>
-<span class="kn">from</span> <span class="nn">litestar.contrib.jwt</span> <span class="kn">import</span> <span class="n">OAuth2Login</span><span class="p">,</span> <span class="n">OAuth2PasswordBearerAuth</span><span class="p">,</span> <span class="n">Token</span>
 <span class="kn">from</span> <span class="nn">litestar.openapi.config</span> <span class="kn">import</span> <span class="n">OpenAPIConfig</span>
+<span class="kn">from</span> <span class="nn">litestar.security.jwt</span> <span class="kn">import</span> <span class="n">OAuth2Login</span><span class="p">,</span> <span class="n">OAuth2PasswordBearerAuth</span><span class="p">,</span> <span class="n">Token</span>
 
 
 <span class="c1"># Let&#39;s assume we have a User model that is a pydantic model.</span>
@@ -1967,8 +1975,8 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
 <span class="kn">from</span> <span class="nn">litestar.connection</span> <span class="kn">import</span> <span class="n">ASGIConnection</span>
-<span class="kn">from</span> <span class="nn">litestar.contrib.jwt</span> <span class="kn">import</span> <span class="n">OAuth2Login</span><span class="p">,</span> <span class="n">OAuth2PasswordBearerAuth</span><span class="p">,</span> <span class="n">Token</span>
 <span class="kn">from</span> <span class="nn">litestar.openapi.config</span> <span class="kn">import</span> <span class="n">OpenAPIConfig</span>
+<span class="kn">from</span> <span class="nn">litestar.security.jwt</span> <span class="kn">import</span> <span class="n">OAuth2Login</span><span class="p">,</span> <span class="n">OAuth2PasswordBearerAuth</span><span class="p">,</span> <span class="n">Token</span>
 
 
 <span class="c1"># Let&#39;s assume we have a User model that is a pydantic model.</span>

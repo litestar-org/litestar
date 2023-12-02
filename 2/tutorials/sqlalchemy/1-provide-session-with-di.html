@@ -1343,6 +1343,14 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../reference/router.html">router</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/routes.html">routes</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/security/jwt.html"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth</span></code></a></li>
+
+
+
+
+
+
+
 <li class="toctree-l3"><a class="reference internal" href="../../reference/security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
@@ -1587,8 +1595,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 83</span><span class="k">async</span> <span class="k">def</span> <span class="nf">get_list</span><span class="p">(</span><span class="n">transaction</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">,</span> <span class="n">done</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TodoCollectionType</span><span class="p">:</span>
 <span class="hll"><span class="linenos"> 84</span>    <span class="k">return</span> <span class="p">[</span><span class="n">serialize_todo</span><span class="p">(</span><span class="n">todo</span><span class="p">)</span> <span class="k">for</span> <span class="n">todo</span> <span class="ow">in</span> <span class="k">await</span> <span class="n">get_todo_list</span><span class="p">(</span><span class="n">done</span><span class="p">,</span> <span class="n">transaction</span><span class="p">)]</span>
 </span><span class="hll"><span class="linenos"> 85</span>
-</span><span class="hll"><span class="linenos"> 86</span>
-</span><span class="linenos"> 87</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span class="linenos"> 86</span>
+<span class="linenos"> 87</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 <span class="linenos"> 88</span><span class="k">async</span> <span class="k">def</span> <span class="nf">add_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">TodoType</span><span class="p">,</span> <span class="n">transaction</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TodoType</span><span class="p">:</span>
 <span class="hll"><span class="linenos"> 89</span>    <span class="n">new_todo</span> <span class="o">=</span> <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">],</span> <span class="n">done</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;done&quot;</span><span class="p">])</span>
 </span><span class="hll"><span class="linenos"> 90</span>    <span class="n">transaction</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">new_todo</span><span class="p">)</span>
@@ -1699,8 +1707,8 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 83</span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 <span class="hll"><span class="linenos"> 84</span><span class="k">async</span> <span class="k">def</span> <span class="nf">get_list</span><span class="p">(</span><span class="n">transaction</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">,</span> <span class="n">done</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TodoCollectionType</span><span class="p">:</span>
 </span><span class="hll"><span class="linenos"> 85</span>    <span class="k">return</span> <span class="p">[</span><span class="n">serialize_todo</span><span class="p">(</span><span class="n">todo</span><span class="p">)</span> <span class="k">for</span> <span class="n">todo</span> <span class="ow">in</span> <span class="k">await</span> <span class="n">get_todo_list</span><span class="p">(</span><span class="n">done</span><span class="p">,</span> <span class="n">transaction</span><span class="p">)]</span>
-</span><span class="hll"><span class="linenos"> 86</span>
-</span><span class="linenos"> 87</span>
+</span><span class="linenos"> 86</span>
+<span class="linenos"> 87</span>
 <span class="linenos"> 88</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 <span class="hll"><span class="linenos"> 89</span><span class="k">async</span> <span class="k">def</span> <span class="nf">add_item</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">TodoType</span><span class="p">,</span> <span class="n">transaction</span><span class="p">:</span> <span class="n">AsyncSession</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TodoType</span><span class="p">:</span>
 </span><span class="hll"><span class="linenos"> 90</span>    <span class="n">new_todo</span> <span class="o">=</span> <span class="n">TodoItem</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">],</span> <span class="n">done</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;done&quot;</span><span class="p">])</span>
