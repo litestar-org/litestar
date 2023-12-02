@@ -164,7 +164,7 @@ async def test_asyncpg_make_connection() -> None:
 
 async def test_asyncpg_no_make_conn_or_dsn_passed_raises() -> None:
     with pytest.raises(ImproperlyConfiguredException):
-        AsyncPgChannelsBackend()
+        AsyncPgChannelsBackend()  # type: ignore[call-overload]
 
 
 def test_asyncpg_listener_raises_on_non_string_payload() -> None:
