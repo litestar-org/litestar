@@ -466,14 +466,16 @@ def test_optional_enum() -> None:
 
     schema = SchemaCreator().for_field_definition(FieldDefinition.from_annotation(Optional[Foo]))
     assert isinstance(schema, Schema)
-    assert schema.type == OpenAPIType.INTEGER
+    assert schema.type is not None
+    assert set(schema.type) == {OpenAPIType.INTEGER, OpenAPIType.NULL}
     assert schema.enum == [1, 2, None]
 
 
 def test_optional_literal() -> None:
     schema = SchemaCreator().for_field_definition(FieldDefinition.from_annotation(Optional[Literal[1]]))
     assert isinstance(schema, Schema)
-    assert schema.type == OpenAPIType.INTEGER
+    assert schema.type is not None
+    assert set(schema.type) == {OpenAPIType.INTEGER, OpenAPIType.NULL}
     assert schema.enum == [1, None]
 
 
