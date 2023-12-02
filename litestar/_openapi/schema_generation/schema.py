@@ -58,6 +58,7 @@ from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagin
 from litestar.params import BodyKwarg, ParameterKwarg
 from litestar.plugins import OpenAPISchemaPlugin
 from litestar.types import Empty
+from litestar.types.builtin_types import NoneType
 from litestar.typing import FieldDefinition
 from litestar.utils.helpers import get_name
 from litestar.utils.predicates import (
@@ -116,6 +117,7 @@ TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
     MutableMapping: Schema(type=OpenAPIType.OBJECT),
     MutableSequence: Schema(type=OpenAPIType.ARRAY),
     None: Schema(type=OpenAPIType.NULL),
+    NoneType: Schema(type=OpenAPIType.NULL),
     OrderedDict: Schema(type=OpenAPIType.OBJECT),
     Path: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URI),
     Pattern: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.REGEX),
@@ -144,6 +146,29 @@ TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
         content_media_type="application/octet-stream",
     ),
 }
+
+
+def _types_in_list(lst: list[Any]) -> list[OpenAPIType] | OpenAPIType:
+    """Extract unique OpenAPITypes present in the values of a list.
+
+    Args:
+        lst: A list of values
+
+    Returns:
+        OpenAPIType in the given list. If more then one exists, return
+        a list of OpenAPITypes.
+    """
+    schema_types: list[OpenAPIType] = []
+    for item in lst:
+        schema_type = TYPE_MAP[type(item)].type
+        if isinstance(schema_type, OpenAPIType):
+            schema_types.append(schema_type)
+        elif schema_type is None:
+            raise RuntimeError("Item in TYPE_MAP must have a type that is not None")
+        else:
+            schema_types.extend(schema_type)
+    schema_types = list(set(schema_types))
+    return schema_types[0] if len(schema_types) == 1 else schema_types
 
 
 def _get_type_schema_name(field_definition: FieldDefinition) -> str:
@@ -178,10 +203,9 @@ def create_enum_schema(annotation: EnumMeta, include_null: bool = False) -> Sche
         A schema instance.
     """
     enum_values: list[str | int | None] = [v.value for v in annotation]  # type: ignore
-    if include_null:
+    if include_null and None not in enum_values:
         enum_values.append(None)
-    openapi_type = OpenAPIType.STRING if isinstance(enum_values[0], str) else OpenAPIType.INTEGER
-    return Schema(type=openapi_type, enum=enum_values)
+    return Schema(type=_types_in_list(enum_values), enum=enum_values)
 
 
 def _iter_flat_literal_args(annotation: Any) -> Iterable[Any]:
@@ -211,9 +235,9 @@ def create_literal_schema(annotation: Any, include_null: bool = False) -> Schema
         A schema instance.
     """
     args = list(_iter_flat_literal_args(annotation))
-    if include_null:
+    if include_null and None not in args:
         args.append(None)
-    schema = copy(TYPE_MAP[type(args[0])])
+    schema = Schema(type=_types_in_list(args))
     if len(args) > 1:
         schema.enum = args
     else:
