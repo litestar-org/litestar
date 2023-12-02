@@ -38,7 +38,7 @@ class ParameterCollection:
             route_handler: Associated route handler
         """
         self.route_handler = route_handler
-        self._parameters: dict[str, Parameter] = {}
+        self._parameters: dict[tuple[str, str], Parameter] = {}
 
     def add(self, parameter: Parameter) -> None:
         """Add a ``Parameter`` to the collection.
@@ -50,18 +50,18 @@ class ParameterCollection:
         ``ImproperlyConfiguredException``.
         """
 
-        if parameter.name not in self._parameters:
+        if (parameter.name, parameter.param_in) not in self._parameters:
             # because we are defining routes as unique per path, we have to handle here a situation when there is an optional
             # path parameter. e.g. get(path=["/", "/{param:str}"]). When parsing the parameter for path, the route handler
             # would still have a kwarg called param:
             # def handler(param: str | None) -> ...
             if parameter.param_in != ParamType.QUERY or all(
-                "{" + parameter.name + ":" not in path for path in self.route_handler.paths
+                f"{{{parameter.name}:" not in path for path in self.route_handler.paths
             ):
-                self._parameters[parameter.name] = parameter
+                self._parameters[(parameter.name, parameter.param_in)] = parameter
             return
 
-        pre_existing = self._parameters[parameter.name]
+        pre_existing = self._parameters[(parameter.name, parameter.param_in)]
         if parameter == pre_existing:
             return
 
@@ -206,13 +206,13 @@ def create_parameter_for_handler(
     dependency_providers = route_handler.resolve_dependencies()
     layered_parameters = route_handler.resolve_layered_parameters()
 
-    unique_handler_fields = tuple(
+    unique_handler_fields = (
         (k, v) for k, v in handler_fields.items() if k not in RESERVED_KWARGS and k not in layered_parameters
     )
-    unique_layered_fields = tuple(
+    unique_layered_fields = (
         (k, v) for k, v in layered_parameters.items() if k not in RESERVED_KWARGS and k not in handler_fields
     )
-    intersection_fields = tuple(
+    intersection_fields = (
         (k, v) for k, v in handler_fields.items() if k not in RESERVED_KWARGS and k in layered_parameters
     )
 

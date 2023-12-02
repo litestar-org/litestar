@@ -4,13 +4,13 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING, Any, Callable, Generic, Iterable, Literal, Sequence, TypeVar, cast
 
-from litestar.contrib.jwt.jwt_token import Token
-from litestar.contrib.jwt.middleware import JWTAuthenticationMiddleware, JWTCookieAuthenticationMiddleware
 from litestar.datastructures import Cookie
 from litestar.enums import MediaType
 from litestar.middleware import DefineMiddleware
 from litestar.openapi.spec import Components, OAuthFlow, OAuthFlows, SecurityRequirement, SecurityScheme
 from litestar.security.base import AbstractSecurityConfig
+from litestar.security.jwt.middleware import JWTAuthenticationMiddleware, JWTCookieAuthenticationMiddleware
+from litestar.security.jwt.token import Token
 from litestar.status_codes import HTTP_201_CREATED
 from litestar.types import ControllerRouterHandler, Empty, Guard, Method, Scopes, SyncOrAsyncUnion, TypeEncodersMap
 
