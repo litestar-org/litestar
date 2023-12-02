@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import time
 from secrets import token_hex
 from typing import cast
 from unittest.mock import AsyncMock, MagicMock
@@ -156,6 +157,8 @@ def test_create_ws_route_handlers_arbitrary_channels_allowed(channels_backend: C
         with client.websocket_connect("/ws/foo") as ws:
             channels_plugin.publish("something", "foo")
             assert ws.receive_text(timeout=2) == "something"
+
+        time.sleep(0.1)
 
         with client.websocket_connect("/ws/bar") as ws:
             channels_plugin.publish("something else", "bar")
