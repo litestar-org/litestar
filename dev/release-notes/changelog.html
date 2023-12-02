@@ -1494,6 +1494,48 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.4.2">
+<h2>2.4.2<a class="headerlink" href="#2.4.2" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2023/12/02<section id="2.4.2-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.4.2-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Fix OpenAPI handling of parameters with duplicated names<a class="headerlink reference internal" href="#2.4.2-fix openapi handling of parameters with duplicated names" id="2.4.2-fix openapi handling of parameters with duplicated names">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug where schema generation would consider two parameters with the same
+name but declared in different places (eg., header, cookie) as an error.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2662">litestar-org/litestar#2662</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2788">litestar-org/litestar#2788</a></span></p>
+</div>
+</dd>
+<dt>Fix late failure where <code class="docutils literal notranslate"><span class="pre">DTOData</span></code> is used without a DTO<a class="headerlink reference internal" href="#2.4.2-fix late failure where" id="2.4.2-fix late failure where">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix an issue where a handler would be allowed to be registered with a
+<code class="docutils literal notranslate"><span class="pre">DTOData</span></code> annotation without having a DTO defined, which would result in a
+runtime exception. In cases like these, a configuration error is now raised
+during startup.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2779">litestar-org/litestar#2779</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2789">litestar-org/litestar#2789</a></span></p>
+</div>
+</dd>
+<dt>Correctly propagate camelCase names on OpenAPI schema<a class="headerlink reference internal" href="#2.4.2-correctly propagate camelcase names on openapi schema" id="2.4.2-correctly propagate camelcase names on openapi schema">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug where OpenAPI schema fields would be inappropriately propagated as
+camelCase where they should have been snake_case</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2800">litestar-org/litestar#2800</a></span></p>
+</div>
+</dd>
+<dt>Fix error handling in event handler stream<a class="headerlink reference internal" href="#2.4.2-fix error handling in event handler stream" id="2.4.2-fix error handling in event handler stream">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a class of errors that could result in the event listener stream being
+terminated when an exception occurred within an event listener. Errors in
+event listeners are now not propagated anymore but handled by the backend and
+logged instead.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2810,">litestar-org/litestar#2810,</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2814">litestar-org/litestar#2814</a></span></p>
+</div>
+</dd>
+<dt>Fix OpenAPI schema for pydantic computed fields<a class="headerlink reference internal" href="#2.4.2-fix openapi schema for pydantic computed fields" id="2.4.2-fix openapi schema for pydantic computed fields">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Add support for including computed fields in schemas generated from pydantic
+models.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2792">litestar-org/litestar#2792</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2797">litestar-org/litestar#2797</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.4.1">
 <h2>2.4.1<a class="headerlink" href="#2.4.1" title="Permalink to this heading">#</a></h2>
 <strong>Released: </strong>2023/11/28<section id="2.4.1-bugfix">
@@ -4553,6 +4595,10 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.4.2">2.4.2</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.4.2-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.4.1">2.4.1</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.4.1-bugfix">Bugfixes</a></li>
 </ul>
