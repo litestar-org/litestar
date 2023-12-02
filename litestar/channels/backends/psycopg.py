@@ -9,7 +9,7 @@ from .base import ChannelsBackend
 
 
 def _safe_quote(ident: str) -> str:
-    return '"{}"'.format(ident.replace('"', '""'))
+    return f""""{ident.replace('"', '""')}\""""
 
 
 class PsycoPgChannelsBackend(ChannelsBackend):
