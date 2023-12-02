@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 from datetime import timedelta
 from typing import AsyncGenerator, cast
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from _pytest.fixtures import FixtureRequest
@@ -165,3 +165,9 @@ async def test_asyncpg_make_connection() -> None:
 async def test_asyncpg_no_make_conn_or_dsn_passed_raises() -> None:
     with pytest.raises(ImproperlyConfiguredException):
         AsyncPgChannelsBackend()
+
+
+def test_asyncpg_listener_raises_on_non_string_payload() -> None:
+    backend = AsyncPgChannelsBackend(make_connection=AsyncMock())
+    with pytest.raises(RuntimeError):
+        backend._listener(connection=MagicMock(), pid=1, payload=b"abc", channel="foo")
