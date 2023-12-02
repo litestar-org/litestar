@@ -46,6 +46,7 @@ class AsyncPgChannelsBackend(ChannelsBackend):
 
     async def on_shutdown(self) -> None:
         await self._listener_conn.close()
+        del self._queue
 
     async def publish(self, data: bytes, channels: Iterable[str]) -> None:
         dec_data = data.decode("utf-8")
