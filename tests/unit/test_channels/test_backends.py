@@ -14,6 +14,7 @@ from litestar.channels.backends.asyncpg import AsyncPgChannelsBackend
 from litestar.channels.backends.memory import MemoryChannelsBackend
 from litestar.channels.backends.psycopg import PsycoPgChannelsBackend
 from litestar.channels.backends.redis import RedisChannelsPubSubBackend, RedisChannelsStreamBackend
+from litestar.exceptions import ImproperlyConfiguredException
 from litestar.utils.compat import async_next
 
 
@@ -159,3 +160,8 @@ async def test_asyncpg_make_connection() -> None:
     await backend.on_startup()
 
     make_connection.assert_awaited_once()
+
+
+async def test_asyncpg_no_make_conn_or_dsn_passed_raises() -> None:
+    with pytest.raises(ImproperlyConfiguredException):
+        AsyncPgChannelsBackend()
