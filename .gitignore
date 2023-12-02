@@ -8,6 +8,7 @@
 .scannerwork/
 .unasyncd_cache/
 .venv/
+.venv*
 .vscode/
 __pycache__/
 build/

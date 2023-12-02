@@ -5,7 +5,7 @@
 groups = ["default", "standard", "jwt", "pydantic", "cli", "picologging", "dev-contrib", "piccolo", "prometheus", "dev", "mako", "test", "brotli", "cryptography", "linting", "attrs", "opentelemetry", "docs", "redis", "sqlalchemy", "full", "annotated-types", "jinja", "structlog", "minijinja"]
 strategy = ["cross_platform"]
 lock_version = "4.4"
-content_hash = "sha256:621796e9ccd87bf1be1aa40fd5e3ec170a89be761aae62fed47879256848d88f"
+content_hash = "sha256:d9d9469bfaa3932d8be1987dfba4650c9e88b5509e9fcce3ee7f039833980121"
 
 [[package]]
 name = "accessible-pygments"
@@ -236,6 +236,10 @@ requires_python = ">=3.8,<4.0"
 summary = "Automatically generate code examples for different Python versions in mkdocs or Sphinx based documentations"
 dependencies = [
     "ruff>=0.0.260",
+]
+files = [
+    {file = "auto_pytabs-0.4.0-py3-none-any.whl", hash = "sha256:941ca4f21b218249ee4d026ebaf4a8a7788a066fdb223571f1f7b93d44ac6a74"},
+    {file = "auto_pytabs-0.4.0.tar.gz", hash = "sha256:4c596aa02ea20c6c85809e5f60a22aa60499dcaa637e52d6313d07c58c5bb61e"},
 ]
 
 [[package]]
