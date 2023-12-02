@@ -510,6 +510,9 @@ see [the contribution guide](CONTRIBUTING.rst).
       <td align="center" valign="top" width="14.28%"><a href="https://gitlab.com/marcuslimdw/"><img src="https://avatars.githubusercontent.com/u/42759889?v=4?s=100" width="100px;" alt="Marcus Lim"/><br /><sub><b>Marcus Lim</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=marcuslimdw" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/hzhou0"><img src="https://avatars.githubusercontent.com/u/43188301?v=4?s=100" width="100px;" alt="Henry Zhou"/><br /><sub><b>Henry Zhou</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/issues?q=author%3Ahzhou0" title="Bug reports">🐛</a> <a href="https://github.com/litestar-org/litestar/commits?author=hzhou0" title="Code">💻</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/WilliamStam"><img src="https://avatars.githubusercontent.com/u/182800?v=4?s=100" width="100px;" alt="William Stam"/><br /><sub><b>William Stam</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=WilliamStam" title="Documentation">📖</a></td>
+    </tr>
   </tbody>
 </table>
 
