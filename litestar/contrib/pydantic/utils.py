@@ -3,9 +3,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from typing_extensions import get_type_hints
+from typing_extensions import Annotated, get_type_hints
 
+from litestar.params import KwargDefinition
 from litestar.types import Empty
+from litestar.typing import FieldDefinition
 from litestar.utils import is_class_and_subclass
 from litestar.utils.predicates import is_generic
 from litestar.utils.typing import (
@@ -168,3 +170,37 @@ def is_pydantic_2_model(
 
 def is_pydantic_undefined(value: Any) -> bool:
     return any(v is value for v in PYDANTIC_UNDEFINED_SENTINELS)
+
+
+def create_field_definitions_for_computed_fields(
+    model: type[pydantic_v1.BaseModel | pydantic_v2.BaseModel],  # pyright: ignore
+    prefer_alias: bool,
+) -> dict[str, FieldDefinition]:
+    """Create field definitions for computed fields.
+
+    Args:
+        model: A pydantic model.
+        prefer_alias: Whether to prefer the alias or the name of the field.
+
+    Returns:
+        A dictionary containing the field definitions for the computed fields.
+    """
+    pydantic_decorators = getattr(model, "__pydantic_decorators__", None)
+    if pydantic_decorators is None:
+        return {}
+
+    def get_name(k: str, dec: Any) -> str:
+        if not dec.info.alias:
+            return k
+        return dec.info.alias if prefer_alias else k  # type: ignore[no-any-return]
+
+    return {
+        (name := get_name(k, dec)): FieldDefinition.from_annotation(
+            Annotated[
+                dec.info.return_type,
+                KwargDefinition(title=dec.info.title, description=dec.info.description, read_only=True),
+            ],
+            name=name,
+        )
+        for k, dec in pydantic_decorators.computed_fields.items()
+    }
