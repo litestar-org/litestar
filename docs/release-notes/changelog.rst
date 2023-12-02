@@ -3,6 +3,51 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.4.2
+    :date: 2023/12/02
+
+    .. change:: Fix OpenAPI handling of parameters with duplicated names
+        :type: bugfix
+        :issue: 2662
+        :pr: 2788
+
+        Fix a bug where schema generation would consider two parameters with the same
+        name but declared in different places (eg., header, cookie) as an error.
+
+    .. change:: Fix late failure where ``DTOData`` is used without a DTO
+        :type: bugfix
+        :issue: 2779
+        :pr: 2789
+
+        Fix an issue where a handler would be allowed to be registered with a
+        ``DTOData`` annotation without having a DTO defined, which would result in a
+        runtime exception. In cases like these, a configuration error is now raised
+        during startup.
+
+    .. change:: Correctly propagate camelCase names on OpenAPI schema
+        :type: bugfix
+        :pr: 2800
+
+        Fix a bug where OpenAPI schema fields would be inappropriately propagated as
+        camelCase where they should have been snake_case
+
+    .. change:: Fix error handling in event handler stream
+        :type: bugfix
+        :pr: 2810, 2814
+
+        Fix a class of errors that could result in the event listener stream being
+        terminated when an exception occurred within an event listener. Errors in
+        event listeners are now not propagated anymore but handled by the backend and
+        logged instead.
+
+    .. change:: Fix OpenAPI schema for pydantic computed fields
+        :type: bugfix
+        :pr: 2797
+        :issue: 2792
+
+        Add support for including computed fields in schemas generated from pydantic
+        models.
+
 .. changelog:: 2.4.1
     :date: 2023/11/28
 
