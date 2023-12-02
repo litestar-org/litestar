@@ -17,15 +17,14 @@ import anyio
 
 from litestar.exceptions import ImproperlyConfiguredException
 
-__all__ = ("BaseEventEmitterBackend", "SimpleEventEmitter")
-
-
 if TYPE_CHECKING:
     from types import TracebackType
 
     from anyio.streams.memory import MemoryObjectReceiveStream, MemoryObjectSendStream
 
     from litestar.events.listener import EventListener
+
+__all__ = ("BaseEventEmitterBackend", "SimpleEventEmitter")
 
 
 class BaseEventEmitterBackend(AsyncContextManager["BaseEventEmitterBackend"], ABC):
@@ -77,8 +76,7 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
         self._send_stream: MemoryObjectSendStream | None = None
         self._exit_stack: AsyncExitStack | None = None
 
-    @staticmethod
-    async def _worker(receive_stream: MemoryObjectReceiveStream) -> None:
+    async def _worker(self, receive_stream: MemoryObjectReceiveStream) -> None:
         """Run items from ``receive_stream`` in a task group.
 
         Returns:

@@ -110,6 +110,8 @@ class KwargDefinition:
     """Specify the format to which a string value should be converted."""
     enum: Sequence[Any] | None = field(default=None)
     """A sequence of valid values."""
+    read_only: bool | None = field(default=None)
+    """A boolean flag dictating whether this parameter is read only."""
 
     @property
     def is_constrained(self) -> bool:

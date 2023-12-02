@@ -95,6 +95,7 @@ KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP: dict[str, str] = {
     "multiple_of": "multiple_of",
     "pattern": "pattern",
     "title": "title",
+    "read_only": "read_only",
 }
 
 TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
