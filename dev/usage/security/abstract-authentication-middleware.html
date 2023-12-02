@@ -1385,6 +1385,9 @@ document.write(`
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../topics/deployment/index.html">Deployment</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../topics/deployment/nginx-unit.html">NGINX Unit</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../topics/deployment/manually-with-asgi-server.html">Manually with ASGI server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../topics/deployment/docker.html">Docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../topics/deployment/supervisor.html">Supervisor (linux)</a></li>
+
 </ul>
 </li>
 </ul>
@@ -1502,7 +1505,7 @@ document.write(`
                   
   <section id="abstractauthenticationmiddleware">
 <h1>AbstractAuthenticationMiddleware<a class="headerlink" href="#abstractauthenticationmiddleware" title="Permalink to this heading">#</a></h1>
-<p>Litestar exports <a class="reference internal" href="../../reference/middleware/index.html#litestar.middleware.AbstractAuthenticationMiddleware" title="litestar.middleware.authentication.AbstractAuthenticationMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractAuthenticationMiddleware</span></code></a>,
+<p>Litestar exports <a class="reference internal" href="../../reference/middleware/authentication.html#litestar.middleware.authentication.AbstractAuthenticationMiddleware" title="litestar.middleware.authentication.AbstractAuthenticationMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractAuthenticationMiddleware</span></code></a>,
 which is an Abstract Base Class (ABC) that implements the <a class="reference internal" href="../../reference/middleware/index.html#litestar.middleware.MiddlewareProtocol" title="litestar.middleware.base.MiddlewareProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">MiddlewareProtocol</span></code></a>.
 To add authentication to your app using this class as a basis, subclass it and implement the abstract method
 <a class="reference internal" href="../../reference/middleware/authentication.html#litestar.middleware.authentication.AbstractAuthenticationMiddleware.authenticate_request" title="litestar.middleware.authentication.AbstractAuthenticationMiddleware.authenticate_request"><code class="xref py py-meth docutils literal notranslate"><span class="pre">authenticate_request</span></code></a>:</p>
@@ -1522,7 +1525,7 @@ To add authentication to your app using this class as a basis, subclass it and i
 </pre></div>
 </div>
 <p>As you can see, <code class="docutils literal notranslate"><span class="pre">authenticate_request</span></code> is an async function that receives a connection instance and is supposed to return
-an <a class="reference internal" href="../../reference/middleware/index.html#litestar.middleware.AuthenticationResult" title="litestar.middleware.authentication.AuthenticationResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">AuthenticationResult</span></code></a> instance, which is a pydantic model
+an <a class="reference internal" href="../../reference/middleware/authentication.html#litestar.middleware.authentication.AuthenticationResult" title="litestar.middleware.authentication.AuthenticationResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">AuthenticationResult</span></code></a> instance, which is a pydantic model
 that has two attributes:</p>
 <ol class="arabic simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">user</span></code>: a non-optional value representing a user. It’s typed as <code class="docutils literal notranslate"><span class="pre">Any</span></code> so it receives any value, including <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>NGINX Unit &#8212; Litestar Framework</title>
+    <title>Docker &#8212; Litestar Framework</title>
   
   
   
@@ -46,13 +46,13 @@
     <script src="../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../_static/litestar-theme.js?v=ab2dcc9e"></script>
     <script src="../../_static/design-tabs.js?v=36754332"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'topics/deployment/nginx-unit';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'topics/deployment/docker';</script>
     <script src="../../_static/versioning.js?v=68b42869"></script>
     <link rel="icon" href="../../_static/favicon.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Manually with ASGI server" href="manually-with-asgi-server.html" />
-    <link rel="prev" title="Deployment" href="index.html" />
+    <link rel="next" title="Supervisor (linux)" href="supervisor.html" />
+    <link rel="prev" title="Manually with ASGI server" href="manually-with-asgi-server.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -1383,9 +1383,9 @@ document.write(`
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">Topics</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../sync-vs-async.html">Sync vs. Async</a></li>
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">Deployment</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
-<li class="toctree-l3 current active"><a class="current reference internal" href="#">NGINX Unit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nginx-unit.html">NGINX Unit</a></li>
 <li class="toctree-l3"><a class="reference internal" href="manually-with-asgi-server.html">Manually with ASGI server</a></li>
-<li class="toctree-l3"><a class="reference internal" href="docker.html">Docker</a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">Docker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="supervisor.html">Supervisor (linux)</a></li>
 
 </ul>
@@ -1486,7 +1486,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Deployment</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">NGINX Unit</li>
+    <li class="breadcrumb-item active" aria-current="page">Docker</li>
   </ul>
 </nav>
 </div>
@@ -1503,149 +1503,35 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="nginx-unit">
-<h1>NGINX Unit<a class="headerlink" href="#nginx-unit" title="Permalink to this heading">#</a></h1>
-<p>To run litestar using <a class="reference external" href="https://unit.nginx.org/">nginx-unit</a></p>
-<section id="install-nginx-unit">
-<h2>Install nginx-unit<a class="headerlink" href="#install-nginx-unit" title="Permalink to this heading">#</a></h2>
-<p>To install <code class="docutils literal notranslate"><span class="pre">nginx-unit</span></code>, refer to the <a class="reference external" href="https://unit.nginx.org/installation/">official documentation</a></p>
-<div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-0">
-macOS (<a class="reference external" href="https://brew.sh/">Brew</a>)</label><div class="sd-tab-content docutils">
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>unit-python311
-brew<span class="w"> </span>install<span class="w"> </span>nginx/unit/unit-python3
+  <section id="docker">
+<h1>Docker<a class="headerlink" href="#docker" title="Permalink to this heading">#</a></h1>
+<p>This uses the default python container <a class="reference external" href="https://hub.docker.com/_/python">https://hub.docker.com/_/python</a></p>
+<section id="dockerfile">
+<h2>Dockerfile<a class="headerlink" href="#dockerfile" title="Permalink to this heading">#</a></h2>
+<div class="highlight-docker notranslate"><div class="highlight"><pre><span></span><span class="k">FROM</span><span class="w"> </span><span class="s">python:3.12</span>
+<span class="k">WORKDIR</span><span class="w"> </span><span class="s">/code</span>
+<span class="k">COPY</span><span class="w"> </span>./requirements.txt<span class="w"> </span>/code/requirements.txt
+<span class="k">RUN</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--no-cache-dir<span class="w"> </span>--upgrade<span class="w"> </span>-r<span class="w"> </span>/code/requirements.txt
+<span class="k">COPY</span><span class="w"> </span>./src<span class="w"> </span>/
+<span class="k">CMD</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;uvicorn&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;app:app&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;--host&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;0.0.0.0&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;--port&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;80&quot;</span><span class="p">]</span>
 </pre></div>
 </div>
-</div>
-<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-1">
-Ubuntu</label><div class="sd-tab-content docutils">
-<p>To be done</p>
-</div>
-</div>
-<p>Start the process, replace <cite>user</cite> by your system user.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>unitd<span class="w"> </span>--user<span class="w"> </span>&lt;user&gt;
-</pre></div>
-</div>
-<ol class="arabic simple" start="3">
-<li><p>Create a <cite>run.py</cite> file containing the reference of your litestar app</p></li>
-</ol>
-<div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">run.py</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-
-
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="k">return</span> <span class="s2">&quot;Hello, world!&quot;</span>
-
-
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">hello_world</span><span class="p">])</span>
-</pre></div>
-</div>
-</div>
+<p>This copies the <cite>src</cite> folder on your machine to the <cite>/code</cite> in the docker container and runs your app via uvicorn. Adjust according to whichever asgi server you choose.</p>
+<p><a class="reference internal" href="manually-with-asgi-server.html"><span class="doc">Manually with ASGI server</span></a></p>
 </section>
-<section id="configuration">
-<h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this heading">#</a></h2>
-<p>Create a file called <cite>unit.json</cite>, put it at the root of the your project</p>
-<div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">unit.json</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
-<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-<span class="w">  </span><span class="nt">&quot;listeners&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;*:8080&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;pass&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;applications/litestar&quot;</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">  </span><span class="p">},</span>
-
-<span class="w">  </span><span class="nt">&quot;applications&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">    </span><span class="nt">&quot;litestar&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-<span class="w">      </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;python 3.11&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;home&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/Users/user/project/listestar/.venv/&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;path&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/Users/user/project/litestar/src/app&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;module&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;run&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;callable&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;app&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;stderr&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;/Users/user/project/litestar/error.log&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;user&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;user&quot;</span><span class="p">,</span>
-<span class="w">      </span><span class="nt">&quot;processes&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span>
-<span class="w">    </span><span class="p">}</span>
-<span class="w">  </span><span class="p">}</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</div>
-<section id="listeners">
-<h3>Listeners<a class="headerlink" href="#listeners" title="Permalink to this heading">#</a></h3>
-<p>To accept requests, add a listener object in the config/listeners API section; the object’s name can be:</p>
-<ul class="simple">
-<li><p>A unique IP socket: <code class="docutils literal notranslate"><span class="pre">127.0.0.1:80</span></code>, <code class="docutils literal notranslate"><span class="pre">[::1]:8080</span></code></p></li>
-<li><p>A wildcard that matches any host IPs on the port: <code class="docutils literal notranslate"><span class="pre">*:80</span></code></p></li>
-<li><p>On Linux-based systems, abstract UNIX sockets can be used as well: <code class="docutils literal notranslate"><span class="pre">unix:&#64;abstract_socket</span></code>.</p></li>
-</ul>
-</section>
-<section id="applications">
-<h3>Applications<a class="headerlink" href="#applications" title="Permalink to this heading">#</a></h3>
-<p>Each app that Unit runs is defined as an object in the <code class="docutils literal notranslate"><span class="pre">/config/applications</span></code> section of the control API; it lists the app’s language and settings, its runtime limits, process model, and various language-specific options.</p>
-<table class="table">
-<tbody>
-<tr class="row-odd"><td><p>Option</p></td>
-<td><p>Value</p></td>
-<td><p>Description</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">type</span></code> (required)</p></td>
-<td><p><cite>python 3.12</cite></p></td>
-<td><p>Application type: <cite>python</cite> <code class="docutils literal notranslate"><span class="pre">&quot;type&quot;:</span> <span class="pre">&quot;python</span> <span class="pre">3&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;type&quot;:</span> <span class="pre">&quot;python</span> <span class="pre">3.12&quot;</span></code></p>
-<p>Unit searches its modules and uses the latest matching one, reporting an error if none match.</p>
-</td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">home</span></code></p></td>
-<td><p><cite>venv</cite></p></td>
-<td><p>String; path to the app’s virtual environment. Absolute or relative to <code class="docutils literal notranslate"><span class="pre">working_directory</span></code>.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">path</span></code></p></td>
-<td><p><cite>src/app</cite></p></td>
-<td><p>String or an array of strings; additional Python module lookup paths. These values are prepended to <code class="docutils literal notranslate"><span class="pre">sys.path</span></code>.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">module</span></code> (required)</p></td>
-<td><p><cite>run</cite></p></td>
-<td><p>String; app’s module name. This module is imported by Unit the usual Python way.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">callable</span></code></p></td>
-<td><p><cite>app</cite></p></td>
-<td><p>String; name of the module-based callable that Unit runs as the app. The default is <cite>application</cite>.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">working_directory</span></code></p></td>
-<td><p>&lt;path_to_project&gt;</p></td>
-<td><p>String; the app’s working directory. The default is the working directory of Unit’s main process.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">stderr</span></code>, <code class="docutils literal notranslate"><span class="pre">stdout</span></code></p></td>
-<td><p><cite>log_error.log</cite></p></td>
-<td><p>Strings; filenames where Unit redirects the application’s output.</p>
-<p>The default is <code class="docutils literal notranslate"><span class="pre">/dev/null</span></code>.</p>
-</td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">user</span></code></p></td>
-<td></td>
-<td><p>String; username that runs the app process.</p></td>
-</tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">group</span></code></p></td>
-<td></td>
-<td><p>String; group name that runs the app process. The default is the <code class="docutils literal notranslate"><span class="pre">user</span></code>’s primary group.</p></td>
-</tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">processes</span></code></p></td>
-<td><p>1</p></td>
-<td><p>Integer or object; integer sets a static number of app processes, and object options <cite>max</cite>, <cite>spare</cite>, and <cite>idle_timeout</cite> enable dynamic management.</p>
-<p>The default is 1.</p>
-</td>
-</tr>
-</tbody>
-</table>
-</section>
-</section>
-<section id="configuration-update">
-<h2>Configuration update<a class="headerlink" href="#configuration-update" title="Permalink to this heading">#</a></h2>
-<p>To update the nginx-unit service already running, use <code class="docutils literal notranslate"><span class="pre">PUT</span></code> method to send the <code class="docutils literal notranslate"><span class="pre">unit.json</span></code> file on the <code class="docutils literal notranslate"><span class="pre">/config</span></code> endpoint</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span>--data-binary<span class="w"> </span>@unit.json<span class="w"> </span>--unix-socket<span class="w"> </span>/opt/homebrew/var/run/unit/control.sock<span class="w"> </span>http://localhost/config
+<section id="docker-compose">
+<h2>Docker-compose<a class="headerlink" href="#docker-compose" title="Permalink to this heading">#</a></h2>
+<p>If you want to run the container as part of a docker-compose setup then you can simply use this compose file</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">services</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">api</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">build</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">context</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./</span>
+<span class="w">      </span><span class="nt">dockerfile</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Dockerfile</span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;api&quot;</span>
+<span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">database</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;80:80&quot;</span>
 </pre></div>
 </div>
 </section>
@@ -1662,20 +1548,20 @@ Ubuntu</label><div class="sd-tab-content docutils">
                   <!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
-       href="index.html"
+       href="manually-with-asgi-server.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Deployment</p>
+        <p class="prev-next-title">Manually with ASGI server</p>
       </div>
     </a>
     <a class="right-next"
-       href="manually-with-asgi-server.html"
+       href="supervisor.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Manually with ASGI server</p>
+        <p class="prev-next-title">Supervisor (linux)</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -1694,13 +1580,8 @@ Ubuntu</label><div class="sd-tab-content docutils">
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-nginx-unit">Install nginx-unit</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration">Configuration</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#listeners">Listeners</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#applications">Applications</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration-update">Configuration update</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dockerfile">Dockerfile</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#docker-compose">Docker-compose</a></li>
 </ul>
   </nav></div>
 

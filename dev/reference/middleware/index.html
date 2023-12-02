@@ -1385,6 +1385,9 @@ document.write(`
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../topics/deployment/index.html">Deployment</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../topics/deployment/nginx-unit.html">NGINX Unit</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../topics/deployment/manually-with-asgi-server.html">Manually with ASGI server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../topics/deployment/docker.html">Docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../topics/deployment/supervisor.html">Supervisor (linux)</a></li>
+
 </ul>
 </li>
 </ul>
@@ -1542,7 +1545,7 @@ and overriding <a class="reference internal" href="#litestar.middleware.Abstract
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.middleware.AbstractAuthenticationMiddleware.authenticate_request">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">authenticate_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../connection.html#litestar.connection.ASGIConnection" title="litestar.connection.base.ASGIConnection"><span class="pre">ASGIConnection</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#litestar.middleware.AuthenticationResult" title="litestar.middleware.authentication.AuthenticationResult"><span class="pre">AuthenticationResult</span></a></span></span><a class="headerlink" href="#litestar.middleware.AbstractAuthenticationMiddleware.authenticate_request" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">authenticate_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../connection.html#litestar.connection.ASGIConnection" title="litestar.connection.base.ASGIConnection"><span class="pre">ASGIConnection</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="authentication.html#litestar.middleware.authentication.AuthenticationResult" title="litestar.middleware.authentication.AuthenticationResult"><span class="pre">AuthenticationResult</span></a></span></span><a class="headerlink" href="#litestar.middleware.AbstractAuthenticationMiddleware.authenticate_request" title="Permalink to this definition">#</a></dt>
 <dd><p>Receive the http connection and return an <a class="reference internal" href="#litestar.middleware.AuthenticationResult" title="litestar.middleware.AuthenticationResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">AuthenticationResult</span></code></a>.</p>
 <div class="admonition-notes admonition">
 <p class="admonition-title">Notes</p>
@@ -1558,7 +1561,7 @@ and overriding <a class="reference internal" href="#litestar.middleware.Abstract
 <dd class="field-even"><p><a class="reference internal" href="../exceptions.html#litestar.exceptions.NotAuthorizedException" title="litestar.exceptions.NotAuthorizedException"><strong>NotAuthorizedException</strong></a><strong> | </strong><a class="reference internal" href="../exceptions.html#litestar.exceptions.PermissionDeniedException" title="litestar.exceptions.PermissionDeniedException"><strong>PermissionDeniedException</strong></a> – if authentication fails.</p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>An instance of <a class="reference internal" href="#litestar.middleware.AuthenticationResult" title="litestar.middleware.authentication.AuthenticationResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">AuthenticationResult</span></code></a>.</p>
+<dd class="field-odd"><p>An instance of <a class="reference internal" href="authentication.html#litestar.middleware.authentication.AuthenticationResult" title="litestar.middleware.authentication.AuthenticationResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">AuthenticationResult</span></code></a>.</p>
 </dd>
 </dl>
 </dd></dl>
