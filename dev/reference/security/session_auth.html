@@ -1250,6 +1250,8 @@ document.write(`
 <li class="toctree-l4"><a class="reference internal" href="../channels/backends/base.html">base</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../channels/backends/memory.html">memory</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../channels/backends/redis.html">redis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../channels/backends/psycopg.html">psycopg</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../channels/backends/asyncpg.html">asyncpg</a></li>
 </ul>
 </li>
 </ul>
@@ -1664,7 +1666,7 @@ backend.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.security.session_auth.middleware.SessionAuthMiddleware">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.security.session_auth.middleware.</span></span><span class="sig-name descname"><span class="pre">SessionAuthMiddleware</span></span><a class="headerlink" href="#litestar.security.session_auth.middleware.SessionAuthMiddleware" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../middleware/authentication.html#litestar.middleware.authentication.AbstractAuthenticationMiddleware" title="litestar.middleware.authentication.AbstractAuthenticationMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractAuthenticationMiddleware</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="../middleware/index.html#litestar.middleware.AbstractAuthenticationMiddleware" title="litestar.middleware.authentication.AbstractAuthenticationMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractAuthenticationMiddleware</span></code></a></p>
 <p>Session Authentication Middleware.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.security.session_auth.middleware.SessionAuthMiddleware.__init__">
@@ -1686,7 +1688,7 @@ backend.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.security.session_auth.middleware.SessionAuthMiddleware.authenticate_request">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">authenticate_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../connection.html#litestar.connection.ASGIConnection" title="litestar.connection.ASGIConnection"><span class="pre">ASGIConnection</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../middleware/authentication.html#litestar.middleware.authentication.AuthenticationResult" title="litestar.middleware.authentication.AuthenticationResult"><span class="pre">AuthenticationResult</span></a></span></span><a class="headerlink" href="#litestar.security.session_auth.middleware.SessionAuthMiddleware.authenticate_request" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">authenticate_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../connection.html#litestar.connection.ASGIConnection" title="litestar.connection.ASGIConnection"><span class="pre">ASGIConnection</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../middleware/index.html#litestar.middleware.AuthenticationResult" title="litestar.middleware.AuthenticationResult"><span class="pre">AuthenticationResult</span></a></span></span><a class="headerlink" href="#litestar.security.session_auth.middleware.SessionAuthMiddleware.authenticate_request" title="Permalink to this definition">#</a></dt>
 <dd><p>Authenticate an incoming connection.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1696,7 +1698,7 @@ backend.</p>
 <dd class="field-even"><p><a class="reference internal" href="../exceptions.html#litestar.exceptions.NotAuthorizedException" title="litestar.exceptions.NotAuthorizedException"><strong>NotAuthorizedException</strong></a> – if session data is empty or user is not found.</p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="../middleware/authentication.html#litestar.middleware.authentication.AuthenticationResult" title="litestar.middleware.authentication.AuthenticationResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">AuthenticationResult</span></code></a></p>
+<dd class="field-odd"><p><a class="reference internal" href="../middleware/index.html#litestar.middleware.AuthenticationResult" title="litestar.middleware.authentication.AuthenticationResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">AuthenticationResult</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>

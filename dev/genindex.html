@@ -1245,6 +1245,8 @@ document.write(`
 <li class="toctree-l4"><a class="reference internal" href="reference/channels/backends/base.html">base</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reference/channels/backends/memory.html">memory</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reference/channels/backends/redis.html">redis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference/channels/backends/psycopg.html">psycopg</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference/channels/backends/asyncpg.html">asyncpg</a></li>
 </ul>
 </li>
 </ul>
@@ -1819,7 +1821,11 @@ document.write(`
 </li>
         <li><a href="reference/background_tasks.html#litestar.background_tasks.BackgroundTasks.__init__">(litestar.background_tasks.BackgroundTasks method)</a>
 </li>
+        <li><a href="reference/channels/backends/asyncpg.html#litestar.channels.backends.asyncpg.AsyncPgChannelsBackend.__init__">(litestar.channels.backends.asyncpg.AsyncPgChannelsBackend method)</a>
+</li>
         <li><a href="reference/channels/backends/memory.html#litestar.channels.backends.memory.MemoryChannelsBackend.__init__">(litestar.channels.backends.memory.MemoryChannelsBackend method)</a>
+</li>
+        <li><a href="reference/channels/backends/psycopg.html#litestar.channels.backends.psycopg.PsycoPgChannelsBackend.__init__">(litestar.channels.backends.psycopg.PsycoPgChannelsBackend method)</a>
 </li>
         <li><a href="reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsBackend.__init__">(litestar.channels.backends.redis.RedisChannelsBackend method)</a>
 </li>
@@ -2493,6 +2499,8 @@ document.write(`
       <li><a href="reference/response/file.html#litestar.response.file.async_file_iterator">async_file_iterator() (in module litestar.response.file)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.AsyncAnyCallable">AsyncAnyCallable (in module litestar.types)</a>
+</li>
+      <li><a href="reference/channels/backends/asyncpg.html#litestar.channels.backends.asyncpg.AsyncPgChannelsBackend">AsyncPgChannelsBackend (class in litestar.channels.backends.asyncpg)</a>
 </li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.AsyncSessionConfig">AsyncSessionConfig (class in litestar.contrib.sqlalchemy.plugins)</a>
 </li>
@@ -3794,10 +3802,14 @@ document.write(`
 </li>
       <li><a href="reference/app.html#litestar.app.Litestar.get_handler_index_by_name">get_handler_index_by_name() (litestar.app.Litestar method)</a>
 </li>
-      <li><a href="reference/channels/backends/base.html#litestar.channels.backends.base.ChannelsBackend.get_history">get_history() (litestar.channels.backends.base.ChannelsBackend method)</a>
+      <li><a href="reference/channels/backends/asyncpg.html#litestar.channels.backends.asyncpg.AsyncPgChannelsBackend.get_history">get_history() (litestar.channels.backends.asyncpg.AsyncPgChannelsBackend method)</a>
 
       <ul>
+        <li><a href="reference/channels/backends/base.html#litestar.channels.backends.base.ChannelsBackend.get_history">(litestar.channels.backends.base.ChannelsBackend method)</a>
+</li>
         <li><a href="reference/channels/backends/memory.html#litestar.channels.backends.memory.MemoryChannelsBackend.get_history">(litestar.channels.backends.memory.MemoryChannelsBackend method)</a>
+</li>
+        <li><a href="reference/channels/backends/psycopg.html#litestar.channels.backends.psycopg.PsycoPgChannelsBackend.get_history">(litestar.channels.backends.psycopg.PsycoPgChannelsBackend method)</a>
 </li>
         <li><a href="reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsPubSubBackend.get_history">(litestar.channels.backends.redis.RedisChannelsPubSubBackend method)</a>
 </li>
@@ -4605,6 +4617,13 @@ document.write(`
 </li>
       </ul></li>
       <li>
+    litestar.channels.backends.asyncpg
+
+      <ul>
+        <li><a href="reference/channels/backends/asyncpg.html#module-litestar.channels.backends.asyncpg">module</a>
+</li>
+      </ul></li>
+      <li>
     litestar.channels.backends.base
 
       <ul>
@@ -4616,6 +4635,13 @@ document.write(`
 
       <ul>
         <li><a href="reference/channels/backends/memory.html#module-litestar.channels.backends.memory">module</a>
+</li>
+      </ul></li>
+      <li>
+    litestar.channels.backends.psycopg
+
+      <ul>
+        <li><a href="reference/channels/backends/psycopg.html#module-litestar.channels.backends.psycopg">module</a>
 </li>
       </ul></li>
       <li>
@@ -4786,6 +4812,8 @@ document.write(`
         <li><a href="reference/dto/config.html#module-litestar.dto.config">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     litestar.dto.data_structures
 
@@ -4793,8 +4821,6 @@ document.write(`
         <li><a href="reference/dto/data_structures.html#module-litestar.dto.data_structures">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     litestar.dto.dataclass_dto
 
@@ -5399,9 +5425,13 @@ document.write(`
 </li>
         <li><a href="reference/background_tasks.html#module-litestar.background_tasks">litestar.background_tasks</a>
 </li>
+        <li><a href="reference/channels/backends/asyncpg.html#module-litestar.channels.backends.asyncpg">litestar.channels.backends.asyncpg</a>
+</li>
         <li><a href="reference/channels/backends/base.html#module-litestar.channels.backends.base">litestar.channels.backends.base</a>
 </li>
         <li><a href="reference/channels/backends/memory.html#module-litestar.channels.backends.memory">litestar.channels.backends.memory</a>
+</li>
+        <li><a href="reference/channels/backends/psycopg.html#module-litestar.channels.backends.psycopg">litestar.channels.backends.psycopg</a>
 </li>
         <li><a href="reference/channels/backends/redis.html#module-litestar.channels.backends.redis">litestar.channels.backends.redis</a>
 </li>
@@ -5724,10 +5754,14 @@ document.write(`
       </ul></li>
       <li><a href="reference/config.html#litestar.config.app.AppConfig.on_shutdown">on_shutdown (litestar.config.app.AppConfig attribute)</a>
 </li>
-      <li><a href="reference/channels/backends/base.html#litestar.channels.backends.base.ChannelsBackend.on_shutdown">on_shutdown() (litestar.channels.backends.base.ChannelsBackend method)</a>
+      <li><a href="reference/channels/backends/asyncpg.html#litestar.channels.backends.asyncpg.AsyncPgChannelsBackend.on_shutdown">on_shutdown() (litestar.channels.backends.asyncpg.AsyncPgChannelsBackend method)</a>
 
       <ul>
+        <li><a href="reference/channels/backends/base.html#litestar.channels.backends.base.ChannelsBackend.on_shutdown">(litestar.channels.backends.base.ChannelsBackend method)</a>
+</li>
         <li><a href="reference/channels/backends/memory.html#litestar.channels.backends.memory.MemoryChannelsBackend.on_shutdown">(litestar.channels.backends.memory.MemoryChannelsBackend method)</a>
+</li>
+        <li><a href="reference/channels/backends/psycopg.html#litestar.channels.backends.psycopg.PsycoPgChannelsBackend.on_shutdown">(litestar.channels.backends.psycopg.PsycoPgChannelsBackend method)</a>
 </li>
         <li><a href="reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsPubSubBackend.on_shutdown">(litestar.channels.backends.redis.RedisChannelsPubSubBackend method)</a>
 </li>
@@ -5736,10 +5770,14 @@ document.write(`
       </ul></li>
       <li><a href="reference/config.html#litestar.config.app.AppConfig.on_startup">on_startup (litestar.config.app.AppConfig attribute)</a>
 </li>
-      <li><a href="reference/channels/backends/base.html#litestar.channels.backends.base.ChannelsBackend.on_startup">on_startup() (litestar.channels.backends.base.ChannelsBackend method)</a>
+      <li><a href="reference/channels/backends/asyncpg.html#litestar.channels.backends.asyncpg.AsyncPgChannelsBackend.on_startup">on_startup() (litestar.channels.backends.asyncpg.AsyncPgChannelsBackend method)</a>
 
       <ul>
+        <li><a href="reference/channels/backends/base.html#litestar.channels.backends.base.ChannelsBackend.on_startup">(litestar.channels.backends.base.ChannelsBackend method)</a>
+</li>
         <li><a href="reference/channels/backends/memory.html#litestar.channels.backends.memory.MemoryChannelsBackend.on_startup">(litestar.channels.backends.memory.MemoryChannelsBackend method)</a>
+</li>
+        <li><a href="reference/channels/backends/psycopg.html#litestar.channels.backends.psycopg.PsycoPgChannelsBackend.on_startup">(litestar.channels.backends.psycopg.PsycoPgChannelsBackend method)</a>
 </li>
         <li><a href="reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsPubSubBackend.on_startup">(litestar.channels.backends.redis.RedisChannelsPubSubBackend method)</a>
 </li>
@@ -5754,12 +5792,12 @@ document.write(`
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.SecurityScheme.open_id_connect_url">open_id_connect_url (litestar.openapi.spec.SecurityScheme attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OpenAPI">OpenAPI (class in litestar.openapi.spec)</a>
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OpenAPI.openapi">openapi (litestar.openapi.spec.OpenAPI attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/security/index.html#litestar.security.AbstractSecurityConfig.openapi_components">openapi_components (litestar.security.AbstractSecurityConfig property)</a>
 
       <ul>
@@ -5984,14 +6022,14 @@ document.write(`
 </li>
       <li><a href="usage/channels.html#term-plugin"><strong>plugin</strong></a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/config.html#litestar.config.app.AppConfig.plugins">plugins (litestar.config.app.AppConfig attribute)</a>
 
       <ul>
         <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.plugins">(litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.pool">pool (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
 </li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.pool_logging_name">pool_logging_name (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
@@ -6062,12 +6100,18 @@ document.write(`
 </li>
       <li><a href="reference/datastructures.html#litestar.datastructures.CacheControlHeader.proxy_revalidate">proxy_revalidate (litestar.datastructures.CacheControlHeader attribute)</a>
 </li>
+      <li><a href="reference/channels/backends/psycopg.html#litestar.channels.backends.psycopg.PsycoPgChannelsBackend">PsycoPgChannelsBackend (class in litestar.channels.backends.psycopg)</a>
+</li>
       <li><a href="reference/datastructures.html#litestar.datastructures.CacheControlHeader.public">public (litestar.datastructures.CacheControlHeader attribute)</a>
 </li>
-      <li><a href="reference/channels/backends/base.html#litestar.channels.backends.base.ChannelsBackend.publish">publish() (litestar.channels.backends.base.ChannelsBackend method)</a>
+      <li><a href="reference/channels/backends/asyncpg.html#litestar.channels.backends.asyncpg.AsyncPgChannelsBackend.publish">publish() (litestar.channels.backends.asyncpg.AsyncPgChannelsBackend method)</a>
 
       <ul>
+        <li><a href="reference/channels/backends/base.html#litestar.channels.backends.base.ChannelsBackend.publish">(litestar.channels.backends.base.ChannelsBackend method)</a>
+</li>
         <li><a href="reference/channels/backends/memory.html#litestar.channels.backends.memory.MemoryChannelsBackend.publish">(litestar.channels.backends.memory.MemoryChannelsBackend method)</a>
+</li>
+        <li><a href="reference/channels/backends/psycopg.html#litestar.channels.backends.psycopg.PsycoPgChannelsBackend.publish">(litestar.channels.backends.psycopg.PsycoPgChannelsBackend method)</a>
 </li>
         <li><a href="reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsPubSubBackend.publish">(litestar.channels.backends.redis.RedisChannelsPubSubBackend method)</a>
 </li>
@@ -6804,12 +6848,12 @@ document.write(`
 </li>
       <li><a href="reference/security/session_auth.html#litestar.security.session_auth.SessionAuth">SessionAuth (class in litestar.security.session_auth)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/security/session_auth.html#litestar.security.session_auth.middleware.SessionAuthMiddleware">SessionAuthMiddleware (class in litestar.security.session_auth.middleware)</a>
 </li>
       <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.SessionMiddleware">SessionMiddleware (class in litestar.middleware.session.base)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionBackend.set">set() (litestar.middleware.session.server_side.ServerSideSessionBackend method)</a>
 
       <ul>
@@ -6990,10 +7034,14 @@ document.write(`
       </ul></li>
       <li><a href="reference/connection.html#litestar.connection.Request.stream">stream() (litestar.connection.Request method)</a>
 </li>
-      <li><a href="reference/channels/backends/base.html#litestar.channels.backends.base.ChannelsBackend.stream_events">stream_events() (litestar.channels.backends.base.ChannelsBackend method)</a>
+      <li><a href="reference/channels/backends/asyncpg.html#litestar.channels.backends.asyncpg.AsyncPgChannelsBackend.stream_events">stream_events() (litestar.channels.backends.asyncpg.AsyncPgChannelsBackend method)</a>
 
       <ul>
+        <li><a href="reference/channels/backends/base.html#litestar.channels.backends.base.ChannelsBackend.stream_events">(litestar.channels.backends.base.ChannelsBackend method)</a>
+</li>
         <li><a href="reference/channels/backends/memory.html#litestar.channels.backends.memory.MemoryChannelsBackend.stream_events">(litestar.channels.backends.memory.MemoryChannelsBackend method)</a>
+</li>
+        <li><a href="reference/channels/backends/psycopg.html#litestar.channels.backends.psycopg.PsycoPgChannelsBackend.stream_events">(litestar.channels.backends.psycopg.PsycoPgChannelsBackend method)</a>
 </li>
         <li><a href="reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsPubSubBackend.stream_events">(litestar.channels.backends.redis.RedisChannelsPubSubBackend method)</a>
 </li>
@@ -7016,10 +7064,14 @@ document.write(`
       </ul></li>
       <li><a href="reference/security/jwt.html#litestar.security.jwt.Token.sub">sub (litestar.security.jwt.Token attribute)</a>
 </li>
-      <li><a href="reference/channels/backends/base.html#litestar.channels.backends.base.ChannelsBackend.subscribe">subscribe() (litestar.channels.backends.base.ChannelsBackend method)</a>
+      <li><a href="reference/channels/backends/asyncpg.html#litestar.channels.backends.asyncpg.AsyncPgChannelsBackend.subscribe">subscribe() (litestar.channels.backends.asyncpg.AsyncPgChannelsBackend method)</a>
 
       <ul>
+        <li><a href="reference/channels/backends/base.html#litestar.channels.backends.base.ChannelsBackend.subscribe">(litestar.channels.backends.base.ChannelsBackend method)</a>
+</li>
         <li><a href="reference/channels/backends/memory.html#litestar.channels.backends.memory.MemoryChannelsBackend.subscribe">(litestar.channels.backends.memory.MemoryChannelsBackend method)</a>
+</li>
+        <li><a href="reference/channels/backends/psycopg.html#litestar.channels.backends.psycopg.PsycoPgChannelsBackend.subscribe">(litestar.channels.backends.psycopg.PsycoPgChannelsBackend method)</a>
 </li>
         <li><a href="reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsPubSubBackend.subscribe">(litestar.channels.backends.redis.RedisChannelsPubSubBackend method)</a>
 </li>
@@ -7296,10 +7348,14 @@ document.write(`
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.unique_items">unique_items (litestar.openapi.spec.Schema attribute)</a>
 </li>
-      <li><a href="reference/channels/backends/base.html#litestar.channels.backends.base.ChannelsBackend.unsubscribe">unsubscribe() (litestar.channels.backends.base.ChannelsBackend method)</a>
+      <li><a href="reference/channels/backends/asyncpg.html#litestar.channels.backends.asyncpg.AsyncPgChannelsBackend.unsubscribe">unsubscribe() (litestar.channels.backends.asyncpg.AsyncPgChannelsBackend method)</a>
 
       <ul>
+        <li><a href="reference/channels/backends/base.html#litestar.channels.backends.base.ChannelsBackend.unsubscribe">(litestar.channels.backends.base.ChannelsBackend method)</a>
+</li>
         <li><a href="reference/channels/backends/memory.html#litestar.channels.backends.memory.MemoryChannelsBackend.unsubscribe">(litestar.channels.backends.memory.MemoryChannelsBackend method)</a>
+</li>
+        <li><a href="reference/channels/backends/psycopg.html#litestar.channels.backends.psycopg.PsycoPgChannelsBackend.unsubscribe">(litestar.channels.backends.psycopg.PsycoPgChannelsBackend method)</a>
 </li>
         <li><a href="reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsPubSubBackend.unsubscribe">(litestar.channels.backends.redis.RedisChannelsPubSubBackend method)</a>
 </li>
@@ -7330,14 +7386,14 @@ document.write(`
 </li>
       <li><a href="reference/params.html#litestar.params.KwargDefinition.upper_case">upper_case (litestar.params.KwargDefinition attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.upsert">upsert() (litestar.repository.abc.AbstractAsyncRepository method)</a>
 
       <ul>
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.upsert">(litestar.repository.abc.AbstractSyncRepository method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.upsert_many">upsert_many() (litestar.repository.abc.AbstractAsyncRepository method)</a>
 
       <ul>

@@ -1252,6 +1252,8 @@ document.write(`
 <li class="toctree-l4"><a class="reference internal" href="../reference/channels/backends/base.html">base</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/channels/backends/memory.html">memory</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/channels/backends/redis.html">redis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/channels/backends/psycopg.html">psycopg</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/channels/backends/asyncpg.html">asyncpg</a></li>
 </ul>
 </li>
 </ul>
@@ -1894,7 +1896,7 @@ implemented are:</p>
 <dt><a class="reference internal" href="../reference/channels/backends/memory.html#litestar.channels.backends.memory.MemoryChannelsBackend" title="litestar.channels.backends.memory.MemoryChannelsBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryChannelsBacked</span></code></a></dt><dd><p>A basic in-memory backend, mostly useful for testing and local development, but
 still fully capable. Since it stores all data in-process, it can achieve the highest
 performance of all the backends, but at the same time is not suitable for
-applications running on multiple processes.</p>
+applications running on multiple processes</p>
 </dd>
 <dt><a class="reference internal" href="../reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsPubSubBackend" title="litestar.channels.backends.redis.RedisChannelsPubSubBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">RedisChannelsPubSubBackend</span></code></a></dt><dd><p>A Redis based backend, using <a class="reference external" href="https://redis.io/docs/manual/pubsub/">Pub/Sub</a> to
 delivery messages. This Redis backend has a low latency and overhead and is
@@ -1904,6 +1906,12 @@ generally recommended if history is not needed</p>
 to deliver messages. It has a slightly higher latency when publishing than the
 Pub/Sub backend, but achieves the same throughput in message fanout. Recommended
 when history is needed</p>
+</dd>
+<dt><a class="reference internal" href="../reference/channels/backends/asyncpg.html#litestar.channels.backends.asyncpg.AsyncPgChannelsBackend" title="litestar.channels.backends.asyncpg.AsyncPgChannelsBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncPgChannelsBackend</span></code></a></dt><dd><p>A postgres backend using the
+<a class="reference external" href="https://magicstack.github.io/asyncpg/current/">asyncpg</a> driver</p>
+</dd>
+<dt><code class="xref py py-class docutils literal notranslate"><span class="pre">PsycoPgChannelsBackend</span></code></dt><dd><p>A postgres backend using the <a class="reference external" href="https://www.psycopg.org/psycopg3/docs/">psycopg3</a>
+async driver</p>
 </dd>
 </dl>
 </section>
