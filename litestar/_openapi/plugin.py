@@ -11,7 +11,7 @@ from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.controller import OpenAPINotFoundException
 from litestar.openapi.spec import OpenAPI
-from litestar.plugins import InitPluginProtocol, ReceiveRouteProtocol
+from litestar.plugins import InitPluginProtocol, ReceiveRoutePluginProtocol
 from litestar.response import Response
 from litestar.routes import HTTPRoute
 from litestar.serialization import decode_json, encode_json, get_serializer
@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from litestar.routes import BaseRoute
 
 
-class OpenAPIPlugin(InitPluginProtocol, ReceiveRouteProtocol):
+class OpenAPIPlugin(InitPluginProtocol, ReceiveRoutePluginProtocol):
     def __init__(self, app: Litestar) -> None:
         self.app = app
         self.included_routes: list[HTTPRoute] = []

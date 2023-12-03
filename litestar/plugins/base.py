@@ -20,7 +20,7 @@ __all__ = (
     "OpenAPISchemaPluginProtocol",
     "OpenAPISchemaPlugin",
     "PluginProtocol",
-    "ReceiveRouteProtocol",
+    "ReceiveRoutePluginProtocol",
     "CLIPlugin",
     "CLIPluginProtocol",
     "PluginRegistry",
@@ -72,7 +72,7 @@ class InitPluginProtocol(Protocol):
 
 
 @runtime_checkable
-class ReceiveRouteProtocol(Protocol):
+class ReceiveRoutePluginProtocol(Protocol):
     """Protocol used to define plugins that affect the application's init process."""
 
     __slots__ = ()
