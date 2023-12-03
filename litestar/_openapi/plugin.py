@@ -24,6 +24,15 @@ if TYPE_CHECKING:
 
 
 class OpenAPIPlugin(InitPluginProtocol, ReceiveRoutePluginProtocol):
+    __slots__ = (
+        "app",
+        "included_routes",
+        "_openapi_config",
+        "_openapi_schema",
+        "_openapi_schema_json",
+        "_openapi_schema_yaml",
+    )
+
     def __init__(self, app: Litestar) -> None:
         self.app = app
         self.included_routes: list[HTTPRoute] = []
