@@ -26,11 +26,11 @@ def openapi_guard(request: ASGIConnection, route_handler: BaseRouteHandler) -> N
     if not request.app.openapi_config:  # pragma: no cover
         raise ImproperlyConfiguredException("Litestar has not been instantiated with an OpenAPIConfig")
 
-    if not isinstance(route_handler, HTTPRouteHandler):
+    if not isinstance(route_handler, HTTPRouteHandler):  # pragma: no cover
         raise RuntimeError("Guard should be used with HTTPRouteHandler instances only")
 
     owner = route_handler.owner
-    if not owner or not isinstance(owner, OpenAPIController):
+    if not owner or not isinstance(owner, OpenAPIController):  # pragma: no cover
         raise RuntimeError("OpenAPIController should be the owner of this route handler")
 
     asgi_root_path = set(filter(None, request.scope.get("root_path", "").split("/")))
