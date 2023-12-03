@@ -3,14 +3,18 @@ from __future__ import annotations
 import asyncio
 from datetime import timedelta
 from typing import AsyncGenerator, cast
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from _pytest.fixtures import FixtureRequest
 from redis.asyncio.client import Redis
 
 from litestar.channels import ChannelsBackend
+from litestar.channels.backends.asyncpg import AsyncPgChannelsBackend
 from litestar.channels.backends.memory import MemoryChannelsBackend
+from litestar.channels.backends.psycopg import PsycoPgChannelsBackend
 from litestar.channels.backends.redis import RedisChannelsPubSubBackend, RedisChannelsStreamBackend
+from litestar.exceptions import ImproperlyConfiguredException
 from litestar.utils.compat import async_next
 
 
@@ -18,6 +22,8 @@ from litestar.utils.compat import async_next
     params=[
         pytest.param("redis_pub_sub_backend", id="redis:pubsub", marks=pytest.mark.xdist_group("redis")),
         pytest.param("redis_stream_backend", id="redis:stream", marks=pytest.mark.xdist_group("redis")),
+        pytest.param("postgres_asyncpg_backend", id="postgres:asyncpg", marks=pytest.mark.xdist_group("postgres")),
+        pytest.param("postgres_psycopg_backend", id="postgres:psycopg", marks=pytest.mark.xdist_group("postgres")),
         pytest.param("memory_backend", id="memory"),
     ]
 )
@@ -82,7 +88,7 @@ async def test_unsubscribe_without_subscription(channels_backend: ChannelsBacken
 async def test_get_history(
     channels_backend: ChannelsBackend, history_limit: int | None, expected_history_length: int
 ) -> None:
-    if isinstance(channels_backend, RedisChannelsPubSubBackend):
+    if isinstance(channels_backend, (RedisChannelsPubSubBackend, AsyncPgChannelsBackend, PsycoPgChannelsBackend)):
         pytest.skip("Redis pub/sub backend does not support history")
 
     messages = [str(i).encode() for i in range(100)]
@@ -97,7 +103,7 @@ async def test_get_history(
 
 
 async def test_discards_history_entries(channels_backend: ChannelsBackend) -> None:
-    if isinstance(channels_backend, RedisChannelsPubSubBackend):
+    if isinstance(channels_backend, (RedisChannelsPubSubBackend, AsyncPgChannelsBackend, PsycoPgChannelsBackend)):
         pytest.skip("Redis pub/sub backend does not support history")
 
     for _ in range(20):
@@ -133,3 +139,35 @@ async def test_memory_publish_not_initialized_raises() -> None:
 
     with pytest.raises(RuntimeError):
         await backend.publish(b"foo", ["something"])
+
+
+@pytest.mark.xdist_group("postgres")
+async def test_asyncpg_get_history(postgres_asyncpg_backend: AsyncPgChannelsBackend) -> None:
+    with pytest.raises(NotImplementedError):
+        await postgres_asyncpg_backend.get_history("something")
+
+
+@pytest.mark.xdist_group("postgres")
+async def test_psycopg_get_history(postgres_psycopg_backend: PsycoPgChannelsBackend) -> None:
+    with pytest.raises(NotImplementedError):
+        await postgres_psycopg_backend.get_history("something")
+
+
+async def test_asyncpg_make_connection() -> None:
+    make_connection = AsyncMock()
+
+    backend = AsyncPgChannelsBackend(make_connection=make_connection)
+    await backend.on_startup()
+
+    make_connection.assert_awaited_once()
+
+
+async def test_asyncpg_no_make_conn_or_dsn_passed_raises() -> None:
+    with pytest.raises(ImproperlyConfiguredException):
+        AsyncPgChannelsBackend()  # type: ignore[call-overload]
+
+
+def test_asyncpg_listener_raises_on_non_string_payload() -> None:
+    backend = AsyncPgChannelsBackend(make_connection=AsyncMock())
+    with pytest.raises(RuntimeError):
+        backend._listener(connection=MagicMock(), pid=1, payload=b"abc", channel="foo")
