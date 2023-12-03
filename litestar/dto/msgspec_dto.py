@@ -31,6 +31,9 @@ class MsgspecDTO(AbstractDTO[T], Generic[T]):
         def default_or_empty(value: Any) -> Any:
             return Empty if value is NODEFAULT else value
 
+        def default_or_none(value: Any) -> Any:
+            return None if value is NODEFAULT else value
+
         for key, field_definition in cls.get_model_type_hints(model_type).items():
             msgspec_field = msgspec_fields[key]
             dto_field = (field_definition.extra or {}).pop(DTO_FIELD_META_KEY, DTOField())
@@ -40,7 +43,7 @@ class MsgspecDTO(AbstractDTO[T], Generic[T]):
                     field_definition=field_definition,
                     dto_field=dto_field,
                     model_name=model_type.__name__,
-                    default_factory=default_or_empty(msgspec_field.default_factory),
+                    default_factory=default_or_none(msgspec_field.default_factory),
                 ),
                 default=default_or_empty(msgspec_field.default),
                 name=key,

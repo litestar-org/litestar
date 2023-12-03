@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING, Any, Iterable
 from litestar.constants import (
     HTTP_RESPONSE_BODY,
     HTTP_RESPONSE_START,
-    SCOPE_STATE_RESPONSE_COMPRESSED,
 )
 from litestar.data_extractors import (
     ConnectionDataExtractor,
@@ -19,11 +18,9 @@ from litestar.enums import ScopeType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.middleware.base import AbstractMiddleware, DefineMiddleware
 from litestar.serialization import encode_json
-from litestar.utils import (
-    get_litestar_scope_state,
-    get_serializer_from_scope,
-    set_litestar_scope_state,
-)
+from litestar.utils.empty import value_or_default
+from litestar.utils.scope import get_serializer_from_scope
+from litestar.utils.scope.state import ScopeState
 
 __all__ = ("LoggingMiddleware", "LoggingMiddlewareConfig")
 
@@ -126,7 +123,7 @@ class LoggingMiddleware(AbstractMiddleware):
         Returns:
             None
         """
-        extracted_data = await self.extract_request_data(request=scope["app"].request_class(scope, receive=receive))
+        extracted_data = await self.extract_request_data(request=scope["app"].request_class(scope, receive))
         self.log_message(values=extracted_data)
 
     def log_response(self, scope: Scope) -> None:
@@ -194,13 +191,14 @@ class LoggingMiddleware(AbstractMiddleware):
         """
         data: dict[str, Any] = {"message": self.config.response_log_message}
         serializer = get_serializer_from_scope(scope)
+        connection_state = ScopeState.from_scope(scope)
         extracted_data = self.response_extractor(
             messages=(
-                get_litestar_scope_state(scope, HTTP_RESPONSE_START, pop=True),
-                get_litestar_scope_state(scope, HTTP_RESPONSE_BODY, pop=True),
+                connection_state.log_context.pop(HTTP_RESPONSE_START),
+                connection_state.log_context.pop(HTTP_RESPONSE_BODY),
             ),
         )
-        response_body_compressed = get_litestar_scope_state(scope, SCOPE_STATE_RESPONSE_COMPRESSED, default=False)
+        response_body_compressed = value_or_default(connection_state.response_compressed, False)
         for key in self.config.response_log_fields:
             value: Any
             value = extracted_data.get(key)
@@ -221,12 +219,13 @@ class LoggingMiddleware(AbstractMiddleware):
         Returns:
             An ASGI send function.
         """
+        connection_state = ScopeState.from_scope(scope)
 
         async def send_wrapper(message: Message) -> None:
             if message["type"] == HTTP_RESPONSE_START:
-                set_litestar_scope_state(scope, HTTP_RESPONSE_START, message)
+                connection_state.log_context[HTTP_RESPONSE_START] = message
             elif message["type"] == HTTP_RESPONSE_BODY:
-                set_litestar_scope_state(scope, HTTP_RESPONSE_BODY, message)
+                connection_state.log_context[HTTP_RESPONSE_BODY] = message
                 self.log_response(scope=scope)
             await send(message)
 

@@ -28,6 +28,11 @@ if TYPE_CHECKING:
     from litestar.cli._utils import LitestarGroup
 
 
+@pytest.fixture(autouse=True)
+def reset_litestar_app_env(monkeypatch: MonkeyPatch) -> None:
+    monkeypatch.delenv("LITESTAR_APP", raising=False)
+
+
 @pytest.fixture()
 def root_command() -> LitestarGroup:
     import litestar.cli.main

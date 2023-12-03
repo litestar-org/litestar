@@ -36,6 +36,7 @@ from typing_extensions import (
 from litestar.constants import UNDEFINED_SENTINELS
 from litestar.types import Empty
 from litestar.types.builtin_types import NoneType, UnionTypes
+from litestar.utils.deprecation import warn_deprecation
 from litestar.utils.helpers import unwrap_partial
 from litestar.utils.typing import get_origin_or_inner_type
 
@@ -62,7 +63,6 @@ __all__ = (
     "is_non_string_iterable",
     "is_non_string_sequence",
     "is_optional_union",
-    "is_sync_or_async_generator",
     "is_undefined_sentinel",
     "is_union",
 )
@@ -287,7 +287,7 @@ def is_class_var(annotation: Any) -> bool:
     return annotation is ClassVar
 
 
-def is_sync_or_async_generator(obj: Any) -> TypeGuard[AnyGenerator]:
+def _is_sync_or_async_generator(obj: Any) -> TypeGuard[AnyGenerator]:
     """Check if the given annotation is a sync or async generator.
 
     Args:
@@ -321,3 +321,19 @@ def is_undefined_sentinel(value: Any) -> bool:
         A boolean.
     """
     return any(v is value for v in UNDEFINED_SENTINELS)
+
+
+_deprecated_names = {"is_sync_or_async_generator": _is_sync_or_async_generator}
+
+
+def __getattr__(name: str) -> Any:
+    if name in _deprecated_names:
+        warn_deprecation(
+            deprecated_name=f"litestar.utils.scope.{name}",
+            version="2.4",
+            kind="import",
+            removal_in="3.0",
+            info=f"'litestar.utils.predicates.{name}' is deprecated.",
+        )
+        return globals()["_deprecated_names"][name]
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")  # pragma: no cover

@@ -12,3 +12,5 @@ Contents
 
     nginx-unit
     manually-with-asgi-server
+    docker
+    supervisor

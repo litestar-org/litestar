@@ -1,17 +1,19 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Generic, Optional, TypeVar
+from typing import Generic, Optional, TypeVar, cast
 
 import msgspec
 import pytest
 import yaml
 from typing_extensions import Annotated
 
-from litestar import Controller, get, post
+from litestar import Controller, Litestar, get, post
 from litestar.app import DEFAULT_OPENAPI_CONFIG
 from litestar.enums import MediaType, OpenAPIMediaType, ParamType
 from litestar.openapi import OpenAPIConfig, OpenAPIController
+from litestar.openapi.spec import Parameter as OpenAPIParameter
+from litestar.params import Parameter
 from litestar.serialization.msgspec_hooks import decode_json, encode_json, get_serializer
 from litestar.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
 from litestar.testing import create_test_client
@@ -291,3 +293,32 @@ def test_with_generic_class() -> None:
                 }
             },
         }
+
+
+def test_allow_multiple_parameters_with_same_name_but_different_location() -> None:
+    """Test that we can support params with the same name if they are in different locations, e.g., cookie and header.
+
+    https://github.com/litestar-org/litestar/issues/2662
+    """
+
+    @post("/test")
+    async def route(
+        name: Annotated[Optional[str], Parameter(cookie="name")] = None,  # noqa: UP007
+        name_header: Annotated[Optional[str], Parameter(header="name")] = None,  # noqa: UP007
+    ) -> str:
+        return name or name_header or ""
+
+    app = Litestar(route_handlers=[route], debug=True)
+    assert app.openapi_schema.paths is not None
+    schema = app.openapi_schema
+    paths = schema.paths
+    assert paths is not None
+    path = paths["/test"]
+    assert path.post is not None
+    parameters = path.post.parameters
+    assert parameters is not None
+    assert len(parameters) == 2
+    assert all(isinstance(param, OpenAPIParameter) for param in parameters)
+    params = cast("list[OpenAPIParameter]", parameters)
+    assert all(param.name == "name" for param in params)
+    assert tuple(param.param_in for param in params) == ("cookie", "header")
