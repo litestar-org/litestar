@@ -17,7 +17,6 @@ from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Iterable, Mappi
 
 from litestar._asgi import ASGIRouter
 from litestar._asgi.utils import get_route_handlers, wrap_in_exception_handler
-from litestar._openapi.plugin import OpenAPIPlugin
 from litestar.config.allowed_hosts import AllowedHostsConfig
 from litestar.config.app import AppConfig
 from litestar.config.response_cache import ResponseCacheConfig
@@ -30,6 +29,7 @@ from litestar.exceptions import (
 )
 from litestar.logging.config import LoggingConfig, get_logger_placeholder
 from litestar.middleware.cors import CORSMiddleware
+from litestar.openapi._plugin import OpenAPIPlugin
 from litestar.openapi.config import OpenAPIConfig
 from litestar.plugins import (
     CLIPluginProtocol,

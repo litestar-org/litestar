@@ -10,7 +10,6 @@ from litestar._openapi.path_item import create_path_item_for_route
 from litestar.di import Provide
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.exceptions.openapi_exceptions import OpenAPINotFoundException
-from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.spec import OpenAPI
 from litestar.plugins import InitPluginProtocol, ReceiveRoutePluginProtocol
 from litestar.response import Response
@@ -21,6 +20,7 @@ from litestar.status_codes import HTTP_404_NOT_FOUND
 if TYPE_CHECKING:
     from litestar.app import Litestar
     from litestar.config.app import AppConfig
+    from litestar.openapi.config import OpenAPIConfig
     from litestar.routes import BaseRoute
 
 
@@ -90,10 +90,9 @@ class OpenAPIPlugin(InitPluginProtocol, ReceiveRoutePluginProtocol):
                     "openapi_schema": Provide(self.provide_openapi, sync_to_thread=False),
                     "openapi_json": Provide(self.provide_openapi_schema_json, sync_to_thread=False),
                     "openapi_yaml": Provide(self.provide_openapi_schema_yaml, sync_to_thread=False),
-                    "openapi_config": Provide(lambda: self.openapi_config, sync_to_thread=False),
                 }
             )
-            app_config.signature_types.extend([OpenAPI, OpenAPIConfig])
+            app_config.signature_types.append(OpenAPI)
             app_config.exception_handlers[OpenAPINotFoundException] = self.handle_openapi_not_found
         return app_config
 

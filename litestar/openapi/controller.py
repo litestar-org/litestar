@@ -8,22 +8,21 @@ from litestar.enums import MediaType, OpenAPIMediaType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.exceptions.openapi_exceptions import OpenAPINotFoundException
 from litestar.handlers import HTTPRouteHandler, get
-from litestar.params import Dependency
+from litestar.openapi._plugin import OpenAPIPlugin
 from litestar.response.base import ASGIResponse
 from litestar.serialization import encode_json
 from litestar.types.helper_types import NoValidate
 
 if TYPE_CHECKING:
-    from litestar.connection import ASGIConnection
+    from litestar.connection import ASGIConnection, Request
     from litestar.handlers import BaseRouteHandler
-    from litestar.openapi.config import OpenAPIConfig
     from litestar.openapi.spec.open_api import OpenAPI
 
 __all__ = ("OpenAPIController",)
 
 
 def openapi_guard(request: ASGIConnection, route_handler: BaseRouteHandler) -> None:
-    if not request.app.openapi_config:  # pragma: no cover
+    if not (config := request.app.plugins.get(OpenAPIPlugin).openapi_config):  # pragma: no cover
         raise ImproperlyConfiguredException("Litestar has not been instantiated with an OpenAPIConfig")
 
     if not isinstance(route_handler, HTTPRouteHandler):  # pragma: no cover
@@ -37,8 +36,6 @@ def openapi_guard(request: ASGIConnection, route_handler: BaseRouteHandler) -> N
     full_request_path = set(filter(None, request.url.path.split("/")))
     request_path = full_request_path.difference(asgi_root_path)
     root_path = set(filter(None, owner.path.split("/")))
-
-    config = request.app.openapi_config
 
     if (request_path == root_path and config.root_schema_site in config.enabled_endpoints) or (
         request_path & config.enabled_endpoints
@@ -59,6 +56,7 @@ class OpenAPIController(Controller):
     """Controller for OpenAPI endpoints."""
 
     guards = [openapi_guard]
+    signature_namespace = {"NoValidate": NoValidate}
 
     path: str = "/schema"
     """Base path for the OpenAPI documentation endpoints."""
@@ -173,7 +171,7 @@ class OpenAPIController(Controller):
 
     @get(path="/", include_in_schema=False, sync_to_thread=False, media_type=MediaType.HTML)
     def root(
-        self, openapi_config: NoValidate[OpenAPIConfig], openapi_schema: NoValidate[OpenAPI], openapi_json: bytes
+        self, request: Request[Any, Any, Any], openapi_schema: NoValidate[OpenAPI], openapi_json: bytes
     ) -> ASGIResponse:
         """Render a static documentation site.
 
@@ -181,7 +179,7 @@ class OpenAPIController(Controller):
          :class:`OpenAPIConfig <.openapi.OpenAPIConfig>`. Defaults to ``redoc``.
 
         Args:
-            openapi_config: The application's OpenAPIConfig instance.
+            request: The current request.
             openapi_schema: The OpenAPI schema as an OpenAPI instance.
             openapi_json: The OpenAPI schema as JSON.
 
@@ -191,6 +189,7 @@ class OpenAPIController(Controller):
         Raises:
             ImproperlyConfiguredException: If the application ``openapi_config`` attribute is ``None``.
         """
+        openapi_config = request.app.plugins.get(OpenAPIPlugin).openapi_config
         render_method = self.render_methods_map[openapi_config.root_schema_site]
         return ASGIResponse(body=render_method(openapi_schema, openapi_json), media_type=MediaType.HTML)
 
