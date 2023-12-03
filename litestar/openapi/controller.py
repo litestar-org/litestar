@@ -3,28 +3,62 @@ from __future__ import annotations
 from functools import cached_property
 from typing import TYPE_CHECKING, Any, Callable, Literal
 
-from yaml import dump as dump_yaml
-
-from litestar.constants import OPENAPI_NOT_INITIALIZED
 from litestar.controller import Controller
 from litestar.enums import MediaType, OpenAPIMediaType
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.handlers import get
+from litestar.exceptions.openapi_exceptions import OpenAPINotFoundException
+from litestar.handlers import HTTPRouteHandler, get
 from litestar.response.base import ASGIResponse
 from litestar.serialization import encode_json
-from litestar.serialization.msgspec_hooks import decode_json
-from litestar.status_codes import HTTP_404_NOT_FOUND
+from litestar.types.helper_types import NoValidate
+
+if TYPE_CHECKING:
+    from litestar.connection import ASGIConnection
+    from litestar.handlers import BaseRouteHandler
+    from litestar.openapi.config import OpenAPIConfig
+    from litestar.openapi.spec.open_api import OpenAPI
 
 __all__ = ("OpenAPIController",)
 
 
-if TYPE_CHECKING:
-    from litestar.connection.request import Request
-    from litestar.openapi.spec.open_api import OpenAPI
+def openapi_guard(request: ASGIConnection, route_handler: BaseRouteHandler) -> None:
+    if not request.app.openapi_config:  # pragma: no cover
+        raise ImproperlyConfiguredException("Litestar has not been instantiated with an OpenAPIConfig")
+
+    if not isinstance(route_handler, HTTPRouteHandler):
+        raise RuntimeError("Guard should be used with HTTPRouteHandler instances only")
+
+    owner = route_handler.owner
+    if not owner or not isinstance(owner, OpenAPIController):
+        raise RuntimeError("OpenAPIController should be the owner of this route handler")
+
+    asgi_root_path = set(filter(None, request.scope.get("root_path", "").split("/")))
+    full_request_path = set(filter(None, request.url.path.split("/")))
+    request_path = full_request_path.difference(asgi_root_path)
+    root_path = set(filter(None, owner.path.split("/")))
+
+    config = request.app.openapi_config
+
+    if (request_path == root_path and config.root_schema_site in config.enabled_endpoints) or (
+        request_path & config.enabled_endpoints
+    ):
+        return
+
+    media_type = (
+        MediaType.JSON
+        if route_handler.media_type in (OpenAPIMediaType.OPENAPI_JSON, OpenAPIMediaType.OPENAPI_YAML)
+        else MediaType(route_handler.media_type)
+    )
+    raise OpenAPINotFoundException(
+        body=owner.render_404_page() if media_type == MediaType.HTML else b"null", media_type=media_type
+    )
 
 
 class OpenAPIController(Controller):
     """Controller for OpenAPI endpoints."""
+
+    guards = [openapi_guard]
+    signature_namespace = {"NoValidate": NoValidate}
 
     path: str = "/schema"
     """Base path for the OpenAPI documentation endpoints."""
@@ -83,45 +117,6 @@ class OpenAPIController(Controller):
     dto = None
     return_dto = None
 
-    @staticmethod
-    def get_schema_from_request(request: Request[Any, Any, Any]) -> OpenAPI:
-        """Return the OpenAPI pydantic model from the request instance.
-
-        Args:
-            request: A :class:`Litestar <.connection.Request>` instance.
-
-        Returns:
-            An :class:`OpenAPI <litestar.openapi.spec.open_api.OpenAPI>` instance.
-        """
-        return request.app.openapi_schema
-
-    def should_serve_endpoint(self, request: Request[Any, Any, Any]) -> bool:
-        """Verify that the requested path is within the enabled endpoints in the openapi_config.
-
-        Args:
-            request: To be tested if endpoint enabled.
-
-        Returns:
-            A boolean.
-
-        Raises:
-            ImproperlyConfiguredException: If the application ``openapi_config`` attribute is ``None``.
-        """
-        if not request.app.openapi_config:  # pragma: no cover
-            raise ImproperlyConfiguredException("Litestar has not been instantiated with an OpenAPIConfig")
-
-        asgi_root_path = set(filter(None, request.scope.get("root_path", "").split("/")))
-        full_request_path = set(filter(None, request.url.path.split("/")))
-        request_path = full_request_path.difference(asgi_root_path)
-        root_path = set(filter(None, self.path.split("/")))
-
-        config = request.app.openapi_config
-
-        if request_path == root_path and config.root_schema_site in config.enabled_endpoints:
-            return True
-
-        return bool(request_path & config.enabled_endpoints)
-
     @property
     def favicon(self) -> str:
         """Return favicon ``<link>`` tag, if applicable.
@@ -134,7 +129,7 @@ class OpenAPIController(Controller):
     @cached_property
     def render_methods_map(
         self,
-    ) -> dict[Literal["redoc", "swagger", "elements", "rapidoc"], Callable[[Request], bytes]]:
+    ) -> dict[Literal["redoc", "swagger", "elements", "rapidoc"], Callable[[OpenAPI, bytes], bytes]]:
         """Map render method names to render methods.
 
         Returns:
@@ -153,52 +148,42 @@ class OpenAPIController(Controller):
         include_in_schema=False,
         sync_to_thread=False,
     )
-    def retrieve_schema_yaml(self, request: Request[Any, Any, Any]) -> ASGIResponse:
+    def retrieve_schema_yaml(self, openapi_yaml: bytes) -> ASGIResponse:
         """Return the OpenAPI schema as YAML with an ``application/vnd.oai.openapi`` Content-Type header.
 
         Args:
-            request:
-                A :class:`Request <.connection.Request>` instance.
+            openapi_yaml: The OpenAPI schema as YAML.
 
         Returns:
             A Response instance with the YAML object rendered into a string.
         """
-        if self.should_serve_endpoint(request):
-            if not self._dumped_json_schema:
-                schema_json = decode_json(self._get_schema_as_json(request))
-                schema_yaml = dump_yaml(schema_json, default_flow_style=False)
-                self._dumped_yaml_schema = schema_yaml.encode("utf-8")
-            return ASGIResponse(body=self._dumped_yaml_schema, media_type=OpenAPIMediaType.OPENAPI_YAML)
-        return ASGIResponse(body=b"", status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
+        return ASGIResponse(body=openapi_yaml, media_type=OpenAPIMediaType.OPENAPI_YAML)
 
     @get(path="/openapi.json", media_type=OpenAPIMediaType.OPENAPI_JSON, include_in_schema=False, sync_to_thread=False)
-    def retrieve_schema_json(self, request: Request[Any, Any, Any]) -> ASGIResponse:
+    def retrieve_schema_json(self, openapi_json: bytes) -> ASGIResponse:
         """Return the OpenAPI schema as JSON with an ``application/vnd.oai.openapi+json`` Content-Type header.
 
         Args:
-            request:
-                A :class:`Request <.connection.Request>` instance.
+            openapi_json: The OpenAPI schema as JSON.
 
         Returns:
             A Response instance with the JSON object rendered into a string.
         """
-        if self.should_serve_endpoint(request):
-            return ASGIResponse(
-                body=self._get_schema_as_json(request),
-                media_type=OpenAPIMediaType.OPENAPI_JSON,
-            )
-        return ASGIResponse(body=b"", status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
+        return ASGIResponse(body=openapi_json, media_type=OpenAPIMediaType.OPENAPI_JSON)
 
-    @get(path="/", include_in_schema=False, sync_to_thread=False)
-    def root(self, request: Request[Any, Any, Any]) -> ASGIResponse:
+    @get(path="/", include_in_schema=False, sync_to_thread=False, media_type=MediaType.HTML)
+    def root(
+        self, openapi_config: NoValidate[OpenAPIConfig], openapi_schema: NoValidate[OpenAPI], openapi_json: bytes
+    ) -> ASGIResponse:
         """Render a static documentation site.
 
          The site to be rendered is based on the ``root_schema_site`` value set in the application's
          :class:`OpenAPIConfig <.openapi.OpenAPIConfig>`. Defaults to ``redoc``.
 
         Args:
-            request:
-                A :class:`Request <.connection.Request>` instance.
+            openapi_config: The application's OpenAPIConfig instance.
+            openapi_schema: The OpenAPI schema as an OpenAPI instance.
+            openapi_json: The OpenAPI schema as JSON.
 
         Returns:
             A response with the rendered site defined in root_schema_site.
@@ -206,91 +191,69 @@ class OpenAPIController(Controller):
         Raises:
             ImproperlyConfiguredException: If the application ``openapi_config`` attribute is ``None``.
         """
-        config = request.app.openapi_config
-        if not config:  # pragma: no cover
-            raise ImproperlyConfiguredException(OPENAPI_NOT_INITIALIZED)
+        render_method = self.render_methods_map[openapi_config.root_schema_site]
+        return ASGIResponse(body=render_method(openapi_schema, openapi_json), media_type=MediaType.HTML)
 
-        render_method = self.render_methods_map[config.root_schema_site]
-
-        if self.should_serve_endpoint(request):
-            return ASGIResponse(body=render_method(request), media_type=MediaType.HTML)
-        return ASGIResponse(body=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
-
-    @get(path="/swagger", include_in_schema=False, sync_to_thread=False)
-    def swagger_ui(self, request: Request[Any, Any, Any]) -> ASGIResponse:
+    @get(path="/swagger", include_in_schema=False, sync_to_thread=False, media_type=MediaType.HTML)
+    def swagger_ui(self, openapi_schema: NoValidate[OpenAPI], openapi_json: bytes) -> ASGIResponse:
         """Route handler responsible for rendering Swagger-UI.
 
         Args:
-            request:
-                A :class:`Request <.connection.Request>` instance.
+            openapi_schema: The OpenAPI schema as an OpenAPI instance.
+            openapi_json: The OpenAPI schema as JSON.
 
         Returns:
             A response with a rendered swagger documentation site
         """
-        if self.should_serve_endpoint(request):
-            return ASGIResponse(body=self.render_swagger_ui(request), media_type=MediaType.HTML)
-        return ASGIResponse(body=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
+        return ASGIResponse(body=self.render_swagger_ui(openapi_schema, openapi_json), media_type=MediaType.HTML)
 
     @get(path="/elements", media_type=MediaType.HTML, include_in_schema=False, sync_to_thread=False)
-    def stoplight_elements(self, request: Request[Any, Any, Any]) -> ASGIResponse:
+    def stoplight_elements(self, openapi_schema: NoValidate[OpenAPI], openapi_json: bytes) -> ASGIResponse:
         """Route handler responsible for rendering StopLight Elements.
 
         Args:
-            request:
-                A :class:`Request <.connection.Request>` instance.
+            openapi_schema: The OpenAPI schema as an OpenAPI instance.
+            openapi_json: The OpenAPI schema as JSON.
 
         Returns:
             A response with a rendered stoplight elements documentation site
         """
-        if self.should_serve_endpoint(request):
-            return ASGIResponse(body=self.render_stoplight_elements(request), media_type=MediaType.HTML)
-        return ASGIResponse(body=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
+        return ASGIResponse(
+            body=self.render_stoplight_elements(openapi_schema, openapi_json), media_type=MediaType.HTML
+        )
 
     @get(path="/redoc", media_type=MediaType.HTML, include_in_schema=False, sync_to_thread=False)
-    def redoc(self, request: Request[Any, Any, Any]) -> ASGIResponse:  # pragma: no cover
+    def redoc(self, openapi_schema: NoValidate[OpenAPI], openapi_json: bytes) -> ASGIResponse:  # pragma: no cover
         """Route handler responsible for rendering Redoc.
 
         Args:
-            request:
-                A :class:`Request <.connection.Request>` instance.
+            openapi_schema: The OpenAPI schema as an OpenAPI instance.
+            openapi_json: The OpenAPI schema as JSON.
 
         Returns:
             A response with a rendered redoc documentation site
         """
-        if self.should_serve_endpoint(request):
-            return ASGIResponse(body=self.render_redoc(request), media_type=MediaType.HTML)
-        return ASGIResponse(body=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
+        return ASGIResponse(body=self.render_redoc(openapi_schema, openapi_json), media_type=MediaType.HTML)
 
     @get(path="/rapidoc", media_type=MediaType.HTML, include_in_schema=False, sync_to_thread=False)
-    def rapidoc(self, request: Request[Any, Any, Any]) -> ASGIResponse:
-        if self.should_serve_endpoint(request):
-            return ASGIResponse(body=self.render_rapidoc(request), media_type=MediaType.HTML)
-        return ASGIResponse(body=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
+    def rapidoc(self, openapi_schema: NoValidate[OpenAPI], openapi_json: bytes) -> ASGIResponse:
+        return ASGIResponse(body=self.render_rapidoc(openapi_schema, openapi_json), media_type=MediaType.HTML)
 
     @get(path="/oauth2-redirect.html", media_type=MediaType.HTML, include_in_schema=False, sync_to_thread=False)
-    def swagger_ui_oauth2_redirect(self, request: Request[Any, Any, Any]) -> ASGIResponse:  # pragma: no cover
+    def swagger_ui_oauth2_redirect(self) -> ASGIResponse:  # pragma: no cover
         """Route handler responsible for rendering oauth2-redirect.html page for Swagger-UI.
-
-        Args:
-            request:
-                A :class:`Request <.connection.Request>` instance.
 
         Returns:
             A response with a rendered oauth2-redirect.html page for Swagger-UI.
         """
-        if self.should_serve_endpoint(request):
-            return ASGIResponse(body=self.render_swagger_ui_oauth2_redirect(request), media_type=MediaType.HTML)
-        return ASGIResponse(body=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
+        return ASGIResponse(body=self.render_swagger_ui_oauth2_redirect(), media_type=MediaType.HTML)
 
-    def render_swagger_ui_oauth2_redirect(self, request: Request[Any, Any, Any]) -> bytes:
+    @staticmethod
+    def render_swagger_ui_oauth2_redirect() -> bytes:
         """Render an HTML oauth2-redirect.html page for Swagger-UI.
 
         Notes:
             - override this method to customize the template.
-
-        Args:
-            request:
-                A :class:`Request <.connection.Request>` instance.
 
         Returns:
             A rendered html string.
@@ -375,24 +338,22 @@ class OpenAPIController(Controller):
         </body>
         </html>"""
 
-    def render_swagger_ui(self, request: Request[Any, Any, Any]) -> bytes:
+    def render_swagger_ui(self, openapi_schema: OpenAPI, openapi_json: bytes) -> bytes:
         """Render an HTML page for Swagger-UI.
 
         Notes:
             - override this method to customize the template.
 
         Args:
-            request:
-                A :class:`Request <.connection.Request>` instance.
+            openapi_schema: The OpenAPI schema as an OpenAPI instance.
+            openapi_json: The OpenAPI schema as JSON.
 
         Returns:
             A rendered html string.
         """
-        schema = self.get_schema_from_request(request)
-
         head = f"""
           <head>
-            <title>{schema.info.title}</title>
+            <title>{openapi_schema.info.title}</title>
             {self.favicon}
             <meta charset="utf-8"/>
             <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -408,7 +369,7 @@ class OpenAPIController(Controller):
             <div id='swagger-container'/>
             <script type="text/javascript">
             const ui = SwaggerUIBundle({{
-                spec: {self._get_schema_as_json(request)},
+                spec: {openapi_json.decode('utf-8')},
                 dom_id: '#swagger-container',
                 deepLinking: true,
                 showExtensions: true,
@@ -431,23 +392,21 @@ class OpenAPIController(Controller):
             </html>
         """.encode()
 
-    def render_stoplight_elements(self, request: Request[Any, Any, Any]) -> bytes:
+    def render_stoplight_elements(self, openapi_schema: OpenAPI, _: bytes) -> bytes:
         """Render an HTML page for StopLight Elements.
 
         Notes:
             - override this method to customize the template.
 
         Args:
-            request:
-                A :class:`Request <.connection.Request>` instance.
+            openapi_schema: The OpenAPI schema as an OpenAPI instance.
 
         Returns:
             A rendered html string.
         """
-        schema = self.get_schema_from_request(request)
         head = f"""
           <head>
-            <title>{schema.info.title}</title>
+            <title>{openapi_schema.info.title}</title>
             {self.favicon}
             <meta charset="utf-8"/>
             <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -475,12 +434,10 @@ class OpenAPIController(Controller):
             </html>
         """.encode()
 
-    def render_rapidoc(self, request: Request[Any, Any, Any]) -> bytes:  # pragma: no cover
-        schema = self.get_schema_from_request(request)
-
+    def render_rapidoc(self, openapi_schema: OpenAPI, _: bytes) -> bytes:  # pragma: no cover
         head = f"""
           <head>
-            <title>{schema.info.title}</title>
+            <title>{openapi_schema.info.title}</title>
             {self.favicon}
             <meta charset="utf-8"/>
             <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -503,24 +460,22 @@ class OpenAPIController(Controller):
             </html>
         """.encode()
 
-    def render_redoc(self, request: Request[Any, Any, Any]) -> bytes:  # pragma: no cover
+    def render_redoc(self, openapi_schema: OpenAPI, openapi_json: bytes) -> bytes:  # pragma: no cover
         """Render an HTML page for Redoc.
 
         Notes:
             - override this method to customize the template.
 
         Args:
-            request:
-                A :class:`Request <.connection.Request>` instance.
+            openapi_schema: The OpenAPI schema as an OpenAPI instance.
+            openapi_json: The OpenAPI schema as JSON.
 
         Returns:
             A rendered html string.
         """
-        schema = self.get_schema_from_request(request)
-
         head = f"""
           <head>
-            <title>{schema.info.title}</title>
+            <title>{openapi_schema.info.title}</title>
             {self.favicon}
             <meta charset="utf-8"/>
             <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -544,7 +499,7 @@ class OpenAPIController(Controller):
             <div id='redoc-container'/>
             <script type="text/javascript">
                 Redoc.init(
-                    {self._get_schema_as_json(request)},
+                    {openapi_json.decode('utf-8')},
                     undefined,
                     document.getElementById('redoc-container')
                 )
@@ -584,13 +539,3 @@ class OpenAPIController(Controller):
             </body>
         </html>
         """.encode()
-
-    def _get_schema_as_json(self, request: Request) -> str:
-        """Get the schema encoded as a JSON string."""
-
-        if not self._dumped_json_schema:
-            schema = self.get_schema_from_request(request).to_schema()
-            json_encoded_schema = encode_json(schema, request.route_handler.default_serializer)
-            self._dumped_json_schema = json_encoded_schema.decode("utf-8")
-
-        return self._dumped_json_schema
