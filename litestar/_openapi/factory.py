@@ -4,7 +4,7 @@ from functools import cached_property
 from typing import TYPE_CHECKING
 
 from litestar._openapi.datastructures import OpenAPIContext
-from litestar._openapi.path_item import PathItemFactory
+from litestar._openapi.path_item import create_path_item_for_route
 from litestar.constants import OPENAPI_NOT_INITIALIZED
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.routes import HTTPRoute
@@ -81,9 +81,7 @@ class OpenAPIFactory:
             any(route_handler.resolve_include_in_schema() for route_handler, _ in route.route_handler_map.values())
             and (route.path_format or "/") not in self.paths
         ):
-            path_item_factory = PathItemFactory(self.openapi_context, route)
-            path_item = path_item_factory.create_path_item()
-            self.paths[route.path_format or "/"] = path_item
+            self.paths[route.path_format or "/"] = create_path_item_for_route(self.openapi_context, route)
 
     def initialize(self) -> None:
         """Initialize the OpenAPIFactory.

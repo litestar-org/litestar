@@ -37,11 +37,7 @@ if TYPE_CHECKING:
     from litestar.openapi.spec.responses import Responses
 
 
-__all__ = (
-    "ResponseFactory",
-    "create_cookie_schema",
-    "create_error_responses",
-)
+__all__ = ("create_responses_for_handler",)
 
 CAPITAL_LETTERS_PATTERN = re.compile(r"(?=[A-Z])")
 
@@ -308,3 +304,19 @@ def create_error_responses(exceptions: list[type[HTTPException]]) -> Iterator[tu
                 content={MediaType.JSON: OpenAPIMediaType(schema=schema)},
             ),
         )
+
+
+def create_responses_for_handler(
+    context: OpenAPIContext, route_handler: HTTPRouteHandler, raises_validation_error: bool
+) -> Responses | None:
+    """Create the schema for responses, if any.
+
+    Args:
+        context: An OpenAPIContext instance.
+        route_handler: An HTTPRouteHandler instance.
+        raises_validation_error: Boolean flag indicating whether the handler raises a ValidationException.
+
+    Returns:
+        Responses
+    """
+    return ResponseFactory(context, route_handler).create_responses(raises_validation_error=raises_validation_error)
