@@ -8,7 +8,6 @@ from litestar.enums import MediaType, OpenAPIMediaType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.exceptions.openapi_exceptions import OpenAPINotFoundException
 from litestar.handlers import HTTPRouteHandler, get
-from litestar.params import Dependency
 from litestar.response.base import ASGIResponse
 from litestar.serialization import encode_json
 from litestar.types.helper_types import NoValidate
