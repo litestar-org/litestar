@@ -1,0 +1,23 @@
+name: "Validate PR target"
+
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
+
+permissions:
+  pull-requests: read
+
+jobs:
+  main:
+    name: Validate PR target branch
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR target
+        if: ${{ startsWith(github.event.pull_request.title, 'feat') && github.base_ref != 'develop' }}
+        uses: actions/github-script@v3
+        with:
+          script: |
+              core.setFailed('Invalid target branch for feature PR')
