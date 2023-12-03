@@ -203,12 +203,13 @@ class OpenAPISchemaPlugin(OpenAPISchemaPluginProtocol):
 
 
 PluginProtocol = Union[
-    SerializationPluginProtocol,
-    InitPluginProtocol,
-    OpenAPISchemaPluginProtocol,
-    OpenAPISchemaPlugin,
-    CLIPluginProtocol,
     CLIPlugin,
+    CLIPluginProtocol,
+    InitPluginProtocol,
+    OpenAPISchemaPlugin,
+    OpenAPISchemaPluginProtocol,
+    ReceiveRoutePlugin,
+    SerializationPluginProtocol,
 ]
 
 PluginT = TypeVar("PluginT", bound=PluginProtocol)
@@ -218,7 +219,7 @@ class PluginRegistry:
     __slots__ = {
         "init": "Plugins that implement the InitPluginProtocol",
         "openapi": "Plugins that implement the OpenAPISchemaPluginProtocol",
-        "receive_route": "Plugins that implement the ReceiveRouteProtocol",
+        "receive_route": "ReceiveRoutePlugin types",
         "serialization": "Plugins that implement the SerializationPluginProtocol",
         "cli": "Plugins that implement the CLIPluginProtocol",
         "_plugins_by_type": None,
