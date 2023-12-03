@@ -92,14 +92,14 @@ class SimpleEventEmitter(BaseEventEmitterBackend):
         self._exit_stack: AsyncExitStack | None = None
 
 
-    async def _worker(receive_stream: MemoryObjectReceiveStream[EventMessage]) -> None:
+    async def _worker(self) -> None:
         """Run items from ``receive_stream`` in a task group.
 
         Returns:
             None
         """
-        async with receive_stream, anyio.create_task_group() as task_group:
-            async for item in receive_stream:
+        async with (self, anyio.create_task_group() as task_group):
+            async for item in self:
                 fn = partial(item.fn, **item.kwargs) if item.kwargs else item.fn
                 # mypy doesn't infer `fn` type correctly, explicitly cast it
                 fn = cast("AsyncCallable", fn)
