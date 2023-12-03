@@ -1,17 +1,18 @@
 from dataclasses import dataclass
 from typing import Any, Callable, Dict, List, Type
-from unittest.mock import MagicMock
+from unittest.mock import ANY, MagicMock
 
 import pytest
 
 from litestar import Controller, Litestar, post
 from litestar._openapi.datastructures import OpenAPIContext
-from litestar._openapi.request_body import RequestBodyFactory
+from litestar._openapi.request_body import create_request_body
 from litestar.datastructures.upload_file import UploadFile
 from litestar.dto import AbstractDTO
 from litestar.enums import RequestEncodingType
 from litestar.handlers import BaseRouteHandler
 from litestar.openapi.config import OpenAPIConfig
+from litestar.openapi.spec import RequestBody
 from litestar.params import Body
 from litestar.typing import FieldDefinition
 
@@ -22,18 +23,23 @@ class FormData:
     image: UploadFile
 
 
-CreateFactoryFixture = Callable[..., RequestBodyFactory]
+ResponseBodyFactory = Callable[[BaseRouteHandler, FieldDefinition], RequestBody]
 
 
 @pytest.fixture()
-def create_factory() -> CreateFactoryFixture:
-    def _factory(route_handler: BaseRouteHandler, data_field: FieldDefinition) -> RequestBodyFactory:
-        return RequestBodyFactory(
-            context=OpenAPIContext(
-                openapi_config=OpenAPIConfig(title="test", version="1.0.0", create_examples=True),
-                plugins=[],
-                schemas={},
-            ),
+def openapi_context() -> OpenAPIContext:
+    return OpenAPIContext(
+        openapi_config=OpenAPIConfig(title="test", version="1.0.0", create_examples=True),
+        plugins=[],
+        schemas={},
+    )
+
+
+@pytest.fixture()
+def create_response(openapi_context: OpenAPIContext) -> ResponseBodyFactory:
+    def _factory(route_handler: BaseRouteHandler, data_field: FieldDefinition) -> RequestBody:
+        return create_request_body(
+            context=openapi_context,
             handler_id=route_handler.handler_id,
             resolved_data_dto=route_handler.resolve_data_dto(),
             data_field=data_field,
@@ -42,12 +48,12 @@ def create_factory() -> CreateFactoryFixture:
     return _factory
 
 
-def test_create_request_body(person_controller: Type[Controller], create_factory: CreateFactoryFixture) -> None:
+def test_create_request_body(person_controller: Type[Controller], create_response: ResponseBodyFactory) -> None:
     for route in Litestar(route_handlers=[person_controller]).routes:
         for route_handler, _ in route.route_handler_map.values():  # type: ignore
             handler_fields = route_handler.parsed_fn_signature.parameters
             if "data" in handler_fields:
-                request_body = create_factory(route_handler, handler_fields["data"]).create_request_body()
+                request_body = create_response(route_handler, handler_fields["data"])
                 assert request_body
 
 
@@ -104,7 +110,7 @@ def test_upload_file_request_body_generation() -> None:
     }
 
 
-def test_request_body_generation_with_dto(create_factory: CreateFactoryFixture) -> None:
+def test_request_body_generation_with_dto(create_response: ResponseBodyFactory) -> None:
     mock_dto = MagicMock(spec=AbstractDTO)
 
     @post(path="/form-upload", dto=mock_dto)  # pyright: ignore
@@ -113,9 +119,7 @@ def test_request_body_generation_with_dto(create_factory: CreateFactoryFixture) 
 
     Litestar(route_handlers=[handler])
     field_definition = FieldDefinition.from_annotation(Dict[str, Any])
-    factory = create_factory(handler, field_definition)
-    factory.create_request_body()
-
+    create_response(handler, field_definition)
     mock_dto.create_openapi_schema.assert_called_once_with(
-        field_definition=field_definition, handler_id=handler.handler_id, schema_creator=factory.schema_creator
+        field_definition=field_definition, handler_id=handler.handler_id, schema_creator=ANY
     )

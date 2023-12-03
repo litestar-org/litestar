@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from litestar.openapi.spec import Reference
     from litestar.types.internal_types import PathParameterDefinition
 
-__all__ = ("ParameterFactory",)
+__all__ = ("create_parameters_for_handler",)
 
 
 class ParameterCollection:
@@ -217,3 +217,17 @@ class ParameterFactory:
         handler_fields = self.route_handler.parsed_fn_signature.parameters
         self.create_parameters_for_field_definitions(handler_fields)
         return self.parameters.list()
+
+
+def create_parameters_for_handler(
+    context: OpenAPIContext,
+    route_handler: BaseRouteHandler,
+    path_parameters: tuple[PathParameterDefinition, ...],
+) -> list[Parameter]:
+    """Create a list of path/query/header Parameter models for the given PathHandler."""
+    factory = ParameterFactory(
+        context=context,
+        route_handler=route_handler,
+        path_parameters=path_parameters,
+    )
+    return factory.create_parameters_for_handler()
