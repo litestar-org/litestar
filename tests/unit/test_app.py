@@ -363,13 +363,12 @@ def test_registering_route_handler_generates_openapi_docs() -> None:
 
     app.register(get("/path1")(fn))
 
-    paths = app.openapi_schema.paths
-
-    assert paths is not None
-    assert paths.get("/path1")
+    assert app.openapi_schema.paths is not None
+    assert app.openapi_schema.paths.get("/path1")
 
     app.register(get("/path2")(fn))
-    assert paths.get("/path2")
+    assert app.openapi_schema.paths.get("/path1")
+    assert app.openapi_schema.paths.get("/path2")
 
 
 def test_plugin_properties() -> None:

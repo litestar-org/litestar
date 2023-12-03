@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from litestar.handlers.http_handlers import HTTPRouteHandler
     from litestar.routes import HTTPRoute
 
-__all__ = ("PathItemFactory",)
+__all__ = ("create_path_item_for_route",)
 
 
 class PathItemFactory:
