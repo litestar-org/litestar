@@ -20,7 +20,7 @@ __all__ = (
     "OpenAPISchemaPluginProtocol",
     "OpenAPISchemaPlugin",
     "PluginProtocol",
-    "ReceiveRouteProtocol",
+    "ReceiveRoutePluginProtocol",
     "CLIPlugin",
     "CLIPluginProtocol",
     "PluginRegistry",
@@ -72,7 +72,7 @@ class InitPluginProtocol(Protocol):
 
 
 @runtime_checkable
-class ReceiveRouteProtocol(Protocol):
+class ReceiveRoutePluginProtocol(Protocol):
     """Protocol used to define plugins that affect the application's init process."""
 
     __slots__ = ()
@@ -232,7 +232,7 @@ class PluginRegistry:
         self._plugins = frozenset(plugins)
         self.init = tuple(p for p in plugins if isinstance(p, InitPluginProtocol))
         self.openapi = tuple(p for p in plugins if isinstance(p, OpenAPISchemaPluginProtocol))
-        self.receive_route = tuple(p for p in plugins if isinstance(p, ReceiveRouteProtocol))
+        self.receive_route = tuple(p for p in plugins if isinstance(p, ReceiveRoutePluginProtocol))
         self.serialization = tuple(p for p in plugins if isinstance(p, SerializationPluginProtocol))
         self.cli = tuple(p for p in plugins if isinstance(p, CLIPluginProtocol))
 
