@@ -16,8 +16,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check PR target
-        if: ${{ startsWith(github.event.pull_request.title, 'feat') && github.base_ref != 'develop' }}
+        if: ${{ startsWith(github.event.pull_request.title, 'feat') && github.base_ref == 'main' }}
         uses: actions/github-script@v3
         with:
           script: |
-              core.setFailed('Invalid target branch for feature PR')
+              core.setFailed('Cannot merge feature type PR into main. Merge into a feature branch or develop')
