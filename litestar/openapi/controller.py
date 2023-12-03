@@ -5,7 +5,8 @@ from typing import TYPE_CHECKING, Any, Callable, Literal
 
 from litestar.controller import Controller
 from litestar.enums import MediaType, OpenAPIMediaType
-from litestar.exceptions import ImproperlyConfiguredException, NotFoundException
+from litestar.exceptions import ImproperlyConfiguredException
+from litestar.exceptions.openapi_exceptions import OpenAPINotFoundException
 from litestar.handlers import HTTPRouteHandler, get
 from litestar.params import Dependency
 from litestar.response.base import ASGIResponse
@@ -18,14 +19,7 @@ if TYPE_CHECKING:
     from litestar.openapi.config import OpenAPIConfig
     from litestar.openapi.spec.open_api import OpenAPI
 
-
-class OpenAPINotFoundException(NotFoundException):
-    """Exception raised when an OpenAPI endpoint is not found."""
-
-    def __init__(self, body: bytes, media_type: MediaType) -> None:
-        self.body = body
-        self.media_type = media_type
-        super().__init__()
+__all__ = ("OpenAPIController",)
 
 
 def openapi_guard(request: ASGIConnection, route_handler: BaseRouteHandler) -> None:

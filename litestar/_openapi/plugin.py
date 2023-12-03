@@ -9,8 +9,8 @@ from litestar._openapi.datastructures import OpenAPIContext
 from litestar._openapi.path_item import create_path_item_for_route
 from litestar.di import Provide
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.exceptions.openapi_exceptions import OpenAPINotFoundException
 from litestar.openapi.config import OpenAPIConfig
-from litestar.openapi.controller import OpenAPINotFoundException
 from litestar.openapi.spec import OpenAPI
 from litestar.plugins import InitPluginProtocol, ReceiveRoutePluginProtocol
 from litestar.response import Response
