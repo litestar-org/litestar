@@ -44,7 +44,7 @@ def test_cleanup_is_being_performed(tmpdir: Path) -> None:
 
     upload_file: Optional[UploadFile] = None
 
-    @post("/form")
+    @post("/form", sync_to_thread=False)
     def handler(data: UploadFile = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
         nonlocal upload_file
         upload_file = data

@@ -404,7 +404,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             ]
             self._resolved_include_in_schema = include_in_schemas[-1] if include_in_schemas else True
 
-        return cast(bool, self._resolved_include_in_schema)
+        return self._resolved_include_in_schema
 
     def get_response_handler(self, is_response_type_data: bool = False) -> Callable[[Any], Awaitable[ASGIApp]]:
         """Resolve the response_handler function for the route handler.

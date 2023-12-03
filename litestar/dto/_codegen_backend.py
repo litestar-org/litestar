@@ -349,7 +349,7 @@ class TransferFunctionFactory:
         override_serialization_name: bool,
         field_definition: FieldDefinition | None = None,
     ) -> Callable[[Any], Any]:
-        if field_definition and field_definition.is_non_string_collection and not field_definition.is_mapping:
+        if field_definition and field_definition.is_non_string_collection:
             factory = cls(
                 is_data_field=is_data_field,
                 override_serialization_name=override_serialization_name,
@@ -390,9 +390,14 @@ class TransferFunctionFactory:
             override_serialization_name=self.override_serialization_name,
         )
         transfer_func_name = self._add_to_fn_globals("transfer_data", transfer_func)
-        self._add_stmt(
-            f"{assignment_target} = {origin_name}({transfer_func_name}(item) for item in {source_data_name})"
-        )
+        if field_definition.is_mapping:
+            self._add_stmt(
+                f"{assignment_target} = {origin_name}((key, {transfer_func_name}(item)) for key, item in {source_data_name}.items())"
+            )
+        else:
+            self._add_stmt(
+                f"{assignment_target} = {origin_name}({transfer_func_name}(item) for item in {source_data_name})"
+            )
 
     def _create_transfer_instance_data(
         self,

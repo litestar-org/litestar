@@ -5,9 +5,10 @@ from typing import TYPE_CHECKING, cast
 from msgspec.msgpack import encode as encode_msgpack
 
 from litestar import Request
-from litestar.constants import HTTP_RESPONSE_BODY, HTTP_RESPONSE_START, SCOPE_STATE_DO_CACHE, SCOPE_STATE_IS_CACHED
+from litestar.constants import HTTP_RESPONSE_BODY, HTTP_RESPONSE_START
 from litestar.enums import ScopeType
-from litestar.utils import get_litestar_scope_state, set_litestar_scope_state
+from litestar.utils.empty import value_or_default
+from litestar.utils.scope.state import ScopeState
 
 from .base import AbstractMiddleware
 
@@ -33,16 +34,19 @@ class ResponseCacheMiddleware(AbstractMiddleware):
         elif route_handler.cache is not False and isinstance(route_handler.cache, int):
             expires_in = route_handler.cache
 
+        connection_state = ScopeState.from_scope(scope)
+
         messages: list[Message] = []
 
         async def wrapped_send(message: Message) -> None:
-            if not get_litestar_scope_state(scope, SCOPE_STATE_IS_CACHED):
+            if not value_or_default(connection_state.is_cached, False):
                 if message["type"] == HTTP_RESPONSE_START:
-                    do_cache = self.config.cache_response_filter(cast("HTTPScope", scope), message["status"])
-                    set_litestar_scope_state(scope, SCOPE_STATE_DO_CACHE, do_cache)
+                    do_cache = connection_state.do_cache = self.config.cache_response_filter(
+                        cast("HTTPScope", scope), message["status"]
+                    )
                     if do_cache:
                         messages.append(message)
-                elif get_litestar_scope_state(scope, SCOPE_STATE_DO_CACHE):
+                elif value_or_default(connection_state.do_cache, False):
                     messages.append(message)
 
                 if messages and message["type"] == HTTP_RESPONSE_BODY and not message["more_body"]:

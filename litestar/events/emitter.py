@@ -19,9 +19,6 @@ import anyio
 
 from litestar.exceptions import ImproperlyConfiguredException
 
-__all__ = ("BaseEventEmitterBackend", "SimpleEventEmitter")
-
-
 if TYPE_CHECKING:
     from contextvars import Context
     from types import TracebackType
@@ -41,6 +38,8 @@ class EventMessage:
     args: Sequence[Any]
     kwargs: dict[str, Any]
     ctx: Context | None
+
+__all__ = ("BaseEventEmitterBackend", "SimpleEventEmitter")
 
 
 class BaseEventEmitterBackend(AsyncContextManager["BaseEventEmitterBackend"], ABC):
