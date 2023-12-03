@@ -6,7 +6,7 @@ from litestar.plugins.base import (
     OpenAPISchemaPluginProtocol,
     PluginProtocol,
     PluginRegistry,
-    ReceiveRoutePluginProtocol,
+    ReceiveRoutePlugin,
     SerializationPluginProtocol,
 )
 
@@ -17,7 +17,7 @@ __all__ = (
     "OpenAPISchemaPluginProtocol",
     "OpenAPISchemaPlugin",
     "PluginProtocol",
-    "ReceiveRoutePluginProtocol",
+    "ReceiveRoutePlugin",
     "CLIPluginProtocol",
     "PluginRegistry",
 )

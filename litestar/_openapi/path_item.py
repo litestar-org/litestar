@@ -67,7 +67,7 @@ class PathItemFactory:
                 self.context, route_handler.handler_id, route_handler.resolve_data_dto(), data_field
             )
 
-        raises_validation_error = bool("data" in signature_fields or self._path_item.parameters or parameters)
+        raises_validation_error = bool(data_field or self._path_item.parameters or parameters)
         responses = create_responses_for_handler(
             self.context, route_handler, raises_validation_error=raises_validation_error
         )
@@ -76,7 +76,7 @@ class PathItemFactory:
             operation_id=operation_id,
             tags=route_handler.resolve_tags() or None,
             summary=route_handler.summary or SEPARATORS_CLEANUP_PATTERN.sub("", route_handler.handler_name.title()),
-            description=self.get_description_for_handler(route_handler),
+            description=self.create_description_for_handler(route_handler),
             deprecated=route_handler.deprecated,
             responses=responses,
             request_body=request_body,
@@ -107,7 +107,7 @@ class PathItemFactory:
         self.context.add_operation_id(operation_id)
         return operation_id
 
-    def get_description_for_handler(self, route_handler: HTTPRouteHandler) -> str | None:
+    def create_description_for_handler(self, route_handler: HTTPRouteHandler) -> str | None:
         """Produce the operation description for a route handler.
 
         Args:
