@@ -15,12 +15,16 @@ from typing import (
     Union,
 )
 
+from typing_extensions import Annotated
+
+from litestar.params import Dependency
+
 if TYPE_CHECKING:
     from typing_extensions import TypeAlias
 
 T = TypeVar("T")
 
-__all__ = ("OptionalSequence", "SyncOrAsyncUnion", "AnyIOBackend", "StreamType", "MaybePartial")
+__all__ = ("OptionalSequence", "SyncOrAsyncUnion", "AnyIOBackend", "StreamType", "MaybePartial", "NoValidate")
 
 OptionalSequence: TypeAlias = Optional[Sequence[T]]
 """Types 'T' as union of Sequence[T] and None."""
@@ -37,3 +41,6 @@ StreamType: TypeAlias = Union[Iterable[T], Iterator[T], AsyncIterable[T], AsyncI
 
 MaybePartial: TypeAlias = Union[T, partial]
 """A potentially partial callable."""
+
+NoValidate: TypeAlias = Annotated[T, Dependency(skip_validation=True)]
+"""Generic type for marking a dependency that should not be validated."""

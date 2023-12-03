@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 from functools import cached_property
-from typing import TYPE_CHECKING, Any, Callable, Literal, TypeVar
-
-from typing_extensions import Annotated, TypeAlias
+from typing import TYPE_CHECKING, Any, Callable, Literal
 
 from litestar.controller import Controller
 from litestar.enums import MediaType, OpenAPIMediaType
@@ -12,9 +10,7 @@ from litestar.handlers import HTTPRouteHandler, get
 from litestar.params import Dependency
 from litestar.response.base import ASGIResponse
 from litestar.serialization import encode_json
-
-__all__ = ("OpenAPIController",)
-
+from litestar.types.helper_types import NoValidate
 
 if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
@@ -63,10 +59,6 @@ def openapi_guard(request: ASGIConnection, route_handler: BaseRouteHandler) -> N
     raise OpenAPINotFoundException(
         body=owner.render_404_page() if media_type == MediaType.HTML else b"null", media_type=media_type
     )
-
-
-T = TypeVar("T")
-NoValidate: TypeAlias = Annotated[T, Dependency(skip_validation=True)]
 
 
 class OpenAPIController(Controller):
