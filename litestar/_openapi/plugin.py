@@ -5,7 +5,8 @@ from typing import TYPE_CHECKING
 from litestar._openapi.datastructures import OpenAPIContext
 from litestar._openapi.path_item import create_path_item_for_route
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.plugins import InitPluginProtocol, ReceiveRoutePlugin
+from litestar.plugins import InitPluginProtocol
+from litestar.plugins.base import ReceiveRoutePlugin
 from litestar.routes import HTTPRoute
 
 if TYPE_CHECKING:

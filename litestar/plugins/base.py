@@ -20,7 +20,6 @@ __all__ = (
     "OpenAPISchemaPluginProtocol",
     "OpenAPISchemaPlugin",
     "PluginProtocol",
-    "ReceiveRoutePlugin",
     "CLIPlugin",
     "CLIPluginProtocol",
     "PluginRegistry",
@@ -72,7 +71,7 @@ class InitPluginProtocol(Protocol):
 
 
 class ReceiveRoutePlugin:
-    """Protocol used to define plugins that affect the application's init process."""
+    """Receive routes as they are added to the application."""
 
     __slots__ = ()
 
