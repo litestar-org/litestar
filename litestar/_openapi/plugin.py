@@ -54,7 +54,7 @@ class OpenAPIPlugin(InitPluginProtocol, ReceiveRoutePluginProtocol):
         }
         return openapi
 
-    def provide_openapi_schema(self) -> OpenAPI:
+    def provide_openapi(self) -> OpenAPI:
         if not self._openapi_schema:
             self._openapi_schema = self._build_openapi_schema()
         return self._openapi_schema
@@ -62,7 +62,7 @@ class OpenAPIPlugin(InitPluginProtocol, ReceiveRoutePluginProtocol):
     def provide_openapi_schema_json(self) -> bytes:
         if not self._openapi_schema_json:
             self._openapi_schema_json = encode_json(
-                self.provide_openapi_schema().to_schema(), get_serializer(self.app.type_encoders)
+                self.provide_openapi().to_schema(), get_serializer(self.app.type_encoders)
             )
         return self._openapi_schema_json
 
@@ -87,7 +87,7 @@ class OpenAPIPlugin(InitPluginProtocol, ReceiveRoutePluginProtocol):
             app_config.route_handlers.append(self.openapi_config.openapi_controller)
             app_config.dependencies.update(
                 {
-                    "openapi_schema": Provide(self.provide_openapi_schema, sync_to_thread=False),
+                    "openapi_schema": Provide(self.provide_openapi, sync_to_thread=False),
                     "openapi_json": Provide(self.provide_openapi_schema_json, sync_to_thread=False),
                     "openapi_yaml": Provide(self.provide_openapi_schema_yaml, sync_to_thread=False),
                     "openapi_config": Provide(lambda: self.openapi_config, sync_to_thread=False),

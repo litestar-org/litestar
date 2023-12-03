@@ -583,7 +583,7 @@ class Litestar(Router):
         Raises:
             ImproperlyConfiguredException: If the application ``openapi_config`` attribute is ``None``.
         """
-        return self.plugins.get(OpenAPIPlugin).provide_openapi_schema()
+        return self.plugins.get(OpenAPIPlugin).provide_openapi()
 
     @classmethod
     def from_config(cls, config: AppConfig) -> Self:
