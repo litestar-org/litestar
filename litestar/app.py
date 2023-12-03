@@ -165,7 +165,6 @@ class Litestar(Router):
         "websocket_class",
         "pdb_on_exception",
         "experimental_features",
-        "_openapi_factory",
     )
 
     def __init__(
