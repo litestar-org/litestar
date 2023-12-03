@@ -107,8 +107,7 @@ class OpenAPIPlugin(InitPluginProtocol, ReceiveRoutePluginProtocol):
         if not isinstance(route, HTTPRoute):
             return
 
-        # Force recompute the schema if a new route is added
-        self._openapi_schema = self._openapi_schema_yaml = self._openapi_schema_json = None
-
         if any(route_handler.resolve_include_in_schema() for route_handler, _ in route.route_handler_map.values()):
+            # Force recompute the schema if a new route is added
+            self._openapi_schema = self._openapi_schema_yaml = self._openapi_schema_json = None
             self.included_routes.append(route)
