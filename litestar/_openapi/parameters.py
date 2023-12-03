@@ -202,7 +202,7 @@ class ParameterFactory:
                 continue
 
             if provider := self.dependency_providers.get(field_name):
-                self.create_parameters_for_field_definitions(fields=provider.parsed_signature.parameters)
+                self.create_parameters_for_field_definitions(fields=provider.parsed_fn_signature.parameters)
             else:
                 self.parameters.add(self.create_parameter(field_definition=field_definition, parameter_name=field_name))
 
