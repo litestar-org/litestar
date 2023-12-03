@@ -17,7 +17,7 @@ from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Iterable, Mappi
 
 from litestar._asgi import ASGIRouter
 from litestar._asgi.utils import get_route_handlers, wrap_in_exception_handler
-from litestar._openapi.factory import OpenAPIFactory
+from litestar._openapi.plugin import OpenAPIPlugin
 from litestar.config.allowed_hosts import AllowedHostsConfig
 from litestar.config.app import AppConfig
 from litestar.config.response_cache import ResponseCacheConfig
@@ -315,8 +315,6 @@ class Litestar(Router):
             experimental_features: An iterable of experimental features to enable
         """
 
-        self._openapi_factory = OpenAPIFactory(self)
-
         if logging_config is Empty:
             logging_config = LoggingConfig()
 
@@ -377,6 +375,9 @@ class Litestar(Router):
             websocket_class=websocket_class,
             experimental_features=list(experimental_features or []),
         )
+
+        config.plugins.append(OpenAPIPlugin(self))
+
         for handler in chain(
             on_app_init or [],
             (p.on_app_init for p in config.plugins if isinstance(p, InitPluginProtocol)),
@@ -454,9 +455,6 @@ class Litestar(Router):
         if self.logging_config:
             self.get_logger = self.logging_config.configure()
             self.logger = self.get_logger("litestar")
-
-        if self.openapi_config:
-            self.register(self.openapi_config.openapi_controller)
 
         for static_config in self.static_files_config:
             self.register(static_config.to_static_files_app())
@@ -585,8 +583,7 @@ class Litestar(Router):
         Raises:
             ImproperlyConfiguredException: If the application ``openapi_config`` attribute is ``None``.
         """
-        self._openapi_factory.initialize()
-        return self._openapi_factory.openapi_schema
+        return self.plugins.get(OpenAPIPlugin).provide_openapi_schema()
 
     @classmethod
     def from_config(cls, config: AppConfig) -> Self:
@@ -622,10 +619,12 @@ class Litestar(Router):
 
             if isinstance(route, HTTPRoute):
                 route.create_handler_map()
-                self._openapi_factory.add_route(route)
 
             elif isinstance(route, WebSocketRoute):
                 route.handler_parameter_model = route.create_handler_kwargs_model(route.route_handler)
+
+            for plugin in self.plugins.receive_route:
+                plugin.receive_route(route)
 
         self.asgi_router.construct_routing_trie()
 
@@ -824,7 +823,7 @@ class Litestar(Router):
         Returns:
             None
         """
-        self._openapi_factory.initialize()
+        self.plugins.get(OpenAPIPlugin)._build_openapi_schema()
 
     def emit(self, event_id: str, *args: Any, **kwargs: Any) -> None:
         """Emit an event to all attached listeners.

@@ -40,7 +40,7 @@ def test_resolve_from_layers() -> None:
             pass
 
     router = Router("/router", route_handlers=[MyController], dependencies={"router": router_dependency})
-    app = Litestar([router], dependencies={"app": app_dependency})
+    app = Litestar([router], dependencies={"app": app_dependency}, openapi_config=None)
 
     handler_map = app.get_handler_index_by_name("foo")
     assert handler_map

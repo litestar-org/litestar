@@ -1,4 +1,3 @@
-from logging import getLogger
 from pathlib import Path
 from typing import Optional
 
@@ -10,8 +9,6 @@ from litestar import Litestar
 from litestar.cli._utils import LitestarEnv, _path_to_dotted_path
 
 from .conftest import CreateAppFileFixture
-
-logger = getLogger(__name__)
 
 
 @pytest.mark.parametrize("env_name,attr_name", [("LITESTAR_DEBUG", "debug"), ("LITESTAR_RELOAD", "reload")])

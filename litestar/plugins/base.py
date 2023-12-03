@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from litestar.config.app import AppConfig
     from litestar.dto import AbstractDTO
     from litestar.openapi.spec import Schema
+    from litestar.routes import BaseRoute
     from litestar.typing import FieldDefinition
 
 __all__ = (
@@ -19,6 +20,7 @@ __all__ = (
     "OpenAPISchemaPluginProtocol",
     "OpenAPISchemaPlugin",
     "PluginProtocol",
+    "ReceiveRouteProtocol",
     "CLIPlugin",
     "CLIPluginProtocol",
     "PluginRegistry",
@@ -67,6 +69,16 @@ class InitPluginProtocol(Protocol):
             The app config object.
         """
         return app_config  # pragma: no cover
+
+
+@runtime_checkable
+class ReceiveRouteProtocol(Protocol):
+    """Protocol used to define plugins that affect the application's init process."""
+
+    __slots__ = ()
+
+    def receive_route(self, route: BaseRoute) -> None:
+        """Receive routes as they are registered on an application."""
 
 
 @runtime_checkable
@@ -207,6 +219,7 @@ class PluginRegistry:
     __slots__ = {
         "init": "Plugins that implement the InitPluginProtocol",
         "openapi": "Plugins that implement the OpenAPISchemaPluginProtocol",
+        "receive_route": "Plugins that implement the ReceiveRouteProtocol",
         "serialization": "Plugins that implement the SerializationPluginProtocol",
         "cli": "Plugins that implement the CLIPluginProtocol",
         "_plugins_by_type": None,
@@ -219,6 +232,7 @@ class PluginRegistry:
         self._plugins = frozenset(plugins)
         self.init = tuple(p for p in plugins if isinstance(p, InitPluginProtocol))
         self.openapi = tuple(p for p in plugins if isinstance(p, OpenAPISchemaPluginProtocol))
+        self.receive_route = tuple(p for p in plugins if isinstance(p, ReceiveRouteProtocol))
         self.serialization = tuple(p for p in plugins if isinstance(p, SerializationPluginProtocol))
         self.cli = tuple(p for p in plugins if isinstance(p, CLIPluginProtocol))
 
