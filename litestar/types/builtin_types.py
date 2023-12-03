@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Type, Union
+from typing import TYPE_CHECKING, Dict, Type, Union
 
-from typing_extensions import _TypedDictMeta  # type: ignore
+from typing_extensions import Never, _TypedDictMeta  # type: ignore
 
 if TYPE_CHECKING:
     from typing_extensions import TypeAlias
@@ -12,6 +12,7 @@ __all__ = (
     "UnionType",
     "UnionTypes",
     "TypedDictClass",
+    "EmptyDict",
 )
 
 NoneType: type[None] = type(None)
@@ -23,3 +24,4 @@ except ImportError:
 
 UnionTypes = {UnionType, Union}
 TypedDictClass: TypeAlias = Type[_TypedDictMeta]
+EmptyDict: TypeAlias = Dict[Never, Never]

@@ -1,37 +1,38 @@
-from typing import Optional
+from typing import Any, Dict, Optional
 
 import pytest
 
 from litestar import Controller, Request, Response, Router, get
+from litestar.datastructures import State
 from litestar.testing import create_test_client
 from litestar.types import AnyCallable, BeforeRequestHookHandler
 
 
-def sync_before_request_handler_with_return_value(request: Request) -> dict:
+def sync_before_request_handler_with_return_value(request: Request[Any, Any, State]) -> Dict[str, str]:
     assert isinstance(request, Request)
     return {"hello": "moon"}
 
 
-async def async_before_request_handler_with_return_value(request: Request) -> dict:
+async def async_before_request_handler_with_return_value(request: Request[Any, Any, State]) -> Dict[str, str]:
     assert isinstance(request, Request)
     return {"hello": "moon"}
 
 
-def sync_before_request_handler_without_return_value(request: Request) -> None:
+def sync_before_request_handler_without_return_value(request: Request[Any, Any, State]) -> None:
     assert isinstance(request, Request)
 
 
-async def async_before_request_handler_without_return_value(request: Request) -> None:
+async def async_before_request_handler_without_return_value(request: Request[Any, Any, State]) -> None:
     assert isinstance(request, Request)
 
 
-def sync_after_request_handler(response: Response) -> Response:
+def sync_after_request_handler(response: Response[Dict[str, str]]) -> Response[Dict[str, str]]:
     assert isinstance(response, Response)
     response.content = {"hello": "moon"}
     return response
 
 
-async def async_after_request_handler(response: Response) -> Response:
+async def async_after_request_handler(response: Response[Dict[str, str]]) -> Response[Dict[str, str]]:
     assert isinstance(response, Response)
     response.content = {"hello": "moon"}
     return response
@@ -47,9 +48,9 @@ async def async_after_request_handler(response: Response) -> Response:
         (async_before_request_handler_without_return_value, {"hello": "world"}),
     ),
 )
-def test_before_request_handler_called(before_request: Optional[AnyCallable], expected: dict) -> None:
+def test_before_request_handler_called(before_request: Optional[AnyCallable], expected: Dict[str, str]) -> None:
     @get(before_request=before_request)
-    def handler() -> dict:
+    def handler() -> Dict[str, str]:
         return {"hello": "world"}
 
     with create_test_client(route_handlers=handler) as client:
@@ -94,7 +95,7 @@ def test_before_request_handler_resolution(
     router_before_request_handler: Optional[BeforeRequestHookHandler],
     controller_before_request_handler: Optional[BeforeRequestHookHandler],
     method_before_request_handler: Optional[BeforeRequestHookHandler],
-    expected: dict,
+    expected: Dict[str, str],
 ) -> None:
     class MyController(Controller):
         path = "/hello"
@@ -102,7 +103,7 @@ def test_before_request_handler_resolution(
         before_request = controller_before_request_handler
 
         @get(before_request=method_before_request_handler)
-        def hello(self) -> dict:
+        def hello(self) -> Dict[str, str]:
             return {"hello": "world"}
 
     router = Router(path="/greetings", route_handlers=[MyController], before_request=router_before_request_handler)
