@@ -58,6 +58,7 @@ class OpenAPIController(Controller):
     """Controller for OpenAPI endpoints."""
 
     guards = [openapi_guard]
+    signature_namespace = {"NoValidate": NoValidate}
 
     path: str = "/schema"
     """Base path for the OpenAPI documentation endpoints."""
