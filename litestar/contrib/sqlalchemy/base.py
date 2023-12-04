@@ -12,9 +12,9 @@ from advanced_alchemy.base import (
     UUIDBase,
     UUIDPrimaryKey,
     create_registry,
-    orm_registry,
-    touch_updated_timestamp,
+    orm_registry, 
 )
+from advanced_alchemy._listeners import touch_updated_timestamp
 
 __all__ = (
     "AuditColumns",
