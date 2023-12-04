@@ -213,25 +213,25 @@ async def test_client_interface_context_manager(
     async with maybe_async_cm(test_client_cls(mock_service, backend=test_client_backend)) as client:  # pyright: ignore
         if method == "get":
             response = await maybe_async(client.get("/"))  # type: ignore[attr-defined]
-            assert response.status_code == HTTP_200_OK
+            assert response.status_code == HTTP_200_OK  # pyright: ignore
         elif method == "post":
             response = await maybe_async(client.post("/"))  # type: ignore[attr-defined]
-            assert response.status_code == HTTP_201_CREATED
+            assert response.status_code == HTTP_201_CREATED  # pyright: ignore
         elif method == "put":
             response = await maybe_async(client.put("/"))  # type: ignore[attr-defined]
-            assert response.status_code == HTTP_200_OK
+            assert response.status_code == HTTP_200_OK  # pyright: ignore
         elif method == "patch":
             response = await maybe_async(client.patch("/"))  # type: ignore[attr-defined]
-            assert response.status_code == HTTP_200_OK
+            assert response.status_code == HTTP_200_OK  # pyright: ignore
         elif method == "delete":
             response = await maybe_async(client.delete("/"))  # type: ignore[attr-defined]
-            assert response.status_code == HTTP_204_NO_CONTENT
+            assert response.status_code == HTTP_204_NO_CONTENT  # pyright: ignore
         elif method == "head":
             response = await maybe_async(client.head("/"))  # type: ignore[attr-defined]
-            assert response.status_code == HTTP_200_OK
+            assert response.status_code == HTTP_200_OK  # pyright: ignore
         else:
             response = await maybe_async(client.options("/"))  # type: ignore[attr-defined]
-            assert response.status_code == HTTP_204_NO_CONTENT
+            assert response.status_code == HTTP_204_NO_CONTENT  # pyright: ignore
 
 
 @pytest.mark.parametrize("block,timeout", [(False, None), (False, 0.001), (True, 0.001)])
