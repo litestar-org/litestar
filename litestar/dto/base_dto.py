@@ -267,7 +267,7 @@ class AbstractDTO(Generic[T]):
 
         return {
             k: FieldDefinition.from_kwarg(annotation=v, name=k)
-            for k, v in get_type_hints(model_type, localns=namespace, include_extras=True).items()
+            for k, v in get_type_hints(model_type, localns=namespace, include_extras=True).items()  # pyright: ignore
         }
 
     @staticmethod
