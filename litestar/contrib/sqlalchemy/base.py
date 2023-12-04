@@ -1,7 +1,7 @@
 """Application ORM configuration."""
 from __future__ import annotations
 
-try :
+try:
     # v0.6.0+
     from advanced_alchemy._listeners import touch_updated_timestamp  # pyright: ignore
 except ImportError:
