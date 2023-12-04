@@ -1,6 +1,7 @@
 """Application ORM configuration."""
 from __future__ import annotations
 
+from advanced_alchemy._listeners import touch_updated_timestamp
 from advanced_alchemy.base import (
     AuditColumns,
     BigIntAuditBase,
@@ -12,9 +13,8 @@ from advanced_alchemy.base import (
     UUIDBase,
     UUIDPrimaryKey,
     create_registry,
-    orm_registry, 
+    orm_registry,
 )
-from advanced_alchemy._listeners import touch_updated_timestamp
 
 __all__ = (
     "AuditColumns",
