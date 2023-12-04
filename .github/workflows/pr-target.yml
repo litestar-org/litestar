@@ -1,0 +1,25 @@
+name: "Validate PR target"
+
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
+    branches:
+      - main
+
+permissions:
+  pull-requests: read
+
+jobs:
+  main:
+    name: Validate PR target branch
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR target
+        if: ${{ startsWith(github.event.pull_request.title, 'feat') }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+              core.setFailed('Cannot merge feature type PR into main. Merge into a feature branch or develop')
