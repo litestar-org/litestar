@@ -1,6 +1,12 @@
 """Application ORM configuration."""
 from __future__ import annotations
 
+try:
+    # v0.6.0+
+    from advanced_alchemy._listeners import touch_updated_timestamp  # pyright: ignore
+except ImportError:
+    from advanced_alchemy.base import touch_updated_timestamp  # type: ignore[no-redef,attr-defined]
+
 from advanced_alchemy.base import (
     AuditColumns,
     BigIntAuditBase,
@@ -13,7 +19,6 @@ from advanced_alchemy.base import (
     UUIDPrimaryKey,
     create_registry,
     orm_registry,
-    touch_updated_timestamp,
 )
 
 __all__ = (
