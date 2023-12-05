@@ -98,7 +98,6 @@ class SignatureModel(Struct):
 
     _data_dto: ClassVar[Optional[Type[AbstractDTO]]]
     _dependency_name_set: ClassVar[Set[str]]
-    # NOTE: we have to use Set and Dict here because python 3.8 goes haywire if we use 'set' and 'dict'
     _fields: ClassVar[Dict[str, FieldDefinition]]
     _return_annotation: ClassVar[Any]
 

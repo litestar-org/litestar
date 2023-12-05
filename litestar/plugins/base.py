@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from litestar.config.app import AppConfig
     from litestar.dto import AbstractDTO
     from litestar.openapi.spec import Schema
+    from litestar.routes import BaseRoute
     from litestar.typing import FieldDefinition
 
 __all__ = (
@@ -67,6 +68,15 @@ class InitPluginProtocol(Protocol):
             The app config object.
         """
         return app_config  # pragma: no cover
+
+
+class ReceiveRoutePlugin:
+    """Receive routes as they are added to the application."""
+
+    __slots__ = ()
+
+    def receive_route(self, route: BaseRoute) -> None:
+        """Receive routes as they are registered on an application."""
 
 
 @runtime_checkable
@@ -192,12 +202,13 @@ class OpenAPISchemaPlugin(OpenAPISchemaPluginProtocol):
 
 
 PluginProtocol = Union[
-    SerializationPluginProtocol,
-    InitPluginProtocol,
-    OpenAPISchemaPluginProtocol,
-    OpenAPISchemaPlugin,
-    CLIPluginProtocol,
     CLIPlugin,
+    CLIPluginProtocol,
+    InitPluginProtocol,
+    OpenAPISchemaPlugin,
+    OpenAPISchemaPluginProtocol,
+    ReceiveRoutePlugin,
+    SerializationPluginProtocol,
 ]
 
 PluginT = TypeVar("PluginT", bound=PluginProtocol)
@@ -207,6 +218,7 @@ class PluginRegistry:
     __slots__ = {
         "init": "Plugins that implement the InitPluginProtocol",
         "openapi": "Plugins that implement the OpenAPISchemaPluginProtocol",
+        "receive_route": "ReceiveRoutePlugin types",
         "serialization": "Plugins that implement the SerializationPluginProtocol",
         "cli": "Plugins that implement the CLIPluginProtocol",
         "_plugins_by_type": None,
@@ -219,6 +231,7 @@ class PluginRegistry:
         self._plugins = frozenset(plugins)
         self.init = tuple(p for p in plugins if isinstance(p, InitPluginProtocol))
         self.openapi = tuple(p for p in plugins if isinstance(p, OpenAPISchemaPluginProtocol))
+        self.receive_route = tuple(p for p in plugins if isinstance(p, ReceiveRoutePlugin))
         self.serialization = tuple(p for p in plugins if isinstance(p, SerializationPluginProtocol))
         self.cli = tuple(p for p in plugins if isinstance(p, CLIPluginProtocol))
 

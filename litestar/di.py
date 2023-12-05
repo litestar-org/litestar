@@ -16,6 +16,7 @@ from litestar.utils.warnings import (
 if TYPE_CHECKING:
     from litestar._signature import SignatureModel
     from litestar.types import AnyCallable
+    from litestar.utils.signature import ParsedSignature
 
 __all__ = ("Provide",)
 
@@ -28,12 +29,14 @@ class Provide:
         "has_sync_callable",
         "has_sync_generator_dependency",
         "has_async_generator_dependency",
+        "parsed_fn_signature",
         "signature_model",
         "sync_to_thread",
         "use_cache",
         "value",
     )
 
+    parsed_fn_signature: ParsedSignature
     signature_model: type[SignatureModel]
     dependency: AnyCallable
 

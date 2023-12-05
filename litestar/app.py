@@ -17,16 +17,14 @@ from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Iterable, Mappi
 
 from litestar._asgi import ASGIRouter
 from litestar._asgi.utils import get_route_handlers, wrap_in_exception_handler
-from litestar._openapi.path_item import create_path_item
+from litestar._openapi.plugin import OpenAPIPlugin
 from litestar.config.allowed_hosts import AllowedHostsConfig
 from litestar.config.app import AppConfig
 from litestar.config.response_cache import ResponseCacheConfig
 from litestar.connection import Request, WebSocket
-from litestar.constants import OPENAPI_NOT_INITIALIZED
 from litestar.datastructures.state import State
 from litestar.events.emitter import BaseEventEmitterBackend, SimpleEventEmitter
 from litestar.exceptions import (
-    ImproperlyConfiguredException,
     MissingDependencyException,
     NoRouteMatchFoundException,
 )
@@ -315,6 +313,7 @@ class Litestar(Router):
                 connections.
             experimental_features: An iterable of experimental features to enable
         """
+
         if logging_config is Empty:
             logging_config = LoggingConfig()
 
@@ -375,6 +374,9 @@ class Litestar(Router):
             websocket_class=websocket_class,
             experimental_features=list(experimental_features or []),
         )
+
+        config.plugins.append(OpenAPIPlugin(self))
+
         for handler in chain(
             on_app_init or [],
             (p.on_app_init for p in config.plugins if isinstance(p, InitPluginProtocol)),
@@ -452,9 +454,6 @@ class Litestar(Router):
         if self.logging_config:
             self.get_logger = self.logging_config.configure()
             self.logger = self.get_logger("litestar")
-
-        if self.openapi_config:
-            self.register(self.openapi_config.openapi_controller)
 
         for static_config in self.static_files_config:
             self.register(static_config.to_static_files_app())
@@ -583,14 +582,7 @@ class Litestar(Router):
         Raises:
             ImproperlyConfiguredException: If the application ``openapi_config`` attribute is ``None``.
         """
-        if not self.openapi_config:
-            raise ImproperlyConfiguredException(OPENAPI_NOT_INITIALIZED)
-
-        if not self._openapi_schema:
-            self._openapi_schema = self.openapi_config.to_openapi_schema()
-            self.update_openapi_schema()
-
-        return self._openapi_schema
+        return self.plugins.get(OpenAPIPlugin).provide_openapi()
 
     @classmethod
     def from_config(cls, config: AppConfig) -> Self:
@@ -630,10 +622,10 @@ class Litestar(Router):
             elif isinstance(route, WebSocketRoute):
                 route.handler_parameter_model = route.create_handler_kwargs_model(route.route_handler)
 
-        self.asgi_router.construct_routing_trie()
+            for plugin in self.plugins.receive_route:
+                plugin.receive_route(route)
 
-        if self._openapi_schema is not None:
-            self.update_openapi_schema()
+        self.asgi_router.construct_routing_trie()
 
     def get_handler_index_by_name(self, name: str) -> HandlerIndex | None:
         """Receives a route handler name and returns an optional dictionary containing the route handler instance and
@@ -830,36 +822,7 @@ class Litestar(Router):
         Returns:
             None
         """
-        if not self.openapi_config or not self._openapi_schema or self._openapi_schema.paths is None:
-            raise ImproperlyConfiguredException("Cannot generate OpenAPI schema without initializing an OpenAPIConfig")
-
-        operation_ids: list[str] = []
-
-        for route in self.routes:
-            if (
-                isinstance(route, HTTPRoute)
-                and any(
-                    route_handler.resolve_include_in_schema() for route_handler, _ in route.route_handler_map.values()
-                )
-                and (route.path_format or "/") not in self._openapi_schema.paths
-            ):
-                path_item, created_operation_ids = create_path_item(
-                    route=route,
-                    create_examples=self.openapi_config.create_examples,
-                    plugins=self.plugins.openapi,
-                    use_handler_docstrings=self.openapi_config.use_handler_docstrings,
-                    operation_id_creator=self.openapi_config.operation_id_creator,
-                    schemas=self._openapi_schema.components.schemas,
-                )
-                self._openapi_schema.paths[route.path_format or "/"] = path_item
-
-                for operation_id in created_operation_ids:
-                    if operation_id in operation_ids:
-                        raise ImproperlyConfiguredException(
-                            f"operation_ids must be unique, "
-                            f"please ensure the value of 'operation_id' is either not set or unique for {operation_id}"
-                        )
-                    operation_ids.append(operation_id)
+        self.plugins.get(OpenAPIPlugin)._build_openapi_schema()
 
     def emit(self, event_id: str, *args: Any, **kwargs: Any) -> None:
         """Emit an event to all attached listeners.
