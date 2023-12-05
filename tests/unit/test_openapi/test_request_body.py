@@ -23,7 +23,7 @@ class FormData:
     image: UploadFile
 
 
-ResponseBodyFactory = Callable[[BaseRouteHandler, FieldDefinition], RequestBody]
+RequestBodyFactory = Callable[[BaseRouteHandler, FieldDefinition], RequestBody]
 
 
 @pytest.fixture()
@@ -36,7 +36,7 @@ def openapi_context() -> OpenAPIContext:
 
 
 @pytest.fixture()
-def create_response(openapi_context: OpenAPIContext) -> ResponseBodyFactory:
+def create_request(openapi_context: OpenAPIContext) -> RequestBodyFactory:
     def _factory(route_handler: BaseRouteHandler, data_field: FieldDefinition) -> RequestBody:
         return create_request_body(
             context=openapi_context,
@@ -48,12 +48,12 @@ def create_response(openapi_context: OpenAPIContext) -> ResponseBodyFactory:
     return _factory
 
 
-def test_create_request_body(person_controller: Type[Controller], create_response: ResponseBodyFactory) -> None:
+def test_create_request_body(person_controller: Type[Controller], create_request: RequestBodyFactory) -> None:
     for route in Litestar(route_handlers=[person_controller]).routes:
         for route_handler, _ in route.route_handler_map.values():  # type: ignore
             handler_fields = route_handler.parsed_fn_signature.parameters
             if "data" in handler_fields:
-                request_body = create_response(route_handler, handler_fields["data"])
+                request_body = create_request(route_handler, handler_fields["data"])
                 assert request_body
 
 
@@ -110,7 +110,7 @@ def test_upload_file_request_body_generation() -> None:
     }
 
 
-def test_request_body_generation_with_dto(create_response: ResponseBodyFactory) -> None:
+def test_request_body_generation_with_dto(create_request: RequestBodyFactory) -> None:
     mock_dto = MagicMock(spec=AbstractDTO)
 
     @post(path="/form-upload", dto=mock_dto)  # pyright: ignore
@@ -119,7 +119,7 @@ def test_request_body_generation_with_dto(create_response: ResponseBodyFactory) 
 
     Litestar(route_handlers=[handler])
     field_definition = FieldDefinition.from_annotation(Dict[str, Any])
-    create_response(handler, field_definition)
+    create_request(handler, field_definition)
     mock_dto.create_openapi_schema.assert_called_once_with(
         field_definition=field_definition, handler_id=handler.handler_id, schema_creator=ANY
     )

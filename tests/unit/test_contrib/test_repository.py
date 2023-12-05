@@ -16,7 +16,7 @@ from litestar.repository.filters import (
 
 
 def test_app_repository_signature_namespace() -> None:
-    app = Litestar([], on_app_init=[handlers.on_app_init], openapi_config=None)
+    app = Litestar([], on_app_init=[handlers.on_app_init])
 
     assert app.signature_namespace == {
         "BeforeAfter": BeforeAfter,

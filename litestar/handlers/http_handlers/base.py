@@ -433,7 +433,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         Tags are additive, so the tags of the route handler are the sum of all tags of the ownership layers.
 
         Returns:
-            list[str]: The resolved tags property.
+            list[str]: A sorted list of unique tags.
         """
         if self._resolved_tags is Empty:
             tag_set = set()
