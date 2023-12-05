@@ -85,8 +85,13 @@ def test_upload_file_request_body_generation() -> None:
         "format": "binary",
     }
     assert paths["/file-list-upload"]["post"]["requestBody"]["content"]["multipart/form-data"]["schema"] == {
-        "items": {"type": "string", "contentMediaType": "application/octet-stream", "format": "binary"},
-        "type": "array",
+        "type": "object",
+        "properties": {
+            "file": {
+                "items": {"type": "string", "contentMediaType": "application/octet-stream", "format": "binary"},
+                "type": "array",
+            }
+        },
     }
 
     assert components == {

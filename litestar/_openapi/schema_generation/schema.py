@@ -423,10 +423,15 @@ class SchemaCreator:
             # filters out ellipsis from tuple[int, ...] type annotations
             inner_types = (f for f in field_definition.inner_types if f.annotation is not Ellipsis)
             items = list(map(self.for_field_definition, inner_types or ()))
-            return Schema(
+
+            schema = Schema(
                 type=OpenAPIType.ARRAY,
                 items=Schema(one_of=items) if len(items) > 1 else items[0],
             )
+            if field_definition.has_inner_subclass_of(UploadFile):
+                schema = Schema(type=OpenAPIType.OBJECT, properties={"file": schema})
+
+            return schema
 
         raise ImproperlyConfiguredException(  # pragma: no cover
             f"Parameter '{field_definition.name}' with type '{field_definition.annotation}' could not be mapped to an Open API type. "
