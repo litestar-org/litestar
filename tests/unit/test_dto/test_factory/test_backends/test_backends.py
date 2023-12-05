@@ -18,6 +18,7 @@ from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.enums import MediaType
 from litestar.exceptions import SerializationException
 from litestar.openapi.spec.reference import Reference
+from litestar.openapi.spec.schema import Schema
 from litestar.serialization import encode_json
 from litestar.testing import RequestFactory
 from litestar.typing import FieldDefinition
@@ -187,22 +188,33 @@ def test_backend_create_openapi_schema(dto_factory: type[DataclassDTO]) -> None:
 
     app = Litestar(route_handlers=[handler])
 
-    schemas: dict[str, Any] = {}
+    creator = SchemaCreator()
     ref = dto_factory.create_openapi_schema(
         handler_id=app.get_handler_index_by_name("test")["handler"].handler_id,  # type: ignore[index]
         field_definition=FieldDefinition.from_annotation(DC),
-        schema_creator=SchemaCreator(schemas=schemas),
+        schema_creator=creator,
     )
+    schemas = creator.schema_registry.generate_components_schemas()
     assert isinstance(ref, Reference)
     schema = schemas[ref.value]
-    assert schema.properties["a"].type == "integer"
-    assert schema.properties["b"].type == "string"
-    assert schema.properties["c"].items.type == "integer"
-    assert schema.properties["c"].type == "array"
+    assert schema.properties is not None
+    a, b, c = schema.properties["a"], schema.properties["b"], schema.properties["c"]
+    assert isinstance(a, Schema)
+    assert a.type == "integer"
+    assert isinstance(b, Schema)
+    assert b.type == "string"
+    assert isinstance(c, Schema)
+    assert c.type == "array"
+    assert isinstance(c.items, Schema)
+    assert c.items.type == "integer"
     assert isinstance(nested := schema.properties["nested"], Reference)
     nested_schema = schemas[nested.value]
-    assert nested_schema.properties["a"].type == "integer"
-    assert nested_schema.properties["b"].type == "string"
+    assert nested_schema.properties is not None
+    nested_a, nested_b = nested_schema.properties["a"], nested_schema.properties["b"]
+    assert isinstance(nested_a, Schema)
+    assert nested_a.type == "integer"
+    assert isinstance(nested_b, Schema)
+    assert nested_b.type == "string"
 
 
 def test_backend_model_name_uniqueness(dto_factory: type[DataclassDTO], backend_cls: type[DTOBackend]) -> None:

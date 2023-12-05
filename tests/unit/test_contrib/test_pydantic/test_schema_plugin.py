@@ -1,6 +1,6 @@
 import datetime
 from decimal import Decimal
-from typing import Any, Dict, Generic, Optional, Type, TypeVar, Union
+from typing import Any, Generic, Optional, Type, TypeVar, Union
 
 import pydantic as pydantic_v2
 import pytest
@@ -38,11 +38,11 @@ def test_schema_generation_with_generic_classes(model: Type[Union[PydanticV1Gene
     cls = model[int]  # type: ignore[index]
     field_definition = FieldDefinition.from_kwarg(name=get_name(cls), annotation=cls)
 
-    schemas: Dict[str, Schema] = {}
-    SchemaCreator(schemas=schemas, plugins=[PydanticSchemaPlugin()]).for_field_definition(field_definition)
+    creator = SchemaCreator(plugins=[PydanticSchemaPlugin()])
+    creator.for_field_definition(field_definition)
 
     name = _get_normalized_schema_key(str(field_definition.annotation))
-    properties = schemas[name].properties
+    properties = creator.schema_registry.get(tuple(name.split("_"))).schema.properties
     expected_foo_schema = Schema(type=OpenAPIType.INTEGER)
     expected_optional_foo_schema = Schema(one_of=[Schema(type=OpenAPIType.NULL), Schema(type=OpenAPIType.INTEGER)])
 

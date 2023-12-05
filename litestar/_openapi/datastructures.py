@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from typing import TYPE_CHECKING, Sequence
+from typing import TYPE_CHECKING, Iterator, Sequence
 
 from litestar.exceptions import ImproperlyConfiguredException
 
@@ -23,7 +23,8 @@ class RegisteredSchema:
 
 class SchemaRegistry:
     def __init__(self) -> None:
-        self._schema_map: dict = {}
+        self._schema_key_map: dict[tuple[str, ...], RegisteredSchema] = {}
+        self._schema_reference_map: dict[int, RegisteredSchema] = {}
         self._model_name_groups: defaultdict[str, list[RegisteredSchema]] = defaultdict(list)
 
     def register(
@@ -32,12 +33,23 @@ class SchemaRegistry:
         schema: Schema,
         reference: Reference,
     ) -> None:
-        if (registered_schema := self._schema_map.get(key)) is not None:
+        if (registered_schema := self._schema_key_map.get(key)) is not None:
             registered_schema.references.append(reference)
+            self._schema_reference_map[id(reference)] = registered_schema
             return
 
-        self._schema_map[key] = registered_schema = RegisteredSchema(key, schema, [reference])
+        self._schema_key_map[key] = registered_schema = RegisteredSchema(key, schema, [reference])
+        self._schema_reference_map[id(reference)] = registered_schema
         self._model_name_groups[key[-1]].append(registered_schema)
+
+    def get(self, key: tuple[str, ...]) -> RegisteredSchema:
+        return self._schema_key_map[key]
+
+    def from_reference(self, reference: Reference) -> RegisteredSchema:
+        return self._schema_reference_map[id(reference)]
+
+    def __iter__(self) -> Iterator[RegisteredSchema]:
+        return iter(self._schema_key_map.values())
 
     @staticmethod
     def set_reference_paths(name: str, registered_schema: RegisteredSchema) -> None:

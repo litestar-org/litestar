@@ -1,7 +1,7 @@
 from datetime import date, timedelta
 from decimal import Decimal
 from types import ModuleType
-from typing import Any, Callable, Dict, Pattern, Type, Union, cast
+from typing import Any, Callable, Pattern, Type, Union, cast
 
 import pydantic as pydantic_v2
 import pytest
@@ -15,7 +15,6 @@ from litestar._openapi.schema_generation.constrained_fields import (
     create_string_constrained_field_schema,
 )
 from litestar._openapi.schema_generation.schema import SchemaCreator
-from litestar._openapi.schema_generation.utils import _get_normalized_schema_key
 from litestar.contrib.pydantic import PydanticPlugin, PydanticSchemaPlugin
 from litestar.openapi import OpenAPIConfig
 from litestar.openapi.spec import Example, Reference, Schema
@@ -506,10 +505,11 @@ def test_create_schema_for_field_v1() -> None:
             max_length=16,  # pyright: ignore
         )
 
-    schemas: Dict[str, Schema] = {}
     field_definition = FieldDefinition.from_kwarg(name="Model", annotation=Model)
-    SchemaCreator(schemas=schemas, plugins=[PydanticSchemaPlugin()]).for_field_definition(field_definition)
-    schema = schemas["tests_unit_test_contrib_test_pydantic_test_openapi_test_create_schema_for_field_v1_locals_Model"]
+    creator = SchemaCreator(plugins=[PydanticSchemaPlugin()])
+    creator.for_field_definition(field_definition)
+    schemas = creator.schema_registry.generate_components_schemas()
+    schema = schemas["Model"]
 
     assert schema.properties
 
@@ -527,10 +527,11 @@ def test_create_schema_for_field_v2() -> None:
             title="title", description="description", max_length=16, json_schema_extra={"example": "example"}
         )
 
-    schemas: Dict[str, Schema] = {}
     field_definition = FieldDefinition.from_kwarg(name="Model", annotation=Model)
-    SchemaCreator(schemas=schemas, plugins=[PydanticSchemaPlugin()]).for_field_definition(field_definition)
-    schema = schemas["tests_unit_test_contrib_test_pydantic_test_openapi_test_create_schema_for_field_v2_locals_Model"]
+    creator = SchemaCreator(plugins=[PydanticSchemaPlugin()])
+    creator.for_field_definition(field_definition)
+    schemas = creator.schema_registry.generate_components_schemas()
+    schema = schemas["Model"]
 
     assert schema.properties
 
@@ -557,12 +558,10 @@ class Foo(BaseModel):
     foo: Annotated[int, "Foo description"]
 """
     )
-    schemas: Dict[str, Schema] = {}
-    SchemaCreator(schemas=schemas, plugins=[PydanticSchemaPlugin()]).for_field_definition(
-        FieldDefinition.from_annotation(module.Foo)
-    )
-    key_name = _get_normalized_schema_key(str(module.Foo))
-    schema = schemas[key_name]
+    creator = SchemaCreator(plugins=[PydanticSchemaPlugin()])
+    creator.for_field_definition(FieldDefinition.from_annotation(module.Foo))
+    schemas = creator.schema_registry.generate_components_schemas()
+    schema = schemas["Foo"]
     assert schema.properties and "foo" in schema.properties
 
 
@@ -584,11 +583,10 @@ class Model(BaseModel):
     list_default_in_factory: list = Field(default_factory=list)
 """
     )
-    schemas: Dict[str, Schema] = {}
-    SchemaCreator(schemas=schemas, plugins=[PydanticSchemaPlugin()]).for_field_definition(
-        FieldDefinition.from_annotation(module.Model)
-    )
-    schema = schemas[f"{module.__name__}_Model"]
+    creator = SchemaCreator(plugins=[PydanticSchemaPlugin()])
+    creator.for_field_definition(FieldDefinition.from_annotation(module.Model))
+    schemas = creator.schema_registry.generate_components_schemas()
+    schema = schemas["Model"]
     assert schema.properties
     assert "dict_default" in schema.properties
     assert "dict_default_in_field" in schema.properties
@@ -621,8 +619,9 @@ def test_create_for_computed_field(prefer_alias: bool) -> None:
     schema_creator = SchemaCreator(plugins=[PydanticSchemaPlugin()])
     ref = schema_creator.for_field_definition(field_definition)
     assert isinstance(ref, Reference)
-    assert len(schema_creator.schemas) == 1
-    schema = next(iter(schema_creator.schemas.values()))
+    registered_schemas = list(schema_creator.schema_registry)
+    assert len(registered_schemas) == 1
+    schema = registered_schemas[0].schema
     assert schema.required == ["property_one", "property_two"] if not prefer_alias else ["property_one", "prop_two"]
     properties = schema.properties
     assert properties is not None

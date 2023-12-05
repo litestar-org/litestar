@@ -267,7 +267,6 @@ class SchemaCreator:
         self,
         generate_examples: bool = False,
         plugins: Iterable[OpenAPISchemaPluginProtocol] | None = None,
-        schemas: dict[str, Schema] | None = None,
         prefer_alias: bool = True,
         schema_registry: SchemaRegistry | None = None,
     ) -> None:
@@ -276,13 +275,11 @@ class SchemaCreator:
         Args:
             generate_examples: Whether to generate examples if none are given.
             plugins: A list of plugins.
-            schemas: A mapping of namespaces to schemas - this mapping is used in the OA components section.
             prefer_alias: Whether to prefer the alias name for the schema.
             schema_registry: A SchemaRegistry instance.
         """
         self.generate_examples = generate_examples
         self.plugins = plugins if plugins is not None else []
-        self.schemas = schemas if schemas is not None else {}
         self.prefer_alias = prefer_alias
         self.schema_registry = schema_registry or SchemaRegistry()
 
@@ -290,7 +287,6 @@ class SchemaCreator:
     def from_openapi_context(cls, context: OpenAPIContext, prefer_alias: bool = True, **kwargs: Any) -> Self:
         kwargs.setdefault("generate_examples", context.openapi_config.create_examples)
         kwargs.setdefault("plugins", context.plugins)
-        kwargs.setdefault("schemas", context.schemas)
         kwargs.setdefault("schema_registry", context.schema_registry)
         return cls(**kwargs, prefer_alias=prefer_alias)
 
@@ -299,7 +295,7 @@ class SchemaCreator:
         """Return a SchemaCreator with generate_examples set to False."""
         if not self.generate_examples:
             return self
-        return type(self)(generate_examples=False, plugins=self.plugins, schemas=self.schemas, prefer_alias=False)
+        return type(self)(generate_examples=False, plugins=self.plugins, prefer_alias=False)
 
     def get_plugin_for(self, field_definition: FieldDefinition) -> OpenAPISchemaPluginProtocol | None:
         return next(
@@ -696,9 +692,6 @@ class SchemaCreator:
 
         if schema.title and schema.type in (OpenAPIType.OBJECT, OpenAPIType.ARRAY):
             class_name = _get_normalized_schema_key(str(field.annotation))
-            if class_name not in self.schemas:
-                self.schemas[class_name] = schema
-
             class_key = tuple(class_name.split("_"))
             ref = Reference(ref=f"#/components/schemas/{class_name}", description=schema.description)
 

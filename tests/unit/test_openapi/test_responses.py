@@ -231,17 +231,13 @@ def test_create_success_response_with_response_class(create_factory: CreateFacto
 
     handler = get_registered_route_handler(handler, "test")
     factory = create_factory(handler, True)
-    schemas = factory.context.schemas
     response = factory.create_success_response()
 
     assert response.content
     reference = response.content["application/json"].schema
 
     assert isinstance(reference, Reference)
-    key = reference.ref.split("/")[-1]
-    assert isinstance(schemas[key], Schema)
-
-    assert key == "tests_models_DataclassPerson"
+    assert isinstance(factory.context.schema_registry.from_reference(reference).schema, Schema)
 
 
 def test_create_success_response_with_stream(create_factory: CreateFactoryFixture) -> None:
@@ -347,7 +343,6 @@ def test_create_additional_responses(create_factory: CreateFactoryFixture) -> No
         return DataclassPersonFactory.build()
 
     factory = create_factory(handler)
-    schemas = factory.context.schemas
     responses = factory.create_additional_responses()
 
     first_response = next(responses)
@@ -358,7 +353,7 @@ def test_create_additional_responses(create_factory: CreateFactoryFixture) -> No
     assert isinstance(first_response[1].content["application/json"], OpenAPIMediaType)
     reference = first_response[1].content["application/json"].schema
     assert isinstance(reference, Reference)
-    schema = schemas[reference.ref.split("/")[-1]]
+    schema = factory.context.schema_registry.from_reference(reference).schema
     assert isinstance(schema, Schema)
     assert schema.title == "AuthenticationError"
 
@@ -370,7 +365,7 @@ def test_create_additional_responses(create_factory: CreateFactoryFixture) -> No
     assert isinstance(second_response[1].content["text/plain"], OpenAPIMediaType)
     reference = second_response[1].content["text/plain"].schema
     assert isinstance(reference, Reference)
-    schema = schemas[reference.ref.split("/")[-1]]
+    schema = factory.context.schema_registry.from_reference(reference).schema
     assert isinstance(schema, Schema)
     assert schema.title == "ServerError"
     assert not schema.examples
@@ -431,14 +426,13 @@ def test_create_response_for_response_subclass(create_factory: CreateFactoryFixt
 
     handler = get_registered_route_handler(handler, "test")
     factory = create_factory(handler, True)
-    schemas = factory.context.schemas
     response = factory.create_success_response()
 
     assert response.content
     assert isinstance(response.content["application/json"], OpenAPIMediaType)
     reference = response.content["application/json"].schema
     assert isinstance(reference, Reference)
-    schema = schemas[reference.value]
+    schema = factory.context.schema_registry.from_reference(reference).schema
     assert schema.title == "DataclassPerson"
 
 
