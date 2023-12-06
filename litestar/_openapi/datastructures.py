@@ -12,7 +12,16 @@ if TYPE_CHECKING:
 
 
 class RegisteredSchema:
+    """Object to store a schema and any references to it."""
+
     def __init__(self, key: tuple[str, ...], schema: Schema, references: list[Reference]) -> None:
+        """Create a new RegisteredSchema object.
+
+        Args:
+            key: The key used to register the schema.
+            schema: The schema object.
+            references: A list of references to the schema.
+        """
         self.key = key
         self.schema = schema
         self.references = references
@@ -22,6 +31,17 @@ class RegisteredSchema:
 
 
 class SchemaRegistry:
+    """A registry for object schemas.
+
+    This class is used to store schemas that we reference from other parts of the spec.
+
+    Its main purpose is to allow us to generate the components/schemas section of the spec once we have
+    collected all the schemas that should be included.
+
+    This allows us to determine a path to the schema in the components/schemas section of the spec that
+    is unique and as short as possible.
+    """
+
     def __init__(self) -> None:
         self._schema_key_map: dict[tuple[str, ...], RegisteredSchema] = {}
         self._schema_reference_map: dict[int, RegisteredSchema] = {}
@@ -43,22 +63,57 @@ class SchemaRegistry:
         self._model_name_groups[key[-1]].append(registered_schema)
 
     def get(self, key: tuple[str, ...]) -> RegisteredSchema:
+        """Get a registered schema by its key.
+
+        Args:
+            key: The key of the schema to get.
+
+        Returns:
+            A RegisteredSchema object.
+        """
         return self._schema_key_map[key]
 
     def from_reference(self, reference: Reference) -> RegisteredSchema:
+        """Get a registered schema by its reference.
+
+        Args:
+            reference: The reference to the schema to get.
+
+        Returns:
+            A RegisteredSchema object.
+        """
         return self._schema_reference_map[id(reference)]
 
     def __iter__(self) -> Iterator[RegisteredSchema]:
+        """Iterate over the registered schemas."""
         return iter(self._schema_key_map.values())
 
     @staticmethod
     def set_reference_paths(name: str, registered_schema: RegisteredSchema) -> None:
+        """Set the reference paths for a registered schema."""
         for reference in registered_schema.references:
             reference.ref = f"#/components/schemas/{name}"
 
     @staticmethod
     def remove_common_prefix(tuples: list[tuple[str, ...]]) -> list[tuple[str, ...]]:
+        """Remove the common prefix from a list of tuples.
+
+        Args:
+            tuples: A list of tuples to remove the common prefix from.
+
+        Returns:
+            A list of tuples with the common prefix removed.
+        """
+
         def longest_common_prefix(tuples_: list[tuple[str, ...]]) -> tuple[str, ...]:
+            """Find the longest common prefix of a list of tuples.
+
+            Args:
+                tuples_: A list of tuples to find the longest common prefix of.
+
+            Returns:
+                The longest common prefix of the tuples.
+            """
             if not tuples_:
                 return ()
 
@@ -77,6 +132,11 @@ class SchemaRegistry:
         return [t[prefix_length:] for t in tuples]
 
     def generate_components_schemas(self) -> dict[str, Schema]:
+        """Generate the components/schemas section of the spec.
+
+        Returns:
+            A dictionary of schemas.
+        """
         components_schemas: dict[str, Schema] = {}
 
         for name, name_group in self._model_name_groups.items():
