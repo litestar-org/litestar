@@ -17,7 +17,6 @@ from litestar.status_codes import HTTP_404_NOT_FOUND
 
 __all__ = ("OpenAPIController",)
 
-
 if TYPE_CHECKING:
     from litestar.connection.request import Request
     from litestar.openapi.spec.open_api import OpenAPI
@@ -38,6 +37,8 @@ class OpenAPIController(Controller):
     """StopLight Elements version to download from the CDN."""
     rapidoc_version: str = "9.3.4"
     """RapiDoc version to download from the CDN."""
+    scalar_version: str = "1.6.1"
+    """Scalar version to download from the CDN."""
     favicon_url: str = ""
     """URL to download a favicon from."""
     redoc_google_fonts: bool = True
@@ -74,6 +75,8 @@ class OpenAPIController(Controller):
     """Download url for the Stoplight Elements JS bundle."""
     rapidoc_js_url: str = f"https://unpkg.com/rapidoc@{rapidoc_version}/dist/rapidoc-min.js"
     """Download url for the RapiDoc JS bundle."""
+    scalar_js_url: str = f"https://cdn.jsdelivr.net/npm/@scalar/api-reference@{scalar_version}"
+    """Download url for the Scalar JS bundle."""
 
     # internal
     _dumped_json_schema: str = ""
@@ -134,7 +137,7 @@ class OpenAPIController(Controller):
     @cached_property
     def render_methods_map(
         self,
-    ) -> dict[Literal["redoc", "swagger", "elements", "rapidoc"], Callable[[Request], bytes]]:
+    ) -> dict[Literal["redoc", "swagger", "elements", "rapidoc", "scalar"], Callable[[Request], bytes]]:
         """Map render method names to render methods.
 
         Returns:
@@ -145,6 +148,7 @@ class OpenAPIController(Controller):
             "swagger": self.render_swagger_ui,
             "elements": self.render_stoplight_elements,
             "rapidoc": self.render_rapidoc,
+            "scalar": self.render_scalar,
         }
 
     @get(
@@ -265,6 +269,21 @@ class OpenAPIController(Controller):
     def rapidoc(self, request: Request[Any, Any, Any]) -> ASGIResponse:
         if self.should_serve_endpoint(request):
             return ASGIResponse(body=self.render_rapidoc(request), media_type=MediaType.HTML)
+        return ASGIResponse(body=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
+
+    @get(path="/scalar", media_type=MediaType.HTML, include_in_schema=False, sync_to_thread=False)
+    def scalar(self, request: Request[Any, Any, Any]) -> ASGIResponse:
+        """Route handler responsible for rendering Scalar.
+
+        Args:
+            request:
+                A :class:`Request <.connection.Request>` instance.
+
+        Returns:
+            A response with a rendered redoc documentation site
+        """
+        if self.should_serve_endpoint(request):
+            return ASGIResponse(body=self.render_scalar(request), media_type=MediaType.HTML)
         return ASGIResponse(body=self.render_404_page(), status_code=HTTP_404_NOT_FOUND, media_type=MediaType.HTML)
 
     @get(path="/oauth2-redirect.html", media_type=MediaType.HTML, include_in_schema=False, sync_to_thread=False)
@@ -493,6 +512,49 @@ class OpenAPIController(Controller):
           <body>
             <rapi-doc spec-url="openapi.json" />
           </body>
+        """
+
+        return f"""
+        <!DOCTYPE html>
+            <html>
+                {head}
+                {body}
+            </html>
+        """.encode()
+
+    def render_scalar(self, request: Request[Any, Any, Any]) -> bytes:  # pragma: no cover
+        """Render an HTML page for Scalar API reference.
+
+        .. note:: Override this method to customize the template.
+
+        Args:
+            request:
+                A :class:`Request <.connection.Request>` instance.
+
+        Returns:
+            A rendered html string.
+        """
+        schema = self.get_schema_from_request(request)
+
+        head = f"""
+          <head>
+            <title>{schema.info.title}</title>
+            <style>{self.style}</style>
+            <meta charset="utf-8"/>
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <link rel="shortcut icon" href="{self.favicon_url}">
+          </head>
+        """
+
+        body = f"""
+        <noscript>
+            Scalar requires Javascript to function. Please enable it to browse the documentation.
+        </noscript>
+        <script
+          id="api-reference"
+          data-url="openapi.json">
+        </script>
+        <script src="{self.scalar_js_url}" crossorigin></script>
         """
 
         return f"""

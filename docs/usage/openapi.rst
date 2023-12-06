@@ -218,6 +218,9 @@ This controller exposes the following endpoints:
 ``/schema/rapidoc``
     Serves the docs using `RapiDoc <https://github.com/rapi-doc/RapiDoc>`_.
 
+``/schema/scalar``
+    Serves the docs using `Scalar <https://scalar.com/>`_.
+
 Additionally, the root ``/schema/`` path is accessible, serving the site that is configured as the default in
 the :class:`OpenAPIConfig <.openapi.OpenAPIConfig>`.
 
@@ -307,7 +310,8 @@ You can change the default download paths for JS and CSS bundles as well as goog
        stoplight_elements_js_url = (
            "https://offline_location/spotlight-web-components.min.js"
        )
-       rapidoc_js_url = "https://offline_location/rapidock-min.js"
+       rapidoc_js_url = "https://offline_location/rapidoc-min.js"
+       scalar_js_url = "https://offline_location/scalar-min.js"
 
 
    app = Litestar(

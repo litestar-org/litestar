@@ -12,163 +12,142 @@ from litestar.testing import create_test_client
 root_paths: List[str] = ["", "/part1", "/part1/part2"]
 
 
-def test_default_redoc_cdn_urls(person_controller: Type[Controller], pet_controller: Type[Controller]) -> None:
-    with create_test_client([person_controller, pet_controller]) as client:
-        response = client.get("/schema/redoc")
-        default_redoc_version = "next"
-        default_redoc_js_bundle = (
-            f"https://cdn.jsdelivr.net/npm/redoc@{default_redoc_version}/bundles/redoc.standalone.js"
-        )
-        assert client.app.openapi_config is not None
-        assert client.app.openapi_config.openapi_controller.redoc_js_url == default_redoc_js_bundle
-        assert default_redoc_js_bundle in response.text
+class OfflineOpenAPIControllerRedoc(OpenAPIController):
+    redoc_js_url = "https://offline_location/redoc.standalone.js"
+    redoc_google_fonts = False
 
 
-def test_default_swagger_ui_cdn_urls(person_controller: Type[Controller], pet_controller: Type[Controller]) -> None:
-    with create_test_client([person_controller, pet_controller]) as client:
-        response = client.get("/schema/swagger")
-        default_swagger_bundles = [
-            f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{OpenAPIController.swagger_ui_version}/swagger-ui.css",
-            f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{OpenAPIController.swagger_ui_version}/swagger-ui-bundle.js",
-            f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{OpenAPIController.swagger_ui_version}/swagger-ui-standalone-preset.js",
-        ]
-        assert client.app.openapi_config is not None
-        assert client.app.openapi_config.openapi_controller.swagger_css_url in default_swagger_bundles
-        assert client.app.openapi_config.openapi_controller.swagger_ui_bundle_js_url in default_swagger_bundles
-        assert (
-            client.app.openapi_config.openapi_controller.swagger_ui_standalone_preset_js_url in default_swagger_bundles
-        )
-        assert all(cdn_url in response.text for cdn_url in default_swagger_bundles)
+class OfflineOpenAPIControllerSwagger(OpenAPIController):
+    swagger_css_url = "https://offline_location/swagger-ui-css"
+    swagger_ui_bundle_js_url = "https://offline_location/swagger-ui-bundle.js"
+    swagger_ui_standalone_preset_js_url = "https://offline_location/swagger-ui-standalone-preset.js"
 
 
-def test_default_stoplight_elements_cdn_urls(
-    person_controller: Type[Controller], pet_controller: Type[Controller]
+class OfflineOpenAPIControllerStoplight(OpenAPIController):
+    stoplight_elements_css_url = "https://offline_location/spotlight-styles.mins.css"
+    stoplight_elements_js_url = "https://offline_location/spotlight-web-components.min.js"
+
+
+class OfflineOpenAPIControllerRapidoc(OpenAPIController):
+    rapidoc_js_url = "https://offline_location/rapidoc-min.js"
+
+
+class OfflineOpenAPIControllerScalar(OpenAPIController):
+    scalar_js_url = "https://offline_location/scalar-min.js"
+
+
+@pytest.mark.parametrize(
+    "endpoint, version, cdn_urls",
+    [
+        (
+            "/schema/swagger",
+            OpenAPIController.swagger_ui_version,
+            [
+                "https://cdn.jsdelivr.net/npm/swagger-ui-dist@{}/swagger-ui.css",
+                "https://cdn.jsdelivr.net/npm/swagger-ui-dist@{}/swagger-ui-bundle.js",
+                "https://cdn.jsdelivr.net/npm/swagger-ui-dist@{}/swagger-ui-standalone-preset.js",
+            ],
+        ),
+        (
+            "/schema/elements",
+            OpenAPIController.stoplight_elements_version,
+            [
+                "https://unpkg.com/@stoplight/elements@{}/styles.min.css",
+                "https://unpkg.com/@stoplight/elements@{}/web-components.min.js",
+            ],
+        ),
+        ("/schema/redoc", "next", ["https://cdn.jsdelivr.net/npm/redoc@{}/bundles/redoc.standalone.js"]),
+        ("/schema/rapidoc", OpenAPIController.rapidoc_version, ["https://unpkg.com/rapidoc@{}/dist/rapidoc-min.js"]),
+        ("/schema/scalar", OpenAPIController.scalar_version, ["https://cdn.jsdelivr.net/npm/@scalar/api-reference@{}"]),
+    ],
+)
+def test_default_cdn_urls(
+    endpoint: str,
+    version: str,
+    cdn_urls: List[str],
+    person_controller: Type[Controller],
+    pet_controller: Type[Controller],
 ) -> None:
     with create_test_client([person_controller, pet_controller]) as client:
-        response = client.get("/schema/elements")
-        default_stoplight_elements_bundles = [
-            f"https://unpkg.com/@stoplight/elements@{OpenAPIController.stoplight_elements_version}/styles.min.css",
-            f"https://unpkg.com/@stoplight/elements@{OpenAPIController.stoplight_elements_version}/web-components.min.js",
-        ]
+        response = client.get(endpoint)
+        formatted_cdn_urls = [url.format(version) for url in cdn_urls]
         assert client.app.openapi_config is not None
-        assert (
-            client.app.openapi_config.openapi_controller.stoplight_elements_css_url
-            in default_stoplight_elements_bundles
-        )
-        assert (
-            client.app.openapi_config.openapi_controller.stoplight_elements_js_url in default_stoplight_elements_bundles
-        )
-        assert all(cdn_url in response.text for cdn_url in default_stoplight_elements_bundles)
+        assert all(url in response.text for url in formatted_cdn_urls)
 
 
-def test_default_rapidoc_elements_cdn_urls(
-    person_controller: Type[Controller], pet_controller: Type[Controller]
+@pytest.mark.parametrize(
+    "openapi_controller, should_have_google_fonts", [(OpenAPIController, True), (OfflineOpenAPIControllerRedoc, False)]
+)
+def test_redoc_google_fonts(
+    person_controller: Type[Controller],
+    pet_controller: Type[Controller],
+    openapi_controller: Type[OpenAPIController],
+    should_have_google_fonts: bool,
 ) -> None:
-    with create_test_client([person_controller, pet_controller]) as client:
-        response = client.get("/schema/rapidoc")
-        default_rapidoc_bundles = [f"https://unpkg.com/rapidoc@{OpenAPIController.rapidoc_version}/dist/rapidoc-min.js"]
-        assert client.app.openapi_config is not None
-        assert client.app.openapi_config.openapi_controller.rapidoc_js_url in default_rapidoc_bundles
-        assert all(cdn_url in response.text for cdn_url in default_rapidoc_bundles)
+    google_font_cdn = "https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700"
+    config = OpenAPIConfig(title="Litestar API", version="1.0.0", openapi_controller=openapi_controller)
 
-
-def test_redoc_with_google_fonts(person_controller: Type[Controller], pet_controller: Type[Controller]) -> None:
-    with create_test_client([person_controller, pet_controller]) as client:
+    with create_test_client([person_controller, pet_controller], openapi_config=config) as client:
         response = client.get("/schema/redoc")
-        google_font_cdn = "https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700"
-        assert client.app.openapi_config is not None
-        assert client.app.openapi_config.openapi_controller.redoc_google_fonts is True
-        assert google_font_cdn in response.text
+        if should_have_google_fonts:
+            assert google_font_cdn in response.text
+        else:
+            assert google_font_cdn not in response.text
 
 
-def test_redoc_without_google_fonts(person_controller: Type[Controller], pet_controller: Type[Controller]) -> None:
-    class OfflineOpenAPIController(OpenAPIController):
-        """test class for usage in a couple "offline" tests and for without Google fonts test."""
-
-        redoc_google_fonts = False
-
-    offline_config = OpenAPIConfig(title="Litestar API", version="1.0.0", openapi_controller=OfflineOpenAPIController)
-    with create_test_client([person_controller, pet_controller], openapi_config=offline_config) as client:
-        response = client.get("/schema/redoc")
-        assert "fonts.googleapis.com" not in response.text
-
-
-def test_openapi_redoc_offline(person_controller: Type[Controller], pet_controller: Type[Controller]) -> None:
-    class OfflineOpenAPIController(OpenAPIController):
-        """test class for usage in a couple "offline" tests and for without Google fonts test."""
-
-        redoc_js_url = "https://offline_location/redoc.standalone.js"
-
-    offline_config = OpenAPIConfig(title="Litestar API", version="1.0.0", openapi_controller=OfflineOpenAPIController)
-    with create_test_client([person_controller, pet_controller], openapi_config=offline_config) as client:
-        response = client.get("/schema/redoc")
-        assert OfflineOpenAPIController.redoc_js_url in response.text
-
-
-def test_openapi_swagger_offline(person_controller: Type[Controller], pet_controller: Type[Controller]) -> None:
-    class OfflineOpenAPIController(OpenAPIController):
-        """test class for usage in a couple "offline" tests and for without Google fonts test."""
-
-        swagger_css_url = "https://offline_location/swagger-ui-css"
-        swagger_ui_bundle_js_url = "https://offline_location/swagger-ui-bundle.js"
-        swagger_ui_standalone_preset_js_url = "https://offline_location/swagger-ui-standalone-preset.js"
-
-    offline_config = OpenAPIConfig(title="Litestar API", version="1.0.0", openapi_controller=OfflineOpenAPIController)
-    with create_test_client([person_controller, pet_controller], openapi_config=offline_config) as client:
-        response = client.get("/schema/swagger")
-        assert OfflineOpenAPIController.swagger_css_url in response.text
-        assert OfflineOpenAPIController.swagger_ui_bundle_js_url in response.text
-        assert OfflineOpenAPIController.swagger_ui_standalone_preset_js_url in response.text
-
-
-def test_openapi_stoplight_elements_offline(
-    person_controller: Type[Controller], pet_controller: Type[Controller]
+@pytest.mark.parametrize(
+    "endpoint, controller_class, urls_to_check",
+    [
+        (
+            "/schema/swagger",
+            OfflineOpenAPIControllerSwagger,
+            [
+                OfflineOpenAPIControllerSwagger.swagger_css_url,
+                OfflineOpenAPIControllerSwagger.swagger_ui_bundle_js_url,
+                OfflineOpenAPIControllerSwagger.swagger_ui_standalone_preset_js_url,
+            ],
+        ),
+        (
+            "/schema/elements",
+            OfflineOpenAPIControllerStoplight,
+            [
+                OfflineOpenAPIControllerStoplight.stoplight_elements_css_url,
+                OfflineOpenAPIControllerStoplight.stoplight_elements_js_url,
+            ],
+        ),
+        ("/schema/redoc", OfflineOpenAPIControllerRedoc, [OfflineOpenAPIControllerRedoc.redoc_js_url]),
+        ("/schema/rapidoc", OfflineOpenAPIControllerRapidoc, [OfflineOpenAPIControllerRapidoc.rapidoc_js_url]),
+        ("/schema/scalar", OfflineOpenAPIControllerScalar, [OfflineOpenAPIControllerScalar.scalar_js_url]),
+    ],
+)
+def test_openapi_endpoints_offline(
+    endpoint: str,
+    controller_class: Type[OpenAPIController],
+    urls_to_check: List[str],
+    person_controller: Type[Controller],
+    pet_controller: Type[Controller],
 ) -> None:
-    class OfflineOpenAPIController(OpenAPIController):
-        """test class for usage in a couple "offline" tests and for without Google fonts test."""
-
-        stoplight_elements_css_url = "https://offline_location/spotlight-styles.mins.css"
-        stoplight_elements_js_url = "https://offline_location/spotlight-web-components.min.js"
-
-    offline_config = OpenAPIConfig(title="Litestar API", version="1.0.0", openapi_controller=OfflineOpenAPIController)
+    offline_config = OpenAPIConfig(title="Litestar API", version="1.0.0", openapi_controller=controller_class)
     with create_test_client([person_controller, pet_controller], openapi_config=offline_config) as client:
-        response = client.get("/schema/elements")
-        assert OfflineOpenAPIController.stoplight_elements_css_url in response.text
-        assert OfflineOpenAPIController.stoplight_elements_js_url in response.text
+        response = client.get(endpoint)
+        for url in urls_to_check:
+            assert url in response.text
 
 
-def test_openapi_rapidoc_offline(person_controller: Type[Controller], pet_controller: Type[Controller]) -> None:
-    class OfflineOpenAPIController(OpenAPIController):
-        """test class for usage in a couple "offline" tests and for without Google fonts test."""
-
-        rapidoc_js_url = "https://offline_location/rapidoc-min.js"
-
-    offline_config = OpenAPIConfig(title="Litestar API", version="1.0.0", openapi_controller=OfflineOpenAPIController)
-    with create_test_client([person_controller, pet_controller], openapi_config=offline_config) as client:
-        response = client.get("/schema/rapidoc")
-        assert OfflineOpenAPIController.rapidoc_js_url in response.text
-
-
-@pytest.mark.parametrize("root_path", root_paths)
-def test_openapi_root(root_path: str, person_controller: Type[Controller], pet_controller: Type[Controller]) -> None:
+@pytest.mark.parametrize(
+    "root_path, endpoint",
+    [(root_path, "/schema") for root_path in root_paths]
+    + [(root_path, "/schema/redoc") for root_path in root_paths]
+    + [(root_path, "/schema/swagger") for root_path in root_paths]
+    + [(root_path, "/schema/elements/") for root_path in root_paths]
+    + [(root_path, "/schema/rapidoc") for root_path in root_paths]
+    + [(root_path, "/schema/scalar") for root_path in root_paths],
+)
+def test_openapi_endpoints(
+    root_path: str, endpoint: str, person_controller: Type[Controller], pet_controller: Type[Controller]
+) -> None:
     with create_test_client([person_controller, pet_controller], root_path=root_path) as client:
-        response = client.get("/schema")
-        assert response.status_code == HTTP_200_OK
-        assert response.headers["content-type"].startswith(MediaType.HTML.value)
-
-
-@pytest.mark.parametrize("root_path", root_paths)
-def test_openapi_redoc(root_path: str, person_controller: Type[Controller], pet_controller: Type[Controller]) -> None:
-    with create_test_client([person_controller, pet_controller], root_path=root_path) as client:
-        response = client.get("/schema/redoc")
-        assert response.status_code == HTTP_200_OK
-        assert response.headers["content-type"].startswith(MediaType.HTML.value)
-
-
-@pytest.mark.parametrize("root_path", root_paths)
-def test_openapi_swagger(root_path: str, person_controller: Type[Controller], pet_controller: Type[Controller]) -> None:
-    with create_test_client([person_controller, pet_controller], root_path=root_path) as client:
-        response = client.get("/schema/swagger")
+        response = client.get(endpoint)
         assert response.status_code == HTTP_200_OK
         assert response.headers["content-type"].startswith(MediaType.HTML.value)
 
@@ -188,91 +167,28 @@ def test_openapi_swagger_caching_schema(
         assert response.headers["content-type"].startswith(MediaType.HTML.value)
 
 
-@pytest.mark.parametrize("root_path", root_paths)
-def test_openapi_stoplight_elements(
-    root_path: str, person_controller: Type[Controller], pet_controller: Type[Controller]
-) -> None:
-    with create_test_client([person_controller, pet_controller], root_path=root_path) as client:
-        response = client.get("/schema/elements/")
-        assert response.status_code == HTTP_200_OK
-        assert response.headers["content-type"].startswith(MediaType.HTML.value)
-
-
-@pytest.mark.parametrize("root_path", root_paths)
-def test_openapi_rapidoc(root_path: str, person_controller: Type[Controller], pet_controller: Type[Controller]) -> None:
-    with create_test_client([person_controller, pet_controller], root_path=root_path) as client:
-        response = client.get("/schema/rapidoc")
-        assert response.status_code == HTTP_200_OK
-        assert response.headers["content-type"].startswith(MediaType.HTML.value)
-
-
-def test_openapi_root_not_allowed(person_controller: Type[Controller], pet_controller: Type[Controller]) -> None:
-    with create_test_client(
-        [person_controller, pet_controller],
-        openapi_config=OpenAPIConfig(
-            title="Litestar API",
-            version="1.0.0",
-            enabled_endpoints={"swagger", "elements", "openapi.json", "openapi.yaml", "openapi.yml"},
-        ),
-    ) as client:
-        response = client.get("/schema")
-        assert response.status_code == HTTP_404_NOT_FOUND
-        assert response.headers["content-type"].startswith(MediaType.HTML.value)
-
-
-def test_openapi_redoc_not_allowed(person_controller: Type[Controller], pet_controller: Type[Controller]) -> None:
-    with create_test_client(
-        [person_controller, pet_controller],
-        openapi_config=OpenAPIConfig(
-            title="Litestar API",
-            version="1.0.0",
-            enabled_endpoints={"swagger", "elements", "openapi.json", "openapi.yaml", "openapi.yml"},
-        ),
-    ) as client:
-        response = client.get("/schema/redoc")
-        assert response.status_code == HTTP_404_NOT_FOUND
-        assert response.headers["content-type"].startswith(MediaType.HTML.value)
-
-
-def test_openapi_swagger_not_allowed(person_controller: Type[Controller], pet_controller: Type[Controller]) -> None:
-    with create_test_client(
-        [person_controller, pet_controller],
-        openapi_config=OpenAPIConfig(
-            title="Litestar API",
-            version="1.0.0",
-            enabled_endpoints={"redoc", "elements", "openapi.json", "openapi.yaml", "openapi.yml"},
-        ),
-    ) as client:
-        response = client.get("/schema/swagger")
-        assert response.status_code == HTTP_404_NOT_FOUND
-        assert response.headers["content-type"].startswith(MediaType.HTML.value)
-
-
-def test_openapi_stoplight_elements_not_allowed(
-    person_controller: Type[Controller], pet_controller: Type[Controller]
+@pytest.mark.parametrize(
+    "endpoint",
+    [
+        "/schema",
+        "/schema/redoc",
+        "/schema/swagger",
+        "/schema/elements/",
+        "/schema/rapidoc",
+        "/schema/scalar",
+    ],
+)
+def test_openapi_endpoints_not_allowed(
+    endpoint: str, person_controller: Type[Controller], pet_controller: Type[Controller]
 ) -> None:
     with create_test_client(
         [person_controller, pet_controller],
         openapi_config=OpenAPIConfig(
             title="Litestar API",
             version="1.0.0",
-            enabled_endpoints={"redoc", "swagger", "openapi.json", "openapi.yaml", "openapi.yml"},
+            enabled_endpoints={"openapi.json", "openapi.yaml", "openapi.yml"},
         ),
     ) as client:
-        response = client.get("/schema/elements/")
-        assert response.status_code == HTTP_404_NOT_FOUND
-        assert response.headers["content-type"].startswith(MediaType.HTML.value)
-
-
-def test_openapi_rapidoc_not_allowed(person_controller: Type[Controller], pet_controller: Type[Controller]) -> None:
-    with create_test_client(
-        [person_controller, pet_controller],
-        openapi_config=OpenAPIConfig(
-            title="Litestar API",
-            version="1.0.0",
-            enabled_endpoints={"swagger", "elements", "openapi.json", "openapi.yaml", "openapi.yml"},
-        ),
-    ) as client:
-        response = client.get("/schema/rapidoc")
+        response = client.get(endpoint)
         assert response.status_code == HTTP_404_NOT_FOUND
         assert response.headers["content-type"].startswith(MediaType.HTML.value)
