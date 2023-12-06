@@ -26,9 +26,6 @@ class RegisteredSchema:
         self.schema = schema
         self.references = references
 
-    def __repr__(self) -> str:
-        return f"<RegisteredSchema key={self.key}>"
-
 
 class SchemaRegistry:
     """A registry for object schemas.
@@ -61,17 +58,6 @@ class SchemaRegistry:
         self._schema_key_map[key] = registered_schema = RegisteredSchema(key, schema, [reference])
         self._schema_reference_map[id(reference)] = registered_schema
         self._model_name_groups[key[-1]].append(registered_schema)
-
-    def get(self, key: tuple[str, ...]) -> RegisteredSchema:
-        """Get a registered schema by its key.
-
-        Args:
-            key: The key of the schema to get.
-
-        Returns:
-            A RegisteredSchema object.
-        """
-        return self._schema_key_map[key]
 
     def from_reference(self, reference: Reference) -> RegisteredSchema:
         """Get a registered schema by its reference.
@@ -114,9 +100,6 @@ class SchemaRegistry:
             Returns:
                 The longest common prefix of the tuples.
             """
-            if not tuples_:
-                return ()
-
             prefix_ = tuples_[0]
             for t in tuples_:
                 # Compare the current prefix with each tuple and shorten it
