@@ -24,7 +24,7 @@ def test_spec_generation() -> None:
     with create_test_client(handler) as client:
         schema = client.app.openapi_schema
         assert schema
-        assert schema.to_schema()["components"]["schemas"]["Person"] == {
+        assert schema.to_schema()["components"]["schemas"]["test_spec_generation.Person"] == {
             "properties": {
                 "first_name": {"type": "string"},
                 "last_name": {"type": "string"},

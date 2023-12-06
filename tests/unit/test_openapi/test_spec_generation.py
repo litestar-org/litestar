@@ -59,7 +59,7 @@ def test_msgspec_schema() -> None:
         schema = client.app.openapi_schema
         assert schema
 
-        assert schema.to_schema()["components"]["schemas"]["CamelizedStruct"] == {
+        assert schema.to_schema()["components"]["schemas"]["test_msgspec_schema.CamelizedStruct"] == {
             "properties": {"fieldOne": {"type": "integer"}, "fieldTwo": {"type": "number"}},
             "required": ["fieldOne", "fieldTwo"],
             "title": "CamelizedStruct",

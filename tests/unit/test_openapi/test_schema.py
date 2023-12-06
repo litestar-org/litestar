@@ -41,6 +41,7 @@ from litestar.testing import create_test_client
 from litestar.types.builtin_types import NoneType
 from litestar.typing import FieldDefinition
 from litestar.utils.helpers import get_name
+from tests.helpers import get_schema_for_field_definition
 from tests.models import DataclassPerson, DataclassPet
 
 if TYPE_CHECKING:
@@ -48,14 +49,6 @@ if TYPE_CHECKING:
     from typing import Callable
 
 T = TypeVar("T")
-
-
-def get_schema_for_field_definition(field_definition: FieldDefinition) -> Schema:
-    creator = SchemaCreator()
-    result = creator.for_field_definition(field_definition)
-    if isinstance(result, Schema):
-        return result
-    return creator.schema_registry.from_reference(result).schema
 
 
 def test_process_schema_result() -> None:
@@ -97,41 +90,54 @@ def test_get_normalized_schema_key() -> None:
     class LocalClass(msgspec.Struct):
         id: str
 
+    # replace each of the long strings with underscores with a tuple of strings split at each underscore
     assert (
-        "tests_unit_test_openapi_test_schema_test_get_normalized_schema_key_locals_LocalClass"
-        == _get_normalized_schema_key(str(LocalClass))
-    )
+        "tests",
+        "unit",
+        "test_openapi",
+        "test_schema",
+        "test_get_normalized_schema_key.LocalClass",
+    ) == _get_normalized_schema_key(LocalClass)
 
-    assert "tests_models_DataclassPerson" == _get_normalized_schema_key(str(DataclassPerson))
+    assert ("tests", "models", "DataclassPerson") == _get_normalized_schema_key(DataclassPerson)
 
     builtin_dict = Dict[str, List[int]]
-    assert "typing_Dict[str_typing_List[int]]" == _get_normalized_schema_key(str(builtin_dict))
+    assert ("typing", "Dict[str, typing.List[int]]") == _get_normalized_schema_key(builtin_dict)
 
     builtin_with_custom = Dict[str, DataclassPerson]
-    assert "typing_Dict[str_tests_models_DataclassPerson]" == _get_normalized_schema_key(str(builtin_with_custom))
+    assert ("typing", "Dict[str, tests.models.DataclassPerson]") == _get_normalized_schema_key(builtin_with_custom)
 
     class LocalGeneric(Generic[T]):
         pass
 
     assert (
-        "tests_unit_test_openapi_test_schema_test_get_normalized_schema_key_locals_LocalGeneric"
-        == _get_normalized_schema_key(str(LocalGeneric))
-    )
+        "tests",
+        "unit",
+        "test_openapi",
+        "test_schema",
+        "test_get_normalized_schema_key.LocalGeneric",
+    ) == _get_normalized_schema_key(LocalGeneric)
 
     generic_int = LocalGeneric[int]
     generic_str = LocalGeneric[str]
 
     assert (
-        "tests_unit_test_openapi_test_schema_test_get_normalized_schema_key_locals_LocalGeneric[int]"
-        == _get_normalized_schema_key(str(generic_int))
-    )
+        "tests",
+        "unit",
+        "test_openapi",
+        "test_schema",
+        "test_get_normalized_schema_key.LocalGeneric[int]",
+    ) == _get_normalized_schema_key(generic_int)
 
     assert (
-        "tests_unit_test_openapi_test_schema_test_get_normalized_schema_key_locals_LocalGeneric[str]"
-        == _get_normalized_schema_key(str(generic_str))
-    )
+        "tests",
+        "unit",
+        "test_openapi",
+        "test_schema",
+        "test_get_normalized_schema_key.LocalGeneric[str]",
+    ) == _get_normalized_schema_key(generic_str)
 
-    assert _get_normalized_schema_key(str(generic_int)) != _get_normalized_schema_key(str(generic_str))
+    assert _get_normalized_schema_key(generic_int) != _get_normalized_schema_key(generic_str)
 
 
 def test_dependency_schema_generation() -> None:

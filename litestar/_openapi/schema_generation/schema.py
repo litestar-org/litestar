@@ -691,11 +691,11 @@ class SchemaCreator:
             schema.examples = get_formatted_examples(field, create_examples_for_field(field))
 
         if schema.title and schema.type in (OpenAPIType.OBJECT, OpenAPIType.ARRAY):
-            class_name = _get_normalized_schema_key(str(field.annotation))
-            class_key = tuple(class_name.split("_"))
-            ref = Reference(ref=f"#/components/schemas/{class_name}", description=schema.description)
-
+            class_key = _get_normalized_schema_key(field.annotation)
+            # the "ref" attribute set here is arbitrary, since it will be overwritten by the SchemaRegistry
+            # when the "components/schemas" section of the OpenAPI document is generated and the paths are
+            # known.
+            ref = Reference(ref="", description=schema.description)
             self.schema_registry.register(class_key, schema, ref)
-
             return ref
         return schema

@@ -24,6 +24,7 @@ from litestar.status_codes import HTTP_200_OK
 from litestar.testing import TestClient, create_test_client
 from litestar.typing import FieldDefinition
 from litestar.utils import is_class_and_subclass
+from tests.helpers import get_schema_for_field_definition
 from tests.unit.test_contrib.test_pydantic.models import (
     PydanticDataclassPerson,
     PydanticPerson,
@@ -377,7 +378,7 @@ def test_schema_generation_v1(create_examples: bool) -> None:
     ) as client:
         response = client.get("/schema/openapi.json")
         assert response.status_code == HTTP_200_OK
-        assert response.json()["components"]["schemas"]["Lookup"]["properties"]["id"] == {
+        assert response.json()["components"]["schemas"]["test_schema_generation_v1.Lookup"]["properties"]["id"] == {
             "description": "A unique identifier",
             "examples": {"id-example-1": {"value": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"}},
             "maxLength": 16,
@@ -414,7 +415,7 @@ def test_schema_generation_v2(create_examples: bool) -> None:
     ) as client:
         response = client.get("/schema/openapi.json")
         assert response.status_code == HTTP_200_OK
-        assert response.json()["components"]["schemas"]["Lookup"]["properties"]["id"] == {
+        assert response.json()["components"]["schemas"]["test_schema_generation_v2.Lookup"]["properties"]["id"] == {
             "description": "A unique identifier",
             "examples": {"id-example-1": {"value": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"}},
             "maxLength": 16,
@@ -439,14 +440,14 @@ def test_schema_by_alias(base_model: AnyBaseModelType, pydantic_version: Pydanti
     assert app.openapi_schema
     schemas = app.openapi_schema.to_schema()["components"]["schemas"]
     request_key = "second"
-    assert schemas["RequestWithAlias"] == {
+    assert schemas["test_schema_by_alias.RequestWithAlias"] == {
         "properties": {request_key: {"type": "string"}},
         "type": "object",
         "required": [request_key],
         "title": "RequestWithAlias",
     }
     response_key = "first"
-    assert schemas["ResponseWithAlias"] == {
+    assert schemas["test_schema_by_alias.ResponseWithAlias"] == {
         "properties": {response_key: {"type": "string"}},
         "type": "object",
         "required": [response_key],
@@ -477,14 +478,14 @@ def test_schema_by_alias_plugin_override(base_model: AnyBaseModelType, pydantic_
     assert app.openapi_schema
     schemas = app.openapi_schema.to_schema()["components"]["schemas"]
     request_key = "second"
-    assert schemas["RequestWithAlias"] == {
+    assert schemas["test_schema_by_alias_plugin_override.RequestWithAlias"] == {
         "properties": {request_key: {"type": "string"}},
         "type": "object",
         "required": [request_key],
         "title": "RequestWithAlias",
     }
     response_key = "second"
-    assert schemas["ResponseWithAlias"] == {
+    assert schemas["test_schema_by_alias_plugin_override.ResponseWithAlias"] == {
         "properties": {response_key: {"type": "string"}},
         "type": "object",
         "required": [response_key],
@@ -505,11 +506,9 @@ def test_create_schema_for_field_v1() -> None:
             max_length=16,  # pyright: ignore
         )
 
-    field_definition = FieldDefinition.from_kwarg(name="Model", annotation=Model)
-    creator = SchemaCreator(plugins=[PydanticSchemaPlugin()])
-    creator.for_field_definition(field_definition)
-    schemas = creator.schema_registry.generate_components_schemas()
-    schema = schemas["Model"]
+    schema = get_schema_for_field_definition(
+        FieldDefinition.from_kwarg(name="Model", annotation=Model), plugins=[PydanticSchemaPlugin()]
+    )
 
     assert schema.properties
 
@@ -527,11 +526,9 @@ def test_create_schema_for_field_v2() -> None:
             title="title", description="description", max_length=16, json_schema_extra={"example": "example"}
         )
 
-    field_definition = FieldDefinition.from_kwarg(name="Model", annotation=Model)
-    creator = SchemaCreator(plugins=[PydanticSchemaPlugin()])
-    creator.for_field_definition(field_definition)
-    schemas = creator.schema_registry.generate_components_schemas()
-    schema = schemas["Model"]
+    schema = get_schema_for_field_definition(
+        FieldDefinition.from_kwarg(name="Model", annotation=Model), plugins=[PydanticSchemaPlugin()]
+    )
 
     assert schema.properties
 

@@ -173,7 +173,9 @@ def test_msgspec_schema_generation(create_examples: bool) -> None:
     ) as client:
         response = client.get("/schema/openapi.json")
         assert response.status_code == HTTP_200_OK
-        assert response.json()["components"]["schemas"]["Lookup"]["properties"]["id"] == {
+        assert response.json()["components"]["schemas"]["test_msgspec_schema_generation.Lookup"]["properties"][
+            "id"
+        ] == {
             "description": "A unique identifier",
             "examples": {"id-example-1": {"value": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"}},
             "maxLength": 16,
