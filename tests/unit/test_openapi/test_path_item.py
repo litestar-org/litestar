@@ -50,7 +50,6 @@ def create_factory() -> CreateFactoryFixture:
             OpenAPIContext(
                 openapi_config=OpenAPIConfig(title="Test", version="1.0.0", description="Test", create_examples=True),
                 plugins=[],
-                schemas={},
             ),
             route,
         )

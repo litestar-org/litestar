@@ -159,11 +159,9 @@ class OpenAPIContext:
         self,
         openapi_config: OpenAPIConfig,
         plugins: Sequence[OpenAPISchemaPluginProtocol],
-        schemas: dict[str, Schema],
     ) -> None:
         self.openapi_config = openapi_config
         self.plugins = plugins
-        self.schemas = schemas
         self.operation_ids: set[str] = set()
         self.schema_registry = SchemaRegistry()
 
