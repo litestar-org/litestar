@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 
 
-<html lang="en" >
+<html lang="en" data-content_root="" >
 
   <head>
     <meta charset="utf-8" />
@@ -18,12 +18,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
-<link href="../../../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
 
   
-  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -35,9 +35,9 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
-  <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
 
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=a5ad1038"></script>
     <script src="../../../_static/doctools.js?v=888ff710"></script>
@@ -116,6 +116,7 @@
   <div class=" navbar-header-items__start">
     
       <div class="navbar-item">
+
    
 
 <a class="navbar-brand logo" href="https://litestar.dev">
@@ -591,6 +592,7 @@
       
         <div class="navbar-item navbar-persistent--container">
           
+
 <script>
 document.write(`
   <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -602,6 +604,7 @@ document.write(`
       
         <div class="navbar-item navbar-persistent--container">
           
+
 <script>
 document.write(`
   <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -648,6 +651,7 @@ document.write(`
   
   
     <div class="navbar-persistent--mobile">
+
 <script>
 document.write(`
   <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -658,6 +662,7 @@ document.write(`
     </div>
   
     <div class="navbar-persistent--mobile">
+
 <script>
 document.write(`
   <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -1173,7 +1178,8 @@ document.write(`
   </div>
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentation</span></p>
@@ -1385,6 +1391,9 @@ document.write(`
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../topics/deployment/index.html">Deployment</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../../topics/deployment/nginx-unit.html">NGINX Unit</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../topics/deployment/manually-with-asgi-server.html">Manually with ASGI server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../topics/deployment/docker.html">Docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../topics/deployment/supervisor.html">Supervisor (linux)</a></li>
+
 </ul>
 </li>
 </ul>
@@ -1747,17 +1756,17 @@ e.g. <code class="docutils literal notranslate"><span class="pre">'postgresql+as
 </div>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">create_engine_callable:</span> <span class="pre">Callable[[str],</span> <span class="pre">EngineT],</span> <span class="pre">session_config:</span> <span class="pre">GenericSessionConfig[Any,</span> <span class="pre">Any,</span> <span class="pre">Any],</span> <span class="pre">session_maker_class:</span> <span class="pre">type[sessionmaker</span> <span class="pre">|</span> <span class="pre">async_sessionmaker],</span> <span class="pre">connection_string:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">engine_config:</span> <span class="pre">EngineConfig</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">session_maker:</span> <span class="pre">Callable[[],</span> <span class="pre">SessionT]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">engine_instance:</span> <span class="pre">EngineT</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">create_all:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">metadata:</span> <span class="pre">MetaData</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.engine_config">
 <span class="sig-name descname"><span class="pre">engine_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#litestar.contrib.sqlalchemy.plugins.EngineConfig" title="litestar.contrib.sqlalchemy.plugins.EngineConfig"><span class="pre">EngineConfig</span></a></em><a class="headerlink" href="#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.engine_config" title="Permalink to this definition">#</a></dt>
 <dd><p>Configuration for the SQLAlchemy engine.</p>
 <p>The configuration options are documented in the SQLAlchemy documentation.</p>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">create_engine_callable:</span> <span class="pre">Callable[[str],</span> <span class="pre">EngineT],</span> <span class="pre">session_config:</span> <span class="pre">GenericSessionConfig[Any,</span> <span class="pre">Any,</span> <span class="pre">Any],</span> <span class="pre">session_maker_class:</span> <span class="pre">type[sessionmaker</span> <span class="pre">|</span> <span class="pre">async_sessionmaker],</span> <span class="pre">connection_string:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">engine_config:</span> <span class="pre">EngineConfig</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;,</span> <span class="pre">session_maker:</span> <span class="pre">Callable[[],</span> <span class="pre">SessionT]</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">engine_instance:</span> <span class="pre">EngineT</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">create_all:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False,</span> <span class="pre">metadata:</span> <span class="pre">MetaData</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">enable_touch_updated_timestamp_listener:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.__init__" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.session_maker">
@@ -1784,6 +1793,14 @@ e.g. <code class="docutils literal notranslate"><span class="pre">'postgresql+as
 <span class="sig-name descname"><span class="pre">metadata</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">MetaData</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.metadata" title="Permalink to this definition">#</a></dt>
 <dd><p>Optional metadata to use.</p>
 <p>If set, the plugin will use the provided instance rather than the default metadata.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.enable_touch_updated_timestamp_listener">
+<span class="sig-name descname"><span class="pre">enable_touch_updated_timestamp_listener</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.enable_touch_updated_timestamp_listener" title="Permalink to this definition">#</a></dt>
+<dd><p>Enable Created/Updated Timestamp event listener.</p>
+<p>This is a listener that will update <code class="docutils literal notranslate"><span class="pre">created_at</span></code> and <code class="docutils literal notranslate"><span class="pre">updated_at</span></code> columns on record modification.
+Disable if you plan to bring your own update mechanism for these columns</p>
 </dd></dl>
 
 <dl class="py property">
@@ -1909,7 +1926,7 @@ class.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.contrib.sqlalchemy.plugins.</span></span><span class="sig-name descname"><span class="pre">SQLAlchemyAsyncConfig</span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/plugins/init/config/asyncio.html#advanced_alchemy.extensions.litestar.plugins.init.config.asyncio.SQLAlchemyAsyncConfig" title="(in advanced_alchemy v0.5.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyAsyncConfig</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">_CreateEngineMixin</span></code>[<a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/extensions/asyncio.html#sqlalchemy.ext.asyncio.AsyncEngine" title="(in SQLAlchemy v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncEngine</span></code></a>]</p>
+<dd><p>Bases: <a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/plugins/init/config/asyncio.html#advanced_alchemy.extensions.litestar.plugins.init.config.asyncio.SQLAlchemyAsyncConfig" title="(in advanced_alchemy v0.6.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyAsyncConfig</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">_CreateEngineMixin</span></code>[<a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/extensions/asyncio.html#sqlalchemy.ext.asyncio.AsyncEngine" title="(in SQLAlchemy v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncEngine</span></code></a>]</p>
 </dd></dl>
 
 <dl class="py class">
@@ -1978,7 +1995,7 @@ class.</p>
 <p>A plugin that provides SQLAlchemy integration.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/plugins/init/config/asyncio.html#advanced_alchemy.extensions.litestar.plugins.init.config.asyncio.SQLAlchemyAsyncConfig" title="(in advanced_alchemy v0.5.5)"><span class="pre">SQLAlchemyAsyncConfig</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/plugins/init/config/sync.html#advanced_alchemy.extensions.litestar.plugins.init.config.sync.SQLAlchemySyncConfig" title="(in advanced_alchemy v0.5.5)"><span class="pre">SQLAlchemySyncConfig</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin.__init__" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/plugins/init/config/asyncio.html#advanced_alchemy.extensions.litestar.plugins.init.config.asyncio.SQLAlchemyAsyncConfig" title="(in advanced_alchemy v0.6.0)"><span class="pre">SQLAlchemyAsyncConfig</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/plugins/init/config/sync.html#advanced_alchemy.extensions.litestar.plugins.init.config.sync.SQLAlchemySyncConfig" title="(in advanced_alchemy v0.6.0)"><span class="pre">SQLAlchemySyncConfig</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin.__init__" title="Permalink to this definition">#</a></dt>
 <dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">SQLAlchemyPlugin</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2042,7 +2059,7 @@ class.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.contrib.sqlalchemy.plugins.</span></span><span class="sig-name descname"><span class="pre">SQLAlchemySyncConfig</span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/plugins/init/config/sync.html#advanced_alchemy.extensions.litestar.plugins.init.config.sync.SQLAlchemySyncConfig" title="(in advanced_alchemy v0.5.5)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemySyncConfig</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">_CreateEngineMixin</span></code>[<a class="reference external" href="https://docs.sqlalchemy.org/en/20/core/connections.html#sqlalchemy.engine.Engine" title="(in SQLAlchemy v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Engine</span></code></a>]</p>
+<dd><p>Bases: <a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/plugins/init/config/sync.html#advanced_alchemy.extensions.litestar.plugins.init.config.sync.SQLAlchemySyncConfig" title="(in advanced_alchemy v0.6.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemySyncConfig</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">_CreateEngineMixin</span></code>[<a class="reference external" href="https://docs.sqlalchemy.org/en/20/core/connections.html#sqlalchemy.engine.Engine" title="(in SQLAlchemy v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Engine</span></code></a>]</p>
 </dd></dl>
 
 <dl class="py class">
@@ -2061,7 +2078,7 @@ class.</p>
               
               
                 <footer class="prev-next-footer">
-                  <!-- Previous / next buttons -->
+                  
 <div class="prev-next-area">
     <a class="left-prev"
        href="index.html"
@@ -2091,6 +2108,7 @@ class.</p>
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
   <div class="sidebar-secondary-item">
+
   <div class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
   </div>
@@ -2138,12 +2156,13 @@ class.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.session_config"><code class="docutils literal notranslate"><span class="pre">GenericSQLAlchemyConfig.session_config</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.session_maker_class"><code class="docutils literal notranslate"><span class="pre">GenericSQLAlchemyConfig.session_maker_class</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.connection_string"><code class="docutils literal notranslate"><span class="pre">GenericSQLAlchemyConfig.connection_string</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.__init__"><code class="docutils literal notranslate"><span class="pre">GenericSQLAlchemyConfig.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.engine_config"><code class="docutils literal notranslate"><span class="pre">GenericSQLAlchemyConfig.engine_config</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.__init__"><code class="docutils literal notranslate"><span class="pre">GenericSQLAlchemyConfig.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.session_maker"><code class="docutils literal notranslate"><span class="pre">GenericSQLAlchemyConfig.session_maker</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.engine_instance"><code class="docutils literal notranslate"><span class="pre">GenericSQLAlchemyConfig.engine_instance</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.create_all"><code class="docutils literal notranslate"><span class="pre">GenericSQLAlchemyConfig.create_all</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.metadata"><code class="docutils literal notranslate"><span class="pre">GenericSQLAlchemyConfig.metadata</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.enable_touch_updated_timestamp_listener"><code class="docutils literal notranslate"><span class="pre">GenericSQLAlchemyConfig.enable_touch_updated_timestamp_listener</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.engine_config_dict"><code class="docutils literal notranslate"><span class="pre">GenericSQLAlchemyConfig.engine_config_dict</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.session_config_dict"><code class="docutils literal notranslate"><span class="pre">GenericSQLAlchemyConfig.session_config_dict</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.get_engine"><code class="docutils literal notranslate"><span class="pre">GenericSQLAlchemyConfig.get_engine()</span></code></a></li>
@@ -2200,8 +2219,8 @@ class.</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
-<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
+  <script src="../../../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -2209,6 +2228,7 @@ class.</p>
     <div class="footer-items__start">
       
         <div class="footer-item">
+
   <p class="copyright">
     
       © Copyright 2023, Litestar-Org.
@@ -2218,6 +2238,7 @@ class.</p>
 </div>
       
         <div class="footer-item">
+
   <p class="sphinx-version">
     Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
     <br/>
@@ -2230,8 +2251,9 @@ class.</p>
   
     <div class="footer-items__end">
       
-        <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.4.
 </p></div>
       
     </div>

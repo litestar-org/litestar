@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 
 
-<html lang="en" >
+<html lang="en" data-content_root="" >
 
   <head>
     <meta charset="utf-8" />
@@ -18,12 +18,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=365ca57ee442770a23c6" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -35,9 +35,9 @@
     <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6" />
-  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=365ca57ee442770a23c6"></script>
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=a5ad1038"></script>
     <script src="../_static/doctools.js?v=888ff710"></script>
@@ -116,6 +116,7 @@
   <div class=" navbar-header-items__start">
     
       <div class="navbar-item">
+
    
 
 <a class="navbar-brand logo" href="https://litestar.dev">
@@ -591,6 +592,7 @@
       
         <div class="navbar-item navbar-persistent--container">
           
+
 <script>
 document.write(`
   <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -602,6 +604,7 @@ document.write(`
       
         <div class="navbar-item navbar-persistent--container">
           
+
 <script>
 document.write(`
   <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -648,6 +651,7 @@ document.write(`
   
   
     <div class="navbar-persistent--mobile">
+
 <script>
 document.write(`
   <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -658,6 +662,7 @@ document.write(`
     </div>
   
     <div class="navbar-persistent--mobile">
+
 <script>
 document.write(`
   <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
@@ -1173,7 +1178,8 @@ document.write(`
   </div>
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item"><nav class="bd-docs-nav bd-links"
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
   <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentation</span></p>
@@ -1385,6 +1391,9 @@ document.write(`
 <li class="toctree-l2 has-children"><a class="reference internal" href="../topics/deployment/index.html">Deployment</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../topics/deployment/nginx-unit.html">NGINX Unit</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../topics/deployment/manually-with-asgi-server.html">Manually with ASGI server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../topics/deployment/docker.html">Docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../topics/deployment/supervisor.html">Supervisor (linux)</a></li>
+
 </ul>
 </li>
 </ul>
@@ -1652,7 +1661,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-7" name="sd-tab-set-2" type="radio">
+<input id="sd-tab-item-7" name="sd-tab-set-2" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-7">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">Union</span>
@@ -1673,6 +1682,27 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
+<input checked="checked" id="sd-tab-item-8" name="sd-tab-set-2" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-8">
+Python 3.10+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Protocol</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">DirectoryPath</span>
+
+<span class="c1"># the template class of the respective library</span>
+<span class="kn">from</span> <span class="nn">some_lib</span> <span class="kn">import</span> <span class="n">SomeTemplate</span>
+
+
+<span class="k">class</span> <span class="nc">TemplateEngineProtocol</span><span class="p">(</span><span class="n">Protocol</span><span class="p">[</span><span class="n">SomeTemplate</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">:</span> <span class="n">DirectoryPath</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="n">DirectoryPath</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Builds a template engine.&quot;&quot;&quot;</span>
+        <span class="o">...</span>
+
+    <span class="k">def</span> <span class="nf">get_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SomeTemplate</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Loads the template with template_name and returns it.&quot;&quot;&quot;</span>
+        <span class="o">...</span>
+</pre></div>
+</div>
+</div>
 </div>
 <p>Once you have your custom engine you can register it as you would the built-in engines.</p>
 </section>
@@ -1681,8 +1711,8 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <p>If you need to access the template engine instance, you can do so via the
 <a class="reference internal" href="../reference/template.html#litestar.template.TemplateConfig" title="litestar.template.TemplateConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateConfig.engine</span></code></a> attribute:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-8" name="sd-tab-set-3" type="radio">
-</input><label class="sd-tab-label" data-sync-id="jinja" for="sd-tab-item-8">
+<input checked="checked" id="sd-tab-item-9" name="sd-tab-set-3" type="radio">
+</input><label class="sd-tab-label" data-sync-id="jinja" for="sd-tab-item-9">
 Jinja</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.contrib.jinja</span> <span class="kn">import</span> <span class="n">JinjaTemplateEngine</span>
 <span class="kn">from</span> <span class="nn">litestar.template.config</span> <span class="kn">import</span> <span class="n">TemplateConfig</span>
@@ -1691,8 +1721,8 @@ Jinja</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-9" name="sd-tab-set-3" type="radio">
-</input><label class="sd-tab-label" data-sync-id="mako" for="sd-tab-item-9">
+<input id="sd-tab-item-10" name="sd-tab-set-3" type="radio">
+</input><label class="sd-tab-label" data-sync-id="mako" for="sd-tab-item-10">
 Mako</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.contrib.mako</span> <span class="kn">import</span> <span class="n">MakoTemplateEngine</span>
 <span class="kn">from</span> <span class="nn">litestar.template.config</span> <span class="kn">import</span> <span class="n">TemplateConfig</span>
@@ -1701,8 +1731,8 @@ Mako</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-10" name="sd-tab-set-3" type="radio">
-</input><label class="sd-tab-label" data-sync-id="minijinja" for="sd-tab-item-10">
+<input id="sd-tab-item-11" name="sd-tab-set-3" type="radio">
+</input><label class="sd-tab-label" data-sync-id="minijinja" for="sd-tab-item-11">
 MiniJinja</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.contrib.minijinja</span> <span class="kn">import</span> <span class="n">MiniJinjaTemplateEngine</span>
 <span class="kn">from</span> <span class="nn">litestar.template.config</span> <span class="kn">import</span> <span class="n">TemplateConfig</span>
@@ -1719,8 +1749,8 @@ MiniJinja</label><div class="sd-tab-content docutils">
 <p>Once you have a template engine registered you can return <a class="reference internal" href="../reference/response/index.html#litestar.response.Template" title="litestar.response.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">templates</span> <span class="pre">responses</span></code></a> from
 your route handlers:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-11" name="sd-tab-set-4" type="radio">
-</input><label class="sd-tab-label" data-sync-id="jinja" for="sd-tab-item-11">
+<input checked="checked" id="sd-tab-item-12" name="sd-tab-set-4" type="radio">
+</input><label class="sd-tab-label" data-sync-id="jinja" for="sd-tab-item-12">
 Jinja</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
@@ -1748,8 +1778,8 @@ Jinja</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-12" name="sd-tab-set-4" type="radio">
-</input><label class="sd-tab-label" data-sync-id="mako" for="sd-tab-item-12">
+<input id="sd-tab-item-13" name="sd-tab-set-4" type="radio">
+</input><label class="sd-tab-label" data-sync-id="mako" for="sd-tab-item-13">
 Mako</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
@@ -1779,8 +1809,8 @@ Mako</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-13" name="sd-tab-set-4" type="radio">
-</input><label class="sd-tab-label" data-sync-id="minijinja" for="sd-tab-item-13">
+<input id="sd-tab-item-14" name="sd-tab-set-4" type="radio">
+</input><label class="sd-tab-label" data-sync-id="minijinja" for="sd-tab-item-14">
 MiniJinja</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
@@ -1825,8 +1855,8 @@ engine’s <code class="docutils literal notranslate"><span class="pre">render</
 containing the template. The latter is useful if you want to define the template inline
 for small templates or <a class="reference internal" href="htmx.html"><span class="doc">HTMX</span></a> responses for example.</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-14" name="sd-tab-set-5" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-14">
+<input checked="checked" id="sd-tab-item-15" name="sd-tab-set-5" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-15">
 File name</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id6">
 <div class="code-block-caption"><span class="caption-text">Template via file</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
@@ -1837,8 +1867,8 @@ File name</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input id="sd-tab-item-15" name="sd-tab-set-5" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-15">
+<input id="sd-tab-item-16" name="sd-tab-set-5" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-16">
 String</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id7">
 <div class="code-block-caption"><span class="caption-text">Template via string</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
@@ -1863,8 +1893,8 @@ template context under <code class="docutils literal notranslate"><span class="p
 <p>Accessing <code class="docutils literal notranslate"><span class="pre">app.state.key</span></code> for example would look like this:
 &lt;strong&gt;check_context_key: &lt;/strong&gt;{{ check_context_key() }}</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-16" name="sd-tab-set-6" type="radio">
-</input><label class="sd-tab-label" data-sync-id="jinja" for="sd-tab-item-16">
+<input checked="checked" id="sd-tab-item-17" name="sd-tab-set-6" type="radio">
+</input><label class="sd-tab-label" data-sync-id="jinja" for="sd-tab-item-17">
 Jinja</label><div class="sd-tab-content docutils">
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
     <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
@@ -1876,8 +1906,8 @@ Jinja</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-17" name="sd-tab-set-6" type="radio">
-</input><label class="sd-tab-label" data-sync-id="mako" for="sd-tab-item-17">
+<input id="sd-tab-item-18" name="sd-tab-set-6" type="radio">
+</input><label class="sd-tab-label" data-sync-id="mako" for="sd-tab-item-18">
 Mako</label><div class="sd-tab-content docutils">
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span>html
 <span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
@@ -1890,8 +1920,8 @@ Mako</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-18" name="sd-tab-set-6" type="radio">
-</input><label class="sd-tab-label" data-sync-id="minijinja" for="sd-tab-item-18">
+<input id="sd-tab-item-19" name="sd-tab-set-6" type="radio">
+</input><label class="sd-tab-label" data-sync-id="minijinja" for="sd-tab-item-19">
 MiniJinja</label><div class="sd-tab-content docutils">
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
     <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
@@ -1912,8 +1942,8 @@ MiniJinja</label><div class="sd-tab-content docutils">
 you first need to configure <a class="reference internal" href="middleware/builtin-middleware.html#csrf"><span class="std std-ref">CSRF protection</span></a>.
 With that in place, you can now insert the CSRF input field inside an HTML form:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-19" name="sd-tab-set-7" type="radio">
-</input><label class="sd-tab-label" data-sync-id="jinja" for="sd-tab-item-19">
+<input checked="checked" id="sd-tab-item-20" name="sd-tab-set-7" type="radio">
+</input><label class="sd-tab-label" data-sync-id="jinja" for="sd-tab-item-20">
 Jinja</label><div class="sd-tab-content docutils">
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
     <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
@@ -1931,8 +1961,8 @@ Jinja</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-20" name="sd-tab-set-7" type="radio">
-</input><label class="sd-tab-label" data-sync-id="mako" for="sd-tab-item-20">
+<input id="sd-tab-item-21" name="sd-tab-set-7" type="radio">
+</input><label class="sd-tab-label" data-sync-id="mako" for="sd-tab-item-21">
 Mako</label><div class="sd-tab-content docutils">
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
     <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
@@ -1950,8 +1980,8 @@ Mako</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-21" name="sd-tab-set-7" type="radio">
-</input><label class="sd-tab-label" data-sync-id="minijinja" for="sd-tab-item-21">
+<input id="sd-tab-item-22" name="sd-tab-set-7" type="radio">
+</input><label class="sd-tab-label" data-sync-id="minijinja" for="sd-tab-item-22">
 MiniJinja</label><div class="sd-tab-content docutils">
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
     <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
@@ -2016,12 +2046,12 @@ for the two built in engines, and it can be used to register callables that will
 should expect one argument - the context dictionary. It can be any callable - a function, method, or class that defines
 the call method. For example:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-22" name="sd-tab-set-8" type="radio">
-</input><label class="sd-tab-label" data-sync-id="jinja" for="sd-tab-item-22">
+<input checked="checked" id="sd-tab-item-23" name="sd-tab-set-8" type="radio">
+</input><label class="sd-tab-label" data-sync-id="jinja" for="sd-tab-item-23">
 Jinja</label><div class="sd-tab-content docutils">
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-25" name="sd-tab-set-9" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-25">
+<input id="sd-tab-item-26" name="sd-tab-set-9" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-26">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id8">
 <div class="code-block-caption"><span class="caption-text">template_functions.py</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
@@ -2065,8 +2095,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-26" name="sd-tab-set-9" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-26">
+<input checked="checked" id="sd-tab-item-27" name="sd-tab-set-9" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-27">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id9">
 <div class="code-block-caption"><span class="caption-text">template_functions.py</span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
@@ -2118,12 +2148,12 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input id="sd-tab-item-23" name="sd-tab-set-8" type="radio">
-</input><label class="sd-tab-label" data-sync-id="mako" for="sd-tab-item-23">
+<input id="sd-tab-item-24" name="sd-tab-set-8" type="radio">
+</input><label class="sd-tab-label" data-sync-id="mako" for="sd-tab-item-24">
 Mako</label><div class="sd-tab-content docutils">
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-27" name="sd-tab-set-10" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-27">
+<input id="sd-tab-item-28" name="sd-tab-set-10" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-28">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id11">
 <div class="code-block-caption"><span class="caption-text">template_functions.py</span><a class="headerlink" href="#id11" title="Permalink to this code">#</a></div>
@@ -2167,8 +2197,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-28" name="sd-tab-set-10" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-28">
+<input checked="checked" id="sd-tab-item-29" name="sd-tab-set-10" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-29">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id12">
 <div class="code-block-caption"><span class="caption-text">template_functions.py</span><a class="headerlink" href="#id12" title="Permalink to this code">#</a></div>
@@ -2220,8 +2250,8 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input id="sd-tab-item-24" name="sd-tab-set-8" type="radio">
-</input><label class="sd-tab-label" data-sync-id="minijinja" for="sd-tab-item-24">
+<input id="sd-tab-item-25" name="sd-tab-set-8" type="radio">
+</input><label class="sd-tab-label" data-sync-id="minijinja" for="sd-tab-item-25">
 Minijinja</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id14">
 <div class="code-block-caption"><span class="caption-text">template_functions.py</span><a class="headerlink" href="#id14" title="Permalink to this code">#</a></div>
@@ -2280,7 +2310,7 @@ you’ll see</p>
               
               
                 <footer class="prev-next-footer">
-                  <!-- Previous / next buttons -->
+                  
 <div class="prev-next-area">
     <a class="left-prev"
        href="stores.html"
@@ -2310,6 +2340,7 @@ you’ll see</p>
                 <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
   <div class="sidebar-secondary-item">
+
   <div class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
   </div>
@@ -2351,8 +2382,8 @@ you’ll see</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=365ca57ee442770a23c6"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=365ca57ee442770a23c6"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -2360,6 +2391,7 @@ you’ll see</p>
     <div class="footer-items__start">
       
         <div class="footer-item">
+
   <p class="copyright">
     
       © Copyright 2023, Litestar-Org.
@@ -2369,6 +2401,7 @@ you’ll see</p>
 </div>
       
         <div class="footer-item">
+
   <p class="sphinx-version">
     Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
     <br/>
@@ -2381,8 +2414,9 @@ you’ll see</p>
   
     <div class="footer-items__end">
       
-        <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.3.
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.4.
 </p></div>
       
     </div>
