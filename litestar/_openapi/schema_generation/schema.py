@@ -690,7 +690,7 @@ class SchemaCreator:
 
             schema.examples = get_formatted_examples(field, create_examples_for_field(field))
 
-        if schema.title and schema.type in (OpenAPIType.OBJECT, OpenAPIType.ARRAY):
+        if schema.title and schema.type == OpenAPIType.OBJECT:
             class_key = _get_normalized_schema_key(field.annotation)
             # the "ref" attribute set here is arbitrary, since it will be overwritten by the SchemaRegistry
             # when the "components/schemas" section of the OpenAPI document is generated and the paths are
