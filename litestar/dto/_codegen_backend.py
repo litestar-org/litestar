@@ -87,12 +87,10 @@ class DTOCodegenBackend(DTOBackend):
         self._transfer_data_from_builtins = self._create_transfer_data_fn(
             destination_type=self.model_type,
             field_definition=self.field_definition,
-            override_serialization_name=False,
         )
         self._transfer_data_from_builtins_with_overrides = self._create_transfer_data_fn(
             destination_type=self.model_type,
             field_definition=self.field_definition,
-            override_serialization_name=True,
         )
         self._encode_data = self._create_transfer_data_fn(
             destination_type=self.transfer_model_type,
@@ -116,19 +114,15 @@ class DTOCodegenBackend(DTOBackend):
             )
         return self.transfer_data_from_builtins(self.parse_builtins(builtins, asgi_connection))
 
-    def transfer_data_from_builtins(self, builtins: Any, override_serialization_name: bool = False) -> Any:
+    def transfer_data_from_builtins(self, builtins: Any) -> Any:
         """Populate model instance from builtin types.
 
         Args:
             builtins: Builtin type.
-            override_serialization_name: Use the original field names, used when creating
-                                         an instance using `DTOData.create_instance`
 
         Returns:
             Instance or collection of ``model_type`` instances.
         """
-        if override_serialization_name:
-            return self._transfer_data_from_builtins_with_overrides(builtins)
         return self._transfer_data_from_builtins(builtins)
 
     def populate_data_from_raw(self, raw: bytes, asgi_connection: ASGIConnection) -> Any:
@@ -168,14 +162,12 @@ class DTOCodegenBackend(DTOBackend):
         self,
         destination_type: type[Any],
         field_definition: FieldDefinition,
-        override_serialization_name: bool | None = None,
     ) -> Any:
         """Create instance or iterable of instances of ``destination_type``.
 
         Args:
             destination_type: the model type received by the DTO on type narrowing.
             field_definition: the parsed type that represents the handler annotation for which the DTO is being applied.
-            override_serialization_name: Override serialization name
 
         Returns:
             Data parsed into ``destination_type``.
@@ -185,9 +177,6 @@ class DTOCodegenBackend(DTOBackend):
             destination_type=destination_type,
             field_definitions=self.parsed_field_definitions,
             is_data_field=self.is_data_field,
-            override_serialization_name=override_serialization_name
-            if override_serialization_name is not None
-            else self.override_serialization_name,
             field_definition=field_definition,
         )
 
@@ -198,9 +187,8 @@ class FieldAccessManager(Protocol):
 
 
 class TransferFunctionFactory:
-    def __init__(self, is_data_field: bool, override_serialization_name: bool, nested_as_dict: bool) -> None:
+    def __init__(self, is_data_field: bool, nested_as_dict: bool) -> None:
         self.is_data_field = is_data_field
-        self.override_serialization_name = override_serialization_name
         self._fn_locals: dict[str, Any] = {
             "Mapping": Mapping,
             "UNSET": UNSET,
@@ -301,13 +289,8 @@ class TransferFunctionFactory:
         field_definitions: tuple[TransferDTOFieldDefinition, ...],
         destination_type: type[Any],
         is_data_field: bool,
-        override_serialization_name: bool,
     ) -> Callable[[Any], Any]:
-        factory = cls(
-            is_data_field=is_data_field,
-            override_serialization_name=override_serialization_name,
-            nested_as_dict=destination_type is dict,
-        )
+        factory = cls(is_data_field=is_data_field, nested_as_dict=destination_type is dict)
         tmp_return_type_name = factory._create_local_name("tmp_return_type")
         source_instance_name = factory._create_local_name("source_instance")
         destination_type_name = factory._add_to_fn_globals("destination_type", destination_type)
@@ -325,11 +308,8 @@ class TransferFunctionFactory:
         cls,
         transfer_type: TransferType,
         is_data_field: bool,
-        override_serialization_name: bool,
     ) -> Callable[[Any], Any]:
-        factory = cls(
-            is_data_field=is_data_field, override_serialization_name=override_serialization_name, nested_as_dict=False
-        )
+        factory = cls(is_data_field=is_data_field, nested_as_dict=False)
         tmp_return_type_name = factory._create_local_name("tmp_return_type")
         source_value_name = factory._create_local_name("source_value")
         factory._create_transfer_type_data_body(
@@ -346,13 +326,11 @@ class TransferFunctionFactory:
         destination_type: type[Any],
         field_definitions: tuple[TransferDTOFieldDefinition, ...],
         is_data_field: bool,
-        override_serialization_name: bool,
         field_definition: FieldDefinition | None = None,
     ) -> Callable[[Any], Any]:
         if field_definition and field_definition.is_non_string_collection:
             factory = cls(
                 is_data_field=is_data_field,
-                override_serialization_name=override_serialization_name,
                 nested_as_dict=False,
             )
             source_value_name = factory._create_local_name("source_value")
@@ -370,7 +348,6 @@ class TransferFunctionFactory:
             destination_type=destination_type,
             field_definitions=field_definitions,
             is_data_field=is_data_field,
-            override_serialization_name=override_serialization_name,
         )
 
     def _create_transfer_data_body_nested(
@@ -387,7 +364,6 @@ class TransferFunctionFactory:
             destination_type=destination_type,
             field_definition=field_definition.inner_types[0],
             field_definitions=field_definitions,
-            override_serialization_name=self.override_serialization_name,
         )
         transfer_func_name = self._add_to_fn_globals("transfer_data", transfer_func)
         if field_definition.is_mapping:
@@ -458,16 +434,10 @@ class TransferFunctionFactory:
         access_field_safe: FieldAccessManager,
         source_instance_name: str,
     ) -> None:
-        should_use_serialization_name = not self.override_serialization_name and self.is_data_field
         for field_definition in field_definitions:
-            source_field_name = (
-                field_definition.serialization_name if should_use_serialization_name else field_definition.name
-            )
-            destination_name = field_definition.name if self.is_data_field else field_definition.serialization_name
-
             with access_field_safe(
                 source_name=source_instance_name,
-                field_name=source_field_name,
+                field_name=field_definition.name,
                 expect_optional=field_definition.is_partial or field_definition.is_optional,
             ) as source_value_expr:
                 if self.is_data_field and field_definition.is_partial:
@@ -486,7 +456,7 @@ class TransferFunctionFactory:
                         transfer_type=field_definition.transfer_type,
                         nested_as_dict=self.nested_as_dict,
                         source_value_name=source_value_name,
-                        assignment_target=f"{local_dict_name}['{destination_name}']",
+                        assignment_target=f"{local_dict_name}['{field_definition.name}']",
                     )
 
     def _create_transfer_type_data_body(
@@ -525,9 +495,7 @@ class TransferFunctionFactory:
             origin_name = self._add_to_fn_globals("origin", transfer_type.field_definition.instantiable_origin)
             if transfer_type.has_nested:
                 transfer_type_data_fn = TransferFunctionFactory.create_transfer_type_data(
-                    is_data_field=self.is_data_field,
-                    override_serialization_name=self.override_serialization_name,
-                    transfer_type=transfer_type.inner_type,
+                    is_data_field=self.is_data_field, transfer_type=transfer_type.inner_type
                 )
                 transfer_type_data_name = self._add_to_fn_globals("transfer_type_data", transfer_type_data_fn)
                 self._add_stmt(
