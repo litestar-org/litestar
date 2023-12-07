@@ -106,8 +106,7 @@ class Subscriber:
         """
         if self._task is not None:
             raise RuntimeError("Subscriber is already running")
-        else:
-            self._task = asyncio.create_task(self._worker(on_event))
+        self._task = asyncio.create_task(self._worker(on_event))
 
     @property
     def is_running(self) -> bool:
