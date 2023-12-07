@@ -150,6 +150,12 @@ class Fzop:
         ("camel", Fzop(spam_bar="star"), ["spamBar"], {"spamBar": "star"}),
         ("pascal", Fzop(spam_bar="star"), ["SpamBar"], {"SpamBar": "star"}),
         ("camel", Fzop(spam_model=Spam()), ["spamModel"], {"spamModel": {"mainId": "spam-id"}}),
+        (
+            "kebab",
+            Fzop(spam_bar="star", spam_model=Spam()),
+            ["spam-bar", "spam-model"],
+            {"spam-bar": "star", "spam-model": {"main-id": "spam-id"}},
+        ),
     ],
 )
 def test_fields_alias_generator(
