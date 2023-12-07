@@ -108,8 +108,8 @@ class TransferDTOFieldDefinition(DTOFieldDefinition):
 
     transfer_type: TransferType
     """Type of the field for transfer."""
-    serialization_name: str
-    """Name of the field as it should feature on the transfer model."""
+    serialization_name: str | None
+    """Name of the field as it should appear in serialized form."""
     is_partial: bool
     """Whether the field is optional for transfer."""
     is_excluded: bool
@@ -120,7 +120,7 @@ class TransferDTOFieldDefinition(DTOFieldDefinition):
         cls,
         field_definition: DTOFieldDefinition,
         transfer_type: TransferType,
-        serialization_name: str,
+        serialization_name: str | None,
         is_partial: bool,
         is_excluded: bool,
     ) -> Self:
