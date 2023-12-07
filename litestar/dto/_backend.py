@@ -549,6 +549,9 @@ def _rename_field(name: str, strategy: RenameStrategy) -> str:
     if strategy == "pascal":
         return _camelize(value=name, capitalize_first_letter=True)
 
+    if strategy == "kebab":
+        return name.replace("_", "-")
+
     return name.lower() if strategy == "lower" else name.upper()
 
 

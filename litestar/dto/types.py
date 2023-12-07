@@ -9,5 +9,5 @@ if TYPE_CHECKING:
 
 __all__ = ("RenameStrategy",)
 
-RenameStrategy: TypeAlias = 'Literal["lower", "upper", "camel", "pascal"] | Callable[[str], str]'
+RenameStrategy: TypeAlias = 'Literal["lower", "upper", "camel", "pascal", "kebab"] | Callable[[str], str]'
 """A pre-defined strategy or a custom callback for converting DTO field names."""

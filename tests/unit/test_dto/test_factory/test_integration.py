@@ -156,6 +156,12 @@ class Fzop:
             ["spam-bar", "spam-model"],
             {"spam-bar": "star", "spam-model": {"main-id": "spam-id"}},
         ),
+        (
+            "kebab",
+            Fzop(spam_bar="star", spam_model=Spam()),
+            ["spam-bar", "spam-model"],
+            {"spam-bar": "star", "spam-model": {"main-id": "spam-id"}},
+        ),
     ],
 )
 def test_fields_alias_generator(
