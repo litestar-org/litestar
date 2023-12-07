@@ -37,7 +37,7 @@ class OpenAPIController(Controller):
     """StopLight Elements version to download from the CDN."""
     rapidoc_version: str = "9.3.4"
     """RapiDoc version to download from the CDN."""
-    scalar_version: str = "1.6.1"
+    scalar_version: str = "1.8.0"
     """Scalar version to download from the CDN."""
     favicon_url: str = ""
     """URL to download a favicon from."""
