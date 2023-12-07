@@ -118,7 +118,7 @@ Fields can also be renamed using a renaming strategy that will be applied to all
 
 Fields that are directly renamed using `rename_fields` mapping will be excluded from `rename_strategy`.
 
-The rename strategy either accepts one of the pre-defined strategies: "camel", "pascal", "upper", "lower", or it can be provided a callback that accepts the field name as an argument and should return a string.
+The rename strategy either accepts one of the pre-defined strategies: "camel", "pascal", "kebab", "upper", "lower", or it can be provided a callback that accepts the field name as an argument and should return a string.
 
 Type checking
 -------------
