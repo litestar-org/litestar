@@ -252,6 +252,7 @@ class SignatureModel(Struct):
                 field_definition=field_definition,
                 type_decoders=[*(type_decoders or []), *DEFAULT_TYPE_DECODERS],
                 meta_data=meta_data,
+                data_dto=data_dto,
             )
 
             default = field_definition.default if field_definition.has_default else NODEFAULT
@@ -277,7 +278,12 @@ class SignatureModel(Struct):
         field_definition: FieldDefinition,
         type_decoders: TypeDecodersSequence,
         meta_data: Meta | None = None,
+        data_dto: type[AbstractDTO] | None = None,
     ) -> Any:
+        # DTOs have already validated their data, so we can just use Any here
+        if field_definition.name == "data" and data_dto:
+            return Any
+
         annotation = _normalize_annotation(field_definition=field_definition)
 
         if annotation is Any:
