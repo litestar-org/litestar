@@ -293,7 +293,7 @@ Example Applications
   Litestar projects, this application is open to contributions, big and small.
 * `litestar-fullstack <https://github.com/litestar-org/litestar-fullstack>`_ : A fully-capable, production-ready fullstack
   Litestar web application configured with best practices. It includes SQLAlchemy 2.0, VueJS, `Vite <https://vitejs.dev/>`_,
-  :doc:`SAQ job queue <https://saq-py.readthedocs.io/en/latest/>`_, ``Jinja`` templates and more.
+  `SAQ job queue <https://saq-py.readthedocs.io/en/latest/>`_, ``Jinja`` templates and more.
   `Read more <https://litestar-org.github.io/litestar-fullstack/latest/>`_.
 * `litestar-hello-world <https://github.com/litestar-org/litestar-hello-world>`_: A bare-minimum application setup.
   Great for testing and POC work.

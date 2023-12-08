@@ -3,6 +3,43 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.4.3
+    :date: 2023/12/07
+
+    .. change:: Fix OpenAPI schema for ``Literal | None`` unions
+        :type: bugfix
+        :issue: 2812
+        :pr: 2818
+
+        Fix a bug where an incorrect OpenAPI schema was generated generated when any
+        ``Literal | None``-union was present in an annotation.
+
+        For example
+
+        .. code-block:: python
+
+            type: Literal["sink", "source"] | None
+
+        would generate
+
+        .. code-block:: json
+
+            {
+              "name": "type",
+              "in": "query",
+              "schema": {
+                "type": "string",
+                "enum": [ "sink", "source", null ]
+              }
+            }
+
+    .. change:: Fix advanced-alchemy 0.6.0 compatibility issue with ``touch_updated_timestamp``
+        :type: bugfix
+        :pr: 2843
+
+        Fix an incorrect import for ``touch_updated_timestamp`` of Advanced Alchemy,
+        introduced in Advanced-Alchemy version 0.6.0.
+
 .. changelog:: 2.4.2
     :date: 2023/12/02
 
