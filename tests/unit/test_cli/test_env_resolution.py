@@ -10,6 +10,8 @@ from litestar.cli._utils import LitestarEnv, _path_to_dotted_path
 
 from .conftest import CreateAppFileFixture
 
+pytestmark = pytest.mark.xdist_group("cli_autodiscovery")
+
 
 @pytest.mark.parametrize("env_name,attr_name", [("LITESTAR_DEBUG", "debug"), ("LITESTAR_RELOAD", "reload")])
 @pytest.mark.parametrize(
