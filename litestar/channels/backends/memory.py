@@ -63,7 +63,10 @@ class MemoryChannelsBackend(ChannelsBackend):
 
     async def stream_events(self) -> AsyncGenerator[tuple[str, Any], None]:
         """Return a generator, iterating over events of subscribed channels as they become available"""
-        while self._queue:
+        if self._queue is None:
+            raise RuntimeError("Backend not yet initialized. Did you forget to call on_startup?")
+
+        while True:
             yield await self._queue.get()
             self._queue.task_done()
 
