@@ -1,12 +1,15 @@
+from dataclasses import dataclass
 from types import ModuleType
 from typing import Any, Callable, Iterable, List, Optional, Sequence, Union
 from unittest.mock import MagicMock
 
+import msgspec
 import pytest
 from typing_extensions import Annotated
 
 from litestar import get
 from litestar._signature import SignatureModel
+from litestar.dto import DataclassDTO
 from litestar.params import Body, Parameter
 from litestar.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT
 from litestar.testing import TestClient, create_test_client
@@ -181,3 +184,30 @@ def test_collection_union_struct_fields(with_optional: bool) -> None:
         response = client.get("/?param=foo&param=bar&param=123")
         assert response.status_code == 500
         assert "TypeError: Type unions may not contain more than one array-like" in response.text
+
+
+def test_dto_data_typed_as_any() -> None:
+    """DTOs already validate the payload, we don't need the signature model to do it too.
+
+    https://github.com/litestar-org/litestar/issues/2149
+    """
+
+    @dataclass
+    class Test:
+        a: str
+
+    dto = DataclassDTO[Test]
+
+    def fn(data: Test) -> None:
+        pass
+
+    model = SignatureModel.create(
+        dependency_name_set=set(),
+        fn=fn,
+        data_dto=dto,
+        parsed_signature=ParsedSignature.from_fn(fn, signature_namespace={"Test": Test}),
+        type_decoders=[],
+    )
+    (field,) = msgspec.structs.fields(model)
+    assert field.name == "data"
+    assert field.type is Any
