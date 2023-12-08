@@ -112,7 +112,10 @@ class RedisChannelsPubSubBackend(RedisChannelsBackend):
     async def unsubscribe(self, channels: Iterable[str]) -> None:
         """Stop listening for events on ``channels``"""
         await self._pub_sub.unsubscribe(*channels)
-        if not self._pub_sub.subscribed:
+        # if we have no active subscriptions, or only subscriptions which are pending
+        # to be unsubscribed we consider the backend to be unsubscribed from all
+        # channels, so we reset the event
+        if not self._pub_sub.channels.keys() - self._pub_sub.pending_unsubscribe_channels:
             self._has_subscribed.clear()
 
     async def publish(self, data: bytes, channels: Iterable[str]) -> None:
@@ -234,8 +237,6 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
             # We wait for subscribed channels, because we can't pass an empty dict to
             # xread and block for subscribers
             stream_keys = [self._make_key(c) for c in await self._get_subscribed_channels()]
-            if not stream_keys:
-                continue
 
             data: list[tuple[bytes, list[tuple[bytes, dict[bytes, bytes]]]]] = await self._redis.xread(
                 {key: stream_ids.get(key, 0) for key in stream_keys}, block=self._stream_sleep_no_subscriptions
