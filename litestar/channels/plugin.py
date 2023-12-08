@@ -336,11 +336,13 @@ class ChannelsPlugin(InitPluginProtocol, AbstractAsyncContextManager):
             self._sub_task.cancel()
             with suppress(CancelledError):
                 await self._sub_task
+            self._sub_task = None
 
         if self._pub_task:
             self._pub_task.cancel()
             with suppress(CancelledError):
                 await self._pub_task
+            self._sub_task = None
 
         await self._backend.on_shutdown()
 
