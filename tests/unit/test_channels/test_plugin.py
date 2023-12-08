@@ -34,6 +34,18 @@ def channels_backend(request: FixtureRequest) -> ChannelsBackend:
     return cast(ChannelsBackend, request.getfixturevalue(request.param))
 
 
+@pytest.fixture(
+    params=[
+        pytest.param(
+            "redis_stream_backend_with_history", id="redis:stream+history", marks=pytest.mark.xdist_group("redis")
+        ),
+        pytest.param("memory_backend_with_history", id="memory+history"),
+    ]
+)
+def channels_backend_with_history(request: FixtureRequest) -> ChannelsBackend:
+    return cast(ChannelsBackend, request.getfixturevalue(request.param))
+
+
 def test_channels_no_channels_arbitrary_not_allowed_raises(memory_backend: MemoryChannelsBackend) -> None:
     with pytest.raises(ImproperlyConfiguredException):
         ChannelsPlugin(backend=memory_backend)
@@ -78,10 +90,11 @@ async def test_pub_sub_wait_published(channels_backend: ChannelsBackend) -> None
 
 
 @pytest.mark.flaky(reruns=10)
-async def test_pub_sub_non_blocking(channels_backend: ChannelsBackend) -> None:
+@pytest.mark.parametrize("channel", ["something", ["something"]])
+async def test_pub_sub_non_blocking(channels_backend: ChannelsBackend, channel: str | list[str]) -> None:
     async with ChannelsPlugin(backend=channels_backend, channels=["something"]) as plugin:
-        subscriber = await plugin.subscribe("something")
-        plugin.publish(b"foo", "something")
+        subscriber = await plugin.subscribe(channel)
+        plugin.publish(b"foo", channel)
 
         await asyncio.sleep(0.1)  # give the worker time to process things
 
@@ -222,13 +235,15 @@ async def test_start_subscription(
 @pytest.mark.parametrize("history", [1, 2])
 @pytest.mark.parametrize("channels", [["foo"], ["foo", "bar"]])
 async def test_subscribe_with_history(
-    async_mock: AsyncMock, memory_backend: MemoryChannelsBackend, channels: list[str], history: int
+    async_mock: AsyncMock, memory_backend_with_history: MemoryChannelsBackend, channels: list[str], history: int
 ) -> None:
-    async with ChannelsPlugin(backend=memory_backend, channels=channels) as plugin:
+    async with ChannelsPlugin(backend=memory_backend_with_history, channels=channels) as plugin:
         expected_messages = set()
 
         for channel in channels:
-            messages = await _populate_channels_backend(message_count=4, backend=memory_backend, channel=channel)
+            messages = await _populate_channels_backend(
+                message_count=4, backend=memory_backend_with_history, channel=channel
+            )
             expected_messages.update(messages[-history:])
 
         subscriber = await plugin.subscribe(channels, history=history)
@@ -240,13 +255,15 @@ async def test_subscribe_with_history(
 @pytest.mark.parametrize("history", [1, 2])
 @pytest.mark.parametrize("channels", [["foo"], ["foo", "bar"]])
 async def test_start_subscription_with_history(
-    async_mock: AsyncMock, memory_backend: MemoryChannelsBackend, channels: list[str], history: int
+    async_mock: AsyncMock, memory_backend_with_history: MemoryChannelsBackend, channels: list[str], history: int
 ) -> None:
-    async with ChannelsPlugin(backend=memory_backend, channels=channels) as plugin:
+    async with ChannelsPlugin(backend=memory_backend_with_history, channels=channels) as plugin:
         expected_messages = set()
 
         for channel in channels:
-            messages = await _populate_channels_backend(message_count=4, backend=memory_backend, channel=channel)
+            messages = await _populate_channels_backend(
+                message_count=4, backend=memory_backend_with_history, channel=channel
+            )
             expected_messages.update(messages[-history:])
 
         async with plugin.start_subscription(channels, history=history) as subscriber:
@@ -327,16 +344,15 @@ async def _populate_channels_backend(*, message_count: int, channel: str, backen
     ],
 )
 async def test_handler_sends_history(
-    memory_backend: MemoryChannelsBackend,
+    memory_backend_with_history: MemoryChannelsBackend,
     message_count: int,
     handler_send_history: int,
     expected_history_count: int,
     mocker: MockerFixture,
 ) -> None:
     mock_socket_send = mocker.patch("litestar.connection.websocket.WebSocket.send_data")
-    memory_backend._max_history_length = 10
     plugin = ChannelsPlugin(
-        backend=memory_backend,
+        backend=memory_backend_with_history,
         arbitrary_channels_allowed=True,
         ws_handler_send_history=handler_send_history,
         create_ws_route_handlers=True,
@@ -344,8 +360,10 @@ async def test_handler_sends_history(
 
     app = Litestar([], plugins=[plugin])
     with TestClient(app) as client:
-        await memory_backend.subscribe(["foo"])
-        messages = await _populate_channels_backend(message_count=message_count, channel="foo", backend=memory_backend)
+        await memory_backend_with_history.subscribe(["foo"])
+        messages = await _populate_channels_backend(
+            message_count=message_count, channel="foo", backend=memory_backend_with_history
+        )
 
         with client.websocket_connect("/foo"):
             pass
@@ -358,11 +376,11 @@ async def test_handler_sends_history(
 
 @pytest.mark.parametrize("channels,expected_entry_count", [("foo", 1), (["foo", "bar"], 2)])
 async def test_set_subscriber_history(
-    channels: str | list[str], memory_backend: MemoryChannelsBackend, expected_entry_count: int
+    channels: str | list[str], memory_backend_with_history: MemoryChannelsBackend, expected_entry_count: int
 ) -> None:
-    async with ChannelsPlugin(backend=memory_backend, arbitrary_channels_allowed=True) as plugin:
+    async with ChannelsPlugin(backend=memory_backend_with_history, arbitrary_channels_allowed=True) as plugin:
         subscriber = await plugin.subscribe(channels)
-        await memory_backend.publish(b"something", channels if isinstance(channels, list) else [channels])
+        await memory_backend_with_history.publish(b"something", channels if isinstance(channels, list) else [channels])
 
         await plugin.put_subscriber_history(subscriber, channels)
 
@@ -393,3 +411,13 @@ async def test_backlog(
 
     assert async_mock.call_count == 2
     assert [call.args[0] for call in async_mock.call_args_list] == expected_messages
+
+
+async def test_shutdown_idempotent(memory_backend: MemoryChannelsBackend) -> None:
+    # calling shutdown repeatedly or before startup shouldn't cause any issues
+    plugin = ChannelsPlugin(backend=memory_backend, arbitrary_channels_allowed=True)
+    await plugin._on_shutdown()
+    await plugin._on_startup()
+
+    await plugin._on_shutdown()
+    await plugin._on_shutdown()

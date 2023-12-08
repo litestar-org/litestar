@@ -28,7 +28,12 @@ def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item
 
 @pytest.fixture()
 def redis_stream_backend(redis_client: AsyncRedis) -> RedisChannelsStreamBackend:
-    return RedisChannelsStreamBackend(history=10, redis=redis_client, cap_streams_approximate=False)
+    return RedisChannelsStreamBackend(redis=redis_client, cap_streams_approximate=False, history=1)
+
+
+@pytest.fixture()
+def redis_stream_backend_with_history(redis_client: AsyncRedis) -> RedisChannelsStreamBackend:
+    return RedisChannelsStreamBackend(redis=redis_client, cap_streams_approximate=False, history=10)
 
 
 @pytest.fixture()
@@ -38,6 +43,11 @@ def redis_pub_sub_backend(redis_client: AsyncRedis) -> RedisChannelsPubSubBacken
 
 @pytest.fixture()
 def memory_backend() -> MemoryChannelsBackend:
+    return MemoryChannelsBackend()
+
+
+@pytest.fixture()
+def memory_backend_with_history() -> MemoryChannelsBackend:
     return MemoryChannelsBackend(history=10)
 
 
