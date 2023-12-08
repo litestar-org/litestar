@@ -29,7 +29,7 @@ jobs:
             ./pdm.lock
 
       - name: Install dependencies
-        run: pdm install -G:all
+        run: pdm sync -G:all
 
       - name: Fetch gh pages
         run: git fetch origin gh-pages --depth=1
