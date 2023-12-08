@@ -1820,7 +1820,7 @@ from persistence using the provided function.</p>
 <li><p><strong>exclude</strong> – A pattern or list of patterns to skip.</p></li>
 <li><p><strong>exclude_opt_key</strong> – An identifier to use on routes to disable authentication for a particular route.</p></li>
 <li><p><strong>exclude_http_methods</strong> – A sequence of http methods that do not require authentication.</p></li>
-<li><p><strong>retrieve_user_handler</strong> – A function that receives a <code class="xref py py-class docutils literal notranslate"><span class="pre">Token</span></code> and returns a user,
+<li><p><strong>retrieve_user_handler</strong> – A function that receives a <a class="reference internal" href="#litestar.security.jwt.Token" title="litestar.security.jwt.Token"><code class="xref py py-class docutils literal notranslate"><span class="pre">Token</span></code></a> and returns a user,
 which can be any arbitrary value.</p></li>
 <li><p><strong>scopes</strong> – ASGI scopes processed by the authentication middleware.</p></li>
 <li><p><strong>token_secret</strong> – Secret for decoding the JWT token. This value should be equivalent to the secret used to
@@ -2093,7 +2093,7 @@ retrieves the user from persistence using the provided function.</p>
 <li><p><strong>exclude</strong> – A pattern or list of patterns to skip.</p></li>
 <li><p><strong>exclude_opt_key</strong> – An identifier to use on routes to disable authentication for a particular route.</p></li>
 <li><p><strong>exclude_http_methods</strong> – A sequence of http methods that do not require authentication.</p></li>
-<li><p><strong>retrieve_user_handler</strong> – A function that receives a <code class="xref py py-class docutils literal notranslate"><span class="pre">Token</span></code> and returns a user,
+<li><p><strong>retrieve_user_handler</strong> – A function that receives a <a class="reference internal" href="#litestar.security.jwt.Token" title="litestar.security.jwt.Token"><code class="xref py py-class docutils literal notranslate"><span class="pre">Token</span></code></a> and returns a user,
 which can be any arbitrary value.</p></li>
 <li><p><strong>scopes</strong> – ASGI scopes processed by the authentication middleware.</p></li>
 <li><p><strong>token_secret</strong> – Secret for decoding the JWT token. This value should be equivalent to the secret used to
