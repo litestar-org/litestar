@@ -4,7 +4,6 @@ import pytest
 from msgspec import Struct
 
 from litestar import post
-from litestar._openapi.schema_generation.utils import _get_normalized_schema_key
 from litestar.testing import create_test_client
 from tests.models import DataclassPerson, MsgSpecStructPerson, TypedDictPerson
 
@@ -18,9 +17,7 @@ def test_spec_generation(cls: Any) -> None:
     with create_test_client(handler) as client:
         schema = client.app.openapi_schema
         assert schema
-        schema_key = _get_normalized_schema_key(str(cls))
-
-        assert schema.to_schema()["components"]["schemas"][schema_key] == {
+        assert schema.to_schema()["components"]["schemas"][cls.__name__] == {
             "properties": {
                 "first_name": {"type": "string"},
                 "last_name": {"type": "string"},
@@ -37,7 +34,7 @@ def test_spec_generation(cls: Any) -> None:
                     "oneOf": [
                         {"type": "null"},
                         {
-                            "items": {"$ref": "#/components/schemas/tests_models_DataclassPet"},
+                            "items": {"$ref": "#/components/schemas/DataclassPet"},
                             "type": "array",
                         },
                     ]
@@ -62,9 +59,7 @@ def test_msgspec_schema() -> None:
         schema = client.app.openapi_schema
         assert schema
 
-        assert schema.to_schema()["components"]["schemas"][
-            "tests_unit_test_openapi_test_spec_generation_test_msgspec_schema_locals_CamelizedStruct"
-        ] == {
+        assert schema.to_schema()["components"]["schemas"]["test_msgspec_schema.CamelizedStruct"] == {
             "properties": {"fieldOne": {"type": "integer"}, "fieldTwo": {"type": "number"}},
             "required": ["fieldOne", "fieldTwo"],
             "title": "CamelizedStruct",

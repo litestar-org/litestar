@@ -24,8 +24,7 @@ def test_spec_generation() -> None:
     with create_test_client(handler) as client:
         schema = client.app.openapi_schema
         assert schema
-        key_name = "tests_unit_test_contrib_test_attrs_test_schema_spec_generation_test_spec_generation_locals_Person"
-        assert schema.to_schema()["components"]["schemas"][key_name] == {
+        assert schema.to_schema()["components"]["schemas"]["test_spec_generation.Person"] == {
             "properties": {
                 "first_name": {"type": "string"},
                 "last_name": {"type": "string"},
@@ -42,7 +41,7 @@ def test_spec_generation() -> None:
                     "oneOf": [
                         {"type": "null"},
                         {
-                            "items": {"$ref": "#/components/schemas/tests_models_DataclassPet"},
+                            "items": {"$ref": "#/components/schemas/DataclassPet"},
                             "type": "array",
                         },
                     ]

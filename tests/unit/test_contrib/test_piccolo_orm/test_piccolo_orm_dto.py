@@ -108,22 +108,22 @@ def test_piccolo_dto_openapi_spec_generation() -> None:
     post_operation = concert_path.post
     assert (
         post_operation.request_body.content["application/json"].schema.ref  # type: ignore
-        == "#/components/schemas/litestar_dto_backend_CreateConcertConcertRequestBody"
+        == "#/components/schemas/CreateConcertConcertRequestBody"
     )
 
     studio_path_get_operation = studio_path.get
     assert (
         studio_path_get_operation.responses["200"].content["application/json"].schema.ref  # type: ignore
-        == "#/components/schemas/litestar_dto_backend_RetrieveStudioRecordingStudioResponseBody"
+        == "#/components/schemas/RetrieveStudioRecordingStudioResponseBody"
     )
 
     venues_path_get_operation = venues_path.get
     assert (
         venues_path_get_operation.responses["200"].content["application/json"].schema.items.ref  # type: ignore
-        == "#/components/schemas/litestar_dto_backend_RetrieveVenuesVenueResponseBody"
+        == "#/components/schemas/RetrieveVenuesVenueResponseBody"
     )
 
-    concert_schema = schema.components.schemas["litestar_dto_backend_CreateConcertConcertRequestBody"]
+    concert_schema = schema.components.schemas["CreateConcertConcertRequestBody"]
     assert concert_schema
     assert concert_schema.to_schema() == {
         "properties": {
@@ -136,7 +136,7 @@ def test_piccolo_dto_openapi_spec_generation() -> None:
         "type": "object",
     }
 
-    record_studio_schema = schema.components.schemas["litestar_dto_backend_RetrieveStudioRecordingStudioResponseBody"]
+    record_studio_schema = schema.components.schemas["RetrieveStudioRecordingStudioResponseBody"]
     assert record_studio_schema
     assert record_studio_schema.to_schema() == {
         "properties": {
@@ -150,7 +150,7 @@ def test_piccolo_dto_openapi_spec_generation() -> None:
         "type": "object",
     }
 
-    venue_schema = schema.components.schemas["litestar_dto_backend_RetrieveVenuesVenueResponseBody"]
+    venue_schema = schema.components.schemas["RetrieveVenuesVenueResponseBody"]
     assert venue_schema
     assert venue_schema.to_schema() == {
         "properties": {

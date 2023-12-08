@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-import re
 from enum import Enum
-from typing import TYPE_CHECKING, Any, Mapping
+from typing import TYPE_CHECKING, Any, Mapping, _GenericAlias  # type: ignore[attr-defined]
 
 from litestar.utils.helpers import get_name
 
@@ -84,33 +83,21 @@ def _should_create_literal_schema(field_definition: FieldDefinition) -> bool:
     )
 
 
-TYPE_NAME_NORMALIZATION_SUB_REGEX = re.compile(r"[^a-zA-Z0-9]+")
-TYPE_NAME_EXTRACTION_REGEX = re.compile(r"<\w+ '(.+)'")
+def _get_normalized_schema_key(annotation: Any) -> tuple[str, ...]:
+    """Create a key for a type annotation.
 
-
-def _replace_non_alphanumeric_match(match: re.Match) -> str:
-    # we don't want to introduce leading or trailing underscores, so we only replace a
-    # char with an underscore if we're not at the beginning or at the end of the
-    # matchable string
-    return "" if match.start() == 0 or match.end() == match.endpos else "_"
-
-
-def _get_normalized_schema_key(type_annotation_str: str) -> str:
-    """Normalize a type annotation, replacing all non-alphanumeric with underscores.
-    Existing underscores will be left as-is
+    The key should be a tuple such as ``("path", "to", "type", "TypeName")``.
 
     Args:
-        type_annotation_str: A string representing a type annotation
-            (i.e. 'typing.Dict[str, typing.Any]' or '<class 'model.Foo'>')
+        annotation: a type annotation
 
     Returns:
-        A normalized version of the input string
+        A tuple of strings.
     """
-    # extract names from repr() style annotations like <class 'foo.bar.Baz'>
-    normalized_name = TYPE_NAME_EXTRACTION_REGEX.sub(r"\g<1>", type_annotation_str)
-    # replace all non-alphanumeric characters with underscores, ensuring no leading or
-    # trailing underscores
-    return TYPE_NAME_NORMALIZATION_SUB_REGEX.sub(_replace_non_alphanumeric_match, normalized_name)
+    module = getattr(annotation, "__module__", "")
+    name = str(annotation)[len(module) + 1 :] if isinstance(annotation, _GenericAlias) else annotation.__qualname__
+    name = name.replace(".<locals>.", ".")
+    return *module.split("."), name
 
 
 def get_formatted_examples(field_definition: FieldDefinition, examples: Sequence[Example]) -> Mapping[str, Example]:

@@ -131,7 +131,7 @@ class ParameterFactory:
         if not result:
             result = self.schema_creator.for_field_definition(field_definition)
 
-        schema = result if isinstance(result, Schema) else self.context.schemas[result.value]
+        schema = result if isinstance(result, Schema) else self.context.schema_registry.from_reference(result).schema
 
         examples_list = kwarg_definition.examples or [] if kwarg_definition else []
         examples = get_formatted_examples(field_definition, examples_list)

@@ -18,13 +18,7 @@ def test_schema_generation() -> None:
                             "200": {
                                 "description": "Request fulfilled, document follows",
                                 "headers": {},
-                                "content": {
-                                    "application/json": {
-                                        "schema": {
-                                            "$ref": "#/components/schemas/docs_examples_openapi_customize_pydantic_model_name_IdModel"
-                                        }
-                                    }
-                                },
+                                "content": {"application/json": {"schema": {"$ref": "#/components/schemas/IdModel"}}},
                             }
                         },
                         "deprecated": False,
@@ -33,7 +27,7 @@ def test_schema_generation() -> None:
             },
             "components": {
                 "schemas": {
-                    "docs_examples_openapi_customize_pydantic_model_name_IdModel": {
+                    "IdModel": {
                         "properties": {"id": {"type": "string", "format": "uuid", "description": "Any UUID string"}},
                         "type": "object",
                         "required": ["id"],

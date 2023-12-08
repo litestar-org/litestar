@@ -27,9 +27,7 @@ if TYPE_CHECKING:
 def create_factory(route: BaseRoute, handler: HTTPRouteHandler) -> ParameterFactory:
     return ParameterFactory(
         OpenAPIContext(
-            openapi_config=OpenAPIConfig(title="Test API", version="1.0.0", create_examples=True),
-            plugins=[],
-            schemas={},
+            openapi_config=OpenAPIConfig(title="Test API", version="1.0.0", create_examples=True), plugins=[]
         ),
         route_handler=handler,
         path_parameters=route.path_parameters,
