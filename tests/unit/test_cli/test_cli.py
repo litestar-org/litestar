@@ -3,6 +3,8 @@ import sys
 from typing import TYPE_CHECKING
 from unittest.mock import MagicMock
 
+import pytest
+
 from tests.unit.test_cli import CREATE_APP_FILE_CONTENT
 from tests.unit.test_cli.conftest import CreateAppFileFixture
 
@@ -33,6 +35,7 @@ def test_format_is_enabled() -> None:
     assert _format_is_enabled("a") == "[green]Enabled[/]"
 
 
+@pytest.mark.xdist_group("cli_autodiscovery")
 def test_info_command(mocker: "MockerFixture", runner: "CliRunner", app_file: "Path") -> None:
     mock = mocker.patch("litestar.cli.commands.core.show_app_info")
     result = runner.invoke(cli_command, ["info"])
@@ -41,6 +44,7 @@ def test_info_command(mocker: "MockerFixture", runner: "CliRunner", app_file: "P
     mock.assert_called_once()
 
 
+@pytest.mark.xdist_group("cli_autodiscovery")
 def test_info_command_with_app_dir(
     mocker: "MockerFixture", runner: "CliRunner", create_app_file: CreateAppFileFixture
 ) -> None:
@@ -60,6 +64,7 @@ def test_info_command_with_app_dir(
     mock.assert_called_once()
 
 
+@pytest.mark.xdist_group("cli_autodiscovery")
 def test_register_commands_from_entrypoint(mocker: "MockerFixture", runner: "CliRunner", app_file: "Path") -> None:
     mock_command_callback = MagicMock()
 
