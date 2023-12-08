@@ -31,7 +31,6 @@ def openapi_context() -> OpenAPIContext:
     return OpenAPIContext(
         openapi_config=OpenAPIConfig(title="test", version="1.0.0", create_examples=True),
         plugins=[],
-        schemas={},
     )
 
 
@@ -91,7 +90,7 @@ def test_upload_file_request_body_generation() -> None:
 
     assert components == {
         "schemas": {
-            "tests_unit_test_openapi_test_request_body_FormData": {
+            "FormData": {
                 "properties": {
                     "cv": {
                         "type": "string",

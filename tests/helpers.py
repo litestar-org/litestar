@@ -6,6 +6,11 @@ import sys
 from contextlib import AbstractContextManager
 from typing import Any, AsyncContextManager, Awaitable, ContextManager, TypeVar, cast, overload
 
+from litestar._openapi.schema_generation import SchemaCreator
+from litestar.openapi.spec import Schema
+from litestar.plugins import OpenAPISchemaPluginProtocol
+from litestar.typing import FieldDefinition
+
 T = TypeVar("T")
 
 
@@ -51,3 +56,14 @@ def maybe_async_cm(obj: ContextManager[T] | AsyncContextManager[T]) -> AsyncCont
     if isinstance(obj, AbstractContextManager):
         return cast(AsyncContextManager[T], _AsyncContextManagerWrapper(obj))
     return obj
+
+
+def get_schema_for_field_definition(
+    field_definition: FieldDefinition, *, plugins: list[OpenAPISchemaPluginProtocol] | None = None
+) -> Schema:
+    plugins = plugins or []
+    creator = SchemaCreator(plugins=plugins)
+    result = creator.for_field_definition(field_definition)
+    if isinstance(result, Schema):
+        return result
+    return creator.schema_registry.from_reference(result).schema

@@ -121,7 +121,7 @@ def test_classic_pagination_openapi_schema(paginator: Any) -> None:
             "schema": {
                 "properties": {
                     "items": {
-                        "items": {"$ref": "#/components/schemas/tests_models_DataclassPerson"},
+                        "items": {"$ref": "#/components/schemas/DataclassPerson"},
                         "type": "array",
                     },
                     "page_size": {"type": "integer", "description": "Number of items per page."},
@@ -178,7 +178,7 @@ def test_limit_offset_pagination_openapi_schema(paginator: Any) -> None:
             "schema": {
                 "properties": {
                     "items": {
-                        "items": {"$ref": "#/components/schemas/tests_models_DataclassPerson"},
+                        "items": {"$ref": "#/components/schemas/DataclassPerson"},
                         "type": "array",
                     },
                     "limit": {"type": "integer", "description": "Maximal number of items to send."},
@@ -258,7 +258,7 @@ def test_cursor_pagination_openapi_schema(paginator: Any) -> None:
             "schema": {
                 "properties": {
                     "items": {
-                        "items": {"$ref": "#/components/schemas/tests_models_DataclassPerson"},
+                        "items": {"$ref": "#/components/schemas/DataclassPerson"},
                         "type": "array",
                     },
                     "cursor": {

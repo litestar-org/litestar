@@ -17,6 +17,8 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from litestar import Litestar
 from litestar.testing import TestClient
 
+pytestmark = pytest.mark.xdist_group("sqlalchemy_examples")
+
 
 @pytest.fixture(
     params=[

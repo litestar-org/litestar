@@ -65,14 +65,6 @@ def test_dictconfig_startup(dict_config_class: str, handlers: Any) -> None:
             assert dict_config_mock.called
 
 
-LoggingConfig(
-    handlers=default_handlers,
-    loggers={
-        "test_logger": {"level": "INFO", "handlers": ["queue_listener"], "propagate": True},
-    },
-).configure()
-
-
 def test_standard_queue_listener_logger(caplog: "LogCaptureFixture") -> None:
     with caplog.at_level("INFO", logger="test_logger"):
         logger = logging.getLogger("test_logger")
@@ -139,7 +131,7 @@ def test_root_logger(handlers: Any, listener: Any) -> None:
     logging_config = LoggingConfig(handlers=handlers)
     get_logger = logging_config.configure()
     root_logger = get_logger()
-    isinstance(root_logger.handlers[0], listener)  # type: ignore
+    assert isinstance(root_logger.handlers[0], listener)  # type: ignore
 
 
 @pytest.mark.parametrize(
@@ -161,4 +153,4 @@ def test_customizing_handler(handlers: Any, listener: Any, monkeypatch: pytest.M
     logging_config = LoggingConfig(handlers=handlers)
     get_logger = logging_config.configure()
     root_logger = get_logger()
-    isinstance(root_logger.handlers[0], listener)  # type: ignore
+    assert isinstance(root_logger.handlers[0], listener)  # type: ignore

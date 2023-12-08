@@ -54,7 +54,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
             exclude: A pattern or list of patterns to skip.
             exclude_opt_key: An identifier to use on routes to disable authentication for a particular route.
             exclude_http_methods: A sequence of http methods that do not require authentication.
-            retrieve_user_handler: A function that receives a :class:`Token <.contrib.jwt.Token>` and returns a user,
+            retrieve_user_handler: A function that receives a :class:`Token <.security.jwt.Token>` and returns a user,
                 which can be any arbitrary value.
             scopes: ASGI scopes processed by the authentication middleware.
             token_secret: Secret for decoding the JWT token. This value should be equivalent to the secret used to
@@ -149,7 +149,7 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
             exclude: A pattern or list of patterns to skip.
             exclude_opt_key: An identifier to use on routes to disable authentication for a particular route.
             exclude_http_methods: A sequence of http methods that do not require authentication.
-            retrieve_user_handler: A function that receives a :class:`Token <.contrib.jwt.Token>` and returns a user,
+            retrieve_user_handler: A function that receives a :class:`Token <.security.jwt.Token>` and returns a user,
                 which can be any arbitrary value.
             scopes: ASGI scopes processed by the authentication middleware.
             token_secret: Secret for decoding the JWT token. This value should be equivalent to the secret used to

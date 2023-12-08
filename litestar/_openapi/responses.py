@@ -148,7 +148,9 @@ class ResponseFactory:
 
                 result = self.schema_creator.for_field_definition(field_def)
 
-            schema = result if isinstance(result, Schema) else self.context.schemas[result.value]
+            schema = (
+                result if isinstance(result, Schema) else self.context.schema_registry.from_reference(result).schema
+            )
             schema.content_encoding = self.route_handler.content_encoding
             schema.content_media_type = self.route_handler.content_media_type
             response = OpenAPIResponse(
