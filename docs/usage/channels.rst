@@ -399,7 +399,7 @@ implemented are:
     A basic in-memory backend, mostly useful for testing and local development, but
     still fully capable. Since it stores all data in-process, it can achieve the highest
     performance of all the backends, but at the same time is not suitable for
-    applications running on multiple processes
+    applications running on multiple processes.
 
 :class:`RedisChannelsPubSubBackend <.redis.RedisChannelsPubSubBackend>`
     A Redis based backend, using `Pub/Sub <https://redis.io/docs/manual/pubsub/>`_ to

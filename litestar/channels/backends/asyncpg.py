@@ -13,7 +13,6 @@ from litestar.exceptions import ImproperlyConfiguredException
 
 class AsyncPgChannelsBackend(ChannelsBackend):
     _listener_conn: asyncpg.Connection
-    _queue: asyncio.Queue[tuple[str, bytes]]
 
     @overload
     def __init__(self, dsn: str) -> None:
@@ -39,6 +38,7 @@ class AsyncPgChannelsBackend(ChannelsBackend):
         self._subscribed_channels: set[str] = set()
         self._exit_stack = AsyncExitStack()
         self._connect = make_connection or partial(asyncpg.connect, dsn=dsn)
+        self._queue: asyncio.Queue[tuple[str, bytes]] | None = None
 
     async def on_startup(self) -> None:
         self._queue = asyncio.Queue()
@@ -46,9 +46,12 @@ class AsyncPgChannelsBackend(ChannelsBackend):
 
     async def on_shutdown(self) -> None:
         await self._listener_conn.close()
-        del self._queue
+        self._queue = None
 
     async def publish(self, data: bytes, channels: Iterable[str]) -> None:
+        if self._queue is None:
+            raise RuntimeError("Backend not yet initialized. Did you forget to call on_startup?")
+
         dec_data = data.decode("utf-8")
 
         conn = await self._connect()
@@ -69,7 +72,10 @@ class AsyncPgChannelsBackend(ChannelsBackend):
         self._subscribed_channels = self._subscribed_channels - set(channels)
 
     async def stream_events(self) -> AsyncGenerator[tuple[str, bytes], None]:
-        while self._queue:
+        if self._queue is None:
+            raise RuntimeError("Backend not yet initialized. Did you forget to call on_startup?")
+
+        while True:
             yield await self._queue.get()
             self._queue.task_done()
 
@@ -79,4 +85,4 @@ class AsyncPgChannelsBackend(ChannelsBackend):
     def _listener(self, /, connection: asyncpg.Connection, pid: int, channel: str, payload: object) -> None:
         if not isinstance(payload, str):
             raise RuntimeError("Invalid data received")
-        self._queue.put_nowait((channel, payload.encode("utf-8")))
+        self._queue.put_nowait((channel, payload.encode("utf-8")))  # type: ignore[union-attr]
