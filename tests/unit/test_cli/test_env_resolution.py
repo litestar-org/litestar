@@ -62,6 +62,7 @@ def test_litestar_env_from_env_host(monkeypatch: MonkeyPatch, app_file: Path) ->
         pytest.param("application/another_random_name.py", id="application_module_random"),
     ],
 )
+@pytest.mark.xdist_group("test_env_autodiscover_from_files")
 def test_env_from_env_autodiscover_from_files(
     path: str, app_file_content: str, app_file_app_name: str, create_app_file: CreateAppFileFixture
 ) -> None:
