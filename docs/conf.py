@@ -86,6 +86,7 @@ nitpick_ignore = [
     (PY_CLASS, "_schema.Table"),
     (PY_CLASS, "_types.TypeDecorator"),
     (PY_CLASS, "abc.Collection"),
+    (PY_CLASS, "advanced_alchemy.utils.dataclass.Empty"),
     (PY_CLASS, "jinja2.environment.Environment"),
     (PY_CLASS, "pydantic.BaseModel"),
     (PY_CLASS, "pydantic.generics.GenericModel"),
@@ -173,6 +174,9 @@ nitpick_ignore = [
     (PY_ATTR, "advanced_alchemy.repository.AbstractAsyncRepository.id_attribute"),
     (PY_OBJ, "litestar.template.base.T_co"),
     ("py:exc", "RepositoryError"),
+    ("py:exc", "InternalServerError"),
+    ("py:exc", "HTTPExceptions"),
+    (PY_CLASS, "litestar.template.Template"),
 ]
 
 nitpick_ignore_regex = [
@@ -200,6 +204,7 @@ nitpick_ignore_regex = [
     (PY_RE, r"advanced_alchemy.*\.T"),
     (PY_RE, r"advanced_alchemy\.config.common\.EngineT"),
     (PY_RE, r"advanced_alchemy\.config.common\.SessionT"),
+    (PY_RE, r".*R"),
 ]
 
 # Warnings about missing references to those targets in the specified location will be ignored.
@@ -212,6 +217,7 @@ ignore_missing_refs = {
     "litestar.template": {"litestar.template.base.T_co"},
     "litestar.openapi.OpenAPIController.security": {"SecurityRequirement"},
     "litestar.response.file.async_file_iterator": {"FileSystemAdapter"},
+    "advanced_alchemy._listeners.touch_updated_timestamp": {"Session"},
     re.compile("litestar.response.redirect.*"): {"RedirectStatusType"},
     re.compile(r"litestar\.plugins.*"): re.compile(".*ModelT"),
     re.compile(r"litestar\.(contrib|repository)\.*"): re.compile(".*T"),
@@ -219,6 +225,7 @@ ignore_missing_refs = {
         ".*(ConnectionT|EngineT|SessionT|SessionMakerT|SlotsBase)"
     ),
     re.compile(r"litestar\.dto.*"): re.compile(".*T|.*FieldDefinition|Empty"),
+    re.compile(r"litestar\.template\.(config|TemplateConfig).*"): re.compile(".*EngineType"),
 }
 
 # Do not warn about broken links to the following:
