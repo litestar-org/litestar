@@ -144,17 +144,6 @@ and `Open Collective <sponsor-oc_>`_, you can play a pivotal role in our project
 
 Additionally, we engage in pledge-based sponsorship opportunities through `Polar <sponsor-polar_>`_.
 
-Support Agreements
-~~~~~~~~~~~~~~~~~~
-
-For businesses that mandate or have regulatory requirements of support contracts for open-source solutions,
-Litestar offers solutions to meet these requirements.
-
-Our commitment includes comprehensive support, ensuring that your organization receives timely and effective assistance.
-Explore our various support tiers on `GitHub <sponsor-github_>`_,
-`Open Collective <sponsor-oc_>`_, and soon on `Polar <sponsor-polar_>`_,
-to secure a partnership that aligns with your business needs.
-
 .. raw:: html
 
     <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
