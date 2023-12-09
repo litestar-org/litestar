@@ -113,19 +113,26 @@ for testing and POC work.
 ## Sponsors
 
 Litestar is an open-source project, and we enjoy the support of our sponsors to help fund the exciting
-work we do. If you would like to support the work that we do please consider
-[becoming a sponsor][sponsor-github] on [GitHub][sponsor-github] or [Open Collective][sponsor-oc].
+work we do.
+
+If you would like to support the work that we do please consider [becoming a sponsor][sponsor-github]
+on [GitHub][sponsor-github] or [Open Collective][sponsor-oc].
 
 We also participate in pledge-based sponsorship with [Polar][sponsor-polar].
 
+Does your company require third-party services offer support contracts?
+We also provide SLAs and support contracts for Litestar.
+If you are interested in this, please check out our tiers on [GitHub Sponsor][sponsor-github]
+, [Open Collective][sponsor-oc], or (Coming Soon) [Polar][sponsor-polar].
+
 [//]: # "Note to maintainers: Highest sponsors first; no more than 3 per row - create new div if needed"
 
-<div style="display: flex; justify-content: center; align-items: center; height: 200px; gap: 8px;">
+<div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
   <a href="https://scalar.com">
-    <img src="https://raw.githubusercontent.com/litestar-org/branding/main/assets/sponsors/scalar.svg" alt="Scalar.com" style="border-radius: 10px; max-width: 100%; height: auto;"/>
+    <img src="https://raw.githubusercontent.com/litestar-org/branding/main/assets/sponsors/scalar.svg" alt="Scalar.com" style="border-radius: 10px; width: auto; max-height: 150px;"/> <!-- Adjust max-height as needed -->
   </a>
-  <a href="https://telemetrysports.com/" style="flex-grow: 1;">
-    <img src="https://raw.githubusercontent.com/litestar-org/branding/main/assets/sponsors/telemetry-sports.svg" alt="Telemetry Sports" style="border-radius: 10px; width: 100%; height: auto; display: block;"/>
+  <a href="https://telemetrysports.com/">
+    <img src="https://raw.githubusercontent.com/litestar-org/branding/main/assets/sponsors/telemetry-sports-temp.svg" alt="Telemetry Sports" style="border-radius: 10px; width: auto; max-height: 150px;"/> <!-- Adjust max-height as needed -->
   </a>
 </div>
 

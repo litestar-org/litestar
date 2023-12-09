@@ -132,6 +132,44 @@ and
 
 You can check out a more in-depth tutorial in the :doc:`/tutorials/todo-app/index` section!
 
+Sponsors
+--------
+
+Litestar is a community-driven open-source initiative that thrives on the generous contributions of our sponsors,
+enabling us to pursue innovative developments.
+
+We invite organizations and individuals to join our sponsorship program.
+By becoming a sponsor on platforms like `GitHub <sponsor-github_>`_
+and `Open Collective <sponsor-oc_>`_, you can play a pivotal role in our project's growth.
+
+Additionally, we engage in pledge-based sponsorship opportunities through `Polar <sponsor-polar_>`_.
+
+Support Agreements
+~~~~~~~~~~~~~~~~~~
+
+For businesses that mandate or have regulatory requirements of support contracts for open-source solutions,
+Litestar offers solutions to meet these requirements.
+
+Our commitment includes comprehensive support, ensuring that your organization receives timely and effective assistance.
+Explore our various support tiers on `GitHub <sponsor-github_>`_,
+`Open Collective <sponsor-oc_>`_, and soon on `Polar <sponsor-polar_>`_,
+to secure a partnership that aligns with your business needs.
+
+.. raw:: html
+
+    <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
+      <a href="https://scalar.com">
+        <img src="https://raw.githubusercontent.com/litestar-org/branding/main/assets/sponsors/scalar.svg" alt="Scalar.com" style="border-radius: 10px; width: auto; max-height: 150px;"/> <!-- Adjust max-height as needed -->
+      </a>
+      <a href="https://telemetrysports.com/">
+        <img src="https://raw.githubusercontent.com/litestar-org/branding/main/assets/sponsors/telemetry-sports-temp.svg" alt="Telemetry Sports" style="border-radius: 10px; width: auto; max-height: 150px;"/> <!-- Adjust max-height as needed -->
+      </a>
+    </div>
+
+.. _sponsor-github: https://github.com/sponsors/litestar-org
+.. _sponsor-oc: https://opencollective.com/litestar
+.. _sponsor-polar: https://polar.sh/litestar-org
+
 Expanded Example
 ----------------
 
