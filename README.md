@@ -123,10 +123,6 @@ on [GitHub][sponsor-github] or [Open Collective][sponsor-oc].
 
 We also participate in pledge-based sponsorship with [Polar][sponsor-polar].
 
-Does your company require third-party services offer support contracts?
-We also provide SLAs and support contracts for Litestar.
-If you are interested in this, please check out our tiers on [GitHub Sponsor][sponsor-github]
-, [Open Collective][sponsor-oc], or (Coming Soon) [Polar][sponsor-polar].
 
 [//]: # "Note to maintainers: Highest sponsors first; no more than 3 per row - create new div if needed"
 
