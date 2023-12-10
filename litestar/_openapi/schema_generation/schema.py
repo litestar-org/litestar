@@ -48,7 +48,6 @@ from litestar._openapi.schema_generation.utils import (
 )
 from litestar.datastructures import UploadFile
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.openapi.spec import Reference
 from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
 from litestar.openapi.spec.schema import Schema, SchemaDataContainer
 from litestar.params import BodyKwarg, ParameterKwarg
@@ -68,7 +67,7 @@ from litestar.utils.typing import (
 
 if TYPE_CHECKING:
     from litestar._openapi.datastructures import OpenAPIContext
-    from litestar.openapi.spec import Example
+    from litestar.openapi.spec import Example, Reference
     from litestar.plugins import OpenAPISchemaPluginProtocol
 
 KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP: dict[str, str] = {
@@ -330,6 +329,9 @@ class SchemaCreator:
         result: Schema | Reference
 
         if plugin_for_annotation := self.get_plugin_for(field_definition):
+            key = _get_normalized_schema_key(field_definition.annotation)
+            if (ref := self.schema_registry.get_reference_for_key(key)) is not None:
+                return ref
             result = self.for_plugin(field_definition, plugin_for_annotation)
         elif _should_create_enum_schema(field_definition):
             annotation = _type_or_first_not_none_inner_type(field_definition)
@@ -535,11 +537,47 @@ class SchemaCreator:
             schema.examples = get_formatted_examples(field, create_examples_for_field(field))
 
         if schema.title and schema.type == OpenAPIType.OBJECT:
-            class_key = _get_normalized_schema_key(field.annotation)
-            # the "ref" attribute set here is arbitrary, since it will be overwritten by the SchemaRegistry
-            # when the "components/schemas" section of the OpenAPI document is generated and the paths are
-            # known.
-            ref = Reference(ref="", description=schema.description)
-            self.schema_registry.register(class_key, schema, ref)
+            key = _get_normalized_schema_key(field.annotation)
+            ref = self.schema_registry.get_reference_for_key(key)
+            if ref is None:
+                raise RuntimeError(f"Schema for key '{key}' not found in registry")
             return ref
+        return schema
+
+    def create_component_schema(
+        self,
+        type_: FieldDefinition,
+        /,
+        required: list[str],
+        property_fields: Mapping[str, FieldDefinition],
+        openapi_type: OpenAPIType = OpenAPIType.OBJECT,
+        title: str | None = None,
+        examples: Mapping[str, Example] | None = None,
+    ) -> Schema:
+        """Create a schema for the components/schemas section of the OpenAPI spec.
+
+        These are schemas that can be referenced by other schemas in the document.
+
+        Args:
+            type_: ``FieldDefinition`` instance of the type to create a schema for.
+            required: A list of required fields.
+            property_fields: Mapping of name to ``FieldDefinition`` instances for the properties of the schema.
+            openapi_type: The OpenAPI type, defaults to ``OpenAPIType.OBJECT``.
+            title: The schema title, generated if not provided.
+            examples: A mapping of example names to ``Example`` instances, not required.
+
+        Returns:
+            A schema instance.
+        """
+        schema = self.schema_registry.get_schema_for_key(_get_normalized_schema_key(type_.annotation))
+        schema.title = title or _get_type_schema_name(type_)
+        schema.required = required
+        schema.type = openapi_type
+        schema.properties = {
+            k: self.schema_registry.get_reference_for_key(_get_normalized_schema_key(v.annotation))
+            or self.for_field_definition(v)
+            for k, v in property_fields.items()
+        }
+        if examples:
+            schema.examples = examples
         return schema

@@ -1,4 +1,5 @@
-from typing import Any
+from types import ModuleType
+from typing import Any, Callable
 
 import pytest
 from msgspec import Struct
@@ -64,4 +65,67 @@ def test_msgspec_schema() -> None:
             "required": ["fieldOne", "fieldTwo"],
             "title": "CamelizedStruct",
             "type": "object",
+        }
+
+
+def test_recursive_schema_generation(create_module: Callable[[str], ModuleType]) -> None:
+    module = create_module(
+        """
+from __future__ import annotations
+
+from typing import List, Optional
+
+from msgspec import Struct
+
+from litestar import Litestar, get
+
+class A(Struct):
+    a: A
+    b: B
+    opt_a: Optional[A] = None
+    opt_b: Optional[B] = None
+    list_a: List[A] = []
+    list_b: List[B] = []
+
+class B(Struct):
+    a: A
+    b: B
+    opt_a: Optional[A] = None
+    opt_b: Optional[B] = None
+    list_a: List[A] = []
+    list_b: List[B] = []
+
+@get("/")
+async def test() -> A:
+    return A()
+    """
+    )
+    with create_test_client(module.test, debug=True) as client:
+        schema = client.app.openapi_schema
+        assert schema
+        assert schema.to_schema()["components"]["schemas"]["A"] == {
+            "required": ["a", "b"],
+            "properties": {
+                "a": {"$ref": "#/components/schemas/A"},
+                "b": {"$ref": "#/components/schemas/B"},
+                "opt_a": {"oneOf": [{"type": "null"}, {"$ref": "#/components/schemas/A"}]},
+                "opt_b": {"oneOf": [{"type": "null"}, {"$ref": "#/components/schemas/B"}]},
+                "list_a": {"items": {"$ref": "#/components/schemas/A"}, "type": "array"},
+                "list_b": {"items": {"$ref": "#/components/schemas/B"}, "type": "array"},
+            },
+            "type": "object",
+            "title": "A",
+        }
+        assert schema.to_schema()["components"]["schemas"]["B"] == {
+            "required": ["a", "b"],
+            "properties": {
+                "a": {"$ref": "#/components/schemas/A"},
+                "b": {"$ref": "#/components/schemas/B"},
+                "opt_a": {"oneOf": [{"type": "null"}, {"$ref": "#/components/schemas/A"}]},
+                "opt_b": {"oneOf": [{"type": "null"}, {"$ref": "#/components/schemas/B"}]},
+                "list_a": {"items": {"$ref": "#/components/schemas/A"}, "type": "array"},
+                "list_b": {"items": {"$ref": "#/components/schemas/B"}, "type": "array"},
+            },
+            "type": "object",
+            "title": "B",
         }
