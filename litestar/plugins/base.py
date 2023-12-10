@@ -189,6 +189,21 @@ class OpenAPISchemaPlugin(OpenAPISchemaPluginProtocol):
     """Plugin to extend the support of OpenAPI schema generation for non-library types."""
 
     @staticmethod
+    def is_plugin_supported_type(value: Any) -> bool:
+        return False
+
+    def is_plugin_supported_field(self, field_definition: FieldDefinition) -> bool:
+        """Given a value of indeterminate type, determine if this value is supported by the plugin.
+
+        Args:
+            field_definition: A parsed type.
+
+        Returns:
+            Whether the type is supported by the plugin.
+        """
+        return self.is_plugin_supported_type(field_definition.annotation)
+
+    @staticmethod
     def is_undefined_sentinel(value: Any) -> bool:
         """Return ``True`` if ``value`` should be treated as an undefined field"""
         return False
