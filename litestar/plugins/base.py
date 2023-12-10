@@ -190,10 +190,27 @@ class OpenAPISchemaPlugin(OpenAPISchemaPluginProtocol):
 
     @staticmethod
     def is_plugin_supported_type(value: Any) -> bool:
-        return False
+        """Given a value of indeterminate type, determine if this value is supported by the plugin.
+
+        This is called by the default implementation of :meth:`is_plugin_supported_field` for
+        backwards compatibility. User's should prefer to override that method instead.
+
+        Args:
+            value: An arbitrary value.
+
+        Returns:
+            A typeguard dictating whether the value is supported by the plugin.
+        """
+        raise NotImplementedError(
+            "One of either is_plugin_supported_type or is_plugin_supported_field should be defined. "
+            "The default implementation of is_plugin_supported_field calls is_plugin_supported_type "
+            "for backwards compatibility. Users should prefer to override is_plugin_supported_field "
+            "as it receives a 'FieldDefinition' instance which is more useful than a raw type."
+        )
 
     def is_plugin_supported_field(self, field_definition: FieldDefinition) -> bool:
-        """Given a value of indeterminate type, determine if this value is supported by the plugin.
+        """Given a :class:`FieldDefinition <litestar.typing.FieldDefinition>` that represents an indeterminate type,
+        determine if this value is supported by the plugin
 
         Args:
             field_definition: A parsed type.

@@ -557,7 +557,10 @@ class SchemaCreator:
     ) -> Schema:
         """Create a schema for the components/schemas section of the OpenAPI spec.
 
-        These are schemas that can be referenced by other schemas in the document.
+        These are schemas that can be referenced by other schemas in the document, including self references.
+
+        To support self referencing schemas, the schema is added to the registry before schemas for its properties
+        are created. This allows the schema to be referenced by its properties.
 
         Args:
             type_: ``FieldDefinition`` instance of the type to create a schema for.
@@ -575,6 +578,5 @@ class SchemaCreator:
         schema.required = required
         schema.type = openapi_type
         schema.properties = {k: self.for_field_definition(v) for k, v in property_fields.items()}
-        if examples:
-            schema.examples = examples
+        schema.examples = examples
         return schema
