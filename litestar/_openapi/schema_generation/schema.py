@@ -328,12 +328,7 @@ class SchemaCreator:
 
         result: Schema | Reference
 
-        if plugin_for_annotation := self.get_plugin_for(field_definition):
-            key = _get_normalized_schema_key(field_definition.annotation)
-            if (ref := self.schema_registry.get_reference_for_key(key)) is not None:
-                return ref
-            result = self.for_plugin(field_definition, plugin_for_annotation)
-        elif _should_create_enum_schema(field_definition):
+        if _should_create_enum_schema(field_definition):
             annotation = _type_or_first_not_none_inner_type(field_definition)
             result = create_enum_schema(annotation, include_null=field_definition.is_optional)
         elif _should_create_literal_schema(field_definition):
@@ -349,10 +344,12 @@ class SchemaCreator:
             result = self.for_union_field(field_definition)
         elif field_definition.is_type_var:
             result = self.for_typevar()
-        elif self.is_constrained_field(field_definition):
-            result = self.for_constrained_field(field_definition)
         elif field_definition.inner_types and not field_definition.is_generic:
             result = self.for_object_type(field_definition)
+        elif plugin_for_annotation := self.get_plugin_for(field_definition):
+            result = self.for_plugin(field_definition, plugin_for_annotation)
+        elif self.is_constrained_field(field_definition):
+            result = self.for_constrained_field(field_definition)
         else:
             result = create_schema_for_annotation(field_definition.annotation)
 
@@ -448,6 +445,10 @@ class SchemaCreator:
         Returns:
             A schema instance.
         """
+        key = _get_normalized_schema_key(field_definition.annotation)
+        if (ref := self.schema_registry.get_reference_for_key(key)) is not None:
+            return ref
+
         schema = plugin.to_openapi_schema(field_definition=field_definition, schema_creator=self)
         if isinstance(schema, SchemaDataContainer):
             return self.for_field_definition(
@@ -573,11 +574,7 @@ class SchemaCreator:
         schema.title = title or _get_type_schema_name(type_)
         schema.required = required
         schema.type = openapi_type
-        schema.properties = {
-            k: self.schema_registry.get_reference_for_key(_get_normalized_schema_key(v.annotation))
-            or self.for_field_definition(v)
-            for k, v in property_fields.items()
-        }
+        schema.properties = {k: self.for_field_definition(v) for k, v in property_fields.items()}
         if examples:
             schema.examples = examples
         return schema
