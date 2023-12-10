@@ -1928,7 +1928,7 @@ Jinja</label><div class="sd-tab-content docutils">
     <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
         <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
             <span class="p">&lt;</span><span class="nt">form</span> <span class="na">action</span><span class="o">=</span><span class="s">&quot;https://myserverurl.com/some-endpoint&quot;</span> <span class="na">method</span><span class="o">=</span><span class="s">&quot;post&quot;</span><span class="p">&gt;</span>
-                {{ csrf_input }}
+                {{ csrf_input | safe }}
                 <span class="p">&lt;</span><span class="nt">label</span> <span class="na">for</span><span class="o">=</span><span class="s">&quot;fname&quot;</span><span class="p">&gt;</span>First name:<span class="p">&lt;/</span><span class="nt">label</span><span class="p">&gt;&lt;</span><span class="nt">br</span><span class="p">&gt;</span>
                 <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;text&quot;</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;fname&quot;</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;fname&quot;</span><span class="p">&gt;</span>
                 <span class="p">&lt;</span><span class="nt">label</span> <span class="na">for</span><span class="o">=</span><span class="s">&quot;lname&quot;</span><span class="p">&gt;</span>Last name:<span class="p">&lt;/</span><span class="nt">label</span><span class="p">&gt;&lt;</span><span class="nt">br</span><span class="p">&gt;</span>
@@ -1947,7 +1947,7 @@ Mako</label><div class="sd-tab-content docutils">
     <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
         <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
             <span class="p">&lt;</span><span class="nt">form</span> <span class="na">action</span><span class="o">=</span><span class="s">&quot;https://myserverurl.com/some-endpoint&quot;</span> <span class="na">method</span><span class="o">=</span><span class="s">&quot;post&quot;</span><span class="p">&gt;</span>
-                ${csrf_input}
+                ${csrf_input | n}
                 <span class="p">&lt;</span><span class="nt">label</span> <span class="na">for</span><span class="o">=</span><span class="s">&quot;fname&quot;</span><span class="p">&gt;</span>First name:<span class="p">&lt;/</span><span class="nt">label</span><span class="p">&gt;&lt;</span><span class="nt">br</span><span class="p">&gt;</span>
                 <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;text&quot;</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;fname&quot;</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;fname&quot;</span><span class="p">&gt;</span>
                 <span class="p">&lt;</span><span class="nt">label</span> <span class="na">for</span><span class="o">=</span><span class="s">&quot;lname&quot;</span><span class="p">&gt;</span>Last name:<span class="p">&lt;/</span><span class="nt">label</span><span class="p">&gt;&lt;</span><span class="nt">br</span><span class="p">&gt;</span>
@@ -1966,7 +1966,7 @@ MiniJinja</label><div class="sd-tab-content docutils">
     <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
         <span class="p">&lt;</span><span class="nt">div</span><span class="p">&gt;</span>
             <span class="p">&lt;</span><span class="nt">form</span> <span class="na">action</span><span class="o">=</span><span class="s">&quot;https://myserverurl.com/some-endpoint&quot;</span> <span class="na">method</span><span class="o">=</span><span class="s">&quot;post&quot;</span><span class="p">&gt;</span>
-                {{ csrf_input }}
+                {{ csrf_input | safe}}
                 <span class="p">&lt;</span><span class="nt">label</span> <span class="na">for</span><span class="o">=</span><span class="s">&quot;fname&quot;</span><span class="p">&gt;</span>First name:<span class="p">&lt;/</span><span class="nt">label</span><span class="p">&gt;&lt;</span><span class="nt">br</span><span class="p">&gt;</span>
                 <span class="p">&lt;</span><span class="nt">input</span> <span class="na">type</span><span class="o">=</span><span class="s">&quot;text&quot;</span> <span class="na">id</span><span class="o">=</span><span class="s">&quot;fname&quot;</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;fname&quot;</span><span class="p">&gt;</span>
                 <span class="p">&lt;</span><span class="nt">label</span> <span class="na">for</span><span class="o">=</span><span class="s">&quot;lname&quot;</span><span class="p">&gt;</span>Last name:<span class="p">&lt;/</span><span class="nt">label</span><span class="p">&gt;&lt;</span><span class="nt">br</span><span class="p">&gt;</span>
@@ -1981,6 +1981,10 @@ MiniJinja</label><div class="sd-tab-content docutils">
 </div>
 <p>The input holds a CSRF token as its value and is hidden so users cannot see or interact with it. The token is sent
 back to the server when the form is submitted, and is checked by the CSRF middleware.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <cite>csrf_input</cite> must be marked as safe in order to ensure that it does not get escaped.</p>
+</div>
 </section>
 <section id="passing-template-context">
 <h3>Passing template context<a class="headerlink" href="#passing-template-context" title="Permalink to this heading">#</a></h3>
