@@ -743,7 +743,9 @@ class Litestar(Router):
                 from litestar.static_files.config import StaticFilesConfig
 
                 app = Litestar(
-                    static_files_config=[StaticFilesConfig(directories=["css"], path="/static/css")]
+                    static_files_config=[
+                        StaticFilesConfig(directories=["css"], path="/static/css", name="css")
+                    ]
                 )
 
                 path = app.url_for_static_asset("css", "main.css")

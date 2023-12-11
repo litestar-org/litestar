@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from litestar.app import Litestar
     from litestar.config.app import AppConfig
     from litestar.dto import AbstractDTO
-    from litestar.openapi.spec import Reference, Schema
+    from litestar.openapi.spec import Schema
     from litestar.routes import BaseRoute
     from litestar.typing import FieldDefinition
 
@@ -172,7 +172,7 @@ class OpenAPISchemaPluginProtocol(Protocol):
         """
         raise NotImplementedError()
 
-    def to_openapi_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema | Reference:
+    def to_openapi_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:
         """Given a type annotation, transform it into an OpenAPI schema class.
 
         Args:
@@ -199,7 +199,7 @@ class OpenAPISchemaPlugin(OpenAPISchemaPluginProtocol):
             value: An arbitrary value.
 
         Returns:
-            A typeguard dictating whether the value is supported by the plugin.
+            A bool indicating whether the value is supported by the plugin.
         """
         raise NotImplementedError(
             "One of either is_plugin_supported_type or is_plugin_supported_field should be defined. "
