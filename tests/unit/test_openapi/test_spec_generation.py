@@ -1,3 +1,4 @@
+import sys
 from types import ModuleType
 from typing import Any, Callable
 
@@ -68,9 +69,9 @@ def test_msgspec_schema() -> None:
         }
 
 
-def test_recursive_schema_generation(create_module: Callable[[str], ModuleType]) -> None:
-    module = create_module(
-        """
+@pytest.fixture()
+def py_38_module_content() -> str:
+    return """
 from __future__ import annotations
 
 from typing import List, Optional
@@ -98,8 +99,58 @@ class B(Struct):
 @get("/")
 async def test() -> A:
     return A()
-    """
-    )
+"""
+
+
+@pytest.fixture()
+def py_310_module_content() -> str:
+    return """
+from __future__ import annotations
+
+from msgspec import Struct
+
+from litestar import Litestar, get
+
+class A(Struct):
+    a: A
+    b: B
+    opt_a: A | None = None
+    opt_b: B | None = None
+    list_a: list[A] = []
+    list_b: list[B] = []
+
+class B(Struct):
+    a: A
+    b: B
+    opt_a: A | None = None
+    opt_b: B | None = None
+    list_a: list[A] = []
+    list_b: list[B] = []
+
+@get("/")
+async def test() -> A:
+    return A()
+"""
+
+
+@pytest.mark.parametrize(
+    ("fixture_name",),
+    [
+        ("py_38_module_content",),
+        pytest.param(
+            "py_310_module_content",
+            marks=pytest.mark.skipif(
+                sys.version_info < (3, 10),
+                reason="requires python 3.10",
+            ),
+        ),
+    ],
+)
+def test_recursive_schema_generation(
+    fixture_name: str, create_module: Callable[[str], ModuleType], request: pytest.FixtureRequest
+) -> None:
+    module_content = request.getfixturevalue(fixture_name)
+    module = create_module(module_content)
     with create_test_client(module.test, debug=True) as client:
         schema = client.app.openapi_schema
         assert schema

@@ -329,7 +329,9 @@ class SchemaCreator:
 
         result: Schema | Reference
 
-        if _should_create_enum_schema(field_definition):
+        if plugin_for_annotation := self.get_plugin_for(field_definition):
+            result = self.for_plugin(field_definition, plugin_for_annotation)
+        elif _should_create_enum_schema(field_definition):
             annotation = _type_or_first_not_none_inner_type(field_definition)
             result = create_enum_schema(annotation, include_null=field_definition.is_optional)
         elif _should_create_literal_schema(field_definition):
@@ -347,8 +349,6 @@ class SchemaCreator:
             result = self.for_typevar()
         elif field_definition.inner_types and not field_definition.is_generic:
             result = self.for_object_type(field_definition)
-        elif plugin_for_annotation := self.get_plugin_for(field_definition):
-            result = self.for_plugin(field_definition, plugin_for_annotation)
         elif self.is_constrained_field(field_definition):
             result = self.for_constrained_field(field_definition)
         else:
