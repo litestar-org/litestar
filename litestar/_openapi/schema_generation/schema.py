@@ -289,14 +289,15 @@ class SchemaCreator:
             return self
         return type(self)(generate_examples=False, plugins=self.plugins, prefer_alias=False)
 
-    def get_plugin_for(self, field_definition: FieldDefinition) -> OpenAPISchemaPluginProtocol | None:
-        def plugin_supports_field(plugin: OpenAPISchemaPluginProtocol, field: FieldDefinition) -> bool:
-            if predicate := getattr(plugin, "is_plugin_supported_field", None):
-                return predicate(field)  # type: ignore[no-any-return]
-            return plugin.is_plugin_supported_type(field.annotation)
+    @staticmethod
+    def plugin_supports_field(plugin: OpenAPISchemaPluginProtocol, field: FieldDefinition) -> bool:
+        if predicate := getattr(plugin, "is_plugin_supported_field", None):
+            return predicate(field)  # type: ignore[no-any-return]
+        return plugin.is_plugin_supported_type(field.annotation)
 
+    def get_plugin_for(self, field_definition: FieldDefinition) -> OpenAPISchemaPluginProtocol | None:
         return next(
-            (plugin for plugin in self.plugins if plugin_supports_field(plugin, field_definition)),
+            (plugin for plugin in self.plugins if self.plugin_supports_field(plugin, field_definition)),
             None,
         )
 
