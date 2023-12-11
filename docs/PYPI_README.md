@@ -115,10 +115,7 @@ for testing and POC work.
 Litestar is an open-source project, and we enjoy the support of our sponsors to help fund the exciting
 work we do.
 
-If you would like to support the work that we do please consider [becoming a sponsor][sponsor-github]
-on [GitHub][sponsor-github] or [Open Collective][sponsor-oc].
-
-We also participate in pledge-based sponsorship with [Polar][sponsor-polar].
+A **huge** thanks to our sponsors:
 
 [//]: # "Note to maintainers: Highest sponsors first; no more than 3 per row - create new div if needed"
 
@@ -136,6 +133,11 @@ We also participate in pledge-based sponsorship with [Polar][sponsor-polar].
     <p style="text-align: center;">Telemetry Sports</p>
   </div>
 </div>
+
+If you would like to support the work that we do please consider [becoming a sponsor][sponsor-github]
+on [GitHub][sponsor-github] or [Open Collective][sponsor-oc].
+
+We also participate in pledge-based sponsorship with [Polar][sponsor-polar].
 
 [sponsor-github]: https://github.com/sponsors/litestar-org
 [sponsor-oc]: https://opencollective.com/litestar

@@ -138,11 +138,7 @@ Sponsors
 Litestar is a community-driven open-source initiative that thrives on the generous contributions of our sponsors,
 enabling us to pursue innovative developments.
 
-We invite organizations and individuals to join our sponsorship program.
-By becoming a sponsor on platforms like `GitHub <sponsor-github_>`_
-and `Open Collective <sponsor-oc_>`_, you can play a pivotal role in our project's growth.
-
-Additionally, we engage in pledge-based sponsorship opportunities through `Polar <sponsor-polar_>`_.
+A huge thank you to our current sponsors:
 
 .. raw:: html
 
@@ -160,6 +156,12 @@ Additionally, we engage in pledge-based sponsorship opportunities through `Polar
         <p style="text-align: center;">Telemetry Sports</p>
       </div>
     </div>
+
+We invite organizations and individuals to join our sponsorship program.
+By becoming a sponsor on platforms like `GitHub <sponsor-github_>`_
+and `Open Collective <sponsor-oc_>`_, you can play a pivotal role in our project's growth.
+
+Additionally, we engage in pledge-based sponsorship opportunities through `Polar <sponsor-polar_>`_.
 
 
 .. _sponsor-github: https://github.com/sponsors/litestar-org
