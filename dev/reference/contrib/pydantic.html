@@ -1620,12 +1620,14 @@ document.write(`
 <dt class="sig sig-object py" id="litestar.contrib.pydantic.PydanticSchemaPlugin.is_plugin_supported_type">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_plugin_supported_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#litestar.contrib.pydantic.PydanticSchemaPlugin.is_plugin_supported_type" title="Permalink to this definition">#</a></dt>
 <dd><p>Given a value of indeterminate type, determine if this value is supported by the plugin.</p>
+<p>This is called by the default implementation of <a class="reference internal" href="../plugins.html#litestar.plugins.OpenAPISchemaPlugin.is_plugin_supported_field" title="litestar.plugins.OpenAPISchemaPlugin.is_plugin_supported_field"><code class="xref py py-meth docutils literal notranslate"><span class="pre">is_plugin_supported_field()</span></code></a> for
+backwards compatibility. User’s should prefer to override that method instead.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>value</strong> – An arbitrary value.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A typeguard dictating whether the value is supported by the plugin.</p>
+<dd class="field-even"><p>A bool indicating whether the value is supported by the plugin.</p>
 </dd>
 </dl>
 </dd></dl>
