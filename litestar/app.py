@@ -18,6 +18,7 @@ from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Iterable, Mappi
 from litestar._asgi import ASGIRouter
 from litestar._asgi.utils import get_route_handlers, wrap_in_exception_handler
 from litestar._openapi.plugin import OpenAPIPlugin
+from litestar._openapi.schema_generation import openapi_schema_plugins
 from litestar.config.allowed_hosts import AllowedHostsConfig
 from litestar.config.app import AppConfig
 from litestar.config.response_cache import ResponseCacheConfig
@@ -375,7 +376,7 @@ class Litestar(Router):
             experimental_features=list(experimental_features or []),
         )
 
-        config.plugins.append(OpenAPIPlugin(self))
+        config.plugins.extend([OpenAPIPlugin(self), *openapi_schema_plugins])
 
         for handler in chain(
             on_app_init or [],

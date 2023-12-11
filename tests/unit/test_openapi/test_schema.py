@@ -24,6 +24,7 @@ from msgspec import Struct
 from typing_extensions import Annotated, TypeAlias
 
 from litestar import Controller, MediaType, get
+from litestar._openapi.schema_generation.plugins import openapi_schema_plugins
 from litestar._openapi.schema_generation.schema import (
     KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP,
     SchemaCreator,
@@ -231,7 +232,7 @@ def test_schema_hashing() -> None:
 
 def test_title_validation() -> None:
     # TODO: what is this actually testing?
-    creator = SchemaCreator()
+    creator = SchemaCreator(plugins=openapi_schema_plugins)
     person_ref = creator.for_field_definition(FieldDefinition.from_kwarg(name="Person", annotation=DataclassPerson))
     pet_ref = creator.for_field_definition(FieldDefinition.from_kwarg(name="Pet", annotation=DataclassPet))
     assert isinstance(person_ref, Reference)
