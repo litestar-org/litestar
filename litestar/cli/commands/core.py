@@ -6,7 +6,7 @@ import os
 import subprocess
 import sys
 from contextlib import AbstractContextManager, ExitStack, contextmanager
-from typing import TYPE_CHECKING, Any, Iterator
+from typing import TYPE_CHECKING, Any, Iterator, List
 
 from rich.tree import Tree
 
@@ -75,6 +75,8 @@ def _run_uvicorn_in_subprocess(
     workers: int | None,
     reload: bool,
     reload_dirs: tuple[str, ...] | None,
+    reload_includes: List[str] | None,
+    reload_excludes: List[str] | None,
     fd: int | None,
     uds: str | None,
     certfile_path: str | None,
@@ -93,6 +95,10 @@ def _run_uvicorn_in_subprocess(
         process_args["uds"] = uds
     if reload_dirs:
         process_args["reload-dir"] = reload_dirs
+    if reload_includes is not None:
+        process_args["reload-include"] = reload_includes
+    if reload_excludes is not None:
+        process_args["reload_exclude"] = reload_excludes
     if certfile_path is not None:
         process_args["ssl-certfile"] = certfile_path
     if keyfile_path is not None:
@@ -122,6 +128,13 @@ def info_command(app: Litestar) -> None:
 @command(name="run")
 @option("-r", "--reload", help="Reload server on changes", default=False, is_flag=True)
 @option("-R", "--reload-dir", help="Directories to watch for file changes", multiple=True)
+@option("--reload-include", help="Set glob patterns to include while watching for files. Includes '*.py' "
+                                "by default; these defaults can be overridden with `--reload-exclude`. "
+                                "This option has no effect unless watchfiles is installed.", multiple=True)
+@option("--reload-exclude", help="Set glob patterns to exclude while watching for files. Includes "
+                                "'.*, .py[cod], .sw.*, ~*' by default; these defaults can be overridden "
+                                "with `--reload-include`. This option has no effect unless watchfiles is "
+                                "installed.", multiple=True)
 @option("-p", "--port", help="Serve under this port", type=int, default=8000, show_default=True)
 @option(
     "-W",
@@ -161,6 +174,8 @@ def run_command(
     uds: str | None,
     debug: bool,
     reload_dir: tuple[str, ...],
+    reload_include: List[str],
+    reload_exclude: List[str],
     pdb: bool,
     ssl_certfile: str | None,
     ssl_keyfile: str | None,
@@ -200,12 +215,13 @@ def run_command(
     app = env.app
 
     reload_dirs = env.reload_dirs or reload_dir
+    reload_includes = env.reload_includes or reload_include
 
     host = env.host or host
     port = env.port if env.port is not None else port
     fd = env.fd if env.fd is not None else fd
     uds = env.uds or uds
-    reload = env.reload or reload or bool(reload_dirs)
+    reload = env.reload or reload or bool(reload_dirs) or bool(reload_includes) or bool(reload_excludes)
     workers = env.web_concurrency or wc
 
     ssl_certfile = ssl_certfile or env.certfile_path
@@ -252,6 +268,8 @@ def run_command(
                 workers=workers,
                 reload=reload,
                 reload_dirs=reload_dirs,
+                reload_includes=reload_includes,
+                reload_excludes=reload_excludes,
                 fd=fd,
                 uds=uds,
                 certfile_path=certfile_path,
