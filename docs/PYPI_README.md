@@ -119,20 +119,10 @@ A **huge** thanks to our sponsors:
 
 [//]: # "Note to maintainers: Highest sponsors first; no more than 3 per row - create new div if needed"
 
-<div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
-  <div>
-    <a href="https://scalar.com">
-      <img src="https://raw.githubusercontent.com/litestar-org/branding/main/assets/sponsors/scalar.svg" alt="Scalar.com" style="border-radius: 10px; width: auto; max-height: 150px;"/>
-    </a>
-    <p style="text-align: center;">Scalar.com</p>
-  </div>
-  <div>
-    <a href="https://telemetrysports.com/">
-      <img src="https://raw.githubusercontent.com/litestar-org/branding/main/assets/sponsors/telemetry-sports/unofficial-telemetry-whitebg.svg" alt="Telemetry Sports" style="border-radius: 10px; width: auto; max-height: 150px;"/>
-    </a>
-    <p style="text-align: center;">Telemetry Sports</p>
-  </div>
-</div>
+<a href="https://github.com/scalar/scalar/?utm_source=litestar&utm_medium=website&utm_campaign=main-badge" target="_blank" title="Scalar.com - Document, Discover and Test APIs with Scalar."><img src="https://raw.githubusercontent.com/litestar-org/branding/main/assets/sponsors/scalar.svg" width="180" alt="Scalar.com"></a>
+<a href="https://telemetrysports.com/" title="Telemetry Sports - Changing the way data influences the sports experience"><img src="https://raw.githubusercontent.com/litestar-org/branding/main/assets/sponsors/telemetry-sports/unofficial-telemetry-whitebg.svg" width="150" alt="Telemetry Sports"></a>
+
+<a href="https://docs.litestar.dev/dev/#sponsors" class="external-link" target="_blank">Check out our sponsors in the docs</a>
 
 If you would like to support the work that we do please consider [becoming a sponsor][sponsor-github]
 on [GitHub][sponsor-github] or [Open Collective][sponsor-oc].
