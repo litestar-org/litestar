@@ -1,7 +1,8 @@
 name: "Bug Report"
 description: Create an issue for a bug.
 title: "Bug: <title>"
-labels: ["bug", "triage required"]
+labels: ["Bug :bug:", "Triage Required"]
+projects: ["litestar-org/16"]
 body:
   - type: textarea
     id: description

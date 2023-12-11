@@ -17,6 +17,7 @@ from litestar._openapi.responses import (
     ResponseFactory,
     create_error_responses,
 )
+from litestar._openapi.schema_generation.plugins import openapi_schema_plugins
 from litestar.datastructures import Cookie, ResponseHeader
 from litestar.dto import AbstractDTO
 from litestar.exceptions import (
@@ -51,7 +52,7 @@ def create_factory() -> CreateFactoryFixture:
         return ResponseFactory(
             context=OpenAPIContext(
                 openapi_config=OpenAPIConfig(title="test", version="1.0.0", create_examples=generate_examples),
-                plugins=[],
+                plugins=openapi_schema_plugins,
             ),
             route_handler=route_handler,
         )
