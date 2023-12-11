@@ -147,13 +147,20 @@ Additionally, we engage in pledge-based sponsorship opportunities through `Polar
 .. raw:: html
 
     <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
-      <a href="https://scalar.com">
-        <img src="https://raw.githubusercontent.com/litestar-org/branding/main/assets/sponsors/scalar.svg" alt="Scalar.com" style="border-radius: 10px; width: auto; max-height: 150px;"/> <!-- Adjust max-height as needed -->
-      </a>
-      <a href="https://telemetrysports.com/">
-        <img src="https://raw.githubusercontent.com/litestar-org/branding/main/assets/sponsors/telemetry-sports-temp.svg" alt="Telemetry Sports" style="border-radius: 10px; width: auto; max-height: 150px;"/> <!-- Adjust max-height as needed -->
-      </a>
+      <div>
+        <a href="https://scalar.com">
+          <img src="https://raw.githubusercontent.com/litestar-org/branding/main/assets/sponsors/scalar.svg" alt="Scalar.com" style="border-radius: 10px; width: auto; max-height: 150px;"/>
+        </a>
+        <p style="text-align: center;">Scalar.com</p>
+      </div>
+      <div>
+        <a href="https://telemetrysports.com/">
+          <img src="https://raw.githubusercontent.com/litestar-org/branding/main/assets/sponsors/telemetry-sports/unofficial-telemetry-whitebg.svg" alt="Telemetry Sports" style="border-radius: 10px; width: auto; max-height: 150px;"/>
+        </a>
+        <p style="text-align: center;">Telemetry Sports</p>
+      </div>
     </div>
+
 
 .. _sponsor-github: https://github.com/sponsors/litestar-org
 .. _sponsor-oc: https://opencollective.com/litestar
