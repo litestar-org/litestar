@@ -399,7 +399,7 @@ implemented are:
     A basic in-memory backend, mostly useful for testing and local development, but
     still fully capable. Since it stores all data in-process, it can achieve the highest
     performance of all the backends, but at the same time is not suitable for
-    applications running on multiple processes.
+    applications running on multiple processes
 
 :class:`RedisChannelsPubSubBackend <.redis.RedisChannelsPubSubBackend>`
     A Redis based backend, using `Pub/Sub <https://redis.io/docs/manual/pubsub/>`_ to
@@ -411,6 +411,17 @@ implemented are:
     to deliver messages. It has a slightly higher latency when publishing than the
     Pub/Sub backend, but achieves the same throughput in message fanout. Recommended
     when history is needed
+
+
+:class:`AsyncPgChannelsBackend <.asyncpg.AsyncPgChannelsBackend>`
+    A postgres backend using the
+    `asyncpg <https://magicstack.github.io/asyncpg/current/>`_ driver
+
+
+:class:`PsycoPgChannelsBackend <.psycopg.AsyncPgChannelsBackend>`
+    A postgres backend using the `psycopg3 <https://www.psycopg.org/psycopg3/docs/>`_
+    async driver
+
 
 
 

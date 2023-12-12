@@ -139,3 +139,8 @@ async def postgres_responsive(host: str) -> bool:
         return (await conn.fetchrow("SELECT 1"))[0] == 1  # type: ignore
     finally:
         await conn.close()
+
+
+@pytest.fixture()
+async def postgres_service(docker_services: DockerServiceRegistry) -> None:
+    await docker_services.start("postgres", check=postgres_responsive)

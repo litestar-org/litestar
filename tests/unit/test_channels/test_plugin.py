@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import time
 from secrets import token_hex
 from typing import cast
 from unittest.mock import AsyncMock, MagicMock
@@ -24,6 +25,8 @@ from .util import get_from_stream
     params=[
         pytest.param("redis_pub_sub_backend", id="redis:pubsub", marks=pytest.mark.xdist_group("redis")),
         pytest.param("redis_stream_backend", id="redis:stream", marks=pytest.mark.xdist_group("redis")),
+        pytest.param("postgres_asyncpg_backend", id="postgres:asyncpg", marks=pytest.mark.xdist_group("postgres")),
+        pytest.param("postgres_psycopg_backend", id="postgres:psycopg", marks=pytest.mark.xdist_group("postgres")),
         pytest.param("memory_backend", id="memory"),
     ]
 )
@@ -119,7 +122,7 @@ def test_create_ws_route_handlers(
 
 
 @pytest.mark.flaky(reruns=5)
-def test_ws_route_handlers_receive_arbitrary_message(channels_backend: ChannelsBackend) -> None:
+async def test_ws_route_handlers_receive_arbitrary_message(channels_backend: ChannelsBackend) -> None:
     """The websocket handlers await `WebSocket.receive()` to detect disconnection and stop the subscription.
 
     This test ensures that the subscription is only stopped in the case of receiving a `websocket.disconnect` message.
@@ -140,7 +143,7 @@ def test_ws_route_handlers_receive_arbitrary_message(channels_backend: ChannelsB
 
 
 @pytest.mark.flaky(reruns=5)
-async def test_create_ws_route_handlers_arbitrary_channels_allowed(channels_backend: ChannelsBackend) -> None:
+def test_create_ws_route_handlers_arbitrary_channels_allowed(channels_backend: ChannelsBackend) -> None:
     channels_plugin = ChannelsPlugin(
         backend=channels_backend,
         arbitrary_channels_allowed=True,
@@ -154,6 +157,8 @@ async def test_create_ws_route_handlers_arbitrary_channels_allowed(channels_back
         with client.websocket_connect("/ws/foo") as ws:
             channels_plugin.publish("something", "foo")
             assert ws.receive_text(timeout=2) == "something"
+
+        time.sleep(0.1)
 
         with client.websocket_connect("/ws/bar") as ws:
             channels_plugin.publish("something else", "bar")

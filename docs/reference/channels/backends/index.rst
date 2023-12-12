@@ -6,3 +6,5 @@ backends
     base
     memory
     redis
+    psycopg
+    asyncpg

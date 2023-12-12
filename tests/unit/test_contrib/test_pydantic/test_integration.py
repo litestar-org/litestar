@@ -172,3 +172,30 @@ def test_signature_model_invalid_input(
                     "key": "other_child.val.1",
                 },
             ]
+
+
+def test_pydantic_v2_down_typing() -> None:
+    class EmailModel(pydantic_v2.BaseModel):
+        email: pydantic_v2.EmailStr
+        data_any: pydantic_v2.Json
+        data_obj: pydantic_v2.Json[Dict[str, int]]
+        data_arr: pydantic_v2.Json[List[str]]
+        path: pydantic_v2.DirectoryPath
+    EmailDTO = PydanticDTO[EmailModel]
+
+    @post("/email", dto=EmailDTO)
+    def handler(data: EmailModel) -> EmailModel:
+        return data
+
+    with create_test_client(route_handlers=handler) as client:
+        response = client.post(
+            "/email",
+            json={
+                "email": "foo@bar.com",
+                "data_any": "null",
+                "data_obj": '{"a":1}',
+                "data_arr": '["a","b"]',
+                "path": ".",
+            },
+        )
+        assert response.status_code == 201

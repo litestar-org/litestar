@@ -311,10 +311,10 @@ class ChannelsPlugin(InitPluginProtocol, AbstractAsyncContextManager):
                 subscriber.put_nowait(payload)
 
     async def _on_startup(self) -> None:
+        await self._backend.on_startup()
         self._pub_queue = Queue()
         self._pub_task = create_task(self._pub_worker())
         self._sub_task = create_task(self._sub_worker())
-        await self._backend.on_startup()
         if self._channels:
             await self._backend.subscribe(list(self._channels))
 
