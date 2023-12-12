@@ -93,8 +93,9 @@ class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
             except ValueError:
                 print("Caught exception")
                 async for value in self.content_async_iterator:
+                    print(value)
                     d = self.ensure_bytes(value, DEFAULT_SEPARATOR)
-                    print(f"{d} | {value}")
+                    print(d)
                     yield d
                 break
 
