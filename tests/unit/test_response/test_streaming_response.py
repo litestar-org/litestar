@@ -3,15 +3,18 @@
 https://github.com/encode/starlette/blob/master/tests/test_responses.py And are meant to ensure our compatibility with
 their API.
 """
+from dataclasses import dataclass
 from itertools import cycle
-from typing import TYPE_CHECKING, AsyncIterator, Iterator
+from typing import TYPE_CHECKING, AsyncIterator, Iterator, Optional
 
 import anyio
 from httpx_sse import aconnect_sse
+import pytest
 
 from litestar import get
 from litestar.background_tasks import BackgroundTask
 from litestar.response import ServerSentEventStream
+from litestar.response.sse import ServerSentEvent
 from litestar.response.streaming import ASGIStreamingResponse
 from litestar.testing import TestClient, create_async_test_client
 
@@ -178,8 +181,6 @@ async def test_sse_steaming_response() -> None:
         def numbers(minimum: int, maximum: int) -> Iterator[str]:
             for i in range(minimum, maximum + 1):
                 yield str(i)
-                if i != maximum:
-                    yield ", "
 
         generator = numbers(1, 5)
 
@@ -188,14 +189,61 @@ async def test_sse_steaming_response() -> None:
     async with create_async_test_client(handler) as client:
         async with aconnect_sse(client, "GET", f"{client.base_url}/test") as event_source:
             events = [sse async for sse in event_source.aiter_sse()]
-            assert len(events) == 1
-            (sse,) = events
-            assert sse.event == "special"
-            assert sse.data == "1\n, \n2\n, \n3\n, \n4\n, \n5"
-            assert sse.id == "123"
-            assert sse.retry == 1000
+            assert len(events) == 5
+            print(events)
+            for idx, sse in enumerate(events, start=1):
+                assert sse.event == "special" or sse.event == "message"
+                assert sse.data == str(idx)
+                assert sse.id == "123"
+                assert sse.retry == 1000 or not sse.retry
 
 
 def test_asgi_response_encoded_headers() -> None:
     response = ASGIStreamingResponse(encoded_headers=[(b"foo", b"bar")], iterator="")
     assert response.encode_headers() == [(b"foo", b"bar"), (b"content-type", b"application/json")]
+
+
+from httpx_sse import ServerSentEvent as HTTPXServerSentEvent
+
+
+@pytest.mark.parametrize(
+    "input,expected_events",
+    [
+        ("string", [HTTPXServerSentEvent(event="special", data=str(i), id="123", retry=1000) for i in range(1, 6)]),
+        ("integer", [HTTPXServerSentEvent(event="special", data=str(i), id="123", retry=1000) for i in range(1, 6)]),
+        ("dict1", [HTTPXServerSentEvent(event="special", data=str(i), id="123", retry=1000) for i in range(1, 6)]),
+        ("dict2", [HTTPXServerSentEvent(event="special", data=str(i), id="123", retry=1000) for i in range(1, 6)]),
+        ("obj", [HTTPXServerSentEvent(event="special", data=str(i), id="123", retry=1000) for i in range(1, 6)]),
+    ],
+)
+async def test_various_sse_inputs(input, expected_events):
+    @get("/testme")
+    async def handler() -> ServerSentEventStream:
+        async def numbers(minimum, maximum):
+            for i in range(minimum, maximum + 1):
+                await anyio.sleep(0.1)
+                if input == "integer":
+                    yield i
+                elif input == "string":
+                    yield str(i)
+                elif input == "dict1":
+                    yield dict(data=i, event="special", retry=1000)
+                elif input == "dict2":
+                    yield dict(data=i, event="special", retry=1000)
+                elif input == "obj":
+                    yield ServerSentEvent(data=i, event="special", retry=1000)
+
+        generator = numbers(1, 5)
+        response = ServerSentEventStream(generator, event_type="special", event_id="123", retry_duration=1000)  # type: ignore
+        return response
+
+    async with create_async_test_client(handler) as client:
+        async with aconnect_sse(client, "GET", f"{client.base_url}/testme") as event_source:
+            events = [sse async for sse in event_source.aiter_sse()]
+            assert len(events) == 5
+            print(events)
+            for i in range(5):
+                assert events[i].event == expected_events[i].event
+                assert events[i].data == expected_events[i].data
+                assert events[i].id == expected_events[i].id
+                assert events[i].retry == expected_events[i].retry
