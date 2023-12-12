@@ -4,6 +4,7 @@ import contextlib
 import importlib
 import inspect
 import os
+import re
 import sys
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
@@ -19,6 +20,8 @@ from typing_extensions import ParamSpec, get_type_hints
 
 from litestar import Litestar, __version__
 from litestar.middleware import DefineMiddleware
+from litestar.openapi import OpenAPIConfig
+from litestar.routes import HTTPRoute
 from litestar.utils import get_name
 
 RICH_CLICK_INSTALLED = False
@@ -539,3 +542,30 @@ def _generate_self_signed_cert(certfile_path: Path, keyfile_path: Path, common_n
                 encryption_algorithm=serialization.NoEncryption(),
             )
         )
+
+
+def remove_routes_with_patterns(routes: list[HTTPRoute], patterns: tuple[str, ...]):
+    regex_routes = []
+    valid_patterns = []
+    for pattern in patterns:
+        try:
+            check_pattern = re.compile(pattern)
+            valid_patterns.append(check_pattern)
+        except re.error as e:
+            print(f"Error: {e}. Invalid regex pattern supplied: {pattern}. omitting from querying results.")
+
+    for route in routes:
+        checked_pattern_route_matches = []
+        for pattern_compile in valid_patterns:
+            matches = pattern_compile.match(route.path)
+            checked_pattern_route_matches.append(matches)
+
+        if not any(checked_pattern_route_matches):
+            regex_routes.append(route)
+
+    return regex_routes
+
+
+def remove_default_schema_routes(routes: list[HTTPRoute], openapi_config: OpenAPIConfig):
+    schema_path = openapi_config.openapi_controller.path
+    return remove_routes_with_patterns(routes, (schema_path,))
