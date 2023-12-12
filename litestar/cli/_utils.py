@@ -11,7 +11,7 @@ from functools import wraps
 from itertools import chain
 from os import getenv
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Generator, Iterable, Sequence, TypeVar, cast, List
+from typing import TYPE_CHECKING, Any, Callable, Generator, Iterable, Sequence, TypeVar, cast
 
 from rich import get_console
 from rich.table import Table
@@ -99,8 +99,8 @@ class LitestarEnv:
     uds: str | None = None
     reload: bool | None = None
     reload_dirs: tuple[str, ...] | None = None
-    reload_includes: List[str] | None = None
-    reload_excludes: List[str] | None = None
+    reload_includes: list[str] | None = None
+    reload_excludes: list[str] | None = None
     web_concurrency: int | None = None
     is_app_factory: bool = False
     certfile_path: str | None = None

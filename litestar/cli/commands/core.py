@@ -6,7 +6,7 @@ import os
 import subprocess
 import sys
 from contextlib import AbstractContextManager, ExitStack, contextmanager
-from typing import TYPE_CHECKING, Any, Iterator, List
+from typing import TYPE_CHECKING, Any, Iterator
 
 from rich.tree import Tree
 
@@ -75,8 +75,8 @@ def _run_uvicorn_in_subprocess(
     workers: int | None,
     reload: bool,
     reload_dirs: tuple[str, ...] | None,
-    reload_includes: List[str] | None,
-    reload_excludes: List[str] | None,
+    reload_includes: list[str] | None,
+    reload_excludes: list[str] | None,
     fd: int | None,
     uds: str | None,
     certfile_path: str | None,
@@ -128,13 +128,21 @@ def info_command(app: Litestar) -> None:
 @command(name="run")
 @option("-r", "--reload", help="Reload server on changes", default=False, is_flag=True)
 @option("-R", "--reload-dir", help="Directories to watch for file changes", multiple=True)
-@option("--reload-include", help="Set glob patterns to include while watching for files. Includes '*.py' "
-                                "by default; these defaults can be overridden with `--reload-exclude`. "
-                                "This option has no effect unless watchfiles is installed.", multiple=True)
-@option("--reload-exclude", help="Set glob patterns to exclude while watching for files. Includes "
-                                "'.*, .py[cod], .sw.*, ~*' by default; these defaults can be overridden "
-                                "with `--reload-include`. This option has no effect unless watchfiles is "
-                                "installed.", multiple=True)
+@option(
+    "--reload-include", 
+    help="Set glob patterns to include while watching for files. Includes '*.py' "
+    "by default; these defaults can be overridden with `--reload-exclude`. "
+    "This option has no effect unless watchfiles is installed.", 
+    multiple=True,
+)
+@option(
+    "--reload-exclude", 
+    help="Set glob patterns to exclude while watching for files. Includes "
+    "'.*, .py[cod], .sw.*, ~*' by default; these defaults can be overridden "
+    "with `--reload-include`. This option has no effect unless watchfiles is "
+    "installed.", 
+    multiple=True,
+)
 @option("-p", "--port", help="Serve under this port", type=int, default=8000, show_default=True)
 @option(
     "-W",
@@ -174,8 +182,8 @@ def run_command(
     uds: str | None,
     debug: bool,
     reload_dir: tuple[str, ...],
-    reload_include: List[str],
-    reload_exclude: List[str],
+    reload_include: list[str],
+    reload_exclude: list[str],
     pdb: bool,
     ssl_certfile: str | None,
     ssl_keyfile: str | None,
@@ -216,6 +224,7 @@ def run_command(
 
     reload_dirs = env.reload_dirs or reload_dir
     reload_includes = env.reload_includes or reload_include
+    reload_excludes = env.reload_excludes or reload_exclude
 
     host = env.host or host
     port = env.port if env.port is not None else port
