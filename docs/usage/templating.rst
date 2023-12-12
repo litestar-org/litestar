@@ -288,7 +288,7 @@ With that in place, you can now insert the CSRF input field inside an HTML form:
                <body>
                    <div>
                        <form action="https://myserverurl.com/some-endpoint" method="post">
-                           {{ csrf_input }}
+                           {{ csrf_input | safe }}
                            <label for="fname">First name:</label><br>
                            <input type="text" id="fname" name="fname">
                            <label for="lname">Last name:</label><br>
@@ -307,7 +307,7 @@ With that in place, you can now insert the CSRF input field inside an HTML form:
                <body>
                    <div>
                        <form action="https://myserverurl.com/some-endpoint" method="post">
-                           ${csrf_input}
+                           ${csrf_input | n}
                            <label for="fname">First name:</label><br>
                            <input type="text" id="fname" name="fname">
                            <label for="lname">Last name:</label><br>
@@ -326,7 +326,7 @@ With that in place, you can now insert the CSRF input field inside an HTML form:
                <body>
                    <div>
                        <form action="https://myserverurl.com/some-endpoint" method="post">
-                           {{ csrf_input }}
+                           {{ csrf_input | safe}}
                            <label for="fname">First name:</label><br>
                            <input type="text" id="fname" name="fname">
                            <label for="lname">Last name:</label><br>
@@ -339,6 +339,10 @@ With that in place, you can now insert the CSRF input field inside an HTML form:
 
 The input holds a CSRF token as its value and is hidden so users cannot see or interact with it. The token is sent
 back to the server when the form is submitted, and is checked by the CSRF middleware.
+
+.. note::
+
+    The `csrf_input` must be marked as safe in order to ensure that it does not get escaped.
 
 Passing template context
 ^^^^^^^^^^^^^^^^^^^^^^^^
