@@ -148,7 +148,7 @@ To set multiple directories via an environment variable, use a comma-separated l
    LITESTAR_RELOAD_DIRS=.,../other-library/src
 
 --reload-include
-++++++++++++
+++++++++++++++++
 
 Set glob patterns to include while watching for files. Includes '*.py' by default; these defaults can be overridden with `--reload-exclude`. This option has no effect unless watchfiles is installed. You can specify multiple directories by passing the flag multiple times:
 
