@@ -127,6 +127,10 @@ Options
 +-------------------------------------------+----------------------------------------------+----------------------------------------------------------------------------------+
 | ``--create-self-signed-cert``             | ``LITESTAR_CREATE_SELF_SIGNED_CERT``         | If the SSL certificate and key are not found, generate a self-signed certificate |
 +-------------------------------------------+----------------------------------------------+----------------------------------------------------------------------------------+
+| ``--reload-include``                      | ``LITESTAR_RELOAD_INCLUDE``                  | Set glob patterns to include while watching for files                            |
++-------------------------------------------+----------------------------------------------+----------------------------------------------------------------------------------+
+| ``--reload-exclude``                      | ``LITESTAR_RELOAD_EXCLUDE``                  | Set glob patterns to exclude while watching for files                            |
++-------------------------------------------+----------------------------------------------+----------------------------------------------------------------------------------+
 
 --reload-dir
 ++++++++++++
@@ -142,6 +146,36 @@ To set multiple directories via an environment variable, use a comma-separated l
 .. code-block:: shell
 
    LITESTAR_RELOAD_DIRS=.,../other-library/src
+
+--reload-include
+++++++++++++
+
+Set glob patterns to include while watching for files. Includes '*.py' by default; these defaults can be overridden with `--reload-exclude`. This option has no effect unless watchfiles is installed. You can specify multiple directories by passing the flag multiple times:
+
+.. code-block:: shell
+
+   litestar run --reload-include=. --reload-dir=../other-library/src
+
+To set multiple directories via an environment variable, use a comma-separated list:
+
+.. code-block:: shell
+
+   LITESTAR_RELOAD_INCLUDE=.,../other-library/src
+
+--reload-exclude
+++++++++++++
+
+Set glob patterns to exclude while watching for files. Includes '.*, .py[cod], .sw.*, ~*' by default; these defaults can be overridden with `--reload-include`. This option has no effect unless watchfiles is installed. You can specify multiple directories by passing the flag multiple times:
+
+.. code-block:: shell
+
+   litestar run --reload-exclude=. --reload-dir=../other-library/src
+
+To set multiple directories via an environment variable, use a comma-separated list:
+
+.. code-block:: shell
+
+   LITESTAR_RELOAD_EXCLUDE=.,../other-library/src
 
 SSL
 +++
