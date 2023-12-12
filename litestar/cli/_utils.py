@@ -137,7 +137,7 @@ class LitestarEnv:
         fd = getenv("LITESTAR_FILE_DESCRIPTOR")
         reload_dirs = tuple(s.strip() for s in getenv("LITESTAR_RELOAD_DIRS", "").split(",") if s) or None
         reload_includes = [s.strip() for s in getenv("LITESTAR_RELOAD_INCLUDES", "").split(",") if s] or None
-        reload_excludes = [s.strip() for s in getenv("LITESTAR_RELOAD_INCLUDES", "").split(",") if s] or None
+        reload_excludes = [s.strip() for s in getenv("LITESTAR_RELOAD_EXCLUDES", "").split(",") if s] or None
 
         return cls(
             app_path=loaded_app.app_path,
