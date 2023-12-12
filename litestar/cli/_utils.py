@@ -12,7 +12,7 @@ from functools import wraps
 from itertools import chain
 from os import getenv
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Generator, Iterable, Sequence, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Callable, Generator, Iterable, Sequence, TypeVar, cast, List, Union
 
 from rich import get_console
 from rich.table import Table
@@ -21,7 +21,7 @@ from typing_extensions import ParamSpec, get_type_hints
 from litestar import Litestar, __version__
 from litestar.middleware import DefineMiddleware
 from litestar.openapi import OpenAPIConfig
-from litestar.routes import HTTPRoute
+from litestar.routes import HTTPRoute, ASGIRoute, WebSocketRoute
 from litestar.utils import get_name
 
 RICH_CLICK_INSTALLED = False
@@ -544,7 +544,8 @@ def _generate_self_signed_cert(certfile_path: Path, keyfile_path: Path, common_n
         )
 
 
-def remove_routes_with_patterns(routes: list[HTTPRoute], patterns: tuple[str, ...]):
+def remove_routes_with_patterns(routes: List[Union[HTTPRoute, ASGIRoute,
+WebSocketRoute]], patterns: tuple[str, ...]) ->  List[Union[HTTPRoute, ASGIRoute, WebSocketRoute]]:
     regex_routes = []
     valid_patterns = []
     for pattern in patterns:
@@ -566,6 +567,7 @@ def remove_routes_with_patterns(routes: list[HTTPRoute], patterns: tuple[str, ..
     return regex_routes
 
 
-def remove_default_schema_routes(routes: list[HTTPRoute], openapi_config: OpenAPIConfig):
+def remove_default_schema_routes(routes: List[Union[HTTPRoute, ASGIRoute,
+WebSocketRoute]], openapi_config: OpenAPIConfig) ->  List[Union[HTTPRoute, ASGIRoute, WebSocketRoute]]:
     schema_path = openapi_config.openapi_controller.path
     return remove_routes_with_patterns(routes, (schema_path,))

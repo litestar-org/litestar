@@ -339,7 +339,7 @@ def test_routes_command_options(
         schema_enabled: bool,
         exclude_pattern_list: tuple[str, ...],
         create_app_file: CreateAppFileFixture
-):
+) -> None:
     create_app_file("app.py", content=app_content)
 
     command = "routes"
@@ -372,7 +372,7 @@ def test_routes_command_options(
         assert result_routes_len == 3
 
 
-def test_remove_default_schema_routes():
+def test_remove_default_schema_routes() -> None:
     routes = ["/",
               "/schema",
               "/schema/elements",
@@ -402,7 +402,7 @@ def test_remove_default_schema_routes():
         assert "/schema" not in words
 
 
-def test_remove_routes_with_patterns():
+def test_remove_routes_with_patterns() -> None:
     routes = [
         "/",
         "/destroy/all/foo/bar/schema",
@@ -416,7 +416,7 @@ def test_remove_routes_with_patterns():
 
     patterns = ("/destroy", "/pizza", "[]")
     results = remove_routes_with_patterns(http_routes, patterns)
-    paths = [ route.path for route in results]
+    paths = [route.path for route in results]
     assert len(paths) == 2
     for route in ["/", "/foo"]:
         assert route in paths
