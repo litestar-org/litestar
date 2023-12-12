@@ -15,5 +15,5 @@ async def handler(socket: WebSocket, channels: ChannelsPlugin) -> None:
 
 app = Litestar(
     [handler],
-    plugins=[ChannelsPlugin(backend=MemoryChannelsBackend(), arbitrary_channels_allowed=True)],
+    plugins=[ChannelsPlugin(backend=MemoryChannelsBackend(), channels=["some_channel"])],
 )
