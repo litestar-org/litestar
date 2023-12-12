@@ -12,7 +12,7 @@ from functools import wraps
 from itertools import chain
 from os import getenv
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Generator, Iterable, Sequence, TypeVar, cast, List, Union
+from typing import TYPE_CHECKING, Any, Callable, Generator, Iterable, Sequence, TypeVar, cast
 
 from rich import get_console
 from rich.table import Table
@@ -20,8 +20,6 @@ from typing_extensions import ParamSpec, get_type_hints
 
 from litestar import Litestar, __version__
 from litestar.middleware import DefineMiddleware
-from litestar.openapi import OpenAPIConfig
-from litestar.routes import HTTPRoute, ASGIRoute, WebSocketRoute
 from litestar.utils import get_name
 
 RICH_CLICK_INSTALLED = False
@@ -68,6 +66,8 @@ else:
 
 
 if TYPE_CHECKING:
+    from litestar.openapi import OpenAPIConfig
+    from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
     from litestar.types import AnyCallable
 
 
@@ -544,8 +544,9 @@ def _generate_self_signed_cert(certfile_path: Path, keyfile_path: Path, common_n
         )
 
 
-def remove_routes_with_patterns(routes: List[Union[HTTPRoute, ASGIRoute,
-WebSocketRoute]], patterns: tuple[str, ...]) ->  List[Union[HTTPRoute, ASGIRoute, WebSocketRoute]]:
+def remove_routes_with_patterns(
+    routes: list[HTTPRoute | ASGIRoute | WebSocketRoute], patterns: tuple[str, ...]
+) -> list[HTTPRoute | ASGIRoute | WebSocketRoute]:
     regex_routes = []
     valid_patterns = []
     for pattern in patterns:
@@ -553,7 +554,7 @@ WebSocketRoute]], patterns: tuple[str, ...]) ->  List[Union[HTTPRoute, ASGIRoute
             check_pattern = re.compile(pattern)
             valid_patterns.append(check_pattern)
         except re.error as e:
-            print(f"Error: {e}. Invalid regex pattern supplied: {pattern}. omitting from querying results.")
+            console.print(f"Error: {e}. Invalid regex pattern supplied: {pattern}. omitting from querying results.")
 
     for route in routes:
         checked_pattern_route_matches = []
@@ -567,7 +568,8 @@ WebSocketRoute]], patterns: tuple[str, ...]) ->  List[Union[HTTPRoute, ASGIRoute
     return regex_routes
 
 
-def remove_default_schema_routes(routes: List[Union[HTTPRoute, ASGIRoute,
-WebSocketRoute]], openapi_config: OpenAPIConfig) ->  List[Union[HTTPRoute, ASGIRoute, WebSocketRoute]]:
+def remove_default_schema_routes(
+    routes: list[HTTPRoute | ASGIRoute | WebSocketRoute], openapi_config: OpenAPIConfig
+) -> list[HTTPRoute | ASGIRoute | WebSocketRoute]:
     schema_path = openapi_config.openapi_controller.path
     return remove_routes_with_patterns(routes, (schema_path,))

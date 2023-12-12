@@ -1,7 +1,8 @@
 import os
+import re
 import sys
 from pathlib import Path
-from typing import Callable, Generator, List, Optional
+from typing import Callable, Generator, List, Optional, Tuple
 from unittest.mock import MagicMock
 
 import pytest
@@ -10,19 +11,19 @@ from click.testing import CliRunner
 from pytest_mock import MockerFixture
 
 from litestar import __version__ as litestar_version
-from litestar.cli._utils import remove_routes_with_patterns, remove_default_schema_routes
+from litestar.cli._utils import remove_default_schema_routes, remove_routes_with_patterns
 from litestar.cli.main import litestar_group as cli_command
 from litestar.exceptions import LitestarWarning
 
 from . import (
     APP_FACTORY_FILE_CONTENT_SERVER_LIFESPAN_PLUGIN,
+    APP_FILE_CONTENT_ROUTES_EXAMPLE,
     CREATE_APP_FILE_CONTENT,
     GENERIC_APP_FACTORY_FILE_CONTENT,
     GENERIC_APP_FACTORY_FILE_CONTENT_STRING_ANNOTATION,
-    APP_FILE_CONTENT_ROUTES_EXAMPLE,
 )
 from .conftest import CreateAppFileFixture
-import re
+
 project_base = Path(__file__).parent.parent.parent
 
 
@@ -325,20 +326,21 @@ def test_run_command_with_server_lifespan_plugin(
     )
 
 
-@pytest.mark.parametrize("app_content, schema_enabled, exclude_pattern_list",
-                         [
-                             (APP_FILE_CONTENT_ROUTES_EXAMPLE, False, ()),
-                             (APP_FILE_CONTENT_ROUTES_EXAMPLE, False, ('/foo', '/destroy/.*', "/java", "/haskell")),
-                             (APP_FILE_CONTENT_ROUTES_EXAMPLE, True, ()),
-                             (APP_FILE_CONTENT_ROUTES_EXAMPLE, True, ('/foo', '/destroy/.*', "/java", "/haskell"))
-
-                         ])
+@pytest.mark.parametrize(
+    "app_content, schema_enabled, exclude_pattern_list",
+    [
+        (APP_FILE_CONTENT_ROUTES_EXAMPLE, False, ()),
+        (APP_FILE_CONTENT_ROUTES_EXAMPLE, False, ("/foo", "/destroy/.*", "/java", "/haskell")),
+        (APP_FILE_CONTENT_ROUTES_EXAMPLE, True, ()),
+        (APP_FILE_CONTENT_ROUTES_EXAMPLE, True, ("/foo", "/destroy/.*", "/java", "/haskell")),
+    ],
+)
 def test_routes_command_options(
-        runner: CliRunner,
-        app_content: str,
-        schema_enabled: bool,
-        exclude_pattern_list: tuple[str, ...],
-        create_app_file: CreateAppFileFixture
+    runner: CliRunner,
+    app_content: str,
+    schema_enabled: bool,
+    exclude_pattern_list: Tuple[str, ...],
+    create_app_file: CreateAppFileFixture,
 ) -> None:
     create_app_file("app.py", content=app_content)
 
@@ -373,40 +375,19 @@ def test_routes_command_options(
 
 
 def test_remove_default_schema_routes() -> None:
-    routes = ["/",
-              "/schema",
-              "/schema/elements",
-              "/schema/oauth2-redirect.html",
-              "/schema/openapi.json",
-              "/schema/openapi.yaml",
-              "/schema/openapi.yml",
-              "/schema/rapidoc",
-              "/schema/redoc",
-              "/schema/swagger",
-              "/destroy/all/foo/bar/schema",
-              "/foo"
-              ]
-    http_routes = []
-    for route in routes:
-        http_route = MagicMock()
-        http_route.path = route
-        http_routes.append(http_route)
-
-    api_config = MagicMock()
-    api_config.openapi_controller.path = '/schema'
-
-    results = remove_default_schema_routes(http_routes, api_config)
-    assert len(results) == 3
-    for result in results:
-        words = re.split("(^\/[a-z]+)", result.path)
-        assert "/schema" not in words
-
-
-def test_remove_routes_with_patterns() -> None:
     routes = [
         "/",
+        "/schema",
+        "/schema/elements",
+        "/schema/oauth2-redirect.html",
+        "/schema/openapi.json",
+        "/schema/openapi.yaml",
+        "/schema/openapi.yml",
+        "/schema/rapidoc",
+        "/schema/redoc",
+        "/schema/swagger",
         "/destroy/all/foo/bar/schema",
-        "/foo"
+        "/foo",
     ]
     http_routes = []
     for route in routes:
@@ -414,8 +395,26 @@ def test_remove_routes_with_patterns() -> None:
         http_route.path = route
         http_routes.append(http_route)
 
+    api_config = MagicMock()
+    api_config.openapi_controller.path = "/schema"
+
+    results = remove_default_schema_routes(http_routes, api_config) # type: ignore
+    assert len(results) == 3
+    for result in results:
+        words = re.split(r"(^\/[a-z]+)", result.path)
+        assert "/schema" not in words
+
+
+def test_remove_routes_with_patterns() -> None:
+    routes = ["/", "/destroy/all/foo/bar/schema", "/foo"]
+    http_routes = []
+    for route in routes:
+        http_route = MagicMock()
+        http_route.path = route
+        http_routes.append(http_route)
+
     patterns = ("/destroy", "/pizza", "[]")
-    results = remove_routes_with_patterns(http_routes, patterns)
+    results = remove_routes_with_patterns(http_routes, patterns) # type: ignore 
     paths = [route.path for route in results]
     assert len(paths) == 2
     for route in ["/", "/foo"]:
