@@ -16,7 +16,7 @@ from litestar._signature import SignatureModel
 from litestar.background_tasks import BackgroundTask
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.datastructures import Cookie, ResponseHeader
-from litestar.response import ServerSentEvent
+from litestar.response import ServerSentEventStream
 from litestar.response.base import ASGIResponse
 from litestar.response.file import ASGIFileResponse, File
 from litestar.response.redirect import Redirect
@@ -352,8 +352,8 @@ async def test_to_response_sse_events(content: str | bytes | StreamType[str | by
     @get(
         path="/test",
     )
-    def handler() -> ServerSentEvent:
-        return ServerSentEvent(
+    def handler() -> ServerSentEventStream:
+        return ServerSentEventStream(
             content=content,
             headers={"response-header": "abc"},
             cookies=[Cookie(key="streaming-cookie", value="xyz")],
@@ -398,8 +398,8 @@ async def test_sse_events_content(content: str | bytes | StreamType[str | bytes]
     @get(
         path="/test",
     )
-    def handler() -> ServerSentEvent:
-        return ServerSentEvent(
+    def handler() -> ServerSentEventStream:
+        return ServerSentEventStream(
             content=content,
             comment_message="my comment message\r\nwith some\nmixed line breaks",
             event_id=123,

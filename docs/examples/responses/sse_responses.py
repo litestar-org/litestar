@@ -2,7 +2,7 @@ from asyncio import sleep
 from typing import AsyncGenerator
 
 from litestar import Litestar, get
-from litestar.response import ServerSentEvent
+from litestar.response import ServerSentEventStream
 
 
 async def my_generator() -> AsyncGenerator[bytes, None]:
@@ -14,8 +14,8 @@ async def my_generator() -> AsyncGenerator[bytes, None]:
 
 
 @get(path="/count", sync_to_thread=False)
-def sse_handler() -> ServerSentEvent:
-    return ServerSentEvent(my_generator())
+def sse_handler() -> ServerSentEventStream:
+    return ServerSentEventStream(my_generator())
 
 
 app = Litestar(route_handlers=[sse_handler])

@@ -11,7 +11,7 @@ from httpx_sse import aconnect_sse
 
 from litestar import get
 from litestar.background_tasks import BackgroundTask
-from litestar.response import ServerSentEvent
+from litestar.response import ServerSentEventStream
 from litestar.response.streaming import ASGIStreamingResponse
 from litestar.testing import TestClient, create_async_test_client
 
@@ -174,7 +174,7 @@ async def test_sse_steaming_response() -> None:
     @get(
         path="/test",
     )
-    def handler() -> ServerSentEvent:
+    def handler() -> ServerSentEventStream:
         def numbers(minimum: int, maximum: int) -> Iterator[str]:
             for i in range(minimum, maximum + 1):
                 yield str(i)
@@ -183,7 +183,7 @@ async def test_sse_steaming_response() -> None:
 
         generator = numbers(1, 5)
 
-        return ServerSentEvent(content=generator, event_id=123, event_type="special", retry_duration=1000)
+        return ServerSentEventStream(content=generator, event_id=123, event_type="special", retry_duration=1000)
 
     async with create_async_test_client(handler) as client:
         async with aconnect_sse(client, "GET", f"{client.base_url}/test") as event_source:

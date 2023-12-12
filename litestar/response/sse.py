@@ -73,7 +73,7 @@ class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
         yield b"\r\n"
 
 
-class ServerSentEvent(Stream):
+class ServerSentEventStream(Stream):
     def __init__(
         self,
         content: str | bytes | StreamType[str | bytes],
