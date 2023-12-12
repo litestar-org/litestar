@@ -17,8 +17,9 @@ _LINE_BREAK_RE = re.compile(r"\r\n|\r|\n")
 
 
 class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
-    __slots__ = ("content_async_iterator",)
+    __slots__ = ("content_async_iterator", "chunks", )
 
+    chunks: list[bytes]
     content_async_iterator: AsyncIteratorWrapper[bytes | str] | AsyncIterable[str | bytes] | AsyncIterator[str | bytes]
 
     def __init__(
@@ -42,6 +43,7 @@ class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
         if retry_duration is not None:
             chunks.append(f"retry: {retry_duration}\r\n".encode())
 
+        self.chunks = chunks
         super().__init__(iterator=chunks)
 
         if not isinstance(content, (Iterator, AsyncIterator, AsyncIteratorWrapper)) and callable(content):
@@ -58,7 +60,8 @@ class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
 
     def _call_next(self) -> bytes:
         try:
-            return next(self.iterator)
+            a = next(self.iterator)
+            return a
         except StopIteration as e:
             raise ValueError from e
 
