@@ -459,7 +459,7 @@ class SchemaCreator:
                     kwarg_definition=field_definition.kwarg_definition,
                 )
             )
-        return schema  # pragma: no cover
+        return schema
 
     def for_constrained_field(self, field: FieldDefinition) -> Schema:
         """Create Schema for Pydantic Constrained fields (created using constr(), conint() and so forth, or by subclassing
@@ -538,10 +538,7 @@ class SchemaCreator:
 
         if schema.title and schema.type == OpenAPIType.OBJECT:
             key = _get_normalized_schema_key(field.annotation)
-            ref = self.schema_registry.get_reference_for_key(key)
-            if ref is None:
-                raise RuntimeError(f"Schema for key '{key}' not found in registry")
-            return ref
+            return self.schema_registry.get_reference_for_key(key) or schema
         return schema
 
     def create_component_schema(
