@@ -132,6 +132,42 @@ and
 
 You can check out a more in-depth tutorial in the :doc:`/tutorials/todo-app/index` section!
 
+Sponsors
+--------
+
+Litestar is a community-driven open-source initiative that thrives on the generous contributions of our sponsors,
+enabling us to pursue innovative developments.
+
+A huge thank you to our current sponsors:
+
+.. raw:: html
+
+    <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
+      <div>
+        <a href="https://scalar.com">
+          <img src="https://raw.githubusercontent.com/litestar-org/branding/main/assets/sponsors/scalar.svg" alt="Scalar.com" style="border-radius: 10px; width: auto; max-height: 150px;"/>
+        </a>
+        <p style="text-align: center;">Scalar.com</p>
+      </div>
+      <div>
+        <a href="https://telemetrysports.com/">
+          <img src="https://raw.githubusercontent.com/litestar-org/branding/main/assets/sponsors/telemetry-sports/unofficial-telemetry-whitebg.svg" alt="Telemetry Sports" style="border-radius: 10px; width: auto; max-height: 150px;"/>
+        </a>
+        <p style="text-align: center;">Telemetry Sports</p>
+      </div>
+    </div>
+
+We invite organizations and individuals to join our sponsorship program.
+By becoming a sponsor on platforms like `GitHub <sponsor-github_>`_
+and `Open Collective <sponsor-oc_>`_, you can play a pivotal role in our project's growth.
+
+Additionally, we engage in pledge-based sponsorship opportunities through `Polar <sponsor-polar_>`_.
+
+
+.. _sponsor-github: https://github.com/sponsors/litestar-org
+.. _sponsor-oc: https://opencollective.com/litestar
+.. _sponsor-polar: https://polar.sh/litestar-org
+
 Expanded Example
 ----------------
 

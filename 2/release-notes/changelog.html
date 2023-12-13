@@ -1503,6 +1503,51 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.4.4">
+<h2>2.4.4<a class="headerlink" href="#2.4.4" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2023/12/13<section id="2.4.4-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.4.4-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Support non-valid identifier as serialization target name<a class="headerlink reference internal" href="#2.4.4-support non-valid identifier as serialization target name" id="2.4.4-support non-valid identifier as serialization target name">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug where DTOs would raise a <code class="docutils literal notranslate"><span class="pre">TypeError:</span> <span class="pre">__slots__</span> <span class="pre">must</span> <span class="pre">be</span> <span class="pre">identifiers</span></code>
+during serialization, if a non-valid identifier (such as <code class="docutils literal notranslate"><span class="pre">field-name</span></code>)was used
+for field renaming.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2845">litestar-org/litestar#2845</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2850">litestar-org/litestar#2850</a></span></p>
+</div>
+</dd>
+<dt>Fix regression signature validation for DTO validated types<a class="headerlink reference internal" href="#2.4.4-fix regression signature validation for dto validated types" id="2.4.4-fix regression signature validation for dto validated types">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a regression introduced in <code class="docutils literal notranslate"><span class="pre">2.0.0rc1</span></code> that would cause data validated by
+the DTO to be validated again by the signature model.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2149">litestar-org/litestar#2149</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2854">litestar-org/litestar#2854</a></span></p>
+</div>
+</dd>
+<dt>Fix regression in OpenAPI schema key names<a class="headerlink reference internal" href="#2.4.4-fix regression in openapi schema key names" id="2.4.4-fix regression in openapi schema key names">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a regression introduced in <code class="docutils literal notranslate"><span class="pre">2.4.0</span></code> regarding the naming of OpenAPI schema
+keys, in which a change was introduced to the way that keys for the OpenAPI
+components/schemas objects were calculated to address the possibility of name
+collisions.</p>
+<p>This behaviour was reverted for the case where a name has no collision, and now
+only introduces extended keys for the case where there are multiple objects with
+the same name, a case which would previously result in an exception.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2804">litestar-org/litestar#2804</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2841">litestar-org/litestar#2841</a></span></p>
+</div>
+</dd>
+<dt>Fix regression in OpenAPI handling of routes with multiple handlers<a class="headerlink reference internal" href="#2.4.4-fix regression in openapi handling of routes with multiple handlers" id="2.4.4-fix regression in openapi handling of routes with multiple handlers">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a regression introduced in <code class="docutils literal notranslate"><span class="pre">2.4.3</span></code> causing two routes registered with the
+same path, but different methods to break OpenAPI schema generation due to both
+of them having the same value for operation ID.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2863">litestar-org/litestar#2863</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2864">litestar-org/litestar#2864</a></span></p>
+</div>
+</dd>
+<dt>Fix OpenAPI schema generation for recursive models<a class="headerlink reference internal" href="#2.4.4-fix openapi schema generation for recursive models" id="2.4.4-fix openapi schema generation for recursive models">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix an issue that would lead to a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RecursionError" title="(in Python v3.12)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">RecursionError</span></code></a> when including nested
+models in the OpenAPI schema.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2429">litestar-org/litestar#2429</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2869">litestar-org/litestar#2869</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.4.3">
 <h2>2.4.3<a class="headerlink" href="#2.4.3" title="Permalink to this heading">#</a></h2>
 <strong>Released: </strong>2023/12/07<section id="2.4.3-bugfix">
@@ -2213,8 +2258,8 @@ This was fixed by leaving the default value as <a class="reference external" hre
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2138">litestar-org/litestar#2138</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2189">litestar-org/litestar#2189</a></span></p>
 </div>
 </dd>
-<dt>Add <a class="reference internal" href="../reference/config.html#litestar.config.app.AppConfig.include_in_schema" title="litestar.config.app.AppConfig.include_in_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">include_in_schema()</span></code></a> option for all layers<a class="headerlink reference internal" href="#2.1.0-add" id="2.1.0-add">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Adds the <a class="reference internal" href="../reference/config.html#litestar.config.app.AppConfig.include_in_schema" title="litestar.config.app.AppConfig.include_in_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">include_in_schema()</span></code></a> option to all layers, allowing to include/exclude
+<dt>Add <a class="reference internal" href="../reference/controller.html#litestar.controller.Controller.include_in_schema" title="litestar.controller.Controller.include_in_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">include_in_schema()</span></code></a> option for all layers<a class="headerlink reference internal" href="#2.1.0-add" id="2.1.0-add">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Adds the <a class="reference internal" href="../reference/controller.html#litestar.controller.Controller.include_in_schema" title="litestar.controller.Controller.include_in_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">include_in_schema()</span></code></a> option to all layers, allowing to include/exclude
 specific routes from the generated OpenAPI schema.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2267">litestar-org/litestar#2267</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2295">litestar-org/litestar#2295</a></span></p>
 </div>
@@ -2247,11 +2292,11 @@ dedicated class method.</p>
 </div>
 </dd>
 <dt>SQLAlchemy: Exclude implicit fields for SQLAlchemy DTO<a class="headerlink reference internal" href="#2.1.0-sqlalchemy: exclude implicit fields for sqlalchemy dto" id="2.1.0-sqlalchemy: exclude implicit fields for sqlalchemy dto">#</a></dt><dd><div class="changelog-change docutils container">
-<p><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.6.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be
+<p><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be
 configured using a separate config object. This can be set using both
 class inheritance and <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Annotated">Annotated</a>:</p>
 <div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.6.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be configured using a separate config object using <code class="docutils literal notranslate"><span class="pre">config</span></code> object.</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be configured using a separate config object using <code class="docutils literal notranslate"><span class="pre">config</span></code> object.</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyModelDTO</span><span class="p">(</span><span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">MyModel</span><span class="p">]):</span>
     <span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemyDTOConfig</span><span class="p">()</span>
 </pre></div>
@@ -2259,7 +2304,7 @@ class inheritance and <a class="reference external" href="https://docs.python.or
 </div>
 <p>or</p>
 <div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.6.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be configured using a separate config object using <code class="docutils literal notranslate"><span class="pre">Annotated</span></code>.</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be configured using a separate config object using <code class="docutils literal notranslate"><span class="pre">Annotated</span></code>.</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span> <span class="n">MyModelDTO</span> <span class="o">=</span> <span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="n">MyModel</span><span class="p">,</span> <span class="n">SQLAlchemyDTOConfig</span><span class="p">()]]</span>
 </pre></div>
 </div>
@@ -2349,7 +2394,7 @@ regardless of whether it’s passed positionally or by name.</p>
 </div>
 </dd>
 <dt>Filters not available in <code class="docutils literal notranslate"><span class="pre">exists()</span></code><a class="headerlink reference internal" href="#2.1.0-filters not available in" id="2.1.0-filters not available in">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Fixes <a class="reference internal" href="../reference/stores/base.html#litestar.stores.base.Store.exists" title="litestar.stores.base.Store.exists"><code class="xref py py-meth docutils literal notranslate"><span class="pre">exists()</span></code></a> method for SQLAlchemy sync and async.</p>
+<p>Fixes <a class="reference internal" href="../reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.exists" title="litestar.repository.abc.AbstractAsyncRepository.exists"><code class="xref py py-meth docutils literal notranslate"><span class="pre">exists()</span></code></a> method for SQLAlchemy sync and async.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2221">litestar-org/litestar#2221</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2228">litestar-org/litestar#2228</a></span></p>
 </div>
 </dd>
@@ -2693,7 +2738,7 @@ has been added.</p>
 <strong>Released: </strong>2023/07/20<section id="2.0.0beta3-feature">
 <h3>Features<a class="headerlink" href="#2.0.0beta3-feature" title="Permalink to this heading">#</a></h3>
 <dl>
-<dt><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.6.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a>: column/relationship type inference<a class="headerlink reference internal" href="#2.0.0beta3-sqlalchemydto (advanced alchemy)" id="2.0.0beta3-sqlalchemydto (advanced alchemy)">#</a></dt><dd><div class="changelog-change docutils container">
+<dt><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a>: column/relationship type inference<a class="headerlink reference internal" href="#2.0.0beta3-sqlalchemydto (advanced alchemy)" id="2.0.0beta3-sqlalchemydto (advanced alchemy)">#</a></dt><dd><div class="changelog-change docutils container">
 <p>If type annotations aren’t available for a given column/relationship, they may
 be inferred from the mapped object.</p>
 <p>For columns, the <a class="reference external" href="https://docs.sqlalchemy.org/en/20/core/reflection.html#sqlalchemy.engine.interfaces.ReflectedColumn.type" title="(in SQLAlchemy v2.0)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">type</span></code></a>‘s
@@ -2815,7 +2860,7 @@ of the update.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1894">litestar-org/litestar#1894</a></span></p>
 </div>
 </dd>
-<dt><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.6.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a>: Fix handling of <code class="docutils literal notranslate"><span class="pre">Sequence</span></code> with defaults<a class="headerlink reference internal" href="#2.0.0beta3-sqlalchemydto (advanced alchemy)" id="2.0.0beta3-sqlalchemydto (advanced alchemy)">#</a></dt><dd><div class="changelog-change docutils container">
+<dt><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a>: Fix handling of <code class="docutils literal notranslate"><span class="pre">Sequence</span></code> with defaults<a class="headerlink reference internal" href="#2.0.0beta3-sqlalchemydto (advanced alchemy)" id="2.0.0beta3-sqlalchemydto (advanced alchemy)">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fixes handling of columns defined with
 <a class="reference external" href="https://docs.sqlalchemy.org/en/20/core/defaults.html#defining-sequences">Sequence</a>
 default values.</p>
@@ -3104,8 +3149,8 @@ using a double-underscore syntax, for example
 </div>
 </dd>
 <dt>DTOs: Hybrid properties and association proxies in
-<a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.6.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a><a class="headerlink reference internal" href="#2.0.0beta1-dtos: hybrid properties and association proxies in" id="2.0.0beta1-dtos: hybrid properties and association proxies in">#</a></dt><dd><div class="changelog-change docutils container">
-<p>The <a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.6.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a>
+<a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a><a class="headerlink reference internal" href="#2.0.0beta1-dtos: hybrid properties and association proxies in" id="2.0.0beta1-dtos: hybrid properties and association proxies in">#</a></dt><dd><div class="changelog-change docutils container">
+<p>The <a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a>
 now supports <a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/extensions/hybrid.html">hybrid attribute</a>
 and <a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/extensions/associationproxy.html">associationproxy</a>.</p>
 <p>The generated field will be marked read-only.</p>
@@ -4640,6 +4685,10 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.4.4">2.4.4</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.4.4-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.4.3">2.4.3</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.4.3-bugfix">Bugfixes</a></li>
 </ul>

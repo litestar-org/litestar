@@ -3,6 +3,58 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.4.4
+    :date: 2023/12/13
+
+    .. change:: Support non-valid identifier as serialization target name
+        :type: bugfix
+        :pr: 2850
+        :issue: 2845
+
+        Fix a bug where DTOs would raise a ``TypeError: __slots__ must be identifiers``
+        during serialization, if a non-valid identifier (such as ``field-name``)was used
+        for field renaming.
+
+    .. change:: Fix regression signature validation for DTO validated types
+        :type: bugfix
+        :pr: 2854
+        :issue: 2149
+
+        Fix a regression introduced in ``2.0.0rc1`` that would cause data validated by
+        the DTO to be validated again by the signature model.
+
+    .. change:: Fix regression in OpenAPI schema key names
+        :type: bugfix
+        :pr: 2841
+        :issue: 2804
+
+        Fix a regression introduced in ``2.4.0`` regarding the naming of OpenAPI schema
+        keys, in which a change was introduced to the way that keys for the OpenAPI
+        components/schemas objects were calculated to address the possibility of name
+        collisions.
+
+        This behaviour was reverted for the case where a name has no collision, and now
+        only introduces extended keys for the case where there are multiple objects with
+        the same name, a case which would previously result in an exception.
+
+    .. change:: Fix regression in OpenAPI handling of routes with multiple handlers
+        :type: bugfix
+        :pr: 2864
+        :issue: 2863
+
+        Fix a regression introduced in ``2.4.3`` causing two routes registered with the
+        same path, but different methods to break OpenAPI schema generation due to both
+        of them having the same value for operation ID.
+
+    .. change:: Fix OpenAPI schema generation for recursive models
+        :type: bugfix
+        :pr: 2869
+        :issue: 2429
+
+        Fix an issue that would lead to a :exc:`RecursionError` when including nested
+        models in the OpenAPI schema.
+
+
 .. changelog:: 2.4.3
     :date: 2023/12/07
 

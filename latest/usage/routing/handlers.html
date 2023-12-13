@@ -1601,8 +1601,7 @@ kwargs are inspected by Litestar and then injected into the request handler.</p>
 <p>Additionally, you can specify the following special kwargs, what’s called “reserved keywords” internally:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">cookies</span></code>: injects the request <a class="reference internal" href="../../reference/datastructures.html#litestar.datastructures.Cookie" title="litestar.datastructures.cookie.Cookie"><code class="xref py py-class docutils literal notranslate"><span class="pre">cookies</span></code></a> as a parsed dictionary.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">headers</span></code>: injects the request headers as an instance of <a class="reference internal" href="../../reference/datastructures.html#litestar.datastructures.Headers" title="litestar.datastructures.headers.Headers"><code class="xref py py-class docutils literal notranslate"><span class="pre">Headers</span></code></a> ,
-which is a case-insensitive mapping.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">headers</span></code>: injects the request headers as a parsed dictionary.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">query</span></code> : injects the request <code class="docutils literal notranslate"><span class="pre">query_params</span></code> as a parsed dictionary.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">request</span></code>: injects the <a class="reference internal" href="../../reference/connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance. Available only for <a class="reference internal" href="#http-route-handlers">http route handlers</a></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">scope</span></code> : injects the ASGI scope dictionary.</p></li>
@@ -1618,14 +1617,14 @@ which is a case-insensitive mapping.</p></li>
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">Headers</span><span class="p">,</span> <span class="n">State</span>
+<span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">State</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">my_request_handler</span><span class="p">(</span>
     <span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">,</span>
     <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span>
-    <span class="n">headers</span><span class="p">:</span> <span class="n">Headers</span><span class="p">,</span>
+    <span class="n">headers</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
     <span class="n">query</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
     <span class="n">cookies</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -1638,14 +1637,14 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">Headers</span><span class="p">,</span> <span class="n">State</span>
+<span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">State</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">my_request_handler</span><span class="p">(</span>
     <span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">,</span>
     <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span>
-    <span class="n">headers</span><span class="p">:</span> <span class="n">Headers</span><span class="p">,</span>
+    <span class="n">headers</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
     <span class="n">query</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
     <span class="n">cookies</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>

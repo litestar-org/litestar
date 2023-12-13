@@ -1520,7 +1520,7 @@ and from raw bytes.</p>
 <li><p><a class="reference internal" href="../../reference/dto/dataclass_dto.html#litestar.dto.dataclass_dto.DataclassDTO" title="litestar.dto.dataclass_dto.DataclassDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataclassDTO</span></code></a></p></li>
 <li><p><a class="reference internal" href="../../reference/dto/msgspec_dto.html#litestar.dto.msgspec_dto.MsgspecDTO" title="litestar.dto.msgspec_dto.MsgspecDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">MsgspecDTO</span></code></a></p></li>
 <li><p><a class="reference internal" href="../../reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticDTO" title="litestar.contrib.pydantic.PydanticDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">PydanticDTO</span></code></a></p></li>
-<li><p><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.6.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span></code></a></p></li>
 </ul>
 <section id="using-dto-factories">
 <h2>Using DTO Factories<a class="headerlink" href="#using-dto-factories" title="Permalink to this heading">#</a></h2>
@@ -1559,13 +1559,13 @@ a DTO for use with a SQLAlchemy model:</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;944fc0c9-43a7-4cff-ba1c-b961a0d9fe61&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;33b9ca9e-396c-452d-bfdc-af33ff0e3d2e&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
 <p>Here we see that a SQLAlchemy model is used as both the <code class="docutils literal notranslate"><span class="pre">data</span></code> and return annotation for the handler, and while
 Litestar does not natively support encoding/decoding to/from SQLAlchemy models, through
-<a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.6.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span></code></a> we can do this.</p>
+<a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.6.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span></code></a> we can do this.</p>
 <p>However, we do have some issues with the above example. Firstly, the user’s password has been returned to them in the
 response from the handler. Secondly, the user is able to set the <code class="docutils literal notranslate"><span class="pre">created_at</span></code> field on the model, which should only
 ever be set once, and defined internally.</p>
@@ -1616,7 +1616,7 @@ configuration.</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;1295610c-2f8b-46b8-8762-6eef15feeb9a&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;fc9b6814-11e8-42e5-a7e6-cdd76cd4e0b0&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -1879,7 +1879,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;7641f690-d361-41e7-a4d9-118743f749fb&quot;</span>,<span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;3395da77-1f3d-4343-8b17-08cf33fb6887&quot;</span>,<span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -1971,7 +1971,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;firstName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;createdAt&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;createdAt&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;309dc7a1-28e4-4888-82ae-151713a95908&quot;</span>,<span class="s2">&quot;firstName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;createdAt&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;ed806a84-0966-4822-b07a-c652c9c471a5&quot;</span>,<span class="s2">&quot;firstName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -2243,7 +2243,7 @@ type of the data that it will contain, and provides useful methods for interacti
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/person<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;age&quot;</span>:41<span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;10916565-7c2c-4a92-8b3e-874cf98e10ca&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;age&quot;</span>:41<span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;24e6d67a-14dd-4d33-88f2-e0fc6cee8e4e&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;age&quot;</span>:41<span class="o">}</span>
 </pre></div>
 </div>
 </div>
