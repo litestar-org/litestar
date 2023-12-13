@@ -1,6 +1,11 @@
 Supervisor (Linux)
 ==================
 
+``supervisor`` is a process control system for Linux, which allows you to monitor and control
+a number of processes on UNIX-like operating systems. It is particularly useful for managing
+processes that need to be running continuously, and for monitoring and controlling processes
+that are running in the background.
+
 Use When
 --------
 
