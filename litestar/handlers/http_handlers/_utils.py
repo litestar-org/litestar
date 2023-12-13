@@ -80,7 +80,7 @@ def create_data_handler(
         if after_request:
             response = await after_request(response)  # type: ignore[arg-type,misc]
 
-        return response.to_asgi_response(app=None, request=request, headers=normalize_headers(headers), cookies=cookies)
+        return response.to_asgi_response(app=None, request=request, headers=normalize_headers(headers), cookies=cookies)  # pyright: ignore
 
     return handler
 
