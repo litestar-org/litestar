@@ -476,3 +476,9 @@ def test_type_or_first_not_none_inner_type_utility(in_type: Any, out_type: Any) 
             _type_or_first_not_none_inner_type(in_type)
     else:
         assert _type_or_first_not_none_inner_type(in_type) == out_type
+
+
+def test_not_generating_examples_property() -> None:
+    with_examples = SchemaCreator(generate_examples=True)
+    without_examples = with_examples.not_generating_examples
+    assert without_examples.generate_examples is False
