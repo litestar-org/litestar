@@ -427,7 +427,7 @@ class SchemaCreator:
                 items=Schema(one_of=items) if len(items) > 1 else items[0],
             )
 
-        raise ImproperlyConfiguredException(
+        raise ImproperlyConfiguredException(  # pragma: no cover
             f"Parameter '{field_definition.name}' with type '{field_definition.annotation}' could not be mapped to an Open API type. "
             f"This can occur if a user-defined generic type is resolved as a parameter. If '{field_definition.name}' should "
             "not be documented as a parameter, annotate it using the `Dependency` function, e.g., "
