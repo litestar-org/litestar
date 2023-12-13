@@ -4,7 +4,7 @@ import asyncio
 import sys
 
 if sys.version_info < (3, 9):
-    import importlib_resources
+    import importlib_resources  # pyright: ignore
 else:
     import importlib.resources as importlib_resources
 from abc import ABC
