@@ -352,3 +352,22 @@ class Model:
         f"{module_b.__name__}_Model",
     }
     # TODO: expand this test to cover more cases
+
+
+def test_multiple_handlers_for_same_route() -> None:
+    @post("/", sync_to_thread=False)
+    def post_handler() -> None:
+        ...
+
+    @get("/", sync_to_thread=False)
+    def get_handler() -> None:
+        ...
+
+    app = Litestar([get_handler, post_handler])
+    openapi_plugin = app.plugins.get(OpenAPIPlugin)
+    openapi = openapi_plugin.provide_openapi()
+
+    assert openapi.paths is not None
+    path_item = openapi.paths["/"]
+    assert path_item.get is not None
+    assert path_item.post is not None
