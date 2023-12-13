@@ -10,7 +10,7 @@ on:
       - main
 
 permissions:
-  pull-requests: read
+  pull-requests: write
 
 jobs:
   main:
@@ -18,7 +18,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check PR target
+        id: check-pr-target
         if: ${{ startsWith(github.event.pull_request.title, 'feat') }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const isFeature = context.payload.pull_request.title.startsWith('feat');
+            core.setOutput('is-feature', isFeature ? 'true' : 'false');
+
+      - name: Comment PR
+        if: steps.check-pr-target.outputs.is-feature == 'true'
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: "It looks like you are adding a new feature! :rocket: Please rebase and point your PR to the `develop` branch."
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Fail if feature PR is targeted to main
+        if: steps.check-pr-target.outputs.is-feature == 'true' && github.event.pull_request.base.ref == 'main'
         uses: actions/github-script@v7
         with:
           script: |
