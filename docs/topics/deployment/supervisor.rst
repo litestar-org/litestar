@@ -16,14 +16,16 @@ Alternatives
 
 For different deployment scenarios, consider these alternatives:
 
-- `Docker <https://www.docker.com/>`_:
+- :doc:`Docker <docker>`:
     Ideal for containerized environments, offering isolation and scalability.
-- `NGINX Unit <https://unit.nginx.org/>`_:
+- :doc:`NGINX Unit <nginx-unit>`:
     A dynamic web and application server, suitable for running and managing multiple applications.
 - `systemd <https://www.freedesktop.org/wiki/Software/systemd/>`_:
     A system and service manager, integrated into many Linux distributions for managing system processes.
-- `Manually with an ASGI Server <https://asgi.readthedocs.io/en/latest/>`_:
-    Direct control by running the application with an ASGI server like Uvicorn or Hypercorn.
+
+    .. note:: Official documentation coming soon
+- :doc:`Manually with an ASGI server <manually-with-asgi-server>`:
+    Direct control by running the application with an ASGI server like Uvicorn, Hypercorn, Daphne, etc.
 
 This resource provides comprehensive guidance on installation, configuration, and usage of
 ``supervisor`` for service management.
@@ -53,13 +55,13 @@ After you have created the config file, you will need to reload the ``supervisor
 
 .. dropdown:: Helpful Commands
 
-    .. code-block:: sh
+    .. code-block:: shell
         :caption: Reload supervisor config
 
         sudo supervisorctl reread
         sudo supervisorctl update
 
-    .. code-block:: sh
+    .. code-block:: shell
         :caption: Start/Stop/Restart/Status
 
         sudo supervisorctl start exampleapp
@@ -67,7 +69,7 @@ After you have created the config file, you will need to reload the ``supervisor
         sudo supervisorctl restart exampleapp
         sudo supervisorctl status exampleapp
 
-    .. code-block:: sh
+    .. code-block:: shell
         :caption: View logs
 
         sudo supervisorctl tail -f exampleapp
@@ -98,7 +100,7 @@ This is where the magic happens to let us simply use ``exampleapp start`` instea
 
 .. dropdown:: Alias Examples
 
-    .. code-block:: sh
+    .. code-block:: shell
         :caption: Example commands provided by the alias file
 
         exampleapp start
@@ -107,7 +109,7 @@ This is where the magic happens to let us simply use ``exampleapp start`` instea
         exampleapp status
         exampleapp watch
 
-    .. code-block:: sh
+    .. code-block:: shell
         :caption: Example alias file
         :linenos:
 
@@ -167,7 +169,7 @@ facilitating the complete update process of the application:
 
 .. dropdown:: Update Script Example
 
-    .. code-block:: sh
+    .. code-block:: shell
         :caption: Example update command
         :linenos:
 
