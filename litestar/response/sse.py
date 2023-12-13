@@ -3,7 +3,7 @@ from __future__ import annotations
 import io
 import re
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, AsyncGenerator, AsyncIterable, AsyncIterator, Iterable, Iterator, Union, Any, Optional
+from typing import TYPE_CHECKING, Any, AsyncGenerator, AsyncIterable, AsyncIterator, Iterable, Iterator
 
 from anyio.to_thread import run_sync
 
@@ -49,7 +49,6 @@ class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
         if retry_duration is not None:
             chunks.append(f"retry: {retry_duration}\r\n".encode())
 
-        # self.chunks = chunks
         super().__init__(iterator=chunks)
 
         if not isinstance(content, (Iterator, AsyncIterator, AsyncIteratorWrapper)) and callable(content):
@@ -64,22 +63,20 @@ class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
         else:
             raise ImproperlyConfiguredException(f"Invalid type {type(content)} for ServerSentEvent")
 
-    def ensure_bytes(self, data: Union[bytes, dict, ServerSentEvent, Any], sep: str) -> bytes:
+    def ensure_bytes(self, data: bytes | dict | ServerSentEvent | Any, sep: str) -> bytes:
         if isinstance(data, bytes):
             return data
-        elif isinstance(data, ServerSentEvent):
+        if isinstance(data, ServerSentEvent):
             return data.encode()
-        elif isinstance(data, dict):
+        if isinstance(data, dict):
             data["sep"] = sep
             return ServerSentEvent(**data).encode()
-        else:
-            print(f"Invalid type {type(data)} for")
-            return ServerSentEvent(
-                data=str(data), id=self.event_id, event=self.event_type, retry=self.retry_duration, sep=sep
-            ).encode()
+
+        return ServerSentEvent(
+            data=str(data), id=self.event_id, event=self.event_type, retry=self.retry_duration, sep=sep
+        ).encode()
 
     def _call_next(self) -> bytes:
-        print("_call_next")
         try:
             return next(self.iterator)
         except StopIteration as e:
@@ -88,29 +85,24 @@ class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
     async def _async_generator(self) -> AsyncGenerator[bytes, None]:
         while True:
             try:
-                print("_async_generator SYNC")
                 yield await run_sync(self._call_next)
             except ValueError:
-                print("Caught exception")
                 async for value in self.content_async_iterator:
-                    print(value)
                     d = self.ensure_bytes(value, DEFAULT_SEPARATOR)
-                    print(d)
                     yield d
                 break
 
 
 @dataclass
 class ServerSentEvent:
-    data: Optional[Any] = None
-    event: Optional[str] = None
-    id: Optional[str] = None
-    retry: Optional[int] = None
-    comment: Optional[str] = None
-    sep: Optional[str] = DEFAULT_SEPARATOR
+    data: Any | None = None
+    event: str | None = None
+    id: str | None = None
+    retry: int | None = None
+    comment: str | None = None
+    sep: str | None = DEFAULT_SEPARATOR
 
     def encode(self) -> bytes:
-        print("ENCODE")
         buffer = io.StringIO()
         if self.comment is not None:
             for chunk in _LINE_BREAK_RE.split(str(self.comment)):
@@ -150,7 +142,7 @@ class ServerSentEventStream(Stream):
         encoding: str = "utf-8",
         headers: ResponseHeaders | None = None,
         event_type: str | None = None,
-        event_id: int | None = None,
+        event_id: str | None = None,
         retry_duration: int | None = None,
         comment_message: str | None = None,
         status_code: int | None = None,

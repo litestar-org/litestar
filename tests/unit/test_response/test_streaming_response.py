@@ -3,13 +3,13 @@
 https://github.com/encode/starlette/blob/master/tests/test_responses.py And are meant to ensure our compatibility with
 their API.
 """
-from dataclasses import dataclass
 from itertools import cycle
-from typing import TYPE_CHECKING, AsyncIterator, Iterator, Optional
+from typing import TYPE_CHECKING, AsyncIterator, Iterator
 
 import anyio
-from httpx_sse import aconnect_sse
 import pytest
+from httpx_sse import ServerSentEvent as HTTPXServerSentEvent
+from httpx_sse import aconnect_sse
 
 from litestar import get
 from litestar.background_tasks import BackgroundTask
@@ -190,7 +190,6 @@ async def test_sse_steaming_response() -> None:
         async with aconnect_sse(client, "GET", f"{client.base_url}/test") as event_source:
             events = [sse async for sse in event_source.aiter_sse()]
             assert len(events) == 5
-            print(events)
             for idx, sse in enumerate(events, start=1):
                 assert sse.event == "special" or sse.event == "message"
                 assert sse.data == str(idx)
@@ -201,9 +200,6 @@ async def test_sse_steaming_response() -> None:
 def test_asgi_response_encoded_headers() -> None:
     response = ASGIStreamingResponse(encoded_headers=[(b"foo", b"bar")], iterator="")
     assert response.encode_headers() == [(b"foo", b"bar"), (b"content-type", b"application/json")]
-
-
-from httpx_sse import ServerSentEvent as HTTPXServerSentEvent
 
 
 @pytest.mark.parametrize(
@@ -227,21 +223,19 @@ async def test_various_sse_inputs(input, expected_events):
                 elif input == "string":
                     yield str(i)
                 elif input == "dict1":
-                    yield dict(data=i, event="special", retry=1000)
+                    yield {"data": i, "event": "special", "retry": 1000}
                 elif input == "dict2":
-                    yield dict(data=i, event="special", retry=1000)
+                    yield {"data": i, "event": "special", "retry": 1000}
                 elif input == "obj":
                     yield ServerSentEvent(data=i, event="special", retry=1000)
 
         generator = numbers(1, 5)
-        response = ServerSentEventStream(generator, event_type="special", event_id="123", retry_duration=1000)  # type: ignore
-        return response
+        return ServerSentEventStream(generator, event_type="special", event_id="123", retry_duration=1000)
 
     async with create_async_test_client(handler) as client:
         async with aconnect_sse(client, "GET", f"{client.base_url}/testme") as event_source:
             events = [sse async for sse in event_source.aiter_sse()]
             assert len(events) == 5
-            print(events)
             for i in range(5):
                 assert events[i].event == expected_events[i].event
                 assert events[i].data == expected_events[i].data
