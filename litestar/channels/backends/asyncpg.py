@@ -76,8 +76,12 @@ class AsyncPgChannelsBackend(ChannelsBackend):
             raise RuntimeError("Backend not yet initialized. Did you forget to call on_startup?")
 
         while True:
-            yield await self._queue.get()
+            channel, message = await self._queue.get()
             self._queue.task_done()
+            # an UNLISTEN may be in transit while we're getting here, so we double-check
+            # that we are actually supposed to deliver this message
+            if channel in self._subscribed_channels:
+                yield channel, message
 
     async def get_history(self, channel: str, limit: int | None = None) -> list[bytes]:
         raise NotImplementedError()
