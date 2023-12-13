@@ -52,7 +52,7 @@ async def channels_backend(channels_backend_instance: ChannelsBackend) -> AsyncG
 
 @pytest.fixture()
 async def channels_backend_with_history(
-    channels_backend_instance_with_history: ChannelsBackend
+    channels_backend_instance_with_history: ChannelsBackend,
 ) -> AsyncGenerator[ChannelsBackend, None]:
     await channels_backend_instance_with_history.on_startup()
     yield channels_backend_instance_with_history
@@ -69,6 +69,17 @@ async def test_pub_sub(channels_backend: ChannelsBackend, channels: set[str]) ->
     for _ in channels:
         received.add(await async_next(event_generator))
     assert received == {(c, b"something") for c in channels}
+
+
+async def test_pub_sub_unsubscribe(channels_backend: ChannelsBackend) -> None:
+    await channels_backend.subscribe(["foo", "bar"])
+    await channels_backend.publish(b"something", ["foo"])
+
+    event_generator = channels_backend.stream_events()
+    await channels_backend.unsubscribe(["foo"])
+    await channels_backend.publish(b"something", ["bar"])
+
+    assert await asyncio.wait_for(async_next(event_generator), timeout=0.01) == ("bar", b"something")
 
 
 async def test_pub_sub_no_subscriptions(channels_backend: ChannelsBackend) -> None:
