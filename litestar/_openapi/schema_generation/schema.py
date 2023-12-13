@@ -449,7 +449,7 @@ class SchemaCreator:
             return ref
 
         schema = plugin.to_openapi_schema(field_definition=field_definition, schema_creator=self)
-        if isinstance(schema, SchemaDataContainer):
+        if isinstance(schema, SchemaDataContainer):  # pragma: no cover
             return self.for_field_definition(
                 FieldDefinition.from_kwarg(
                     annotation=schema.data_container,
