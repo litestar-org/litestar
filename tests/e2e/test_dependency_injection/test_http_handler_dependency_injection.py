@@ -90,7 +90,7 @@ def test_function_dependency_injection() -> None:
     )
     def test_function(first: int, second: bool, third: str) -> None:
         assert isinstance(first, int)
-        assert second is False  #  sourcery skip
+        assert second is False
         assert isinstance(third, str)
 
     with create_test_client(

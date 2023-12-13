@@ -126,7 +126,6 @@ linting = [
   "mypy",
   "pre-commit",
   "slotscheck",
-  "sourcery",
   "pyright",
   "blacken-docs",
   "asyncpg-stubs",
