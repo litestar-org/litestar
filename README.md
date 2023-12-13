@@ -535,6 +535,7 @@ see [the contribution guide](CONTRIBUTING.rst).
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/WilliamStam"><img src="https://avatars.githubusercontent.com/u/182800?v=4?s=100" width="100px;" alt="William Stam"/><br /><sub><b>William Stam</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=WilliamStam" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/andrewdoh"><img src="https://avatars.githubusercontent.com/u/7662358?v=4?s=100" width="100px;" alt="andrew do"/><br /><sub><b>andrew do</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=andrewdoh" title="Code">💻</a> <a href="https://github.com/litestar-org/litestar/commits?author=andrewdoh" title="Tests">⚠️</a> <a href="https://github.com/litestar-org/litestar/commits?author=andrewdoh" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>
