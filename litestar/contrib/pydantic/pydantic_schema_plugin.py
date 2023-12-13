@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from typing_extensions import Annotated
 
-from litestar._openapi.schema_generation.schema import SchemaCreator, _get_type_schema_name
 from litestar._openapi.schema_generation.utils import get_formatted_examples
 from litestar.contrib.pydantic.utils import (
     create_field_definitions_for_computed_fields,
@@ -34,6 +33,8 @@ except ImportError:
     except ImportError as e:
         raise MissingDependencyException("pydantic") from e
 
+if TYPE_CHECKING:
+    from litestar._openapi.schema_generation.schema import SchemaCreator
 
 PYDANTIC_TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
     pydantic_v1.ByteSize: Schema(type=OpenAPIType.INTEGER),
@@ -265,7 +266,7 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
             k: getattr(f, "field_info", f) for k, f in model_field_info.items()
         }
 
-        field_definitions = {
+        property_fields = {
             f.alias if f.alias and schema_creator.prefer_alias else k: FieldDefinition.from_kwarg(
                 annotation=Annotated[annotation_hints[k], f, f.metadata]  # type: ignore[union-attr]
                 if is_v2_model
@@ -279,16 +280,18 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
         computed_field_definitions = create_field_definitions_for_computed_fields(
             annotation, schema_creator.prefer_alias
         )
-        field_definitions.update(computed_field_definitions)
+        property_fields.update(computed_field_definitions)
 
-        return Schema(
-            required=sorted(f.name for f in field_definitions.values() if f.is_required),
-            properties={k: schema_creator.for_field_definition(f) for k, f in field_definitions.items()},
-            type=OpenAPIType.OBJECT,
-            title=title or _get_type_schema_name(field_definition),
-            examples=get_formatted_examples(
-                field_definition, [Example(description=f"Example {field_definition.name} value", value=example)]
-            )
-            if example
-            else None,
+        return schema_creator.create_component_schema(
+            field_definition,
+            required=sorted(f.name for f in property_fields.values() if f.is_required),
+            property_fields=property_fields,
+            title=title,
+            examples=(
+                None
+                if example is None
+                else get_formatted_examples(
+                    field_definition, [Example(description=f"Example {field_definition.name} value", value=example)]
+                )
+            ),
         )

@@ -4,10 +4,10 @@ from collections import defaultdict
 from typing import TYPE_CHECKING, Iterator, Sequence
 
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.openapi.spec import Reference, Schema
 
 if TYPE_CHECKING:
     from litestar.openapi import OpenAPIConfig
-    from litestar.openapi.spec import Reference, Schema
     from litestar.plugins import OpenAPISchemaPluginProtocol
 
 
@@ -44,20 +44,36 @@ class SchemaRegistry:
         self._schema_reference_map: dict[int, RegisteredSchema] = {}
         self._model_name_groups: defaultdict[str, list[RegisteredSchema]] = defaultdict(list)
 
-    def register(
-        self,
-        key: tuple[str, ...],
-        schema: Schema,
-        reference: Reference,
-    ) -> None:
-        if (registered_schema := self._schema_key_map.get(key)) is not None:
-            registered_schema.references.append(reference)
-            self._schema_reference_map[id(reference)] = registered_schema
-            return
+    def get_schema_for_key(self, key: tuple[str, ...]) -> Schema:
+        """Get a registered schema by its key.
 
-        self._schema_key_map[key] = registered_schema = RegisteredSchema(key, schema, [reference])
+        Args:
+            key: The key to the schema to get.
+
+        Returns:
+            A RegisteredSchema object.
+        """
+        if key not in self._schema_key_map:
+            self._schema_key_map[key] = registered_schema = RegisteredSchema(key, Schema(), [])
+            self._model_name_groups[key[-1]].append(registered_schema)
+        return self._schema_key_map[key].schema
+
+    def get_reference_for_key(self, key: tuple[str, ...]) -> Reference | None:
+        """Get a reference to a registered schema by its key.
+
+        Args:
+            key: The key to the schema to get.
+
+        Returns:
+            A Reference object.
+        """
+        if key not in self._schema_key_map:
+            return None
+        registered_schema = self._schema_key_map[key]
+        reference = Reference(f"#/components/schemas/{'_'.join(key)}")
+        registered_schema.references.append(reference)
         self._schema_reference_map[id(reference)] = registered_schema
-        self._model_name_groups[key[-1]].append(registered_schema)
+        return reference
 
     def from_reference(self, reference: Reference) -> RegisteredSchema:
         """Get a registered schema by its reference.
