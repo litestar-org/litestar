@@ -67,7 +67,7 @@ def test_run_command(
     mock_subprocess_run: MagicMock,
     mock_uvicorn_run: MagicMock,
     tmp_project_dir: Path,
-) -> None:  # sourcery skip: low-code-quality
+) -> None:
     args = []
     if custom_app_file:
         args.extend(["--app", f"{custom_app_file.stem}:app"])

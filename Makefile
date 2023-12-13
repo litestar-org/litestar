@@ -129,9 +129,6 @@ test-all: test test-examples 						## Run all tests
 .PHONY: check-all
 check-all: lint test-all coverage                   ## Run all linting, tests, and coverage checks
 
-.PHONY: sourcery
-sourcery:                                           ## Run sourcery AI
-	@$(PDM) run sourcery review --fix .
 
 # =============================================================================
 # Docs
