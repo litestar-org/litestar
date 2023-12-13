@@ -48,7 +48,6 @@ from litestar._openapi.schema_generation.utils import (
 )
 from litestar.datastructures import UploadFile
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.openapi.spec import Reference
 from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
 from litestar.openapi.spec.schema import Schema, SchemaDataContainer
 from litestar.params import BodyKwarg, ParameterKwarg
@@ -68,7 +67,7 @@ from litestar.utils.typing import (
 
 if TYPE_CHECKING:
     from litestar._openapi.datastructures import OpenAPIContext
-    from litestar.openapi.spec import Example
+    from litestar.openapi.spec import Example, Reference
     from litestar.plugins import OpenAPISchemaPluginProtocol
 
 KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP: dict[str, str] = {
@@ -157,10 +156,8 @@ def _types_in_list(lst: list[Any]) -> list[OpenAPIType] | OpenAPIType:
         schema_type = TYPE_MAP[type(item)].type
         if isinstance(schema_type, OpenAPIType):
             schema_types.append(schema_type)
-        elif schema_type is None:
-            raise RuntimeError("Item in TYPE_MAP must have a type that is not None")
         else:
-            schema_types.extend(schema_type)
+            raise RuntimeError("Unexpected type for schema item")  # pragma: no cover
     schema_types = list(set(schema_types))
     return schema_types[0] if len(schema_types) == 1 else schema_types
 
@@ -348,10 +345,10 @@ class SchemaCreator:
             result = self.for_union_field(field_definition)
         elif field_definition.is_type_var:
             result = self.for_typevar()
-        elif self.is_constrained_field(field_definition):
-            result = self.for_constrained_field(field_definition)
         elif field_definition.inner_types and not field_definition.is_generic:
             result = self.for_object_type(field_definition)
+        elif self.is_constrained_field(field_definition):
+            result = self.for_constrained_field(field_definition)
         else:
             result = create_schema_for_annotation(field_definition.annotation)
 
@@ -430,7 +427,7 @@ class SchemaCreator:
                 items=Schema(one_of=items) if len(items) > 1 else items[0],
             )
 
-        raise ImproperlyConfiguredException(
+        raise ImproperlyConfiguredException(  # pragma: no cover
             f"Parameter '{field_definition.name}' with type '{field_definition.annotation}' could not be mapped to an Open API type. "
             f"This can occur if a user-defined generic type is resolved as a parameter. If '{field_definition.name}' should "
             "not be documented as a parameter, annotate it using the `Dependency` function, e.g., "
@@ -447,8 +444,12 @@ class SchemaCreator:
         Returns:
             A schema instance.
         """
+        key = _get_normalized_schema_key(field_definition.annotation)
+        if (ref := self.schema_registry.get_reference_for_key(key)) is not None:
+            return ref
+
         schema = plugin.to_openapi_schema(field_definition=field_definition, schema_creator=self)
-        if isinstance(schema, SchemaDataContainer):
+        if isinstance(schema, SchemaDataContainer):  # pragma: no cover
             return self.for_field_definition(
                 FieldDefinition.from_kwarg(
                     annotation=schema.data_container,
@@ -458,7 +459,7 @@ class SchemaCreator:
                     kwarg_definition=field_definition.kwarg_definition,
                 )
             )
-        return schema  # pragma: no cover
+        return schema
 
     def for_constrained_field(self, field: FieldDefinition) -> Schema:
         """Create Schema for Pydantic Constrained fields (created using constr(), conint() and so forth, or by subclassing
@@ -536,11 +537,42 @@ class SchemaCreator:
             schema.examples = get_formatted_examples(field, create_examples_for_field(field))
 
         if schema.title and schema.type == OpenAPIType.OBJECT:
-            class_key = _get_normalized_schema_key(field.annotation)
-            # the "ref" attribute set here is arbitrary, since it will be overwritten by the SchemaRegistry
-            # when the "components/schemas" section of the OpenAPI document is generated and the paths are
-            # known.
-            ref = Reference(ref="", description=schema.description)
-            self.schema_registry.register(class_key, schema, ref)
-            return ref
+            key = _get_normalized_schema_key(field.annotation)
+            return self.schema_registry.get_reference_for_key(key) or schema
+        return schema
+
+    def create_component_schema(
+        self,
+        type_: FieldDefinition,
+        /,
+        required: list[str],
+        property_fields: Mapping[str, FieldDefinition],
+        openapi_type: OpenAPIType = OpenAPIType.OBJECT,
+        title: str | None = None,
+        examples: Mapping[str, Example] | None = None,
+    ) -> Schema:
+        """Create a schema for the components/schemas section of the OpenAPI spec.
+
+        These are schemas that can be referenced by other schemas in the document, including self references.
+
+        To support self referencing schemas, the schema is added to the registry before schemas for its properties
+        are created. This allows the schema to be referenced by its properties.
+
+        Args:
+            type_: ``FieldDefinition`` instance of the type to create a schema for.
+            required: A list of required fields.
+            property_fields: Mapping of name to ``FieldDefinition`` instances for the properties of the schema.
+            openapi_type: The OpenAPI type, defaults to ``OpenAPIType.OBJECT``.
+            title: The schema title, generated if not provided.
+            examples: A mapping of example names to ``Example`` instances, not required.
+
+        Returns:
+            A schema instance.
+        """
+        schema = self.schema_registry.get_schema_for_key(_get_normalized_schema_key(type_.annotation))
+        schema.title = title or _get_type_schema_name(type_)
+        schema.required = required
+        schema.type = openapi_type
+        schema.properties = {k: self.for_field_definition(v) for k, v in property_fields.items()}
+        schema.examples = examples
         return schema
