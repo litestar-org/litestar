@@ -191,10 +191,10 @@ async def test_sse_steaming_response() -> None:
             events = [sse async for sse in event_source.aiter_sse()]
             assert len(events) == 5
             for idx, sse in enumerate(events, start=1):
-                assert sse.event == "special" or sse.event == "message"
+                assert sse.event == "special"
                 assert sse.data == str(idx)
                 assert sse.id == "123"
-                assert sse.retry == 1000 or not sse.retry
+                assert sse.retry == 1000
 
 
 def test_asgi_response_encoded_headers() -> None:
@@ -208,7 +208,16 @@ def test_asgi_response_encoded_headers() -> None:
         ("string", [HTTPXServerSentEvent(event="special", data=str(i), id="123", retry=1000) for i in range(1, 6)]),
         ("integer", [HTTPXServerSentEvent(event="special", data=str(i), id="123", retry=1000) for i in range(1, 6)]),
         ("dict1", [HTTPXServerSentEvent(event="special", data=str(i), id="123", retry=1000) for i in range(1, 6)]),
-        ("dict2", [HTTPXServerSentEvent(event="special", data=str(i), id="123", retry=1000) for i in range(1, 6)]),
+        (
+            "dict2",
+            [
+                HTTPXServerSentEvent(
+                    event=e, data=str(i) if e == "event1" else str(2 * i), id="123", retry=1000 if e == "event1" else 10
+                )
+                for i in range(1, 6)
+                for e in ["event1", "event2"]
+            ],
+        ),
         ("obj", [HTTPXServerSentEvent(event="special", data=str(i), id="123", retry=1000) for i in range(1, 6)]),
     ],
 )
@@ -225,7 +234,8 @@ async def test_various_sse_inputs(input, expected_events):
                 elif input == "dict1":
                     yield {"data": i, "event": "special", "retry": 1000}
                 elif input == "dict2":
-                    yield {"data": i, "event": "special", "retry": 1000}
+                    yield {"data": i, "event": "event1", "retry": 1000}
+                    yield {"data": 2 * i, "event": "event2", "retry": 10}
                 elif input == "obj":
                     yield ServerSentEvent(data=i, event="special", retry=1000)
 
@@ -235,8 +245,8 @@ async def test_various_sse_inputs(input, expected_events):
     async with create_async_test_client(handler) as client:
         async with aconnect_sse(client, "GET", f"{client.base_url}/testme") as event_source:
             events = [sse async for sse in event_source.aiter_sse()]
-            assert len(events) == 5
-            for i in range(5):
+            assert len(events) == len(expected_events)
+            for i in range(len(expected_events)):
                 assert events[i].event == expected_events[i].event
                 assert events[i].data == expected_events[i].data
                 assert events[i].id == expected_events[i].id
