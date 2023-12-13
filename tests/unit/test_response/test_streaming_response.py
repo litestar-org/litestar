@@ -4,7 +4,7 @@ https://github.com/encode/starlette/blob/master/tests/test_responses.py And are 
 their API.
 """
 from itertools import cycle
-from typing import TYPE_CHECKING, AsyncIterator, Iterator
+from typing import TYPE_CHECKING, Any, AsyncIterator, Iterator, List
 
 import anyio
 import pytest
@@ -184,7 +184,7 @@ async def test_sse_steaming_response() -> None:
 
         generator = numbers(1, 5)
 
-        return ServerSentEventStream(content=generator, event_id=123, event_type="special", retry_duration=1000)
+        return ServerSentEventStream(content=generator, event_id="123", event_type="special", retry_duration=1000)
 
     async with create_async_test_client(handler) as client:
         async with aconnect_sse(client, "GET", f"{client.base_url}/test") as event_source:
@@ -221,10 +221,10 @@ def test_asgi_response_encoded_headers() -> None:
         ("obj", [HTTPXServerSentEvent(event="special", data=str(i), id="123", retry=1000) for i in range(1, 6)]),
     ],
 )
-async def test_various_sse_inputs(input, expected_events):
+async def test_various_sse_inputs(input: str, expected_events: List[HTTPXServerSentEvent]) -> None:
     @get("/testme")
     async def handler() -> ServerSentEventStream:
-        async def numbers(minimum, maximum):
+        async def numbers(minimum: int, maximum: int) -> AsyncIterator[Any]:
             for i in range(minimum, maximum + 1):
                 await anyio.sleep(0.1)
                 if input == "integer":

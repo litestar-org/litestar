@@ -359,7 +359,7 @@ async def test_to_response_sse_events(content: str | bytes | StreamType[str | by
             cookies=[Cookie(key="streaming-cookie", value="xyz")],
             background=background_task,
             comment_message="my comment message\r\nwith some\nmixed line breaks",
-            event_id=123,
+            event_id="123",
             event_type="special",
         )
 
@@ -402,7 +402,7 @@ async def test_sse_events_content(content: str | bytes | StreamType[str | bytes]
         return ServerSentEventStream(
             content=content,
             comment_message="my comment message\r\nwith some\nmixed line breaks",
-            event_id=123,
+            event_id="123",
             event_type="special",
         )
 

@@ -100,7 +100,7 @@ class ServerSentEvent:
     id: str | None = None
     retry: int | None = None
     comment: str | None = None
-    sep: str | None = DEFAULT_SEPARATOR
+    sep: str = DEFAULT_SEPARATOR
 
     def encode(self) -> bytes:
         buffer = io.StringIO()
