@@ -38,7 +38,7 @@ class BaseLocalFileSystem(FileSystemProtocol):
         result = await Path(path).stat()
         return await FileSystemAdapter.parse_stat_result(path=path, result=result)
 
-    async def open(self, file: PathType, mode: str, buffering: int = -1) -> AsyncFile[AnyStr]:
+    async def open(self, file: PathType, mode: str, buffering: int = -1) -> AsyncFile[AnyStr]:  # pyright: ignore
         """Return a file-like object from the filesystem.
 
         Notes:
