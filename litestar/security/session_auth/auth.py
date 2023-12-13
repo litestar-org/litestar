@@ -34,7 +34,7 @@ class SessionAuth(Generic[UserType, BaseSessionBackendT], AbstractSecurityConfig
 
     """
 
-    authentication_middleware_class: type[SessionAuthMiddleware] = field(default=SessionAuthMiddleware)
+    authentication_middleware_class: type[SessionAuthMiddleware] = field(default=SessionAuthMiddleware)  # pyright: ignore
     """The authentication middleware class to use.
 
     Must inherit from :class:`SessionAuthMiddleware <litestar.security.session_auth.middleware.SessionAuthMiddleware>`

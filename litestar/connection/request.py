@@ -56,7 +56,7 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         "supports_push_promise",
     )
 
-    scope: HTTPScope
+    scope: HTTPScope  # pyright: ignore
     """The ASGI scope attached to the connection."""
     receive: Receive
     """The ASGI receive function."""
