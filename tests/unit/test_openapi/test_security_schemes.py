@@ -1,10 +1,10 @@
-from typing import TYPE_CHECKING, Any, List
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
 from litestar import Controller, Litestar, Router, get
 from litestar.openapi.config import OpenAPIConfig
-from litestar.openapi.spec import Components, SecurityRequirement
+from litestar.openapi.spec import Components
 from litestar.openapi.spec.security_scheme import SecurityScheme
 
 if TYPE_CHECKING:
@@ -99,7 +99,7 @@ def test_schema_with_route_security_overridden(protected_route: "HTTPRouteHandle
 def test_layered_security_declaration() -> None:
     class MyController(Controller):
         path = "/controller"
-        security: List[SecurityRequirement] = [{"controllerToken": []}]
+        security = [{"controllerToken": []}]
 
         @get("", security=[{"handlerToken": []}])
         def my_handler(self) -> None:
