@@ -156,10 +156,8 @@ def _types_in_list(lst: list[Any]) -> list[OpenAPIType] | OpenAPIType:
         schema_type = TYPE_MAP[type(item)].type
         if isinstance(schema_type, OpenAPIType):
             schema_types.append(schema_type)
-        elif schema_type is None:
-            raise RuntimeError("Item in TYPE_MAP must have a type that is not None")
         else:
-            schema_types.extend(schema_type)
+            raise RuntimeError("Unexpected type for schema item")  # pragma: no cover
     schema_types = list(set(schema_types))
     return schema_types[0] if len(schema_types) == 1 else schema_types
 
