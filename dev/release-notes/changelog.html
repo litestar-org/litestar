@@ -1503,6 +1503,51 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.4.4">
+<h2>2.4.4<a class="headerlink" href="#2.4.4" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2023/12/13<section id="2.4.4-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.4.4-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Support non-valid identifier as serialization target name<a class="headerlink reference internal" href="#2.4.4-support non-valid identifier as serialization target name" id="2.4.4-support non-valid identifier as serialization target name">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug where DTOs would raise a <code class="docutils literal notranslate"><span class="pre">TypeError:</span> <span class="pre">__slots__</span> <span class="pre">must</span> <span class="pre">be</span> <span class="pre">identifiers</span></code>
+during serialization, if a non-valid identifier (such as <code class="docutils literal notranslate"><span class="pre">field-name</span></code>)was used
+for field renaming.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2845">litestar-org/litestar#2845</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2850">litestar-org/litestar#2850</a></span></p>
+</div>
+</dd>
+<dt>Fix regression signature validation for DTO validated types<a class="headerlink reference internal" href="#2.4.4-fix regression signature validation for dto validated types" id="2.4.4-fix regression signature validation for dto validated types">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a regression introduced in <code class="docutils literal notranslate"><span class="pre">2.0.0rc1</span></code> that would cause data validated by
+the DTO to be validated again by the signature model.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2149">litestar-org/litestar#2149</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2854">litestar-org/litestar#2854</a></span></p>
+</div>
+</dd>
+<dt>Fix regression in OpenAPI schema key names<a class="headerlink reference internal" href="#2.4.4-fix regression in openapi schema key names" id="2.4.4-fix regression in openapi schema key names">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a regression introduced in <code class="docutils literal notranslate"><span class="pre">2.4.0</span></code> regarding the naming of OpenAPI schema
+keys, in which a change was introduced to the way that keys for the OpenAPI
+components/schemas objects were calculated to address the possibility of name
+collisions.</p>
+<p>This behaviour was reverted for the case where a name has no collision, and now
+only introduces extended keys for the case where there are multiple objects with
+the same name, a case which would previously result in an exception.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2804">litestar-org/litestar#2804</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2841">litestar-org/litestar#2841</a></span></p>
+</div>
+</dd>
+<dt>Fix regression in OpenAPI handling of routes with multiple handlers<a class="headerlink reference internal" href="#2.4.4-fix regression in openapi handling of routes with multiple handlers" id="2.4.4-fix regression in openapi handling of routes with multiple handlers">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a regression introduced in <code class="docutils literal notranslate"><span class="pre">2.4.3</span></code> causing two routes registered with the
+same path, but different methods to break OpenAPI schema generation due to both
+of them having the same value for operation ID.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2863">litestar-org/litestar#2863</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2864">litestar-org/litestar#2864</a></span></p>
+</div>
+</dd>
+<dt>Fix OpenAPI schema generation for recursive models<a class="headerlink reference internal" href="#2.4.4-fix openapi schema generation for recursive models" id="2.4.4-fix openapi schema generation for recursive models">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix an issue that would lead to a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RecursionError" title="(in Python v3.12)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">RecursionError</span></code></a> when including nested
+models in the OpenAPI schema.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2429">litestar-org/litestar#2429</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2869">litestar-org/litestar#2869</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.4.3">
 <h2>2.4.3<a class="headerlink" href="#2.4.3" title="Permalink to this heading">#</a></h2>
 <strong>Released: </strong>2023/12/07<section id="2.4.3-bugfix">
@@ -2213,8 +2258,8 @@ This was fixed by leaving the default value as <a class="reference external" hre
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2138">litestar-org/litestar#2138</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2189">litestar-org/litestar#2189</a></span></p>
 </div>
 </dd>
-<dt>Add <a class="reference internal" href="../reference/controller.html#litestar.controller.Controller.include_in_schema" title="litestar.controller.Controller.include_in_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">include_in_schema()</span></code></a> option for all layers<a class="headerlink reference internal" href="#2.1.0-add" id="2.1.0-add">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Adds the <a class="reference internal" href="../reference/controller.html#litestar.controller.Controller.include_in_schema" title="litestar.controller.Controller.include_in_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">include_in_schema()</span></code></a> option to all layers, allowing to include/exclude
+<dt>Add <a class="reference internal" href="../reference/config.html#litestar.config.app.AppConfig.include_in_schema" title="litestar.config.app.AppConfig.include_in_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">include_in_schema()</span></code></a> option for all layers<a class="headerlink reference internal" href="#2.1.0-add" id="2.1.0-add">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Adds the <a class="reference internal" href="../reference/config.html#litestar.config.app.AppConfig.include_in_schema" title="litestar.config.app.AppConfig.include_in_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">include_in_schema()</span></code></a> option to all layers, allowing to include/exclude
 specific routes from the generated OpenAPI schema.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2267">litestar-org/litestar#2267</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2295">litestar-org/litestar#2295</a></span></p>
 </div>
@@ -4640,6 +4685,10 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.4.4">2.4.4</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.4.4-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.4.3">2.4.3</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.4.3-bugfix">Bugfixes</a></li>
 </ul>
