@@ -10,12 +10,15 @@ from typing import TYPE_CHECKING, Any, Iterator
 
 from rich.tree import Tree
 
+from litestar.app import DEFAULT_OPENAPI_CONFIG
 from litestar.cli._utils import (
     RICH_CLICK_INSTALLED,
     UVICORN_INSTALLED,
     LitestarEnv,
     console,
     create_ssl_files,
+    remove_default_schema_routes,
+    remove_routes_with_patterns,
     show_app_info,
     validate_ssl_file_paths,
 )
@@ -260,12 +263,20 @@ def run_command(
 
 
 @command(name="routes")
-def routes_command(app: Litestar) -> None:  # pragma: no cover
+@option("--schema", help="Include schema routes", is_flag=True, default=False)
+@option("--exclude", help="routes to exclude via regex", type=str, is_flag=False, multiple=True)
+def routes_command(app: Litestar, exclude: tuple[str, ...], schema: bool) -> None:  # pragma: no cover
     """Display information about the application's routes."""
 
     tree = Tree("", hide_root=True)
+    sorted_routes = sorted(app.routes, key=lambda r: r.path)
+    if not schema:
+        openapi_config = app.openapi_config or DEFAULT_OPENAPI_CONFIG
+        sorted_routes = remove_default_schema_routes(sorted_routes, openapi_config)
+    if exclude is not None:
+        sorted_routes = remove_routes_with_patterns(sorted_routes, exclude)
 
-    for route in sorted(app.routes, key=lambda r: r.path):
+    for route in sorted_routes:
         if isinstance(route, HTTPRoute):
             branch = tree.add(f"[green]{route.path}[/green] (HTTP)")
             for handler in route.route_handlers:
