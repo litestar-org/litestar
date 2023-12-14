@@ -554,7 +554,7 @@ def remove_routes_with_patterns(
             check_pattern = re.compile(pattern)
             valid_patterns.append(check_pattern)
         except re.error as e:
-            console.print(f"Error: {e}. Invalid regex pattern supplied: {pattern}. omitting from querying results.")
+            console.print(f"Error: {e}. Invalid regex pattern supplied: '{pattern}'. Omitting from querying results.")
 
     for route in routes:
         checked_pattern_route_matches = []
