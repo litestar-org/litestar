@@ -4,6 +4,7 @@ import contextlib
 import importlib
 import inspect
 import os
+import re
 import sys
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
@@ -65,6 +66,8 @@ else:
 
 
 if TYPE_CHECKING:
+    from litestar.openapi import OpenAPIConfig
+    from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
     from litestar.types import AnyCallable
 
 
@@ -539,3 +542,34 @@ def _generate_self_signed_cert(certfile_path: Path, keyfile_path: Path, common_n
                 encryption_algorithm=serialization.NoEncryption(),
             )
         )
+
+
+def remove_routes_with_patterns(
+    routes: list[HTTPRoute | ASGIRoute | WebSocketRoute], patterns: tuple[str, ...]
+) -> list[HTTPRoute | ASGIRoute | WebSocketRoute]:
+    regex_routes = []
+    valid_patterns = []
+    for pattern in patterns:
+        try:
+            check_pattern = re.compile(pattern)
+            valid_patterns.append(check_pattern)
+        except re.error as e:
+            console.print(f"Error: {e}. Invalid regex pattern supplied: '{pattern}'. Omitting from querying results.")
+
+    for route in routes:
+        checked_pattern_route_matches = []
+        for pattern_compile in valid_patterns:
+            matches = pattern_compile.match(route.path)
+            checked_pattern_route_matches.append(matches)
+
+        if not any(checked_pattern_route_matches):
+            regex_routes.append(route)
+
+    return regex_routes
+
+
+def remove_default_schema_routes(
+    routes: list[HTTPRoute | ASGIRoute | WebSocketRoute], openapi_config: OpenAPIConfig
+) -> list[HTTPRoute | ASGIRoute | WebSocketRoute]:
+    schema_path = openapi_config.openapi_controller.path
+    return remove_routes_with_patterns(routes, (schema_path,))
