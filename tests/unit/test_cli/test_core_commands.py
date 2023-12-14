@@ -1,7 +1,8 @@
 import os
+import re
 import sys
 from pathlib import Path
-from typing import Callable, Generator, List, Optional
+from typing import Callable, Generator, List, Optional, Tuple
 from unittest.mock import MagicMock
 
 import pytest
@@ -10,11 +11,13 @@ from click.testing import CliRunner
 from pytest_mock import MockerFixture
 
 from litestar import __version__ as litestar_version
+from litestar.cli._utils import remove_default_schema_routes, remove_routes_with_patterns
 from litestar.cli.main import litestar_group as cli_command
 from litestar.exceptions import LitestarWarning
 
 from . import (
     APP_FACTORY_FILE_CONTENT_SERVER_LIFESPAN_PLUGIN,
+    APP_FILE_CONTENT_ROUTES_EXAMPLE,
     CREATE_APP_FILE_CONTENT,
     GENERIC_APP_FACTORY_FILE_CONTENT,
     GENERIC_APP_FACTORY_FILE_CONTENT_STRING_ANNOTATION,
@@ -321,3 +324,98 @@ def test_run_command_with_server_lifespan_plugin(
         ssl_certfile=None,
         ssl_keyfile=None,
     )
+
+
+@pytest.mark.parametrize(
+    "app_content, schema_enabled, exclude_pattern_list",
+    [
+        (APP_FILE_CONTENT_ROUTES_EXAMPLE, False, ()),
+        (APP_FILE_CONTENT_ROUTES_EXAMPLE, False, ("/foo", "/destroy/.*", "/java", "/haskell")),
+        (APP_FILE_CONTENT_ROUTES_EXAMPLE, True, ()),
+        (APP_FILE_CONTENT_ROUTES_EXAMPLE, True, ("/foo", "/destroy/.*", "/java", "/haskell")),
+    ],
+)
+def test_routes_command_options(
+    runner: CliRunner,
+    app_content: str,
+    schema_enabled: bool,
+    exclude_pattern_list: Tuple[str, ...],
+    create_app_file: CreateAppFileFixture,
+) -> None:
+    create_app_file("app.py", content=app_content)
+
+    command = "routes"
+    if schema_enabled:
+        command += " --schema "
+    if exclude_pattern_list:
+        for pattern in exclude_pattern_list:
+            command += f" --exclude={pattern}"
+
+    result = runner.invoke(cli_command, command)
+    assert result.exception is None
+    assert result.exit_code == 0
+
+    result_routes = re.findall(r"\/(?:\/|[a-z]|\.|-|[0-9])* \(HTTP\)", result.output)
+    for route in result_routes:
+        route_words = route.split(" ")
+        root_dir = route_words[0]
+        if not schema_enabled:
+            assert root_dir != "/api-docs"
+
+        assert root_dir not in exclude_pattern_list
+    result_routes_len = len(result_routes)
+    if schema_enabled and exclude_pattern_list:
+        assert result_routes_len == 11
+    elif schema_enabled and not exclude_pattern_list:
+        assert result_routes_len == 12
+    elif not schema_enabled and exclude_pattern_list:
+        assert result_routes_len == 2
+    elif not schema_enabled and not exclude_pattern_list:
+        assert result_routes_len == 3
+
+
+def test_remove_default_schema_routes() -> None:
+    routes = [
+        "/",
+        "/schema",
+        "/schema/elements",
+        "/schema/oauth2-redirect.html",
+        "/schema/openapi.json",
+        "/schema/openapi.yaml",
+        "/schema/openapi.yml",
+        "/schema/rapidoc",
+        "/schema/redoc",
+        "/schema/swagger",
+        "/destroy/all/foo/bar/schema",
+        "/foo",
+    ]
+    http_routes = []
+    for route in routes:
+        http_route = MagicMock()
+        http_route.path = route
+        http_routes.append(http_route)
+
+    api_config = MagicMock()
+    api_config.openapi_controller.path = "/schema"
+
+    results = remove_default_schema_routes(http_routes, api_config)  # type: ignore
+    assert len(results) == 3
+    for result in results:
+        words = re.split(r"(^\/[a-z]+)", result.path)
+        assert "/schema" not in words
+
+
+def test_remove_routes_with_patterns() -> None:
+    routes = ["/", "/destroy/all/foo/bar/schema", "/foo"]
+    http_routes = []
+    for route in routes:
+        http_route = MagicMock()
+        http_route.path = route
+        http_routes.append(http_route)
+
+    patterns = ("/destroy", "/pizza", "[]")
+    results = remove_routes_with_patterns(http_routes, patterns)  # type: ignore
+    paths = [route.path for route in results]
+    assert len(paths) == 2
+    for route in ["/", "/foo"]:
+        assert route in paths
