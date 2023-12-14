@@ -193,7 +193,7 @@ Options
 +=================+=======================================================================================================================================================+
 | ``--schema``    | Include default auto generated openAPI schema routes                                                                                                  |
 +-----------------+ ------------------------------------------------------------------------------------------------------------------------------------------------------+
-| ``--exclude``   | Exclude endpoints from query with given regex patterns. multiple excludes allowed. e.g.  litestar routes  --schema --exclude=routes/.* --exclude=[]   |
+| ``--exclude``   | Exclude endpoints from query with given regex patterns. Multiple excludes allowed. e.g., ``litestar routes  --schema --exclude=routes/.* --exclude=[]``   |
 +-----------------+-------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 
