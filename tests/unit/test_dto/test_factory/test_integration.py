@@ -829,3 +829,22 @@ def test_dto_returning_mapping(use_experimental_dto_backend: bool) -> None:
     with create_test_client(route_handlers=[get_definition]) as client:
         response = client.get("/")
         assert response.json() == {"hello": {"name": "hello"}, "world": {"name": "world"}}
+
+
+def test_data_dto_with_default() -> None:
+    """A POST request without Body should inject the default value.
+
+    https://github.com/litestar-org/litestar/issues/2902
+    """
+
+    @dataclass
+    class Foo:
+        foo: str
+
+    @post(path="/", dto=DataclassDTO[Foo], signature_types=[Foo])
+    def test(data: Optional[Foo] = None) -> dict:
+        return {"foo": data}
+
+    with create_test_client([test]) as client:
+        response = client.post("/")
+        assert response.json() == {"foo": None}
