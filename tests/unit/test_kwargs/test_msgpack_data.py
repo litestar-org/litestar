@@ -1,3 +1,5 @@
+from typing_extensions import Annotated
+
 from litestar import post
 from litestar.enums import RequestEncodingType
 from litestar.params import Body
@@ -22,3 +24,14 @@ def test_request_body_msgpack() -> None:
     with create_test_client([test_header, test_annotated]) as client:
         response = client.post("/annotated", content=encode_msgpack(test_data))
         assert response.status_code == HTTP_201_CREATED
+
+
+def test_no_body_with_default() -> None:
+    @post(path="/test")
+    def test_method(data: Annotated[str, Body(media_type=RequestEncodingType.MESSAGEPACK)] = "abc") -> dict:
+        return {"data": data}
+
+    with create_test_client(test_method) as client:
+        response = client.post("/test")
+        assert response.status_code == HTTP_201_CREATED
+        assert response.json() == {"data": "abc"}

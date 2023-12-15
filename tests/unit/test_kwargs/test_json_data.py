@@ -26,3 +26,14 @@ def test_empty_dict_allowed() -> None:
     with create_test_client(test_method) as client:
         response = client.post("/test", json={})
         assert response.status_code == HTTP_201_CREATED
+
+
+def test_no_body_with_default() -> None:
+    @post(path="/test")
+    def test_method(data: str = "abc") -> dict:
+        return {"data": data}
+
+    with create_test_client(test_method) as client:
+        response = client.post("/test")
+        assert response.status_code == HTTP_201_CREATED
+        assert response.json() == {"data": "abc"}
