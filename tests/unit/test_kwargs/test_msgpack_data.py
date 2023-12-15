@@ -1,3 +1,4 @@
+from msgspec import Struct
 from typing_extensions import Annotated
 
 from litestar import post
@@ -27,11 +28,16 @@ def test_request_body_msgpack() -> None:
 
 
 def test_no_body_with_default() -> None:
-    @post(path="/test")
-    def test_method(data: Annotated[str, Body(media_type=RequestEncodingType.MESSAGEPACK)] = "abc") -> dict:
-        return {"data": data}
+    class Test(Struct, frozen=True):
+        name: str
+
+    default = Test(name="default")
+
+    @post(path="/test", signature_types=[Test])
+    def test_method(data: Annotated[Test, Body(media_type=RequestEncodingType.MESSAGEPACK)] = default) -> Test:
+        return data
 
     with create_test_client(test_method) as client:
         response = client.post("/test")
         assert response.status_code == HTTP_201_CREATED
-        assert response.json() == {"data": "abc"}
+        assert response.json() == {"name": "default"}
