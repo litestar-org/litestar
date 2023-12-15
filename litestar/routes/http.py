@@ -178,11 +178,11 @@ class HTTPRoute(BaseRoute):
                     data = await kwargs["data"]
                 except SerializationException as e:
                     raise ClientException(str(e)) from e
+
+                if data is Empty:
+                    del kwargs["data"]
                 else:
-                    if data is Empty:
-                        del kwargs["data"]
-                    else:
-                        kwargs["data"] = data
+                    kwargs["data"] = data
 
             if "body" in kwargs:
                 kwargs["body"] = await kwargs["body"]
