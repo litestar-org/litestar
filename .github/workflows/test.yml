@@ -65,5 +65,5 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: inputs.coverage
         with:
-          name: coverage-data
+          name: coverage-data.${{ inputs.python-version }}
           path: .coverage.${{ inputs.python-version }}

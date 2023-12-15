@@ -121,7 +121,12 @@ jobs:
       - name: Download Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: coverage-data
+          name: coverage-data.3.8
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-data.3.12
 
       - name: Combine coverage files
         run: |
