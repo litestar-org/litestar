@@ -13,7 +13,7 @@ Running your application manually with an ASGI server is usually only ideal in d
 
 It is generally recommended to run your production workloads inside a containerized environment, such as
 :doc:`Docker <docker>` or Kubernetes or via a process control system
-such as :doc:`Supervisor <supervisor` or ``systemd``.
+such as :doc:`Supervisor <supervisor>` or ``systemd``.
 
 Alternatives
 ~~~~~~~~~~~~
