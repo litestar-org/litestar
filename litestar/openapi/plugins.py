@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, Sequence
 
 import msgspec
@@ -17,6 +18,7 @@ __all__ = (
     "OpenAPIRenderPlugin",
     "RapidocRenderPlugin",
     "RedocRenderPlugin",
+    "ScalarRenderPlugin",
     "StoplightRenderPlugin",
     "SwaggerRenderPlugin",
     "YamlRenderPlugin",
@@ -311,6 +313,109 @@ class RedocRenderPlugin(OpenAPIRenderPlugin):
                 b"</html>",
             ]
         )
+
+
+class ScalarRenderPlugin(OpenAPIRenderPlugin):
+    """Plugin to render an OpenAPI schema using Scalar.
+
+    .. versionadded:: 2.5.0
+    """
+
+    _default_scalar_css_url = "/schema/_litestar-internal/scalar.css"
+
+    def __init__(
+        self,
+        *,
+        version: str = "1.8.0",
+        js_url: str | None = None,
+        css_url: str | None = None,
+        path: str | Sequence[str] = "/scalar",
+        **kwargs: Any,
+    ) -> None:
+        """Initialize the Scalar OpenAPI UI render plugin.
+
+        Args:
+            version: Scalar version to download from the CDN.
+                If js_url is provided, this is ignored.
+            js_url: Download url for the Scalar JS bundle.
+                If not provided, the version will be used to construct the url.
+            css_url: Download url for the Scalar CSS bundle.
+                If not provided, the Litestar-provided CSS will be used.
+            path: Path to serve the OpenAPI UI at.
+            **kwargs: Additional arguments to pass to the base class.
+        """
+        self.js_url = js_url or f"https://cdn.jsdelivr.net/npm/@scalar/api-reference@{version}"
+        self.css_url = css_url or self._default_scalar_css_url
+        super().__init__(path=path, **kwargs)
+
+    def render(self, request: Request, openapi_schema: dict[str, Any]) -> bytes:
+        """Render an HTMl page for Scalar.
+
+        .. note:: Override this method to customize the template.
+
+        Args:
+            request: The request.
+            openapi_schema: The OpenAPI schema as a dictionary.
+
+        Returns:
+            A rendered html string.
+        """
+        head = f"""
+                  <head>
+                    <title>{openapi_schema["info"]["title"]}</title>
+                    <style>{self.style}</style>
+                    <meta charset="utf-8"/>
+                    <meta name="viewport" content="width=device-width, initial-scale=1">
+                    {self.favicon}
+                    <link rel="stylesheet" type="text/css" href="{self.css_url}">
+                  </head>
+                """
+
+        body = f"""
+                <noscript>
+                    Scalar requires Javascript to function. Please enable it to browse the documentation.
+                </noscript>
+                <script
+                  id="api-reference"
+                  data-url="openapi.json">
+                </script>
+                <script src="{self.js_url}" crossorigin></script>
+                """
+
+        return f"""
+                <!DOCTYPE html>
+                    <html>
+                        {head}
+                        {body}
+                    </html>
+                """.encode()
+
+    def receive_router(self, router: Router) -> None:
+        """Receive the router that serves the OpenAPI UI.
+
+        Adds a route to serve the Scalar.com OpenAPI UI CSS.
+
+        Args:
+            router: The router that serves the OpenAPI UI.
+        """
+        if self.css_url == self._default_scalar_css_url:
+            router.register(
+                get("/_litestar-internal/scalar.css", media_type=MediaType.CSS, sync_to_thread=False)(
+                    self.render_scalar_css
+                ),
+            )
+
+    @staticmethod
+    def render_scalar_css() -> bytes:
+        """Render the Scalar CSS file.
+
+
+        Returns:
+            The CSS content as bytes.
+        """
+        here = Path(__file__).parent
+        css_path = here / "styles/scalar.css"
+        return css_path.read_bytes()
 
 
 class StoplightRenderPlugin(OpenAPIRenderPlugin):
