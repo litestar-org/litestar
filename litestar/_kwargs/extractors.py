@@ -295,6 +295,8 @@ async def json_extractor(connection: Request[Any, Any, Any]) -> Any:
     Returns:
         The JSON value.
     """
+    if not await connection.body():
+        return Empty
     return await connection.json()
 
 
@@ -310,6 +312,8 @@ async def msgpack_extractor(connection: Request[Any, Any, Any]) -> Any:
     Returns:
         The MessagePack value.
     """
+    if not await connection.body():
+        return Empty
     return await connection.msgpack()
 
 
@@ -454,7 +458,8 @@ def create_dto_extractor(
     """
 
     async def dto_extractor(connection: Request[Any, Any, Any]) -> Any:
-        body = await connection.body()
+        if not (body := await connection.body()):
+            return Empty
         return data_dto(connection).decode_bytes(body)
 
     return dto_extractor  # type:ignore[return-value]

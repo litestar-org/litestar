@@ -56,7 +56,7 @@ maintainers = [
 name = "litestar"
 readme = "README.md"
 requires-python = ">=3.8,<4.0"
-version = "2.4.3"
+version = "2.4.4"
 
 [project.urls]
 Blog = "https://blog.litestar.dev"
@@ -126,7 +126,6 @@ linting = [
   "mypy",
   "pre-commit",
   "slotscheck",
-  "sourcery",
   "pyright",
   "blacken-docs",
   "asyncpg-stubs",

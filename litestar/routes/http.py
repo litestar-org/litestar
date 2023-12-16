@@ -14,6 +14,7 @@ from litestar.handlers.http_handlers import HTTPRouteHandler
 from litestar.response import Response
 from litestar.routes.base import BaseRoute
 from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
+from litestar.types.empty import Empty
 from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
@@ -174,9 +175,14 @@ class HTTPRoute(BaseRoute):
 
             if "data" in kwargs:
                 try:
-                    kwargs["data"] = await kwargs["data"]
+                    data = await kwargs["data"]
                 except SerializationException as e:
                     raise ClientException(str(e)) from e
+
+                if data is Empty:
+                    del kwargs["data"]
+                else:
+                    kwargs["data"] = data
 
             if "body" in kwargs:
                 kwargs["body"] = await kwargs["body"]

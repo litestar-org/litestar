@@ -93,7 +93,7 @@ def test_function_dependency_injection() -> None:
         msg = await socket.receive_json()
         assert msg
         assert isinstance(first, int)
-        assert second is False  #  sourcery skip
+        assert second is False
         assert isinstance(third, str)
         await socket.close()
 

@@ -166,7 +166,7 @@ def run_command(
     ssl_keyfile: str | None,
     create_self_signed_cert: bool,
     ctx: Context,
-) -> None:  # sourcery skip: low-code-quality
+) -> None:
     """Run a Litestar app; requires ``uvicorn``.
 
     The app can be either passed as a module path in the form of <module name>.<submodule>:<app instance or factory>,

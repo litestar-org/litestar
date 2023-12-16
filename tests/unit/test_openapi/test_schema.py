@@ -476,3 +476,18 @@ def test_type_or_first_not_none_inner_type_utility(in_type: Any, out_type: Any) 
             _type_or_first_not_none_inner_type(in_type)
     else:
         assert _type_or_first_not_none_inner_type(in_type) == out_type
+
+
+def test_not_generating_examples_property() -> None:
+    with_examples = SchemaCreator(generate_examples=True)
+    without_examples = with_examples.not_generating_examples
+    assert without_examples.generate_examples is False
+
+
+def test_process_schema_result_with_unregistered_object_schema() -> None:
+    """This test ensures that if a schema is created for an object and not registered in the schema registry, the
+    schema is returned as-is, and not referenced.
+    """
+    schema = Schema(title="has title", type=OpenAPIType.OBJECT)
+    field_definition = FieldDefinition.from_annotation(dict)
+    assert SchemaCreator().process_schema_result(field_definition, schema) is schema

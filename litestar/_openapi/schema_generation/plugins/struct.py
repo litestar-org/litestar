@@ -5,8 +5,6 @@ from typing import TYPE_CHECKING
 from msgspec import Struct
 from msgspec.structs import fields
 
-from litestar._openapi.schema_generation.schema import _get_type_schema_name
-from litestar.openapi.spec import OpenAPIType, Schema
 from litestar.plugins import OpenAPISchemaPlugin
 from litestar.types.empty import Empty
 from litestar.typing import FieldDefinition
@@ -16,6 +14,7 @@ if TYPE_CHECKING:
     from msgspec.structs import FieldInfo
 
     from litestar._openapi.schema_generation import SchemaCreator
+    from litestar.openapi.spec import Schema
 
 
 class StructSchemaPlugin(OpenAPISchemaPlugin):
@@ -23,27 +22,23 @@ class StructSchemaPlugin(OpenAPISchemaPlugin):
         return field_definition.is_subclass_of(Struct)
 
     def to_openapi_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:
-        def _is_field_required(field: FieldInfo) -> bool:
+        def is_field_required(field: FieldInfo) -> bool:
             return field.required or field.default_factory is Empty
 
-        unwrapped_annotation = field_definition.origin or field_definition.annotation
         type_hints = field_definition.get_type_hints(include_extras=True, resolve_generics=True)
-        struct_fields = fields(unwrapped_annotation)
+        struct_fields = fields(field_definition.type_)
 
-        return Schema(
+        return schema_creator.create_component_schema(
+            field_definition,
             required=sorted(
                 [
                     field.encode_name
                     for field in struct_fields
-                    if _is_field_required(field=field) and not is_optional_union(type_hints[field.name])
+                    if is_field_required(field=field) and not is_optional_union(type_hints[field.name])
                 ]
             ),
-            properties={
-                field.encode_name: schema_creator.for_field_definition(
-                    FieldDefinition.from_kwarg(type_hints[field.name], field.encode_name)
-                )
+            property_fields={
+                field.encode_name: FieldDefinition.from_kwarg(type_hints[field.name], field.encode_name)
                 for field in struct_fields
             },
-            type=OpenAPIType.OBJECT,
-            title=_get_type_schema_name(field_definition),
         )
