@@ -51,7 +51,7 @@
     <link rel="icon" href="../../_static/favicon.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Supervisor (linux)" href="supervisor.html" />
+    <link rel="next" title="Supervisor (Linux)" href="supervisor.html" />
     <link rel="prev" title="Manually with ASGI server" href="manually-with-asgi-server.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
@@ -1392,8 +1392,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="nginx-unit.html">NGINX Unit</a></li>
 <li class="toctree-l3"><a class="reference internal" href="manually-with-asgi-server.html">Manually with ASGI server</a></li>
 <li class="toctree-l3 current active"><a class="current reference internal" href="#">Docker</a></li>
-<li class="toctree-l3"><a class="reference internal" href="supervisor.html">Supervisor (linux)</a></li>
-
+<li class="toctree-l3"><a class="reference internal" href="supervisor.html">Supervisor (Linux)</a></li>
 </ul>
 </li>
 </ul>
@@ -1511,36 +1510,249 @@ document.write(`
                   
   <section id="docker">
 <h1>Docker<a class="headerlink" href="#docker" title="Permalink to this heading">#</a></h1>
-<p>This uses the default python container <a class="reference external" href="https://hub.docker.com/_/python">https://hub.docker.com/_/python</a></p>
-<section id="dockerfile">
-<h2>Dockerfile<a class="headerlink" href="#dockerfile" title="Permalink to this heading">#</a></h2>
-<div class="highlight-docker notranslate"><div class="highlight"><pre><span></span><span class="k">FROM</span><span class="w"> </span><span class="s">python:3.12</span>
-<span class="k">WORKDIR</span><span class="w"> </span><span class="s">/code</span>
-<span class="k">COPY</span><span class="w"> </span>./requirements.txt<span class="w"> </span>/code/requirements.txt
-<span class="k">RUN</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--no-cache-dir<span class="w"> </span>--upgrade<span class="w"> </span>-r<span class="w"> </span>/code/requirements.txt
-<span class="k">COPY</span><span class="w"> </span>./src<span class="w"> </span>/
-<span class="k">CMD</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;uvicorn&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;app:app&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;--host&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;0.0.0.0&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;--port&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;80&quot;</span><span class="p">]</span>
+<p>Docker is a containerization platform that allows you to package your application and all its dependencies together.
+It is useful for creating consistent environments for your application to run in, irrespective of the host system
+and its own configuration or dependencies - which is especially helpful in preventing dependency conflicts.</p>
+<p>This guide uses the <a class="reference external" href="https://hub.docker.com/_/python">Docker official Python container</a> as a base image.</p>
+<section id="use-when">
+<h2>Use When<a class="headerlink" href="#use-when" title="Permalink to this heading">#</a></h2>
+<p>Docker is ideal for deploying Python web applications in scenarios where:</p>
+<ul class="simple">
+<li><p><strong>Isolation:</strong> You require a consistent, isolated environment for your application, independent of the host system.</p></li>
+<li><p><strong>Scalability:</strong> Your application needs to be easily scaled up or down based on demand.</p></li>
+<li><p><strong>Portability:</strong> The need to run your application consistently across different environments (development, testing, production) is crucial.</p></li>
+<li><p><strong>Microservices Architecture:</strong> You are adopting a microservices architecture, where each service can be containerized and managed independently.</p></li>
+<li><p><strong>Continuous Integration/Continuous Deployment (CI/CD):</strong> You are implementing CI/CD pipelines, and Docker facilitates the building, testing, and deployment of applications.</p></li>
+<li><p><strong>Dependency Management:</strong> Ensuring that your application has all its dependencies bundled together without conflicts with other applications.</p></li>
+</ul>
+<section id="alternatives">
+<h3>Alternatives<a class="headerlink" href="#alternatives" title="Permalink to this heading">#</a></h3>
+<p>For different deployment scenarios, consider these alternatives:</p>
+<ul>
+<li><dl>
+<dt><a class="reference external" href="https://www.freedesktop.org/wiki/Software/systemd/">systemd</a>:</dt><dd><p>A system and service manager, integrated into many Linux distributions for managing system processes.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Official documentation coming soon</p>
+</div>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><a class="reference internal" href="supervisor.html"><span class="doc">Supervisor</span></a>:</dt><dd><p>A process control system that can be used to automatically start, stop and restart processes; includes a web UI.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><a class="reference internal" href="manually-with-asgi-server.html"><span class="doc">Manually with an ASGI server</span></a>:</dt><dd><p>Direct control by running the application with an ASGI server like Uvicorn, Hypercorn, Daphne, etc.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>This guide assumes that you have Docker installed and running on your system, and that you have the following
+files in your project directory:</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">requirements.txt</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>litestar<span class="o">[</span>standard<span class="o">]</span>&gt;<span class="o">=</span><span class="m">2</span>.4.0,&lt;<span class="m">3</span>.0.0
 </pre></div>
 </div>
-<p>This copies the <cite>src</cite> folder on your machine to the <cite>/code</cite> in the docker container and runs your app via uvicorn. Adjust according to whichever asgi server you choose.</p>
-<p><a class="reference internal" href="manually-with-asgi-server.html"><span class="doc">Manually with ASGI server</span></a></p>
+</div>
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-0">
+Python 3.8+</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Minimal Litestar application.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">sleep</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">async_hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Route Handler that outputs hello world.&quot;&quot;&quot;</span>
+    <span class="k">await</span> <span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/sync&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">sync_hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Route Handler that outputs hello world.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">sync_hello_world</span><span class="p">,</span> <span class="n">async_hello_world</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<input checked="checked" id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-1">
+Python 3.9+</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;Minimal Litestar application.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">sleep</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">async_hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Route Handler that outputs hello world.&quot;&quot;&quot;</span>
+    <span class="k">await</span> <span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/sync&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">sync_hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Route Handler that outputs hello world.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">sync_hello_world</span><span class="p">,</span> <span class="n">async_hello_world</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
 </section>
+</section>
+<section id="dockerfile">
+<h2>Dockerfile<a class="headerlink" href="#dockerfile" title="Permalink to this heading">#</a></h2>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">Example Dockerfile</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
+<div class="highlight-docker notranslate"><div class="highlight"><pre><span></span><span class="c"># Set the base image using Python 3.12 and Debian Bookworm</span>
+<span class="k">FROM</span><span class="w"> </span><span class="s">python:3.12-slim-bookworm</span>
+
+<span class="c"># Set the working directory to /app</span>
+<span class="k">WORKDIR</span><span class="w"> </span><span class="s">/app</span>
+
+<span class="c"># Copy only the necessary files to the working directory</span>
+<span class="k">COPY</span><span class="w"> </span>.<span class="w"> </span>/app
+
+<span class="c"># Install the requirements</span>
+<span class="k">RUN</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--no-cache-dir<span class="w"> </span>--upgrade<span class="w"> </span>-r<span class="w"> </span>/app/requirements.txt
+
+<span class="c"># Expose the port the app runs on</span>
+<span class="k">EXPOSE</span><span class="w"> </span><span class="s">80</span>
+
+<span class="c"># Run the app with the Litestar CLI</span>
+<span class="k">CMD</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;litestar&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;run&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;--host&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;0.0.0.0&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;--port&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;80&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<p>This copies your local project folder to the <code class="docutils literal notranslate"><span class="pre">/app</span></code> directory in the Docker container and runs your
+app via <code class="docutils literal notranslate"><span class="pre">uvicorn</span></code> utilizing the <code class="docutils literal notranslate"><span class="pre">litestar</span> <span class="pre">run</span></code> command. <code class="docutils literal notranslate"><span class="pre">uvicorn</span></code> is provided by the <code class="docutils literal notranslate"><span class="pre">litestar[standard]</span></code>
+extra, which is installed in the <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code> file.</p>
+<p>You can also launch the application with an <a class="reference internal" href="manually-with-asgi-server.html"><span class="doc">ASGI server</span></a> directly, if you prefer.</p>
+<p>Once you have your <code class="docutils literal notranslate"><span class="pre">Dockerfile</span></code> defined, you can build the image with <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">build</span></code> and run it with <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">run</span></code>.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Useful Dockerfile Commands<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Useful Docker commands</span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Build the container</span>
+docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>exampleapp<span class="w"> </span>.
+
+<span class="c1"># Run the container</span>
+docker<span class="w"> </span>run<span class="w"> </span>-d<span class="w"> </span>-p<span class="w"> </span><span class="m">80</span>:80<span class="w"> </span>--name<span class="w"> </span>exampleapp<span class="w"> </span>exampleapp
+
+<span class="c1"># Stop the container</span>
+docker<span class="w"> </span>stop<span class="w"> </span>exampleapp
+
+<span class="c1"># Start the container</span>
+docker<span class="w"> </span>start<span class="w"> </span>exampleapp
+
+<span class="c1"># Remove the container</span>
+docker<span class="w"> </span>rm<span class="w"> </span>exampleapp
+</pre></div>
+</div>
+</div>
+</div>
+</details></section>
 <section id="docker-compose">
-<h2>Docker-compose<a class="headerlink" href="#docker-compose" title="Permalink to this heading">#</a></h2>
-<p>If you want to run the container as part of a docker-compose setup then you can simply use this compose file</p>
-<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">services</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">api</span><span class="p">:</span>
+<h2>Docker Compose<a class="headerlink" href="#docker-compose" title="Permalink to this heading">#</a></h2>
+<p>Compose is a tool for defining and running multi-container Docker applications.
+Read more about Compose in the <a class="reference external" href="https://docs.docker.com/compose/">official Docker documentation</a>.</p>
+<p>If you want to run the container as part of a Docker Compose setup then you can simply use this compose file:</p>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">docker-compose.yml</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;3.9&quot;</span>
+
+<span class="nt">services</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">exampleapp</span><span class="p">:</span>
 <span class="w">    </span><span class="nt">build</span><span class="p">:</span>
 <span class="w">      </span><span class="nt">context</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">./</span>
 <span class="w">      </span><span class="nt">dockerfile</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Dockerfile</span>
-<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;api&quot;</span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;exampleapp&quot;</span>
 <span class="w">    </span><span class="nt">depends_on</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">database</span>
 <span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
 <span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;80:80&quot;</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DB_HOST=database</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DB_PORT=5432</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DB_USER=litestar</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DB_PASS=r0cks</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">DB_NAME=exampleapp</span>
+
+<span class="w">  </span><span class="nt">database</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">postgres:latest</span>
+<span class="w">    </span><span class="nt">container_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;exampledb&quot;</span>
+<span class="w">    </span><span class="nt">environment</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">POSTGRES_USER</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampleuser</span>
+<span class="w">      </span><span class="nt">POSTGRES_PASSWORD</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">examplepass</span>
+<span class="w">      </span><span class="nt">POSTGRES_DB</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">exampledb</span>
+<span class="w">    </span><span class="nt">ports</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;5432:5432&quot;</span>
+<span class="w">    </span><span class="nt">volumes</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">db_data:/var/lib/postgresql/data</span>
+
+<span class="nt">volumes</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">db_data</span><span class="p">:</span>
 </pre></div>
 </div>
-</section>
+</div>
+<p>This compose file defines two services: <code class="docutils literal notranslate"><span class="pre">exampleapp</span></code> and <code class="docutils literal notranslate"><span class="pre">database</span></code>. The <code class="docutils literal notranslate"><span class="pre">exampleapp</span></code> service is built
+from the Dockerfile in the current directory, and exposes port 80. The <code class="docutils literal notranslate"><span class="pre">database</span></code> service uses the official
+PostgreSQL image, and exposes port <code class="docutils literal notranslate"><span class="pre">5432</span></code>. The <code class="docutils literal notranslate"><span class="pre">exampleapp</span></code> service depends on the <code class="docutils literal notranslate"><span class="pre">database</span></code> service, so
+the database will be started before the app. The <code class="docutils literal notranslate"><span class="pre">exampleapp</span></code> service also has environment variables set for
+the database connection details, which are used by the app.</p>
+<p>Once you have your <code class="docutils literal notranslate"><span class="pre">docker-compose.yml</span></code> defined, you can run <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span> <span class="pre">up</span></code> to start the containers.
+You can also run <code class="docutils literal notranslate"><span class="pre">docker</span> <span class="pre">compose</span> <span class="pre">up</span> <span class="pre">-d</span></code> to run the containers in the background, or “detached” mode.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Useful Compose Commands<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">Useful Docker Compose commands</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Build the containers</span>
+docker<span class="w"> </span>compose<span class="w"> </span>build
+
+<span class="c1"># Run the containers</span>
+docker<span class="w"> </span>compose<span class="w"> </span>up
+
+<span class="c1"># Run the containers in the background</span>
+docker<span class="w"> </span>compose<span class="w"> </span>up<span class="w"> </span>-d
+
+<span class="c1"># Stop the containers</span>
+docker<span class="w"> </span>compose<span class="w"> </span>down
+</pre></div>
+</div>
+</div>
+</div>
+</details></section>
 </section>
 
 
@@ -1567,7 +1779,7 @@ document.write(`
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">Supervisor (linux)</p>
+        <p class="prev-next-title">Supervisor (Linux)</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -1587,8 +1799,12 @@ document.write(`
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-when">Use When</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alternatives">Alternatives</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dockerfile">Dockerfile</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#docker-compose">Docker-compose</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#docker-compose">Docker Compose</a></li>
 </ul>
   </nav></div>
 
