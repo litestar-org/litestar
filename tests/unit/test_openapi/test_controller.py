@@ -12,8 +12,15 @@ from litestar.testing import create_test_client
 root_paths: List[str] = ["", "/part1", "/part1/part2"]
 
 
-def test_default_redoc_cdn_urls(person_controller: Type[Controller], pet_controller: Type[Controller]) -> None:
-    with create_test_client([person_controller, pet_controller]) as client:
+@pytest.fixture()
+def config() -> OpenAPIConfig:
+    return OpenAPIConfig(title="Litestar API", version="1.0.0", openapi_controller=OpenAPIController)
+
+
+def test_default_redoc_cdn_urls(
+    person_controller: Type[Controller], pet_controller: Type[Controller], config: OpenAPIConfig
+) -> None:
+    with create_test_client([person_controller, pet_controller], openapi_config=config) as client:
         response = client.get("/schema/redoc")
         default_redoc_version = "next"
         default_redoc_js_bundle = (
@@ -24,8 +31,10 @@ def test_default_redoc_cdn_urls(person_controller: Type[Controller], pet_control
         assert default_redoc_js_bundle in response.text
 
 
-def test_default_swagger_ui_cdn_urls(person_controller: Type[Controller], pet_controller: Type[Controller]) -> None:
-    with create_test_client([person_controller, pet_controller]) as client:
+def test_default_swagger_ui_cdn_urls(
+    person_controller: Type[Controller], pet_controller: Type[Controller], config: OpenAPIConfig
+) -> None:
+    with create_test_client([person_controller, pet_controller], openapi_config=config) as client:
         response = client.get("/schema/swagger")
         default_swagger_bundles = [
             f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{OpenAPIController.swagger_ui_version}/swagger-ui.css",
@@ -42,9 +51,9 @@ def test_default_swagger_ui_cdn_urls(person_controller: Type[Controller], pet_co
 
 
 def test_default_stoplight_elements_cdn_urls(
-    person_controller: Type[Controller], pet_controller: Type[Controller]
+    person_controller: Type[Controller], pet_controller: Type[Controller], config: OpenAPIConfig
 ) -> None:
-    with create_test_client([person_controller, pet_controller]) as client:
+    with create_test_client([person_controller, pet_controller], openapi_config=config) as client:
         response = client.get("/schema/elements")
         default_stoplight_elements_bundles = [
             f"https://unpkg.com/@stoplight/elements@{OpenAPIController.stoplight_elements_version}/styles.min.css",
@@ -61,8 +70,10 @@ def test_default_stoplight_elements_cdn_urls(
         assert all(cdn_url in response.text for cdn_url in default_stoplight_elements_bundles)
 
 
-def test_default_rapidoc_cdn_urls(person_controller: Type[Controller], pet_controller: Type[Controller]) -> None:
-    with create_test_client([person_controller, pet_controller]) as client:
+def test_default_rapidoc_cdn_urls(
+    person_controller: Type[Controller], pet_controller: Type[Controller], config: OpenAPIConfig
+) -> None:
+    with create_test_client([person_controller, pet_controller], openapi_config=config) as client:
         response = client.get("/schema/rapidoc")
         default_rapidoc_bundles = [f"https://unpkg.com/rapidoc@{OpenAPIController.rapidoc_version}/dist/rapidoc-min.js"]
         assert client.app.openapi_config is not None
@@ -70,8 +81,10 @@ def test_default_rapidoc_cdn_urls(person_controller: Type[Controller], pet_contr
         assert all(cdn_url in response.text for cdn_url in default_rapidoc_bundles)
 
 
-def test_redoc_with_google_fonts(person_controller: Type[Controller], pet_controller: Type[Controller]) -> None:
-    with create_test_client([person_controller, pet_controller]) as client:
+def test_redoc_with_google_fonts(
+    person_controller: Type[Controller], pet_controller: Type[Controller], config: OpenAPIConfig
+) -> None:
+    with create_test_client([person_controller, pet_controller], openapi_config=config) as client:
         response = client.get("/schema/redoc")
         google_font_cdn = "https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700"
         assert client.app.openapi_config is not None
