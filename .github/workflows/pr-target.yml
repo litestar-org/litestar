@@ -19,7 +19,6 @@ jobs:
     steps:
       - name: Check PR target
         id: check-pr-target
-        if: ${{ startsWith(github.event.pull_request.title, 'feat') }}
         uses: actions/github-script@v7
         with:
           script: |
