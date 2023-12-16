@@ -27,6 +27,9 @@ Alternatives
 - :doc:`Docker <docker>`:
     Ideal for containerized environments, offering isolation and scalability.
 
+    .. note:: You can deploy ``nginx-unit`` with Docker using the
+        `official NGINX image <https://unit.nginx.org/howto/docker/>`_.
+
 Install ``nginx-unit``
 ----------------------
 
