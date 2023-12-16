@@ -5,7 +5,14 @@ from dataclasses import dataclass, field, fields
 from typing import TYPE_CHECKING, Literal
 
 from litestar._openapi.utils import default_operation_id_creator
-from litestar.openapi.controller import OpenAPIController
+from litestar.openapi.plugins import (
+    JsonRenderPlugin,
+    RapidocRenderPlugin,
+    RedocRenderPlugin,
+    StoplightRenderPlugin,
+    SwaggerRenderPlugin,
+    YamlRenderPlugin,
+)
 from litestar.openapi.spec import (
     Components,
     Contact,
@@ -21,11 +28,23 @@ from litestar.openapi.spec import (
 )
 from litestar.utils.path import normalize_path
 
+if TYPE_CHECKING:
+    from litestar.openapi.controller import OpenAPIController
+    from litestar.openapi.plugins import OpenAPIRenderPlugin
+    from litestar.types.callable_types import OperationIDCreator
+
 __all__ = ("OpenAPIConfig",)
 
-
-if TYPE_CHECKING:
-    from litestar.types.callable_types import OperationIDCreator
+enabled_plugin_map = {
+    "elements": StoplightRenderPlugin,
+    "openapi.json": JsonRenderPlugin,
+    "openapi.yaml": YamlRenderPlugin,
+    "openapi.yml": YamlRenderPlugin,
+    "rapidoc": RapidocRenderPlugin,
+    "redoc": RedocRenderPlugin,
+    "swagger": SwaggerRenderPlugin,
+    "oauth2-redirect.html": None,
+}
 
 
 @dataclass
@@ -43,7 +62,7 @@ class OpenAPIConfig:
 
     create_examples: bool = field(default=False)
     """Generate examples using the polyfactory library."""
-    openapi_controller: type[OpenAPIController] = field(default_factory=lambda: OpenAPIController)
+    openapi_controller: type[OpenAPIController] | None = None
     """Controller for generating OpenAPI routes.
 
     Must be subclass of :class:`OpenAPIController <litestar.openapi.controller.OpenAPIController>`.
@@ -107,11 +126,22 @@ class OpenAPIConfig:
     """A callable that generates unique operation ids"""
     path: str | None = field(default=None)
     """Base path for the OpenAPI documentation endpoints."""
+    render_plugins: list[OpenAPIRenderPlugin] = field(default_factory=list)
 
     def __post_init__(self) -> None:
-        if self.path:
+        if self.path and self.openapi_controller is not None:
             self.path = normalize_path(self.path)
             self.openapi_controller = type("OpenAPIController", (self.openapi_controller,), {"path": self.path})
+
+        if self.openapi_controller is None:
+            if not self.render_plugins:
+                # NOTE: while we support the legacy `enabled_endpoints` property we need to dynamically
+                #       generate the render_plugins list. Once that is gone, we can set the defaults in
+                #       the field's `default_factory` and remove this code.
+                self.render_plugins = [plugin() for k in self.enabled_endpoints if (plugin := enabled_plugin_map[k])]
+
+            if not any(plugin.has_path("/openapi.json") for plugin in self.render_plugins):
+                self.render_plugins.append(JsonRenderPlugin())
 
     def to_openapi_schema(self) -> OpenAPI:
         """Return an ``OpenAPI`` instance from the values stored in ``self``.

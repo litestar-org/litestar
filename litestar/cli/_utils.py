@@ -389,7 +389,12 @@ def show_app_info(app: Litestar) -> None:  # pragma: no cover
 
     openapi_enabled = _format_is_enabled(app.openapi_config)
     if app.openapi_config:
-        openapi_enabled += f" path=[yellow]{app.openapi_config.openapi_controller.path}"
+        path = (
+            app.openapi_config.openapi_controller.path
+            if app.openapi_config.openapi_controller
+            else app.openapi_config.path or "/schema"
+        )
+        openapi_enabled += f" path=[yellow]{path}"
     table.add_row("OpenAPI", openapi_enabled)
 
     table.add_row("Compression", app.compression_config.backend if app.compression_config else "[red]Disabled")
@@ -558,5 +563,9 @@ def remove_routes_with_patterns(
 def remove_default_schema_routes(
     routes: list[HTTPRoute | ASGIRoute | WebSocketRoute], openapi_config: OpenAPIConfig
 ) -> list[HTTPRoute | ASGIRoute | WebSocketRoute]:
-    schema_path = openapi_config.openapi_controller.path
+    schema_path = (
+        (openapi_config.path or "/schema")
+        if openapi_config.openapi_controller is None
+        else openapi_config.openapi_controller.path
+    )
     return remove_routes_with_patterns(routes, (schema_path,))

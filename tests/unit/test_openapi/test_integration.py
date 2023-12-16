@@ -11,7 +11,6 @@ from typing_extensions import Annotated
 
 from litestar import Controller, Litestar, get, post
 from litestar._openapi.plugin import OpenAPIPlugin
-from litestar.app import DEFAULT_OPENAPI_CONFIG
 from litestar.enums import MediaType, OpenAPIMediaType, ParamType
 from litestar.openapi import OpenAPIConfig, OpenAPIController
 from litestar.openapi.spec import Parameter as OpenAPIParameter
@@ -65,8 +64,7 @@ def test_openapi_json(
 def test_openapi_yaml_not_allowed(
     endpoint: str, schema_path: str, person_controller: type[Controller], pet_controller: type[Controller]
 ) -> None:
-    openapi_config = DEFAULT_OPENAPI_CONFIG
-    openapi_config.enabled_endpoints.discard(endpoint)
+    openapi_config = OpenAPIConfig("Example API", "1.0.0", enabled_endpoints=set())
 
     with create_test_client([person_controller, pet_controller], openapi_config=openapi_config) as client:
         assert client.app.openapi_schema
@@ -77,8 +75,12 @@ def test_openapi_yaml_not_allowed(
 
 
 def test_openapi_json_not_allowed(person_controller: type[Controller], pet_controller: type[Controller]) -> None:
-    openapi_config = DEFAULT_OPENAPI_CONFIG
-    openapi_config.enabled_endpoints.discard("openapi.json")
+    openapi_config = OpenAPIConfig(
+        "Example API",
+        "1.0.0",
+        enabled_endpoints=set(),
+        openapi_controller=OpenAPIController,
+    )
 
     with create_test_client([person_controller, pet_controller], openapi_config=openapi_config) as client:
         assert client.app.openapi_schema
