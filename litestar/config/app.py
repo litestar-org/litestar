@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import enum
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Callable, Sequence
+from typing import TYPE_CHECKING, Any, Callable
 
 from litestar.config.allowed_hosts import AllowedHostsConfig
 from litestar.config.response_cache import ResponseCacheConfig
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from litestar.config.cors import CORSConfig
     from litestar.config.csrf import CSRFConfig
     from litestar.connection import Request, WebSocket
-    from litestar.datastructures import CacheControlHeader, ETag, ResponseHeader
+    from litestar.datastructures import CacheControlHeader, ETag
     from litestar.di import Provide
     from litestar.dto import AbstractDTO
     from litestar.events.emitter import BaseEventEmitterBackend
@@ -43,6 +43,7 @@ if TYPE_CHECKING:
         Middleware,
         ParametersMap,
         ResponseCookies,
+        ResponseHeaders,
         ResponseType,
         TypeEncodersMap,
     )
@@ -161,7 +162,7 @@ class AppConfig:
     """A custom subclass of :class:`Response <.response.Response>` to be used as the app's default response."""
     response_cookies: ResponseCookies = field(default_factory=list)
     """A list of :class:`Cookie <.datastructures.Cookie>`."""
-    response_headers: Sequence[ResponseHeader] = field(default_factory=list)
+    response_headers: ResponseHeaders = field(default_factory=list)
     """A string keyed dictionary mapping :class:`ResponseHeader <.datastructures.ResponseHeader>`."""
     response_cache_config: ResponseCacheConfig = field(default_factory=ResponseCacheConfig)
     """Configures caching behavior of the application."""

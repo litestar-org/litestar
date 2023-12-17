@@ -59,7 +59,7 @@ if TYPE_CHECKING:
     from litestar.config.compression import CompressionConfig
     from litestar.config.cors import CORSConfig
     from litestar.config.csrf import CSRFConfig
-    from litestar.datastructures import CacheControlHeader, ETag, ResponseHeader
+    from litestar.datastructures import CacheControlHeader, ETag
     from litestar.dto import AbstractDTO
     from litestar.events.listener import EventListener
     from litestar.logging.config import BaseLoggingConfig
@@ -91,6 +91,7 @@ if TYPE_CHECKING:
         ParametersMap,
         Receive,
         ResponseCookies,
+        ResponseHeaders,
         ResponseType,
         RouteHandlerType,
         Scope,
@@ -205,7 +206,7 @@ class Litestar(Router):
         response_cache_config: ResponseCacheConfig | None = None,
         response_class: ResponseType | None = None,
         response_cookies: ResponseCookies | None = None,
-        response_headers: Sequence[ResponseHeader] | None = None,
+        response_headers: ResponseHeaders | None = None,
         return_dto: type[AbstractDTO] | None | EmptyType = Empty,
         security: Sequence[SecurityRequirement] | None = None,
         signature_namespace: Mapping[str, Any] | None = None,

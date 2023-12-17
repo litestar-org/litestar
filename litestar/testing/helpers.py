@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from litestar.config.cors import CORSConfig
     from litestar.config.csrf import CSRFConfig
     from litestar.config.response_cache import ResponseCacheConfig
-    from litestar.datastructures import CacheControlHeader, ETag, ResponseHeader, State
+    from litestar.datastructures import CacheControlHeader, ETag, State
     from litestar.dto import AbstractDTO
     from litestar.events import BaseEventEmitterBackend, EventListener
     from litestar.logging.config import BaseLoggingConfig
@@ -47,6 +47,7 @@ if TYPE_CHECKING:
         OnAppInitHandler,
         ParametersMap,
         ResponseCookies,
+        ResponseHeaders,
         ResponseType,
         TypeEncodersMap,
     )
@@ -94,7 +95,7 @@ def create_test_client(
     response_cache_config: ResponseCacheConfig | None = None,
     response_class: ResponseType | None = None,
     response_cookies: ResponseCookies | None = None,
-    response_headers: Sequence[ResponseHeader] | None = None,
+    response_headers: ResponseHeaders | None = None,
     return_dto: type[AbstractDTO] | None | EmptyType = Empty,
     root_path: str = "",
     security: Sequence[SecurityRequirement] | None = None,
@@ -349,7 +350,7 @@ def create_async_test_client(
     response_cache_config: ResponseCacheConfig | None = None,
     response_class: ResponseType | None = None,
     response_cookies: ResponseCookies | None = None,
-    response_headers: Sequence[ResponseHeader] | None = None,
+    response_headers: ResponseHeaders | None = None,
     return_dto: type[AbstractDTO] | None | EmptyType = Empty,
     root_path: str = "",
     security: Sequence[SecurityRequirement] | None = None,
