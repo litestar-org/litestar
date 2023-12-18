@@ -17,6 +17,7 @@ from litestar.handlers.http_handlers._utils import (
     create_generic_asgi_response_handler,
     create_response_handler,
     get_default_status_code,
+    is_empty_response_annotation,
     normalize_http_method,
 )
 from litestar.openapi.spec import Operation
@@ -41,7 +42,6 @@ from litestar.types import (
     ResponseType,
     TypeEncodersMap,
 )
-from litestar.types.builtin_types import NoneType
 from litestar.utils import ensure_async_callable
 from litestar.utils.predicates import is_async_callable
 from litestar.utils.warnings import warn_implicit_sync_to_thread, warn_sync_to_thread_with_async_callable
@@ -552,7 +552,7 @@ class HTTPRouteHandler(BaseRouteHandler):
 
         if (
             self.status_code < 200 or self.status_code in {HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED}
-        ) and not return_type.is_subclass_of(NoneType):
+        ) and not is_empty_response_annotation(return_type):
             raise ImproperlyConfiguredException(
                 "A status code 204, 304 or in the range below 200 does not support a response body. "
                 "If the function should return a value, change the route handler status code to an appropriate value.",
