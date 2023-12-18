@@ -12,7 +12,7 @@ from litestar.utils.predicates import is_class_and_subclass
 if TYPE_CHECKING:
     from contextlib import AbstractAsyncContextManager
 
-    from litestar import Request, WebSocket
+    from litestar import Request, Response, WebSocket
     from litestar.config.allowed_hosts import AllowedHostsConfig
     from litestar.config.app import ExperimentalFeatures
     from litestar.config.compression import CompressionConfig
@@ -48,7 +48,6 @@ if TYPE_CHECKING:
         ParametersMap,
         ResponseCookies,
         ResponseHeaders,
-        ResponseType,
         TypeEncodersMap,
     )
 
@@ -93,7 +92,7 @@ def create_test_client(
     pdb_on_exception: bool | None = None,
     request_class: type[Request] | None = None,
     response_cache_config: ResponseCacheConfig | None = None,
-    response_class: ResponseType | None = None,
+    response_class: type[Response] | None = None,
     response_cookies: ResponseCookies | None = None,
     response_headers: ResponseHeaders | None = None,
     return_dto: type[AbstractDTO] | None | EmptyType = Empty,
@@ -348,7 +347,7 @@ def create_async_test_client(
     raise_server_exceptions: bool = True,
     request_class: type[Request] | None = None,
     response_cache_config: ResponseCacheConfig | None = None,
-    response_class: ResponseType | None = None,
+    response_class: type[Response] | None = None,
     response_cookies: ResponseCookies | None = None,
     response_headers: ResponseHeaders | None = None,
     return_dto: type[AbstractDTO] | None | EmptyType = Empty,

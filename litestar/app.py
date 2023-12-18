@@ -65,6 +65,7 @@ if TYPE_CHECKING:
     from litestar.logging.config import BaseLoggingConfig
     from litestar.openapi.spec import SecurityRequirement
     from litestar.openapi.spec.open_api import OpenAPI
+    from litestar.response import Response
     from litestar.static_files.config import StaticFilesConfig
     from litestar.stores.base import Store
     from litestar.types import (
@@ -92,7 +93,6 @@ if TYPE_CHECKING:
         Receive,
         ResponseCookies,
         ResponseHeaders,
-        ResponseType,
         RouteHandlerType,
         Scope,
         Send,
@@ -204,7 +204,7 @@ class Litestar(Router):
         plugins: Sequence[PluginProtocol] | None = None,
         request_class: type[Request] | None = None,
         response_cache_config: ResponseCacheConfig | None = None,
-        response_class: ResponseType | None = None,
+        response_class: type[Response] | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
         return_dto: type[AbstractDTO] | None | EmptyType = Empty,

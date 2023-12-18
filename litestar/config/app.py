@@ -13,7 +13,7 @@ from litestar.types.empty import Empty
 if TYPE_CHECKING:
     from contextlib import AbstractAsyncContextManager
 
-    from litestar import Litestar
+    from litestar import Litestar, Response
     from litestar.config.compression import CompressionConfig
     from litestar.config.cors import CORSConfig
     from litestar.config.csrf import CSRFConfig
@@ -44,7 +44,6 @@ if TYPE_CHECKING:
         ParametersMap,
         ResponseCookies,
         ResponseHeaders,
-        ResponseType,
         TypeEncodersMap,
     )
     from litestar.types.callable_types import LifespanHook
@@ -158,7 +157,7 @@ class AppConfig:
     """List of :class:`SerializationPluginProtocol <.plugins.SerializationPluginProtocol>`."""
     request_class: type[Request] | None = field(default=None)
     """An optional subclass of :class:`Request <.connection.Request>` to use for http connections."""
-    response_class: ResponseType | None = field(default=None)
+    response_class: type[Response] | None = field(default=None)
     """A custom subclass of :class:`Response <.response.Response>` to be used as the app's default response."""
     response_cookies: ResponseCookies = field(default_factory=list)
     """A list of :class:`Cookie <.datastructures.Cookie>`."""

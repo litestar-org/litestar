@@ -22,6 +22,7 @@ if TYPE_CHECKING:
     from litestar.datastructures import CacheControlHeader, ETag
     from litestar.dto import AbstractDTO
     from litestar.openapi.spec import SecurityRequirement
+    from litestar.response import Response
     from litestar.router import Router
     from litestar.types import (
         AfterRequestHookHandler,
@@ -33,7 +34,6 @@ if TYPE_CHECKING:
         Middleware,
         ParametersMap,
         ResponseCookies,
-        ResponseType,
         TypeEncodersMap,
     )
     from litestar.types.composite_types import ResponseHeaders, TypeDecodersSequence
@@ -127,7 +127,7 @@ class Controller:
 
     All route handlers under the controller will have the fragment appended to them. If not set it defaults to ``/``.
     """
-    response_class: ResponseType | None
+    response_class: type[Response] | None
     """A custom subclass of :class:`Response <.response.Response>` to be used as the default response for all route
     handlers under the controller.
     """

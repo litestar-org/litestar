@@ -21,6 +21,7 @@ if TYPE_CHECKING:
     from litestar.dto import AbstractDTO
     from litestar.openapi.datastructures import ResponseSpec
     from litestar.openapi.spec import SecurityRequirement
+    from litestar.response import Response
     from litestar.types import (
         AfterRequestHookHandler,
         AfterResponseHookHandler,
@@ -33,7 +34,6 @@ if TYPE_CHECKING:
         Middleware,
         ResponseCookies,
         ResponseHeaders,
-        ResponseType,
         TypeEncodersMap,
     )
     from litestar.types.callable_types import OperationIDCreator
@@ -70,7 +70,7 @@ class delete(HTTPRouteHandler):
         middleware: Sequence[Middleware] | None = None,
         name: str | None = None,
         opt: Mapping[str, Any] | None = None,
-        response_class: ResponseType | None = None,
+        response_class: type[Response] | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
         return_dto: type[AbstractDTO] | None | EmptyType = Empty,
@@ -234,7 +234,7 @@ class get(HTTPRouteHandler):
         middleware: Sequence[Middleware] | None = None,
         name: str | None = None,
         opt: Mapping[str, Any] | None = None,
-        response_class: ResponseType | None = None,
+        response_class: type[Response] | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
         return_dto: type[AbstractDTO] | None | EmptyType = Empty,
@@ -399,7 +399,7 @@ class head(HTTPRouteHandler):
         middleware: Sequence[Middleware] | None = None,
         name: str | None = None,
         opt: Mapping[str, Any] | None = None,
-        response_class: ResponseType | None = None,
+        response_class: type[Response] | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
         signature_namespace: Mapping[str, Any] | None = None,
@@ -581,7 +581,7 @@ class patch(HTTPRouteHandler):
         middleware: Sequence[Middleware] | None = None,
         name: str | None = None,
         opt: Mapping[str, Any] | None = None,
-        response_class: ResponseType | None = None,
+        response_class: type[Response] | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
         return_dto: type[AbstractDTO] | None | EmptyType = Empty,
@@ -745,7 +745,7 @@ class post(HTTPRouteHandler):
         middleware: Sequence[Middleware] | None = None,
         name: str | None = None,
         opt: Mapping[str, Any] | None = None,
-        response_class: ResponseType | None = None,
+        response_class: type[Response] | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
         return_dto: type[AbstractDTO] | None | EmptyType = Empty,
@@ -909,7 +909,7 @@ class put(HTTPRouteHandler):
         middleware: Sequence[Middleware] | None = None,
         name: str | None = None,
         opt: Mapping[str, Any] | None = None,
-        response_class: ResponseType | None = None,
+        response_class: type[Response] | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
         return_dto: type[AbstractDTO] | None | EmptyType = Empty,
