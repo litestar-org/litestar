@@ -6,14 +6,15 @@ from typing import TYPE_CHECKING, Any, Sequence, cast
 
 from litestar.enums import HttpMethod
 from litestar.exceptions import ValidationException
+from litestar.response import Response
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
+from litestar.types.builtin_types import NoneType
 
 if TYPE_CHECKING:
     from litestar.app import Litestar
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
     from litestar.connection import Request
     from litestar.datastructures import Cookie, ResponseHeader
-    from litestar.response import Response
     from litestar.types import (
         AfterRequestHookHandler,
         ASGIApp,
@@ -22,12 +23,14 @@ if TYPE_CHECKING:
         ResponseType,
         TypeEncodersMap,
     )
+    from litestar.typing import FieldDefinition
 
 __all__ = (
     "create_data_handler",
     "create_generic_asgi_response_handler",
     "create_response_handler",
     "get_default_status_code",
+    "is_empty_response_annotation",
     "normalize_headers",
     "normalize_http_method",
 )
@@ -204,6 +207,22 @@ def get_default_status_code(http_methods: set[Method]) -> int:
     if HttpMethod.DELETE in http_methods:
         return HTTP_204_NO_CONTENT
     return HTTP_200_OK
+
+
+def is_empty_response_annotation(return_annotation: FieldDefinition) -> bool:
+    """Return whether the return annotation is an empty response.
+
+    Args:
+        return_annotation: A return annotation.
+
+    Returns:
+        Whether the return annotation is an empty response.
+    """
+    return (
+        return_annotation.is_subclass_of(NoneType)
+        or return_annotation.is_subclass_of(Response)
+        and return_annotation.has_inner_subclass_of(NoneType)
+    )
 
 
 HTTP_METHOD_NAMES = {m.value for m in HttpMethod}

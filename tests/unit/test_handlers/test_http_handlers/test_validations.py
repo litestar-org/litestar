@@ -1,5 +1,6 @@
 from pathlib import Path
-from typing import Dict
+from types import ModuleType
+from typing import Callable, Dict
 
 import pytest
 
@@ -110,3 +111,36 @@ async def test_function_validation() -> None:
         Litestar(route_handlers=[test_function_2])
 
         test_function_2.on_registration(Litestar())
+
+
+@pytest.mark.parametrize(
+    ("return_annotation", "should_raise"),
+    [
+        ("None", False),
+        ("Response[None]", False),
+        ("int", True),
+        ("Response[int]", True),
+        ("Response", True),
+    ],
+)
+def test_204_response_annotations(
+    return_annotation: str, should_raise: bool, create_module: Callable[[str], ModuleType]
+) -> None:
+    module = create_module(
+        f"""
+from litestar import get
+from litestar.response import Response
+from litestar.status_codes import HTTP_204_NO_CONTENT
+
+@get(path="/", status_code=HTTP_204_NO_CONTENT)
+def no_response_handler() -> {return_annotation}:
+    pass
+"""
+    )
+
+    if should_raise:
+        with pytest.raises(ImproperlyConfiguredException):
+            Litestar(route_handlers=[module.no_response_handler])
+        return
+
+    Litestar(route_handlers=[module.no_response_handler])
