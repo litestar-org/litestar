@@ -61,7 +61,7 @@ def test_default_stoplight_elements_cdn_urls(
         assert all(cdn_url in response.text for cdn_url in default_stoplight_elements_bundles)
 
 
-def test_default_rapidoc_elements_cdn_urls(
+def test_default_rapidoc_cdn_urls(
     person_controller: Type[Controller], pet_controller: Type[Controller]
 ) -> None:
     with create_test_client([person_controller, pet_controller]) as client:
