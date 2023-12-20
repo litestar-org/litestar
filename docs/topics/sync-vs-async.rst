@@ -93,7 +93,7 @@ operations, such as calling synchronous functions that are I/O bound.
 It might be tempting to look at this and think a function should be async by default,
 unless it's performing blocking operations synchronously, but this is not the case.
 Async itself has an overhead attached to it which, while very small, can in some
-situations become non negligible. An synchronous function performing non-blocking
+situations become non negligible. A synchronous function performing non-blocking
 operations will outperform an asynchronous function doing the same.
 
 
