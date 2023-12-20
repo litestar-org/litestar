@@ -14,7 +14,6 @@ if TYPE_CHECKING:
     from litestar.router import Router
 
 __all__ = (
-    "JsonRenderPlugin",
     "OpenAPIRenderPlugin",
     "RapidocRenderPlugin",
     "RedocRenderPlugin",
