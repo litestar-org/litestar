@@ -3,10 +3,11 @@ from typing import TYPE_CHECKING, Any, List
 import pytest
 
 from litestar import Litestar, get
+from litestar._openapi.plugin import JsonRenderPlugin
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.controller import OpenAPIController
-from litestar.openapi.plugins import JsonRenderPlugin, RedocRenderPlugin
+from litestar.openapi.plugins import RedocRenderPlugin
 from litestar.openapi.spec import Components, Example, OpenAPIHeader, OpenAPIType, Schema
 
 if TYPE_CHECKING:

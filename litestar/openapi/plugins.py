@@ -14,7 +14,6 @@ if TYPE_CHECKING:
     from litestar.router import Router
 
 __all__ = (
-    "JsonRenderPlugin",
     "OpenAPIRenderPlugin",
     "RapidocRenderPlugin",
     "RedocRenderPlugin",
@@ -98,39 +97,6 @@ class OpenAPIRenderPlugin:
             True if the plugin has the path, False otherwise.
         """
         return path in self.path if isinstance(self.path, Sequence) else path == self.path
-
-
-class JsonRenderPlugin(OpenAPIRenderPlugin):
-    """Render the OpenAPI schema as JSON."""
-
-    def __init__(
-        self,
-        *,
-        path: str | Sequence[str] = "/openapi.json",
-        media_type: MediaType | OpenAPIMediaType = OpenAPIMediaType.OPENAPI_JSON,
-        **kwargs: Any,
-    ) -> None:
-        """Initialize the OpenAPI UI render plugin.
-
-        Args:
-            path: Path to serve the OpenAPI UI at.
-            media_type: Media type for the handler.
-            **kwargs: Additional arguments to pass to the base class.
-
-        """
-        super().__init__(path=path, media_type=media_type, **kwargs)
-
-    def render(self, request: Request, openapi_schema: dict[str, Any]) -> bytes:
-        """Render an OpenAPI schema as JSON.
-
-        Args:
-            request: The request.
-            openapi_schema: The OpenAPI schema as a dictionary.
-
-        Returns:
-            The rendered OpenAPI schema as JSON.
-        """
-        return self.render_json(request, openapi_schema)
 
 
 class YamlRenderPlugin(OpenAPIRenderPlugin):
