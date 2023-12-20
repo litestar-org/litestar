@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from litestar._openapi.plugin import JsonRenderPlugin
 from litestar.handlers import get
 from litestar.openapi.config import OpenAPIConfig
+from litestar.openapi.plugins import JsonRenderPlugin
 from litestar.testing import create_test_client
 
 
