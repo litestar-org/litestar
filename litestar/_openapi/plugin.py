@@ -1,14 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, Sequence
+from typing import TYPE_CHECKING, Any, Dict
 
 from litestar._openapi.datastructures import OpenAPIContext
 from litestar._openapi.path_item import create_path_item_for_route
 from litestar.di import Provide
-from litestar.enums import MediaType, OpenAPIMediaType
+from litestar.enums import MediaType
 from litestar.exceptions import ImproperlyConfiguredException, NotFoundException
 from litestar.handlers import get
-from litestar.openapi.plugins import OpenAPIRenderPlugin
 from litestar.plugins import InitPluginProtocol
 from litestar.plugins.base import ReceiveRoutePlugin
 from litestar.response import Response
@@ -22,6 +21,7 @@ if TYPE_CHECKING:
     from litestar.connection import Request
     from litestar.handlers import HTTPRouteHandler
     from litestar.openapi.config import OpenAPIConfig
+    from litestar.openapi.plugins import OpenAPIRenderPlugin
     from litestar.openapi.spec import OpenAPI
     from litestar.routes import BaseRoute
 
@@ -147,36 +147,3 @@ class OpenAPIPlugin(InitPluginProtocol, ReceiveRoutePlugin):
             # Force recompute the schema if a new route is added
             self._openapi_schema = None
             self.included_routes[route.path] = route
-
-
-class JsonRenderPlugin(OpenAPIRenderPlugin):
-    # undocumented
-
-    def __init__(
-        self,
-        *,
-        path: str | Sequence[str] = "/openapi.json",
-        media_type: MediaType | OpenAPIMediaType = OpenAPIMediaType.OPENAPI_JSON,
-        **kwargs: Any,
-    ) -> None:
-        """Initialize the OpenAPI UI render plugin.
-
-        Args:
-            path: Path to serve the OpenAPI UI at.
-            media_type: Media type for the handler.
-            **kwargs: Additional arguments to pass to the base class.
-
-        """
-        super().__init__(path=path, media_type=media_type, **kwargs)
-
-    def render(self, request: Request, openapi_schema: dict[str, Any]) -> bytes:
-        """Render an OpenAPI schema as JSON.
-
-        Args:
-            request: The request.
-            openapi_schema: The OpenAPI schema as a dictionary.
-
-        Returns:
-            The rendered OpenAPI schema as JSON.
-        """
-        return self.render_json(request, openapi_schema)

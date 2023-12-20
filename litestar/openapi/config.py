@@ -4,9 +4,9 @@ from copy import deepcopy
 from dataclasses import dataclass, field, fields
 from typing import TYPE_CHECKING, Literal, Sequence
 
-from litestar._openapi.plugin import JsonRenderPlugin
 from litestar._openapi.utils import default_operation_id_creator
 from litestar.openapi.plugins import (
+    JsonRenderPlugin,
     RapidocRenderPlugin,
     RedocRenderPlugin,
     StoplightRenderPlugin,
