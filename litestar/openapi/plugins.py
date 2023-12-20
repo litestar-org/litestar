@@ -27,6 +27,8 @@ _default_favicon = f"<link rel='icon' type='image/png' href='{_favicon_url}'>"
 
 
 class OpenAPIRenderPlugin:
+    """Base class for OpenAPI UI render plugins."""
+
     def __init__(
         self,
         *,
@@ -100,6 +102,8 @@ class OpenAPIRenderPlugin:
 
 
 class YamlRenderPlugin(OpenAPIRenderPlugin):
+    """Render an OpenAPI schema as YAML."""
+
     def __init__(
         self,
         *,
@@ -136,6 +140,8 @@ class YamlRenderPlugin(OpenAPIRenderPlugin):
 
 
 class RapidocRenderPlugin(OpenAPIRenderPlugin):
+    """Render an OpenAPI schema using Rapidoc."""
+
     def __init__(
         self,
         *,
@@ -197,6 +203,8 @@ class RapidocRenderPlugin(OpenAPIRenderPlugin):
 
 
 class RedocRenderPlugin(OpenAPIRenderPlugin):
+    """Render an OpenAPI schema using Redoc."""
+
     def __init__(
         self,
         *,
@@ -273,6 +281,8 @@ class RedocRenderPlugin(OpenAPIRenderPlugin):
 
 
 class StoplightRenderPlugin(OpenAPIRenderPlugin):
+    """Render an OpenAPI schema using StopLight Elements."""
+
     def __init__(
         self,
         *,
@@ -342,6 +352,8 @@ class StoplightRenderPlugin(OpenAPIRenderPlugin):
 
 
 class SwaggerRenderPlugin(OpenAPIRenderPlugin):
+    """Render an OpenAPI schema using Swagger-UI."""
+
     def __init__(
         self,
         version: str = "5.1.3",
