@@ -261,7 +261,7 @@ Parameters that support layering are:
 * :ref:`etag <usage/responses:etag>`
 * :doc:`exception_handlers </usage/exceptions>`
 * :doc:`guards </usage/security/guards>`
-* :ref:`include_in_schema <usage/openapi:configuring schema generation on a route handler>`
+* :ref:`include_in_schema <usage/openapi/schema_generation:configuring schema generation on a route handler>`
 * :doc:`middleware </usage/middleware/index>`
 * :ref:`opt <handler_opts>`
 * :ref:`response_class <usage/responses:custom responses>`
