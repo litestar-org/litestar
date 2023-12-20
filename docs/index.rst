@@ -5,7 +5,7 @@ Litestar is a powerful, flexible, highly performant, and opinionated ASGI framew
 
 The Litestar framework supports :doc:`/usage/plugins`, ships
 with :doc:`dependency injection </usage/dependency-injection>`, :doc:`security primitives </usage/security/index>`,
-:doc:`OpenAPI schema generation </usage/openapi>`, `MessagePack <https://msgpack.org/>`_,
+:doc:`OpenAPI schema generation </usage/openapi/index>`, `MessagePack <https://msgpack.org/>`_,
 :doc:`middlewares </usage/middleware/index>`, a great :doc:`CLI </usage/cli>` experience, and much more.
 
 Installation

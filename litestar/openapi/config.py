@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from dataclasses import dataclass, field, fields
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Literal, Sequence
 
 from litestar._openapi.utils import default_operation_id_creator
 from litestar.openapi.plugins import (
@@ -125,8 +125,12 @@ class OpenAPIConfig:
     operation_id_creator: OperationIDCreator = default_operation_id_creator
     """A callable that generates unique operation ids"""
     path: str | None = field(default=None)
-    """Base path for the OpenAPI documentation endpoints."""
-    render_plugins: list[OpenAPIRenderPlugin] = field(default_factory=list)
+    """Base path for the OpenAPI documentation endpoints.
+
+    If no path is provided the default is ``/schema``.
+    """
+    render_plugins: Sequence[OpenAPIRenderPlugin] = field(default_factory=list)
+    """Plugins for rendering OpenAPI documentation UIs."""
 
     def __post_init__(self) -> None:
         if self.path and self.openapi_controller is not None:
@@ -138,10 +142,14 @@ class OpenAPIConfig:
                 # NOTE: while we support the legacy `enabled_endpoints` property we need to dynamically
                 #       generate the render_plugins list. Once that is gone, we can set the defaults in
                 #       the field's `default_factory` and remove this code.
-                self.render_plugins = [plugin() for k in self.enabled_endpoints if (plugin := enabled_plugin_map[k])]
+                self.render_plugins = rps = [
+                    plugin() for k in self.enabled_endpoints if (plugin := enabled_plugin_map[k])
+                ]
+            else:
+                self.render_plugins = rps = list(self.render_plugins)
 
             if not any(plugin.has_path("/openapi.json") for plugin in self.render_plugins):
-                self.render_plugins.append(JsonRenderPlugin())
+                rps.append(JsonRenderPlugin())
 
     def to_openapi_schema(self) -> OpenAPI:
         """Return an ``OpenAPI`` instance from the values stored in ``self``.

@@ -101,6 +101,8 @@ class OpenAPIRenderPlugin:
 
 
 class JsonRenderPlugin(OpenAPIRenderPlugin):
+    """Render the OpenAPI schema as JSON."""
+
     def __init__(
         self,
         *,
