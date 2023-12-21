@@ -6,6 +6,7 @@ from unittest.mock import Mock, patch
 import pytest
 
 from litestar import Request, get
+from litestar.exceptions import ImproperlyConfiguredException
 from litestar.logging.config import LoggingConfig, _get_default_handlers, default_handlers, default_picologging_handlers
 from litestar.logging.picologging import QueueListenerHandler as PicologgingQueueListenerHandler
 from litestar.logging.standard import QueueListenerHandler as StandardQueueListenerHandler
@@ -80,6 +81,12 @@ def test_picologging_dictconfig_when_disabled(dict_config_mock: Mock) -> None:
     test_logger = LoggingConfig(loggers={"app": {"level": "INFO", "handlers": ["console"]}}, handlers=default_handlers)
     with create_test_client([], on_startup=[test_logger.configure], logging_config=None):
         assert not dict_config_mock.called
+
+
+def test_get_logger_without_logging_config() -> None:
+    with create_test_client(logging_config=None) as client:
+        with pytest.raises(ImproperlyConfiguredException):
+            client.app.get_logger()
 
 
 def test_get_default_logger() -> None:
