@@ -99,6 +99,8 @@ class LitestarEnv:
     uds: str | None = None
     reload: bool | None = None
     reload_dirs: tuple[str, ...] | None = None
+    reload_includes: list[str] | None = None
+    reload_excludes: list[str] | None = None
     web_concurrency: int | None = None
     is_app_factory: bool = False
     certfile_path: str | None = None
@@ -134,6 +136,8 @@ class LitestarEnv:
         uds = getenv("LITESTAR_UNIX_DOMAIN_SOCKET")
         fd = getenv("LITESTAR_FILE_DESCRIPTOR")
         reload_dirs = tuple(s.strip() for s in getenv("LITESTAR_RELOAD_DIRS", "").split(",") if s) or None
+        reload_includes = [s.strip() for s in getenv("LITESTAR_RELOAD_INCLUDES", "").split(",") if s] or None
+        reload_excludes = [s.strip() for s in getenv("LITESTAR_RELOAD_EXCLUDES", "").split(",") if s] or None
 
         return cls(
             app_path=loaded_app.app_path,
@@ -145,6 +149,8 @@ class LitestarEnv:
             fd=int(fd) if fd else None,
             reload=_bool_from_env("LITESTAR_RELOAD"),
             reload_dirs=reload_dirs,
+            reload_includes=reload_includes,
+            reload_excludes=reload_excludes,
             web_concurrency=int(web_concurrency) if web_concurrency else None,
             is_app_factory=loaded_app.is_factory,
             cwd=cwd,

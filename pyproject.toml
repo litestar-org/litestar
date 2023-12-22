@@ -43,6 +43,7 @@ dependencies = [
   "click",
   "rich>=13.0.0",
   "rich-click",
+  "watchfiles>=0.21.0",
 ]
 description = "Litestar - A production-ready, highly performant, extensible ASGI API Framework"
 keywords = ["api", "rest", "asgi", "litestar", "starlite"]
