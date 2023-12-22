@@ -271,7 +271,7 @@ class LoggingMiddlewareConfig:
     response_log_message: str = field(default="HTTP Response")
     """Log message to prepend when logging a response."""
     request_log_fields: Iterable[RequestExtractorField] = field(
-        default_factory=lambda: (
+        default=(
             "path",
             "method",
             "content_type",
@@ -290,7 +290,7 @@ class LoggingMiddlewareConfig:
         -  To turn off logging of requests, use and empty iterable.
     """
     response_log_fields: Iterable[ResponseExtractorField] = field(
-        default_factory=lambda: (
+        default=(
             "status_code",
             "cookies",
             "headers",
@@ -305,7 +305,7 @@ class LoggingMiddlewareConfig:
             Thus, re-arranging the log-message is as simple as changing the iterable.
         -  To turn off logging of responses, use and empty iterable.
     """
-    middleware_class: type[LoggingMiddleware] = field(default_factory=lambda: LoggingMiddleware)
+    middleware_class: type[LoggingMiddleware] = LoggingMiddleware
     """Middleware class to use.
 
     Should be a subclass of [litestar.middleware.LoggingMiddleware].
