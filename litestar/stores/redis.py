@@ -8,6 +8,7 @@ from redis.asyncio.connection import ConnectionPool
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Empty, EmptyType
+from litestar.utils.empty import value_or_default
 
 from .base import NamespacedStore
 
@@ -29,7 +30,7 @@ class RedisStore(NamespacedStore):
                 ``None``. This will make :meth:`.delete_all` unavailable.
         """
         self._redis = redis
-        self.namespace: str | None = "LITESTAR" if namespace is Empty else namespace
+        self.namespace: str | None = value_or_default(namespace, "LITESTAR")
 
         # script to get and renew a key in one atomic step
         self._get_and_renew_script = self._redis.register_script(
