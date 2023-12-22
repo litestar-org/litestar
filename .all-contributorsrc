@@ -1499,6 +1499,16 @@
         "test",
         "doc"
       ]
+    },
+    {
+      "login": "cbscsm",
+      "name": "Boseong Choi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/31615733?v=4",
+      "profile": "https://github.com/cbscsm",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
