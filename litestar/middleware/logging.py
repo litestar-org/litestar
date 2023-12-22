@@ -305,7 +305,7 @@ class LoggingMiddlewareConfig:
             Thus, re-arranging the log-message is as simple as changing the iterable.
         -  To turn off logging of responses, use and empty iterable.
     """
-    middleware_class: type[LoggingMiddleware] = LoggingMiddleware
+    middleware_class: type[LoggingMiddleware] = field(default=LoggingMiddleware)
     """Middleware class to use.
 
     Should be a subclass of [litestar.middleware.LoggingMiddleware].
