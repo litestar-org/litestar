@@ -3,6 +3,50 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.4.5
+    :date: 2023/12/23
+
+    .. change:: Fix validation of  empty payload data with default values
+        :type: bugfix
+        :issue: 2902
+        :pr: 2903
+
+        Prior to this fix, a handler like:
+
+        .. code-block:: python
+
+            @post(path="/", sync_to_thread=False)
+            def test(data: str = "abc") -> dict:
+                return {"foo": data}
+
+        ``$ curl localhost:8000 -X POST``
+
+        would return a client error like:
+
+        .. code-block:: bash
+
+            {"status_code":400,"detail":"Validation failed for POST http://localhost:8000/","extra":[{"message":"Expected `str`, got `null`","key":"data","source":"body"}]}
+
+    .. change:: Support for returning ``Response[None]`` with a ``204`` status code from a handler
+        :type: bugfix
+        :pr: 2915
+        :issue: 2914
+
+        Returning a ``Response[None]`` from a route handler for a response with a
+        ``204`` now works as expected without resulting in an
+        :exc:`ImproperlyConfiguredException`
+
+    .. change:: Fix error message of ``get_logger_placeholder()``
+        :type: bugfix
+        :pr: 2919
+
+        Using a method on
+        :attr:`Request.logger <litestar.connection.ASGIConnection.logger>` when not
+        setting a ``logging_config`` on the application would result in a non-descriptive
+        :exc:`TypeError`. An :exc:`ImproperlyConfiguredException` with an explanation is
+        now raised instead.
+
+
 .. changelog:: 2.4.4
     :date: 2023/12/13
 
