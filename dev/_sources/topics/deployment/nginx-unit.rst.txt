@@ -14,7 +14,7 @@ For detailed understanding and further information, refer to the official
 `nginx-unit documentation <https://unit.nginx.org/>`_.
 
 Alternatives
-~~~~~~~~~~~~
+++++++++++++
 
 - :doc:`Manually with an ASGI server <manually-with-asgi-server>`:
     Direct control by running the application with an ASGI server like Uvicorn, Hypercorn, Daphne, etc.

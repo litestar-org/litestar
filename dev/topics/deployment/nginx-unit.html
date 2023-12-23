@@ -1624,12 +1624,17 @@ Ubuntu</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
+<section id="listeners">
+<h3>Listeners<a class="headerlink" href="#listeners" title="Permalink to this heading">#</a></h3>
 <p>To accept requests, add a listener object in the <code class="docutils literal notranslate"><span class="pre">config/listeners</span></code> API section; the object’s name can be:</p>
 <ul class="simple">
 <li><p>A unique IP socket: <code class="docutils literal notranslate"><span class="pre">127.0.0.1:80</span></code>, <code class="docutils literal notranslate"><span class="pre">[::1]:8080</span></code></p></li>
 <li><p>A wildcard that matches any host IPs on the port: <code class="docutils literal notranslate"><span class="pre">*:80</span></code></p></li>
 <li><p>On Linux-based systems, abstract UNIX sockets can be used as well: <code class="docutils literal notranslate"><span class="pre">unix:&#64;abstract_socket</span></code>.</p></li>
 </ul>
+</section>
+<section id="applications">
+<h3>Applications<a class="headerlink" href="#applications" title="Permalink to this heading">#</a></h3>
 <p>Each app that Unit runs is defined as an object in the <code class="docutils literal notranslate"><span class="pre">/config/applications</span></code> section of the control API;
 it lists the app’s language and settings, runtime limits, process model, and various language-specific options.</p>
 <table class="table">
@@ -1686,6 +1691,7 @@ it lists the app’s language and settings, runtime limits, process model, and v
 </tr>
 </tbody>
 </table>
+</section>
 </section>
 <section id="configuration-update">
 <h2>Configuration update<a class="headerlink" href="#configuration-update" title="Permalink to this heading">#</a></h2>
@@ -1749,7 +1755,11 @@ it lists the app’s language and settings, runtime limits, process model, and v
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-nginx-unit">Install <code class="docutils literal notranslate"><span class="pre">nginx-unit</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration">Configuration</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration">Configuration</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#listeners">Listeners</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#applications">Applications</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration-update">Configuration update</a></li>
 </ul>
   </nav></div>

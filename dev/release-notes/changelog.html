@@ -1502,6 +1502,45 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.4.5">
+<h2>2.4.5<a class="headerlink" href="#2.4.5" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2023/12/23<section id="2.4.5-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.4.5-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Fix validation of  empty payload data with default values<a class="headerlink reference internal" href="#2.4.5-fix validation of empty payload data with default values" id="2.4.5-fix validation of empty payload data with default values">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Prior to this fix, a handler like:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;abc&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="n">data</span><span class="p">}</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">curl</span> <span class="pre">localhost:8000</span> <span class="pre">-X</span> <span class="pre">POST</span></code></p>
+<p>would return a client error like:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="o">{</span><span class="s2">&quot;status_code&quot;</span>:400,<span class="s2">&quot;detail&quot;</span>:<span class="s2">&quot;Validation failed for POST http://localhost:8000/&quot;</span>,<span class="s2">&quot;extra&quot;</span>:<span class="o">[{</span><span class="s2">&quot;message&quot;</span>:<span class="s2">&quot;Expected `str`, got `null`&quot;</span>,<span class="s2">&quot;key&quot;</span>:<span class="s2">&quot;data&quot;</span>,<span class="s2">&quot;source&quot;</span>:<span class="s2">&quot;body&quot;</span><span class="o">}]}</span>
+</pre></div>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2902">litestar-org/litestar#2902</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2903">litestar-org/litestar#2903</a></span></p>
+</div>
+</dd>
+<dt>Support for returning <code class="docutils literal notranslate"><span class="pre">Response[None]</span></code> with a <code class="docutils literal notranslate"><span class="pre">204</span></code> status code from a handler<a class="headerlink reference internal" href="#2.4.5-support for returning" id="2.4.5-support for returning">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Returning a <code class="docutils literal notranslate"><span class="pre">Response[None]</span></code> from a route handler for a response with a
+<code class="docutils literal notranslate"><span class="pre">204</span></code> now works as expected without resulting in an
+<a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.ImproperlyConfiguredException" title="litestar.exceptions.ImproperlyConfiguredException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ImproperlyConfiguredException</span></code></a></p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2914">litestar-org/litestar#2914</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2915">litestar-org/litestar#2915</a></span></p>
+</div>
+</dd>
+<dt>Fix error message of <code class="docutils literal notranslate"><span class="pre">get_logger_placeholder()</span></code><a class="headerlink reference internal" href="#2.4.5-fix error message of" id="2.4.5-fix error message of">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Using a method on
+<a class="reference internal" href="../reference/connection.html#litestar.connection.ASGIConnection.logger" title="litestar.connection.ASGIConnection.logger"><code class="xref py py-attr docutils literal notranslate"><span class="pre">Request.logger</span></code></a> when not
+setting a <code class="docutils literal notranslate"><span class="pre">logging_config</span></code> on the application would result in a non-descriptive
+<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a>. An <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.ImproperlyConfiguredException" title="litestar.exceptions.ImproperlyConfiguredException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ImproperlyConfiguredException</span></code></a> with an explanation is
+now raised instead.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2919">litestar-org/litestar#2919</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.4.4">
 <h2>2.4.4<a class="headerlink" href="#2.4.4" title="Permalink to this heading">#</a></h2>
 <strong>Released: </strong>2023/12/13<section id="2.4.4-bugfix">
@@ -4684,6 +4723,10 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.4.5">2.4.5</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.4.5-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.4.4">2.4.4</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.4.4-bugfix">Bugfixes</a></li>
 </ul>
