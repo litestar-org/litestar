@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>Supervisor (linux) &#8212; Litestar Framework</title>
+    <title>Supervisor (Linux) &#8212; Litestar Framework</title>
   
   
   
@@ -1392,8 +1392,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="nginx-unit.html">NGINX Unit</a></li>
 <li class="toctree-l3"><a class="reference internal" href="manually-with-asgi-server.html">Manually with ASGI server</a></li>
 <li class="toctree-l3"><a class="reference internal" href="docker.html">Docker</a></li>
-<li class="toctree-l3 current active"><a class="current reference internal" href="#">Supervisor (linux)</a></li>
-
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">Supervisor (Linux)</a></li>
 </ul>
 </li>
 </ul>
@@ -1492,7 +1491,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">Deployment</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">Supervisor (linux)</li>
+    <li class="breadcrumb-item active" aria-current="page">Supervisor (Linux)</li>
   </ul>
 </nav>
 </div>
@@ -1510,154 +1509,276 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section id="supervisor-linux">
-<h1>Supervisor (linux)<a class="headerlink" href="#supervisor-linux" title="Permalink to this heading">#</a></h1>
-<p>To keep a litestar app running you need to set it as a service. The 2 main ways to do that on Ubuntui is to use systemctl or supervisor. Both use unit files to define the service</p>
-<p>Supervisor is an additional package you need to install but i find it much easier to monitor the service than with systemctl</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>supervisor
+<h1>Supervisor (Linux)<a class="headerlink" href="#supervisor-linux" title="Permalink to this heading">#</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">supervisor</span></code> is a process control system for Linux, which allows you to monitor and control
+a number of processes on UNIX-like operating systems. It is particularly useful for managing
+processes that need to be running continuously, and for monitoring and controlling processes
+that are running in the background.</p>
+<section id="use-when">
+<h2>Use When<a class="headerlink" href="#use-when" title="Permalink to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">supervisor</span></code> is ideal for managing Python web applications that need continuous uptime and robust process control.
+It’s particularly useful when you need extensive process management, monitoring, log management, and
+customized control over the start, stop, and restart of application processes.</p>
+<p>For detailed understanding and further information, refer to the official
+<a class="reference external" href="http://supervisord.org/introduction.html">Supervisor documentation</a>.</p>
+<section id="alternatives">
+<h3>Alternatives<a class="headerlink" href="#alternatives" title="Permalink to this heading">#</a></h3>
+<p>For different deployment scenarios, consider these alternatives:</p>
+<ul>
+<li><dl class="simple">
+<dt><a class="reference internal" href="docker.html"><span class="doc">Docker</span></a>:</dt><dd><p>Ideal for containerized environments, offering isolation and scalability.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><a class="reference internal" href="nginx-unit.html"><span class="doc">NGINX Unit</span></a>:</dt><dd><p>A dynamic web and application server, suitable for running and managing multiple applications.</p>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt><a class="reference external" href="https://www.freedesktop.org/wiki/Software/systemd/">systemd</a>:</dt><dd><p>A system and service manager, integrated into many Linux distributions for managing system processes.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Official documentation coming soon</p>
+</div>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><a class="reference internal" href="manually-with-asgi-server.html"><span class="doc">Manually with an ASGI server</span></a>:</dt><dd><p>Direct control by running the application with an ASGI server like Uvicorn, Hypercorn, Daphne, etc.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>This resource provides comprehensive guidance on installation, configuration, and usage of
+<code class="docutils literal notranslate"><span class="pre">supervisor</span></code> for service management.</p>
+</section>
+</section>
+<section id="setup">
+<span id="conf-file"></span><h2>Setup<a class="headerlink" href="#setup" title="Permalink to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">supervisor</span></code> uses a config file for defining services. You can read more about the config file
+in the <a class="reference external" href="http://supervisord.org/configuration.html">Supervisor configuration documentation</a>.</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">Example supervisor config file</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
+<div class="highlight-ini notranslate"><div class="highlight"><pre><span></span><span class="na">[program</span><span class="o">:</span><span class="s">exampleapp]</span><span class="w">  </span><span class="c1"># Defines the service name.</span>
+<span class="na">directory</span><span class="o">=</span><span class="s">/opt/exampleapp/src</span><span class="w">  </span><span class="c1"># Specifies the directory where the service should run.</span>
+<span class="na">command</span><span class="o">=</span><span class="s">/opt/exampleapp/venv/bin/litestar app.py</span><span class="w">  </span><span class="c1"># Specifies the command to run the service.</span>
+<span class="na">redirect_stderr</span><span class="o">=</span><span class="s">true</span><span class="w">  </span><span class="c1"># Redirects stderr to stdout.</span>
+<span class="na">stdout_logfile</span><span class="o">=</span><span class="s">/var/log/exampleapp.log</span><span class="w">  </span><span class="c1"># Specifies the log file to write to.</span>
+<span class="na">stdout_logfile_backups</span><span class="o">=</span><span class="s">10</span><span class="w">  </span><span class="c1"># Specifies the number of backups to keep.</span>
+<span class="na">autostart</span><span class="o">=</span><span class="s">true</span><span class="w">  </span><span class="c1"># Specifies that the service should start automatically when ``supervisor`` starts.</span>
+<span class="na">autorestart</span><span class="o">=</span><span class="s">true</span><span class="w">  </span><span class="c1"># Specifies that the service should restart automatically if it exits unexpectedly.</span>
 </pre></div>
 </div>
-<section id="conf-file">
-<span id="id1"></span><h2>Conf file<a class="headerlink" href="#conf-file" title="Permalink to this heading">#</a></h2>
-<p>Supervisord uses a config file for defining services <a class="reference external" href="http://supervisord.org/configuration.html">http://supervisord.org/configuration.html</a></p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>[program:api]
-directory=/opt/api/src
-command=/opt/api/venv/bin/python main.py
-redirect_stderr=true
-stdout_logfile=/var/log/api.log
-stdout_logfile_backups=10
-autostart=true
-autorestart=true
-</pre></div>
 </div>
-<p><cite>[program:api]</cite> will be your service name. so <cite>supervisorctl start api</cite></p>
-<p><cite>directory=/…</cite> the directory where the service must run from</p>
-<p><cite>command=…</cite> the script the service must run. notice the python executable path, this uses the venv’s python to run the app.</p>
-<p>You will need to reload the supervisor config to load your new service file. do so with:</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>reread
+<p>You can place the above config file in <code class="docutils literal notranslate"><span class="pre">/etc/supervisor/conf.d/exampleapp.conf</span></code>.
+After you have created the config file, you will need to reload the <code class="docutils literal notranslate"><span class="pre">supervisor</span></code> config to load your new service file.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Helpful Commands<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Reload supervisor config</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>reread
 sudo<span class="w"> </span>supervisorctl<span class="w"> </span>update
 </pre></div>
 </div>
-<p>to start/stop the service</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>start<span class="w"> </span>api
-sudo<span class="w"> </span>supervisorctl<span class="w"> </span>stop<span class="w"> </span>api
+</div>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">Start/Stop/Restart/Status</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>start<span class="w"> </span>exampleapp
+sudo<span class="w"> </span>supervisorctl<span class="w"> </span>stop<span class="w"> </span>exampleapp
+sudo<span class="w"> </span>supervisorctl<span class="w"> </span>restart<span class="w"> </span>exampleapp
+sudo<span class="w"> </span>supervisorctl<span class="w"> </span>status<span class="w"> </span>exampleapp
 </pre></div>
 </div>
-<p>to get the status</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>status<span class="w"> </span>api
+</div>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">View logs</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>tail<span class="w"> </span>-f<span class="w"> </span>exampleapp
 </pre></div>
 </div>
-<p>to watch the output</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>tail<span class="w"> </span>-f<span class="w"> </span>api
-</pre></div>
 </div>
-<p>Start the service if its not started. make sure its running. check the output to make sure there aren’t any errors. and if all that went according to plan your litestar application should be accessible on
-<a class="reference external" href="http://yyy.yyy.yyy.yyy:80">http://yyy.yyy.yyy.yyy:80</a></p>
+</div>
+</details><p>Now you are ready to start your application.</p>
+<ol class="arabic simple">
+<li><p>Start the service if it’s not already running: <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">supervisorctl</span> <span class="pre">start</span> <span class="pre">exampleapp</span></code>.</p></li>
+<li><p>Ensure it’s operating correctly by checking the output for errors: <code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">supervisorctl</span> <span class="pre">status</span> <span class="pre">exampleapp</span></code>.</p></li>
+<li><p>Once confirmed, your Litestar application should be accessible (By default at <code class="docutils literal notranslate"><span class="pre">http://0.0.0.0:8000</span></code>).</p></li>
+</ol>
+<p>After that, you are done! You can now use <code class="docutils literal notranslate"><span class="pre">supervisor</span></code> to manage your application.
+The following sections were written to provide suggestions for making things easier to manage and they are not required.</p>
 </section>
+<section id="suggestions">
+<h2>Suggestions<a class="headerlink" href="#suggestions" title="Permalink to this heading">#</a></h2>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>This follows onto the setup above, but provides some suggestions for making things easier to manage.</p>
+</div>
+<section id="aliases">
+<h3>Aliases<a class="headerlink" href="#aliases" title="Permalink to this heading">#</a></h3>
+<p>Create an alias file: <code class="docutils literal notranslate"><span class="pre">/etc/profile.d/exampleapp.sh</span></code>.</p>
+<p>This is where the magic happens to let us simply use <code class="docutils literal notranslate"><span class="pre">exampleapp</span> <span class="pre">start</span></code> instead of
+<code class="docutils literal notranslate"><span class="pre">sudo</span> <span class="pre">supervisorctl</span> <span class="pre">start</span> <span class="pre">exampleapp</span></code>.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Alias Examples<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Example commands provided by the alias file</span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>exampleapp<span class="w"> </span>start
+exampleapp<span class="w"> </span>stop
+exampleapp<span class="w"> </span>restart
+exampleapp<span class="w"> </span>status
+exampleapp<span class="w"> </span>watch
+</pre></div>
+</div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Example alias file</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>exampleapp<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+<span class="linenos"> 2</span><span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="nv">$1</span><span class="w"> </span><span class="k">in</span>
+<span class="linenos"> 3</span><span class="w">    </span>start<span class="o">)</span>
+<span class="linenos"> 4</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Starting exampleapp...&quot;</span>
+<span class="linenos"> 5</span><span class="w">      </span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>start<span class="w"> </span>exampleapp
+<span class="linenos"> 6</span><span class="w">      </span><span class="p">;;</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="w">    </span>stop<span class="o">)</span>
+<span class="linenos"> 9</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Stopping exampleapp...&quot;</span>
+<span class="linenos">10</span><span class="w">      </span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>stop<span class="w"> </span>exampleapp
+<span class="linenos">11</span><span class="w">      </span><span class="p">;;</span>
+<span class="linenos">12</span>
+<span class="linenos">13</span><span class="w">    </span>restart<span class="o">)</span>
+<span class="linenos">14</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Restarting exampleapp...&quot;</span>
+<span class="linenos">15</span><span class="w">      </span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>restart<span class="w"> </span>exampleapp
+<span class="linenos">16</span><span class="w">      </span><span class="p">;;</span>
+<span class="linenos">17</span>
+<span class="linenos">18</span><span class="w">    </span>status<span class="o">)</span>
+<span class="linenos">19</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Checking status of exampleapp...&quot;</span>
+<span class="linenos">20</span><span class="w">      </span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>status<span class="w"> </span>exampleapp
+<span class="linenos">21</span><span class="w">      </span><span class="p">;;</span>
+<span class="linenos">22</span>
+<span class="linenos">23</span><span class="w">    </span>watch<span class="o">)</span>
+<span class="linenos">24</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Tailing logs for exampleapp...&quot;</span>
+<span class="linenos">25</span><span class="w">      </span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>tail<span class="w"> </span>-f<span class="w"> </span>exampleapp
+<span class="linenos">26</span><span class="w">      </span><span class="p">;;</span>
+<span class="linenos">27</span>
+<span class="linenos">28</span><span class="w">    </span><span class="nb">help</span><span class="o">)</span>
+<span class="linenos">29</span><span class="w">      </span>cat<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
+<span class="linenos">30</span><span class="s">      Available options:</span>
+<span class="linenos">31</span><span class="s">        exampleapp start    - Start the exampleapp service</span>
+<span class="linenos">32</span><span class="s">        exampleapp stop     - Stop the exampleapp service</span>
+<span class="linenos">33</span><span class="s">        exampleapp restart  - Restart the exampleapp service</span>
+<span class="linenos">34</span><span class="s">        exampleapp status   - Check the status of the exampleapp service</span>
+<span class="linenos">35</span><span class="s">        exampleapp watch    - Tail the logs for the exampleapp service</span>
+<span class="linenos">36</span><span class="s">      EOF</span>
+<span class="linenos">37</span><span class="w">      </span><span class="p">;;</span>
+<span class="linenos">38</span>
+<span class="linenos">39</span><span class="w">    </span>*<span class="o">)</span>
+<span class="linenos">40</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Unknown command: </span><span class="nv">$1</span><span class="s2">&quot;</span>
+<span class="linenos">41</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Use &#39;exampleapp help&#39; for a list of available commands.&quot;</span>
+<span class="linenos">42</span><span class="w">      </span><span class="p">;;</span>
+<span class="linenos">43</span><span class="w">  </span><span class="k">esac</span>
+<span class="linenos">44</span><span class="o">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</details><p>To activate the alias without restarting your session use <code class="docutils literal notranslate"><span class="pre">source</span> <span class="pre">/etc/profile.d/exampleapp.sh</span></code>.
+Using the <code class="docutils literal notranslate"><span class="pre">watch</span></code> command lets you monitor the realtime output of your application.</p>
 </section>
-<section id="alias-for-easy-control">
-<h1>Alias for easy control<a class="headerlink" href="#alias-for-easy-control" title="Permalink to this heading">#</a></h1>
-<p>This follows onto the Supervisor setup.</p>
-<p>To make things easier to handle the service, here’s an alias to use that will make things much easier for you. this introduces some commands like:</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>api<span class="w"> </span>start
-api<span class="w"> </span>stop
-api<span class="w"> </span>restart
-api<span class="w"> </span>status
-api<span class="w"> </span>watch
+<section id="update-script">
+<h3>Update Script<a class="headerlink" href="#update-script" title="Permalink to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">exampleapp</span></code> function can be extended to include an <code class="docutils literal notranslate"><span class="pre">update</span></code> command,
+facilitating the complete update process of the application:</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Update Script Example<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">Example update command</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>exampleapp<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+<span class="linenos"> 2</span><span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="nv">$1</span><span class="w"> </span><span class="k">in</span>
+<span class="linenos"> 3</span><span class="w">    </span><span class="c1"># ... other cases ... #</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="w">    </span>update<span class="o">)</span>
+<span class="linenos"> 6</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Updating exampleapp...&quot;</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="w">      </span><span class="c1"># Stop the service</span>
+<span class="linenos"> 9</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot; &gt; Stopping service...&quot;</span>
+<span class="linenos">10</span><span class="w">      </span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>stop<span class="w"> </span>exampleapp
+<span class="linenos">11</span>
+<span class="linenos">12</span><span class="w">      </span><span class="c1"># Update application files</span>
+<span class="linenos">13</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot; &gt; Pulling latest changes from repository...&quot;</span>
+<span class="linenos">14</span><span class="w">      </span><span class="nb">cd</span><span class="w"> </span>/opt/exampleapp
+<span class="linenos">15</span><span class="w">      </span>git<span class="w"> </span>fetch<span class="w"> </span>--all
+<span class="linenos">16</span><span class="w">      </span>git<span class="w"> </span>reset<span class="w"> </span>--hard<span class="w"> </span>origin/master
+<span class="linenos">17</span>
+<span class="linenos">18</span><span class="w">      </span><span class="c1"># Update Supervisor configuration and alias</span>
+<span class="linenos">19</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot; &gt; Updating Supervisor and shell configurations...&quot;</span>
+<span class="linenos">20</span><span class="w">      </span>sudo<span class="w"> </span>ln<span class="w"> </span>-sf<span class="w"> </span>/opt/exampleapp/server/service.conf<span class="w"> </span>/etc/supervisor/conf.d/exampleapp.conf
+<span class="linenos">21</span><span class="w">      </span>sudo<span class="w"> </span>ln<span class="w"> </span>-sf<span class="w"> </span>/opt/exampleapp/server/alias.sh<span class="w"> </span>/etc/profile.d/exampleapp.sh
+<span class="linenos">22</span><span class="w">      </span><span class="nb">source</span><span class="w"> </span>/etc/profile.d/exampleapp.sh
+<span class="linenos">23</span>
+<span class="linenos">24</span><span class="w">      </span><span class="c1"># Update Supervisor to apply new configurations</span>
+<span class="linenos">25</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot; &gt; Reloading Supervisor configuration...&quot;</span>
+<span class="linenos">26</span><span class="w">      </span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>reread
+<span class="linenos">27</span><span class="w">      </span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>update
+<span class="linenos">28</span>
+<span class="linenos">29</span><span class="w">      </span><span class="c1"># Update Python dependencies using requirements.txt</span>
+<span class="linenos">30</span><span class="w">      </span><span class="c1"># Here you could replace with poetry, pdm, etc., alleviating the need for</span>
+<span class="linenos">31</span><span class="w">      </span><span class="c1"># a requirements.txt file and virtual environment activation.</span>
+<span class="linenos">32</span><span class="w">      </span><span class="nb">source</span><span class="w"> </span>venv/bin/activate
+<span class="linenos">33</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot; &gt; Installing updated dependencies...&quot;</span>
+<span class="linenos">34</span><span class="w">      </span>python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+<span class="linenos">35</span><span class="w">      </span>deactivate
+<span class="linenos">36</span>
+<span class="linenos">37</span><span class="w">      </span><span class="c1"># ... other update processes like docs building, cleanup, etc. ... #</span>
+<span class="linenos">38</span>
+<span class="linenos">39</span><span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Update process complete.&quot;</span>
+<span class="linenos">40</span>
+<span class="linenos">41</span><span class="w">      </span><span class="c1"># Prompt to start the service</span>
+<span class="linenos">42</span><span class="w">      </span><span class="nb">read</span><span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;Start the service? (y/n) &quot;</span><span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="w"> </span>-r
+<span class="linenos">43</span><span class="w">      </span><span class="nb">echo</span>
+<span class="linenos">44</span><span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span><span class="nv">$REPLY</span><span class="w"> </span><span class="o">=</span>~<span class="w"> </span>^<span class="o">[</span>Yy<span class="o">]</span>$<span class="w"> </span><span class="o">]]</span>
+<span class="linenos">45</span><span class="w">      </span><span class="k">then</span>
+<span class="linenos">46</span><span class="w">          </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot; &gt; Starting service...&quot;</span>
+<span class="linenos">47</span><span class="w">          </span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>start<span class="w"> </span>exampleapp
+<span class="linenos">48</span><span class="w">      </span><span class="k">fi</span>
+<span class="linenos">49</span><span class="w">      </span><span class="p">;;</span>
+<span class="linenos">50</span>
+<span class="linenos">51</span><span class="w">    </span><span class="c1"># ... #</span>
+<span class="linenos">52</span><span class="w">  </span><span class="k">esac</span>
+<span class="linenos">53</span><span class="o">}</span>
 </pre></div>
 </div>
-<p>Create an alias file <cite>/etc/profile.d/api.sh</cite> this is where the magic happens to let us simply use <cite>api start</cite> instead of <cite>sudo supervisorctl start api</cite> (all that extra typing.. urrgghhh). Adding it to <cite>/etc/profile.d/</cite> makes the alias available for all users on that system. They would still however need to pass sudo for these commands.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>api<span class="o">()</span><span class="w"> </span><span class="o">{</span>
-<span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="nv">$1</span><span class="w"> </span><span class="k">in</span>
-<span class="w">    </span>start<span class="o">)</span>
-<span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Starting&quot;</span>
-<span class="w">      </span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>start<span class="w"> </span>api<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">true</span>
-<span class="w">      </span><span class="p">;;</span>
-<span class="w">    </span>stop<span class="o">)</span>
-<span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Stopping&quot;</span>
-<span class="w">      </span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>stop<span class="w"> </span>api<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">true</span>
-<span class="w">      </span><span class="p">;;</span>
-<span class="w">    </span>restart<span class="o">)</span>
-<span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Stopping&quot;</span>
-<span class="w">      </span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>stop<span class="w"> </span>api<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">true</span>
-<span class="w">      </span>sleep<span class="w"> </span><span class="m">2</span>
-<span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Starting&quot;</span>
-<span class="w">      </span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>start<span class="w"> </span>api<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">true</span>
-<span class="w">      </span><span class="p">;;</span>
-<span class="w">    </span>status<span class="o">)</span>
-<span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Status&quot;</span>
-<span class="w">      </span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>status<span class="w"> </span>api<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">true</span>
-<span class="w">      </span><span class="p">;;</span>
-<span class="w">    </span>watch<span class="o">)</span>
-<span class="w">      </span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>tail<span class="w"> </span>-f<span class="w"> </span>api
-<span class="w">      </span><span class="p">;;</span>
-
-<span class="w">    </span><span class="nb">help</span><span class="o">)</span>
-<span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Available options:&quot;</span>
-<span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;  api start&quot;</span>
-<span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;  api stop&quot;</span>
-<span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;  api restart&quot;</span>
-<span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;  api status&quot;</span>
-<span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;  api watch&quot;</span>
-<span class="w">      </span><span class="p">;;</span>
-
-<span class="w">    </span>*<span class="o">)</span>
-<span class="w">      </span><span class="nb">cd</span><span class="w"> </span>/opt/api
-<span class="w">    </span><span class="p">;;</span>
-<span class="w">  </span><span class="k">esac</span>
-<span class="o">}</span>
-</pre></div>
 </div>
-<p>To activate the alias without restarting your session use <cite>source /etc/profile.d/api.sh</cite>.</p>
-<p>Using the <cite>watch</cite> command lets you monitor the realtime output of your application.</p>
-<section id="updating-your-application">
-<h2>Updating your application<a class="headerlink" href="#updating-your-application" title="Permalink to this heading">#</a></h2>
-<p>A cool tip that the whole alias brings to the table is that if you include your supervisor conf file and the alias in your code base, you can do something like this for for updating your entire application.</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>api<span class="o">()</span><span class="w"> </span><span class="o">{</span>
-<span class="w">  </span><span class="k">case</span><span class="w"> </span><span class="nv">$1</span><span class="w"> </span><span class="k">in</span>
-<span class="w">    </span><span class="c1"># ... #</span>
-<span class="w">    </span>update<span class="o">)</span>
-<span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot; &gt; Stopping&quot;</span>
-<span class="w">      </span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>stop<span class="w"> </span>api<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">true</span>
-
-<span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot; &gt; Updating files&quot;</span>
-<span class="w">      </span><span class="nb">cd</span><span class="w"> </span>/opt/api
-<span class="w">      </span>git<span class="w"> </span>reset<span class="w"> </span>--hard<span class="w"> </span>origin/master
-<span class="w">      </span>git<span class="w"> </span>pull<span class="w"> </span>origin<span class="w"> </span>master
-
-<span class="w">      </span>sleep<span class="w"> </span><span class="m">2</span>
-
-<span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot; &gt; Linking supervisord service file&quot;</span>
-<span class="w">      </span>sudo<span class="w"> </span>ln<span class="w"> </span>-sf<span class="w"> </span>/opt/api/server/service.conf<span class="w"> </span>/etc/supervisor/conf.d/api.conf
-<span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot; &gt; Linking service alias&quot;</span>
-<span class="w">      </span>sudo<span class="w"> </span>ln<span class="w"> </span>-sf<span class="w"> </span>/opt/api/server/alias.sh<span class="w"> </span>/etc/profile.d/api.sh
-<span class="w">      </span><span class="nb">source</span><span class="w"> </span>/etc/profile.d/api.sh
-
-<span class="w">      </span>sleep<span class="w"> </span><span class="m">2</span>
-
-<span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot; &gt; Updating supervisord services&quot;</span>
-<span class="w">      </span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>reread
-<span class="w">      </span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>update
-
-<span class="w">      </span>sleep<span class="w"> </span><span class="m">2</span>
-
-<span class="w">      </span><span class="nb">source</span><span class="w"> </span>venv/bin/activate
-<span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot; &gt; Updating dependencies&quot;</span>
-<span class="w">      </span>pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>-r<span class="w"> </span>requirements.txt
-
-<span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;------------------------&quot;</span>
-<span class="w">      </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Done&quot;</span>
-
-<span class="w">      </span><span class="nb">read</span><span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;Start the service? (y/n) &quot;</span><span class="w"> </span>-n<span class="w"> </span><span class="m">1</span><span class="w"> </span>-r
-<span class="w">      </span><span class="nb">echo</span><span class="w">    </span><span class="c1"># (optional) move to a new line</span>
-<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span><span class="nv">$REPLY</span><span class="w"> </span><span class="o">=</span>~<span class="w"> </span>^<span class="o">[</span>Yy<span class="o">]</span>$<span class="w"> </span><span class="o">]]</span>
-<span class="w">      </span><span class="k">then</span>
-<span class="w">          </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Starting&quot;</span>
-<span class="w">          </span>sudo<span class="w"> </span>supervisorctl<span class="w"> </span>start<span class="w"> </span>api<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">true</span>
-<span class="w">      </span><span class="k">fi</span>
-<span class="w">      </span><span class="p">;;</span>
-</pre></div>
 </div>
-<p>You can sym link both the alias file and the conf file into their respective locations and load them up after a git pull.</p>
+</details><p>This update process includes the following steps:</p>
+<ol class="arabic simple">
+<li><p><strong>Stop the Service:</strong> Safely halts the application before making changes.</p></li>
+<li><p><strong>Git Operations:</strong> Ensures the latest code is pulled from the repository.</p></li>
+<li><p><strong>Configuration Symlinking:</strong> Updates <code class="docutils literal notranslate"><span class="pre">supervisor</span></code> configuration and shell alias to reflect any changes.</p></li>
+<li><p><strong>Supervisor Reload:</strong> Applies new configuration settings to <code class="docutils literal notranslate"><span class="pre">supervisor</span></code> service.</p></li>
+<li><p><strong>Dependency Update:</strong> Installs or updates Python dependencies as defined in lockfiles or <code class="docutils literal notranslate"><span class="pre">requirements.txt</span></code>.</p></li>
+<li><p><strong>User Prompt:</strong> Offers a choice to immediately start the service after updating.</p></li>
+</ol>
+</section>
+<section id="execution">
+<h3>Execution<a class="headerlink" href="#execution" title="Permalink to this heading">#</a></h3>
+<p>Run the <code class="docutils literal notranslate"><span class="pre">exampleapp</span> <span class="pre">update</span></code> command to execute this update process.
+It streamlines the deployment of new code and configuration changes,
+ensuring a smooth and consistent application update cycle.</p>
+</section>
 </section>
 </section>
 
@@ -1705,16 +1826,18 @@ api<span class="w"> </span>watch
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Supervisor (linux)</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#conf-file">Conf file</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-when">Use When</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alternatives">Alternatives</a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#alias-for-easy-control">Alias for easy control</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#updating-your-application">Updating your application</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setup">Setup</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#suggestions">Suggestions</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#aliases">Aliases</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#update-script">Update Script</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#execution">Execution</a></li>
 </ul>
 </li>
 </ul>
-
   </nav></div>
 
 </div></div>

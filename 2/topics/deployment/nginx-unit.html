@@ -1392,8 +1392,7 @@ document.write(`
 <li class="toctree-l3 current active"><a class="current reference internal" href="#">NGINX Unit</a></li>
 <li class="toctree-l3"><a class="reference internal" href="manually-with-asgi-server.html">Manually with ASGI server</a></li>
 <li class="toctree-l3"><a class="reference internal" href="docker.html">Docker</a></li>
-<li class="toctree-l3"><a class="reference internal" href="supervisor.html">Supervisor (linux)</a></li>
-
+<li class="toctree-l3"><a class="reference internal" href="supervisor.html">Supervisor (Linux)</a></li>
 </ul>
 </li>
 </ul>
@@ -1511,9 +1510,51 @@ document.write(`
                   
   <section id="nginx-unit">
 <h1>NGINX Unit<a class="headerlink" href="#nginx-unit" title="Permalink to this heading">#</a></h1>
-<p>To run litestar using <a class="reference external" href="https://unit.nginx.org/">nginx-unit</a></p>
+<p><code class="docutils literal notranslate"><span class="pre">nginx-unit</span></code> is a dynamic web application server, designed to run applications in multiple languages,
+serve static files, and more.</p>
+<section id="use-when">
+<h2>Use When<a class="headerlink" href="#use-when" title="Permalink to this heading">#</a></h2>
+<p>Running your application with <code class="docutils literal notranslate"><span class="pre">nginx-unit</span></code> is preferable when you need to run your application in a production
+environment, with a high level of control over the process.</p>
+<p>For detailed understanding and further information, refer to the official
+<a class="reference external" href="https://unit.nginx.org/">nginx-unit documentation</a>.</p>
+<section id="alternatives">
+<h3>Alternatives<a class="headerlink" href="#alternatives" title="Permalink to this heading">#</a></h3>
+<ul>
+<li><dl class="simple">
+<dt><a class="reference internal" href="manually-with-asgi-server.html"><span class="doc">Manually with an ASGI server</span></a>:</dt><dd><p>Direct control by running the application with an ASGI server like Uvicorn, Hypercorn, Daphne, etc.</p>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt><a class="reference external" href="https://www.freedesktop.org/wiki/Software/systemd/">systemd</a>:</dt><dd><p>A system and service manager, integrated into many Linux distributions for managing system processes.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Official documentation coming soon</p>
+</div>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><a class="reference internal" href="supervisor.html"><span class="doc">Supervisor</span></a>:</dt><dd><p>A process control system that can be used to automatically start, stop and restart processes; includes a web UI.</p>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt><a class="reference internal" href="docker.html"><span class="doc">Docker</span></a>:</dt><dd><p>Ideal for containerized environments, offering isolation and scalability.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can deploy <code class="docutils literal notranslate"><span class="pre">nginx-unit</span></code> with Docker using the
+<a class="reference external" href="https://unit.nginx.org/howto/docker/">official NGINX image</a>.</p>
+</div>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+</section>
 <section id="install-nginx-unit">
-<h2>Install nginx-unit<a class="headerlink" href="#install-nginx-unit" title="Permalink to this heading">#</a></h2>
+<h2>Install <code class="docutils literal notranslate"><span class="pre">nginx-unit</span></code><a class="headerlink" href="#install-nginx-unit" title="Permalink to this heading">#</a></h2>
 <p>To install <code class="docutils literal notranslate"><span class="pre">nginx-unit</span></code>, refer to the <a class="reference external" href="https://unit.nginx.org/installation/">official documentation</a></p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
@@ -1530,12 +1571,15 @@ Ubuntu</label><div class="sd-tab-content docutils">
 <p>To be done</p>
 </div>
 </div>
-<p>Start the process, replace <cite>user</cite> by your system user.</p>
+<p>Start the process, replace <code class="docutils literal notranslate"><span class="pre">user</span></code> by your system user.</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">Start nginx-unit</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>unitd<span class="w"> </span>--user<span class="w"> </span>&lt;user&gt;
 </pre></div>
 </div>
+</div>
 <ol class="arabic simple" start="3">
-<li><p>Create a <cite>run.py</cite> file containing the reference of your litestar app</p></li>
+<li><p>Create a <code class="docutils literal notranslate"><span class="pre">run.py</span></code> file containing the reference of your Litestar app</p></li>
 </ol>
 <div class="literal-block-wrapper docutils container" id="id2">
 <div class="code-block-caption"><span class="caption-text">run.py</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
@@ -1554,7 +1598,7 @@ Ubuntu</label><div class="sd-tab-content docutils">
 </section>
 <section id="configuration">
 <h2>Configuration<a class="headerlink" href="#configuration" title="Permalink to this heading">#</a></h2>
-<p>Create a file called <cite>unit.json</cite>, put it at the root of the your project</p>
+<p>Create a file called <code class="docutils literal notranslate"><span class="pre">unit.json</span></code>, put it at the root of the your project</p>
 <div class="literal-block-wrapper docutils container" id="id3">
 <div class="code-block-caption"><span class="caption-text">unit.json</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
@@ -1582,7 +1626,7 @@ Ubuntu</label><div class="sd-tab-content docutils">
 </div>
 <section id="listeners">
 <h3>Listeners<a class="headerlink" href="#listeners" title="Permalink to this heading">#</a></h3>
-<p>To accept requests, add a listener object in the config/listeners API section; the object’s name can be:</p>
+<p>To accept requests, add a listener object in the <code class="docutils literal notranslate"><span class="pre">config/listeners</span></code> API section; the object’s name can be:</p>
 <ul class="simple">
 <li><p>A unique IP socket: <code class="docutils literal notranslate"><span class="pre">127.0.0.1:80</span></code>, <code class="docutils literal notranslate"><span class="pre">[::1]:8080</span></code></p></li>
 <li><p>A wildcard that matches any host IPs on the port: <code class="docutils literal notranslate"><span class="pre">*:80</span></code></p></li>
@@ -1591,7 +1635,8 @@ Ubuntu</label><div class="sd-tab-content docutils">
 </section>
 <section id="applications">
 <h3>Applications<a class="headerlink" href="#applications" title="Permalink to this heading">#</a></h3>
-<p>Each app that Unit runs is defined as an object in the <code class="docutils literal notranslate"><span class="pre">/config/applications</span></code> section of the control API; it lists the app’s language and settings, its runtime limits, process model, and various language-specific options.</p>
+<p>Each app that Unit runs is defined as an object in the <code class="docutils literal notranslate"><span class="pre">/config/applications</span></code> section of the control API;
+it lists the app’s language and settings, runtime limits, process model, and various language-specific options.</p>
 <table class="table">
 <tbody>
 <tr class="row-odd"><td><p>Option</p></td>
@@ -1599,33 +1644,33 @@ Ubuntu</label><div class="sd-tab-content docutils">
 <td><p>Description</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">type</span></code> (required)</p></td>
-<td><p><cite>python 3.12</cite></p></td>
-<td><p>Application type: <cite>python</cite> <code class="docutils literal notranslate"><span class="pre">&quot;type&quot;:</span> <span class="pre">&quot;python</span> <span class="pre">3&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;type&quot;:</span> <span class="pre">&quot;python</span> <span class="pre">3.12&quot;</span></code></p>
+<td><p><code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">3.12</span></code></p></td>
+<td><p>Application type: <code class="docutils literal notranslate"><span class="pre">python</span></code> <code class="docutils literal notranslate"><span class="pre">&quot;type&quot;:</span> <span class="pre">&quot;python</span> <span class="pre">3&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;type&quot;:</span> <span class="pre">&quot;python</span> <span class="pre">3.12&quot;</span></code></p>
 <p>Unit searches its modules and uses the latest matching one, reporting an error if none match.</p>
 </td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">home</span></code></p></td>
-<td><p><cite>venv</cite></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">venv</span></code></p></td>
 <td><p>String; path to the app’s virtual environment. Absolute or relative to <code class="docutils literal notranslate"><span class="pre">working_directory</span></code>.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">path</span></code></p></td>
-<td><p><cite>src/app</cite></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">src/app</span></code></p></td>
 <td><p>String or an array of strings; additional Python module lookup paths. These values are prepended to <code class="docutils literal notranslate"><span class="pre">sys.path</span></code>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">module</span></code> (required)</p></td>
-<td><p><cite>run</cite></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">run</span></code></p></td>
 <td><p>String; app’s module name. This module is imported by Unit the usual Python way.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">callable</span></code></p></td>
-<td><p><cite>app</cite></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">app</span></code></p></td>
 <td><p>String; name of the module-based callable that Unit runs as the app. The default is <cite>application</cite>.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">working_directory</span></code></p></td>
-<td><p>&lt;path_to_project&gt;</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&lt;path_to_project&gt;</span></code></p></td>
 <td><p>String; the app’s working directory. The default is the working directory of Unit’s main process.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">stderr</span></code>, <code class="docutils literal notranslate"><span class="pre">stdout</span></code></p></td>
-<td><p><cite>log_error.log</cite></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">log_error.log</span></code></p></td>
 <td><p>Strings; filenames where Unit redirects the application’s output.</p>
 <p>The default is <code class="docutils literal notranslate"><span class="pre">/dev/null</span></code>.</p>
 </td>
@@ -1639,9 +1684,9 @@ Ubuntu</label><div class="sd-tab-content docutils">
 <td><p>String; group name that runs the app process. The default is the <code class="docutils literal notranslate"><span class="pre">user</span></code>’s primary group.</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">processes</span></code></p></td>
-<td><p>1</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">1</span></code></p></td>
 <td><p>Integer or object; integer sets a static number of app processes, and object options <cite>max</cite>, <cite>spare</cite>, and <cite>idle_timeout</cite> enable dynamic management.</p>
-<p>The default is 1.</p>
+<p>The default is <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
 </td>
 </tr>
 </tbody>
@@ -1650,9 +1695,13 @@ Ubuntu</label><div class="sd-tab-content docutils">
 </section>
 <section id="configuration-update">
 <h2>Configuration update<a class="headerlink" href="#configuration-update" title="Permalink to this heading">#</a></h2>
-<p>To update the nginx-unit service already running, use <code class="docutils literal notranslate"><span class="pre">PUT</span></code> method to send the <code class="docutils literal notranslate"><span class="pre">unit.json</span></code> file on the <code class="docutils literal notranslate"><span class="pre">/config</span></code> endpoint</p>
+<p>To update the <code class="docutils literal notranslate"><span class="pre">nginx-unit</span></code> service already running, use <code class="docutils literal notranslate"><span class="pre">PUT</span></code> method to send the <code class="docutils literal notranslate"><span class="pre">unit.json</span></code> file on the
+<code class="docutils literal notranslate"><span class="pre">/config</span></code> endpoint</p>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">Update nginx-unit configuration</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span>--data-binary<span class="w"> </span>@unit.json<span class="w"> </span>--unix-socket<span class="w"> </span>/opt/homebrew/var/run/unit/control.sock<span class="w"> </span>http://localhost/config
 </pre></div>
+</div>
 </div>
 </section>
 </section>
@@ -1701,7 +1750,11 @@ Ubuntu</label><div class="sd-tab-content docutils">
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-nginx-unit">Install nginx-unit</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-when">Use When</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alternatives">Alternatives</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-nginx-unit">Install <code class="docutils literal notranslate"><span class="pre">nginx-unit</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuration">Configuration</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#listeners">Listeners</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#applications">Applications</a></li>

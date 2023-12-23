@@ -1392,8 +1392,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="deployment/nginx-unit.html">NGINX Unit</a></li>
 <li class="toctree-l3"><a class="reference internal" href="deployment/manually-with-asgi-server.html">Manually with ASGI server</a></li>
 <li class="toctree-l3"><a class="reference internal" href="deployment/docker.html">Docker</a></li>
-<li class="toctree-l3"><a class="reference internal" href="deployment/supervisor.html">Supervisor (linux)</a></li>
-
+<li class="toctree-l3"><a class="reference internal" href="deployment/supervisor.html">Supervisor (Linux)</a></li>
 </ul>
 </li>
 </ul>
@@ -1583,7 +1582,7 @@ operations, such as calling synchronous functions that are I/O bound.</p>
 <p>It might be tempting to look at this and think a function should be async by default,
 unless it’s performing blocking operations synchronously, but this is not the case.
 Async itself has an overhead attached to it which, while very small, can in some
-situations become non negligible. An synchronous function performing non-blocking
+situations become non negligible. A synchronous function performing non-blocking
 operations will outperform an asynchronous function doing the same.</p>
 </section>
 <section id="when-to-use-a-synchronous-function">
@@ -1608,7 +1607,7 @@ necessary.</p>
 non-blocking way, it does not speed up its execution. Computationally intensive tasks
 that are performed regularly should be offloaded into a different process, to make use
 of multiple CPU cores.</p>
-<p>This can for example be achieve by using <a class="reference external" href="https://anyio.readthedocs.io/en/stable/api.html#anyio.to_process.run_sync" title="(in AnyIO v4.1.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">anyio.to_process.run_sync()</span></code></a>.</p>
+<p>This can for example be achieve by using <a class="reference external" href="https://anyio.readthedocs.io/en/stable/api.html#anyio.to_process.run_sync" title="(in AnyIO v4.2.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">anyio.to_process.run_sync()</span></code></a>.</p>
 </section>
 </section>
 <section id="warnings-about-the-mode-of-execution">

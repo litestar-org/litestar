@@ -1392,8 +1392,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="nginx-unit.html">NGINX Unit</a></li>
 <li class="toctree-l3 current active"><a class="current reference internal" href="#">Manually with ASGI server</a></li>
 <li class="toctree-l3"><a class="reference internal" href="docker.html">Docker</a></li>
-<li class="toctree-l3"><a class="reference internal" href="supervisor.html">Supervisor (linux)</a></li>
-
+<li class="toctree-l3"><a class="reference internal" href="supervisor.html">Supervisor (Linux)</a></li>
 </ul>
 </li>
 </ul>
@@ -1511,29 +1510,72 @@ document.write(`
                   
   <section id="manually-with-asgi-server">
 <h1>Manually with ASGI server<a class="headerlink" href="#manually-with-asgi-server" title="Permalink to this heading">#</a></h1>
-<p>ASGI (Asynchronous Server Gateway Interface) is intended to provide a standard interface between async Python web frameworks like Litestar, and async web servers. There are several popular ASGI servers available, and you can choose the one that best fits your application’s needs.</p>
+<p>ASGI (Asynchronous Server Gateway Interface) is intended to provide a standard interface between async Python web
+frameworks like Litestar, and async web servers.</p>
+<p>There are several popular ASGI servers available, and you can choose the one that best fits your application’s needs.</p>
+<section id="use-when">
+<h2>Use When<a class="headerlink" href="#use-when" title="Permalink to this heading">#</a></h2>
+<p>Running your application manually with an ASGI server is usually only ideal in development and testing environments.</p>
+<p>It is generally recommended to run your production workloads inside a containerized environment, such as
+<a class="reference internal" href="docker.html"><span class="doc">Docker</span></a> or Kubernetes or via a process control system
+such as <a class="reference internal" href="supervisor.html"><span class="doc">Supervisor</span></a> or <code class="docutils literal notranslate"><span class="pre">systemd</span></code>.</p>
+<section id="alternatives">
+<h3>Alternatives<a class="headerlink" href="#alternatives" title="Permalink to this heading">#</a></h3>
+<p>For different deployment scenarios, consider these alternatives:</p>
+<ul>
+<li><dl class="simple">
+<dt><a class="reference internal" href="nginx-unit.html"><span class="doc">NGINX Unit</span></a>:</dt><dd><p>A dynamic web and application server, suitable for running and managing multiple applications.</p>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt><a class="reference external" href="https://www.freedesktop.org/wiki/Software/systemd/">systemd</a>:</dt><dd><p>A system and service manager, integrated into many Linux distributions for managing system processes.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Official documentation coming soon</p>
+</div>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><a class="reference internal" href="supervisor.html"><span class="doc">Supervisor</span></a>:</dt><dd><p>A process control system that can be used to automatically start, stop and restart processes; includes a web UI.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><a class="reference internal" href="docker.html"><span class="doc">Docker</span></a>:</dt><dd><p>Ideal for containerized environments, offering isolation and scalability.</p>
+</dd>
+</dl>
+</li>
+</ul>
+</section>
+</section>
 <section id="choosing-an-asgi-server">
 <h2>Choosing an ASGI Server<a class="headerlink" href="#choosing-an-asgi-server" title="Permalink to this heading">#</a></h2>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" data-sync-id="uvicorn" for="sd-tab-item-0">
 Uvicorn</label><div class="sd-tab-content docutils">
-<p><a class="reference external" href="https://www.uvicorn.org/">Uvicorn</a> is an ASGI server that supports HTTP/1.1 and WebSocket.</p>
+<p><a class="reference external" href="https://www.uvicorn.org/">Uvicorn</a> is an ASGI server that supports <code class="docutils literal notranslate"><span class="pre">HTTP/1.1</span></code> and WebSocket.</p>
 </div>
 <input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" data-sync-id="hypercorn" for="sd-tab-item-1">
 Hypercorn</label><div class="sd-tab-content docutils">
-<p><a class="reference external" href="https://hypercorn.readthedocs.io/en/latest/#/">Hypercorn</a> is an ASGI server that was initially part of <a class="reference external" href="https://pgjones.gitlab.io/quart//">Quart</a>, and supports HTTP/1.1, HTTP/2, and WebSocket.</p>
+<p><a class="reference external" href="https://hypercorn.readthedocs.io/en/latest/#/">Hypercorn</a> is an ASGI server that was initially part of
+<a class="reference external" href="https://pgjones.gitlab.io/quart//">Quart</a>, and supports <code class="docutils literal notranslate"><span class="pre">HTTP/1.1</span></code>, <code class="docutils literal notranslate"><span class="pre">HTTP/2</span></code>, and WebSocket.</p>
 </div>
 <input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" data-sync-id="daphne" for="sd-tab-item-2">
 Daphne</label><div class="sd-tab-content docutils">
-<p><a class="reference external" href="https://github.com/django/daphne/">Daphne</a> is an ASGI server that was originally developed for <a class="reference external" href="https://channels.readthedocs.io/en/latest/">Django Channels</a>, and supports HTTP/1.1, HTTP/2, and WebSocket.</p>
+<p><a class="reference external" href="https://github.com/django/daphne/">Daphne</a> is an ASGI server that was originally developed for
+<a class="reference external" href="https://channels.readthedocs.io/en/latest/">Django Channels</a>, and supports <code class="docutils literal notranslate"><span class="pre">HTTP/1.1</span></code>, <code class="docutils literal notranslate"><span class="pre">HTTP/2</span></code>, and
+WebSocket.</p>
 </div>
 <input id="sd-tab-item-3" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" data-sync-id="granian" for="sd-tab-item-3">
 Granian</label><div class="sd-tab-content docutils">
-<p><a class="reference external" href="https://github.com/emmett-framework/granian/">Granian</a> is a Rust based ASGI server that supports HTTP/1.1, HTTP/2, and WebSocket.</p>
+<p><a class="reference external" href="https://github.com/emmett-framework/granian/">Granian</a> is a Rust-based ASGI server that supports <code class="docutils literal notranslate"><span class="pre">HTTP/1.1</span></code>,
+<code class="docutils literal notranslate"><span class="pre">HTTP/2</span></code>, and WebSocket.</p>
 </div>
 </div>
 </section>
@@ -1543,79 +1585,116 @@ Granian</label><div class="sd-tab-content docutils">
 <input checked="checked" id="sd-tab-item-4" name="sd-tab-set-1" type="radio">
 </input><label class="sd-tab-label" data-sync-id="uvicorn" for="sd-tab-item-4">
 Uvicorn</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">Install Uvicorn with pip</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>uvicorn
 </pre></div>
+</div>
 </div>
 </div>
 <input id="sd-tab-item-5" name="sd-tab-set-1" type="radio">
 </input><label class="sd-tab-label" data-sync-id="hypercorn" for="sd-tab-item-5">
 Hypercorn</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Install Hypercorn with pip</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>hypercorn
 </pre></div>
+</div>
 </div>
 </div>
 <input id="sd-tab-item-6" name="sd-tab-set-1" type="radio">
 </input><label class="sd-tab-label" data-sync-id="daphne" for="sd-tab-item-6">
 Daphne</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">Install Daphne with pip</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>daphne
 </pre></div>
+</div>
 </div>
 </div>
 <input id="sd-tab-item-7" name="sd-tab-set-1" type="radio">
 </input><label class="sd-tab-label" data-sync-id="granian" for="sd-tab-item-7">
 Granian</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">Install Granian with pip</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>granian
 </pre></div>
+</div>
 </div>
 </div>
 </div>
 </section>
 <section id="run-the-asgi-server">
 <h2>Run the ASGI Server<a class="headerlink" href="#run-the-asgi-server" title="Permalink to this heading">#</a></h2>
-<p>Assuming your app defined in the same manner as <a class="reference internal" href="../../index.html#minimal-example"><span class="std std-ref">Minimal Example</span></a>, you can run the ASGI server with the following command:</p>
+<p>Assuming your app is defined in the same manner as <a class="reference internal" href="../../index.html#minimal-example"><span class="std std-ref">Minimal Example</span></a>, you can run the
+ASGI server with the following command:</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-8" name="sd-tab-set-2" type="radio">
 </input><label class="sd-tab-label" data-sync-id="uvicorn" for="sd-tab-item-8">
 Uvicorn</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Run Uvicorn with the default configuration</span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>uvicorn<span class="w"> </span>app:app
 </pre></div>
 </div>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+</div>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Console Output</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">INFO:     Waiting for application startup.</span>
+<span class="go">INFO:     Application startup complete.</span>
+<span class="go">INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)</span>
 </pre></div>
+</div>
 </div>
 </div>
 <input id="sd-tab-item-9" name="sd-tab-set-2" type="radio">
 </input><label class="sd-tab-label" data-sync-id="hypercorn" for="sd-tab-item-9">
 Hypercorn</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">Run Hypercorn with the default configuration</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>hypercorn<span class="w"> </span>app:app
 </pre></div>
 </div>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[2023-11-12 23:31:26 -0800] [16748] [INFO] Running on http://127.0.0.1:8000 (CTRL + C to quit)
+</div>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">Console Output</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">[2023-11-12 23:31:26 -0800] [16748] [INFO] Running on http://127.0.0.1:8000 (CTRL + C to quit)</span>
 </pre></div>
+</div>
 </div>
 </div>
 <input id="sd-tab-item-10" name="sd-tab-set-2" type="radio">
 </input><label class="sd-tab-label" data-sync-id="daphne" for="sd-tab-item-10">
 Daphne</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">Run Daphne with the default configuration</span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>daphne<span class="w"> </span>app:app
 </pre></div>
 </div>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>INFO - 2023-11-12 23:31:51,571 - daphne.cli - cli - Starting server at tcp:port=8000:interface=127.0.0.1
-INFO - 2023-11-12 23:31:51,572 - daphne.server - server - Listening on TCP address 127.0.0.1:8000
+</div>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">Console Output</span><a class="headerlink" href="#id10" title="Permalink to this code">#</a></div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">INFO - 2023-11-12 23:31:51,571 - daphne.cli - cli - Starting server at tcp:port=8000:interface=127.0.0.1</span>
+<span class="go">INFO - 2023-11-12 23:31:51,572 - daphne.server - server - Listening on TCP address 127.0.0.1:8000</span>
 </pre></div>
+</div>
 </div>
 </div>
 <input id="sd-tab-item-11" name="sd-tab-set-2" type="radio">
 </input><label class="sd-tab-label" data-sync-id="granian" for="sd-tab-item-11">
 Granian</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text">Run Granian with the default configuration</span><a class="headerlink" href="#id11" title="Permalink to this code">#</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>granian<span class="w"> </span>--interface<span class="w"> </span>asgi<span class="w"> </span>app:app
 </pre></div>
 </div>
-<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>[INFO] Starting granian
-[INFO] Listening at: 127.0.0.1:8000
+</div>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text">Console Output</span><a class="headerlink" href="#id12" title="Permalink to this code">#</a></div>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">[INFO] Starting granian</span>
+<span class="go">[INFO] Listening at: 127.0.0.1:8000</span>
 </pre></div>
+</div>
 </div>
 </div>
 </div>
@@ -1666,6 +1745,10 @@ Granian</label><div class="sd-tab-content docutils">
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#use-when">Use When</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#alternatives">Alternatives</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#choosing-an-asgi-server">Choosing an ASGI Server</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#install-the-asgi-server">Install the ASGI Server</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#run-the-asgi-server">Run the ASGI Server</a></li>

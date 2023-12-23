@@ -1,187 +1,250 @@
-Supervisor (linux)
+Supervisor (Linux)
 ==================
 
-To keep a litestar app running you need to set it as a service. The 2 main ways to do that on Ubuntui is to use systemctl or supervisor. Both use unit files to define the service
+``supervisor`` is a process control system for Linux, which allows you to monitor and control
+a number of processes on UNIX-like operating systems. It is particularly useful for managing
+processes that need to be running continuously, and for monitoring and controlling processes
+that are running in the background.
 
-Supervisor is an additional package you need to install but i find it much easier to monitor the service than with systemctl
+Use When
+--------
 
-.. code-block:: sh
+``supervisor`` is ideal for managing Python web applications that need continuous uptime and robust process control.
+It's particularly useful when you need extensive process management, monitoring, log management, and
+customized control over the start, stop, and restart of application processes.
 
-    sudo apt install supervisor
+For detailed understanding and further information, refer to the official
+`Supervisor documentation <http://supervisord.org/introduction.html>`_.
+
+Alternatives
+~~~~~~~~~~~~
+
+For different deployment scenarios, consider these alternatives:
+
+- :doc:`Docker <docker>`:
+    Ideal for containerized environments, offering isolation and scalability.
+- :doc:`NGINX Unit <nginx-unit>`:
+    A dynamic web and application server, suitable for running and managing multiple applications.
+- `systemd <https://www.freedesktop.org/wiki/Software/systemd/>`_:
+    A system and service manager, integrated into many Linux distributions for managing system processes.
+
+    .. note:: Official documentation coming soon
+- :doc:`Manually with an ASGI server <manually-with-asgi-server>`:
+    Direct control by running the application with an ASGI server like Uvicorn, Hypercorn, Daphne, etc.
+
+This resource provides comprehensive guidance on installation, configuration, and usage of
+``supervisor`` for service management.
 
 .. _conf_file:
 
-Conf file
-----------
+Setup
+-----
 
-Supervisord uses a config file for defining services http://supervisord.org/configuration.html
+``supervisor`` uses a config file for defining services. You can read more about the config file
+in the `Supervisor configuration documentation <http://supervisord.org/configuration.html>`_.
 
-.. code-block:: text
+.. code-block:: ini
+    :caption: Example supervisor config file
 
-    [program:api]
-    directory=/opt/api/src
-    command=/opt/api/venv/bin/python main.py
-    redirect_stderr=true
-    stdout_logfile=/var/log/api.log
-    stdout_logfile_backups=10
-    autostart=true
-    autorestart=true
+    [program:exampleapp]  # Defines the service name.
+    directory=/opt/exampleapp/src  # Specifies the directory where the service should run.
+    command=/opt/exampleapp/venv/bin/litestar app.py  # Specifies the command to run the service.
+    redirect_stderr=true  # Redirects stderr to stdout.
+    stdout_logfile=/var/log/exampleapp.log  # Specifies the log file to write to.
+    stdout_logfile_backups=10  # Specifies the number of backups to keep.
+    autostart=true  # Specifies that the service should start automatically when ``supervisor`` starts.
+    autorestart=true  # Specifies that the service should restart automatically if it exits unexpectedly.
 
+You can place the above config file in ``/etc/supervisor/conf.d/exampleapp.conf``.
+After you have created the config file, you will need to reload the ``supervisor`` config to load your new service file.
 
-`[program:api]` will be your service name. so `supervisorctl start api`
+.. dropdown:: Helpful Commands
 
-`directory=/...` the directory where the service must run from
+    .. code-block:: shell
+        :caption: Reload supervisor config
 
-`command=...` the script the service must run. notice the python executable path, this uses the venv's python to run the app.
+        sudo supervisorctl reread
+        sudo supervisorctl update
 
-You will need to reload the supervisor config to load your new service file. do so with:
+    .. code-block:: shell
+        :caption: Start/Stop/Restart/Status
 
-.. code-block:: sh
+        sudo supervisorctl start exampleapp
+        sudo supervisorctl stop exampleapp
+        sudo supervisorctl restart exampleapp
+        sudo supervisorctl status exampleapp
 
-    sudo supervisorctl reread
-    sudo supervisorctl update
+    .. code-block:: shell
+        :caption: View logs
 
+        sudo supervisorctl tail -f exampleapp
 
-to start/stop the service
+Now you are ready to start your application.
 
-.. code-block:: sh
+#. Start the service if it's not already running: ``sudo supervisorctl start exampleapp``.
+#. Ensure it's operating correctly by checking the output for errors: ``sudo supervisorctl status exampleapp``.
+#. Once confirmed, your Litestar application should be accessible (By default at ``http://0.0.0.0:8000``).
 
-    sudo supervisorctl start api
-    sudo supervisorctl stop api
+After that, you are done! You can now use ``supervisor`` to manage your application.
+The following sections were written to provide suggestions for making things easier to manage and they are not required.
 
+Suggestions
+-----------
 
-to get the status
+.. tip::
 
-.. code-block:: sh
-
-    sudo supervisorctl status api
-
-
-to watch the output
-
-.. code-block:: sh
-
-    sudo supervisorctl tail -f api
-
-
-Start the service if its not started. make sure its running. check the output to make sure there aren't any errors. and if all that went according to plan your litestar application should be accessible on
-http://yyy.yyy.yyy.yyy:80
-
-
-Alias for easy control
-=========================================
-
-This follows onto the Supervisor setup.
-
-To make things easier to handle the service, here's an alias to use that will make things much easier for you. this introduces some commands like:
-
-.. code-block:: sh
-
-    api start
-    api stop
-    api restart
-    api status
-    api watch
+        This follows onto the setup above, but provides some suggestions for making things easier to manage.
 
 
-Create an alias file `/etc/profile.d/api.sh` this is where the magic happens to let us simply use `api start` instead of `sudo supervisorctl start api` (all that extra typing.. urrgghhh). Adding it to `/etc/profile.d/` makes the alias available for all users on that system. They would still however need to pass sudo for these commands.
+Aliases
+~~~~~~~
 
-.. code-block:: sh
+Create an alias file: ``/etc/profile.d/exampleapp.sh``.
 
-    api() {
-      case $1 in
-        start)
-          echo "Starting"
-          sudo supervisorctl start api || true
-          ;;
-        stop)
-          echo "Stopping"
-          sudo supervisorctl stop api || true
-          ;;
-        restart)
-          echo "Stopping"
-          sudo supervisorctl stop api || true
-          sleep 2
-          echo "Starting"
-          sudo supervisorctl start api || true
-          ;;
-        status)
-          echo "Status"
-          sudo supervisorctl status api || true
-          ;;
-        watch)
-          sudo supervisorctl tail -f api
-          ;;
+This is where the magic happens to let us simply use ``exampleapp start`` instead of
+``sudo supervisorctl start exampleapp``.
 
-        help)
-          echo "Available options:"
-          echo "  api start"
-          echo "  api stop"
-          echo "  api restart"
-          echo "  api status"
-          echo "  api watch"
-          ;;
+.. dropdown:: Alias Examples
 
-        *)
-          cd /opt/api
-        ;;
-      esac
-    }
+    .. code-block:: shell
+        :caption: Example commands provided by the alias file
 
-To activate the alias without restarting your session use `source /etc/profile.d/api.sh`.
+        exampleapp start
+        exampleapp stop
+        exampleapp restart
+        exampleapp status
+        exampleapp watch
 
-Using the `watch` command lets you monitor the realtime output of your application.
+    .. code-block:: shell
+        :caption: Example alias file
+        :linenos:
 
+        exampleapp() {
+          case $1 in
+            start)
+              echo "Starting exampleapp..."
+              sudo supervisorctl start exampleapp
+              ;;
 
-Updating your application
---------------------------
+            stop)
+              echo "Stopping exampleapp..."
+              sudo supervisorctl stop exampleapp
+              ;;
 
-A cool tip that the whole alias brings to the table is that if you include your supervisor conf file and the alias in your code base, you can do something like this for for updating your entire application.
+            restart)
+              echo "Restarting exampleapp..."
+              sudo supervisorctl restart exampleapp
+              ;;
 
-.. code-block:: sh
+            status)
+              echo "Checking status of exampleapp..."
+              sudo supervisorctl status exampleapp
+              ;;
 
-    api() {
-      case $1 in
-        # ... #
-        update)
-          echo " > Stopping"
-          sudo supervisorctl stop api || true
+            watch)
+              echo "Tailing logs for exampleapp..."
+              sudo supervisorctl tail -f exampleapp
+              ;;
 
-          echo " > Updating files"
-          cd /opt/api
-          git reset --hard origin/master
-          git pull origin master
+            help)
+              cat << EOF
+              Available options:
+                exampleapp start    - Start the exampleapp service
+                exampleapp stop     - Stop the exampleapp service
+                exampleapp restart  - Restart the exampleapp service
+                exampleapp status   - Check the status of the exampleapp service
+                exampleapp watch    - Tail the logs for the exampleapp service
+              EOF
+              ;;
 
-          sleep 2
+            *)
+              echo "Unknown command: $1"
+              echo "Use 'exampleapp help' for a list of available commands."
+              ;;
+          esac
+        }
 
-          echo " > Linking supervisord service file"
-          sudo ln -sf /opt/api/server/service.conf /etc/supervisor/conf.d/api.conf
-          echo " > Linking service alias"
-          sudo ln -sf /opt/api/server/alias.sh /etc/profile.d/api.sh
-          source /etc/profile.d/api.sh
+To activate the alias without restarting your session use ``source /etc/profile.d/exampleapp.sh``.
+Using the ``watch`` command lets you monitor the realtime output of your application.
 
-          sleep 2
+Update Script
+~~~~~~~~~~~~~
 
-          echo " > Updating supervisord services"
-          sudo supervisorctl reread
-          sudo supervisorctl update
+The ``exampleapp`` function can be extended to include an ``update`` command,
+facilitating the complete update process of the application:
 
-          sleep 2
+.. dropdown:: Update Script Example
 
-          source venv/bin/activate
-          echo " > Updating dependencies"
-          pip install -U -r requirements.txt
+    .. code-block:: shell
+        :caption: Example update command
+        :linenos:
 
-          echo "------------------------"
-          echo "Done"
+        exampleapp() {
+          case $1 in
+            # ... other cases ... #
 
-          read -p "Start the service? (y/n) " -n 1 -r
-          echo    # (optional) move to a new line
-          if [[ $REPLY =~ ^[Yy]$ ]]
-          then
-              echo "Starting"
-              sudo supervisorctl start api || true
-          fi
-          ;;
+            update)
+              echo "Updating exampleapp..."
 
-You can sym link both the alias file and the conf file into their respective locations and load them up after a git pull.
+              # Stop the service
+              echo " > Stopping service..."
+              sudo supervisorctl stop exampleapp
+
+              # Update application files
+              echo " > Pulling latest changes from repository..."
+              cd /opt/exampleapp
+              git fetch --all
+              git reset --hard origin/master
+
+              # Update Supervisor configuration and alias
+              echo " > Updating Supervisor and shell configurations..."
+              sudo ln -sf /opt/exampleapp/server/service.conf /etc/supervisor/conf.d/exampleapp.conf
+              sudo ln -sf /opt/exampleapp/server/alias.sh /etc/profile.d/exampleapp.sh
+              source /etc/profile.d/exampleapp.sh
+
+              # Update Supervisor to apply new configurations
+              echo " > Reloading Supervisor configuration..."
+              sudo supervisorctl reread
+              sudo supervisorctl update
+
+              # Update Python dependencies using requirements.txt
+              # Here you could replace with poetry, pdm, etc., alleviating the need for
+              # a requirements.txt file and virtual environment activation.
+              source venv/bin/activate
+              echo " > Installing updated dependencies..."
+              python3 -m pip install -r requirements.txt
+              deactivate
+
+              # ... other update processes like docs building, cleanup, etc. ... #
+
+              echo "Update process complete."
+
+              # Prompt to start the service
+              read -p "Start the service? (y/n) " -n 1 -r
+              echo
+              if [[ $REPLY =~ ^[Yy]$ ]]
+              then
+                  echo " > Starting service..."
+                  sudo supervisorctl start exampleapp
+              fi
+              ;;
+
+            # ... #
+          esac
+        }
+
+This update process includes the following steps:
+
+#. **Stop the Service:** Safely halts the application before making changes.
+#. **Git Operations:** Ensures the latest code is pulled from the repository.
+#. **Configuration Symlinking:** Updates ``supervisor`` configuration and shell alias to reflect any changes.
+#. **Supervisor Reload:** Applies new configuration settings to ``supervisor`` service.
+#. **Dependency Update:** Installs or updates Python dependencies as defined in lockfiles or ``requirements.txt``.
+#. **User Prompt:** Offers a choice to immediately start the service after updating.
+
+Execution
+~~~~~~~~~
+
+Run the ``exampleapp update`` command to execute this update process.
+It streamlines the deployment of new code and configuration changes,
+ensuring a smooth and consistent application update cycle.
