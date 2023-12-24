@@ -29,6 +29,8 @@ _default_favicon = f"<link rel='icon' type='image/png' href='{_favicon_url}'>"
 class OpenAPIRenderPlugin:
     """Base class for OpenAPI UI render plugins."""
 
+    paths: list[str]
+
     def __init__(
         self,
         *,
@@ -45,13 +47,13 @@ class OpenAPIRenderPlugin:
             favicon: Html <link> tag for the favicon.
             style: Base styling of the html body.
         """
-        self.path = path
+        self.paths = [path] if isinstance(path, str) else list(path)
         self.media_type = media_type
         self.favicon = favicon
         self.style = style
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(path={self.path!r}, media_type={self.media_type!r})"
+        return f"{self.__class__.__name__}(paths={self.paths!r}, media_type={self.media_type!r})"
 
     @staticmethod
     def render_json(request: Request, openapi_schema: dict[str, Any]) -> bytes:
@@ -98,7 +100,7 @@ class OpenAPIRenderPlugin:
         Returns:
             True if the plugin has the path, False otherwise.
         """
-        return path in self.path if isinstance(self.path, Sequence) else path == self.path
+        return path in self.paths
 
 
 class JsonRenderPlugin(OpenAPIRenderPlugin):

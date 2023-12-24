@@ -129,7 +129,7 @@ class OpenAPIConfig:
 
     If no path is provided the default is ``/schema``.
     """
-    render_plugins: Sequence[OpenAPIRenderPlugin] = field(default_factory=list)
+    render_plugins: Sequence[OpenAPIRenderPlugin] = field(default=())
     """Plugins for rendering OpenAPI documentation UIs."""
 
     def __post_init__(self) -> None:
@@ -137,19 +137,40 @@ class OpenAPIConfig:
             self.path = normalize_path(self.path)
             self.openapi_controller = type("OpenAPIController", (self.openapi_controller,), {"path": self.path})
 
+        self.default_plugin: OpenAPIRenderPlugin | None = None
         if self.openapi_controller is None:
             if not self.render_plugins:
-                # NOTE: while we support the legacy `enabled_endpoints` property we need to dynamically
-                #       generate the render_plugins list. Once that is gone, we can set the defaults in
-                #       the field's `default_factory` and remove this code.
-                self.render_plugins = rps = [
-                    plugin() for k in self.enabled_endpoints if (plugin := enabled_plugin_map[k])
-                ]
+                self._plugin_backward_compatibility()
             else:
-                self.render_plugins = rps = list(self.render_plugins)
+                # user is implicitly opted into the future plugin-based OpenAPI implementation
+                # behavior by explicitly providing a list of render plugins
+                for plugin in self.render_plugins:
+                    if plugin.has_path("/"):
+                        self.default_plugin = plugin
+                        break
+                else:
+                    self.default_plugin = self.render_plugins[0]
 
-            if not any(plugin.has_path("/openapi.json") for plugin in self.render_plugins):
-                rps.append(JsonRenderPlugin())
+    def _plugin_backward_compatibility(self) -> None:
+        """Backward compatibility for the plugin-based OpenAPI implementation.
+
+        This preserves backward compatibility with the Controller-based OpenAPI implementation.
+
+        We add a plugin for each enabled endpoint and set the default plugin to the plugin
+        that has a path ending in the value of ``root_schema_site``.
+        """
+
+        def is_default_plugin(plugin_: OpenAPIRenderPlugin) -> bool:
+            """Return True if the plugin is the default plugin."""
+            return any(path.endswith(self.root_schema_site) for path in plugin_.paths)
+
+        self.render_plugins = rps = []
+        for key in self.enabled_endpoints:
+            if plugin_type := enabled_plugin_map[key]:
+                plugin = plugin_type()
+                rps.append(plugin)
+                if is_default_plugin(plugin):
+                    self.default_plugin = plugin
 
     def to_openapi_schema(self) -> OpenAPI:
         """Return an ``OpenAPI`` instance from the values stored in ``self``.
