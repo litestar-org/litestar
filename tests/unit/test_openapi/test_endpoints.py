@@ -7,6 +7,7 @@ from litestar.enums import MediaType
 from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.controller import OpenAPIController
 from litestar.openapi.plugins import (
+    JsonRenderPlugin,
     OpenAPIRenderPlugin,
     RapidocRenderPlugin,
     RedocRenderPlugin,
@@ -389,3 +390,69 @@ def test_openapi_rapidoc_not_allowed(
         response = client.get("/schema/rapidoc")
         assert response.status_code == HTTP_404_NOT_FOUND
         assert response.headers["content-type"].startswith(MediaType.HTML.value)
+
+
+@pytest.mark.parametrize(
+    ("render_plugins",),
+    [
+        ([],),
+        ([RedocRenderPlugin()],),
+        ([RedocRenderPlugin(), JsonRenderPlugin()],),
+        ([JsonRenderPlugin(path="/custom_path")],),
+        ([JsonRenderPlugin(path=["/openapi.json", "/custom_path"])],),
+    ],
+)
+def test_json_plugin_always_enabled(render_plugins: List["OpenAPIRenderPlugin"]) -> None:
+    """We assume that an '/openapi.json' path is available in many of the openapi render plugins.
+
+    This test ensures that the json plugin is always enabled, even if the user has not explicitly
+    included it in the render_plugins list.
+    """
+
+    openapi_config = OpenAPIConfig(title="my title", version="1.0.0", render_plugins=render_plugins)
+    with create_test_client([], openapi_config=openapi_config) as client:
+        response = client.get("/schema/openapi.json")
+        assert response.status_code == HTTP_200_OK
+
+
+def test_default_plugin_explicit_path() -> None:
+    config = OpenAPIConfig(title="my title", version="1.0.0", render_plugins=[SwaggerRenderPlugin(path="/")])
+    with create_test_client([], openapi_config=config) as client:
+        response = client.get("/schema/")
+        assert response.status_code == HTTP_200_OK
+
+        response = client.get("/schema/swagger")
+        assert response.status_code == HTTP_404_NOT_FOUND
+
+
+def test_default_plugin_backward_compatibility() -> None:
+    config = OpenAPIConfig(title="my title", version="1.0.0")
+    with create_test_client([], openapi_config=config) as client:
+        response = client.get("/schema/")
+        assert response.status_code == HTTP_200_OK
+
+        response = client.get("/schema/redoc")
+        assert response.status_code == HTTP_200_OK
+
+
+def test_default_plugin_backward_compatibility_not_found() -> None:
+    config = OpenAPIConfig(title="my title", version="1.0.0", enabled_endpoints={"redoc"}, root_schema_site="swagger")
+    with create_test_client([], openapi_config=config) as client:
+        response = client.get("/schema/")
+        assert response.status_code == HTTP_404_NOT_FOUND
+
+        response = client.get("/schema/swagger")
+        assert response.status_code == HTTP_404_NOT_FOUND
+
+        response = client.get("/schema/redoc")
+        assert response.status_code == HTTP_200_OK
+
+
+def test_default_plugin_future_compatibility() -> None:
+    config = OpenAPIConfig(title="my title", version="1.0.0", render_plugins=[SwaggerRenderPlugin()])
+    with create_test_client([], openapi_config=config) as client:
+        response = client.get("/schema/")
+        assert response.status_code == HTTP_200_OK
+
+        response = client.get("/schema/swagger")
+        assert response.status_code == HTTP_200_OK
