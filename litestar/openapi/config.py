@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 from dataclasses import dataclass, field, fields
-from typing import TYPE_CHECKING, Literal, Sequence
+from typing import TYPE_CHECKING, Final, Literal, Sequence
 
 from litestar._openapi.utils import default_operation_id_creator
 from litestar.openapi.plugins import (
@@ -26,6 +26,7 @@ from litestar.openapi.spec import (
     Server,
     Tag,
 )
+from litestar.utils.deprecation import warn_deprecation
 from litestar.utils.path import normalize_path
 
 if TYPE_CHECKING:
@@ -46,6 +47,8 @@ enabled_plugin_map = {
     "oauth2-redirect.html": None,
 }
 
+_DEFAULT_SCHEMA_SITE: Final = "redoc"
+
 
 @dataclass
 class OpenAPIConfig:
@@ -62,11 +65,6 @@ class OpenAPIConfig:
 
     create_examples: bool = field(default=False)
     """Generate examples using the polyfactory library."""
-    openapi_controller: type[OpenAPIController] | None = None
-    """Controller for generating OpenAPI routes.
-
-    Must be subclass of :class:`OpenAPIController <litestar.openapi.controller.OpenAPIController>`.
-    """
     contact: Contact | None = field(default=None)
     """API contact information, should be an :class:`Contact <litestar.openapi.spec.contact.Contact>` instance."""
     description: str | None = field(default=None)
@@ -107,21 +105,6 @@ class OpenAPIConfig:
 
     :class:`Reference <litestar.openapi.spec.reference.Reference>` objects.
     """
-    root_schema_site: Literal["redoc", "swagger", "elements", "rapidoc"] = "redoc"
-    """The static schema generator to use for the "root" path of `/schema/`."""
-    enabled_endpoints: set[str] = field(
-        default_factory=lambda: {
-            "redoc",
-            "swagger",
-            "elements",
-            "rapidoc",
-            "openapi.json",
-            "openapi.yaml",
-            "openapi.yml",
-            "oauth2-redirect.html",
-        }
-    )
-    """A set of the enabled documentation sites and schema download endpoints."""
     operation_id_creator: OperationIDCreator = default_operation_id_creator
     """A callable that generates unique operation ids"""
     path: str | None = field(default=None)
@@ -131,8 +114,35 @@ class OpenAPIConfig:
     """
     render_plugins: Sequence[OpenAPIRenderPlugin] = field(default=())
     """Plugins for rendering OpenAPI documentation UIs."""
+    openapi_controller: type[OpenAPIController] | None = None
+    """Controller for generating OpenAPI routes.
+
+    Must be subclass of :class:`OpenAPIController <litestar.openapi.controller.OpenAPIController>`.
+    """
+    root_schema_site: Literal["redoc", "swagger", "elements", "rapidoc"] | None = None
+    """The static schema generator to use for the "root" path of `/schema/`."""
+    enabled_endpoints: set[str] | None = None
+    """A set of the enabled documentation sites and schema download endpoints."""
 
     def __post_init__(self) -> None:
+        self._issue_deprecations()
+
+        self.root_schema_site = self.root_schema_site or _DEFAULT_SCHEMA_SITE
+        self.enabled_endpoints = (
+            {
+                "redoc",
+                "swagger",
+                "elements",
+                "rapidoc",
+                "openapi.json",
+                "openapi.yaml",
+                "openapi.yml",
+                "oauth2-redirect.html",
+            }
+            if self.enabled_endpoints is None
+            else self.enabled_endpoints
+        )
+
         if self.path and self.openapi_controller is not None:
             self.path = normalize_path(self.path)
             self.openapi_controller = type("OpenAPIController", (self.openapi_controller,), {"path": self.path})
@@ -151,6 +161,33 @@ class OpenAPIConfig:
                 else:
                     self.default_plugin = self.render_plugins[0]
 
+    def _issue_deprecations(self) -> None:
+        """Handle deprecated config options."""
+        if self.openapi_controller is not None:
+            warn_deprecation(
+                "v2.5.0", "openapi_controller", "attribute", removal_in="v3.0.0", alternative="render_plugins"
+            )
+
+        if self.root_schema_site is not None:
+            warn_deprecation(
+                "v2.5.0",
+                "root_schema_site",
+                "attribute",
+                removal_in="v3.0.0",
+                alternative="render_plugins",
+                info="Any 'render_plugin' with path '/' or first 'render_plugin' in list will be served at the OpenAPI root.",
+            )
+
+        if self.enabled_endpoints is not None:
+            warn_deprecation(
+                "v2.5.0",
+                "enabled_endpoints",
+                "attribute",
+                removal_in="v3.0.0",
+                alternative="render_plugins",
+                info="Configure a 'render_plugin' to enable an endpoint.",
+            )
+
     def _plugin_backward_compatibility(self) -> None:
         """Backward compatibility for the plugin-based OpenAPI implementation.
 
@@ -162,10 +199,11 @@ class OpenAPIConfig:
 
         def is_default_plugin(plugin_: OpenAPIRenderPlugin) -> bool:
             """Return True if the plugin is the default plugin."""
-            return any(path.endswith(self.root_schema_site) for path in plugin_.paths)
+            root_schema_site = self.root_schema_site or _DEFAULT_SCHEMA_SITE
+            return any(path.endswith(root_schema_site) for path in plugin_.paths)
 
         self.render_plugins = rps = []
-        for key in self.enabled_endpoints:
+        for key in self.enabled_endpoints or ():
             if plugin_type := enabled_plugin_map[key]:
                 plugin = plugin_type()
                 rps.append(plugin)
