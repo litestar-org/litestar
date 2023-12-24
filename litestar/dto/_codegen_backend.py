@@ -56,6 +56,7 @@ class DTOCodegenBackend(DTOBackend):
         is_data_field: bool,
         model_type: type[Any],
         wrapper_attribute_name: str | None,
+        wrapped_annotation: Any | None,
     ) -> None:
         """Create dto backend instance.
 
@@ -67,6 +68,8 @@ class DTOCodegenBackend(DTOBackend):
             model_type: Model type.
             wrapper_attribute_name: If the data that DTO should operate upon is wrapped in a generic datastructure,
               this is the name of the attribute that the data is stored in.
+            wrapped_annotation: If the data that DTO should operate upon is wrapped in a generic datastructure,
+                this is the annotation of the attribute that the data is stored in.
         """
         super().__init__(
             dto_factory=dto_factory,
@@ -75,6 +78,7 @@ class DTOCodegenBackend(DTOBackend):
             is_data_field=is_data_field,
             model_type=model_type,
             wrapper_attribute_name=wrapper_attribute_name,
+            wrapped_annotation=wrapped_annotation,
         )
         self._transfer_to_dict = self._create_transfer_data_fn(
             destination_type=dict,

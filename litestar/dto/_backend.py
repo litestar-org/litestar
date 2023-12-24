@@ -3,7 +3,7 @@ back again, to bytes.
 """
 from __future__ import annotations
 
-from dataclasses import replace
+from dataclasses import is_dataclass, make_dataclass, replace
 from typing import (
     TYPE_CHECKING,
     AbstractSet,
@@ -36,7 +36,7 @@ from litestar.enums import RequestEncodingType
 from litestar.serialization import decode_json, decode_msgpack
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
-from litestar.utils import unique_name_for_scope
+from litestar.utils import get_name, unique_name_for_scope
 
 if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
@@ -72,6 +72,7 @@ class DTOBackend:
         "reverse_name_map",
         "transfer_model_type",
         "wrapper_attribute_name",
+        "wrapped_annotation",
     )
 
     _seen_model_names: ClassVar[set[str]] = set()
@@ -84,6 +85,7 @@ class DTOBackend:
         is_data_field: bool,
         model_type: type[Any],
         wrapper_attribute_name: str | None,
+        wrapped_annotation: Any | None,
     ) -> None:
         """Create dto backend instance.
 
@@ -94,6 +96,7 @@ class DTOBackend:
             is_data_field: Whether the field is a subclass of DTOData.
             model_type: Model type.
             wrapper_attribute_name: If the data that DTO should operate upon is wrapped in a generic datastructure, this is the name of the attribute that the data is stored in.
+            wrapped_annotation: The annotation of the wrapped datastructure, if it was wrapped.
         """
         self.dto_factory: Final[type[AbstractDTO]] = dto_factory
         self.field_definition: Final[FieldDefinition] = field_definition
@@ -118,6 +121,25 @@ class DTOBackend:
             field_definition = self.field_definition.inner_types[0]
 
         self.annotation = build_annotation_for_backend(model_type, field_definition, self.transfer_model_type)
+        if wrapped_annotation is not None:
+            if wrapper_attribute_name is None:
+                raise RuntimeError("Wrapped annotation provided without wrapper attribute name.")
+
+            new_name = f"{get_name(wrapped_annotation)}[{get_name(self.annotation)}]"
+            bases = (wrapped_annotation.__origin__,)
+
+            if is_dataclass(wrapped_annotation.__origin__):
+                self.annotation = make_dataclass(
+                    new_name,
+                    fields=[(wrapper_attribute_name, self.annotation)],
+                    bases=bases,
+                )
+            else:
+                self.annotation = type(
+                    new_name,
+                    (wrapped_annotation.__origin__,),
+                    {wrapper_attribute_name: self.annotation},
+                )
 
     def parse_model(
         self,
