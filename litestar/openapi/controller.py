@@ -10,6 +10,7 @@ from litestar.controller import Controller
 from litestar.enums import MediaType, OpenAPIMediaType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import get
+from litestar.openapi.config import _DEFAULT_SCHEMA_SITE
 from litestar.response.base import ASGIResponse
 from litestar.serialization import encode_json
 from litestar.serialization.msgspec_hooks import decode_json
@@ -118,11 +119,13 @@ class OpenAPIController(Controller):
         root_path = set(filter(None, self.path.split("/")))
 
         config = request.app.openapi_config
+        enabled_endpoints = config.enabled_endpoints or set()
+        root_schema_site = config.root_schema_site or _DEFAULT_SCHEMA_SITE
 
-        if request_path == root_path and config.root_schema_site in config.enabled_endpoints:
+        if request_path == root_path and root_schema_site in enabled_endpoints:
             return True
 
-        return bool(request_path & config.enabled_endpoints)
+        return bool(request_path & enabled_endpoints)
 
     @property
     def favicon(self) -> str:
@@ -218,7 +221,7 @@ class OpenAPIController(Controller):
         if not config:  # pragma: no cover
             raise ImproperlyConfiguredException(OPENAPI_NOT_INITIALIZED)
 
-        render_method = self.render_methods_map[config.root_schema_site]
+        render_method = self.render_methods_map[config.root_schema_site or _DEFAULT_SCHEMA_SITE]
 
         if self.should_serve_endpoint(request):
             return ASGIResponse(body=render_method(request), media_type=MediaType.HTML)
