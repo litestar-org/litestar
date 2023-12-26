@@ -41,8 +41,8 @@ if TYPE_CHECKING or not RICH_CLICK_INSTALLED:  # pragma: no cover
     from click import ClickException, Command, Context, Group, pass_context
 else:
     from rich_click import ClickException, Context, pass_context
-    from rich_click.rich_command import RichCommand as Command  # noqa: TCH002
-    from rich_click.rich_group import RichGroup as Group
+    from rich_click.rich_command import RichCommand as Command
+    from rich_click.rich_command import RichGroup as Group
 
 
 __all__ = (

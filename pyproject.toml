@@ -210,6 +210,8 @@ filterwarnings = [
   "ignore:The `parse_obj` method is deprecated:DeprecationWarning:",
   "ignore:The `json` method is deprecated:DeprecationWarning:",
   "ignore:Extra keyword arguments on `Field` is deprecated:DeprecationWarning:pydantic*",
+  "ignore: 'RichMultiCommand':DeprecationWarning::"  # this is coming from rich_click itself, nothing we can do about
+                                                     # that for now
 ]
 markers = [
   "sqlalchemy_integration: SQLAlchemy integration tests",
