@@ -335,6 +335,7 @@ def test_run_command_with_server_lifespan_plugin(
         (APP_FILE_CONTENT_ROUTES_EXAMPLE, True, ("/foo", "/destroy/.*", "/java", "/haskell")),
     ],
 )
+@pytest.mark.xdist_group("cli_autodiscovery")
 def test_routes_command_options(
     runner: CliRunner,
     app_content: str,
