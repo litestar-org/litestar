@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Sequence
 
+import httpx
 import msgspec
 import yaml
 
@@ -321,6 +322,7 @@ class ScalarRenderPlugin(OpenAPIRenderPlugin):
     .. versionadded:: 2.5.0
     """
 
+    _default_litestar_css_url = "https://raw.githubusercontent.com/litestar-org/branding/main/assets/openapi/scalar.css"
     _default_scalar_css_url = "/schema/_litestar-internal/scalar.css"
 
     def __init__(
@@ -393,7 +395,8 @@ class ScalarRenderPlugin(OpenAPIRenderPlugin):
     def receive_router(self, router: Router) -> None:
         """Receive the router that serves the OpenAPI UI.
 
-        Adds a route to serve the Scalar.com OpenAPI UI CSS.
+        Adds a route to serve the Scalar.com OpenAPI UI CSS
+        pulled from the Litestar GitHub branding repo.
 
         Args:
             router: The router that serves the OpenAPI UI.
@@ -405,17 +408,21 @@ class ScalarRenderPlugin(OpenAPIRenderPlugin):
                 ),
             )
 
-    @staticmethod
-    def render_scalar_css() -> bytes:
-        """Render the Scalar CSS file.
-
+    def render_scalar_css(self) -> bytes:
+        """Fetch and render the Scalar CSS file from GitHub.
 
         Returns:
             The CSS content as bytes.
         """
-        here = Path(__file__).parent
-        css_path = here / "styles/scalar.css"
-        return css_path.read_bytes()
+        try:
+            with httpx.Client() as client:
+                response = client.get(self._default_litestar_css_url)
+                response.raise_for_status()
+                return response.content
+        except httpx.HTTPError:
+            here = Path(__file__).parent
+            css_path = here / "styles/scalar.css"
+            return css_path.read_bytes()
 
 
 class StoplightRenderPlugin(OpenAPIRenderPlugin):
