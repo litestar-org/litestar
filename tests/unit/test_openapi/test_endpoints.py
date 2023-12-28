@@ -11,6 +11,7 @@ from litestar.openapi.plugins import (
     OpenAPIRenderPlugin,
     RapidocRenderPlugin,
     RedocRenderPlugin,
+    ScalarRenderPlugin,
     StoplightRenderPlugin,
     SwaggerRenderPlugin,
 )
@@ -208,6 +209,45 @@ def test_openapi_stoplight_elements_offline(
     )
     with create_test_client([person_controller, pet_controller], openapi_config=offline_config) as client:
         response = client.get("/schema/elements")
+        assert all(offline_url in response.text for offline_url in [OFFLINE_LOCATION_JS_URL, OFFLINE_LOCATION_CSS_URL])
+
+
+@pytest.mark.parametrize(
+    ("openapi_controller", "render_plugins"),
+    [
+        (
+            type(
+                "OfflineOpenAPIController",
+                (OpenAPIController,),
+                {
+                    "scalar_css_url": OFFLINE_LOCATION_CSS_URL,
+                    "scalar_js_url": OFFLINE_LOCATION_JS_URL,
+                },
+            ),
+            [],
+        ),
+        (
+            None,
+            [
+                ScalarRenderPlugin(
+                    js_url=OFFLINE_LOCATION_JS_URL,
+                    css_url=OFFLINE_LOCATION_CSS_URL,
+                )
+            ],
+        ),
+    ],
+)
+def test_openapi_scalar_offline(
+    person_controller: Type[Controller],
+    pet_controller: Type[Controller],
+    openapi_controller: Optional[Type[OpenAPIController]],
+    render_plugins: List[OpenAPIRenderPlugin],
+) -> None:
+    offline_config = OpenAPIConfig(
+        title="Litestar API", version="1.0.0", openapi_controller=openapi_controller, render_plugins=render_plugins
+    )
+    with create_test_client([person_controller, pet_controller], openapi_config=offline_config) as client:
+        response = client.get("/schema/scalar")
         assert all(offline_url in response.text for offline_url in [OFFLINE_LOCATION_JS_URL, OFFLINE_LOCATION_CSS_URL])
 
 
