@@ -26,6 +26,11 @@ Using OpenAPI UI Plugins is as simple as importing the plugin, instantiating it,
 
 .. tab-set::
 
+    .. tab-item:: scalar
+
+        .. literalinclude:: /examples/openapi/plugins/scalar_simple.py
+            :language: python
+
     .. tab-item:: rapidoc
 
         .. literalinclude:: /examples/openapi/plugins/rapidoc_simple.py
