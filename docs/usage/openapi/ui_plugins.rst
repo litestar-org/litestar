@@ -199,8 +199,8 @@ And we construct a url for the RapiDoc JavaScript bundle if it is not provided:
     :language: python
     :lines: 30
 
-render()
-~~~~~~~~
+``render()``
+~~~~~~~~~~~~
 
 .. literalinclude:: /examples/openapi/plugins/custom_plugin.py
     :language: python
