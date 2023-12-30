@@ -353,6 +353,7 @@ Setting cookies and headers
 
             from flask import Flask, make_response
 
+
             app = Flask(__name__)
 
 
@@ -415,6 +416,7 @@ For redirects, instead of ``redirect`` use ``Redirect``:
 
             from flask import Flask, redirect, url_for
 
+
             app = Flask(__name__)
 
 
@@ -464,6 +466,7 @@ Instead of using the ``abort`` function, raise an ``HTTPException``:
         .. code-block:: python
 
             from flask import Flask, abort
+
 
             app = Flask(__name__)
 
@@ -554,6 +557,7 @@ the data returned is intended to be serialized into JSON and will do so unless t
         .. code-block:: python
 
             from flask import Flask, Response
+
 
             app = Flask(__name__)
 
