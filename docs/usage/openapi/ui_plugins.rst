@@ -60,7 +60,7 @@ Configuring OpenAPI UI Plugins
 ------------------------------
 
 Each plugin can be tailored to meet your unique requirements by passing options at instantiation. For full details on
-each plugins options, see the :doc:`API Reference </reference/openapi/plugins>`.
+each plugin's options, see the :doc:`API Reference </reference/openapi/plugins>`.
 
 All plugins support the following options:
 
