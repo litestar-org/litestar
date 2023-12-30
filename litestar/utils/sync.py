@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from functools import partial
 from typing import (
     AsyncGenerator,
     Awaitable,
@@ -11,9 +10,9 @@ from typing import (
     TypeVar,
 )
 
-from anyio.to_thread import run_sync
 from typing_extensions import ParamSpec
 
+from litestar.concurrency import sync_to_thread
 from litestar.utils.predicates import is_async_callable
 
 __all__ = ("ensure_async_callable", "AsyncIteratorWrapper", "AsyncCallable", "is_async_callable")
@@ -43,7 +42,7 @@ class AsyncCallable:
         self.func = fn
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Awaitable[T]:  # pyright: ignore
-        return run_sync(partial(self.func, **kwargs), *args)  # pyright: ignore
+        return sync_to_thread(self.func, *args, **kwargs)  # pyright: ignore
 
 
 class AsyncIteratorWrapper(Generic[T]):
@@ -69,7 +68,7 @@ class AsyncIteratorWrapper(Generic[T]):
     async def _async_generator(self) -> AsyncGenerator[T, None]:
         while True:
             try:
-                yield await run_sync(self._call_next)
+                yield await sync_to_thread(self._call_next)
             except ValueError:
                 return
 

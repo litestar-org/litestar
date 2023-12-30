@@ -7,7 +7,8 @@ from tempfile import mkstemp
 from typing import TYPE_CHECKING
 
 from anyio import Path
-from anyio.to_thread import run_sync
+
+from litestar.concurrency import sync_to_thread
 
 from .base import NamespacedStore, StorageObject
 
@@ -73,7 +74,7 @@ class FileStore(NamespacedStore):
             pass
 
     async def _write(self, target_file: Path, storage_obj: StorageObject) -> None:
-        await run_sync(self._write_sync, target_file, storage_obj)
+        await sync_to_thread(self._write_sync, target_file, storage_obj)
 
     async def set(self, key: str, value: str | bytes, expires_in: int | timedelta | None = None) -> None:
         """Set a value.
@@ -140,7 +141,7 @@ class FileStore(NamespacedStore):
             This deletes and recreates :attr:`FileStore.path`
         """
 
-        await run_sync(shutil.rmtree, self.path)
+        await sync_to_thread(shutil.rmtree, self.path)
         await self.path.mkdir(exist_ok=True)
 
     async def delete_expired(self) -> None:
