@@ -1518,6 +1518,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "jseop-lim",
+      "name": "Jeongseop Lim",
+      "avatar_url": "https://avatars.githubusercontent.com/u/86508420?v=4",
+      "profile": "https://velog.io/@azzurri21",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
