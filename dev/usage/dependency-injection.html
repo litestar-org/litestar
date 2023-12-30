@@ -1592,9 +1592,9 @@ value, a warning will be raised.</p>
 </ol>
 <p>What is <em>scope</em> in this context? Dependencies are <strong>isolated</strong> to the context in which they are declared. Thus, in the
 above example, the <code class="docutils literal notranslate"><span class="pre">local_dependency</span></code> can only be accessed within the specific route handler on which it was declared;
-The <code class="docutils literal notranslate"><span class="pre">controller_dependency</span></code> is available only for route handlers on that specific controller; And the router
-dependencies are available only to the route handlers registered on that particular router. Only the <code class="docutils literal notranslate"><span class="pre">app_dependencies</span></code>
-are available to all route handlers.</p>
+The <code class="docutils literal notranslate"><span class="pre">controller_dependency</span></code> is available only for route handlers on that specific controller; And the <code class="docutils literal notranslate"><span class="pre">router</span>
+<span class="pre">dependency</span></code> is available only to the route handlers registered on that particular router. Only the <code class="docutils literal notranslate"><span class="pre">app_dependency</span></code>
+is available to all route handlers.</p>
 </section>
 <section id="dependencies-with-yield-cleanup-step">
 <span id="yield-dependencies"></span><h2>Dependencies with yield (cleanup step)<a class="headerlink" href="#dependencies-with-yield-cleanup-step" title="Permalink to this heading">#</a></h2>
