@@ -521,12 +521,19 @@ class BaseRouteHandler:
             None
         """
         self._validate_handler_function()
+        self._default_handler_name()
         self.resolve_dependencies()
         self.resolve_guards()
         self.resolve_middleware()
         self.resolve_opts()
         self.resolve_data_dto()
         self.resolve_return_dto()
+
+    def _default_handler_name(self) -> None:
+        """Set the handler name to the name of the handler function if not set."""
+        if not self.name and hasattr(self.fn, "__qualname__"):
+            name = self.fn.__qualname__
+            self.name = name
 
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once set by inspecting its return annotations."""
