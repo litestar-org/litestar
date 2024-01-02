@@ -3,8 +3,7 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, AsyncGenerator, AsyncIterable, AsyncIterator, Iterable, Iterator
 
-from anyio.to_thread import run_sync
-
+from litestar.concurrency import sync_to_thread
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.response.streaming import Stream
 from litestar.utils import AsyncIteratorWrapper
@@ -65,7 +64,7 @@ class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
     async def _async_generator(self) -> AsyncGenerator[bytes, None]:
         while True:
             try:
-                yield await run_sync(self._call_next)
+                yield await sync_to_thread(self._call_next)
             except ValueError:
                 async for value in self.content_async_iterator:
                     yield f"data: {value}\r\n".encode() if isinstance(value, str) else b"data: {" + value + b"}\r\n"
