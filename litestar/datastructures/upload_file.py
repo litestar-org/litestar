@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from tempfile import SpooledTemporaryFile
 
-from anyio.to_thread import run_sync
-
+from litestar.concurrency import sync_to_thread
 from litestar.constants import ONE_MEGABYTE
 
 __all__ = ("UploadFile",)
@@ -59,7 +58,7 @@ class UploadFile:
             None
         """
         if self.rolled_to_disk:
-            return await run_sync(self.file.write, data)
+            return await sync_to_thread(self.file.write, data)
         return self.file.write(data)
 
     async def read(self, size: int = -1) -> bytes:
@@ -72,7 +71,7 @@ class UploadFile:
             Byte string.
         """
         if self.rolled_to_disk:
-            return await run_sync(self.file.read, size)
+            return await sync_to_thread(self.file.read, size)
         return self.file.read(size)
 
     async def seek(self, offset: int) -> int:
@@ -85,7 +84,7 @@ class UploadFile:
             None.
         """
         if self.rolled_to_disk:
-            return await run_sync(self.file.seek, offset)
+            return await sync_to_thread(self.file.seek, offset)
         return self.file.seek(offset)
 
     async def close(self) -> None:
@@ -95,7 +94,7 @@ class UploadFile:
             None.
         """
         if self.rolled_to_disk:
-            return await run_sync(self.file.close)
+            return await sync_to_thread(self.file.close)
         return self.file.close()
 
     def __repr__(self) -> str:
