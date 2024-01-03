@@ -13,8 +13,8 @@ from httpx_sse import aconnect_sse
 
 from litestar import get
 from litestar.background_tasks import BackgroundTask
-from litestar.response import ServerSentEventStream
-from litestar.response.sse import ServerSentEvent
+from litestar.response import ServerSentEvent
+from litestar.response.sse import ServerSentEventMessage
 from litestar.response.streaming import ASGIStreamingResponse
 from litestar.testing import TestClient, create_async_test_client
 
@@ -177,14 +177,14 @@ async def test_sse_steaming_response() -> None:
     @get(
         path="/test",
     )
-    def handler() -> ServerSentEventStream:
+    def handler() -> ServerSentEvent:
         def numbers(minimum: int, maximum: int) -> Iterator[str]:
             for i in range(minimum, maximum + 1):
                 yield str(i)
 
         generator = numbers(1, 5)
 
-        return ServerSentEventStream(content=generator, event_id="123", event_type="special", retry_duration=1000)
+        return ServerSentEvent(content=generator, event_id="123", event_type="special", retry_duration=1000)
 
     async with create_async_test_client(handler) as client:
         async with aconnect_sse(client, "GET", f"{client.base_url}/test") as event_source:
@@ -223,7 +223,7 @@ def test_asgi_response_encoded_headers() -> None:
 )
 async def test_various_sse_inputs(input: str, expected_events: List[HTTPXServerSentEvent]) -> None:
     @get("/testme")
-    async def handler() -> ServerSentEventStream:
+    async def handler() -> ServerSentEvent:
         async def numbers(minimum: int, maximum: int) -> AsyncIterator[Any]:
             for i in range(minimum, maximum + 1):
                 await anyio.sleep(0.1)
@@ -237,10 +237,10 @@ async def test_various_sse_inputs(input: str, expected_events: List[HTTPXServerS
                     yield {"data": i, "event": "event1", "retry": 1000}
                     yield {"data": 2 * i, "event": "event2", "retry": 10}
                 elif input == "obj":
-                    yield ServerSentEvent(data=i, event="special", retry=1000)
+                    yield ServerSentEventMessage(data=i, event="special", retry=1000)
 
         generator = numbers(1, 5)
-        return ServerSentEventStream(generator, event_type="special", event_id="123", retry_duration=1000)
+        return ServerSentEvent(generator, event_type="special", event_id="123", retry_duration=1000)
 
     async with create_async_test_client(handler) as client:
         async with aconnect_sse(client, "GET", f"{client.base_url}/testme") as event_source:

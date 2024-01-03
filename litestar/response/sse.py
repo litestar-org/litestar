@@ -63,16 +63,16 @@ class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
         else:
             raise ImproperlyConfiguredException(f"Invalid type {type(content)} for ServerSentEvent")
 
-    def ensure_bytes(self, data: bytes | dict | ServerSentEvent | Any, sep: str) -> bytes:
+    def ensure_bytes(self, data: bytes | dict | ServerSentEventMessage | Any, sep: str) -> bytes:
         if isinstance(data, bytes):
             return data
-        if isinstance(data, ServerSentEvent):
+        if isinstance(data, ServerSentEventMessage):
             return data.encode()
         if isinstance(data, dict):
             data["sep"] = sep
-            return ServerSentEvent(**data).encode()
+            return ServerSentEventMessage(**data).encode()
 
-        return ServerSentEvent(
+        return ServerSentEventMessage(
             data=str(data), id=self.event_id, event=self.event_type, retry=self.retry_duration, sep=sep
         ).encode()
 
@@ -94,7 +94,7 @@ class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
 
 
 @dataclass
-class ServerSentEvent:
+class ServerSentEventMessage:
     data: Any | None = None
     event: str | None = None
     id: str | None = None
@@ -132,7 +132,7 @@ class ServerSentEvent:
         return buffer.getvalue().encode("utf-8")
 
 
-class ServerSentEventStream(Stream):
+class ServerSentEvent(Stream):
     def __init__(
         self,
         content: str | bytes | StreamType[str | bytes],
