@@ -93,6 +93,27 @@ def test_upload_list_of_files_schema_generation() -> None:
     }
 
 
+def test_upload_file_dict_schema_generation() -> None:
+    @post(path="/file-dict-upload")
+    async def handle_file_list_upload(
+        data: Dict[str, UploadFile] = Body(media_type=RequestEncodingType.MULTI_PART),
+    ) -> None:
+        return None
+
+    app = Litestar([handle_file_list_upload])
+    schema = app.openapi_schema.to_schema()
+
+    assert schema["paths"]["/file-dict-upload"]["post"]["requestBody"]["content"]["multipart/form-data"]["schema"] == {
+        "type": "object",
+        "properties": {
+            "files": {
+                "items": {"type": "string", "contentMediaType": "application/octet-stream", "format": "binary"},
+                "type": "array",
+            }
+        },
+    }
+
+
 def test_upload_file_model_schema_generation() -> None:
     @post(path="/form-upload")
     async def handle_form_upload(

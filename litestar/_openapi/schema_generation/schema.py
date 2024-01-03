@@ -362,9 +362,6 @@ class SchemaCreator:
             A Schema instance.
         """
 
-        if field_definition.is_mapping:
-            return Schema()
-
         property_key = "file"
         schema = Schema(
             type=OpenAPIType.STRING,
@@ -372,7 +369,9 @@ class SchemaCreator:
             format=OpenAPIFormat.BINARY,
         )
 
-        if field_definition.is_non_string_sequence:
+        # If the type is `dict[str, UploadFile]`, then it's the same as a `list[UploadFile]`
+        # but we will internally convert that into a `dict[str, UploadFile]`.
+        if field_definition.is_non_string_sequence or field_definition.is_mapping:
             property_key = "files"
             schema = Schema(type=OpenAPIType.ARRAY, items=schema)
 
