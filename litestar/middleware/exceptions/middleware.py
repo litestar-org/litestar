@@ -85,7 +85,7 @@ class ExceptionResponseContent:
     extra: dict[str, Any] | list[Any] | None = field(default=None)
     """An extra mapping to attach to the exception."""
 
-    def to_response(self) -> Response:
+    def to_response(self, request: Request | None = None) -> Response:
         """Create a response from the model attributes.
 
         Returns:
@@ -103,6 +103,7 @@ class ExceptionResponseContent:
             headers=self.headers,
             status_code=self.status_code,
             media_type=self.media_type,
+            type_encoders=request.app.type_encoders if request else None,
         )
 
 
@@ -139,7 +140,7 @@ def create_exception_response(request: Request[Any, Any, Any], exc: Exception) -
         extra=getattr(exc, "extra", None),
         media_type=media_type,
     )
-    return content.to_response()
+    return content.to_response(request=request)
 
 
 class ExceptionHandlerMiddleware:
