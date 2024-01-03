@@ -80,14 +80,14 @@ def test_upload_file_request_body_generation() -> None:
     paths = schema_dict["paths"]
     components = schema_dict["components"]
     assert paths["/file-upload"]["post"]["requestBody"]["content"]["multipart/form-data"]["schema"] == {
-        "type": "string",
-        "contentMediaType": "application/octet-stream",
-        "format": "binary",
+        "properties": {"file": {"type": "string", "format": "binary", "contentMediaType": "application/octet-stream"}},
+        "type": "object",
     }
+
     assert paths["/file-list-upload"]["post"]["requestBody"]["content"]["multipart/form-data"]["schema"] == {
         "type": "object",
         "properties": {
-            "file": {
+            "files": {
                 "items": {"type": "string", "contentMediaType": "application/octet-stream", "format": "binary"},
                 "type": "array",
             }
