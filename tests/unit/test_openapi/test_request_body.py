@@ -56,35 +56,33 @@ def test_create_request_body(person_controller: Type[Controller], create_request
                 assert request_body
 
 
-def test_upload_file_request_body_generation() -> None:
-    @post(path="/form-upload")
-    async def handle_form_upload(
-        data: FormData = Body(media_type=RequestEncodingType.MULTI_PART),
-    ) -> None:
-        return None
-
+def test_upload_single_file_schema_generation() -> None:
     @post(path="/file-upload")
     async def handle_file_upload(
         data: UploadFile = Body(media_type=RequestEncodingType.MULTI_PART),
     ) -> None:
         return None
 
+    app = Litestar([handle_file_upload])
+    schema = app.openapi_schema.to_schema()
+
+    assert schema["paths"]["/file-upload"]["post"]["requestBody"]["content"]["multipart/form-data"]["schema"] == {
+        "properties": {"file": {"type": "string", "format": "binary", "contentMediaType": "application/octet-stream"}},
+        "type": "object",
+    }
+
+
+def test_upload_list_of_files_schema_generation() -> None:
     @post(path="/file-list-upload")
     async def handle_file_list_upload(
         data: List[UploadFile] = Body(media_type=RequestEncodingType.MULTI_PART),
     ) -> None:
         return None
 
-    app = Litestar(route_handlers=[handle_form_upload, handle_file_upload, handle_file_list_upload])
-    schema_dict = app.openapi_schema.to_schema()
-    paths = schema_dict["paths"]
-    components = schema_dict["components"]
-    assert paths["/file-upload"]["post"]["requestBody"]["content"]["multipart/form-data"]["schema"] == {
-        "properties": {"file": {"type": "string", "format": "binary", "contentMediaType": "application/octet-stream"}},
-        "type": "object",
-    }
+    app = Litestar([handle_file_list_upload])
+    schema = app.openapi_schema.to_schema()
 
-    assert paths["/file-list-upload"]["post"]["requestBody"]["content"]["multipart/form-data"]["schema"] == {
+    assert schema["paths"]["/file-list-upload"]["post"]["requestBody"]["content"]["multipart/form-data"]["schema"] == {
         "type": "object",
         "properties": {
             "files": {
@@ -94,7 +92,21 @@ def test_upload_file_request_body_generation() -> None:
         },
     }
 
-    assert components == {
+
+def test_upload_file_model_schema_generation() -> None:
+    @post(path="/form-upload")
+    async def handle_form_upload(
+        data: FormData = Body(media_type=RequestEncodingType.MULTI_PART),
+    ) -> None:
+        return None
+
+    app = Litestar([handle_form_upload])
+    schema = app.openapi_schema.to_schema()
+
+    assert schema["paths"]["/form-upload"]["post"]["requestBody"]["content"]["multipart/form-data"] == {
+        "schema": {"$ref": "#/components/schemas/FormData"}
+    }
+    assert schema["components"] == {
         "schemas": {
             "FormData": {
                 "properties": {
