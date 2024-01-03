@@ -103,7 +103,7 @@ class ExceptionResponseContent:
             headers=self.headers,
             status_code=self.status_code,
             media_type=self.media_type,
-            type_encoders=request.app.type_encoders if request else None,
+            type_encoders=request.route_handler.resolve_type_encoders() if request else None,
         )
 
 
