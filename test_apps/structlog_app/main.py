@@ -1,12 +1,13 @@
 from typing import Dict
 
-from litestar import Litestar, get
+from litestar import Litestar, Request, get
 from litestar.logging.config import StructLoggingConfig
 from litestar.middleware.logging import LoggingMiddlewareConfig
 
 
 @get("/")
-async def handler() -> Dict[str, str]:
+async def handler(request: Request) -> Dict[str, str]:
+    request.logger.info("Logging in the handler")
     return {"hello": "world"}
 
 
