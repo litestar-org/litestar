@@ -365,19 +365,27 @@ class SchemaCreator:
         if field_definition.is_mapping:
             return Schema()
 
-        file_schema = Schema(
+        property_key = "file"
+        schema = Schema(
             type=OpenAPIType.STRING,
             content_media_type="application/octet-stream",
             format=OpenAPIFormat.BINARY,
         )
-        if field_definition.kwarg_definition is None:
-            return file_schema
 
         if field_definition.is_non_string_sequence:
-            schema = Schema(type=OpenAPIType.ARRAY, items=file_schema)
-            return Schema(type=OpenAPIType.OBJECT, properties={"file": schema})
+            property_key = "files"
+            schema = Schema(type=OpenAPIType.ARRAY, items=schema)
 
-        return Schema(type=OpenAPIType.OBJECT, properties={"file": file_schema})
+        # If the uploadfile is annotated directly on the handler, then the
+        # 'properties' needs to be created. Else, the 'properties' will be
+        # created by the corresponding plugin.
+        is_defined_on_handler = field_definition.name == "data" and isinstance(
+            field_definition.kwarg_definition, BodyKwarg
+        )
+        if is_defined_on_handler:
+            return Schema(type=OpenAPIType.OBJECT, properties={property_key: schema})
+
+        return schema
 
     def for_typevar(self) -> Schema:
         """Create a schema for a TypeVar.
