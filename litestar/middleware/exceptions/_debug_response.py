@@ -200,7 +200,7 @@ def create_debug_response(request: Request, exc: Exception) -> Response:
     )
 
 
-def _get_type_encoders_for_request(request: Request) -> TypeEncodersMap:
+def _get_type_encoders_for_request(request: Request) -> TypeEncodersMap | None:
     try:
         return request.route_handler.resolve_type_encoders()
     # we might be in a 404, or before we could resolve the handler, so this
