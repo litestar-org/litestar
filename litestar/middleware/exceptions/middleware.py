@@ -11,7 +11,7 @@ from litestar.datastructures import Headers
 from litestar.enums import MediaType, ScopeType
 from litestar.exceptions import WebSocketException
 from litestar.middleware.cors import CORSMiddleware
-from litestar.middleware.exceptions._debug_response import create_debug_response
+from litestar.middleware.exceptions._debug_response import _get_type_encoders_for_request, create_debug_response
 from litestar.serialization import encode_json
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.utils.deprecation import warn_deprecation
@@ -103,7 +103,7 @@ class ExceptionResponseContent:
             headers=self.headers,
             status_code=self.status_code,
             media_type=self.media_type,
-            type_encoders=request.route_handler.resolve_type_encoders() if request else None,
+            type_encoders=_get_type_encoders_for_request(request) if request is not None else None,
         )
 
 
