@@ -15,6 +15,7 @@ from litestar.enums import ParamType, RequestEncodingType
 from litestar.exceptions import ValidationException
 from litestar.params import BodyKwarg
 from litestar.types import Empty
+from litestar.utils.predicates import is_non_string_sequence
 from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
@@ -366,7 +367,15 @@ def create_multipart_extractor(
         if not form_values and is_data_optional:
             return None
 
-        return data_dto(connection).decode_builtins(form_values) if data_dto else form_values
+        if data_dto:
+            return data_dto(connection).decode_builtins(form_values)
+
+        for name, tp in field_definition.get_type_hints().items():
+            value = form_values[name]
+            if is_non_string_sequence(tp) and not isinstance(value, list):
+                form_values[name] = [value]
+
+        return form_values
 
     return cast("Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", extract_multipart)
 
