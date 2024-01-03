@@ -362,3 +362,20 @@ def test_get_symbol_name_where_type_doesnt_support_bool() -> None:
     if exc is not None and exc.__traceback__ is not None:
         frame = getinnerframes(exc.__traceback__, 2)[-1]
         assert get_symbol_name(frame) == "Test.method"
+
+
+def test_serialize_custom_types() -> None:
+    # ensure type encoders are passed down to the created response so custom types that
+    # might end up as part of a ValidationException are handled properly
+    # https://github.com/litestar-org/litestar/issues/2867
+    class Foo:
+        def __init__(self, value: str) -> None:
+            self.value = value
+
+    @get()
+    def handler() -> None:
+        raise ValidationException(extra={"foo": Foo("bar")})
+
+    with create_test_client([handler], type_encoders={Foo: lambda f: f.value}) as client:
+        res = client.get("/")
+        assert res.json()["extra"] == {"foo": "bar"}
