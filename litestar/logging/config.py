@@ -258,17 +258,21 @@ def default_structlog_processors(as_json: bool = True) -> list[Processor]:  # py
     try:
         import structlog
 
-        processors: list[Processor] = [
+        if as_json:
+            return [
+                structlog.contextvars.merge_contextvars,
+                structlog.processors.add_log_level,
+                structlog.processors.format_exc_info,
+                structlog.processors.TimeStamper(fmt="iso"),
+                structlog.processors.JSONRenderer(serializer=default_json_serializer),
+            ]
+        return [
             structlog.contextvars.merge_contextvars,
             structlog.processors.add_log_level,
             structlog.processors.format_exc_info,
             structlog.processors.TimeStamper(fmt="iso"),
+            structlog.dev.ConsoleRenderer(colors=True),
         ]
-        if as_json:
-            processors.append(structlog.processors.JSONRenderer(serializer=default_json_serializer))
-        else:
-            processors.append(structlog.dev.ConsoleRenderer(colors=True))
-        return processors
 
     except ImportError:
         return []
@@ -283,14 +287,12 @@ def default_structlog_stdlib_processors(as_json: bool = True) -> list[Processor]
     try:
         import structlog
 
-        processors: list[Processor] = [
-            structlog.stdlib.add_log_level,
-        ]
         if as_json:
-            processors.append(structlog.processors.JSONRenderer(serializer=default_json_serializer))
-        else:
-            processors.append(structlog.dev.ConsoleRenderer(colors=True))
-        return processors
+            return [
+                structlog.stdlib.add_log_level,
+                structlog.processors.JSONRenderer(serializer=default_json_serializer),
+            ]
+        return [structlog.stdlib.add_log_level, structlog.dev.ConsoleRenderer(colors=True)]
     except ImportError:
         return []
 
