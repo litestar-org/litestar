@@ -48,7 +48,7 @@ class StructlogPlugin(InitPluginProtocol, CLIPluginProtocol):
             The app config object.
         """
         if app_config.logging_config is not None and isinstance(app_config.logging_config, StructLoggingConfig):
-            console.print("[Orange]* Found pre-configured `StructLoggingConfig` on the `app` instance.[/]")
+            console.print("[orange]* Found pre-configured `StructLoggingConfig` on the `app` instance.[/]")
         else:
             app_config.logging_config = self._config.structlog_logging_config
         if self._config.structlog_logging_config.standard_lib_logging_config is not None:
