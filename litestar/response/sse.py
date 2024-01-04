@@ -97,7 +97,7 @@ class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
 class ServerSentEventMessage:
     data: Any | None = None
     event: str | None = None
-    id: str | None = None
+    id: int | str | None = None
     retry: int | None = None
     comment: str | None = None
     sep: str = DEFAULT_SEPARATOR
