@@ -21,6 +21,7 @@ class StructlogConfig:
     middleware_logging_config: LoggingMiddlewareConfig = field(default_factory=LoggingMiddlewareConfig)
     """Middleware logging config."""
     enable_middleware_logging: bool = True
+    """Enable request logging."""
 
 
 class StructlogPlugin(InitPluginProtocol, CLIPluginProtocol):
@@ -50,6 +51,8 @@ class StructlogPlugin(InitPluginProtocol, CLIPluginProtocol):
             console.print("[Orange]* Found pre-configured `StructLoggingConfig` on the `app` instance.[/]")
         else:
             app_config.logging_config = self._config.structlog_logging_config
+        if self._config.structlog_logging_config.standard_lib_logging_config is not None:
+            self._config.structlog_logging_config.standard_lib_logging_config.configure()
         if self._config.enable_middleware_logging:
             app_config.middleware.append(self._config.middleware_logging_config.middleware)
         return app_config  # pragma: no cover

@@ -249,7 +249,7 @@ def default_json_serializer(value: Any, default: Callable[[Any], Any] | None = N
     return encode_json(value=value, serializer=default)
 
 
-def default_structlog_processors() -> list[Processor] | None:  # pyright: ignore
+def default_structlog_processors(as_json: bool = True) -> list[Processor]:  # pyright: ignore
     """Set the default processors for structlog.
 
     Returns:
@@ -258,15 +258,41 @@ def default_structlog_processors() -> list[Processor] | None:  # pyright: ignore
     try:
         import structlog
 
-        return [
+        processors: list[Processor] = [
             structlog.contextvars.merge_contextvars,
             structlog.processors.add_log_level,
             structlog.processors.format_exc_info,
             structlog.processors.TimeStamper(fmt="iso"),
-            structlog.processors.JSONRenderer(serializer=default_json_serializer),
         ]
+        if as_json:
+            processors.append(structlog.processors.JSONRenderer(serializer=default_json_serializer))
+        else:
+            processors.append(structlog.dev.ConsoleRenderer(colors=True))
+        return processors
+
     except ImportError:
-        return None
+        return []
+
+
+def default_structlog_stdlib_processors(as_json: bool = True) -> list[Processor]:  # pyright: ignore
+    """Set the default processors for structlog stdlib.
+
+    Returns:
+        An optional list of processors.
+    """
+    try:
+        import structlog
+
+        processors: list[Processor] = [
+            structlog.stdlib.add_log_level,
+        ]
+        if as_json:
+            processors.append(structlog.processors.JSONRenderer(serializer=default_json_serializer))
+        else:
+            processors.append(structlog.dev.ConsoleRenderer(colors=True))
+        return processors
+    except ImportError:
+        return []
 
 
 def default_wrapper_class() -> type[BindableLogger] | None:  # pyright: ignore
@@ -284,7 +310,7 @@ def default_wrapper_class() -> type[BindableLogger] | None:  # pyright: ignore
         return None
 
 
-def default_logger_factory() -> Callable[..., WrappedLogger] | None:
+def default_logger_factory(as_json: bool = True) -> Callable[..., WrappedLogger] | None:
     """Set the default logger factory for structlog.
 
     Returns:
@@ -293,7 +319,9 @@ def default_logger_factory() -> Callable[..., WrappedLogger] | None:
     try:
         import structlog
 
-        return structlog.BytesLoggerFactory()
+        if as_json:
+            return structlog.BytesLoggerFactory()
+        return structlog.WriteLoggerFactory()
     except ImportError:
         return None
 
@@ -306,13 +334,18 @@ class StructLoggingConfig(BaseLoggingConfig):
         - requires ``structlog`` to be installed.
     """
 
-    processors: list[Processor] | None = field(default_factory=default_structlog_processors)  # pyright: ignore
+    processors: list[Processor] | None = field(default=None)  # pyright: ignore
     """Iterable of structlog logging processors."""
-    wrapper_class: type[BindableLogger] | None = field(default_factory=default_wrapper_class)  # pyright: ignore
+    standard_lib_logging_config: LoggingConfig | None = field(default=None)  # pyright: ignore
+    """Optional customized standard logging configuration.
+
+    Use this when you need to modify the standard library outside of the Structlog pre-configured implementation.
+    """
+    wrapper_class: type[BindableLogger] | None = field(default=None)  # pyright: ignore
     """Structlog bindable logger."""
     context_class: dict[str, Any] | None = None
     """Context class (a 'contextvar' context) for the logger."""
-    logger_factory: Callable[..., WrappedLogger] | None = field(default_factory=default_logger_factory)
+    logger_factory: Callable[..., WrappedLogger] | None = field(default=None)  # pyright: ignore
     """Logger factory to use."""
     cache_logger_on_first_use: bool = field(default=True)
     """Whether to cache the logger configuration and reuse."""
@@ -324,6 +357,24 @@ class StructLoggingConfig(BaseLoggingConfig):
     """Handler function for logging exceptions."""
 
     def __post_init__(self) -> None:
+        try:
+            import structlog
+
+            if self.standard_lib_logging_config is None:
+                self.standard_lib_logging_config = LoggingConfig(
+                    formatters={
+                        "standard": {
+                            "()": structlog.stdlib.ProcessorFormatter,
+                            "processors": default_structlog_stdlib_processors(sys.stderr.isatty()),
+                        }
+                    }
+                )
+        except ImportError:
+            self.standard_lib_logging_config = LoggingConfig()
+        if self.processors is None:
+            self.processors = default_structlog_processors(sys.stderr.isatty())
+        if self.logger_factory is None:
+            self.logger_factory = default_logger_factory(sys.stderr.isatty())
         if self.log_exceptions != "never" and self.exception_logging_handler is None:
             self.exception_logging_handler = _default_exception_logging_handler_factory(
                 is_struct_logger=True, traceback_line_limit=self.traceback_line_limit
