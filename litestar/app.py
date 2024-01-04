@@ -509,7 +509,7 @@ class Litestar(Router):
     @debug.setter
     def debug(self, value: bool) -> None:
         if self.logger:
-            self.logger.setLevel(logging.DEBUG if value else logging.INFO)
+            self.get_logger().setLevel(logging.DEBUG if value else logging.INFO)
         if isinstance(self.logging_config, LoggingConfig):
             self.logging_config.loggers["litestar"]["level"] = "DEBUG" if value else "INFO"
         self._debug = value
