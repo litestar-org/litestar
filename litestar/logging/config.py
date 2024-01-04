@@ -278,7 +278,7 @@ def default_structlog_processors(as_json: bool = True) -> list[Processor]:  # py
         return []
 
 
-def default_structlog_stdlib_processors(as_json: bool = True) -> list[Processor]:  # pyright: ignore
+def default_structlog_standard_lib_processors(as_json: bool = True) -> list[Processor]:  # pyright: ignore
     """Set the default processors for structlog stdlib.
 
     Returns:
@@ -359,6 +359,14 @@ class StructLoggingConfig(BaseLoggingConfig):
     """Handler function for logging exceptions."""
 
     def __post_init__(self) -> None:
+        if self.processors is None:
+            self.processors = default_structlog_processors(not sys.stderr.isatty())
+        if self.logger_factory is None:
+            self.logger_factory = default_logger_factory(not sys.stderr.isatty())
+        if self.log_exceptions != "never" and self.exception_logging_handler is None:
+            self.exception_logging_handler = _default_exception_logging_handler_factory(
+                is_struct_logger=True, traceback_line_limit=self.traceback_line_limit
+            )
         try:
             import structlog
 
@@ -367,20 +375,12 @@ class StructLoggingConfig(BaseLoggingConfig):
                     formatters={
                         "standard": {
                             "()": structlog.stdlib.ProcessorFormatter,
-                            "processors": default_structlog_stdlib_processors(sys.stderr.isatty()),
+                            "processors": default_structlog_standard_lib_processors(as_json=not sys.stderr.isatty()),
                         }
                     }
                 )
         except ImportError:
             self.standard_lib_logging_config = LoggingConfig()
-        if self.processors is None:
-            self.processors = default_structlog_processors(sys.stderr.isatty())
-        if self.logger_factory is None:
-            self.logger_factory = default_logger_factory(sys.stderr.isatty())
-        if self.log_exceptions != "never" and self.exception_logging_handler is None:
-            self.exception_logging_handler = _default_exception_logging_handler_factory(
-                is_struct_logger=True, traceback_line_limit=self.traceback_line_limit
-            )
 
     def configure(self) -> GetLogger:
         """Return logger with the given configuration.

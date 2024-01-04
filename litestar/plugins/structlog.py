@@ -53,6 +53,7 @@ class StructlogPlugin(InitPluginProtocol, CLIPluginProtocol):
             )
         else:
             app_config.logging_config = self._config.structlog_logging_config
+        app_config.logging_config.configure()
         if self._config.structlog_logging_config.standard_lib_logging_config is not None:
             self._config.structlog_logging_config.standard_lib_logging_config.configure()
         if self._config.enable_middleware_logging:
