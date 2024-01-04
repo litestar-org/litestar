@@ -135,6 +135,11 @@ class BaseLoggingConfig(ABC):
         """
         raise NotImplementedError("abstract method")
 
+    @staticmethod
+    def set_level(app: Any, level: int) -> None:
+        """Provides a consistent interface to call `setLevel` for all loggers."""
+        raise NotImplementedError("abstract method")
+
 
 @dataclass
 class LoggingConfig(BaseLoggingConfig):
@@ -233,6 +238,11 @@ class LoggingConfig(BaseLoggingConfig):
 
         config.dictConfig(values)
         return cast("Callable[[str], Logger]", getLogger)
+
+    @staticmethod
+    def set_level(logger: Logger, level: int) -> None:
+        """Provides a consistent interface to call `setLevel` for all loggers."""
+        logger.setLevel(level)
 
 
 def default_json_serializer(value: Any, default: Callable[[Any], Any] | None = None) -> bytes:
@@ -346,3 +356,14 @@ class StructLoggingConfig(BaseLoggingConfig):
             }
         )
         return get_logger
+
+    @staticmethod
+    def set_level(logger: Logger, level: int) -> None:
+        """Provides a consistent interface to call `setLevel` for all loggers."""
+
+        try:
+            import structlog
+
+            structlog.configure(wrapper_class=structlog.make_filtering_bound_logger(level))
+        except ImportError:
+            """"""

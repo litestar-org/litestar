@@ -508,8 +508,14 @@ class Litestar(Router):
 
     @debug.setter
     def debug(self, value: bool) -> None:
-        if self.logger:
-            self.get_logger().setLevel(logging.DEBUG if value else logging.INFO)
+        """Sets the debug logging level for the application.
+
+        When possible, it calls the `self.logging_config.set_level` method.  This allows for implementation specific code and APIs to be called.
+        """
+        if self.logger and self.logging_config:
+            self.logging_config.set_level(self.logger, logging.DEBUG if value else logging.INFO)
+        elif self.logger and self.logging_config is None:
+            self.logger.setLevel(logging.DEBUG if value else logging.INFO)
         if isinstance(self.logging_config, LoggingConfig):
             self.logging_config.loggers["litestar"]["level"] = "DEBUG" if value else "INFO"
         self._debug = value
