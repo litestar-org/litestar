@@ -142,7 +142,7 @@ class ServerSentEvent(Stream):
         encoding: str = "utf-8",
         headers: ResponseHeaders | None = None,
         event_type: str | None = None,
-        event_id: str | None = None,
+        event_id: int | str | None = None,
         retry_duration: int | None = None,
         comment_message: str | None = None,
         status_code: int | None = None,
