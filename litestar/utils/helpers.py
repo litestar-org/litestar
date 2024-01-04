@@ -98,6 +98,6 @@ def get_exception_group() -> type[BaseException]:
     try:
         return cast("type[BaseException]", ExceptionGroup)  # type:ignore[name-defined]
     except NameError:
-        from exceptiongroup import ExceptionGroup as _ExceptionGroup
+        from exceptiongroup import ExceptionGroup as _ExceptionGroup  # pyright: ignore
 
         return cast("type[BaseException]", _ExceptionGroup)

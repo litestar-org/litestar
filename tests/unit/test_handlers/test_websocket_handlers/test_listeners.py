@@ -19,7 +19,7 @@ from litestar.types.asgi_types import WebSocketMode
 @pytest.fixture
 def listener_class(mock: MagicMock) -> Type[WebsocketListener]:
     class Listener(WebsocketListener):
-        def on_receive(self, data: str) -> str:
+        def on_receive(self, data: str) -> str:  # pyright: ignore
             mock(data)
             return data
 
@@ -403,7 +403,7 @@ def test_websocket_listener_class_hook_dependencies() -> None:
         def on_disconnect(self, name: str, state: State, query: dict, some: str) -> None:  # type: ignore[override]
             on_disconnect_mock(name=name, state=state, query=query, some=some)
 
-        def on_receive(self, data: bytes) -> None:
+        def on_receive(self, data: bytes) -> None:  # pyright: ignore
             pass
 
     with create_test_client([Listener], dependencies={"some": some_dependency}) as client, client.websocket_connect(

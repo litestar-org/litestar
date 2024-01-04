@@ -64,6 +64,19 @@ async def test_stop(join: bool) -> None:
         assert subscriber._task is None
 
 
+async def test_stop_with_task_done() -> None:
+    subscriber = Subscriber(AsyncMock())
+    async with subscriber.run_in_background(AsyncMock()):
+        assert subscriber._task
+        assert subscriber.is_running
+
+        subscriber.put_nowait(None)
+
+        await subscriber.stop(join=True)
+
+        assert subscriber._task is None
+
+
 @pytest.mark.parametrize("join", [False, True])
 async def test_stop_no_task(join: bool) -> None:
     subscriber = Subscriber(AsyncMock())
@@ -96,3 +109,12 @@ async def test_backlog(backlog_strategy: BacklogStrategy) -> None:
     enqueued_items = await get_from_stream(subscriber, 2)
 
     assert expected_messages == enqueued_items
+
+
+async def tests_run_in_background_run_in_background_called_while_running_raises() -> None:
+    subscriber = Subscriber(AsyncMock())
+
+    async with subscriber.run_in_background(AsyncMock()):
+        with pytest.raises(RuntimeError):
+            async with subscriber.run_in_background(AsyncMock()):
+                pass
