@@ -35,6 +35,7 @@ install-pdm: 										## Install latest version of PDM
 	curl -sSL https://pdm.fming.dev/install-pdm.py.sha256 | shasum -a 256 -c - && \
 	python3 install-pdm.py && \
 	rm install-pdm.py
+	export PATH=/home/$USER/.local/bin:$PATH
 
 .PHONY: install
 install: clean										## Install the project, dependencies, and pre-commit for local development
