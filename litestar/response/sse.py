@@ -28,7 +28,7 @@ class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
         self,
         content: str | bytes | StreamType[str | bytes],
         event_type: str | None = None,
-        event_id: str | None = None,
+        event_id: int | str | None = None,
         retry_duration: int | None = None,
         comment_message: str | None = None,
     ) -> None:
