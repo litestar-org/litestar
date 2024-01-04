@@ -217,8 +217,8 @@ This is equivalent to:
 
       @get("/")
       def hello_world() -> Dict[str, str]:
-         """Handler function that returns a greeting dictionary."""
-         return {"hello": "world"}
+          """Handler function that returns a greeting dictionary."""
+          return {"hello": "world"}
 
 
       app = Litestar(route_handlers=[hello_world])
