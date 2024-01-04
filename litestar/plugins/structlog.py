@@ -28,7 +28,9 @@ class StructlogPlugin(InitPluginProtocol, CLIPluginProtocol):
 
     __slots__ = ("_config",)
 
-    def __init__(self, config: StructlogConfig) -> None:
+    def __init__(self, config: StructlogConfig | None = None) -> None:
+        if config is None:
+            config = StructlogConfig()
         self._config = config
         super().__init__()
 
