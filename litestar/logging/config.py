@@ -136,7 +136,7 @@ class BaseLoggingConfig(ABC):
         raise NotImplementedError("abstract method")
 
     @staticmethod
-    def set_level(app: Any, level: int) -> None:
+    def set_level(logger: Any, level: int) -> None:
         """Provides a consistent interface to call `setLevel` for all loggers."""
         raise NotImplementedError("abstract method")
 
