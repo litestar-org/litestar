@@ -99,7 +99,7 @@ def test_schema_with_route_security_overridden(protected_route: "HTTPRouteHandle
 def test_layered_security_declaration() -> None:
     class MyController(Controller):
         path = "/controller"
-        security: List[SecurityRequirement] = [{"controllerToken": []}]
+        security: List[SecurityRequirement] = [{"controllerToken": []}]  # pyright: ignore
 
         @get("", security=[{"handlerToken": []}])
         def my_handler(self) -> None:
