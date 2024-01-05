@@ -359,7 +359,7 @@ async def test_to_response_sse_events(content: str | bytes | StreamType[str | by
             cookies=[Cookie(key="streaming-cookie", value="xyz")],
             background=background_task,
             comment_message="my comment message\r\nwith some\nmixed line breaks",
-            event_id=123,
+            event_id="123",
             event_type="special",
         )
 
@@ -402,7 +402,7 @@ async def test_sse_events_content(content: str | bytes | StreamType[str | bytes]
         return ServerSentEvent(
             content=content,
             comment_message="my comment message\r\nwith some\nmixed line breaks",
-            event_id=123,
+            event_id="123",
             event_type="special",
         )
 
@@ -424,15 +424,14 @@ async def test_sse_events_content(content: str | bytes | StreamType[str | bytes]
         b": mixed line breaks\r\n",
         b"id: 123\r\n",
         b"event: special\r\n",
-        b"data: 1\r\n",
-        b"data: 2\r\n",
-        b"data: 3\r\n",
-        b"data: 4\r\n",
-        b"data: 5\r\n",
-        b"data: 6\r\n",
-        b"data: 7\r\n",
-        b"data: 8\r\n",
-        b"data: 9\r\n",
-        b"data: 10\r\n",
-        b"\r\n",
+        b"id: 123\r\nevent: special\r\ndata: 1\r\n\r\n",
+        b"id: 123\r\nevent: special\r\ndata: 2\r\n\r\n",
+        b"id: 123\r\nevent: special\r\ndata: 3\r\n\r\n",
+        b"id: 123\r\nevent: special\r\ndata: 4\r\n\r\n",
+        b"id: 123\r\nevent: special\r\ndata: 5\r\n\r\n",
+        b"id: 123\r\nevent: special\r\ndata: 6\r\n\r\n",
+        b"id: 123\r\nevent: special\r\ndata: 7\r\n\r\n",
+        b"id: 123\r\nevent: special\r\ndata: 8\r\n\r\n",
+        b"id: 123\r\nevent: special\r\ndata: 9\r\n\r\n",
+        b"id: 123\r\nevent: special\r\ndata: 10\r\n\r\n",
     ]

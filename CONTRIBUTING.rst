@@ -208,31 +208,28 @@ In practice, this looks like the following:
 
 This is equivalent to:
 
+.. code-block:: python
 
-.. raw:: rst
+      from typing import Dict
 
-   .. code-block:: python
-
-       from typing import Dict
-
-       from litestar import Litestar, get
+      from litestar import Litestar, get
 
 
-       @get("/")
-       def hello_world() -> Dict[str, str]:
-           """Handler function that returns a greeting dictionary."""
-           return {"hello": "world"}
+      @get("/")
+      def hello_world() -> Dict[str, str]:
+          """Handler function that returns a greeting dictionary."""
+          return {"hello": "world"}
 
 
-       app = Litestar(route_handlers=[hello_world])
+      app = Litestar(route_handlers=[hello_world])
 
 
-   .. admonition:: Run it
+.. admonition:: Run it
 
-       .. code-block:: bash
+      .. code-block:: bash
 
-           > curl http://127.0.0.1:8000/
-           {"hello": "world"}
+         > curl http://127.0.0.1:8000/
+         {"hello": "world"}
 
 
 Creating a new release
