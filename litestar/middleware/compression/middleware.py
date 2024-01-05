@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from gzip import GzipFile
 from io import BytesIO
 from typing import TYPE_CHECKING, Any, Literal
 
 from litestar.datastructures import Headers, MutableScopeHeaders
 from litestar.enums import CompressionEncoding, ScopeType
-from litestar.exceptions import MissingDependencyException
 from litestar.middleware.base import AbstractMiddleware
+from litestar.middleware.compression.brotli_facade import BrotliCompression
+from litestar.middleware.compression.gzip_facade import GzipCompression
 from litestar.utils.empty import value_or_default
 from litestar.utils.scope.state import ScopeState
 
@@ -26,76 +26,6 @@ if TYPE_CHECKING:
         from brotli import Compressor
     except ImportError:
         Compressor = Any
-
-__all__ = ("CompressionFacade", "CompressionMiddleware")
-
-
-class CompressionFacade:
-    """A unified facade offering a uniform interface for different compression libraries."""
-
-    __slots__ = ("compressor", "buffer", "compression_encoding")
-
-    compressor: GzipFile | Compressor  # pyright: ignore
-
-    def __init__(self, buffer: BytesIO, compression_encoding: CompressionEncoding, config: CompressionConfig) -> None:
-        """Initialize ``CompressionFacade``.
-
-        Args:
-            buffer: A bytes IO buffer to write the compressed data into.
-            compression_encoding: The compression encoding used.
-            config: The app compression config.
-        """
-        self.buffer = buffer
-        self.compression_encoding = compression_encoding
-
-        if compression_encoding == CompressionEncoding.BROTLI:
-            try:
-                import brotli  # noqa: F401
-            except ImportError as e:
-                raise MissingDependencyException("brotli") from e
-
-            from brotli import MODE_FONT, MODE_GENERIC, MODE_TEXT, Compressor
-
-            modes: dict[Literal["generic", "text", "font"], int] = {
-                "text": int(MODE_TEXT),
-                "font": int(MODE_FONT),
-                "generic": int(MODE_GENERIC),
-            }
-            self.compressor = Compressor(
-                quality=config.brotli_quality,
-                mode=modes[config.brotli_mode],
-                lgwin=config.brotli_lgwin,
-                lgblock=config.brotli_lgblock,
-            )
-        else:
-            self.compressor = GzipFile(mode="wb", fileobj=buffer, compresslevel=config.gzip_compress_level)
-
-    def write(self, body: bytes) -> None:
-        """Write compressed bytes.
-
-        Args:
-            body: Message body to process
-
-        Returns:
-            None
-        """
-
-        if self.compression_encoding == CompressionEncoding.BROTLI:
-            self.buffer.write(self.compressor.process(body) + self.compressor.flush())  # type: ignore
-        else:
-            self.compressor.write(body)
-            self.compressor.flush()
-
-    def close(self) -> None:
-        """Close the compression stream.
-
-        Returns:
-            None
-        """
-        if self.compression_encoding == CompressionEncoding.BROTLI:
-            self.buffer.write(self.compressor.finish())  # type: ignore
-        else:
-            self.compressor.close()
 
 
 class CompressionMiddleware(AbstractMiddleware):
@@ -170,7 +100,15 @@ class CompressionMiddleware(AbstractMiddleware):
             An ASGI send function.
         """
         bytes_buffer = BytesIO()
-        facade = CompressionFacade(buffer=bytes_buffer, compression_encoding=compression_encoding, config=self.config)
+
+        # We can't just do `self.config.facade` here since `gzip` might be used as a fallback,
+        # but the config has no way of knowing whether it's the fallback that's being used or not.
+        if compression_encoding == CompressionEncoding.BROTLI:
+            facade = BrotliCompression(
+                buffer=bytes_buffer, compression_encoding=compression_encoding, config=self.config
+            )
+        elif compression_encoding == CompressionEncoding.GZIP:
+            facade = GzipCompression(buffer=bytes_buffer, compression_encoding=compression_encoding, config=self.config)
 
         initial_message: HTTPResponseStartEvent | None = None
         started = False
