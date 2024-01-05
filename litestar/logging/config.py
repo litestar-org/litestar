@@ -269,7 +269,6 @@ def default_structlog_processors(as_json: bool = True) -> list[Processor]:  # py
         return [
             structlog.contextvars.merge_contextvars,
             structlog.processors.add_log_level,
-            structlog.processors.format_exc_info,
             structlog.processors.TimeStamper(fmt="iso"),
             structlog.dev.ConsoleRenderer(colors=True),
         ]
@@ -286,18 +285,26 @@ def default_structlog_standard_lib_processors(as_json: bool = True) -> list[Proc
     """
     try:
         import structlog
+        from structlog.dev import RichTracebackFormatter
 
         if as_json:
             return [
                 structlog.stdlib.add_log_level,
+                structlog.stdlib.ExtraAdder(),
                 structlog.processors.JSONRenderer(serializer=default_json_serializer),
             ]
-        return [structlog.stdlib.add_log_level, structlog.dev.ConsoleRenderer(colors=True)]
+        return [
+            structlog.stdlib.add_log_level,
+            structlog.stdlib.ExtraAdder(),
+            structlog.dev.ConsoleRenderer(
+                colors=True, exception_formatter=RichTracebackFormatter(max_frames=1, show_locals=False, width=80)
+            ),
+        ]
     except ImportError:
         return []
 
 
-def default_wrapper_class() -> type[BindableLogger] | None:  # pyright: ignore
+def default_wrapper_class(log_level: int = INFO) -> type[BindableLogger] | None:  # pyright: ignore
     """Set the default wrapper class for structlog.
 
     Returns:
@@ -307,7 +314,7 @@ def default_wrapper_class() -> type[BindableLogger] | None:  # pyright: ignore
     try:
         import structlog
 
-        return structlog.make_filtering_bound_logger(INFO)
+        return structlog.make_filtering_bound_logger(log_level)
     except ImportError:
         return None
 
@@ -357,12 +364,14 @@ class StructLoggingConfig(BaseLoggingConfig):
     """Max number of lines to print for exception traceback"""
     exception_logging_handler: ExceptionLoggingHandler | None = field(default=None)
     """Handler function for logging exceptions."""
+    pretty_print_tty: bool = field(default=True)
+    """Pretty print log output when run from an interactive terminal."""
 
     def __post_init__(self) -> None:
         if self.processors is None:
-            self.processors = default_structlog_processors(not sys.stderr.isatty())
+            self.processors = default_structlog_processors(not sys.stderr.isatty() and self.pretty_print_tty)
         if self.logger_factory is None:
-            self.logger_factory = default_logger_factory(not sys.stderr.isatty())
+            self.logger_factory = default_logger_factory(not sys.stderr.isatty() and self.pretty_print_tty)
         if self.log_exceptions != "never" and self.exception_logging_handler is None:
             self.exception_logging_handler = _default_exception_logging_handler_factory(
                 is_struct_logger=True, traceback_line_limit=self.traceback_line_limit
@@ -375,7 +384,9 @@ class StructLoggingConfig(BaseLoggingConfig):
                     formatters={
                         "standard": {
                             "()": structlog.stdlib.ProcessorFormatter,
-                            "processors": default_structlog_standard_lib_processors(as_json=not sys.stderr.isatty()),
+                            "processors": default_structlog_standard_lib_processors(
+                                as_json=not sys.stderr.isatty() and self.pretty_print_tty
+                            ),
                         }
                     }
                 )
@@ -389,13 +400,11 @@ class StructLoggingConfig(BaseLoggingConfig):
             A 'logging.getLogger' like function.
         """
         try:
-            import structlog  # noqa: F401
+            import structlog
         except ImportError as e:
             raise MissingDependencyException("structlog") from e
 
-        from structlog import configure, get_logger
-
-        configure(
+        structlog.configure(
             **{
                 k: v
                 for k, v in asdict(self).items()
@@ -405,10 +414,11 @@ class StructLoggingConfig(BaseLoggingConfig):
                     "log_exceptions",
                     "traceback_line_limit",
                     "exception_logging_handler",
+                    "pretty_print_tty",
                 )
             }
         )
-        return get_logger
+        return structlog.get_logger
 
     @staticmethod
     def set_level(logger: Logger, level: int) -> None:
