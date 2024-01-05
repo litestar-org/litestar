@@ -371,8 +371,8 @@ def create_multipart_extractor(
             return data_dto(connection).decode_builtins(form_values)
 
         for name, tp in field_definition.get_type_hints().items():
-            value = form_values[name]
-            if is_non_string_sequence(tp) and not isinstance(value, list):
+            value = form_values.get(name)
+            if value is not None and is_non_string_sequence(tp) and not isinstance(value, list):
                 form_values[name] = [value]
 
         return form_values
