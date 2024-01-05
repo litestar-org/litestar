@@ -126,7 +126,7 @@ linting = [
   "mypy",
   "pre-commit",
   "slotscheck",
-  "pyright",
+  "pyright==1.1.344",
   "blacken-docs",
   "asyncpg-stubs",
   "types-beautifulsoup4",
