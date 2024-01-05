@@ -15,6 +15,7 @@ from litestar.enums import ParamType, RequestEncodingType
 from litestar.exceptions import ValidationException
 from litestar.params import BodyKwarg
 from litestar.types import Empty
+from litestar.utils.predicates import is_non_string_sequence
 from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
@@ -355,7 +356,7 @@ def create_multipart_extractor(
 
         if field_definition.is_non_string_sequence:
             values = list(form_values.values())
-            if field_definition.inner_types[0].annotation is UploadFile and isinstance(values[0], list):
+            if field_definition.has_inner_subclass_of(UploadFile) and isinstance(values[0], list):
                 return values[0]
 
             return values
@@ -366,7 +367,15 @@ def create_multipart_extractor(
         if not form_values and is_data_optional:
             return None
 
-        return data_dto(connection).decode_builtins(form_values) if data_dto else form_values
+        if data_dto:
+            return data_dto(connection).decode_builtins(form_values)
+
+        for name, tp in field_definition.get_type_hints().items():
+            value = form_values.get(name)
+            if value is not None and is_non_string_sequence(tp) and not isinstance(value, list):
+                form_values[name] = [value]
+
+        return form_values
 
     return cast("Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", extract_multipart)
 
