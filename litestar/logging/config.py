@@ -257,6 +257,7 @@ def default_structlog_processors(as_json: bool = True) -> list[Processor]:  # py
     """
     try:
         import structlog
+        from structlog.dev import RichTracebackFormatter
 
         if as_json:
             return [
@@ -270,7 +271,9 @@ def default_structlog_processors(as_json: bool = True) -> list[Processor]:  # py
             structlog.contextvars.merge_contextvars,
             structlog.processors.add_log_level,
             structlog.processors.TimeStamper(fmt="iso"),
-            structlog.dev.ConsoleRenderer(colors=True),
+            structlog.dev.ConsoleRenderer(
+                colors=True, exception_formatter=RichTracebackFormatter(max_frames=1, show_locals=False, width=80)
+            ),
         ]
 
     except ImportError:
