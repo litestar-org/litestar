@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Protocol
+from typing import TYPE_CHECKING, ClassVar, Protocol
 
 if TYPE_CHECKING:
     from io import BytesIO
@@ -12,9 +12,13 @@ if TYPE_CHECKING:
 class CompressionFacade(Protocol):
     """A unified facade offering a uniform interface for different compression libraries."""
 
-    __slots__ = ("compressor", "buffer", "compression_encoding")
+    __slots__ = ("compressor", "buffer", "compression_encoding", "encoding")
 
-    def __init__(self, buffer: BytesIO, compression_encoding: CompressionEncoding, config: CompressionConfig) -> None:
+    encoding: ClassVar[str]
+
+    def __init__(
+        self, buffer: BytesIO, compression_encoding: CompressionEncoding | str, config: CompressionConfig
+    ) -> None:
         """Initialize ``CompressionFacade``.
 
         Args:

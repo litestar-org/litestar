@@ -1,10 +1,15 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.middleware.compression import CompressionMiddleware
+from litestar.middleware.compression.brotli_facade import BrotliCompression
+from litestar.middleware.compression.gzip_facade import GzipCompression
+
+if TYPE_CHECKING:
+    from litestar.middleware.compression.facade import CompressionFacade
 
 __all__ = ("CompressionConfig",)
 
@@ -48,6 +53,8 @@ class CompressionConfig:
     """A pattern or list of patterns to skip in the compression middleware."""
     exclude_opt_key: str | None = None
     """An identifier to use on routes to disable compression for a particular route."""
+    compression_facade: type[CompressionFacade] = GzipCompression
+    """The compression facade to use for the actual compression."""
 
     def __post_init__(self) -> None:
         if self.minimum_size <= 0:
@@ -61,3 +68,6 @@ class CompressionConfig:
 
         if self.brotli_lgwin < 10 or self.brotli_lgwin > 24:
             raise ImproperlyConfiguredException("brotli_lgwin must be a value between 10 and 24")
+
+        if self.backend == "brotli":
+            self.compression_facade = BrotliCompression

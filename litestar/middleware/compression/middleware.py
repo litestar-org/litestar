@@ -58,19 +58,20 @@ class CompressionMiddleware(AbstractMiddleware):
             None
         """
         accept_encoding = Headers.from_scope(scope).get("accept-encoding", "")
+        config = self.config
 
-        if CompressionEncoding.BROTLI in accept_encoding and self.config.backend == "brotli":
+        if config.compression_facade.encoding in accept_encoding:
             await self.app(
                 scope,
                 receive,
                 self.create_compression_send_wrapper(
-                    send=send, compression_encoding=CompressionEncoding.BROTLI, scope=scope
+                    send=send, compression_encoding=config.compression_facade.encoding, scope=scope
                 ),
             )
             return
 
         if CompressionEncoding.GZIP in accept_encoding and (
-            self.config.backend == "gzip" or self.config.brotli_gzip_fallback
+            config.backend == "gzip" or (config.backend == "brotli" and config.brotli_gzip_fallback)
         ):
             await self.app(
                 scope,
@@ -86,7 +87,7 @@ class CompressionMiddleware(AbstractMiddleware):
     def create_compression_send_wrapper(
         self,
         send: Send,
-        compression_encoding: Literal[CompressionEncoding.BROTLI, CompressionEncoding.GZIP],
+        compression_encoding: Literal[CompressionEncoding.BROTLI, CompressionEncoding.GZIP] | str,
         scope: Scope,
     ) -> Send:
         """Wrap ``send`` to handle brotli compression.
@@ -112,8 +113,6 @@ class CompressionMiddleware(AbstractMiddleware):
 
         initial_message: HTTPResponseStartEvent | None = None
         started = False
-
-        _own_encoding = compression_encoding.encode("latin-1")
 
         connection_state = ScopeState.from_scope(scope)
 

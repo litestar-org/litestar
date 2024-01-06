@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Literal
 
+from litestar.enums import CompressionEncoding
 from litestar.exceptions import MissingDependencyException
 from litestar.middleware.compression.facade import CompressionFacade
 
@@ -10,18 +11,23 @@ try:
 except ImportError as e:
     raise MissingDependencyException("brotli") from e
 
+
 if TYPE_CHECKING:
     from io import BytesIO
 
     from litestar.config.compression import CompressionConfig
-    from litestar.enums import CompressionEncoding
 
 
 class BrotliCompression(CompressionFacade):
     __slots__ = ("compressor", "buffer", "compression_encoding")
 
+    encoding = CompressionEncoding.BROTLI
+
     def __init__(
-        self, buffer: BytesIO, compression_encoding: Literal[CompressionEncoding.BROTLI], config: CompressionConfig
+        self,
+        buffer: BytesIO,
+        compression_encoding: Literal[CompressionEncoding.BROTLI] | str,
+        config: CompressionConfig,
     ) -> None:
         self.buffer = buffer
         self.compression_encoding = compression_encoding
