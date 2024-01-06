@@ -63,9 +63,18 @@ class MemoryChannelsBackend(ChannelsBackend):
 
     async def stream_events(self) -> AsyncGenerator[tuple[str, Any], None]:
         """Return a generator, iterating over events of subscribed channels as they become available"""
-        while self._queue:
-            yield await self._queue.get()
+        if self._queue is None:
+            raise RuntimeError("Backend not yet initialized. Did you forget to call on_startup?")
+
+        while True:
+            channel, message = await self._queue.get()
             self._queue.task_done()
+
+            # if a message is published to a channel and the channel is then
+            # unsubscribed before retrieving that message from the stream, it can still
+            # end up here, so we double-check if we still are interested in this message
+            if channel in self._channels:
+                yield channel, message
 
     async def get_history(self, channel: str, limit: int | None = None) -> list[bytes]:
         """Return the event history of ``channel``, at most ``limit`` entries"""

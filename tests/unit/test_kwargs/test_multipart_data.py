@@ -410,6 +410,27 @@ def test_upload_multiple_files(file_count: int) -> None:
         assert response.status_code == HTTP_201_CREATED
 
 
+@dataclass
+class Files:
+    file_list: List[UploadFile]
+
+
+@pytest.mark.parametrize("file_count", (1, 2))
+def test_upload_multiple_files_in_model(file_count: int) -> None:
+    @post("/")
+    async def handler(data: Files = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
+        assert len(data.file_list) == file_count
+
+        for file in data.file_list:
+            assert await file.read() == b"1"
+
+    with create_test_client([handler]) as client:
+        files_to_upload = [("file_list", b"1") for _ in range(file_count)]
+        response = client.post("/", files=files_to_upload)
+
+        assert response.status_code == HTTP_201_CREATED
+
+
 def test_optional_formdata() -> None:
     @post("/", signature_types=[UploadFile])
     async def hello_world(data: Optional[UploadFile] = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
