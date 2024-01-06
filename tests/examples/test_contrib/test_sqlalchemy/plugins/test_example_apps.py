@@ -9,6 +9,8 @@ from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
 from litestar.testing import TestClient
 
+pytestmark = pytest.mark.xdist_group("sqlalchemy_examples")
+
 
 @pytest.fixture
 def data() -> list[dict[str, Any]]:
