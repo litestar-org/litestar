@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
+from typing import Generator
 from unittest.mock import AsyncMock
 
 import pytest
@@ -19,7 +20,7 @@ from litestar.concurrency import (
 
 
 @pytest.fixture(autouse=True)
-def reset_state() -> None:
+def reset_state() -> Generator[None, None, None]:
     _State.LIMITER = None
     _State.EXECUTOR = None
     yield
