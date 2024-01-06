@@ -13,6 +13,7 @@ class CompressionFacade(Protocol):
     """A unified facade offering a uniform interface for different compression libraries."""
 
     encoding: ClassVar[str]
+    """The encoding of the compression."""
 
     def __init__(
         self, buffer: BytesIO, compression_encoding: CompressionEncoding | str, config: CompressionConfig
