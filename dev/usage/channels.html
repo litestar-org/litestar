@@ -1258,6 +1258,8 @@ document.write(`
 <li class="toctree-l4"><a class="reference internal" href="../reference/channels/backends/base.html">base</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/channels/backends/memory.html">memory</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/channels/backends/redis.html">redis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/channels/backends/psycopg.html">psycopg</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/channels/backends/asyncpg.html">asyncpg</a></li>
 </ul>
 </li>
 </ul>
@@ -1284,6 +1286,7 @@ document.write(`
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/controller.html">controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/concurrency.html">cli</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/data_extractors.html">data_extractors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/datastructures.html">datastructures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/di.html">di</a></li>
@@ -1909,6 +1912,12 @@ generally recommended if history is not needed</p>
 to deliver messages. It has a slightly higher latency when publishing than the
 Pub/Sub backend, but achieves the same throughput in message fanout. Recommended
 when history is needed</p>
+</dd>
+<dt><a class="reference internal" href="../reference/channels/backends/asyncpg.html#litestar.channels.backends.asyncpg.AsyncPgChannelsBackend" title="litestar.channels.backends.asyncpg.AsyncPgChannelsBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncPgChannelsBackend</span></code></a></dt><dd><p>A postgres backend using the
+<a class="reference external" href="https://magicstack.github.io/asyncpg/current/">asyncpg</a> driver</p>
+</dd>
+<dt><a class="reference internal" href="../reference/channels/backends/psycopg.html#litestar.channels.backends.psycopg.PsycoPgChannelsBackend" title="litestar.channels.backends.psycopg.PsycoPgChannelsBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">PsycoPgChannelsBackend</span></code></a></dt><dd><p>A postgres backend using the <a class="reference external" href="https://www.psycopg.org/psycopg3/docs/">psycopg3</a>
+async driver</p>
 </dd>
 </dl>
 </section>
