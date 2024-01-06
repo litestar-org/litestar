@@ -1,16 +1,15 @@
-from typing import Iterator, List, AsyncIterator, Any
+from typing import Any, AsyncIterator, Iterator, List
 
 import anyio
 import pytest
-
-from httpx_sse import aconnect_sse, ServerSentEvent as HTTPXServerSentEvent
+from httpx_sse import ServerSentEvent as HTTPXServerSentEvent
+from httpx_sse import aconnect_sse
 
 from litestar import get
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.response import ServerSentEvent
 from litestar.response.sse import ServerSentEventMessage
 from litestar.testing import create_async_test_client
-from litestar.utils.compat import async_next
 
 
 async def test_sse_steaming_response() -> None:
