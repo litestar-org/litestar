@@ -221,7 +221,7 @@ def test_dont_recompress_cached(backend: Literal["gzip", "brotli"], compression_
     assert int(response.headers["Content-Length"]) < 40000
 
 
-def test_compression_with_unsupported_backend(handler: HTTPRouteHandler) -> None:
+def test_compression_with_custom_backend(handler: HTTPRouteHandler) -> None:
     class ZlibCompression(CompressionFacade):
         encoding = "deflate"
 
