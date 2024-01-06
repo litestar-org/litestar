@@ -97,4 +97,4 @@ async def test_various_sse_inputs(input: str, expected_events: List[HTTPXServerS
 
 def test_invalid_content_type_raises() -> None:
     with pytest.raises(ImproperlyConfiguredException):
-        ServerSentEvent(content=object())
+        ServerSentEvent(content=object())  # type: ignore[arg-type]
