@@ -1256,6 +1256,8 @@ document.write(`
 <li class="toctree-l4"><a class="reference internal" href="../../reference/channels/backends/base.html">base</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/channels/backends/memory.html">memory</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../../reference/channels/backends/redis.html">redis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/channels/backends/psycopg.html">psycopg</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../reference/channels/backends/asyncpg.html">asyncpg</a></li>
 </ul>
 </li>
 </ul>
@@ -1282,6 +1284,7 @@ document.write(`
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/controller.html">controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/concurrency.html">cli</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/data_extractors.html">data_extractors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/datastructures.html">datastructures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/di.html">di</a></li>
@@ -1847,19 +1850,17 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="hll"><span class="linenos"> 3</span><span class="n">TodoType</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
 </span><span class="hll"><span class="linenos"> 4</span><span class="n">TodoCollectionType</span> <span class="o">=</span> <span class="n">List</span><span class="p">[</span><span class="n">TodoType</span><span class="p">]</span>
 </span><span class="linenos"> 5</span>
-<span class="hll"><span class="linenos"> 6</span><span class="n">sessionmaker</span> <span class="o">=</span> <span class="n">async_sessionmaker</span><span class="p">(</span><span class="n">expire_on_commit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span class="linenos"> 7</span>
-<span class="linenos"> 8</span>
-<span class="linenos"> 9</span><span class="k">def</span> <span class="nf">serialize_todo</span><span class="p">(</span><span class="n">todo</span><span class="p">:</span> <span class="n">TodoItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TodoType</span><span class="p">:</span>
-<span class="linenos">10</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">sessionmaker</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="n">state</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
-<span class="hll"><span class="linenos">11</span>        <span class="n">todo_item</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_todo_by_title</span><span class="p">(</span><span class="n">item_title</span><span class="p">,</span> <span class="n">session</span><span class="p">)</span>
-</span><span class="linenos">12</span>        <span class="n">todo_item</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span>
-<span class="linenos">13</span>        <span class="n">todo_item</span><span class="o">.</span><span class="n">done</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;done&quot;</span><span class="p">]</span>
-<span class="linenos">14</span>    <span class="k">return</span> <span class="n">serialize_todo</span><span class="p">(</span><span class="n">todo_item</span><span class="p">)</span>
-<span class="linenos">15</span>
-<span class="linenos">16</span>
-<span class="linenos">17</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">get_list</span><span class="p">,</span> <span class="n">add_item</span><span class="p">,</span> <span class="n">update_item</span><span class="p">],</span> <span class="n">lifespan</span><span class="o">=</span><span class="p">[</span><span class="n">db_connection</span><span class="p">])</span>
-</pre></div>
+<span class="hll"><span class="linenos"> 6</span><span class="k">def</span> <span class="nf">serialize_todo</span><span class="p">(</span><span class="n">todo</span><span class="p">:</span> <span class="n">TodoItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TodoType</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 7</span>    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="n">todo</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="s2">&quot;done&quot;</span><span class="p">:</span> <span class="n">todo</span><span class="o">.</span><span class="n">done</span><span class="p">}</span>
+</span><span class="linenos"> 8</span>
+<span class="linenos"> 9</span><span class="nd">@put</span><span class="p">(</span><span class="s2">&quot;/{item_title:str}&quot;</span><span class="p">)</span>
+<span class="hll"><span class="linenos">10</span><span class="k">async</span> <span class="k">def</span> <span class="nf">update_item</span><span class="p">(</span><span class="n">item_title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">TodoType</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TodoType</span><span class="p">:</span>
+</span><span class="linenos">11</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">sessionmaker</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="n">state</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
+<span class="linenos">12</span>        <span class="n">todo_item</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_todo_by_title</span><span class="p">(</span><span class="n">item_title</span><span class="p">,</span> <span class="n">session</span><span class="p">)</span>
+<span class="linenos">13</span>        <span class="n">todo_item</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span>
+<span class="linenos">14</span>        <span class="n">todo_item</span><span class="o">.</span><span class="n">done</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;done&quot;</span><span class="p">]</span>
+<span class="hll"><span class="linenos">15</span>    <span class="k">return</span> <span class="n">serialize_todo</span><span class="p">(</span><span class="n">todo_item</span><span class="p">)</span>
+</span></pre></div>
 </div>
 </div>
 <input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
@@ -1870,19 +1871,17 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="hll"><span class="linenos"> 3</span><span class="n">TodoType</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span>
 </span><span class="hll"><span class="linenos"> 4</span><span class="n">TodoCollectionType</span> <span class="o">=</span> <span class="nb">list</span><span class="p">[</span><span class="n">TodoType</span><span class="p">]</span>
 </span><span class="linenos"> 5</span>
-<span class="hll"><span class="linenos"> 6</span><span class="n">sessionmaker</span> <span class="o">=</span> <span class="n">async_sessionmaker</span><span class="p">(</span><span class="n">expire_on_commit</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span class="linenos"> 7</span>
-<span class="linenos"> 8</span>
-<span class="linenos"> 9</span><span class="k">def</span> <span class="nf">serialize_todo</span><span class="p">(</span><span class="n">todo</span><span class="p">:</span> <span class="n">TodoItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TodoType</span><span class="p">:</span>
-<span class="linenos">10</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">sessionmaker</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="n">state</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
-<span class="hll"><span class="linenos">11</span>        <span class="n">todo_item</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_todo_by_title</span><span class="p">(</span><span class="n">item_title</span><span class="p">,</span> <span class="n">session</span><span class="p">)</span>
-</span><span class="linenos">12</span>        <span class="n">todo_item</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span>
-<span class="linenos">13</span>        <span class="n">todo_item</span><span class="o">.</span><span class="n">done</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;done&quot;</span><span class="p">]</span>
-<span class="linenos">14</span>    <span class="k">return</span> <span class="n">serialize_todo</span><span class="p">(</span><span class="n">todo_item</span><span class="p">)</span>
-<span class="linenos">15</span>
-<span class="linenos">16</span>
-<span class="linenos">17</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">get_list</span><span class="p">,</span> <span class="n">add_item</span><span class="p">,</span> <span class="n">update_item</span><span class="p">],</span> <span class="n">lifespan</span><span class="o">=</span><span class="p">[</span><span class="n">db_connection</span><span class="p">])</span>
-</pre></div>
+<span class="hll"><span class="linenos"> 6</span><span class="k">def</span> <span class="nf">serialize_todo</span><span class="p">(</span><span class="n">todo</span><span class="p">:</span> <span class="n">TodoItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TodoType</span><span class="p">:</span>
+</span><span class="hll"><span class="linenos"> 7</span>    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="n">todo</span><span class="o">.</span><span class="n">title</span><span class="p">,</span> <span class="s2">&quot;done&quot;</span><span class="p">:</span> <span class="n">todo</span><span class="o">.</span><span class="n">done</span><span class="p">}</span>
+</span><span class="linenos"> 8</span>
+<span class="linenos"> 9</span><span class="nd">@put</span><span class="p">(</span><span class="s2">&quot;/{item_title:str}&quot;</span><span class="p">)</span>
+<span class="hll"><span class="linenos">10</span><span class="k">async</span> <span class="k">def</span> <span class="nf">update_item</span><span class="p">(</span><span class="n">item_title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">TodoType</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TodoType</span><span class="p">:</span>
+</span><span class="linenos">11</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">sessionmaker</span><span class="p">(</span><span class="n">bind</span><span class="o">=</span><span class="n">state</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span> <span class="k">as</span> <span class="n">session</span><span class="p">,</span> <span class="n">session</span><span class="o">.</span><span class="n">begin</span><span class="p">():</span>
+<span class="linenos">12</span>        <span class="n">todo_item</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_todo_by_title</span><span class="p">(</span><span class="n">item_title</span><span class="p">,</span> <span class="n">session</span><span class="p">)</span>
+<span class="linenos">13</span>        <span class="n">todo_item</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span>
+<span class="linenos">14</span>        <span class="n">todo_item</span><span class="o">.</span><span class="n">done</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;done&quot;</span><span class="p">]</span>
+<span class="hll"><span class="linenos">15</span>    <span class="k">return</span> <span class="n">serialize_todo</span><span class="p">(</span><span class="n">todo_item</span><span class="p">)</span>
+</span></pre></div>
 </div>
 </div>
 </div>

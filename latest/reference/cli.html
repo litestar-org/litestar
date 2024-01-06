@@ -52,7 +52,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="config" href="config.html" />
-    <link rel="prev" title="redis" href="channels/backends/redis.html" />
+    <link rel="prev" title="asyncpg" href="channels/backends/asyncpg.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -1256,6 +1256,8 @@ document.write(`
 <li class="toctree-l4"><a class="reference internal" href="channels/backends/base.html">base</a></li>
 <li class="toctree-l4"><a class="reference internal" href="channels/backends/memory.html">memory</a></li>
 <li class="toctree-l4"><a class="reference internal" href="channels/backends/redis.html">redis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="channels/backends/psycopg.html">psycopg</a></li>
+<li class="toctree-l4"><a class="reference internal" href="channels/backends/asyncpg.html">asyncpg</a></li>
 </ul>
 </li>
 </ul>
@@ -1282,6 +1284,7 @@ document.write(`
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="controller.html">controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="concurrency.html">cli</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data_extractors.html">data_extractors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="datastructures.html">datastructures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="di.html">di</a></li>
@@ -1540,6 +1543,19 @@ document.write(`
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>litestar<span class="w"> </span>routes<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 </pre></div>
 </div>
+<p class="rubric">Options</p>
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-litestar-routes-schema">
+<span class="sig-name descname"><span class="pre">--schema</span></span><span class="sig-prename descclassname"></span><a class="headerlink" href="#cmdoption-litestar-routes-schema" title="Permalink to this definition">#</a></dt>
+<dd><p>Include schema routes</p>
+</dd></dl>
+
+<dl class="std option">
+<dt class="sig sig-object std" id="cmdoption-litestar-routes-exclude">
+<span class="sig-name descname"><span class="pre">--exclude</span></span><span class="sig-prename descclassname"> <span class="pre">&lt;exclude&gt;</span></span><a class="headerlink" href="#cmdoption-litestar-routes-exclude" title="Permalink to this definition">#</a></dt>
+<dd><p>routes to exclude via regex</p>
+</dd></dl>
+
 </section>
 <section id="litestar-run">
 <h3>run<a class="headerlink" href="#litestar-run" title="Permalink to this heading">#</a></h3>
@@ -1748,12 +1764,12 @@ instance.</p>
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="channels/backends/redis.html"
+       href="channels/backends/asyncpg.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">redis</p>
+        <p class="prev-next-title">asyncpg</p>
       </div>
     </a>
     <a class="right-next"

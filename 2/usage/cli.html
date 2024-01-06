@@ -1256,6 +1256,8 @@ document.write(`
 <li class="toctree-l4"><a class="reference internal" href="../reference/channels/backends/base.html">base</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/channels/backends/memory.html">memory</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/channels/backends/redis.html">redis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/channels/backends/psycopg.html">psycopg</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/channels/backends/asyncpg.html">asyncpg</a></li>
 </ul>
 </li>
 </ul>
@@ -1282,6 +1284,7 @@ document.write(`
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/controller.html">controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/concurrency.html">cli</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/data_extractors.html">data_extractors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/datastructures.html">datastructures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/di.html">di</a></li>
@@ -1705,7 +1708,25 @@ If the files are found, they will be reused.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>litestar<span class="w"> </span>routes
 </pre></div>
 </div>
+<section id="id3">
+<h4>Options<a class="headerlink" href="#id3" title="Permalink to this heading">#</a></h4>
+<table class="table">
+<thead>
+<tr class="row-odd"><th class="head"><p>Flag</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">--schema</span></code></p></td>
+<td><p>Include default auto generated openAPI schema routes</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--exclude</span></code></p></td>
+<td><p>Exclude endpoints from query with given regex patterns. Multiple excludes allowed. e.g., <code class="docutils literal notranslate"><span class="pre">litestar</span> <span class="pre">routes</span>&#160; <span class="pre">--schema</span> <span class="pre">--exclude=routes/.*</span> <span class="pre">--exclude=[]</span></code></p></td>
+</tr>
+</tbody>
+</table>
 <img alt="litestar info" src="../_images/litestar_routes.png" />
+</section>
 </section>
 <section id="sessions">
 <h3>sessions<a class="headerlink" href="#sessions" title="Permalink to this heading">#</a></h3>
@@ -1797,8 +1818,8 @@ setup.py</label><div class="sd-tab-content docutils">
 <input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" for="sd-tab-item-1">
 pdm</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://pdm.fming.dev/">PDM</a></span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://pdm.fming.dev/">PDM</a></span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
 <div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[project.scripts]</span>
 <span class="n">my_command</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;my_litestar_plugin.cli:main&quot;</span>
 
@@ -1813,8 +1834,8 @@ pdm</label><div class="sd-tab-content docutils">
 <input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" for="sd-tab-item-2">
 Poetry</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://python-poetry.org/">Poetry</a></span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://python-poetry.org/">Poetry</a></span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
 <div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[tool.poetry.plugins.</span><span class="s2">&quot;litestar.commands&quot;</span><span class="k">]</span>
 <span class="n">my_command</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;my_litestar_plugin.cli:main&quot;</span>
 </pre></div>
@@ -1932,7 +1953,10 @@ You can achieve this by adding the special <code class="docutils literal notrans
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#info">info</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#routes">routes</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#routes">routes</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#id3">Options</a></li>
+</ul>
+</li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sessions">sessions</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#delete">delete</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#clear">clear</a></li>

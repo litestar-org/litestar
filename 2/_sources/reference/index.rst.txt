@@ -14,6 +14,7 @@ API reference
     connection
     contrib/index
     controller
+    concurrency
     data_extractors
     datastructures
     di
