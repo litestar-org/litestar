@@ -23,7 +23,10 @@ class CompressionConfig:
     """
 
     backend: Literal["gzip", "brotli"] | str
-    """Literal of "gzip" or "brotli"."""
+    """The backend to use.
+
+    If the value given is `gzip` or `brotli`, then the builtin gzip and brotli compression is used.
+    """
     minimum_size: int = field(default=500)
     """Minimum response size (bytes) to enable compression, affects all backends."""
     gzip_compress_level: int = field(default=9)
