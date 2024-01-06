@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Any, Literal
 from litestar.datastructures import Headers, MutableScopeHeaders
 from litestar.enums import CompressionEncoding, ScopeType
 from litestar.middleware.base import AbstractMiddleware
-from litestar.middleware.compression.brotli_facade import BrotliCompression
 from litestar.middleware.compression.gzip_facade import GzipCompression
 from litestar.utils.empty import value_or_default
 from litestar.utils.scope.state import ScopeState
@@ -102,14 +101,14 @@ class CompressionMiddleware(AbstractMiddleware):
         """
         bytes_buffer = BytesIO()
 
-        # We can't just do `self.config.facade` here since `gzip` might be used as a fallback,
-        # but the config has no way of knowing whether it's the fallback that's being used or not.
-        if compression_encoding == CompressionEncoding.BROTLI:
-            facade = BrotliCompression(
+        # We can't use `self.config.compression_facade` directly if the compression is `gzip` since
+        # it may be being used as a fallback.
+        if compression_encoding == CompressionEncoding.GZIP:
+            facade = GzipCompression(buffer=bytes_buffer, compression_encoding=compression_encoding, config=self.config)
+        else:
+            facade = self.config.compression_facade(
                 buffer=bytes_buffer, compression_encoding=compression_encoding, config=self.config
             )
-        elif compression_encoding == CompressionEncoding.GZIP:
-            facade = GzipCompression(buffer=bytes_buffer, compression_encoding=compression_encoding, config=self.config)
 
         initial_message: HTTPResponseStartEvent | None = None
         started = False

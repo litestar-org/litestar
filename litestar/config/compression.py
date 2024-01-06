@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Any, Literal
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.middleware.compression import CompressionMiddleware
@@ -22,7 +22,7 @@ class CompressionConfig:
     using the ``compression_config`` key.
     """
 
-    backend: Literal["gzip", "brotli"]
+    backend: Literal["gzip", "brotli"] | str
     """Literal of "gzip" or "brotli"."""
     minimum_size: int = field(default=500)
     """Minimum response size (bytes) to enable compression, affects all backends."""
@@ -55,6 +55,8 @@ class CompressionConfig:
     """An identifier to use on routes to disable compression for a particular route."""
     compression_facade: type[CompressionFacade] = GzipCompression
     """The compression facade to use for the actual compression."""
+    backend_config: Any = None
+    """Configuration specific to the backend."""
 
     def __post_init__(self) -> None:
         if self.minimum_size <= 0:
@@ -63,11 +65,11 @@ class CompressionConfig:
         if self.gzip_compress_level < 0 or self.gzip_compress_level > 9:
             raise ImproperlyConfiguredException("gzip_compress_level must be a value between 0 and 9")
 
-        if self.brotli_quality < 0 or self.brotli_quality > 11:
-            raise ImproperlyConfiguredException("brotli_quality must be a value between 0 and 11")
-
-        if self.brotli_lgwin < 10 or self.brotli_lgwin > 24:
-            raise ImproperlyConfiguredException("brotli_lgwin must be a value between 10 and 24")
-
         if self.backend == "brotli":
+            if self.brotli_quality < 0 or self.brotli_quality > 11:
+                raise ImproperlyConfiguredException("brotli_quality must be a value between 0 and 11")
+
+            if self.brotli_lgwin < 10 or self.brotli_lgwin > 24:
+                raise ImproperlyConfiguredException("brotli_lgwin must be a value between 10 and 24")
+
             self.compression_facade = BrotliCompression
