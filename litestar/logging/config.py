@@ -100,7 +100,7 @@ def _default_exception_logging_handler_factory(
 
         if is_struct_logger:
             logger.exception(
-                "uncaught exception",
+                "Uncaught Exception",
                 connection_type=scope["type"],
                 path=scope["path"],
                 traceback="".join(tb[-traceback_line_limit:]),
