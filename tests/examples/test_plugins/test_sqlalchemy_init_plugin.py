@@ -1,8 +1,11 @@
 from __future__ import annotations
 
+import pytest
 from _pytest.monkeypatch import MonkeyPatch
 
 from litestar.testing import TestClient
+
+pytestmark = pytest.mark.xdist_group("sqlalchemy_examples")
 
 
 def test_sync_app(monkeypatch: MonkeyPatch) -> None:
