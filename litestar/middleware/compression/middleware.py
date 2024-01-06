@@ -69,9 +69,7 @@ class CompressionMiddleware(AbstractMiddleware):
             )
             return
 
-        if CompressionEncoding.GZIP in accept_encoding and (
-            config.backend == "gzip" or (config.backend == "brotli" and config.brotli_gzip_fallback)
-        ):
+        if config.gzip_fallback and CompressionEncoding.GZIP in accept_encoding:
             await self.app(
                 scope,
                 receive,

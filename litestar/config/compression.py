@@ -57,19 +57,22 @@ class CompressionConfig:
     """The compression facade to use for the actual compression."""
     backend_config: Any = None
     """Configuration specific to the backend."""
+    gzip_fallback: bool = True
+    """Use GZIP as a fallback if the provided backend is not supported by the client."""
 
     def __post_init__(self) -> None:
         if self.minimum_size <= 0:
             raise ImproperlyConfiguredException("minimum_size must be greater than 0")
 
-        if self.gzip_compress_level < 0 or self.gzip_compress_level > 9:
-            raise ImproperlyConfiguredException("gzip_compress_level must be a value between 0 and 9")
-
-        if self.backend == "brotli":
+        if self.backend == "gzip":
+            if self.gzip_compress_level < 0 or self.gzip_compress_level > 9:
+                raise ImproperlyConfiguredException("gzip_compress_level must be a value between 0 and 9")
+        elif self.backend == "brotli":
             if self.brotli_quality < 0 or self.brotli_quality > 11:
                 raise ImproperlyConfiguredException("brotli_quality must be a value between 0 and 11")
 
             if self.brotli_lgwin < 10 or self.brotli_lgwin > 24:
                 raise ImproperlyConfiguredException("brotli_lgwin must be a value between 10 and 24")
 
+            self.gzip_fallback = self.brotli_gzip_fallback
             self.compression_facade = BrotliCompression
