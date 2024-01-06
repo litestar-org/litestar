@@ -12,6 +12,7 @@ from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
     from litestar.config.compression import CompressionConfig
+    from litestar.middleware.compression.facade import CompressionFacade
     from litestar.types import (
         ASGIApp,
         HTTPResponseStartEvent,
@@ -99,6 +100,7 @@ class CompressionMiddleware(AbstractMiddleware):
         """
         bytes_buffer = BytesIO()
 
+        facade: CompressionFacade
         # We can't use `self.config.compression_facade` directly if the compression is `gzip` since
         # it may be being used as a fallback.
         if compression_encoding == CompressionEncoding.GZIP:
