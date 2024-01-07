@@ -19,7 +19,7 @@ exclude the ``email`` field from the DTO, but there are many other configuration
 of them in this tutorial.
 
 The :class:`DataclassDTO <litestar.dto.dataclass_dto.DataclassDTO>` class is a factory class that specializes
-in creating DTOs from dataclasses. It is also a :class:`Generic <typing.Generic>` class, which means that it it accepts
+in creating DTOs from dataclasses. It is also a :class:`Generic <typing.Generic>` class, which means that it accepts
 a type parameter. When we provide a type parameter to a generic class it makes that class a specialized version of the
 generic class. In this case, we create a DTO type that specializes in transferring data to and from instances of the
 ``Person`` class (``DataclassDTO[Person]``).
