@@ -1,16 +1,18 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import PurePath  # noqa: TCH003
 from typing import TYPE_CHECKING, Any
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.file_system import BaseLocalFileSystem
-from litestar.handlers import asgi
+from litestar.handlers import asgi, get, head
+from litestar.response.file import ASGIFileResponse  # noqa: TCH001
+from litestar.router import Router
 from litestar.static_files.base import StaticFiles
 from litestar.utils import normalize_path
 
 __all__ = ("StaticFilesConfig",)
-
 
 if TYPE_CHECKING:
     from litestar.handlers.asgi_handlers import ASGIRouteHandler
@@ -58,20 +60,7 @@ class StaticFilesConfig:
     """Whether to send the file as an attachment."""
 
     def __post_init__(self) -> None:
-        if not self.path:
-            raise ImproperlyConfiguredException("path must be a non-zero length string,")
-
-        if not self.directories or not any(bool(d) for d in self.directories):
-            raise ImproperlyConfiguredException("directories must include at least one path.")
-
-        if "{" in self.path:
-            raise ImproperlyConfiguredException("path parameters are not supported for static files")
-
-        if not (
-            callable(getattr(self.file_system, "info", None)) and callable(getattr(self.file_system, "open", None))
-        ):
-            raise ImproperlyConfiguredException("file_system must adhere to the FileSystemProtocol type")
-
+        _validate_config(path=self.path, directories=self.directories, file_system=self.file_system)
         self.path = normalize_path(self.path)
 
     def to_static_files_app(self) -> ASGIRouteHandler:
@@ -94,3 +83,85 @@ class StaticFilesConfig:
             guards=self.guards,
             exception_handlers=self.exception_handlers,
         )(static_files)
+
+
+def create_static_router(
+    path: str,
+    directories: list[PathType],
+    html_mode: bool = False,
+    name: str | None = None,
+    file_system: Any = None,
+    opt: dict[str, Any] | None = None,
+    guards: list[Guard] | None = None,
+    exception_handlers: ExceptionHandlersMap | None = None,
+    send_as_attachment: bool = False,
+) -> Router:
+    """Create a router with handlers to serve static files.
+
+    Args:
+        path: Path to serve static files under
+        directories: Directories to serve static files from
+        html_mode: When in HTML:
+            - Serve an ``index.html`` file from ``/``
+            - Serve ``404.html`` when a file could not be found
+        file_system: A *file system* implementing
+            :class:`~litestar.types.FileSystemProtocol`.
+            `fsspec <https://filesystem-spec.readthedocs.io/en/latest/>`_ can be passed
+            here as well
+        send_as_attachment: Whether to send the file as an attachment
+        name: Name to pass to the generated handlers
+        opt: Opts passed to the generated route handlers
+        exception_handlers: Exception handlers passed to the generated route handlers
+        guards: Guards passed to the generated route handlers
+    """
+
+    if file_system is None:
+        file_system = BaseLocalFileSystem()
+    _validate_config(path=path, directories=directories, file_system=file_system)
+    path = normalize_path(path)
+    static_files = StaticFiles(
+        is_html_mode=html_mode,
+        directories=directories,
+        file_system=file_system,
+        send_as_attachment=send_as_attachment,
+    )
+
+    @get("{file_path:path}", name=name)
+    async def get_handler(file_path: PurePath) -> ASGIFileResponse:
+        return await static_files.handle(path=str(file_path), is_head_response=False)
+
+    @head("/{file_path:path}", name=f"{name}/head")
+    async def head_handler(file_path: PurePath) -> ASGIFileResponse:
+        return await static_files.handle(path=str(file_path), is_head_response=True)
+
+    handlers = [get_handler, head_handler]
+
+    if html_mode:
+
+        @get("/", name=f"{name}/index")
+        async def index_handler() -> ASGIFileResponse:
+            return await static_files.handle(path="/", is_head_response=False)
+
+        handlers.append(index_handler)
+
+    return Router(
+        path=path,
+        route_handlers=handlers,
+        opt=opt,
+        guards=guards,
+        exception_handlers=exception_handlers,
+    )
+
+
+def _validate_config(path: str, directories: list[PathType], file_system: Any) -> None:
+    if not path:
+        raise ImproperlyConfiguredException("path must be a non-zero length string,")
+
+    if not directories or not any(bool(d) for d in directories):
+        raise ImproperlyConfiguredException("directories must include at least one path.")
+
+    if "{" in path:
+        raise ImproperlyConfiguredException("path parameters are not supported for static files")
+
+    if not (callable(getattr(file_system, "info", None)) and callable(getattr(file_system, "open", None))):
+        raise ImproperlyConfiguredException("file_system must adhere to the FileSystemProtocol type")

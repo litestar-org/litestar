@@ -82,7 +82,11 @@ class StaticFiles:
         if scope["type"] != ScopeType.HTTP or scope["method"] not in {"GET", "HEAD"}:
             raise MethodNotAllowedException()
 
-        split_path = scope["path"].split("/")
+        res = await self.handle(path=scope["path"], is_head_response=scope["method"] == "HEAD")
+        await res(scope=scope, receive=receive, send=send)
+
+    async def handle(self, path: str, is_head_response: bool) -> ASGIFileResponse:
+        split_path = path.split("/")
         filename = split_path[-1]
         joined_path = Path(*split_path)
         resolved_path, fs_info = await self.get_fs_info(directories=self.directories, file_path=joined_path)
@@ -98,15 +102,14 @@ class StaticFiles:
             )
 
         if fs_info and fs_info["type"] == "file":
-            await ASGIFileResponse(
+            return ASGIFileResponse(
                 file_path=resolved_path or joined_path,
                 file_info=fs_info,
                 file_system=self.adapter.file_system,
                 filename=filename,
                 content_disposition_type=content_disposition_type,
-                is_head_response=scope["method"] == "HEAD",
-            )(scope, receive, send)
-            return
+                is_head_response=is_head_response,
+            )
 
         if self.is_html_mode:
             # for some reason coverage doesn't catch these two lines
@@ -116,16 +119,15 @@ class StaticFiles:
             )
 
             if fs_info and fs_info["type"] == "file":
-                await ASGIFileResponse(
+                return ASGIFileResponse(
                     file_path=resolved_path or joined_path,
                     file_info=fs_info,
                     file_system=self.adapter.file_system,
                     filename=filename,
                     status_code=HTTP_404_NOT_FOUND,
                     content_disposition_type=content_disposition_type,
-                    is_head_response=scope["method"] == "HEAD",
-                )(scope, receive, send)
-                return
+                    is_head_response=is_head_response,
+                )
 
         raise NotFoundException(
             f"no file or directory match the path {resolved_path or joined_path} was found"
