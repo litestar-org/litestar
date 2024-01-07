@@ -62,9 +62,7 @@ class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
         else:
             raise ImproperlyConfiguredException(f"Invalid type {type(content)} for ServerSentEvent")
 
-    def ensure_bytes(self, data: bytes | dict | ServerSentEventMessage | Any, sep: str) -> bytes:
-        if isinstance(data, bytes):
-            return data
+    def ensure_bytes(self, data: str | int | bytes | dict | ServerSentEventMessage | Any, sep: str) -> bytes:
         if isinstance(data, ServerSentEventMessage):
             return data.encode()
         if isinstance(data, dict):
@@ -72,7 +70,7 @@ class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
             return ServerSentEventMessage(**data).encode()
 
         return ServerSentEventMessage(
-            data=str(data), id=self.event_id, event=self.event_type, retry=self.retry_duration, sep=sep
+            data=data, id=self.event_id, event=self.event_type, retry=self.retry_duration, sep=sep
         ).encode()
 
     def _call_next(self) -> bytes:
@@ -93,7 +91,7 @@ class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
 
 @dataclass
 class ServerSentEventMessage:
-    data: Any | None = None
+    data: str | int | bytes | None = None
     event: str | None = None
     id: int | str | None = None
     retry: int | None = None
@@ -116,13 +114,12 @@ class ServerSentEventMessage:
             buffer.write(self.sep)
 
         if self.data is not None:
-            for chunk in _LINE_BREAK_RE.split(str(self.data)):
+            data = self.data
+            for chunk in _LINE_BREAK_RE.split(data.decode() if isinstance(data, bytes) else str(data)):
                 buffer.write(f"data: {chunk}")
                 buffer.write(self.sep)
 
         if self.retry is not None:
-            if not isinstance(self.retry, int):
-                raise TypeError("retry argument must be int")
             buffer.write(f"retry: {self.retry}")
             buffer.write(self.sep)
 
