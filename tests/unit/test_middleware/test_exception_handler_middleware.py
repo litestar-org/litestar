@@ -233,7 +233,7 @@ def test_exception_handler_struct_logging(
             assert cap_logs[0].get("connection_type") == "http"
             assert cap_logs[0].get("path") == "/test"
             assert cap_logs[0].get("traceback")
-            assert cap_logs[0].get("event") == "uncaught exception"
+            assert cap_logs[0].get("event") == "Uncaught Exception"
             assert cap_logs[0].get("log_level") == "error"
         else:
             assert not cap_logs
