@@ -148,7 +148,7 @@ def test_sub_path_under_static_path(tmpdir: Path, make_config: MakeConfig) -> No
         return f
 
     configs, handlers = make_config(StaticFilesConfig(path="/static", directories=[tmpdir]))
-    handlers.append(handler)
+    handlers.append(handler)  # type: ignore[arg-type]
 
     with create_test_client(handlers, static_files_config=configs) as client:
         response = client.get("/static/test.txt")

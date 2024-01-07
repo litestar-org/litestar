@@ -1,5 +1,7 @@
-from litestar import Litestar
+from litestar import Litestar, Request, Response
+from litestar.connection import ASGIConnection
 from litestar.exceptions import ValidationException
+from litestar.handlers import BaseRouteHandler
 from litestar.static_files import create_static_router
 
 
@@ -16,7 +18,7 @@ def test_opt() -> None:
 
 
 def test_guards() -> None:
-    def guard():
+    def guard(connection: ASGIConnection, handler: BaseRouteHandler) -> None:
         pass
 
     router = create_static_router(path="/", directories=["something"], guards=[guard])
@@ -25,11 +27,11 @@ def test_guards() -> None:
 
 
 def test_exception_handlers() -> None:
-    def handle():
-        pass
+    def handle(request: Request, exception: Exception) -> Response:
+        return Response(b"")
 
     exception_handlers = {ValidationException: handle}
 
-    router = create_static_router(path="/", directories=["something"], exception_handlers=exception_handlers)
+    router = create_static_router(path="/", directories=["something"], exception_handlers=exception_handlers)  # type: ignore[arg-type]
 
     assert router.exception_handlers == exception_handlers

@@ -28,4 +28,4 @@ def make_config(request: FixtureRequest) -> MakeConfig:
 
 @pytest.fixture(params=[BaseLocalFileSystem(), LocalFileSystem()])
 def file_system(request: FixtureRequest) -> FileSystemProtocol:
-    return request.param
+    return request.param  # type: ignore[no-any-return]
