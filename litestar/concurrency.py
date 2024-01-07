@@ -47,13 +47,13 @@ async def _run_sync_trio(fn: Callable[P, T], *args: P.args, **kwargs: P.kwargs) 
 async def sync_to_thread(fn: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> T:
     """Run the synchronous callable ``fn`` asynchronously in a worker thread.
 
-    When called from asyncio, uses :meth:`asyncio.AbstractEventLoop.run_in_executor` to
+    When called from asyncio, uses :meth:`asyncio.loop.run_in_executor` to
     run the callable. No executor is specified by default so the current loop's executor
     is used. A specific executor can be set using
     :func:`~litestar.concurrency.set_asyncio_executor`. This does not affect the loop's
     default executor.
 
-    When called from trio, uses :meth:`trio.to_thread.run_sync` to run the callable. No
+    When called from trio, uses :func:`trio.to_thread.run_sync` to run the callable. No
     capacity limiter is specified by default, but one can be set using
     :func:`~litestar.concurrency.set_trio_capacity_limiter`. This does not affect trio's
     default capacity limiter.

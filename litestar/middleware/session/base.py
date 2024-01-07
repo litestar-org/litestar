@@ -30,10 +30,10 @@ ConfigT = TypeVar("ConfigT", bound="BaseBackendConfig")
 BaseSessionBackendT = TypeVar("BaseSessionBackendT", bound="BaseSessionBackend")
 
 
-class BaseBackendConfig(ABC, Generic[BaseSessionBackendT]):
+class BaseBackendConfig(ABC, Generic[BaseSessionBackendT]):  # pyright: ignore
     """Configuration for Session middleware backends."""
 
-    _backend_class: type[BaseSessionBackendT]
+    _backend_class: type[BaseSessionBackendT]  # pyright: ignore
 
     key: str
     """Key to use for the cookie inside the header, e.g. ``session=<data>`` where ``session`` is the cookie key and

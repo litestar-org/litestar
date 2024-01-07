@@ -418,7 +418,7 @@ implemented are:
     `asyncpg <https://magicstack.github.io/asyncpg/current/>`_ driver
 
 
-:class:`PsycoPgChannelsBackend <.psycopg.AsyncPgChannelsBackend>`
+:class:`PsycoPgChannelsBackend <.psycopg.PsycoPgChannelsBackend>`
     A postgres backend using the `psycopg3 <https://www.psycopg.org/psycopg3/docs/>`_
     async driver
 
