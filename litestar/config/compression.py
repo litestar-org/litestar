@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Any, Literal
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.middleware.compression import CompressionMiddleware
-from litestar.middleware.compression.brotli_facade import BrotliCompression
 from litestar.middleware.compression.gzip_facade import GzipCompression
 
 if TYPE_CHECKING:
@@ -71,6 +70,9 @@ class CompressionConfig:
             if self.gzip_compress_level < 0 or self.gzip_compress_level > 9:
                 raise ImproperlyConfiguredException("gzip_compress_level must be a value between 0 and 9")
         elif self.backend == "brotli":
+            # Brotli is not guaranteed to be installed.
+            from litestar.middleware.compression.brotli_facade import BrotliCompression
+
             if self.brotli_quality < 0 or self.brotli_quality > 11:
                 raise ImproperlyConfiguredException("brotli_quality must be a value between 0 and 11")
 
