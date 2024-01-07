@@ -148,7 +148,7 @@ class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):
 
 
 @dataclass
-class ServerSideSessionConfig(BaseBackendConfig[ServerSideSessionBackend]):
+class ServerSideSessionConfig(BaseBackendConfig[ServerSideSessionBackend]):  # pyright: ignore
     """Base configuration for server side backends."""
 
     _backend_class = ServerSideSessionBackend

@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 class SessionAuth(Generic[UserType, BaseSessionBackendT], AbstractSecurityConfig[UserType, Dict[str, Any]]):
     """Session Based Security Backend."""
 
-    session_backend_config: BaseBackendConfig[BaseSessionBackendT]
+    session_backend_config: BaseBackendConfig[BaseSessionBackendT]  # pyright: ignore
     """A session backend config."""
     retrieve_user_handler: Callable[[Any, ASGIConnection], SyncOrAsyncUnion[Any | None]]
     """Callable that receives the ``auth`` value from the authentication middleware and returns a ``user`` value.
@@ -34,7 +34,7 @@ class SessionAuth(Generic[UserType, BaseSessionBackendT], AbstractSecurityConfig
 
     """
 
-    authentication_middleware_class: type[SessionAuthMiddleware] = field(default=SessionAuthMiddleware)
+    authentication_middleware_class: type[SessionAuthMiddleware] = field(default=SessionAuthMiddleware)  # pyright: ignore
     """The authentication middleware class to use.
 
     Must inherit from :class:`SessionAuthMiddleware <litestar.security.session_auth.middleware.SessionAuthMiddleware>`
@@ -105,7 +105,7 @@ class SessionAuth(Generic[UserType, BaseSessionBackendT], AbstractSecurityConfig
         Returns:
             A subclass of :class:`BaseSessionBackend <litestar.middleware.session.base.BaseSessionBackend>`
         """
-        return self.session_backend_config._backend_class(config=self.session_backend_config)
+        return self.session_backend_config._backend_class(config=self.session_backend_config)  # pyright: ignore
 
     @property
     def openapi_components(self) -> Components:

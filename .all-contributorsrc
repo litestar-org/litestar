@@ -1527,6 +1527,33 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "FergusMok",
+      "name": "FergusMok",
+      "avatar_url": "https://avatars.githubusercontent.com/u/10182564?v=4",
+      "profile": "https://github.com/FergusMok",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "manusinghal19",
+      "name": "Manu Singhal",
+      "avatar_url": "https://avatars.githubusercontent.com/u/8455587?v=4",
+      "profile": "https://github.com/manusinghal19",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "jrycw",
+      "name": "Jerry Wu",
+      "avatar_url": "https://avatars.githubusercontent.com/u/67060418?v=4",
+      "profile": "https://cv.ycwu.space",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,

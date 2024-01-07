@@ -539,6 +539,11 @@ see [the contribution guide](CONTRIBUTING.rst).
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/cbscsm"><img src="https://avatars.githubusercontent.com/u/31615733?v=4?s=100" width="100px;" alt="Boseong Choi"/><br /><sub><b>Boseong Choi</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=cbscsm" title="Code">💻</a> <a href="https://github.com/litestar-org/litestar/commits?author=cbscsm" title="Tests">⚠️</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/wer153"><img src="https://avatars.githubusercontent.com/u/23370765?v=4?s=100" width="100px;" alt="Kim Minki"/><br /><sub><b>Kim Minki</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=wer153" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://velog.io/@azzurri21"><img src="https://avatars.githubusercontent.com/u/86508420?v=4?s=100" width="100px;" alt="Jeongseop Lim"/><br /><sub><b>Jeongseop Lim</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=jseop-lim" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/FergusMok"><img src="https://avatars.githubusercontent.com/u/10182564?v=4?s=100" width="100px;" alt="FergusMok"/><br /><sub><b>FergusMok</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=FergusMok" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/manusinghal19"><img src="https://avatars.githubusercontent.com/u/8455587?v=4?s=100" width="100px;" alt="Manu Singhal"/><br /><sub><b>Manu Singhal</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=manusinghal19" title="Documentation">📖</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://cv.ycwu.space"><img src="https://avatars.githubusercontent.com/u/67060418?v=4?s=100" width="100px;" alt="Jerry Wu"/><br /><sub><b>Jerry Wu</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=jrycw" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>
