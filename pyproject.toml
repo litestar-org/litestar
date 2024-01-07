@@ -178,7 +178,7 @@ test = "pytest tests docs/examples"
 
 [tool.codespell]
 ignore-words-list = "selectin"
-skip = 'pdm.lock,docs/examples/contrib/sqlalchemy/us_state_lookup.json'
+skip = 'pdm.lock,docs/examples/plugins/sqlalchemy/us_state_lookup.json'
 
 [tool.coverage.run]
 concurrency = ["multiprocessing", "thread"]
@@ -209,8 +209,7 @@ filterwarnings = [
   "ignore::DeprecationWarning:litestar.*",
   "ignore::pydantic.PydanticDeprecatedSince20::",
   "ignore:`general_plain_validator_function`:DeprecationWarning::",
-  "ignore: 'RichMultiCommand':DeprecationWarning::"  # this is coming from rich_click itself, nothing we can do about
-                                                     # that for now
+  "ignore: 'RichMultiCommand':DeprecationWarning::", # this is coming from rich_click itself, nothing we can do about # that for now
 ]
 markers = [
   "sqlalchemy_integration: SQLAlchemy integration tests",
@@ -262,7 +261,6 @@ warn_untyped_fields = true
 
 [tool.pyright]
 disableBytesTypePromotions = true
-reportUnnecessaryTypeIgnoreComments = true
 exclude = [
   "test_apps",
   "tools",
@@ -275,6 +273,7 @@ exclude = [
 ]
 include = ["litestar", "tests"]
 pythonVersion = "3.8"
+reportUnnecessaryTypeIgnoreComments = true
 
 [tool.slotscheck]
 strict-imports = false
