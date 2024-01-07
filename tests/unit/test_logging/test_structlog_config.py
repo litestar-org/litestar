@@ -3,11 +3,26 @@ from structlog.processors import JSONRenderer
 from structlog.types import BindableLogger
 
 from litestar.logging.config import StructLoggingConfig, default_json_serializer
+from litestar.plugins.structlog import StructlogPlugin
 from litestar.serialization import decode_json
 from litestar.testing import create_test_client
 
 # structlog.testing.capture_logs changes the processors
 # Because we want to test processors, use capsys instead
+
+
+def test_structlog_plugin(capsys: CaptureFixture) -> None:
+    with create_test_client([], plugins=[StructlogPlugin()]) as client:
+        assert client.app.logger
+        assert isinstance(client.app.logger.bind(), BindableLogger)
+        client.app.logger.info("message", key="value")
+
+        log_messages = [decode_json(value=x) for x in capsys.readouterr().out.splitlines()]
+        assert len(log_messages) == 1
+
+        # Format should be: {event: message, key: value, level: info, timestamp: isoformat}
+        log_messages[0].pop("timestamp")  # Assume structlog formats timestamp correctly
+        assert log_messages[0] == {"event": "message", "key": "value", "level": "info"}
 
 
 def test_structlog_config_default(capsys: CaptureFixture) -> None:
