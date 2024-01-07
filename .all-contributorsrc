@@ -1545,6 +1545,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "jrycw",
+      "name": "Jerry Wu",
+      "avatar_url": "https://avatars.githubusercontent.com/u/67060418?v=4",
+      "profile": "https://cv.ycwu.space",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
