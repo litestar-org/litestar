@@ -16,7 +16,7 @@ from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 try:
     import prometheus_client  # noqa: F401
 except ImportError as e:
-    raise MissingDependencyException("prometheus_client") from e
+    raise MissingDependencyException("prometheus_client", "prometheus-client", "prometheus") from e
 
 from prometheus_client import Counter, Gauge, Histogram
 
