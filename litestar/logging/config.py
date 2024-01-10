@@ -229,6 +229,11 @@ class LoggingConfig(BaseLoggingConfig):
         else:
             from logging import config, getLogger  # type: ignore[no-redef, assignment]
 
+            if not getLogger().hasHandlers():  # type: ignore[attr-defined]
+                self.root = {
+                    "handlers": ["queue_listener"],
+                    "level": "INFO",
+                }
             values = {k: v for k, v in asdict(self).items() if v is not None}
 
         config.dictConfig(values)
