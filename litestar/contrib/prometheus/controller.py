@@ -9,7 +9,7 @@ from litestar.response import Response
 try:
     import prometheus_client  # noqa: F401
 except ImportError as e:
-    raise MissingDependencyException("prometheus_client") from e
+    raise MissingDependencyException("prometheus_client", "prometheus-client", "prometheus") from e
 
 from prometheus_client import (
     CONTENT_TYPE_LATEST,
