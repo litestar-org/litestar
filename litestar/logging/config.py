@@ -62,7 +62,7 @@ default_picologging_handlers: dict[str, dict[str, Any]] = {
 }
 
 
-def get_logger_placeholder(_: str) -> NoReturn:  # pragma: no cover
+def get_logger_placeholder(_: str | None = None) -> NoReturn:
     """Raise: An :class:`ImproperlyConfiguredException <.exceptions.ImproperlyConfiguredException>`"""
     raise ImproperlyConfiguredException(
         "cannot call '.get_logger' without passing 'logging_config' to the Litestar constructor first"

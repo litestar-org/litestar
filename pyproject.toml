@@ -56,7 +56,7 @@ maintainers = [
 name = "litestar"
 readme = "README.md"
 requires-python = ">=3.8,<4.0"
-version = "2.4.4"
+version = "2.5.0"
 
 [project.urls]
 Blog = "https://blog.litestar.dev"
@@ -107,6 +107,9 @@ dev = [
   "trio",
   "aiosqlite",
   "exceptiongroup; python_version < \"3.11\"",
+  "asyncpg>=0.29.0",
+  "psycopg[pool,binary]>=3.1.10",
+  "psycopg2-binary",
 ]
 dev-contrib = ["opentelemetry-sdk", "httpx-sse"]
 docs = [
@@ -126,7 +129,7 @@ linting = [
   "mypy",
   "pre-commit",
   "slotscheck",
-  "pyright",
+  "pyright==1.1.344",
   "blacken-docs",
   "asyncpg-stubs",
   "types-beautifulsoup4",
@@ -204,12 +207,10 @@ filterwarnings = [
   "ignore::DeprecationWarning:google",
   "ignore::DeprecationWarning:sphinxcontrib",
   "ignore::DeprecationWarning:litestar.*",
-  "ignore:The `__fields__` attribute is deprecated:DeprecationWarning:pydantic*",
-  "ignore:Support for class-based `config` is deprecated:DeprecationWarning:pydantic*",
-  "ignore:The `dict` method is deprecated:DeprecationWarning:",
-  "ignore:The `parse_obj` method is deprecated:DeprecationWarning:",
-  "ignore:The `json` method is deprecated:DeprecationWarning:",
-  "ignore:Extra keyword arguments on `Field` is deprecated:DeprecationWarning:pydantic*",
+  "ignore::pydantic.PydanticDeprecatedSince20::",
+  "ignore:`general_plain_validator_function`:DeprecationWarning::",
+  "ignore: 'RichMultiCommand':DeprecationWarning::"  # this is coming from rich_click itself, nothing we can do about
+                                                     # that for now
 ]
 markers = [
   "sqlalchemy_integration: SQLAlchemy integration tests",

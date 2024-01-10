@@ -4,8 +4,8 @@ from stat import S_ISDIR
 from typing import TYPE_CHECKING, Any, AnyStr, cast
 
 from anyio import AsyncFile, Path, open_file
-from anyio.to_thread import run_sync
 
+from litestar.concurrency import sync_to_thread
 from litestar.exceptions import InternalServerException, NotAuthorizedException
 from litestar.types.file_types import FileSystemProtocol
 from litestar.utils.predicates import is_async_callable
@@ -38,7 +38,7 @@ class BaseLocalFileSystem(FileSystemProtocol):
         result = await Path(path).stat()
         return await FileSystemAdapter.parse_stat_result(path=path, result=result)
 
-    async def open(self, file: PathType, mode: str, buffering: int = -1) -> AsyncFile[AnyStr]:
+    async def open(self, file: PathType, mode: str, buffering: int = -1) -> AsyncFile[AnyStr]:  # pyright: ignore
         """Return a file-like object from the filesystem.
 
         Notes:
@@ -77,7 +77,7 @@ class FileSystemAdapter:
             awaitable = (
                 self.file_system.info(str(path))
                 if is_async_callable(self.file_system.info)
-                else run_sync(self.file_system.info, str(path))
+                else sync_to_thread(self.file_system.info, str(path))
             )
             return cast("FileInfo", await awaitable)
         except FileNotFoundError as e:
@@ -113,7 +113,7 @@ class FileSystemAdapter:
                         buffering=buffering,
                     ),
                 )
-            return AsyncFile(await run_sync(self.file_system.open, file, mode, buffering))  # type: ignore
+            return AsyncFile(await sync_to_thread(self.file_system.open, file, mode, buffering))  # type: ignore[arg-type]
         except PermissionError as e:
             raise NotAuthorizedException(f"failed to open {file} due to missing permissions") from e
         except OSError as e:

@@ -3,6 +3,204 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.5.0
+    :date: 2024/01/06
+
+    .. change:: Fix serialization of custom types in exception responses
+        :type: bugfix
+        :issue: 2867
+        :pr: 2941
+
+        Fix a bug that would lead to a :exc:`SerializationException` when custom types
+        were present in an exception response handled by the built-in exception
+        handlers.
+
+        .. code-block:: python
+
+            class Foo:
+                pass
+
+
+            @get()
+            def handler() -> None:
+                raise ValidationException(extra={"foo": Foo("bar")})
+
+
+            app = Litestar(route_handlers=[handler], type_encoders={Foo: lambda foo: "foo"})
+
+        The cause was that, in examples like the one shown above, ``type_encoders``
+        were not resolved properly from all layers by the exception handling middleware,
+        causing the serializer to throw an exception for an unknown type.
+
+    .. change:: Fix SSE reverting to default ``event_type`` after 1st message
+        :type: bugfix
+        :pr: 2888
+        :issue: 2877
+
+        The ``event_type`` set within an SSE returned from a handler would revert back
+        to a default after the first message sent:
+
+        .. code-block:: python
+
+            @get("/stream")
+            async def stream(self) -> ServerSentEvent:
+                async def gen() -> AsyncGenerator[str, None]:
+                    c = 0
+                    while True:
+                        yield f"<div>{c}</div>\n"
+                        c += 1
+
+                return ServerSentEvent(gen(), event_type="my_event")
+
+        In this example, the event type would only be ``my_event`` for the first
+        message, and fall back to a default afterwards. The implementation has been
+        fixed and will now continue sending the set event type for all messages.
+
+    .. change:: Correctly handle single file upload validation when multiple files are specified
+        :type: bugfix
+        :pr: 2950
+        :issue: 2939
+
+        Uploading a single file when the validation target allowed multiple would cause
+        a :exc:`ValidationException`:
+
+        .. code-block:: python
+
+            class FileUpload(Struct):
+                files: list[UploadFile]
+
+
+            @post(path="/")
+            async def upload_files_object(
+                data: Annotated[FileUpload, Body(media_type=RequestEncodingType.MULTI_PART)]
+            ) -> list[str]:
+                pass
+
+
+        This could would only allow for 2 or more files to be sent, and otherwise throw
+        an exception.
+
+    .. change:: Fix trailing messages after unsubscribe in channels
+        :type: bugfix
+        :pr: 2894
+
+        Fix a bug that would allow some channels backend to receive messages from a
+        channel it just unsubscribed from, for a short period of time, due to how the
+        different brokers handle unsubscribes.
+
+        .. code-block:: python
+
+            await backend.subscribe(["foo", "bar"])  # subscribe to two channels
+            await backend.publish(
+                b"something", ["foo"]
+            )  # publish a message to a channel we're subscribed to
+
+            # start the stream after publishing. Depending on the backend
+            # the previously published message might be in the stream
+            event_generator = backend.stream_events()
+
+            # unsubscribe from the channel we previously published to
+            await backend.unsubscribe(["foo"])
+
+            # this should block, as we expect messages from channels
+            # we unsubscribed from to not appear in the stream anymore
+            print(anext(event_generator))
+
+        Backends affected by this were in-memory, Redis PubSub and asyncpg. The Redis
+        stream and psycopg backends were not affected.
+
+    .. change:: Postgres channels backends
+        :type: feature
+        :pr: 2803
+
+        Two new channel backends were added to bring Postgres support:
+
+        :class:`~litestar.channels.backends.asyncpg.AsyncPgChannelsBackend`, using the
+        `asyncpg <https://magicstack.github.io/asyncpg/current/>`_ driver and
+        :class:`~litestar.channels.backends.psycopg.PsycoPgChannelsBackend` using the
+        `psycopg3 <https://www.psycopg.org/psycopg3/docs/>`_ async driver.
+
+        .. seealso::
+            :doc:`/usage/channels`
+
+
+    .. change:: Add ``--schema`` and ``--exclude`` option to ``litestar route`` CLI command
+        :type: feature
+        :pr: 2886
+
+        Two new options were added to the ``litestar route`` CLI command:
+
+        - ``--schema``, to include the routes serving OpenAPI schema and docs
+        - ``--exclude`` to exclude routes matching a specified pattern
+
+        .. seealso::
+            :ref:`usage/cli:routes`
+
+    .. change:: Improve performance of threaded synchronous execution
+        :type: misc
+        :pr: 2937
+
+        Performance of threaded synchronous code was improved by using the async
+        library's native threading helpers instead of anyio. On asyncio,
+        :meth:`asyncio.loop.run_in_executor` is now used and on trio
+        :func:`trio.to_thread.run_sync`.
+
+        Beneficiaries of these performance improvements are:
+
+        - Synchronous route handlers making use of ``sync_to_thread=True``
+        - Synchronous dependency providers making use of ``sync_to_thread=True``
+        - Synchronous SSE generators
+        - :class:`~litestar.stores.file.FileStore`
+        - Large file uploads where the ``max_spool_size`` is exceeded and the spooled
+          temporary file has been rolled to disk
+        - :class:`~litestar.response.file.File` and
+          :class:`~litestar.response.file.ASGIFileResponse`
+
+
+.. changelog:: 2.4.5
+    :date: 2023/12/23
+
+    .. change:: Fix validation of  empty payload data with default values
+        :type: bugfix
+        :issue: 2902
+        :pr: 2903
+
+        Prior to this fix, a handler like:
+
+        .. code-block:: python
+
+            @post(path="/", sync_to_thread=False)
+            def test(data: str = "abc") -> dict:
+                return {"foo": data}
+
+        ``$ curl localhost:8000 -X POST``
+
+        would return a client error like:
+
+        .. code-block:: bash
+
+            {"status_code":400,"detail":"Validation failed for POST http://localhost:8000/","extra":[{"message":"Expected `str`, got `null`","key":"data","source":"body"}]}
+
+    .. change:: Support for returning ``Response[None]`` with a ``204`` status code from a handler
+        :type: bugfix
+        :pr: 2915
+        :issue: 2914
+
+        Returning a ``Response[None]`` from a route handler for a response with a
+        ``204`` now works as expected without resulting in an
+        :exc:`ImproperlyConfiguredException`
+
+    .. change:: Fix error message of ``get_logger_placeholder()``
+        :type: bugfix
+        :pr: 2919
+
+        Using a method on
+        :attr:`Request.logger <litestar.connection.ASGIConnection.logger>` when not
+        setting a ``logging_config`` on the application would result in a non-descriptive
+        :exc:`TypeError`. An :exc:`ImproperlyConfiguredException` with an explanation is
+        now raised instead.
+
+
 .. changelog:: 2.4.4
     :date: 2023/12/13
 

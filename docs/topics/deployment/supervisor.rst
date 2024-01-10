@@ -93,7 +93,8 @@ Suggestions
 
 .. tip::
 
-This follows onto the setup above, but provides some suggestions for making things easier to manage.
+        This follows onto the setup above, but provides some suggestions for making things easier to manage.
+
 
 Aliases
 ~~~~~~~

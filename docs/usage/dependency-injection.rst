@@ -80,9 +80,9 @@ The pre-requisites for dependency injection are these:
 
 What is *scope* in this context? Dependencies are **isolated** to the context in which they are declared. Thus, in the
 above example, the ``local_dependency`` can only be accessed within the specific route handler on which it was declared;
-The ``controller_dependency`` is available only for route handlers on that specific controller; And the router
-dependencies are available only to the route handlers registered on that particular router. Only the ``app_dependencies``
-are available to all route handlers.
+The ``controller_dependency`` is available only for route handlers on that specific controller; And the ``router
+dependency`` is available only to the route handlers registered on that particular router. Only the ``app_dependency``
+is available to all route handlers.
 
 .. _yield_dependencies:
 

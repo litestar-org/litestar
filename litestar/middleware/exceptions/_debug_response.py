@@ -26,6 +26,7 @@ if TYPE_CHECKING:
     from inspect import FrameInfo
 
     from litestar.connection import Request
+    from litestar.types import TypeEncodersMap
 
 tpl_dir = Path(__file__).parent / "templates"
 
@@ -191,4 +192,19 @@ def create_debug_response(request: Request, exc: Exception) -> Response:
         content = create_plain_text_response_content(exc)
         media_type = MediaType.TEXT
 
-    return Response(content=content, media_type=media_type, status_code=HTTP_500_INTERNAL_SERVER_ERROR)
+    return Response(
+        content=content,
+        media_type=media_type,
+        status_code=HTTP_500_INTERNAL_SERVER_ERROR,
+        type_encoders=_get_type_encoders_for_request(request) if request is not None else None,
+    )
+
+
+def _get_type_encoders_for_request(request: Request) -> TypeEncodersMap | None:
+    try:
+        return request.route_handler.resolve_type_encoders()
+    # we might be in a 404, or before we could resolve the handler, so this
+    # could potentially error out. In this case we fall back on the application
+    # type encoders
+    except (KeyError, AttributeError):
+        return request.app.type_encoders

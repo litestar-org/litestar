@@ -57,6 +57,7 @@ intersphinx_mapping = {
     "opentelemetry": ("https://opentelemetry-python.readthedocs.io/en/latest/", None),
     "advanced-alchemy": ("https://docs.advanced-alchemy.jolt.rs/latest/", None),
     "jinja2": ("https://jinja.palletsprojects.com/en/latest/", None),
+    "trio": ("https://trio.readthedocs.io/en/stable/", None),
 }
 
 napoleon_google_docstring = True
@@ -226,6 +227,9 @@ ignore_missing_refs = {
     ),
     re.compile(r"litestar\.dto.*"): re.compile(".*T|.*FieldDefinition|Empty"),
     re.compile(r"litestar\.template\.(config|TemplateConfig).*"): re.compile(".*EngineType"),
+    "litestar.concurrency.set_asyncio_executor": {"ThreadPoolExecutor"},
+    "litestar.concurrency.get_asyncio_executor": {"ThreadPoolExecutor"},
+    re.compile(r"litestar\.channels\.backends\.asyncpg.*"): {"asyncpg.connection.Connection"},
 }
 
 # Do not warn about broken links to the following:
