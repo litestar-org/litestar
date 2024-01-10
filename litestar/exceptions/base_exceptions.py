@@ -41,10 +41,10 @@ class MissingDependencyException(LitestarException, ImportError):
     This exception is raised only when a module depends on a dependency that has not been installed.
     """
 
-    def __init__(self, package: str, install_package: str | None = None) -> None:
+    def __init__(self, package: str, install_package: str | None = None, extra: str | None = None) -> None:
         super().__init__(
             f"Package {package!r} is not installed but required. You can install it by running "
-            f"'pip install litestar[{install_package or package}]' to install litestar with the required extra "
+            f"'pip install litestar[{extra or install_package or package}]' to install litestar with the required extra "
             f"or 'pip install {install_package or package}' to install the package separately"
         )
 
