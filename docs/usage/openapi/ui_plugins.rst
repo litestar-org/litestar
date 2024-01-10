@@ -231,3 +231,13 @@ This can be used for a variety of purposes, including adding additional routes t
 
 .. literalinclude:: /examples/openapi/plugins/receive_router.py
     :language: python
+
+OAuth2 in Swagger UI
+~~~~~~~~~~~~~~~~~~~~
+
+When using Swagger, OAuth2 settings can be configured via :attr:`swagger_ui_init_oauth <litestar.openapi.controller.OpenAPIController.swagger_ui_init_oauth>`, which can be set to a dictionary containing the parameters described in the Swagger UI documentation for OAuth2 `here <https://swagger.io/docs/open-source-tools/swagger-ui/usage/oauth2/>`_.
+
+We that you can preset your clientId or enable PKCE support.
+
+.. literalinclude:: /examples/openapi/plugins/swagger_ui_oauth.py
+    :language: python
