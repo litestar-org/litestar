@@ -219,23 +219,20 @@ class LoggingConfig(BaseLoggingConfig):
 
         if "picologging" in str(encode_json(self.handlers)):
             try:
-                import picologging  # noqa: F401
+                from picologging import config, getLogger, root
             except ImportError as e:
                 raise MissingDependencyException("picologging") from e
 
-            from picologging import config, getLogger
-
             values = {k: v for k, v in asdict(self).items() if v is not None and k != "incremental"}
         else:
-            from logging import config, getLogger  # type: ignore[no-redef, assignment]
+            from logging import config, getLogger, root  # type: ignore[no-redef, assignment]
 
-            if not getLogger().hasHandlers():  # type: ignore[attr-defined]
-                self.root = {
-                    "handlers": ["queue_listener"],
-                    "level": "INFO",
-                }
             values = {k: v for k, v in asdict(self).items() if v is not None}
-
+        if not root.handlers:  # type: ignore[attr-defined]
+            values["root"] = {
+                "handlers": ["queue_listener"],
+                "level": "INFO",
+            }
         config.dictConfig(values)
         return cast("Callable[[str], Logger]", getLogger)
 
