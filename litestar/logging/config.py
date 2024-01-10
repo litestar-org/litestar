@@ -182,12 +182,7 @@ class LoggingConfig(BaseLoggingConfig):
     """A dict in which each key is a logger name and each value is a dict describing how to configure the corresponding
     Logger instance.
     """
-    root: dict[str, dict[str, Any] | list[Any] | str] = field(
-        default_factory=lambda: {
-            "handlers": ["queue_listener"],
-            "level": "INFO",
-        }
-    )
+    root: dict[str, dict[str, Any] | list[Any] | str] | None = field(default=None)
     """This will be the configuration for the root logger.
 
     Processing of the configuration will be as for any logger, except that the propagate setting will not be applicable.
