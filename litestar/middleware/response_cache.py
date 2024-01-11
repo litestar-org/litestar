@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-
 from typing import TYPE_CHECKING, cast
 
 from msgspec.msgpack import encode as encode_msgpack
