@@ -155,12 +155,10 @@ def test_root_logger_no_config(handlers: Any, listener: Any) -> None:
     logging_config = LoggingConfig(handlers=handlers, configure_root_logger=False)
     get_logger = logging_config.configure()
     root_logger = get_logger()
-    if isinstance(listener, StandardQueueListenerHandler):
-        assert not isinstance(root_logger.handlers[0], listener)  # type: ignore
+    if handlers["console"]["class"] == "logging.StreamHandler":
+        assert not isinstance(root_logger.handlers[0], listener)  # type: ignore[attr-defined]
     else:
-        import picologging
-
-        assert len(picologging.root.handlers) < 1
+        assert len(root_logger.handlers) < 1  # type: ignore[attr-defined]
 
 
 @pytest.mark.parametrize(
