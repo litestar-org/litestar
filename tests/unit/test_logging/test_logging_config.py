@@ -155,6 +155,10 @@ def test_root_logger_no_config(handlers: Any, listener: Any) -> None:
     logging_config = LoggingConfig(handlers=handlers, configure_root_logger=False)
     get_logger = logging_config.configure()
     root_logger = get_logger()
+    for handler in root_logger.handlers:  # type: ignore[attr-defined]
+        root_logger.removeHandler(handler)  # type: ignore[attr-defined]
+    get_logger = logging_config.configure()
+    root_logger = get_logger()
     if handlers["console"]["class"] == "logging.StreamHandler":
         assert not isinstance(root_logger.handlers[0], listener)  # type: ignore[attr-defined]
     else:
