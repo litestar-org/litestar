@@ -15,7 +15,7 @@ __all__ = ("PrometheusConfig",)
 try:
     import prometheus_client  # noqa: F401
 except ImportError as e:
-    raise MissingDependencyException("prometheus_client") from e
+    raise MissingDependencyException("prometheus_client", "prometheus-client", "prometheus") from e
 
 
 if TYPE_CHECKING:

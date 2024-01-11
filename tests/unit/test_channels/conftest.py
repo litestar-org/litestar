@@ -3,7 +3,9 @@ from __future__ import annotations
 import pytest
 from redis.asyncio import Redis as AsyncRedis
 
+from litestar.channels.backends.asyncpg import AsyncPgChannelsBackend
 from litestar.channels.backends.memory import MemoryChannelsBackend
+from litestar.channels.backends.psycopg import PsycoPgChannelsBackend
 from litestar.channels.backends.redis import RedisChannelsPubSubBackend, RedisChannelsStreamBackend
 
 
@@ -26,7 +28,12 @@ def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item
 
 @pytest.fixture()
 def redis_stream_backend(redis_client: AsyncRedis) -> RedisChannelsStreamBackend:
-    return RedisChannelsStreamBackend(history=10, redis=redis_client, cap_streams_approximate=False)
+    return RedisChannelsStreamBackend(redis=redis_client, cap_streams_approximate=False, history=1)
+
+
+@pytest.fixture()
+def redis_stream_backend_with_history(redis_client: AsyncRedis) -> RedisChannelsStreamBackend:
+    return RedisChannelsStreamBackend(redis=redis_client, cap_streams_approximate=False, history=10)
 
 
 @pytest.fixture()
@@ -36,4 +43,19 @@ def redis_pub_sub_backend(redis_client: AsyncRedis) -> RedisChannelsPubSubBacken
 
 @pytest.fixture()
 def memory_backend() -> MemoryChannelsBackend:
+    return MemoryChannelsBackend()
+
+
+@pytest.fixture()
+def memory_backend_with_history() -> MemoryChannelsBackend:
     return MemoryChannelsBackend(history=10)
+
+
+@pytest.fixture()
+def postgres_asyncpg_backend(postgres_service: None, docker_ip: str) -> AsyncPgChannelsBackend:
+    return AsyncPgChannelsBackend(f"postgres://postgres:super-secret@{docker_ip}:5423")
+
+
+@pytest.fixture()
+def postgres_psycopg_backend(postgres_service: None, docker_ip: str) -> PsycoPgChannelsBackend:
+    return PsycoPgChannelsBackend(f"postgres://postgres:super-secret@{docker_ip}:5423")
