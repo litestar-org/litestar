@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import asyncio
+
 from typing import TYPE_CHECKING, cast
 
 from msgspec.msgpack import encode as encode_msgpack
@@ -50,7 +52,11 @@ class ResponseCacheMiddleware(AbstractMiddleware):
                     messages.append(message)
 
                 if messages and message["type"] == HTTP_RESPONSE_BODY and not message["more_body"]:
-                    key = (route_handler.cache_key_builder or self.config.key_builder)(Request(scope))
+                    key_builder = route_handler.cache_key_builder or self.config.key_builder
+                    if asyncio.iscoroutinefunction(key_builder):
+                        key = await key_builder(Request(scope))
+                    else:
+                        key = key_builder(Request(scope))
                     store = self.config.get_store_from_app(scope["app"])
                     await store.set(key, encode_msgpack(messages), expires_in=expires_in)
             await send(message)
