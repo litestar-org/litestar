@@ -1555,6 +1555,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "horo-fox",
+      "name": "horo",
+      "avatar_url": "https://avatars.githubusercontent.com/u/143025439?v=4",
+      "profile": "https://github.com/horo-fox",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,

@@ -544,6 +544,7 @@ see [the contribution guide](CONTRIBUTING.rst).
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://cv.ycwu.space"><img src="https://avatars.githubusercontent.com/u/67060418?v=4?s=100" width="100px;" alt="Jerry Wu"/><br /><sub><b>Jerry Wu</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=jrycw" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/horo-fox"><img src="https://avatars.githubusercontent.com/u/143025439?v=4?s=100" width="100px;" alt="horo"/><br /><sub><b>horo</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/issues?q=author%3Ahoro-fox" title="Bug reports">🐛</a></td>
     </tr>
   </tbody>
 </table>
