@@ -1,6 +1,6 @@
 from __future__ import annotations
-import asyncio
 
+import asyncio
 from itertools import chain
 from typing import TYPE_CHECKING, Any, cast
 
