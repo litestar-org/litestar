@@ -1,4 +1,5 @@
 from __future__ import annotations
+import asyncio
 
 from itertools import chain
 from typing import TYPE_CHECKING, Any, cast
@@ -221,7 +222,11 @@ class HTTPRoute(BaseRoute):
         """
 
         cache_config = request.app.response_cache_config
-        cache_key = (route_handler.cache_key_builder or cache_config.key_builder)(request)
+        key_builder = route_handler.cache_key_builder or cache_config.key_builder
+        if asyncio.iscoroutinefunction(key_builder):
+            cache_key = await key_builder(request)
+        else:
+            cache_key = key_builder(request)
         store = cache_config.get_store_from_app(request.app)
 
         if not (cached_response_data := await store.get(key=cache_key)):
