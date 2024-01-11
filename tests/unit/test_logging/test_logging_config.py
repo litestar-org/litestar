@@ -147,6 +147,25 @@ def test_root_logger(handlers: Any, listener: Any) -> None:
 @pytest.mark.parametrize(
     "handlers, listener",
     [
+        [default_handlers, StandardQueueListenerHandler],
+        [default_picologging_handlers, PicologgingQueueListenerHandler],
+    ],
+)
+def test_root_logger_no_config(handlers: Any, listener: Any) -> None:
+    logging_config = LoggingConfig(handlers=handlers, configure_root_logger=False)
+    get_logger = logging_config.configure()
+    root_logger = get_logger()
+    if isinstance(listener, StandardQueueListenerHandler):
+        assert not isinstance(root_logger.handlers[0], listener)  # type: ignore
+    else:
+        import picologging
+
+        assert len(picologging.root.handlers) < 1
+
+
+@pytest.mark.parametrize(
+    "handlers, listener",
+    [
         pytest.param(
             default_handlers,
             StandardQueueListenerHandler,
@@ -159,7 +178,6 @@ def test_root_logger(handlers: Any, listener: Any) -> None:
 )
 def test_customizing_handler(handlers: Any, listener: Any, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setitem(handlers["queue_listener"], "handlers", ["cfg://handlers.console"])
-
     logging_config = LoggingConfig(handlers=handlers)
     get_logger = logging_config.configure()
     root_logger = get_logger()

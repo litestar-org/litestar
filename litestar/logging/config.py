@@ -182,11 +182,18 @@ class LoggingConfig(BaseLoggingConfig):
     """A dict in which each key is a logger name and each value is a dict describing how to configure the corresponding
     Logger instance.
     """
-    root: dict[str, dict[str, Any] | list[Any] | str] | None = field(default=None)
+    root: dict[str, dict[str, Any] | list[Any] | str] = field(
+        default_factory=lambda: {
+            "handlers": ["queue_listener"],
+            "level": "INFO",
+        }
+    )
     """This will be the configuration for the root logger.
 
     Processing of the configuration will be as for any logger, except that the propagate setting will not be applicable.
     """
+    configure_root_logger: bool = field(default=True)
+    """Should the root logger be configured, defaults to True for ease of configuration."""
     log_exceptions: Literal["always", "debug", "never"] = field(default="debug")
     """Should exceptions be logged, defaults to log exceptions when 'app.debug == True'"""
     traceback_line_limit: int = field(default=20)
@@ -219,20 +226,21 @@ class LoggingConfig(BaseLoggingConfig):
 
         if "picologging" in str(encode_json(self.handlers)):
             try:
-                from picologging import config, getLogger, root
+                from picologging import config, getLogger
             except ImportError as e:
                 raise MissingDependencyException("picologging") from e
 
-            values = {k: v for k, v in asdict(self).items() if v is not None and k != "incremental"}
-        else:
-            from logging import config, getLogger, root  # type: ignore[no-redef, assignment]
-
-            values = {k: v for k, v in asdict(self).items() if v is not None}
-        if not root.handlers:  # type: ignore[attr-defined]
-            values["root"] = {
-                "handlers": ["queue_listener"],
-                "level": "INFO",
+            values = {
+                k: v
+                for k, v in asdict(self).items()
+                if v is not None and k not in ("incremental", "configure_root_logger")
             }
+        else:
+            from logging import config, getLogger  # type: ignore[no-redef, assignment]
+
+            values = {k: v for k, v in asdict(self).items() if v is not None and k not in ("configure_root_logger",)}
+        if not self.configure_root_logger:
+            values.pop("root")
         config.dictConfig(values)
         return cast("Callable[[str], Logger]", getLogger)
 
