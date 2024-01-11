@@ -152,13 +152,11 @@ To set multiple directories via an environment variable, use a comma-separated l
 
 The ``--reload-include`` flag allows you to specify glob patterns to include when watching for file changes. If you specify this flag, the ``--reload`` flag is implied. Furthermore, ``.py`` files are included implicitly by default.
 
-You can specify multiple glob patterns by passing the flag multiple times, or use a comma-separated list:
+You can specify multiple glob patterns by passing the flag multiple times:
 
 .. code-block:: shell
 
    litestar run --reload-include="*.rst" --reload-include="*.yml"
-   # or
-   litestar run --reload-include="*.rst,*.yml"
 
 To set multiple directories via an environment variable, use a comma-separated list:
 
@@ -171,13 +169,11 @@ To set multiple directories via an environment variable, use a comma-separated l
 
 The ``--reload-exclude`` flag allows you to specify glob patterns to exclude when watching for file changes. If you specify this flag, the ``--reload`` flag is implied.
 
-You can specify multiple glob patterns by passing the flag multiple times, or use a comma-separated list:
+You can specify multiple glob patterns by passing the flag multiple times:
 
 .. code-block:: shell
 
    litestar run --reload-exclude="*.py" --reload-exclude="*.yml"
-   # or
-   litestar run --reload-exclude="*.py,*.yml"
 
 To set multiple directories via an environment variable, use a comma-separated list:
 

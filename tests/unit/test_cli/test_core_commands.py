@@ -47,9 +47,9 @@ def mock_show_app_info(mocker: MockerFixture) -> MagicMock:
         (False, None, None, None, None),
         (True, [".", "../somewhere_else"], None, None, None),
         (False, [".", "../somewhere_else"], None, None, None),
-        (True, None, ["*.rst"], ["*.yml"], None),
+        (True, None, ["*.rst", "*.yml"], None, None),
         (False, None, None, ["*.py"], None),
-        (False, None, ["*.yml, *.rst"], None, None),
+        (False, None, ["*.yml", "*.rst"], None, None),
         (None, None, None, None, 2),
         (True, None, None, None, 2),
         (False, None, None, None, 2),
@@ -168,7 +168,7 @@ def test_run_command(
             expected_args.append(f"--fd={fd}")
         if uds is not None:
             expected_args.append(f"--uds={uds}")
-        if reload or reload_dir:
+        if reload or reload_dir or reload_include or reload_exclude:
             expected_args.append("--reload")
         if web_concurrency:
             expected_args.append(f"--workers={web_concurrency}")
