@@ -12,6 +12,7 @@ from docs.examples.contrib.sqlalchemy.plugins.tutorial import (
     full_app_with_serialization_plugin,
     full_app_with_session_di,
 )
+from sqlalchemy import NullPool
 from sqlalchemy.ext.asyncio import create_async_engine
 
 from litestar import Litestar
@@ -34,7 +35,7 @@ async def app(monkeypatch: MonkeyPatch, request: FixtureRequest) -> Litestar:
 
     app_module = request.param
 
-    engine = create_async_engine("sqlite+aiosqlite://")
+    engine = create_async_engine("sqlite+aiosqlite://", poolclass=NullPool)
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
