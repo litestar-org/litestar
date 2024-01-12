@@ -1535,7 +1535,9 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/10182564?v=4",
       "profile": "https://github.com/FergusMok",
       "contributions": [
-        "doc"
+        "doc",
+        "code",
+        "test"
       ]
     },
     {
