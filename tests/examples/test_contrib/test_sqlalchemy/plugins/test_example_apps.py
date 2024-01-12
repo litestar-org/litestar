@@ -4,7 +4,7 @@ from typing import Any
 
 import pytest
 from _pytest.monkeypatch import MonkeyPatch
-from sqlalchemy import Engine, NullPool, create_engine
+from sqlalchemy import Engine, StaticPool, create_engine
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
 from litestar.testing import TestClient
@@ -19,12 +19,12 @@ def data() -> list[dict[str, Any]]:
 
 @pytest.fixture()
 def sqlite_engine() -> Engine:
-    return create_engine("sqlite://", connect_args={"check_same_thread": False}, poolclass=NullPool)
+    return create_engine("sqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool)
 
 
 @pytest.fixture()
 def aiosqlite_engine() -> Engine:
-    return create_async_engine("sqlite+aiosqlite://", connect_args={"check_same_thread": False}, poolclass=NullPool)
+    return create_async_engine("sqlite+aiosqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool)
 
 
 def test_sqlalchemy_async_plugin_example(
