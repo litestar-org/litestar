@@ -53,7 +53,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
 
         Args:
             app: The instance of :class:`Litestar <litestar.app.Litestar>` under test.
-            base_url: URL scheme and domain for test request paths, e.g. 'http://testserver'.
+            base_url: URL scheme and domain for test request paths, e.g. ``http://testserver``.
             raise_server_exceptions: Flag for the underlying test client to raise server exceptions instead of
                 wrapping them in an HTTP response.
             root_path: Path prefix for requests.
