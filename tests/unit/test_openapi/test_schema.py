@@ -495,27 +495,26 @@ def test_process_schema_result_with_unregistered_object_schema() -> None:
 
 @pytest.mark.parametrize("base_type", [msgspec.Struct, TypedDict, dataclass])
 def test_type_union(base_type: type) -> None:
-    if base_type is dataclass:
+    if base_type is dataclass:  # type: ignore[comparison-overlap]
 
         @dataclass
-        class ModelA:
+        class ModelA:  # pyright: ignore
             pass
 
         @dataclass
-        class ModelB:
+        class ModelB:  # pyright: ignore
             pass
     else:
 
-        class ModelA(base_type):
+        class ModelA(base_type):  # type: ignore[no-redef, misc]
             pass
 
-        class ModelB(base_type):
+        class ModelB(base_type):  # type: ignore[no-redef, misc]
             pass
 
     schema = get_schema_for_field_definition(
         FieldDefinition.from_kwarg(name="Lookup", annotation=Union[ModelA, ModelB])
     )
-    assert len(schema.one_of) == 2
     assert schema.one_of == [
         Reference(ref="#/components/schemas/tests_unit_test_openapi_test_schema_test_type_union.ModelA"),
         Reference(ref="#/components/schemas/tests_unit_test_openapi_test_schema_test_type_union.ModelB"),
@@ -525,27 +524,26 @@ def test_type_union(base_type: type) -> None:
 @pytest.mark.parametrize("base_type", [msgspec.Struct, TypedDict, dataclass])
 def test_type_union_with_none(base_type: type) -> None:
     # https://github.com/litestar-org/litestar/issues/2971
-    if base_type is dataclass:
+    if base_type is dataclass:  # type: ignore[comparison-overlap]
 
         @dataclass
-        class ModelA:
+        class ModelA:  # pyright: ignore
             pass
 
         @dataclass
-        class ModelB:
+        class ModelB:  # pyright: ignore
             pass
     else:
 
-        class ModelA(base_type):
+        class ModelA(base_type):  # type: ignore[no-redef, misc]
             pass
 
-        class ModelB(base_type):
+        class ModelB(base_type):  # type: ignore[no-redef, misc]
             pass
 
     schema = get_schema_for_field_definition(
         FieldDefinition.from_kwarg(name="Lookup", annotation=Union[ModelA, ModelB, None])
     )
-    assert len(schema.one_of) == 3
     assert schema.one_of == [
         Schema(type=OpenAPIType.NULL),
         Reference(ref="#/components/schemas/tests_unit_test_openapi_test_schema_test_type_union_with_none.ModelA"),
