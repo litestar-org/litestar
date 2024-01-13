@@ -25,7 +25,7 @@ def sqlite_engine() -> Engine:
 
 @pytest.fixture()
 def aiosqlite_engine() -> Engine:
-    return create_async_engine("sqlite+aiosqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool)
+    return create_async_engine("sqlite+aiosqlite://", connect_args={"check_same_thread": False})
 
 
 def test_sqlalchemy_async_plugin_example(
