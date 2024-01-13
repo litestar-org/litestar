@@ -20,11 +20,11 @@ def test_pass_options() -> None:
     def guard(connection: ASGIConnection, handler: BaseRouteHandler) -> None:
         pass
 
-    def handle(request: Request, exception: Exception) -> Response:
+    def handle(request: Request, exception: Any) -> Response:
         return Response(b"")
 
     async def after_request(response: Response) -> Response:
-        pass
+        return Response(b"")
 
     async def after_response(request: Request) -> None:
         pass
@@ -42,7 +42,7 @@ def test_pass_options() -> None:
         path="/",
         directories=["something"],
         guards=[guard],
-        exception_handlers=exception_handlers,
+        exception_handlers=exception_handlers,  # type: ignore[arg-type]
         opt=opts,
         after_request=after_request,
         after_response=after_response,
