@@ -303,11 +303,13 @@ def default_structlog_standard_lib_processors(as_json: bool = True) -> list[Proc
 
         if as_json:
             return [
+                structlog.processors.TimeStamper(fmt="iso"),
                 structlog.stdlib.add_log_level,
                 structlog.stdlib.ExtraAdder(),
                 structlog.processors.JSONRenderer(serializer=stdlib_json_serializer),
             ]
         return [
+            structlog.processors.TimeStamper(fmt="iso"),
             structlog.stdlib.add_log_level,
             structlog.stdlib.ExtraAdder(),
             structlog.dev.ConsoleRenderer(
