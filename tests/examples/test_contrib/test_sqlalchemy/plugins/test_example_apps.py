@@ -7,7 +7,10 @@ from _pytest.monkeypatch import MonkeyPatch
 from sqlalchemy import Engine, StaticPool, create_engine
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
+from litestar.plugins.sqlalchemy import EngineConfig
 from litestar.testing import TestClient
+
+pytestmark = pytest.mark.xdist_group("sqlalchemy_examples")
 
 
 @pytest.fixture
@@ -22,7 +25,7 @@ def sqlite_engine() -> Engine:
 
 @pytest.fixture()
 def aiosqlite_engine() -> Engine:
-    return create_async_engine("sqlite+aiosqlite://", connect_args={"check_same_thread": False}, poolclass=StaticPool)
+    return create_async_engine("sqlite+aiosqlite://", connect_args={"check_same_thread": False})
 
 
 def test_sqlalchemy_async_plugin_example(
@@ -71,7 +74,8 @@ def test_sqlalchemy_async_init_plugin_dependencies(monkeypatch: MonkeyPatch) -> 
     from docs.examples.contrib.sqlalchemy.plugins import sqlalchemy_async_dependencies
 
     monkeypatch.setattr(sqlalchemy_async_dependencies.config, "connection_string", "sqlite+aiosqlite://")
-
+    engine_config = EngineConfig(connect_args={"check_same_thread": False}, poolclass=StaticPool)
+    monkeypatch.setattr(sqlalchemy_async_dependencies.config, "engine_config", engine_config)
     with TestClient(sqlalchemy_async_dependencies.app) as client:
         assert client.post("/").json() == [1, 2]
 
@@ -79,8 +83,9 @@ def test_sqlalchemy_async_init_plugin_dependencies(monkeypatch: MonkeyPatch) -> 
 def test_sqlalchemy_sync_init_plugin_dependencies(monkeypatch: MonkeyPatch) -> None:
     from docs.examples.contrib.sqlalchemy.plugins import sqlalchemy_sync_dependencies
 
+    engine_config = EngineConfig(connect_args={"check_same_thread": False}, poolclass=StaticPool)
     monkeypatch.setattr(sqlalchemy_sync_dependencies.config, "connection_string", "sqlite://")
-
+    monkeypatch.setattr(sqlalchemy_sync_dependencies.config, "engine_config", engine_config)
     with TestClient(sqlalchemy_sync_dependencies.app) as client:
         assert client.post("/").json() == [1, 2]
 

@@ -1,5 +1,5 @@
 from contextlib import asynccontextmanager
-from typing import Any, AsyncGenerator, Dict, List, Optional
+from typing import Any, AsyncGenerator, Dict, List, Optional, Sequence
 
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError, NoResultFound
@@ -49,7 +49,7 @@ def serialize_todo(todo: TodoItem) -> TodoType:
     return {"title": todo.title, "done": todo.done}
 
 
-async def get_todo_by_title(todo_name, session: AsyncSession) -> TodoItem:
+async def get_todo_by_title(todo_name: str, session: AsyncSession) -> TodoItem:
     query = select(TodoItem).where(TodoItem.title == todo_name)
     result = await session.execute(query)
     try:
@@ -58,7 +58,7 @@ async def get_todo_by_title(todo_name, session: AsyncSession) -> TodoItem:
         raise NotFoundException(detail=f"TODO {todo_name!r} not found") from e
 
 
-async def get_todo_list(done: Optional[bool], session: AsyncSession) -> List[TodoItem]:
+async def get_todo_list(done: Optional[bool], session: AsyncSession) -> Sequence[TodoItem]:
     query = select(TodoItem)
     if done is not None:
         query = query.where(TodoItem.done.is_(done))
