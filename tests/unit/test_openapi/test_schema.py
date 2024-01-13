@@ -493,40 +493,61 @@ def test_process_schema_result_with_unregistered_object_schema() -> None:
     assert SchemaCreator().process_schema_result(field_definition, schema) is schema
 
 
-def test_msgspec_struct_union() -> None:
-    class StructA(msgspec.Struct):
-        a: int
+@pytest.mark.parametrize("base_type", [msgspec.Struct, TypedDict, dataclass])
+def test_type_union(base_type: type) -> None:
+    if base_type is dataclass:
 
-    class StructB(msgspec.Struct):
-        a: int
+        @dataclass
+        class ModelA:
+            pass
+
+        @dataclass
+        class ModelB:
+            pass
+    else:
+
+        class ModelA(base_type):
+            pass
+
+        class ModelB(base_type):
+            pass
 
     schema = get_schema_for_field_definition(
-        FieldDefinition.from_kwarg(name="Lookup", annotation=Union[StructA, StructB])
+        FieldDefinition.from_kwarg(name="Lookup", annotation=Union[ModelA, ModelB])
     )
     assert len(schema.one_of) == 2
     assert schema.one_of == [
-        Reference(ref="#/components/schemas/tests_unit_test_openapi_test_schema_test_msgspec_struct_union.StructA"),
-        Reference("#/components/schemas/tests_unit_test_openapi_test_schema_test_msgspec_struct_union.StructB"),
+        Reference(ref="#/components/schemas/tests_unit_test_openapi_test_schema_test_type_union.ModelA"),
+        Reference(ref="#/components/schemas/tests_unit_test_openapi_test_schema_test_type_union.ModelB"),
     ]
 
 
-def test_msgspec_struct_union_with_none() -> None:
-    class StructA(msgspec.Struct):
-        a: int
+@pytest.mark.parametrize("base_type", [msgspec.Struct, TypedDict, dataclass])
+def test_type_union_with_none(base_type: type) -> None:
+    # https://github.com/litestar-org/litestar/issues/2971
+    if base_type is dataclass:
 
-    class StructB(msgspec.Struct):
-        a: int
+        @dataclass
+        class ModelA:
+            pass
+
+        @dataclass
+        class ModelB:
+            pass
+    else:
+
+        class ModelA(base_type):
+            pass
+
+        class ModelB(base_type):
+            pass
 
     schema = get_schema_for_field_definition(
-        FieldDefinition.from_kwarg(name="Lookup", annotation=Union[StructA, StructB, None])
+        FieldDefinition.from_kwarg(name="Lookup", annotation=Union[ModelA, ModelB, None])
     )
     assert len(schema.one_of) == 3
     assert schema.one_of == [
         Schema(type=OpenAPIType.NULL),
-        Reference(
-            ref="#/components/schemas/tests_unit_test_openapi_test_schema_test_msgspec_struct_union_with_none.StructA"
-        ),
-        Reference(
-            "#/components/schemas/tests_unit_test_openapi_test_schema_test_msgspec_struct_union_with_none.StructB"
-        ),
+        Reference(ref="#/components/schemas/tests_unit_test_openapi_test_schema_test_type_union_with_none.ModelA"),
+        Reference("#/components/schemas/tests_unit_test_openapi_test_schema_test_type_union_with_none.ModelB"),
     ]
