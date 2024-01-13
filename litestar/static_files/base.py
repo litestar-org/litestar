@@ -30,6 +30,7 @@ class StaticFiles:
         directories: Sequence[PathType],
         file_system: FileSystemProtocol,
         send_as_attachment: bool = False,
+        resolve_symlinks: bool = True,
     ) -> None:
         """Initialize the Application.
 
@@ -39,9 +40,10 @@ class StaticFiles:
             file_system: The file_system spec to use for serving files.
             send_as_attachment: Whether to send the file with a ``content-disposition`` header of
              ``attachment`` or ``inline``
+            resolve_symlinks: Resolve symlinks to the directories
         """
         self.adapter = FileSystemAdapter(file_system)
-        self.directories = tuple(Path(p).resolve() for p in directories)
+        self.directories = tuple(Path(p).resolve() if resolve_symlinks else Path(p) for p in directories)
         self.is_html_mode = is_html_mode
         self.send_as_attachment = send_as_attachment
 

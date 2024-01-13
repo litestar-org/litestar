@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import PurePath  # noqa: TCH003
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Sequence
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.file_system import BaseLocalFileSystem
@@ -10,13 +10,25 @@ from litestar.handlers import asgi, get, head
 from litestar.response.file import ASGIFileResponse  # noqa: TCH001
 from litestar.router import Router
 from litestar.static_files.base import StaticFiles
+from litestar.types import Empty
 from litestar.utils import normalize_path
 
 __all__ = ("StaticFilesConfig",)
 
 if TYPE_CHECKING:
+    from litestar.datastructures import CacheControlHeader
     from litestar.handlers.asgi_handlers import ASGIRouteHandler
-    from litestar.types import ExceptionHandlersMap, Guard, PathType
+    from litestar.openapi.spec import SecurityRequirement
+    from litestar.types import (
+        AfterRequestHookHandler,
+        AfterResponseHookHandler,
+        BeforeRequestHookHandler,
+        EmptyType,
+        ExceptionHandlersMap,
+        Guard,
+        Middleware,
+        PathType,
+    )
 
 
 @dataclass
@@ -88,42 +100,65 @@ class StaticFilesConfig:
 def create_static_router(
     path: str,
     directories: list[PathType],
-    html_mode: bool = False,
-    name: str | None = None,
     file_system: Any = None,
-    opt: dict[str, Any] | None = None,
-    guards: list[Guard] | None = None,
-    exception_handlers: ExceptionHandlersMap | None = None,
     send_as_attachment: bool = False,
+    html_mode: bool = False,
+    name: str = "static",
+    after_request: AfterRequestHookHandler | None = None,
+    after_response: AfterResponseHookHandler | None = None,
+    before_request: BeforeRequestHookHandler | None = None,
+    cache_control: CacheControlHeader | None = None,
+    exception_handlers: ExceptionHandlersMap | None = None,
+    guards: list[Guard] | None = None,
+    include_in_schema: bool | EmptyType = Empty,
+    middleware: Sequence[Middleware] | None = None,
+    opt: dict[str, Any] | None = None,
+    security: Sequence[SecurityRequirement] | None = None,
+    tags: Sequence[str] | None = None,
+    router_class: type[Router] = Router,
+    resolve_symlinks: bool = True,
 ) -> Router:
     """Create a router with handlers to serve static files.
 
     Args:
         path: Path to serve static files under
         directories: Directories to serve static files from
-        html_mode: When in HTML:
-            - Serve an ``index.html`` file from ``/``
-            - Serve ``404.html`` when a file could not be found
         file_system: A *file system* implementing
             :class:`~litestar.types.FileSystemProtocol`.
             `fsspec <https://filesystem-spec.readthedocs.io/en/latest/>`_ can be passed
             here as well
         send_as_attachment: Whether to send the file as an attachment
+        html_mode: When in HTML:
+            - Serve an ``index.html`` file from ``/``
+            - Serve ``404.html`` when a file could not be found
         name: Name to pass to the generated handlers
-        opt: Opts passed to the generated route handlers
-        exception_handlers: Exception handlers passed to the generated route handlers
-        guards: Guards passed to the generated route handlers
+        after_request: ``after_request`` handlers passed to the router
+        after_response: ``after_response`` handlers passed to the router
+        before_request: ``before_request`` handlers passed to the router
+        cache_control: ``cache_control`` passed to the router
+        exception_handlers: Exception handlers passed to the router
+        guards: Guards  passed to the router
+        include_in_schema: Include the routes / router in the OpenAPI schema
+        middleware: Middlewares passed to the router
+        opt: Opts passed to the router
+        security: Security options passed to the router
+        tags: ``tags`` passed to the router
+        router_class: The class used to construct a router from
+        resolve_symlinks: Resolve symlinks of ``directories``
     """
 
     if file_system is None:
         file_system = BaseLocalFileSystem()
+
     _validate_config(path=path, directories=directories, file_system=file_system)
     path = normalize_path(path)
+
     static_files = StaticFiles(
         is_html_mode=html_mode,
         directories=directories,
         file_system=file_system,
         send_as_attachment=send_as_attachment,
+        resolve_symlinks=resolve_symlinks,
     )
 
     @get("{file_path:path}", name=name)
@@ -144,12 +179,20 @@ def create_static_router(
 
         handlers.append(index_handler)
 
-    return Router(
+    return router_class(
+        after_request=after_request,
+        after_response=after_response,
+        before_request=before_request,
+        cache_control=cache_control,
+        exception_handlers=exception_handlers,
+        guards=guards,
+        include_in_schema=include_in_schema,
+        middleware=middleware,
+        opt=opt,
         path=path,
         route_handlers=handlers,
-        opt=opt,
-        guards=guards,
-        exception_handlers=exception_handlers,
+        security=security,
+        tags=tags,
     )
 
 

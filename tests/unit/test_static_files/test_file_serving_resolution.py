@@ -10,7 +10,7 @@ import pytest
 from typing_extensions import TypeAlias
 
 from litestar import MediaType, Router, get
-from litestar.static_files import StaticFilesConfig
+from litestar.static_files import StaticFilesConfig, create_static_router
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 from tests.unit.test_static_files.conftest import MakeConfig
@@ -277,3 +277,21 @@ def test_service_from_base_path_using_string(tmpdir: Path) -> None:
         response = client.get("/sub")
         assert response.status_code == HTTP_200_OK
         assert response.json() == {"hello": "world"}
+
+
+@pytest.mark.parametrize("resolve", [True, False])
+def test_resolve_symlinks(tmp_path: Path, resolve: bool) -> None:
+    source_dir = tmp_path / "foo"
+    source_dir.mkdir()
+    linked_dir = tmp_path / "bar"
+    linked_dir.symlink_to(source_dir, target_is_directory=True)
+    source_dir.joinpath("test.txt").write_text("hello")
+
+    router = create_static_router(path="/", directories=[linked_dir], resolve_symlinks=resolve)
+
+    with create_test_client(router) as client:
+        if not resolve:
+            linked_dir.unlink()
+            assert client.get("/test.txt").status_code == 404
+        else:
+            assert client.get("/test.txt").status_code == 200
