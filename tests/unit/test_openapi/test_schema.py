@@ -491,3 +491,42 @@ def test_process_schema_result_with_unregistered_object_schema() -> None:
     schema = Schema(title="has title", type=OpenAPIType.OBJECT)
     field_definition = FieldDefinition.from_annotation(dict)
     assert SchemaCreator().process_schema_result(field_definition, schema) is schema
+
+
+def test_msgspec_struct_union() -> None:
+    class StructA(msgspec.Struct):
+        a: int
+
+    class StructB(msgspec.Struct):
+        a: int
+
+    schema = get_schema_for_field_definition(
+        FieldDefinition.from_kwarg(name="Lookup", annotation=Union[StructA, StructB])
+    )
+    assert len(schema.one_of) == 2
+    assert schema.one_of == [
+        Reference(ref="#/components/schemas/tests_unit_test_openapi_test_schema_test_msgspec_struct_union.StructA"),
+        Reference("#/components/schemas/tests_unit_test_openapi_test_schema_test_msgspec_struct_union.StructB"),
+    ]
+
+
+def test_msgspec_struct_union_with_none() -> None:
+    class StructA(msgspec.Struct):
+        a: int
+
+    class StructB(msgspec.Struct):
+        a: int
+
+    schema = get_schema_for_field_definition(
+        FieldDefinition.from_kwarg(name="Lookup", annotation=Union[StructA, StructB, None])
+    )
+    assert len(schema.one_of) == 3
+    assert schema.one_of == [
+        Schema(type=OpenAPIType.NULL),
+        Reference(
+            ref="#/components/schemas/tests_unit_test_openapi_test_schema_test_msgspec_struct_union_with_none.StructA"
+        ),
+        Reference(
+            "#/components/schemas/tests_unit_test_openapi_test_schema_test_msgspec_struct_union_with_none.StructB"
+        ),
+    ]
