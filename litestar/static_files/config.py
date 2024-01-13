@@ -97,7 +97,7 @@ class StaticFilesConfig:
         )(static_files)
 
 
-def create_static_router(
+def create_static_files_router(
     path: str,
     directories: list[PathType],
     file_system: Any = None,

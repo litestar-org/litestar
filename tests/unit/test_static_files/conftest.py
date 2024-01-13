@@ -10,7 +10,7 @@ from typing_extensions import TypeAlias
 
 from litestar import Router
 from litestar.file_system import BaseLocalFileSystem
-from litestar.static_files import StaticFilesConfig, create_static_router
+from litestar.static_files import StaticFilesConfig, create_static_files_router
 from litestar.types import FileSystemProtocol
 
 MakeConfig: TypeAlias = "Callable[[StaticFilesConfig], tuple[list[StaticFilesConfig], list[Router]]]"
@@ -21,7 +21,7 @@ def make_config(request: FixtureRequest) -> MakeConfig:
     def make(config: StaticFilesConfig) -> tuple[list[StaticFilesConfig], list[Router]]:
         if request.param == "config":
             return [config], []
-        return [], [create_static_router(**asdict(config))]
+        return [], [create_static_files_router(**asdict(config))]
 
     return make
 

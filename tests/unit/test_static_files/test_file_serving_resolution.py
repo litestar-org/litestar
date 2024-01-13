@@ -10,7 +10,7 @@ import pytest
 from typing_extensions import TypeAlias
 
 from litestar import MediaType, Router, get
-from litestar.static_files import StaticFilesConfig, create_static_router
+from litestar.static_files import StaticFilesConfig, create_static_files_router
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 from tests.unit.test_static_files.conftest import MakeConfig
@@ -287,7 +287,7 @@ def test_resolve_symlinks(tmp_path: Path, resolve: bool) -> None:
     linked_dir.symlink_to(source_dir, target_is_directory=True)
     source_dir.joinpath("test.txt").write_text("hello")
 
-    router = create_static_router(path="/", directories=[linked_dir], resolve_symlinks=resolve)
+    router = create_static_files_router(path="/", directories=[linked_dir], resolve_symlinks=resolve)
 
     with create_test_client(router) as client:
         if not resolve:

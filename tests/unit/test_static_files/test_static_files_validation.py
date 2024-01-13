@@ -4,7 +4,7 @@ import pytest
 
 from litestar import HttpMethod, Litestar, MediaType, get
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.static_files import StaticFilesConfig, create_static_router
+from litestar.static_files import StaticFilesConfig, create_static_files_router
 from litestar.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_405_METHOD_NOT_ALLOWED
 from litestar.testing import create_test_client
 
@@ -12,13 +12,13 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
-@pytest.mark.parametrize("func", [StaticFilesConfig, create_static_router])
+@pytest.mark.parametrize("func", [StaticFilesConfig, create_static_files_router])
 def test_config_validation_of_directories(func: Any) -> None:
     with pytest.raises(ImproperlyConfiguredException):
         func(path="/static", directories=[])
 
 
-@pytest.mark.parametrize("func", [StaticFilesConfig, create_static_router])
+@pytest.mark.parametrize("func", [StaticFilesConfig, create_static_files_router])
 def test_config_validation_of_path(tmpdir: "Path", func: Any) -> None:
     path = tmpdir / "text.txt"
     path.write_text("content", "utf-8")
@@ -30,7 +30,7 @@ def test_config_validation_of_path(tmpdir: "Path", func: Any) -> None:
         func(path="/{param:int}", directories=[tmpdir])
 
 
-@pytest.mark.parametrize("func", [StaticFilesConfig, create_static_router])
+@pytest.mark.parametrize("func", [StaticFilesConfig, create_static_files_router])
 def test_config_validation_of_file_system(tmpdir: "Path", func: Any) -> None:
     class FSWithoutOpen:
         def info(self) -> None:
@@ -109,6 +109,6 @@ def test_runtime_validation_of_request_method_create_handler(tmpdir: "Path", met
     path = tmpdir / "test.txt"
     path.write_text("content", "utf-8")
 
-    with create_test_client(create_static_router(path="/static", directories=[tmpdir])) as client:
+    with create_test_client(create_static_files_router(path="/static", directories=[tmpdir])) as client:
         response = client.request(method, "/static/test.txt")
         assert response.status_code == expected

@@ -5,11 +5,13 @@ from litestar.connection import ASGIConnection
 from litestar.datastructures import CacheControlHeader
 from litestar.exceptions import ValidationException
 from litestar.handlers import BaseRouteHandler
-from litestar.static_files import create_static_router
+from litestar.static_files import create_static_files_router
 
 
 def test_route_reverse() -> None:
-    app = Litestar(route_handlers=[create_static_router(path="/static", directories=["something"], name="static")])
+    app = Litestar(
+        route_handlers=[create_static_files_router(path="/static", directories=["something"], name="static")]
+    )
 
     assert app.route_reverse("static", file_path="foo.py") == "/static/foo.py"
 
@@ -36,7 +38,7 @@ def test_pass_options() -> None:
     security = [{"foo": ["bar"]}]
     tags = ["static", "random"]
 
-    router = create_static_router(
+    router = create_static_files_router(
         path="/",
         directories=["something"],
         guards=[guard],
@@ -67,5 +69,5 @@ def test_custom_router_class() -> None:
     class MyRouter(Router):
         pass
 
-    router = create_static_router("/", directories=["some"], router_class=MyRouter)
+    router = create_static_files_router("/", directories=["some"], router_class=MyRouter)
     assert isinstance(router, MyRouter)
