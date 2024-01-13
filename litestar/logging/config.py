@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Any, Callable, Literal, cast
 
 from litestar.exceptions import ImproperlyConfiguredException, MissingDependencyException
 from litestar.serialization import encode_json
+from litestar.serialization.msgspec_hooks import _msgspec_json_encoder
 
 __all__ = ("BaseLoggingConfig", "LoggingConfig", "StructLoggingConfig")
 
@@ -18,6 +19,7 @@ if TYPE_CHECKING:
 
     # these imports are duplicated on purpose so sphinx autodoc can find and link them
     from structlog.types import BindableLogger, Processor, WrappedLogger
+    from structlog.typing import EventDict
 
     from litestar.types import Logger, Scope
     from litestar.types.callable_types import ExceptionLoggingHandler, GetLogger
@@ -250,8 +252,12 @@ class LoggingConfig(BaseLoggingConfig):
         logger.setLevel(level)
 
 
-def default_json_serializer(value: Any, default: Callable[[Any], Any] | None = None) -> bytes:
-    return encode_json(value=value, serializer=default)
+def default_json_serializer(value: EventDict, **_: Any) -> bytes:
+    return _msgspec_json_encoder.encode(value)
+
+
+def stdlib_json_serializer(value: EventDict, **_: Any) -> str:
+    return _msgspec_json_encoder.encode(value).decode("utf-8")
 
 
 def default_structlog_processors(as_json: bool = True) -> list[Processor]:  # pyright: ignore
@@ -299,7 +305,7 @@ def default_structlog_standard_lib_processors(as_json: bool = True) -> list[Proc
             return [
                 structlog.stdlib.add_log_level,
                 structlog.stdlib.ExtraAdder(),
-                structlog.processors.JSONRenderer(serializer=default_json_serializer),
+                structlog.processors.JSONRenderer(serializer=stdlib_json_serializer),
             ]
         return [
             structlog.stdlib.add_log_level,
