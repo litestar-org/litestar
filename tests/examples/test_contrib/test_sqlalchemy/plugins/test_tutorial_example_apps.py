@@ -38,13 +38,13 @@ async def app(monkeypatch: MonkeyPatch, request: FixtureRequest) -> Litestar:
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
-        try:
-            monkeypatch.setattr(app_module, "create_async_engine", lambda *a, **kw: engine)
-        except AttributeError:
-            app_module.db_config.connection_string = None
-            app_module.db_config.engine_instance = engine
+    try:
+        monkeypatch.setattr(app_module, "create_async_engine", lambda *a, **kw: engine)
+    except AttributeError:
+        app_module.db_config.connection_string = None
+        app_module.db_config.engine_instance = engine
 
-        yield app_module.app
+    yield app_module.app
 
 
 @pytest.mark.skipif(sys.platform != "linux", reason="Unknown - fails on Windows and macOS, in CI only")
