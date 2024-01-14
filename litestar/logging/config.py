@@ -300,7 +300,7 @@ def default_json_serializer(value: EventDict, **_: Any) -> bytes:
     return _msgspec_json_encoder.encode(value)
 
 
-def stdlib_json_serializer(value: EventDict, **_: Any) -> str:
+def stdlib_json_serializer(value: EventDict, **_: Any) -> str:  # pragma: no cover
     return _msgspec_json_encoder.encode(value).decode("utf-8")
 
 
@@ -322,6 +322,7 @@ def default_structlog_processors(as_json: bool = True) -> list[Processor]:  # py
                 structlog.processors.TimeStamper(fmt="iso"),
                 structlog.processors.JSONRenderer(serializer=default_json_serializer),
             ]
+        #  pragma: no cover
         return [
             structlog.contextvars.merge_contextvars,
             structlog.processors.add_log_level,
@@ -354,6 +355,7 @@ def default_structlog_standard_lib_processors(as_json: bool = True) -> list[Proc
                 structlog.stdlib.ProcessorFormatter.remove_processors_meta,
                 structlog.processors.JSONRenderer(serializer=stdlib_json_serializer),
             ]
+        #  pragma: no cover
         return [
             structlog.processors.TimeStamper(fmt="iso"),
             structlog.stdlib.add_log_level,
