@@ -1,3 +1,4 @@
+import pytest
 from pytest import CaptureFixture
 from structlog.processors import JSONRenderer
 from structlog.types import BindableLogger
@@ -33,7 +34,7 @@ def test_structlog_plugin(capsys: CaptureFixture) -> None:
         assert log_messages[0] == {"event": "message", "key": "value", "level": "info"}
 
 
-def test_structlog_config_default(capsys: CaptureFixture) -> None:
+def test_structlog_config_no_tty_default(capsys: CaptureFixture) -> None:
     with create_test_client([], logging_config=StructLoggingConfig()) as client:
         assert client.app.logger
         assert isinstance(client.app.logger.bind(), BindableLogger)
@@ -45,6 +46,22 @@ def test_structlog_config_default(capsys: CaptureFixture) -> None:
         # Format should be: {event: message, key: value, level: info, timestamp: isoformat}
         log_messages[0].pop("timestamp")  # Assume structlog formats timestamp correctly
         assert log_messages[0] == {"event": "message", "key": "value", "level": "info"}
+
+
+def test_structlog_config_tty_default(capsys: CaptureFixture, monkeypatch: pytest.MonkeyPatch) -> None:
+    from sys import stderr
+
+    monkeypatch.setattr(stderr, "isatty", lambda: True)
+
+    with create_test_client([], logging_config=StructLoggingConfig()) as client:
+        assert client.app.logger
+        assert isinstance(client.app.logger.bind(), BindableLogger)
+        client.app.logger.info("message", key="value")
+
+        log_messages = capsys.readouterr().out.splitlines()
+        assert len(log_messages) == 1
+
+        assert log_messages[0].startswith("\x1b[")
 
 
 def test_structlog_config_specify_processors(capsys: CaptureFixture) -> None:
