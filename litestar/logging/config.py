@@ -15,6 +15,7 @@ __all__ = ("BaseLoggingConfig", "LoggingConfig", "StructLoggingConfig")
 
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
     from typing import NoReturn
 
     # these imports are duplicated on purpose so sphinx autodoc can find and link them
@@ -252,6 +253,49 @@ class LoggingConfig(BaseLoggingConfig):
         logger.setLevel(level)
 
 
+class StructlogEventFilter:
+    """Remove keys from the log event.
+
+    Add an instance to the processor chain.
+
+    .. code-block:: python
+        :caption: Examples
+
+        structlog.configure(
+            ...,
+            processors=[
+                ...,
+                EventFilter(["color_message"]),
+                ...,
+            ],
+        )
+
+    """
+
+    def __init__(self, filter_keys: Iterable[str]) -> None:
+        """Initialize the EventFilter.
+
+        Args:
+            filter_keys: Iterable of string keys to be excluded from the log event.
+        """
+        self.filter_keys = filter_keys
+
+    def __call__(self, _: WrappedLogger, __: str, event_dict: EventDict) -> EventDict:
+        """Receive the log event, and filter keys.
+
+        Args:
+            _ ():
+            __ ():
+            event_dict (): The data to be logged.
+
+        Returns:
+            The log event with any key in `self.filter_keys` removed.
+        """
+        for key in self.filter_keys:
+            event_dict.pop(key, None)
+        return event_dict
+
+
 def default_json_serializer(value: EventDict, **_: Any) -> bytes:
     return _msgspec_json_encoder.encode(value)
 
@@ -306,12 +350,16 @@ def default_structlog_standard_lib_processors(as_json: bool = True) -> list[Proc
                 structlog.processors.TimeStamper(fmt="iso"),
                 structlog.stdlib.add_log_level,
                 structlog.stdlib.ExtraAdder(),
+                StructlogEventFilter(["color_message"]),
+                structlog.stdlib.ProcessorFormatter.remove_processors_meta,
                 structlog.processors.JSONRenderer(serializer=stdlib_json_serializer),
             ]
         return [
             structlog.processors.TimeStamper(fmt="iso"),
             structlog.stdlib.add_log_level,
             structlog.stdlib.ExtraAdder(),
+            StructlogEventFilter(["color_message"]),
+            structlog.stdlib.ProcessorFormatter.remove_processors_meta,
             structlog.dev.ConsoleRenderer(
                 colors=True, exception_formatter=RichTracebackFormatter(max_frames=1, show_locals=False, width=80)
             ),

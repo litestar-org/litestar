@@ -2,13 +2,21 @@ from pytest import CaptureFixture
 from structlog.processors import JSONRenderer
 from structlog.types import BindableLogger
 
-from litestar.logging.config import StructLoggingConfig, default_json_serializer
+from litestar.logging.config import StructlogEventFilter, StructLoggingConfig, default_json_serializer
 from litestar.plugins.structlog import StructlogPlugin
 from litestar.serialization import decode_json
 from litestar.testing import create_test_client
 
 # structlog.testing.capture_logs changes the processors
 # Because we want to test processors, use capsys instead
+
+
+def test_event_filter() -> None:
+    """Functionality test for the event filter processor."""
+    event_filter = StructlogEventFilter(["a_key"])
+    log_event = {"a_key": "a_val", "b_key": "b_val"}
+    log_event = event_filter(..., "", log_event)  # type:ignore[assignment]
+    assert log_event == {"b_key": "b_val"}
 
 
 def test_structlog_plugin(capsys: CaptureFixture) -> None:
