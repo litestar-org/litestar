@@ -3,8 +3,8 @@ from pytest import CaptureFixture
 from structlog.processors import JSONRenderer
 from structlog.types import BindableLogger
 
-from litestar.logging.config import StructlogEventFilter, StructLoggingConfig, default_json_serializer
-from litestar.plugins.structlog import StructlogPlugin
+from litestar.logging.config import LoggingConfig, StructlogEventFilter, StructLoggingConfig, default_json_serializer
+from litestar.plugins.structlog import StructlogConfig, StructlogPlugin
 from litestar.serialization import decode_json
 from litestar.testing import create_test_client
 
@@ -32,6 +32,40 @@ def test_structlog_plugin(capsys: CaptureFixture) -> None:
         # Format should be: {event: message, key: value, level: info, timestamp: isoformat}
         log_messages[0].pop("timestamp")  # Assume structlog formats timestamp correctly
         assert log_messages[0] == {"event": "message", "key": "value", "level": "info"}
+
+
+def test_structlog_plugin_config(capsys: CaptureFixture) -> None:
+    config = StructlogConfig()
+    with create_test_client([], plugins=[StructlogPlugin(config=config)]) as client:
+        assert client.app.logger
+        assert isinstance(client.app.logger.bind(), BindableLogger)
+        client.app.logger.info("message", key="value")
+
+        log_messages = [decode_json(value=x) for x in capsys.readouterr().out.splitlines()]
+        assert len(log_messages) == 1
+        assert client.app.plugins.get_plugin(StructlogPlugin)._config == config
+
+
+def test_structlog_plugin_config_custom_standard_logger(capsys: CaptureFixture) -> None:
+    standard_logging_config = LoggingConfig()
+    structlog_logging_config = StructLoggingConfig(standard_lib_logging_config=standard_logging_config)
+    config = StructlogConfig(structlog_logging_config=structlog_logging_config)
+    with create_test_client([], plugins=[StructlogPlugin(config=config)]) as client:
+        assert client.app.plugins.get(StructlogPlugin)._config == config
+        assert (
+            client.app.plugins.get(StructlogPlugin)._config.structlog_logging_config.standard_lib_logging_config
+            == standard_logging_config
+        )
+
+
+def test_structlog_plugin_config_with_existing_logging_config(capsys: CaptureFixture) -> None:
+    existing_log_config = StructLoggingConfig()
+    standard_logging_config = LoggingConfig()
+    structlog_logging_config = StructLoggingConfig(standard_lib_logging_config=standard_logging_config)
+    config = StructlogConfig(structlog_logging_config=structlog_logging_config)
+    with create_test_client([], logging_config=existing_log_config, plugins=[StructlogPlugin(config=config)]) as client:
+        assert client.app.plugins.get(StructlogPlugin)._config == config
+        assert "Found pre-configured" in capsys.readouterr().out
 
 
 def test_structlog_config_no_tty_default(capsys: CaptureFixture) -> None:
