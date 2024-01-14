@@ -69,7 +69,7 @@ def test_structlog_plugin_config(capsys: CaptureFixture) -> None:
         assert client.app.plugins.get(StructlogPlugin)._config == config
 
 
-def test_structlog_plugin_config_custom_standard_logger(capsys: CaptureFixture) -> None:
+def test_structlog_plugin_config_custom_standard_logger() -> None:
     standard_logging_config = LoggingConfig()
     structlog_logging_config = StructLoggingConfig(standard_lib_logging_config=standard_logging_config)
     config = StructlogConfig(structlog_logging_config=structlog_logging_config)
@@ -78,6 +78,18 @@ def test_structlog_plugin_config_custom_standard_logger(capsys: CaptureFixture) 
         assert (
             client.app.plugins.get(StructlogPlugin)._config.structlog_logging_config.standard_lib_logging_config
             == standard_logging_config
+        )
+
+
+def test_structlog_plugin_config_custom() -> None:
+    structlog_logging_config = StructLoggingConfig(standard_lib_logging_config=None)
+    config = StructlogConfig(structlog_logging_config=structlog_logging_config)
+    with create_test_client([], plugins=[StructlogPlugin(config=config)]) as client:
+        assert client.app.plugins.get(StructlogPlugin)._config == config
+        assert client.app.plugins.get(StructlogPlugin)._config.structlog_logging_config == structlog_logging_config
+        assert (
+            client.app.plugins.get(StructlogPlugin)._config.structlog_logging_config.standard_lib_logging_config
+            is not None
         )
 
 
