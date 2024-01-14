@@ -157,7 +157,9 @@ We can now create our authentication middleware:
             engine = cast("AsyncEngine", connection.app.state.postgres_connection)
             async with AsyncSession(engine) as async_session:
                 async with async_session.begin():
-                    user = await async_session.execute(select(User).where(User.id == token.sub))
+                    user = await async_session.execute(
+                        select(User).where(User.id == token.sub)
+                    )
             if not user:
                 raise NotAuthorizedException()
             return AuthenticationResult(user=user, auth=token)
