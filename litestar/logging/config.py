@@ -4,7 +4,6 @@ import sys
 from abc import ABC, abstractmethod
 from dataclasses import asdict, dataclass, field
 from importlib.util import find_spec
-from logging import INFO
 from typing import TYPE_CHECKING, Any, Callable, Literal, cast
 
 from litestar.exceptions import ImproperlyConfiguredException, MissingDependencyException
@@ -366,21 +365,6 @@ def default_structlog_standard_lib_processors(as_json: bool = True) -> list[Proc
         ]
     except ImportError:
         return []
-
-
-def default_wrapper_class(log_level: int = INFO) -> type[BindableLogger] | None:  # pyright: ignore
-    """Set the default wrapper class for structlog.
-
-    Returns:
-        An optional wrapper class.
-    """
-
-    try:
-        import structlog
-
-        return structlog.make_filtering_bound_logger(log_level)
-    except ImportError:
-        return None
 
 
 def default_logger_factory(as_json: bool = True) -> Callable[..., WrappedLogger] | None:

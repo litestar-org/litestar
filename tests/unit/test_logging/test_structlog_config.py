@@ -1,7 +1,11 @@
+from typing import Callable
+
 import pytest
+import structlog
 from pytest import CaptureFixture
+from structlog import BytesLoggerFactory, get_logger
 from structlog.processors import JSONRenderer
-from structlog.types import BindableLogger
+from structlog.types import BindableLogger, WrappedLogger
 
 from litestar.logging.config import LoggingConfig, StructlogEventFilter, StructLoggingConfig, default_json_serializer
 from litestar.plugins.structlog import StructlogConfig, StructlogPlugin
@@ -18,6 +22,25 @@ def test_event_filter() -> None:
     log_event = {"a_key": "a_val", "b_key": "b_val"}
     log_event = event_filter(..., "", log_event)  # type:ignore[assignment]
     assert log_event == {"b_key": "b_val"}
+
+
+def test_set_level_custom_logger_factory() -> None:
+    """Functionality test for the event filter processor."""
+
+    def custom_logger_factory() -> Callable[..., WrappedLogger]:
+        """Set the default logger factory for structlog.
+
+        Returns:
+            An optional logger factory.
+        """
+        return BytesLoggerFactory()
+
+    log_config = StructLoggingConfig(logger_factory=custom_logger_factory, wrapper_class=structlog.stdlib.BoundLogger)
+    logger = get_logger()
+    assert logger.bind().__class__.__name__ != "BoundLoggerFilteringAtDebug"
+    log_config.set_level(logger, 10)
+    logger.info("a message")
+    assert logger.bind().__class__.__name__ == "BoundLoggerFilteringAtDebug"
 
 
 def test_structlog_plugin(capsys: CaptureFixture) -> None:
