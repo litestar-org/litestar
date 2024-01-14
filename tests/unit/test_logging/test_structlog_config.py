@@ -43,7 +43,7 @@ def test_structlog_plugin_config(capsys: CaptureFixture) -> None:
 
         log_messages = [decode_json(value=x) for x in capsys.readouterr().out.splitlines()]
         assert len(log_messages) == 1
-        assert client.app.plugins.get_plugin(StructlogPlugin)._config == config
+        assert client.app.plugins.get(StructlogPlugin)._config == config
 
 
 def test_structlog_plugin_config_custom_standard_logger(capsys: CaptureFixture) -> None:
