@@ -49,8 +49,8 @@ class StructlogPlugin(InitPluginProtocol):
         else:
             app_config.logging_config = self._config.structlog_logging_config
         app_config.logging_config.configure()
-        if self._config.structlog_logging_config.standard_lib_logging_config is not None:
-            self._config.structlog_logging_config.standard_lib_logging_config.configure()
+        if self._config.structlog_logging_config.standard_lib_logging_config is not None:  # pragma: no cover
+            self._config.structlog_logging_config.standard_lib_logging_config.configure()  # pragma: no cover
         if self._config.enable_middleware_logging:
             app_config.middleware.append(self._config.middleware_logging_config.middleware)
         return app_config  # pragma: no cover

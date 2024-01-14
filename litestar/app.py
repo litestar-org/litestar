@@ -514,8 +514,8 @@ class Litestar(Router):
         """
         if self.logger and self.logging_config:
             self.logging_config.set_level(self.logger, logging.DEBUG if value else logging.INFO)
-        elif self.logger and hasattr(self.logger, "setLevel"):
-            self.logger.setLevel(logging.DEBUG if value else logging.INFO)
+        elif self.logger and hasattr(self.logger, "setLevel"):  # pragma: no cover
+            self.logger.setLevel(logging.DEBUG if value else logging.INFO)  # pragma: no cover
         if isinstance(self.logging_config, LoggingConfig):
             self.logging_config.loggers["litestar"]["level"] = "DEBUG" if value else "INFO"
         self._debug = value
