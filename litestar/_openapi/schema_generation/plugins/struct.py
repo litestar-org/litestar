@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
 class StructSchemaPlugin(OpenAPISchemaPlugin):
     def is_plugin_supported_field(self, field_definition: FieldDefinition) -> bool:
-        return field_definition.is_subclass_of(Struct)
+        return not field_definition.is_union and field_definition.is_subclass_of(Struct)
 
     def to_openapi_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:
         def is_field_required(field: FieldInfo) -> bool:

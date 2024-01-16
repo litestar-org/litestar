@@ -34,7 +34,7 @@ async def app(monkeypatch: MonkeyPatch, request: FixtureRequest) -> Litestar:
 
     app_module = request.param
 
-    engine = create_async_engine("sqlite+aiosqlite://")
+    engine = create_async_engine("sqlite+aiosqlite://", connect_args={"check_same_thread": False})
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
@@ -44,7 +44,7 @@ async def app(monkeypatch: MonkeyPatch, request: FixtureRequest) -> Litestar:
         app_module.db_config.connection_string = None
         app_module.db_config.engine_instance = engine
 
-    return app_module.app
+    yield app_module.app
 
 
 @pytest.mark.skipif(sys.platform != "linux", reason="Unknown - fails on Windows and macOS, in CI only")

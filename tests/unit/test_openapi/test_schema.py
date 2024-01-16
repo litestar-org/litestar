@@ -491,3 +491,61 @@ def test_process_schema_result_with_unregistered_object_schema() -> None:
     schema = Schema(title="has title", type=OpenAPIType.OBJECT)
     field_definition = FieldDefinition.from_annotation(dict)
     assert SchemaCreator().process_schema_result(field_definition, schema) is schema
+
+
+@pytest.mark.parametrize("base_type", [msgspec.Struct, TypedDict, dataclass])
+def test_type_union(base_type: type) -> None:
+    if base_type is dataclass:  # type: ignore[comparison-overlap]
+
+        @dataclass
+        class ModelA:  # pyright: ignore
+            pass
+
+        @dataclass
+        class ModelB:  # pyright: ignore
+            pass
+    else:
+
+        class ModelA(base_type):  # type: ignore[no-redef, misc]
+            pass
+
+        class ModelB(base_type):  # type: ignore[no-redef, misc]
+            pass
+
+    schema = get_schema_for_field_definition(
+        FieldDefinition.from_kwarg(name="Lookup", annotation=Union[ModelA, ModelB])
+    )
+    assert schema.one_of == [
+        Reference(ref="#/components/schemas/tests_unit_test_openapi_test_schema_test_type_union.ModelA"),
+        Reference(ref="#/components/schemas/tests_unit_test_openapi_test_schema_test_type_union.ModelB"),
+    ]
+
+
+@pytest.mark.parametrize("base_type", [msgspec.Struct, TypedDict, dataclass])
+def test_type_union_with_none(base_type: type) -> None:
+    # https://github.com/litestar-org/litestar/issues/2971
+    if base_type is dataclass:  # type: ignore[comparison-overlap]
+
+        @dataclass
+        class ModelA:  # pyright: ignore
+            pass
+
+        @dataclass
+        class ModelB:  # pyright: ignore
+            pass
+    else:
+
+        class ModelA(base_type):  # type: ignore[no-redef, misc]
+            pass
+
+        class ModelB(base_type):  # type: ignore[no-redef, misc]
+            pass
+
+    schema = get_schema_for_field_definition(
+        FieldDefinition.from_kwarg(name="Lookup", annotation=Union[ModelA, ModelB, None])
+    )
+    assert schema.one_of == [
+        Schema(type=OpenAPIType.NULL),
+        Reference(ref="#/components/schemas/tests_unit_test_openapi_test_schema_test_type_union_with_none.ModelA"),
+        Reference("#/components/schemas/tests_unit_test_openapi_test_schema_test_type_union_with_none.ModelB"),
+    ]
