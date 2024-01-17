@@ -92,7 +92,6 @@ sqlalchemy = ["advanced-alchemy>=0.2.2,<1.0.0"]
 standard = ["jinja2", "jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0; sys_platform != 'win32'", "fast-query-parsers>=1.0.2"]
 structlog = ["structlog"]
 
-
 [tool.pdm]
 ignore_package_warnings = ["sphinx", "slotscheck"]
 
@@ -114,16 +113,16 @@ dev = [
 ]
 dev-contrib = ["opentelemetry-sdk", "httpx-sse"]
 docs = [
-    "sphinx>=7.1.2",
-    "sphinx-autobuild>=2021.3.14",
-    "sphinx-copybutton>=0.5.2",
-    "sphinx-toolbox>=3.5.0",
-    "blacken-docs>=1.16.0",
-    "sphinx-design>=0.5.0",
-    "sphinx-click>=4.4.0",
-    "sphinxcontrib-mermaid>=0.9.2",
-    "auto-pytabs[sphinx]>=0.4.0",
-    "litestar-sphinx-theme @ git+https://github.com/litestar-org/litestar-sphinx-theme.git",
+  "sphinx>=7.1.2",
+  "sphinx-autobuild>=2021.3.14",
+  "sphinx-copybutton>=0.5.2",
+  "sphinx-toolbox>=3.5.0",
+  "blacken-docs>=1.16.0",
+  "sphinx-design>=0.5.0",
+  "sphinx-click>=4.4.0",
+  "sphinxcontrib-mermaid>=0.9.2",
+  "auto-pytabs[sphinx]>=0.4.0",
+  "litestar-sphinx-theme @ git+https://github.com/litestar-org/litestar-sphinx-theme.git",
 ]
 linting = [
   "ruff",
@@ -152,12 +151,6 @@ test = [
   "time-machine",
 ]
 
-[tool.pdm.scripts]
-ci = {composite = ["lint", "test"]}
-docs-serve = "sphinx-autobuild docs docs/_build/ -j auto --watch litestar --watch docs --watch tests --port 8002"
-lint = "pre-commit run --all-files"
-test = "pytest tests docs/examples"
-
 [project.scripts]
 litestar = "litestar.__main__:run_cli"
 
@@ -176,6 +169,12 @@ include = [
 [build-system]
 build-backend = "hatchling.build"
 requires = ["hatchling"]
+
+[tool.pdm.scripts]
+ci = {composite = ["lint", "test"]}
+docs-serve = "sphinx-autobuild docs docs/_build/ -j auto --watch litestar --watch docs --watch tests --port 8002"
+lint = "pre-commit run --all-files"
+test = "pytest tests docs/examples"
 
 [tool.codespell]
 ignore-words-list = "selectin"
