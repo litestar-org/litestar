@@ -1,28 +1,28 @@
-from typing import Any, Union
+from __future__ import annotations
 
 
 class SecretValue:
     """Represents a secret value that can be of type `str` or `bytes`."""
 
-    def __init__(self, secret_value: Union[str, bytes]):
+    def __init__(self, secret_value: str | bytes):
         """Initializes a SecretValue object with a secret value of type `str` or `bytes`.
 
         Args:
-            secret_value (Union[str, bytes]): The secret value to be encapsulated.
+            secret_value (str | bytes): The secret value to be encapsulated.
         """
 
         self._secret_value = secret_value
 
-    def get_value(self) -> Union[str, bytes]:
+    def get_value(self) -> str | bytes:
         """Returns the actual secret value.
 
         Returns:
-            Union[str, bytes]: The secret value.
+            str | bytes: The secret value.
         """
 
         return self._secret_value
 
-    def _get_hidden_value(self) -> Union[str, bytes]:
+    def _get_hidden_value(self) -> str | bytes:
         """Return the hidden representation of the secret value.
 
         Raises:
@@ -59,11 +59,11 @@ class SecretValue:
         class_name = self.__class__.__name__
         return f"{class_name}({self._get_hidden_value()!r})"
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         """Checks if the given object is equal to the current instance.
 
         Args:
-            other (Any): The object to compare.
+            other: The object to compare.
 
         Returns:
             bool: True if equal, False otherwise.
@@ -81,11 +81,11 @@ class SecretValue:
         return hash(self.get_value())
 
     @staticmethod
-    def _hide_value(value: Union[str, bytes]) -> str:
+    def _hide_value(value: str | bytes) -> str:
         """Hides the secret value.
 
         Args:
-            value (Union[str, bytes]): The secret value to be hidden.
+            value (str | bytes): The secret value to be hidden.
 
         Returns:
             str: The hidden representation of the secret value.
