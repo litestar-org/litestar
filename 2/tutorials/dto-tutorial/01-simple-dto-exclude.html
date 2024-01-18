@@ -1348,14 +1348,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../reference/router.html">router</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/routes.html">routes</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../reference/security/jwt.html"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth</span></code></a></li>
-
-
-
-
-
-
-
+<li class="toctree-l3"><a class="reference internal" href="../../reference/security/jwt.html">jwt</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/security/session_auth.html">session_auth</a></li>
 </ul>
 </li>
@@ -1550,7 +1543,7 @@ handler is also instructed to use the DTO to handle the response.</p>
 exclude the <code class="docutils literal notranslate"><span class="pre">email</span></code> field from the DTO, but there are many other configuration options available and we’ll cover most
 of them in this tutorial.</p>
 <p>The <a class="reference internal" href="../../reference/dto/dataclass_dto.html#litestar.dto.dataclass_dto.DataclassDTO" title="litestar.dto.dataclass_dto.DataclassDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataclassDTO</span></code></a> class is a factory class that specializes
-in creating DTOs from dataclasses. It is also a <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a> class, which means that it it accepts
+in creating DTOs from dataclasses. It is also a <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a> class, which means that it accepts
 a type parameter. When we provide a type parameter to a generic class it makes that class a specialized version of the
 generic class. In this case, we create a DTO type that specializes in transferring data to and from instances of the
 <code class="docutils literal notranslate"><span class="pre">Person</span></code> class (<code class="docutils literal notranslate"><span class="pre">DataclassDTO[Person]</span></code>).</p>

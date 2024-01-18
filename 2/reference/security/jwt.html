@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>&lt;no title&gt; &#8212; Litestar Framework</title>
+    <title>jwt &#8212; Litestar Framework</title>
   
   
   
@@ -1352,14 +1352,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../router.html">router</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../routes.html">routes</a></li>
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">security</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
-<li class="toctree-l3 current active"><a class="current reference internal" href="#"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth</span></code></a></li>
-
-
-
-
-
-
-
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">jwt</a></li>
 <li class="toctree-l3"><a class="reference internal" href="session_auth.html">session_auth</a></li>
 </ul>
 </li>
@@ -1494,7 +1487,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="index.html" class="nav-link">security</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">&lt;no title&gt;</li>
+    <li class="breadcrumb-item active" aria-current="page">jwt</li>
   </ul>
 </nav>
 </div>
@@ -1511,7 +1504,9 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <span class="target" id="module-litestar.security.jwt"></span><dl class="py class">
+  <section id="module-litestar.security.jwt">
+<span id="jwt"></span><h1>jwt<a class="headerlink" href="#module-litestar.security.jwt" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
 <dt class="sig sig-object py" id="litestar.security.jwt.BaseJWTAuth">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.security.jwt.</span></span><span class="sig-name descname"><span class="pre">BaseJWTAuth</span></span><a class="headerlink" href="#litestar.security.jwt.BaseJWTAuth" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">UserType</span></code>], <a class="reference internal" href="index.html#litestar.security.AbstractSecurityConfig" title="litestar.security.base.AbstractSecurityConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractSecurityConfig</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">UserType</span></code>, <a class="reference internal" href="#litestar.security.jwt.Token" title="litestar.security.jwt.token.Token"><code class="xref py py-class docutils literal notranslate"><span class="pre">Token</span></code></a>]</p>
@@ -2483,6 +2478,7 @@ Note: if a response body is passed this setting will be ignored.</p></li>
 
 </dd></dl>
 
+</section>
 
 
                 </article>
@@ -2528,133 +2524,132 @@ Note: if a response body is passed this setting will be ignored.</p></li>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.BaseJWTAuth.token_secret"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth.token_secret</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.BaseJWTAuth.retrieve_user_handler"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth.retrieve_user_handler</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.BaseJWTAuth.algorithm"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth.algorithm</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.BaseJWTAuth.auth_header"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth.auth_header</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.BaseJWTAuth.default_token_expiration"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth.default_token_expiration</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.BaseJWTAuth.openapi_security_scheme_name"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth.openapi_security_scheme_name</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.BaseJWTAuth.description"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth.description</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.BaseJWTAuth.authentication_middleware_class"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth.authentication_middleware_class</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.BaseJWTAuth.openapi_components"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth.openapi_components</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.BaseJWTAuth.security_requirement"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth.security_requirement</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.BaseJWTAuth.middleware"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth.middleware</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.BaseJWTAuth.login"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth.login()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.BaseJWTAuth.create_token"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth.create_token()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.BaseJWTAuth.format_auth_header"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth.format_auth_header()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.BaseJWTAuth"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.BaseJWTAuth.token_secret"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth.token_secret</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.BaseJWTAuth.retrieve_user_handler"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth.retrieve_user_handler</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.BaseJWTAuth.algorithm"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth.algorithm</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.BaseJWTAuth.auth_header"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth.auth_header</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.BaseJWTAuth.default_token_expiration"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth.default_token_expiration</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.BaseJWTAuth.openapi_security_scheme_name"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth.openapi_security_scheme_name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.BaseJWTAuth.description"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth.description</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.BaseJWTAuth.authentication_middleware_class"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth.authentication_middleware_class</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.BaseJWTAuth.openapi_components"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth.openapi_components</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.BaseJWTAuth.security_requirement"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth.security_requirement</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.BaseJWTAuth.middleware"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth.middleware</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.BaseJWTAuth.login"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth.login()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.BaseJWTAuth.create_token"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth.create_token()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.BaseJWTAuth.format_auth_header"><code class="docutils literal notranslate"><span class="pre">BaseJWTAuth.format_auth_header()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuth"><code class="docutils literal notranslate"><span class="pre">JWTAuth</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuth.token_secret"><code class="docutils literal notranslate"><span class="pre">JWTAuth.token_secret</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuth.retrieve_user_handler"><code class="docutils literal notranslate"><span class="pre">JWTAuth.retrieve_user_handler</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuth.guards"><code class="docutils literal notranslate"><span class="pre">JWTAuth.guards</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuth.exclude"><code class="docutils literal notranslate"><span class="pre">JWTAuth.exclude</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuth.exclude_opt_key"><code class="docutils literal notranslate"><span class="pre">JWTAuth.exclude_opt_key</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuth.scopes"><code class="docutils literal notranslate"><span class="pre">JWTAuth.scopes</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuth.route_handlers"><code class="docutils literal notranslate"><span class="pre">JWTAuth.route_handlers</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuth.dependencies"><code class="docutils literal notranslate"><span class="pre">JWTAuth.dependencies</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuth.type_encoders"><code class="docutils literal notranslate"><span class="pre">JWTAuth.type_encoders</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuth.algorithm"><code class="docutils literal notranslate"><span class="pre">JWTAuth.algorithm</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuth.auth_header"><code class="docutils literal notranslate"><span class="pre">JWTAuth.auth_header</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuth.default_token_expiration"><code class="docutils literal notranslate"><span class="pre">JWTAuth.default_token_expiration</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuth.openapi_security_scheme_name"><code class="docutils literal notranslate"><span class="pre">JWTAuth.openapi_security_scheme_name</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuth.description"><code class="docutils literal notranslate"><span class="pre">JWTAuth.description</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuth.authentication_middleware_class"><code class="docutils literal notranslate"><span class="pre">JWTAuth.authentication_middleware_class</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuth.__init__"><code class="docutils literal notranslate"><span class="pre">JWTAuth.__init__()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuth"><code class="docutils literal notranslate"><span class="pre">JWTAuth</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuth.token_secret"><code class="docutils literal notranslate"><span class="pre">JWTAuth.token_secret</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuth.retrieve_user_handler"><code class="docutils literal notranslate"><span class="pre">JWTAuth.retrieve_user_handler</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuth.guards"><code class="docutils literal notranslate"><span class="pre">JWTAuth.guards</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuth.exclude"><code class="docutils literal notranslate"><span class="pre">JWTAuth.exclude</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuth.exclude_opt_key"><code class="docutils literal notranslate"><span class="pre">JWTAuth.exclude_opt_key</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuth.scopes"><code class="docutils literal notranslate"><span class="pre">JWTAuth.scopes</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuth.route_handlers"><code class="docutils literal notranslate"><span class="pre">JWTAuth.route_handlers</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuth.dependencies"><code class="docutils literal notranslate"><span class="pre">JWTAuth.dependencies</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuth.type_encoders"><code class="docutils literal notranslate"><span class="pre">JWTAuth.type_encoders</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuth.algorithm"><code class="docutils literal notranslate"><span class="pre">JWTAuth.algorithm</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuth.auth_header"><code class="docutils literal notranslate"><span class="pre">JWTAuth.auth_header</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuth.default_token_expiration"><code class="docutils literal notranslate"><span class="pre">JWTAuth.default_token_expiration</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuth.openapi_security_scheme_name"><code class="docutils literal notranslate"><span class="pre">JWTAuth.openapi_security_scheme_name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuth.description"><code class="docutils literal notranslate"><span class="pre">JWTAuth.description</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuth.authentication_middleware_class"><code class="docutils literal notranslate"><span class="pre">JWTAuth.authentication_middleware_class</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuth.__init__"><code class="docutils literal notranslate"><span class="pre">JWTAuth.__init__()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuthenticationMiddleware"><code class="docutils literal notranslate"><span class="pre">JWTAuthenticationMiddleware</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuthenticationMiddleware.__init__"><code class="docutils literal notranslate"><span class="pre">JWTAuthenticationMiddleware.__init__()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuthenticationMiddleware.authenticate_request"><code class="docutils literal notranslate"><span class="pre">JWTAuthenticationMiddleware.authenticate_request()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuthenticationMiddleware.authenticate_token"><code class="docutils literal notranslate"><span class="pre">JWTAuthenticationMiddleware.authenticate_token()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuthenticationMiddleware"><code class="docutils literal notranslate"><span class="pre">JWTAuthenticationMiddleware</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuthenticationMiddleware.__init__"><code class="docutils literal notranslate"><span class="pre">JWTAuthenticationMiddleware.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuthenticationMiddleware.authenticate_request"><code class="docutils literal notranslate"><span class="pre">JWTAuthenticationMiddleware.authenticate_request()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTAuthenticationMiddleware.authenticate_token"><code class="docutils literal notranslate"><span class="pre">JWTAuthenticationMiddleware.authenticate_token()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.token_secret"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.token_secret</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.retrieve_user_handler"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.retrieve_user_handler</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.guards"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.guards</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.exclude"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.exclude</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.exclude_opt_key"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.exclude_opt_key</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.scopes"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.scopes</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.route_handlers"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.route_handlers</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.dependencies"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.dependencies</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.type_encoders"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.type_encoders</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.algorithm"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.algorithm</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.auth_header"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.auth_header</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.default_token_expiration"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.default_token_expiration</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.openapi_security_scheme_name"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.openapi_security_scheme_name</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.key"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.key</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.path"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.path</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.__init__"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.__init__()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.domain"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.domain</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.secure"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.secure</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.samesite"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.samesite</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.description"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.description</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.authentication_middleware_class"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.authentication_middleware_class</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.openapi_components"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.openapi_components</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.middleware"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.middleware</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.login"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.login()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.token_secret"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.token_secret</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.retrieve_user_handler"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.retrieve_user_handler</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.guards"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.guards</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.exclude"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.exclude</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.exclude_opt_key"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.exclude_opt_key</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.scopes"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.scopes</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.route_handlers"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.route_handlers</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.dependencies"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.dependencies</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.type_encoders"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.type_encoders</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.algorithm"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.algorithm</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.auth_header"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.auth_header</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.default_token_expiration"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.default_token_expiration</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.openapi_security_scheme_name"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.openapi_security_scheme_name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.key"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.key</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.path"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.path</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.__init__"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.domain"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.domain</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.secure"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.secure</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.samesite"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.samesite</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.description"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.description</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.authentication_middleware_class"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.authentication_middleware_class</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.openapi_components"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.openapi_components</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.middleware"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.middleware</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuth.login"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuth.login()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuthenticationMiddleware"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuthenticationMiddleware</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuthenticationMiddleware.__init__"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuthenticationMiddleware.__init__()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuthenticationMiddleware.authenticate_request"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuthenticationMiddleware.authenticate_request()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuthenticationMiddleware"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuthenticationMiddleware</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuthenticationMiddleware.__init__"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuthenticationMiddleware.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.JWTCookieAuthenticationMiddleware.authenticate_request"><code class="docutils literal notranslate"><span class="pre">JWTCookieAuthenticationMiddleware.authenticate_request()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2Login"><code class="docutils literal notranslate"><span class="pre">OAuth2Login</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2Login.__init__"><code class="docutils literal notranslate"><span class="pre">OAuth2Login.__init__()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2Login.access_token"><code class="docutils literal notranslate"><span class="pre">OAuth2Login.access_token</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2Login.token_type"><code class="docutils literal notranslate"><span class="pre">OAuth2Login.token_type</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2Login.refresh_token"><code class="docutils literal notranslate"><span class="pre">OAuth2Login.refresh_token</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2Login.expires_in"><code class="docutils literal notranslate"><span class="pre">OAuth2Login.expires_in</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2Login"><code class="docutils literal notranslate"><span class="pre">OAuth2Login</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2Login.__init__"><code class="docutils literal notranslate"><span class="pre">OAuth2Login.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2Login.access_token"><code class="docutils literal notranslate"><span class="pre">OAuth2Login.access_token</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2Login.token_type"><code class="docutils literal notranslate"><span class="pre">OAuth2Login.token_type</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2Login.refresh_token"><code class="docutils literal notranslate"><span class="pre">OAuth2Login.refresh_token</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2Login.expires_in"><code class="docutils literal notranslate"><span class="pre">OAuth2Login.expires_in</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.__init__"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.__init__()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.token_secret"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.token_secret</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.token_url"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.token_url</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.retrieve_user_handler"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.retrieve_user_handler</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.guards"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.guards</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.exclude"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.exclude</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.exclude_opt_key"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.exclude_opt_key</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.scopes"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.scopes</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.route_handlers"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.route_handlers</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.dependencies"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.dependencies</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.type_encoders"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.type_encoders</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.algorithm"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.algorithm</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.auth_header"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.auth_header</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.default_token_expiration"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.default_token_expiration</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.openapi_security_scheme_name"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.openapi_security_scheme_name</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.oauth_scopes"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.oauth_scopes</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.key"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.key</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.path"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.path</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.domain"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.domain</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.secure"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.secure</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.samesite"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.samesite</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.description"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.description</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.authentication_middleware_class"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.authentication_middleware_class</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.middleware"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.middleware</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.oauth_flow"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.oauth_flow</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.openapi_components"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.openapi_components</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.login"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.login()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.__init__"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.token_secret"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.token_secret</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.token_url"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.token_url</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.retrieve_user_handler"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.retrieve_user_handler</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.guards"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.guards</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.exclude"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.exclude</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.exclude_opt_key"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.exclude_opt_key</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.scopes"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.scopes</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.route_handlers"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.route_handlers</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.dependencies"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.dependencies</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.type_encoders"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.type_encoders</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.algorithm"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.algorithm</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.auth_header"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.auth_header</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.default_token_expiration"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.default_token_expiration</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.openapi_security_scheme_name"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.openapi_security_scheme_name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.oauth_scopes"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.oauth_scopes</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.key"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.key</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.path"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.path</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.domain"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.domain</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.secure"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.secure</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.samesite"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.samesite</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.description"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.description</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.authentication_middleware_class"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.authentication_middleware_class</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.middleware"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.middleware</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.oauth_flow"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.oauth_flow</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.openapi_components"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.openapi_components</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.OAuth2PasswordBearerAuth.login"><code class="docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth.login()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.Token"><code class="docutils literal notranslate"><span class="pre">Token</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.Token.exp"><code class="docutils literal notranslate"><span class="pre">Token.exp</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.Token.sub"><code class="docutils literal notranslate"><span class="pre">Token.sub</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.Token.iat"><code class="docutils literal notranslate"><span class="pre">Token.iat</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.Token.iss"><code class="docutils literal notranslate"><span class="pre">Token.iss</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.Token.aud"><code class="docutils literal notranslate"><span class="pre">Token.aud</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.Token.__init__"><code class="docutils literal notranslate"><span class="pre">Token.__init__()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.Token.jti"><code class="docutils literal notranslate"><span class="pre">Token.jti</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.Token.extras"><code class="docutils literal notranslate"><span class="pre">Token.extras</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.Token.decode"><code class="docutils literal notranslate"><span class="pre">Token.decode()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.Token.encode"><code class="docutils literal notranslate"><span class="pre">Token.encode()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.Token"><code class="docutils literal notranslate"><span class="pre">Token</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.Token.exp"><code class="docutils literal notranslate"><span class="pre">Token.exp</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.Token.sub"><code class="docutils literal notranslate"><span class="pre">Token.sub</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.Token.iat"><code class="docutils literal notranslate"><span class="pre">Token.iat</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.Token.iss"><code class="docutils literal notranslate"><span class="pre">Token.iss</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.Token.aud"><code class="docutils literal notranslate"><span class="pre">Token.aud</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.Token.__init__"><code class="docutils literal notranslate"><span class="pre">Token.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.Token.jti"><code class="docutils literal notranslate"><span class="pre">Token.jti</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.Token.extras"><code class="docutils literal notranslate"><span class="pre">Token.extras</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.Token.decode"><code class="docutils literal notranslate"><span class="pre">Token.decode()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.security.jwt.Token.encode"><code class="docutils literal notranslate"><span class="pre">Token.encode()</span></code></a></li>
 </ul>
 </li>
 </ul>
-
   </nav></div>
 
 </div></div>
