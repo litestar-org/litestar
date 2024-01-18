@@ -396,6 +396,7 @@ known-first-party = ["litestar", "tests", "examples"]
 ]
 "tests/unit/test_contrib/test_sqlalchemy/**/*.*" = ["UP006"]
 "tools/**/*.*" = ["D", "ARG", "EM", "TRY", "G", "FBT"]
+"tools/prepare_release.py" = ["S603", "S607"]
 
 [tool.unasyncd]
 add_editors_note = true
