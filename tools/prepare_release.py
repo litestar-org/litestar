@@ -6,6 +6,7 @@ import datetime
 import os
 import pathlib
 import re
+import shutil
 import subprocess
 from collections import defaultdict
 from dataclasses import dataclass
@@ -297,12 +298,12 @@ def _get_gh_token() -> str:
         click.secho("Using GitHub token from env", fg="blue")
         return gh_token
 
-    gh_executable = subprocess.run(["which", "gh"], check=True, capture_output=True, text=True).stdout
+    gh_executable = shutil.which("gh")
     if not gh_executable:
         click.secho("GitHub CLI not installed", fg="yellow")
     else:
         click.secho("Using GitHub CLI to obtain GitHub token", fg="blue")
-        proc = subprocess.run(["auth", "token"], executable=gh_executable, check=True, capture_output=True, text=True)
+        proc = subprocess.run([gh_executable, "auth", "token"], check=True, capture_output=True, text=True)
         if out := (proc.stdout or "").strip():
             return out
 
