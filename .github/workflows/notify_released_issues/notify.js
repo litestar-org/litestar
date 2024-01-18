@@ -1,7 +1,7 @@
 module.exports = async ({github, context, core}) => {
 
     const issues = JSON.parse(process.env.CLOSED_ISSUES)
-    const releaseURL = context.payload.release.url
+    const releaseURL = context.payload.release.html_url
     const releaseName = context.payload.release.name
     const baseBody = "A fix for this issue has been released in"
     const body = baseBody + ` [${releaseName}](${releaseURL})`

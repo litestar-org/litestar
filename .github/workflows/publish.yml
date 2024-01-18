@@ -99,6 +99,7 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
 
   notify-issues:
+    needs: publish-release
     name: Notify issues
     uses: ./.github/workflows/notify-released-issues.yml
     with:
