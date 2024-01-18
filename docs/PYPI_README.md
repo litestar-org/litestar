@@ -121,6 +121,7 @@ A **huge** thanks to our sponsors:
 
 <a href="https://github.com/scalar/scalar/?utm_source=litestar&utm_medium=website&utm_campaign=main-badge" target="_blank" title="Scalar.com - Document, Discover and Test APIs with Scalar."><img src="https://raw.githubusercontent.com/litestar-org/branding/main/assets/sponsors/scalar.svg" width="180" alt="Scalar.com"></a>
 <a href="https://telemetrysports.com/" title="Telemetry Sports - Changing the way data influences the sports experience"><img src="https://raw.githubusercontent.com/litestar-org/branding/main/assets/sponsors/telemetry-sports/unofficial-telemetry-whitebg.svg" width="150" alt="Telemetry Sports"></a>
+<a href="https://www.stok.kr/" title="Stok - Stack Up Your Assets!"><img src="https://avatars.githubusercontent.com/u/144093421?s=400&v=4" width="150" alt="Stok"></a>
 
 <a href="https://docs.litestar.dev/dev/#sponsors" class="external-link" target="_blank">Check out our sponsors in the docs</a>
 
