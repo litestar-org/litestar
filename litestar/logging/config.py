@@ -4,11 +4,13 @@ import sys
 from abc import ABC, abstractmethod
 from dataclasses import asdict, dataclass, field
 from importlib.util import find_spec
+from logging import INFO
 from typing import TYPE_CHECKING, Any, Callable, Literal, cast
 
 from litestar.exceptions import ImproperlyConfiguredException, MissingDependencyException
 from litestar.serialization import encode_json
 from litestar.serialization.msgspec_hooks import _msgspec_json_encoder
+from litestar.utils.deprecation import deprecated
 
 __all__ = ("BaseLoggingConfig", "LoggingConfig", "StructLoggingConfig")
 
@@ -478,3 +480,14 @@ class StructLoggingConfig(BaseLoggingConfig):
             structlog.configure(wrapper_class=structlog.make_filtering_bound_logger(level))
         except ImportError:
             """"""
+            return
+
+
+@deprecated(version="2.6.0", removal_in="3.0.0", alternative="`StructLoggingConfig.set_level`")
+def default_wrapper_class(log_level: int = INFO) -> type[BindableLogger] | None:  # pragma: no cover  # pyright: ignore
+    try:  # pragma: no cover
+        import structlog
+
+        return structlog.make_filtering_bound_logger(log_level)
+    except ImportError:
+        return None
