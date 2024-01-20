@@ -9,15 +9,19 @@ from typing import TYPE_CHECKING, Any, Callable, Literal, cast
 
 from litestar.exceptions import ImproperlyConfiguredException, MissingDependencyException
 from litestar.serialization import encode_json
+from litestar.serialization.msgspec_hooks import _msgspec_json_encoder
+from litestar.utils.deprecation import deprecated
 
 __all__ = ("BaseLoggingConfig", "LoggingConfig", "StructLoggingConfig")
 
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
     from typing import NoReturn
 
     # these imports are duplicated on purpose so sphinx autodoc can find and link them
     from structlog.types import BindableLogger, Processor, WrappedLogger
+    from structlog.typing import EventDict
 
     from litestar.types import Logger, Scope
     from litestar.types.callable_types import ExceptionLoggingHandler, GetLogger
@@ -250,8 +254,55 @@ class LoggingConfig(BaseLoggingConfig):
         logger.setLevel(level)
 
 
-def default_json_serializer(value: Any, default: Callable[[Any], Any] | None = None) -> bytes:
-    return encode_json(value=value, serializer=default)
+class StructlogEventFilter:
+    """Remove keys from the log event.
+
+    Add an instance to the processor chain.
+
+    .. code-block:: python
+        :caption: Examples
+
+        structlog.configure(
+            ...,
+            processors=[
+                ...,
+                EventFilter(["color_message"]),
+                ...,
+            ],
+        )
+
+    """
+
+    def __init__(self, filter_keys: Iterable[str]) -> None:
+        """Initialize the EventFilter.
+
+        Args:
+            filter_keys: Iterable of string keys to be excluded from the log event.
+        """
+        self.filter_keys = filter_keys
+
+    def __call__(self, _: WrappedLogger, __: str, event_dict: EventDict) -> EventDict:
+        """Receive the log event, and filter keys.
+
+        Args:
+            _ ():
+            __ ():
+            event_dict (): The data to be logged.
+
+        Returns:
+            The log event with any key in `self.filter_keys` removed.
+        """
+        for key in self.filter_keys:
+            event_dict.pop(key, None)
+        return event_dict
+
+
+def default_json_serializer(value: EventDict, **_: Any) -> bytes:
+    return _msgspec_json_encoder.encode(value)
+
+
+def stdlib_json_serializer(value: EventDict, **_: Any) -> str:  # pragma: no cover
+    return _msgspec_json_encoder.encode(value).decode("utf-8")
 
 
 def default_structlog_processors(as_json: bool = True) -> list[Processor]:  # pyright: ignore
@@ -297,34 +348,25 @@ def default_structlog_standard_lib_processors(as_json: bool = True) -> list[Proc
 
         if as_json:
             return [
+                structlog.processors.TimeStamper(fmt="iso"),
                 structlog.stdlib.add_log_level,
                 structlog.stdlib.ExtraAdder(),
-                structlog.processors.JSONRenderer(serializer=default_json_serializer),
+                StructlogEventFilter(["color_message"]),
+                structlog.stdlib.ProcessorFormatter.remove_processors_meta,
+                structlog.processors.JSONRenderer(serializer=stdlib_json_serializer),
             ]
         return [
+            structlog.processors.TimeStamper(fmt="iso"),
             structlog.stdlib.add_log_level,
             structlog.stdlib.ExtraAdder(),
+            StructlogEventFilter(["color_message"]),
+            structlog.stdlib.ProcessorFormatter.remove_processors_meta,
             structlog.dev.ConsoleRenderer(
                 colors=True, exception_formatter=RichTracebackFormatter(max_frames=1, show_locals=False, width=80)
             ),
         ]
     except ImportError:
         return []
-
-
-def default_wrapper_class(log_level: int = INFO) -> type[BindableLogger] | None:  # pyright: ignore
-    """Set the default wrapper class for structlog.
-
-    Returns:
-        An optional wrapper class.
-    """
-
-    try:
-        import structlog
-
-        return structlog.make_filtering_bound_logger(log_level)
-    except ImportError:
-        return None
 
 
 def default_logger_factory(as_json: bool = True) -> Callable[..., WrappedLogger] | None:
@@ -438,3 +480,14 @@ class StructLoggingConfig(BaseLoggingConfig):
             structlog.configure(wrapper_class=structlog.make_filtering_bound_logger(level))
         except ImportError:
             """"""
+            return
+
+
+@deprecated(version="2.6.0", removal_in="3.0.0", alternative="`StructLoggingConfig.set_level`")
+def default_wrapper_class(log_level: int = INFO) -> type[BindableLogger] | None:  # pragma: no cover  # pyright: ignore
+    try:  # pragma: no cover
+        import structlog
+
+        return structlog.make_filtering_bound_logger(log_level)
+    except ImportError:
+        return None

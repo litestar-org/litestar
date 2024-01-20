@@ -6,11 +6,9 @@ from typing import TYPE_CHECKING
 from litestar.cli._utils import console
 from litestar.logging.config import StructLoggingConfig
 from litestar.middleware.logging import LoggingMiddlewareConfig
-from litestar.plugins import CLIPluginProtocol, InitPluginProtocol
+from litestar.plugins import InitPluginProtocol
 
 if TYPE_CHECKING:
-    from click import Group
-
     from litestar.config.app import AppConfig
 
 
@@ -24,7 +22,7 @@ class StructlogConfig:
     """Enable request logging."""
 
 
-class StructlogPlugin(InitPluginProtocol, CLIPluginProtocol):
+class StructlogPlugin(InitPluginProtocol):
     """Structlog Plugin."""
 
     __slots__ = ("_config",)
@@ -34,9 +32,6 @@ class StructlogPlugin(InitPluginProtocol, CLIPluginProtocol):
             config = StructlogConfig()
         self._config = config
         super().__init__()
-
-    def on_cli_init(self, cli: Group) -> None:
-        return super().on_cli_init(cli)
 
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
         """Structlog Plugin
@@ -54,8 +49,8 @@ class StructlogPlugin(InitPluginProtocol, CLIPluginProtocol):
         else:
             app_config.logging_config = self._config.structlog_logging_config
         app_config.logging_config.configure()
-        if self._config.structlog_logging_config.standard_lib_logging_config is not None:
-            self._config.structlog_logging_config.standard_lib_logging_config.configure()
+        if self._config.structlog_logging_config.standard_lib_logging_config is not None:  # pragma: no cover
+            self._config.structlog_logging_config.standard_lib_logging_config.configure()  # pragma: no cover
         if self._config.enable_middleware_logging:
             app_config.middleware.append(self._config.middleware_logging_config.middleware)
         return app_config  # pragma: no cover
