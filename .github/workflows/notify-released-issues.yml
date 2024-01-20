@@ -1,0 +1,32 @@
+name: Notify released issues
+on:
+  workflow_call:
+    inputs:
+      release_tag:
+        type: string
+        required: true
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Get released issues
+        id: get-released-issues
+        run:
+          echo "issues=$(python ./.github/workflows/notify_released_issues/get_closed_issues.py ${{ inputs.release_tag }})" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/github-script@v7
+        env:
+          CLOSED_ISSUES: ${{ steps.get-released-issues.outputs.issues }}
+        with:
+          script: |
+            const script = require('./.github/workflows/notify_released_issues/notify.js')
+            await script({github, context, core})

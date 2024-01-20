@@ -54,7 +54,7 @@ repos:
     rev: v0.17.1
     hooks:
       - id: slotscheck
-        exclude: "test_*|docs"
+        exclude: "test_*|docs|.github"
   - repo: https://github.com/sphinx-contrib/sphinx-lint
     rev: "v0.9.1"
     hooks:
