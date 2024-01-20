@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from enum import Enum
 from functools import partial
-from typing import TYPE_CHECKING, Any, TypeVar, cast
+from typing import TYPE_CHECKING, TypeVar, cast
 from urllib.parse import quote
 
 from litestar.utils.typing import get_origin_or_inner_type
@@ -23,7 +23,7 @@ __all__ = (
 T = TypeVar("T")
 
 
-def get_name(value: Any) -> str:
+def get_name(value: object) -> str:
     """Get the ``__name__`` of an object.
 
     Args:

@@ -3,6 +3,59 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.5.1
+    :date: 2024/01/18
+
+    .. change:: Fix OpenAPI schema generation for Union of multiple ``msgspec.Struct``\ s and ``None``
+        :type: bugfix
+        :pr: 2982
+        :issue: 2971
+
+        The following code would raise a :exc:`TypeError`
+
+        .. code-block:: python
+
+            import msgspec
+
+            from litestar import get
+            from litestar.testing import create_test_client
+
+
+            class StructA(msgspec.Struct):
+                pass
+
+
+            class StructB(msgspec.Struct):
+                pass
+
+
+            @get("/")
+            async def handler() -> StructA | StructB | None:
+                return StructA()
+
+
+    .. change:: Fix misleading error message for missing dependencies provide by a package extra
+        :type: bugfix
+        :pr: 2921
+
+        Ensure that :exc:`MissingDependencyException` includes the correct name of the
+        package to install if the package name differs from the Litestar package extra.
+        (e.g. ``pip install litestar[jinja]`` vs ``pip install jinja2``). Previously the
+        exception assumed the same name for both the package and package-extra name.
+
+
+    .. change:: Fix OpenAPI schema file upload schema types for swagger
+        :type: bugfix
+        :pr: 2745
+        :issue: 2628
+
+        - Always set ``format`` as ``binary``
+        - Fix schema for swagger with multiple files, which requires the type of the
+          request body schema to be ``object`` with ``properties`` instead of a schema
+          of type ``array`` and ``items``.
+
+
+
 .. changelog:: 2.5.0
     :date: 2024/01/06
 
