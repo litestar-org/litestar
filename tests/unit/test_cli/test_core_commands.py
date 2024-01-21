@@ -327,12 +327,24 @@ def test_run_command_with_server_lifespan_plugin(
 
 
 @pytest.mark.parametrize(
-    "app_content, schema_enabled, exclude_pattern_list",
+    "app_content, schema_enabled, exclude_pattern_list, expected_result_routes_count",
     [
-        (APP_FILE_CONTENT_ROUTES_EXAMPLE, False, ()),
-        (APP_FILE_CONTENT_ROUTES_EXAMPLE, False, ("/foo", "/destroy/.*", "/java", "/haskell")),
-        (APP_FILE_CONTENT_ROUTES_EXAMPLE, True, ()),
-        (APP_FILE_CONTENT_ROUTES_EXAMPLE, True, ("/foo", "/destroy/.*", "/java", "/haskell")),
+        pytest.param(APP_FILE_CONTENT_ROUTES_EXAMPLE, False, (), 3, id="schema-enabled_no-exclude"),
+        pytest.param(
+            APP_FILE_CONTENT_ROUTES_EXAMPLE,
+            False,
+            ("/foo", "/destroy/.*", "/java", "/haskell"),
+            2,
+            id="schema-enabled_exclude",
+        ),
+        pytest.param(APP_FILE_CONTENT_ROUTES_EXAMPLE, True, (), 12, id="schema-disabled_no-exclude"),
+        pytest.param(
+            APP_FILE_CONTENT_ROUTES_EXAMPLE,
+            True,
+            ("/foo", "/destroy/.*", "/java", "/haskell"),
+            11,
+            id="schema-disabled_exclude",
+        ),
     ],
 )
 @pytest.mark.xdist_group("cli_autodiscovery")
@@ -342,6 +354,7 @@ def test_routes_command_options(
     schema_enabled: bool,
     exclude_pattern_list: Tuple[str, ...],
     create_app_file: CreateAppFileFixture,
+    expected_result_routes_count: int,
 ) -> None:
     create_app_file("app.py", content=app_content)
 
@@ -356,23 +369,15 @@ def test_routes_command_options(
     assert result.exception is None
     assert result.exit_code == 0
 
-    result_routes = re.findall(r"\/(?:\/|[a-z]|\.|-|[0-9])* \(HTTP\)", result.output)
+    result_routes = [line for line in result.output.splitlines() if "(HTTP)" in line]
     for route in result_routes:
-        route_words = route.split(" ")
-        root_dir = route_words[0]
+        root_dir = route.split(" ")[0]
         if not schema_enabled:
             assert root_dir != "/api-docs"
 
         assert root_dir not in exclude_pattern_list
-    result_routes_len = len(result_routes)
-    if schema_enabled and exclude_pattern_list:
-        assert result_routes_len == 11
-    elif schema_enabled and not exclude_pattern_list:
-        assert result_routes_len == 12
-    elif not schema_enabled and exclude_pattern_list:
-        assert result_routes_len == 2
-    elif not schema_enabled and not exclude_pattern_list:
-        assert result_routes_len == 3
+
+    assert expected_result_routes_count == len(result_routes)
 
 
 def test_remove_default_schema_routes() -> None:
