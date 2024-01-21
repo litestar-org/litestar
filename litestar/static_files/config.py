@@ -11,7 +11,7 @@ from litestar.response.file import ASGIFileResponse  # noqa: TCH001
 from litestar.router import Router
 from litestar.static_files.base import StaticFiles
 from litestar.types import Empty
-from litestar.utils import normalize_path
+from litestar.utils import normalize_path, warn_deprecation
 
 __all__ = ("StaticFilesConfig",)
 
@@ -74,6 +74,15 @@ class StaticFilesConfig:
     def __post_init__(self) -> None:
         _validate_config(path=self.path, directories=self.directories, file_system=self.file_system)
         self.path = normalize_path(self.path)
+        warn_deprecation(
+            "2.6.0",
+            kind="class",
+            deprecated_name="StaticFilesConfig",
+            removal_in="3.0",
+            alternative="create_static_files_router",
+            info='Replace static_files_config=[StaticFilesConfig(path="/static", directories=["assets"])] with '
+            'route_handlers=[..., create_static_files_router(path="/static", directories=["assets"])]',
+        )
 
     def to_static_files_app(self) -> ASGIRouteHandler:
         """Return an ASGI app serving static files based on the config.
