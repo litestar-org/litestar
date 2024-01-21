@@ -1,0 +1,7 @@
+coverage:
+  status:
+    project:
+      default:
+        target: auto
+comment:
+  require_changes: true
