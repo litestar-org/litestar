@@ -19,7 +19,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
 
     def __init__(
         self,
-        path: str | None | list[str] | None = None,
+        path: str | list[str] | None = None,
         *,
         dependencies: Dependencies | None = None,
         exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
