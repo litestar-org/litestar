@@ -1,4 +1,4 @@
-from typing import Type, Union
+from __future__ import annotations
 
 import pytest
 from pytest_mock import MockerFixture
@@ -8,14 +8,14 @@ from litestar.datastructures.multi_dicts import FormMultiDict, ImmutableMultiDic
 
 
 @pytest.mark.parametrize("multi_class", [MultiDict, ImmutableMultiDict])
-def test_multi_to_dict(multi_class: Type[Union[MultiDict, ImmutableMultiDict]]) -> None:
+def test_multi_to_dict(multi_class: type[MultiDict | ImmutableMultiDict]) -> None:
     multi = multi_class([("key", "value"), ("key", "value2"), ("key2", "value3")])
 
     assert multi.dict() == {"key": ["value", "value2"], "key2": ["value3"]}
 
 
 @pytest.mark.parametrize("multi_class", [MultiDict, ImmutableMultiDict])
-def test_multi_multi_items(multi_class: Type[Union[MultiDict, ImmutableMultiDict]]) -> None:
+def test_multi_multi_items(multi_class: type[MultiDict | ImmutableMultiDict]) -> None:
     data = [("key", "value"), ("key", "value2"), ("key2", "value3")]
     multi = multi_class(data)
 

@@ -1,13 +1,16 @@
 from __future__ import annotations
 
 from abc import ABC
-from typing import Any, Generator, Generic, Iterable, Mapping, TypeVar
+from typing import TYPE_CHECKING, Any, Generator, Generic, Iterable, Mapping, TypeVar
 
 from multidict import MultiDict as BaseMultiDict
 from multidict import MultiDictProxy, MultiMapping
-from typing_extensions import Self
 
 from litestar.datastructures.upload_file import UploadFile
+
+if TYPE_CHECKING:
+    from typing_extensions import Self
+
 
 __all__ = ("FormMultiDict", "ImmutableMultiDict", "MultiDict", "MultiMixin")
 
