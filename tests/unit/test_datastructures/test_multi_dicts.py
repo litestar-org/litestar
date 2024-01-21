@@ -47,3 +47,11 @@ async def test_form_multi_dict_close(mocker: MockerFixture) -> None:
     await multi.close()
 
     assert close.call_count == 2
+
+
+@pytest.mark.parametrize("type_", [MultiDict, ImmutableMultiDict])
+def test_copy(type_: type[MultiDict, ImmutableMultiDict]) -> None:
+    d = type_([("foo", "bar"), ("foo", "baz")])
+    copy = d.copy()
+    assert set(d.multi_items()) == set(copy.multi_items())
+    assert isinstance(d, type_)
