@@ -1948,8 +1948,8 @@ will be: <code class="docutils literal notranslate"><span class="pre">&lt;header
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.datastructures.ImmutableMultiDict.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MultiMapping</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.12)"><span class="pre">Mapping</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.12)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.datastructures.ImmutableMultiDict.__init__" title="Permalink to this definition">#</a></dt>
-<dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">ImmutableMultiDict</span></code> from a.</p>
-<p><code class="docutils literal notranslate"><span class="pre">MultiMapping</span></code>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a> or an iterable of tuples.</p>
+<dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">ImmutableMultiDict</span></code> from a <cite>MultiMapping`</cite>,
+<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a> or an iterable of tuples.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>args</strong> – Mapping-like structure to create the <code class="docutils literal notranslate"><span class="pre">ImmutableMultiDict</span></code> from</p>
@@ -1960,13 +1960,18 @@ will be: <code class="docutils literal notranslate"><span class="pre">&lt;header
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.datastructures.ImmutableMultiDict.mutable_copy">
 <span class="sig-name descname"><span class="pre">mutable_copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#litestar.datastructures.MultiDict" title="litestar.datastructures.multi_dicts.MultiDict"><span class="pre">MultiDict</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.datastructures.ImmutableMultiDict.mutable_copy" title="Permalink to this definition">#</a></dt>
-<dd><p>Create a mutable copy as a.</p>
-<p><a class="reference internal" href="#litestar.datastructures.MultiDict" title="litestar.datastructures.MultiDict"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiDict</span></code></a></p>
+<dd><p>Create a mutable copy as a <a class="reference internal" href="#litestar.datastructures.MultiDict" title="litestar.datastructures.MultiDict"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiDict</span></code></a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A mutable multi dict</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.datastructures.ImmutableMultiDict.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#litestar.datastructures.ImmutableMultiDict.copy" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a shallow copy</p>
 </dd></dl>
 
 </dd></dl>
@@ -2143,7 +2148,8 @@ state, as well as allows users to decide whether state is mutable or immutable.<
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.datastructures.MultiDict.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MultiMapping</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.12)"><span class="pre">Mapping</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.12)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.datastructures.MultiDict.__init__" title="Permalink to this definition">#</a></dt>
-<dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">MultiDict</span></code> from a`MultiMapping``, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a> or an iterable of tuples.</p>
+<dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">MultiDict</span></code> from a`MultiMapping``,
+<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a> or an iterable of tuples.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>args</strong> – Mapping-like structure to create the <code class="docutils literal notranslate"><span class="pre">MultiDict</span></code> from</p>
@@ -2161,6 +2167,12 @@ state, as well as allows users to decide whether state is mutable or immutable.<
 <dd class="field-odd"><p>An immutable multi dict</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.datastructures.MultiDict.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#litestar.datastructures.MultiDict.copy" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a shallow copy</p>
 </dd></dl>
 
 </dd></dl>
@@ -2966,6 +2978,7 @@ multidict and pass them back to <a class="reference internal" href="#litestar.da
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.ImmutableMultiDict"><code class="docutils literal notranslate"><span class="pre">ImmutableMultiDict</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.ImmutableMultiDict.__init__"><code class="docutils literal notranslate"><span class="pre">ImmutableMultiDict.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.ImmutableMultiDict.mutable_copy"><code class="docutils literal notranslate"><span class="pre">ImmutableMultiDict.mutable_copy()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.ImmutableMultiDict.copy"><code class="docutils literal notranslate"><span class="pre">ImmutableMultiDict.copy()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.ImmutableState"><code class="docutils literal notranslate"><span class="pre">ImmutableState</span></code></a><ul class="visible nav section-nav flex-column">
@@ -2985,6 +2998,7 @@ multidict and pass them back to <a class="reference internal" href="#litestar.da
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.MultiDict"><code class="docutils literal notranslate"><span class="pre">MultiDict</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.MultiDict.__init__"><code class="docutils literal notranslate"><span class="pre">MultiDict.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.MultiDict.immutable"><code class="docutils literal notranslate"><span class="pre">MultiDict.immutable()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.MultiDict.copy"><code class="docutils literal notranslate"><span class="pre">MultiDict.copy()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.MultiMixin"><code class="docutils literal notranslate"><span class="pre">MultiMixin</span></code></a><ul class="visible nav section-nav flex-column">
