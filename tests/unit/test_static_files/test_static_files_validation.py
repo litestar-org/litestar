@@ -12,10 +12,11 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
+@pytest.mark.parametrize("directories", [[], [""]])
 @pytest.mark.parametrize("func", [StaticFilesConfig, create_static_files_router])
-def test_config_validation_of_directories(func: Any) -> None:
+def test_config_validation_of_directories(func: Any, directories: "list[str]") -> None:
     with pytest.raises(ImproperlyConfiguredException):
-        func(path="/static", directories=[])
+        func(path="/static", directories=directories)
 
 
 @pytest.mark.parametrize("func", [StaticFilesConfig, create_static_files_router])
