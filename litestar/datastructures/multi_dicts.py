@@ -1,12 +1,16 @@
 from __future__ import annotations
 
 from abc import ABC
-from typing import Any, Generator, Generic, Iterable, Mapping, TypeVar
+from typing import TYPE_CHECKING, Any, Generator, Generic, Iterable, Mapping, TypeVar
 
 from multidict import MultiDict as BaseMultiDict
 from multidict import MultiDictProxy, MultiMapping
 
 from litestar.datastructures.upload_file import UploadFile
+
+if TYPE_CHECKING:
+    from typing_extensions import Self
+
 
 __all__ = ("FormMultiDict", "ImmutableMultiDict", "MultiDict", "MultiMixin")
 
@@ -40,7 +44,8 @@ class MultiDict(BaseMultiDict[T], MultiMixin[T], Generic[T]):
     """MultiDict, using :class:`MultiDict <multidict.MultiDictProxy>`."""
 
     def __init__(self, args: MultiMapping | Mapping[str, T] | Iterable[tuple[str, T]] | None = None) -> None:
-        """Initialize ``MultiDict`` from a`MultiMapping``, :class:`Mapping <typing.Mapping>` or an iterable of tuples.
+        """Initialize ``MultiDict`` from a`MultiMapping``,
+        :class:`Mapping <typing.Mapping>` or an iterable of tuples.
 
         Args:
             args: Mapping-like structure to create the ``MultiDict`` from
@@ -57,14 +62,17 @@ class MultiDict(BaseMultiDict[T], MultiMixin[T], Generic[T]):
         """
         return ImmutableMultiDict[T](self)  # pyright: ignore
 
+    def copy(self) -> Self:
+        """Return a shallow copy"""
+        return type(self)(list(self.multi_items()))
+
 
 class ImmutableMultiDict(MultiDictProxy[T], MultiMixin[T], Generic[T]):
     """Immutable MultiDict, using class:`MultiDictProxy <multidict.MultiDictProxy>`."""
 
     def __init__(self, args: MultiMapping | Mapping[str, Any] | Iterable[tuple[str, Any]] | None = None) -> None:
-        """Initialize ``ImmutableMultiDict`` from a.
-
-        ``MultiMapping``, :class:`Mapping <typing.Mapping>` or an iterable of tuples.
+        """Initialize ``ImmutableMultiDict`` from a `MultiMapping``,
+        :class:`Mapping <typing.Mapping>` or an iterable of tuples.
 
         Args:
             args: Mapping-like structure to create the ``ImmutableMultiDict`` from
@@ -72,14 +80,16 @@ class ImmutableMultiDict(MultiDictProxy[T], MultiMixin[T], Generic[T]):
         super().__init__(BaseMultiDict(args or {}))
 
     def mutable_copy(self) -> MultiDict[T]:
-        """Create a mutable copy as a.
-
-        :class:`MultiDict`
+        """Create a mutable copy as a :class:`MultiDict`
 
         Returns:
             A mutable multi dict
         """
         return MultiDict(list(self.multi_items()))
+
+    def copy(self) -> Self:  # type: ignore[override]
+        """Return a shallow copy"""
+        return type(self)(self.items())
 
 
 class FormMultiDict(ImmutableMultiDict[Any]):
