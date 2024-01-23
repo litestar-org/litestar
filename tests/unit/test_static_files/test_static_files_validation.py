@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, List
 
 import pytest
 
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 @pytest.mark.parametrize("directories", [[], [""]])
 @pytest.mark.parametrize("func", [StaticFilesConfig, create_static_files_router])
-def test_config_validation_of_directories(func: Any, directories: "list[str]") -> None:
+def test_config_validation_of_directories(func: Any, directories: List[str]) -> None:
     with pytest.raises(ImproperlyConfiguredException):
         func(path="/static", directories=directories)
 
