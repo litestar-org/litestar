@@ -137,6 +137,7 @@ class Litestar(Router):
         "_server_lifespan_managers",
         "_debug",
         "_openapi_schema",
+        "_static_files_config",
         "plugins",
         "after_exception",
         "allowed_hosts",
@@ -160,7 +161,6 @@ class Litestar(Router):
         "route_map",
         "signature_namespace",
         "state",
-        "static_files_config",
         "stores",
         "template_engine",
         "websocket_class",
@@ -410,7 +410,7 @@ class Litestar(Router):
         self.request_class = config.request_class or Request
         self.response_cache_config = config.response_cache_config
         self.state = config.state
-        self.static_files_config = config.static_files_config
+        self._static_files_config = config.static_files_config
         self.template_engine = config.template_config.engine_instance if config.template_config else None
         self.websocket_class = config.websocket_class or WebSocket
         self.debug = config.debug
@@ -464,6 +464,11 @@ class Litestar(Router):
         self.stores: StoreRegistry = (
             config.stores if isinstance(config.stores, StoreRegistry) else StoreRegistry(config.stores)
         )
+
+    @property
+    @deprecated(version="2.6.0", kind="property", info="Use create_static_files router instead")
+    def static_files_config(self) -> list[StaticFilesConfig]:
+        return self._static_files_config
 
     @property
     @deprecated(version="2.0", alternative="Litestar.plugins.cli", kind="property")
@@ -739,6 +744,9 @@ class Litestar(Router):
 
         return join_paths(output)
 
+    @deprecated(
+        "2.6.0", info="Use create_static_files router instead of StaticFilesConfig, which works with route_reverse"
+    )
     def url_for_static_asset(self, name: str, file_path: str) -> str:
         """Receives a static files handler name, an asset file path and returns resolved url path to the asset.
 
