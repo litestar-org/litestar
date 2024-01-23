@@ -388,7 +388,7 @@ def create_async_test_client(
 
             async def test_my_handler() -> None:
                 async with create_async_test_client(my_handler) as client:
-                    response == client.get("/some-path")
+                    response = await client.get("/some-path")
                     assert response.json() == {"hello": "world"}
 
     Args:
