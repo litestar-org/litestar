@@ -133,7 +133,7 @@ def create_test_client(
 
             def test_my_handler() -> None:
                 with create_test_client(my_handler) as client:
-                    response == client.get("/some-path")
+                    response = client.get("/some-path")
                     assert response.json() == {"hello": "world"}
 
     Args:
