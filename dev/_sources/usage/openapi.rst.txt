@@ -138,7 +138,7 @@ You can also modify the generated schema for the route handler using the followi
        path="/items/{pk:int}",
        responses={
            404: ResponseSpec(
-               model=ItemNotFound, description="Item was removed or not found"
+               data_container=ItemNotFound, description="Item was removed or not found"
            )
        },
    )
