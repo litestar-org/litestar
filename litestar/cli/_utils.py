@@ -24,10 +24,10 @@ from litestar import Litestar, __version__
 from litestar.middleware import DefineMiddleware
 from litestar.utils import get_name
 
-if sys.version_info >= (3, 10):  # pragma: no cover
-    from importlib.metadata import entry_points  # pragma: no cover
-else:  # pragma: no cover
-    from importlib_metadata import entry_points  # pragma: no cover
+if sys.version_info >= (3, 10):
+    from importlib.metadata import entry_points
+else:
+    from importlib_metadata import entry_points
 
 
 if TYPE_CHECKING:
