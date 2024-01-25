@@ -81,6 +81,24 @@ def test_plugin_registry_get() -> None:
     assert PluginRegistry([cli_plugin]).get(CLIPlugin) is cli_plugin
 
 
+def test_plugin_registry_stringified_get() -> None:
+    class CLIPlugin(CLIPluginProtocol):
+        def on_cli_init(self, cli: Group) -> None:
+            pass
+
+    cli_plugin = CLIPlugin()
+    pydantic_plugin = PydanticPlugin()
+    with pytest.raises(KeyError, match="No plugin of type 'CLIPlugin' registered"):
+        PluginRegistry([CLIPlugin()]).get("CLIPlugin")  # not a fqdn.  should fail # type: ignore[list-item]
+        PluginRegistry([]).get("CLIPlugin")  # not a fqdn.  should fail # type: ignore[list-item]
+
+    assert PluginRegistry([cli_plugin, pydantic_plugin]).get(CLIPlugin) is cli_plugin
+    assert PluginRegistry([cli_plugin, pydantic_plugin]).get(PydanticPlugin) is pydantic_plugin
+    assert (
+        PluginRegistry([cli_plugin, pydantic_plugin]).get("litestar.contrib.pydantic.PydanticPlugin") is pydantic_plugin
+    )
+
+
 def test_openapi_schema_plugin_is_constrained_field() -> None:
     assert OpenAPISchemaPlugin.is_constrained_field(FieldDefinition.from_annotation(str)) is False
 

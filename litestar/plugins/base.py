@@ -3,6 +3,8 @@ from __future__ import annotations
 from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any, Iterator, Protocol, TypeVar, Union, cast, runtime_checkable
 
+from litestar.utils.module_loader import import_string
+
 if TYPE_CHECKING:
     from click import Group
 
@@ -267,15 +269,20 @@ class PluginRegistry:
         self.serialization = tuple(p for p in plugins if isinstance(p, SerializationPluginProtocol))
         self.cli = tuple(p for p in plugins if isinstance(p, CLIPluginProtocol))
 
-    def get(self, type_: type[PluginT]) -> PluginT:
+    def get(self, type_: type[PluginT] | str) -> PluginT:
         """Return the registered plugin of ``type_``.
 
         This should be used with subclasses of the plugin protocols.
         """
+        if isinstance(type_, str):
+            try:
+                type_ = import_string(type_)
+            except ImportError as e:
+                raise KeyError(f"No plugin of type {type_!r} registered") from e  # type: ignore[union-attr]
         try:
             return cast(PluginT, self._plugins_by_type[type_])  # type: ignore[index]
         except KeyError as e:
-            raise KeyError(f"No plugin of type {type_.__name__!r} registered") from e
+            raise KeyError(f"No plugin of type {type_.__name__!r} registered") from e  # type: ignore[union-attr]
 
     def __iter__(self) -> Iterator[PluginProtocol]:
         return iter(self._plugins)
