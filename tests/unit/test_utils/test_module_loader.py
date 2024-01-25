@@ -1,5 +1,7 @@
+import pytest
+
 from litestar.config.compression import CompressionConfig
-from litestar.utils.module_loader import import_string
+from litestar.utils.module_loader import import_string, module_to_os_path
 
 
 def test_import_string() -> None:
@@ -13,3 +15,11 @@ def test_import_string_missing() -> None:
     except ImportError:
         cls = None
     assert cls is None
+
+
+def test_module_path() -> None:
+    the_path = module_to_os_path("litestar.config.compression")
+    assert the_path.exists()
+
+    with pytest.raises(ModuleNotFoundError):
+        the_path = module_to_os_path("litestar.config.compression.Config")
