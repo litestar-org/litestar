@@ -133,7 +133,7 @@ def create_test_client(
 
             def test_my_handler() -> None:
                 with create_test_client(my_handler) as client:
-                    response == client.get("/some-path")
+                    response = client.get("/some-path")
                     assert response.json() == {"hello": "world"}
 
     Args:
@@ -368,7 +368,7 @@ def create_async_test_client(
 ) -> AsyncTestClient[Litestar]:
     """Create a Litestar app instance and initializes it.
 
-    :class:`TestClient <litestar.testing.TestClient>` with it.
+    :class:`AsyncTestClient <litestar.testing.AsyncTestClient>` with it.
 
     Notes:
         - This function should be called as a context manager to ensure async startup and shutdown are
@@ -378,7 +378,7 @@ def create_async_test_client(
         .. code-block:: python
 
             from litestar import get
-            from litestar.testing import create_test_client
+            from litestar.testing import create_async_test_client
 
 
             @get("/some-path")
@@ -386,9 +386,9 @@ def create_async_test_client(
                 return {"hello": "world"}
 
 
-            def test_my_handler() -> None:
-                with create_test_client(my_handler) as client:
-                    response == client.get("/some-path")
+            async def test_my_handler() -> None:
+                async with create_async_test_client(my_handler) as client:
+                    response = await client.get("/some-path")
                     assert response.json() == {"hello": "world"}
 
     Args:
