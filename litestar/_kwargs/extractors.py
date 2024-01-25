@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from functools import lru_cache
+from functools import lru_cache, partial
 from typing import TYPE_CHECKING, Any, Callable, Coroutine, Mapping, NamedTuple, cast
 
 from litestar._multipart import parse_multipart_form
@@ -318,6 +318,53 @@ async def msgpack_extractor(connection: Request[Any, Any, Any]) -> Any:
     return await connection.msgpack()
 
 
+async def _extract_multipart(
+    connection: Request[Any, Any, Any],
+    body_kwarg_multipart_form_part_limit: int | None,
+    field_definition: FieldDefinition,
+    is_data_optional: bool,
+    data_dto: type[AbstractDTO] | None,
+) -> Any:
+    multipart_form_part_limit = (
+        body_kwarg_multipart_form_part_limit
+        if body_kwarg_multipart_form_part_limit is not None
+        else connection.app.multipart_form_part_limit
+    )
+    connection.scope["_form"] = form_values = (  # type: ignore[typeddict-unknown-key]
+        connection.scope["_form"]  # type: ignore[typeddict-item]
+        if "_form" in connection.scope
+        else parse_multipart_form(
+            body=await connection.body(),
+            boundary=connection.content_type[-1].get("boundary", "").encode(),
+            multipart_form_part_limit=multipart_form_part_limit,
+            type_decoders=connection.route_handler.resolve_type_decoders(),
+        )
+    )
+
+    if field_definition.is_non_string_sequence:
+        values = list(form_values.values())
+        if field_definition.has_inner_subclass_of(UploadFile) and isinstance(values[0], list):
+            return values[0]
+
+        return values
+
+    if field_definition.is_simple_type and field_definition.annotation is UploadFile and form_values:
+        return next(v for v in form_values.values() if isinstance(v, UploadFile))
+
+    if not form_values and is_data_optional:
+        return None
+
+    if data_dto:
+        return data_dto(connection).decode_builtins(form_values)
+
+    for name, tp in field_definition.get_type_hints().items():
+        value = form_values.get(name)
+        if value is not None and is_non_string_sequence(tp) and not isinstance(value, list):
+            form_values[name] = [value]
+
+    return form_values
+
+
 def create_multipart_extractor(
     field_definition: FieldDefinition, is_data_optional: bool, data_dto: type[AbstractDTO] | None
 ) -> Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]:
@@ -335,47 +382,13 @@ def create_multipart_extractor(
     if field_definition.kwarg_definition and isinstance(field_definition.kwarg_definition, BodyKwarg):
         body_kwarg_multipart_form_part_limit = field_definition.kwarg_definition.multipart_form_part_limit
 
-    async def extract_multipart(
-        connection: Request[Any, Any, Any],
-    ) -> Any:
-        multipart_form_part_limit = (
-            body_kwarg_multipart_form_part_limit
-            if body_kwarg_multipart_form_part_limit is not None
-            else connection.app.multipart_form_part_limit
-        )
-        connection.scope["_form"] = form_values = (  # type: ignore[typeddict-unknown-key]
-            connection.scope["_form"]  # type: ignore[typeddict-item]
-            if "_form" in connection.scope
-            else parse_multipart_form(
-                body=await connection.body(),
-                boundary=connection.content_type[-1].get("boundary", "").encode(),
-                multipart_form_part_limit=multipart_form_part_limit,
-                type_decoders=connection.route_handler.resolve_type_decoders(),
-            )
-        )
-
-        if field_definition.is_non_string_sequence:
-            values = list(form_values.values())
-            if field_definition.has_inner_subclass_of(UploadFile) and isinstance(values[0], list):
-                return values[0]
-
-            return values
-
-        if field_definition.is_simple_type and field_definition.annotation is UploadFile and form_values:
-            return next(v for v in form_values.values() if isinstance(v, UploadFile))
-
-        if not form_values and is_data_optional:
-            return None
-
-        if data_dto:
-            return data_dto(connection).decode_builtins(form_values)
-
-        for name, tp in field_definition.get_type_hints().items():
-            value = form_values.get(name)
-            if value is not None and is_non_string_sequence(tp) and not isinstance(value, list):
-                form_values[name] = [value]
-
-        return form_values
+    extract_multipart = partial(
+        _extract_multipart,
+        body_kwarg_multipart_form_part_limit=body_kwarg_multipart_form_part_limit,
+        is_data_optional=is_data_optional,
+        data_dto=data_dto,
+        field_definition=field_definition,
+    )
 
     return cast("Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", extract_multipart)
 

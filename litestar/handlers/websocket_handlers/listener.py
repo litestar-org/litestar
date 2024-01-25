@@ -71,7 +71,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
     @overload
     def __init__(
         self,
-        path: str | None | list[str] | None = None,
+        path: str | list[str] | None = None,
         *,
         connection_lifespan: Callable[..., AbstractAsyncContextManager[Any]] | None = None,
         dependencies: Dependencies | None = None,
@@ -93,7 +93,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
     @overload
     def __init__(
         self,
-        path: str | None | list[str] | None = None,
+        path: str | list[str] | None = None,
         *,
         connection_accept_handler: Callable[[WebSocket], Coroutine[Any, Any, None]] = WebSocket.accept,
         dependencies: Dependencies | None = None,
@@ -116,7 +116,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
 
     def __init__(
         self,
-        path: str | None | list[str] | None = None,
+        path: str | list[str] | None = None,
         *,
         connection_accept_handler: Callable[[WebSocket], Coroutine[Any, Any, None]] = WebSocket.accept,
         connection_lifespan: Callable[..., AbstractAsyncContextManager[Any]] | None = None,
@@ -309,7 +309,7 @@ websocket_listener = WebsocketListenerRouteHandler
 
 
 class WebsocketListener(ABC):
-    path: str | None | list[str] | None = None
+    path: str | list[str] | None = None
     """A path fragment for the route handler function or a sequence of path fragments. If not given defaults to ``/``"""
     dependencies: Dependencies | None = None
     """A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances."""

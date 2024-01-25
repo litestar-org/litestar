@@ -56,14 +56,10 @@ jobs:
 
       - name: Test with coverage
         if: inputs.coverage
-        run: pdm run pytest docs/examples tests --cov -n auto
+        run: pdm run pytest docs/examples tests -n auto --cov --cov-report xml:coverage.xml
 
-      - name: Rename coverage file
+      - name: Upload coverage reports to Codecov with GitHub Action
         if: inputs.coverage
-        run: mv .coverage .coverage.${{ inputs.python-version }}
-
-      - uses: actions/upload-artifact@v3
-        if: inputs.coverage
+        uses: codecov/codecov-action@v3
         with:
-          name: coverage-data
-          path: .coverage.${{ inputs.python-version }}
+          files: coverage.xml

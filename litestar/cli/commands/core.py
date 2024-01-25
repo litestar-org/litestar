@@ -22,7 +22,7 @@ from litestar.cli._utils import (
     show_app_info,
     validate_ssl_file_paths,
 )
-from litestar.routes import HTTPRoute, WebSocketRoute
+from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from litestar.utils.helpers import unwrap_partial
 
 if UVICORN_INSTALLED:
@@ -268,7 +268,6 @@ def run_command(
 def routes_command(app: Litestar, exclude: tuple[str, ...], schema: bool) -> None:  # pragma: no cover
     """Display information about the application's routes."""
 
-    tree = Tree("", hide_root=True)
     sorted_routes = sorted(app.routes, key=lambda r: r.path)
     if not schema:
         openapi_config = app.openapi_config or DEFAULT_OPENAPI_CONFIG
@@ -276,30 +275,50 @@ def routes_command(app: Litestar, exclude: tuple[str, ...], schema: bool) -> Non
     if exclude is not None:
         sorted_routes = remove_routes_with_patterns(sorted_routes, exclude)
 
-    for route in sorted_routes:
-        if isinstance(route, HTTPRoute):
-            branch = tree.add(f"[green]{route.path}[/green] (HTTP)")
-            for handler in route.route_handlers:
-                handler_info = [
-                    f"[blue]{handler.name or handler.handler_name}[/blue]",
-                ]
+    console.print(_RouteTree(sorted_routes))
 
-                if inspect.iscoroutinefunction(unwrap_partial(handler.fn)):
-                    handler_info.append("[magenta]async[/magenta]")
-                else:
-                    handler_info.append("[yellow]sync[/yellow]")
 
-                handler_info.append(f'[cyan]{", ".join(sorted(handler.http_methods))}[/cyan]')
+class _RouteTree(Tree):
+    def __init__(self, routes: list[HTTPRoute | ASGIRoute | WebSocketRoute]) -> None:
+        super().__init__("", hide_root=True)
+        self._routes = routes
+        self._build()
 
-                if len(handler.paths) > 1:
-                    for path in handler.paths:
-                        branch.add(" ".join([f"[green]{path}[green]", *handler_info]))
-                else:
-                    branch.add(" ".join(handler_info))
+    def _build(self) -> None:
+        for route in self._routes:
+            if isinstance(route, HTTPRoute):
+                self._handle_http_route(route)
+            elif isinstance(route, WebSocketRoute):
+                self._handle_websocket_route(route)
+            else:
+                self._handle_asgi_route(route)
 
-        else:
-            route_type = "WS" if isinstance(route, WebSocketRoute) else "ASGI"
-            branch = tree.add(f"[green]{route.path}[/green] ({route_type})")
-            branch.add(f"[blue]{route.route_handler.name or route.route_handler.handler_name}[/blue]")
+    def _handle_asgi_like_route(self, route: ASGIRoute | WebSocketRoute, route_type: str) -> None:
+        branch = self.add(f"[green]{route.path}[/green] ({route_type})")
+        branch.add(f"[blue]{route.route_handler.name or route.route_handler.handler_name}[/blue]")
 
-    console.print(tree)
+    def _handle_asgi_route(self, route: ASGIRoute) -> None:
+        self._handle_asgi_like_route(route, route_type="ASGI")
+
+    def _handle_websocket_route(self, route: WebSocketRoute) -> None:
+        self._handle_asgi_like_route(route, route_type="WS")
+
+    def _handle_http_route(self, route: HTTPRoute) -> None:
+        branch = self.add(f"[green]{route.path}[/green] (HTTP)")
+        for handler in route.route_handlers:
+            handler_info = [
+                f"[blue]{handler.name or handler.handler_name}[/blue]",
+            ]
+
+            if inspect.iscoroutinefunction(unwrap_partial(handler.fn)):
+                handler_info.append("[magenta]async[/magenta]")
+            else:
+                handler_info.append("[yellow]sync[/yellow]")
+
+            handler_info.append(f'[cyan]{", ".join(sorted(handler.http_methods))}[/cyan]')
+
+            if len(handler.paths) > 1:
+                for path in handler.paths:
+                    branch.add(" ".join([f"[green]{path}[green]", *handler_info]))
+            else:
+                branch.add(" ".join(handler_info))
