@@ -8,6 +8,10 @@ def test_import_string() -> None:
     cls = import_string("litestar.config.compression.CompressionConfig")
     assert type(cls) == type(CompressionConfig)
 
+    with pytest.raises(ImportError):
+        cls = import_string("CompressionConfigNew")
+        cls = import_string("litestar.config.compression.CompressionConfigNew")
+
 
 def test_import_string_missing() -> None:
     try:
