@@ -21,5 +21,6 @@ def test_module_path() -> None:
     the_path = module_to_os_path("litestar.config.compression")
     assert the_path.exists()
 
-    with pytest.raises(ModuleNotFoundError):
+    with pytest.raises(TypeError):
         the_path = module_to_os_path("litestar.config.compression.Config")
+        the_path = module_to_os_path("litestar.config.compression.extra.module")

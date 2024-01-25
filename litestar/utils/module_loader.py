@@ -35,11 +35,11 @@ def module_to_os_path(dotted_path: str = "app") -> Path:
     Returns:
         Path: The path to the module.
     """
-
-    src = find_spec(dotted_path)
-    if src is None:
+    try:
+        src = find_spec(dotted_path)
+    except ModuleNotFoundError as e:
         msg = "Couldn't find the path for %s"
-        raise TypeError(msg, dotted_path)
+        raise TypeError(msg, dotted_path) from e
     path_separator = "\\" if platform.system() == "Windows" else "/"
     if PYTHON_38:
         suffix = f"{path_separator}__init__.py"
