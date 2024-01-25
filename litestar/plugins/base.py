@@ -278,7 +278,7 @@ class PluginRegistry:
             try:
                 type_ = import_string(type_)
             except ImportError as e:
-                raise KeyError(f"No plugin of type {type_!r} registered") from e  # type: ignore[union-attr]
+                raise KeyError(f"No plugin of type {type_!r} registered") from e
         try:
             return cast(PluginT, self._plugins_by_type[type_])  # type: ignore[index]
         except KeyError as e:
