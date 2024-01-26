@@ -63,4 +63,3 @@ jobs:
         with:
           name: coverage-data
           path: .coverage.${{ inputs.python-version }}
-
