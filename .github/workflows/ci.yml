@@ -99,6 +99,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           pattern: coverage-*
+          merge-multiple: true
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
