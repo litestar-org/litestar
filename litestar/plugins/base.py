@@ -3,8 +3,6 @@ from __future__ import annotations
 from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any, Iterator, Protocol, TypeVar, Union, cast, runtime_checkable
 
-from litestar.utils.module_loader import import_string
-
 if TYPE_CHECKING:
     from click import Group
 
@@ -275,10 +273,10 @@ class PluginRegistry:
         This should be used with subclasses of the plugin protocols.
         """
         if isinstance(type_, str):
-            try:
-                type_ = import_string(type_)
-            except ImportError as e:
-                raise KeyError(f"No plugin of type {type_!r} registered") from e
+            for plugin in self._plugins:
+                if type_ == plugin.__class__.__name__:
+                    return cast(PluginT, plugin)
+            raise KeyError(f"No plugin of type {type_!r} registered")
         try:
             return cast(PluginT, self._plugins_by_type[type_])  # type: ignore[index]
         except KeyError as e:

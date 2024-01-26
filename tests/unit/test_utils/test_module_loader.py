@@ -9,16 +9,9 @@ def test_import_string() -> None:
     assert type(cls) == type(CompressionConfig)
 
     with pytest.raises(ImportError):
-        cls = import_string("CompressionConfigNew")
-        cls = import_string("litestar.config.compression.CompressionConfigNew")
-
-
-def test_import_string_missing() -> None:
-    try:
-        cls = import_string("imaginary_module_that_doesnt_exist.Config")  # a random nonexistent class
-    except ImportError:
-        cls = None
-    assert cls is None
+        _ = import_string("CompressionConfigNew")
+        _ = import_string("litestar.config.compression.CompressionConfigNew")
+        _ = import_string("imaginary_module_that_doesnt_exist.Config")  # a random nonexistent class
 
 
 def test_module_path() -> None:
@@ -26,5 +19,5 @@ def test_module_path() -> None:
     assert the_path.exists()
 
     with pytest.raises(TypeError):
-        the_path = module_to_os_path("litestar.config.compression.Config")
-        the_path = module_to_os_path("litestar.config.compression.extra.module")
+        _ = module_to_os_path("litestar.config.compression.Config")
+        _ = module_to_os_path("litestar.config.compression.extra.module")
