@@ -92,6 +92,17 @@ jobs:
       coverage: ${{ (matrix.python-version == '3.12' || matrix.python-version == '3.8') }}
       python-version: ${{ matrix.python-version }}
 
+  upload-test-coverage:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: coverage-*
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+
   test-platform-compat:
     if: github.event_name == 'push'
     strategy:
