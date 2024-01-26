@@ -96,16 +96,27 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     steps:
+      - name: Set up python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
       - uses: actions/download-artifact@v4
         with:
           pattern: coverage-*
           merge-multiple: true
 
+      - name: combine coverage
+        run: |
+          pip install coverage
+          python -Im coverage combine
+          python -Im coverage xml
+
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         with:
           name: coverage-data
-          files: coverage-3.8.xml, coverage-3.12.xml
+          files: coverage.xml
 
   test-platform-compat:
     if: github.event_name == 'push'
