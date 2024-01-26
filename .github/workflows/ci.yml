@@ -102,6 +102,8 @@ jobs:
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
+        with:
+          files: coverage-3.8.xml, coverage-3.12.xml
 
   test-platform-compat:
     if: github.event_name == 'push'
