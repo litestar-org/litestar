@@ -1584,6 +1584,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "patrickneise",
+      "name": "Patrick Neise",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6312074?v=4",
+      "profile": "https://github.com/patrickneise",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
