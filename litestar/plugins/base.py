@@ -274,13 +274,20 @@ class PluginRegistry:
         """
         if isinstance(type_, str):
             for plugin in self._plugins:
-                if type_ == plugin.__class__.__name__:
+                _name = plugin.__class__.__name__
+                _module = plugin.__class__.__module__
+                _qualname = (
+                    f"{_module}.{plugin.__class__.__qualname__}"
+                    if _module is not None and _module != "__builtin__"
+                    else plugin.__class__.__qualname__
+                )
+                if type_ in {_name, _qualname}:
                     return cast(PluginT, plugin)
             raise KeyError(f"No plugin of type {type_!r} registered")
         try:
             return cast(PluginT, self._plugins_by_type[type_])  # type: ignore[index]
         except KeyError as e:
-            raise KeyError(f"No plugin of type {type_.__name__!r} registered") from e  # type: ignore[union-attr]
+            raise KeyError(f"No plugin of type {type_.__name__!r} registered") from e
 
     def __iter__(self) -> Iterator[PluginProtocol]:
         return iter(self._plugins)

@@ -88,12 +88,15 @@ def test_plugin_registry_stringified_get() -> None:
 
     cli_plugin = CLIPlugin()
     pydantic_plugin = PydanticPlugin()
-    with pytest.raises(KeyError, match="No plugin of type 'CLIPlugin' registered"):
-        PluginRegistry([CLIPlugin()]).get("CLIPlugin")  # not a fqdn.  should fail # type: ignore[list-item]
+    with pytest.raises(KeyError):
+        PluginRegistry([CLIPlugin()]).get(
+            "litestar2.contrib.pydantic.PydanticPlugin"
+        )  # not a fqdn.  should fail # type: ignore[list-item]
         PluginRegistry([]).get("CLIPlugin")  # not a fqdn.  should fail # type: ignore[list-item]
 
     assert PluginRegistry([cli_plugin, pydantic_plugin]).get(CLIPlugin) is cli_plugin
     assert PluginRegistry([cli_plugin, pydantic_plugin]).get(PydanticPlugin) is pydantic_plugin
+    assert PluginRegistry([cli_plugin, pydantic_plugin]).get("PydanticPlugin") is pydantic_plugin
     assert (
         PluginRegistry([cli_plugin, pydantic_plugin]).get("litestar.contrib.pydantic.PydanticPlugin") is pydantic_plugin
     )
