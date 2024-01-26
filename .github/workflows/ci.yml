@@ -103,6 +103,7 @@ jobs:
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         with:
+          name: coverage-data
           files: coverage-3.8.xml, coverage-3.12.xml
 
   test-platform-compat:
