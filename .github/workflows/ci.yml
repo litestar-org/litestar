@@ -109,7 +109,7 @@ jobs:
 
       - name: combine coverage
         run: |
-          pip install coverage covdefault
+          pip install coverage covdefaults
           python -Im coverage combine ${{steps.download.outputs.download-path}}/coverage-3.8 ${{steps.download.outputs.download-path}}/coverage-3.12
           python -Im coverage xml
 
