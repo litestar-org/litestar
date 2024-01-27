@@ -101,15 +101,14 @@ jobs:
         with:
           python-version: "3.12"
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v3
         with:
           pattern: coverage-*
-          merge-multiple: true
 
       - name: combine coverage
         run: |
-          pip install coverage
-          python -Im coverage combine /home/runner/work/litestar/litestar/coverage-3.8 /home/runner/work/litestar/litestar/coverage-3.12
+          pip install coverage covdefaults
+          python -Im coverage combine
           python -Im coverage xml
 
       - name: Upload coverage reports to Codecov
