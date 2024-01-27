@@ -35,7 +35,7 @@ jobs:
         with:
           python-version: ${{ inputs.python-version }}
 
-      - uses: pdm-project/setup-pdm@v3
+      - uses: pdm-project/setup-pdm@v4
         name: Set up PDM
         with:
           python-version: ${{ inputs.python-version }}
@@ -56,10 +56,14 @@ jobs:
 
       - name: Test with coverage
         if: inputs.coverage
-        run: pdm run pytest docs/examples tests -n auto --cov --cov-report xml:coverage.xml
+        run: pdm run pytest docs/examples tests -n auto --cov
 
-      - name: Upload coverage reports to Codecov with GitHub Action
+      - name: Rename coverage file
         if: inputs.coverage
-        uses: codecov/codecov-action@v3
+        run: mv .coverage .coverage.${{ inputs.python-version }}
+
+      - uses: actions/upload-artifact@v3
+        if: inputs.coverage
         with:
-          files: coverage.xml
+          name: coverage-data
+          path: .coverage.${{ inputs.python-version }}
