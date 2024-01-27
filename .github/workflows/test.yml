@@ -58,7 +58,7 @@ jobs:
         if: inputs.coverage
         run: pdm run pytest docs/examples tests -n auto --cov
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: inputs.coverage
         with:
           name: coverage-${{ inputs.python-version }}

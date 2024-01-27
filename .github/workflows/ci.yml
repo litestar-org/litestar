@@ -101,14 +101,16 @@ jobs:
         with:
           python-version: "3.12"
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
+        name: download
         with:
           pattern: coverage-*
+          merge-multiple: true
 
       - name: combine coverage
         run: |
-          pip install coverage covdefaults
-          python -Im coverage combine
+          pip install coverage covdefault
+          python -Im coverage combine ${{steps.download.outputs.download-path}}/coverage-3.8 ${{steps.download.outputs.download-path}}/coverage-3.12
           python -Im coverage xml
 
       - name: Upload coverage reports to Codecov
