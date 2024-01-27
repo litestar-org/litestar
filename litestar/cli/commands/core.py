@@ -8,11 +8,12 @@ import sys
 from contextlib import AbstractContextManager, ExitStack, contextmanager
 from typing import TYPE_CHECKING, Any, Iterator
 
+import click
+from click import Context, command, option
 from rich.tree import Tree
 
 from litestar.app import DEFAULT_OPENAPI_CONFIG
 from litestar.cli._utils import (
-    RICH_CLICK_INSTALLED,
     UVICORN_INSTALLED,
     LitestarEnv,
     console,
@@ -24,16 +25,6 @@ from litestar.cli._utils import (
 )
 from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from litestar.utils.helpers import unwrap_partial
-
-if UVICORN_INSTALLED:
-    import uvicorn
-
-if TYPE_CHECKING or not RICH_CLICK_INSTALLED:  # pragma: no cover
-    import click
-    from click import Context, command, option
-else:
-    import rich_click as click
-    from rich_click import Context, command, option
 
 __all__ = ("info_command", "routes_command", "run_command")
 
@@ -226,6 +217,8 @@ def run_command(
     show_app_info(app)
     with _server_lifespan(app):
         if workers == 1 and not reload:
+            import uvicorn
+
             # A guard statement at the beginning of this function prevents uvicorn from being unbound
             # See "reportUnboundVariable in:
             # https://microsoft.github.io/pyright/#/configuration?id=type-check-diagnostics-settings

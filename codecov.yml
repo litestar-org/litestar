@@ -3,5 +3,9 @@ coverage:
     project:
       default:
         target: auto
+        threshold: 0.1%
+    patch:
+      default:
+        target: auto
 comment:
   require_changes: true
