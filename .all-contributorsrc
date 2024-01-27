@@ -1593,6 +1593,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "JeanArhancet",
+      "name": "Jean Arhancet",
+      "avatar_url": "https://avatars.githubusercontent.com/u/10811879?v=4",
+      "profile": "https://github.com/JeanArhancet",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
