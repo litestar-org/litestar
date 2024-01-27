@@ -212,7 +212,7 @@ class ChangelogEntryWriter:
     def __init__(self) -> None:
         self.text = ""
         self._level = 0
-        self._indent = "   "
+        self._indent = "    "
         self._cc_type_map = {"fix": "bugfix", "feat": "feature"}
 
     def add_line(self, line: str) -> None:
