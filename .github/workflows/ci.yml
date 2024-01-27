@@ -109,7 +109,7 @@ jobs:
       - name: combine coverage
         run: |
           pip install coverage
-          python -Im coverage combine
+          python -Im coverage combine /home/runner/work/litestar/litestar/coverage-3.8 /home/runner/work/litestar/litestar/coverage-3.12
           python -Im coverage xml
 
       - name: Upload coverage reports to Codecov
