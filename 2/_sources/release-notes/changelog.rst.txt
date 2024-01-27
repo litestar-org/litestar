@@ -3,6 +3,29 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.5.2
+    :date: 2024/01/27
+
+    .. change:: Ensure ``MultiDict`` and ``ImmutableMultiDict`` copy methods return the instance's type
+        :type: bugfix
+        :pr: 3009
+        :issue: 2549
+
+        Ensure :class:`~litestar.datastructures.MultiDict` and
+        :class:`~litestar.datastructures.ImmutableMultiDict` copy methods return a new
+        instance of ``MultiDict`` and ``ImmutableMultiDict``. Previously, these would
+        return a :class:`multidict.MultiDict` instance.
+
+    .. change:: Ensure ``exceptiongroup`` is installed on Python 3.11
+        :type: bugfix
+        :pr: 3035
+        :issue: 3029
+
+        Add the `exceptiongroup <https://github.com/agronholm/exceptiongroup>`_ package
+        as a required dependency on Python ``<3.11`` (previously ``<3.10``) as a
+        backport of `Exception Groups <https://docs.python.org/3/library/exceptions.html#exception-groups>`_
+
+
 .. changelog:: 2.5.1
     :date: 2024/01/18
 
