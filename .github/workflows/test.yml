@@ -58,8 +58,12 @@ jobs:
         if: inputs.coverage
         run: pdm run pytest docs/examples tests -n auto --cov
 
-      - uses: actions/upload-artifact@v4
+      - name: Rename coverage file
+        if: inputs.coverage
+        run: mv .coverage .coverage.${{ inputs.python-version }}
+
+      - uses: actions/upload-artifact@v3
         if: inputs.coverage
         with:
-          name: coverage-${{ inputs.python-version }}
-          path: .coverage
+          name: coverage-data
+          path: .coverage.${{ inputs.python-version }}

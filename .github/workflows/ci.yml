@@ -96,27 +96,28 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     steps:
-      - name: Set up python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      - uses: actions/download-artifact@v4
-        name: download
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
         with:
-          pattern: coverage-*
-          merge-multiple: true
+          name: coverage-data
 
-      - name: combine coverage
+      - name: Combine coverage files
         run: |
-          pip install coverage covdefaults
-          python -Im coverage combine ${{steps.download.outputs.download-path}}/coverage-3.8 ${{steps.download.outputs.download-path}}/coverage-3.12
-          python -Im coverage xml
+          python -Im pip install coverage covdefaults
+          python -Im coverage combine
+          python -Im coverage xml -i
+
+      - name: Fix coverage file for sonarcloud
+        run: sed -i "s/home\/runner\/work\/litestar\/litestar/github\/workspace/g" coverage.xml
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         with:
-          name: coverage-data
           files: coverage.xml
 
   test-platform-compat:
