@@ -56,8 +56,8 @@ def test_parse_utf8_form_data() -> None:
         ('foo="bar=123456789&name=moisheZuchmir"', {"foo": "bar=123456789&name=moisheZuchmir"}),
         ("email=%20%22%2c%3b%2f", {"email": ' ",;/'}),
         ("foo=%1;bar=bar", {"foo": "%1", "bar": "bar"}),
-        ("foo=bar;fizz  ; buzz", {"buzz": "buzz", "fizz": "fizz", "foo": "bar"}),
-        ("  fizz; foo=  bar", {"fizz": "fizz", "foo": "bar"}),
+        ("foo=bar;fizz  ; buzz", {"buzz": "", "fizz": "", "foo": "bar"}),
+        ("  fizz; foo=  bar", {"fizz": "", "foo": "bar"}),
         ("foo=false;bar=bar;foo=true", {"bar": "bar", "foo": "true"}),
         ("foo=;bar=bar;foo=boo", {"bar": "bar", "foo": "boo"}),
         (
@@ -66,14 +66,7 @@ def test_parse_utf8_form_data() -> None:
         ),
         (
             Cookie(key="abc", value="123", domain="localhost", httponly=True, secure=True).to_header(header=""),
-            {
-                "Domain": "localhost",
-                "Path": "/",
-                "SameSite": "lax",
-                "abc": "123",
-                "HttpOnly": "HttpOnly",
-                "Secure": "Secure",
-            },
+            {"Domain": "localhost", "Path": "/", "SameSite": "lax", "abc": "123", "HttpOnly": "", "Secure": ""},
         ),
     ),
 )
