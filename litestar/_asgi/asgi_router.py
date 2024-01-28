@@ -78,6 +78,8 @@ class ASGIRouter:
         """
         scope.setdefault("path_params", {})
         normalized_path = normalize_path(scope["path"])
+        if root_path := scope["root_path"]:
+            normalized_path = normalized_path.split(root_path, maxsplit=1)[-1]
         asgi_app, scope["route_handler"], scope["path"], scope["path_params"] = self.handle_routing(
             path=normalized_path, method=scope.get("method")
         )
