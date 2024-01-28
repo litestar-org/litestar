@@ -92,6 +92,41 @@ jobs:
       coverage: ${{ (matrix.python-version == '3.12' || matrix.python-version == '3.8') }}
       python-version: ${{ matrix.python-version }}
 
+  test_integration:
+    name: Test server integration
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        uvicorn-version: ["uvicorn<0.27.0", "uvicorn>=0.27.0"]
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
+
+      - uses: pdm-project/setup-pdm@v4
+        name: Set up PDM
+        with:
+          python-version: 3.11
+          allow-python-prereleases: false
+          cache: true
+          cache-dependency-path: |
+            ./pdm.lock
+
+      - name: Install dependencies
+        run: |
+          pdm install -G:all
+          pip install -U "${{ matrix.uvicorn-version }}"
+
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
+
+      - name: Test
+        run: pdm run pytest tests -m server_integration
+
   upload-test-coverage:
     runs-on: ubuntu-latest
     needs: test

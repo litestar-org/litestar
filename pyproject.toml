@@ -220,6 +220,7 @@ filterwarnings = [
 ]
 markers = [
   "sqlalchemy_integration: SQLAlchemy integration tests",
+  "server_integration: Test integration with ASGI server"
 ]
 xfail_strict = true
 
