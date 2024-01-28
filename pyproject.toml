@@ -110,6 +110,7 @@ include = [
 
 
 
+
 [tool.pdm]
 ignore_package_warnings = ["sphinx", "slotscheck"]
 
@@ -127,9 +128,9 @@ dev = [
     "asyncpg>=0.29.0",
     "psycopg[pool,binary]>=3.1.10",
     "psycopg2-binary",
-    "daphne>=4.0.0",
-    "hypercorn>=0.16.0",
     "psutil>=5.9.8",
+    "hypercorn>=0.16.0",
+    "daphne>=4.0.0",
 ]
 dev-contrib = ["opentelemetry-sdk", "httpx-sse"]
 docs = [
