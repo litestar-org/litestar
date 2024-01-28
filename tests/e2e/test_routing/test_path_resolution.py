@@ -312,6 +312,7 @@ def test_base_path_param_resolution_2() -> None:
 def test_server_root_path_handling(
     tmp_path: Path, monkeypatch: MonkeyPatch, server_command: List[str], run_server: Callable[[str, List[str]], None]
 ) -> None:
+    # https://github.com/litestar-org/litestar/issues/2998
     app = """
 from litestar import Litestar, get, Request
 
@@ -325,3 +326,36 @@ app = Litestar(route_handlers=[handler])
     run_server(app, server_command)
 
     assert httpx.get("http://127.0.0.1:9999/handler").json() == ["/handler", "/test"]
+
+
+@pytest.mark.parametrize(
+    "server_command",
+    [
+        pytest.param(["uvicorn", "app:app", "--port", "9999", "--root-path", "/test"], id="uvicorn"),
+        pytest.param(["hypercorn", "app:app", "--bind", "127.0.0.1:9999", "--root-path", "/test"], id="hypercorn"),
+        pytest.param(["daphne", "app:app", "--port", "9999", "--root-path", "/test"], id="daphne"),
+    ],
+)
+@pytest.mark.xdist_group("live_server_test")
+@pytest.mark.server_integration
+def test_server_root_path_handling_empty_path(
+    tmp_path: Path, monkeypatch: MonkeyPatch, server_command: List[str], run_server: Callable[[str, List[str]], None]
+) -> None:
+    # https://github.com/litestar-org/litestar/issues/3041
+    app = """
+from pathlib import Path
+
+from litestar import Litestar
+from litestar.handlers import get
+
+@get(path=["/", "/{path:path}"])
+async def pathfinder(path: Path | None) -> str:
+    return str(path)
+
+app = Litestar(route_handlers=[pathfinder], debug=True)
+    """
+
+    run_server(app, server_command)
+
+    assert httpx.get("http://127.0.0.1:9999/").text == "None"
+    assert httpx.get("http://127.0.0.1:9999/something").text == "/something"
