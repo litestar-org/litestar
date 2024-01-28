@@ -9,7 +9,7 @@ from litestar.params import Body
 
 @post(path="/", sync_to_thread=False)
 def msgpack_handler(
-    data: Annotated[Dict[str, Any], Body(media_type=RequestEncodingType.MESSAGEPACK)]
+    data: Annotated[Dict[str, Any], Body(media_type=RequestEncodingType.MESSAGEPACK)],
 ) -> Dict[str, Any]:
     # This will try to parse the request body as `MessagePack` regardless of the
     # `Content-Type`

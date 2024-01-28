@@ -313,7 +313,7 @@ def test_layered_parameters() -> None:
 def test_parameter_examples() -> None:
     @get(path="/")
     async def index(
-        text: Annotated[str, Parameter(examples=[Example(value="example value", summary="example summary")])]
+        text: Annotated[str, Parameter(examples=[Example(value="example value", summary="example summary")])],
     ) -> str:
         return text
 
