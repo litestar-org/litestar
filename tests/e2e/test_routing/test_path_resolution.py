@@ -315,9 +315,10 @@ def test_server_root_path_handling(
     # https://github.com/litestar-org/litestar/issues/2998
     app = """
 from litestar import Litestar, get, Request
+from typing import List
 
 @get("/handler")
-async def handler(request: Request) -> list[str]:
+async def handler(request: Request) -> List[str]:
     return [request.scope["path"], request.scope["root_path"]]
 
 app = Litestar(route_handlers=[handler])
@@ -347,9 +348,10 @@ from pathlib import Path
 
 from litestar import Litestar
 from litestar.handlers import get
+from typing import Optional
 
 @get(path=["/", "/{path:path}"])
-async def pathfinder(path: Path | None) -> str:
+async def pathfinder(path: Optional[Path]) -> str:
     return str(path)
 
 app = Litestar(route_handlers=[pathfinder], debug=True)
