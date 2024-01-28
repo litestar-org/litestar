@@ -152,8 +152,7 @@ to access the application state:
 
 
    @get("/")
-   def handler(state: State) -> None:
-       ...
+   def handler(state: State) -> None: ...
 
 When using this pattern you can specify the class to use for the state object. This type is not merely for type
 checkers, rather Litestar will instantiate a new state instance based on the type you set there. This allows users to

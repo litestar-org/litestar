@@ -162,38 +162,30 @@ class UserController(Controller):
     path = "/users"
 
     @post()
-    async def create_user(self, data: User) -> User:
-        ...
+    async def create_user(self, data: User) -> User: ...
 
     @get()
-    async def list_users(self) -> List[User]:
-        ...
+    async def list_users(self) -> List[User]: ...
 
     @get(path="/{date:int}")
-    async def list_new_users(self, date: datetime) -> List[User]:
-        ...
+    async def list_new_users(self, date: datetime) -> List[User]: ...
 
     @patch(path="/{user_id:uuid}", dto=PartialUserDTO)
     async def partial_update_user(
         self, user_id: UUID4, data: DTOData[PartialUserDTO]
-    ) -> User:
-        ...
+    ) -> User: ...
 
     @put(path="/{user_id:uuid}")
-    async def update_user(self, user_id: UUID4, data: User) -> User:
-        ...
+    async def update_user(self, user_id: UUID4, data: User) -> User: ...
 
     @get(path="/{user_name:str}")
-    async def get_user_by_name(self, user_name: str) -> Optional[User]:
-        ...
+    async def get_user_by_name(self, user_name: str) -> Optional[User]: ...
 
     @get(path="/{user_id:uuid}")
-    async def get_user(self, user_id: UUID4) -> User:
-        ...
+    async def get_user(self, user_id: UUID4) -> User: ...
 
     @delete(path="/{user_id:uuid}")
-    async def delete_user(self, user_id: UUID4) -> None:
-        ...
+    async def delete_user(self, user_id: UUID4) -> None: ...
 ```
 
 </details>
@@ -247,8 +239,7 @@ from litestar import Litestar, get
 from litestar.di import Provide
 
 
-async def my_dependency() -> str:
-    ...
+async def my_dependency() -> str: ...
 
 
 @get("/")
@@ -295,8 +286,7 @@ async def is_authorized(connection: ASGIConnection, handler: BaseRouteHandler) -
 
 
 @get("/", guards=[is_authorized])
-async def index() -> None:
-    ...
+async def index() -> None: ...
 
 
 app = Litestar([index])
