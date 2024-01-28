@@ -465,7 +465,7 @@ def test_multipart_form_part_limit_body_param_precedence() -> None:
 
     @post("/", signature_types=[UploadFile])
     async def hello_world(
-        data: List[UploadFile] = Body(media_type=RequestEncodingType.MULTI_PART, multipart_form_part_limit=route_limit)
+        data: List[UploadFile] = Body(media_type=RequestEncodingType.MULTI_PART, multipart_form_part_limit=route_limit),
     ) -> None:
         assert len(data) == route_limit
 
