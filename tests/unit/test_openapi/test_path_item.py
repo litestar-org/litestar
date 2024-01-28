@@ -93,7 +93,7 @@ def test_unique_operation_ids_for_multiple_http_methods(create_factory: CreateFa
 
 
 def test_unique_operation_ids_for_multiple_http_methods_with_handler_level_operation_creator(
-    create_factory: CreateFactoryFixture
+    create_factory: CreateFactoryFixture,
 ) -> None:
     class MultipleMethodsRouteController(Controller):
         path = "/"
