@@ -1514,13 +1514,11 @@ on which the root level controllers, routers, and route handler functions are re
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/sub-path&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">sub_path_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="o">...</span>
+<span class="k">def</span> <span class="nf">sub_path_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 
 
 <span class="nd">@get</span><span class="p">()</span>
-<span class="k">def</span> <span class="nf">root_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="o">...</span>
+<span class="k">def</span> <span class="nf">root_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">root_handler</span><span class="p">,</span> <span class="n">sub_path_handler</span><span class="p">])</span>
@@ -1533,8 +1531,7 @@ multiple paths, e.g.:</p>
 
 
 <span class="nd">@get</span><span class="p">([</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;/sub-path&quot;</span><span class="p">])</span>
-<span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="o">...</span>
+<span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">])</span>
@@ -1549,16 +1546,14 @@ by the Litestar app instance:</p>
 
 
 <span class="nd">@get</span><span class="p">()</span>
-<span class="k">def</span> <span class="nf">root_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="o">...</span>
+<span class="k">def</span> <span class="nf">root_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">root_handler</span><span class="p">])</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/sub-path&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">sub_path_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="o">...</span>
+<span class="k">def</span> <span class="nf">sub_path_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 
 
 <span class="n">app</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">sub_path_handler</span><span class="p">)</span>
@@ -1575,8 +1570,7 @@ injected dependencies. For example:</p>
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/some-path&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">route_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/sub-path&quot;</span><span class="p">)</span>
-    <span class="k">def</span> <span class="nf">sub_path_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="o">...</span>
+    <span class="k">def</span> <span class="nf">sub_path_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 
     <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">sub_path_handler</span><span class="p">)</span>
 
@@ -1602,8 +1596,7 @@ similarly to the Litestar constructor:</p>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{order_id:int}&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">order_handler</span><span class="p">(</span><span class="n">order_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="o">...</span>
+<span class="k">def</span> <span class="nf">order_handler</span><span class="p">(</span><span class="n">order_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 
 
 <span class="n">order_router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/orders&quot;</span><span class="p">,</span> <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">order_handler</span><span class="p">])</span>
@@ -1639,22 +1632,18 @@ better code organization and organize code by logical concerns.</p>
     <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/user-order&quot;</span>
 
     <span class="nd">@post</span><span class="p">()</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">create_user_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">UserOrder</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UserOrder</span><span class="p">:</span>
-        <span class="o">...</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">create_user_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">UserOrder</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UserOrder</span><span class="p">:</span> <span class="o">...</span>
 
     <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/{order_id:uuid}&quot;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">retrieve_user_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UserOrder</span><span class="p">:</span>
-        <span class="o">...</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">retrieve_user_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UserOrder</span><span class="p">:</span> <span class="o">...</span>
 
     <span class="nd">@patch</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/{order_id:uuid}&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">PartialUserOrderDTO</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">update_user_order</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">order_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">DTOData</span><span class="p">[</span><span class="n">PartialUserOrderDTO</span><span class="p">]</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UserOrder</span><span class="p">:</span>
-        <span class="o">...</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UserOrder</span><span class="p">:</span> <span class="o">...</span>
 
     <span class="nd">@delete</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/{order_id:uuid}&quot;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">delete_user_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="o">...</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">delete_user_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">order_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
 <p>The above is a simple example of a “CRUD” controller for a model called <code class="docutils literal notranslate"><span class="pre">UserOrder</span></code>. You can place as
@@ -1680,8 +1669,7 @@ while <code class="docutils literal notranslate"><span class="pre">retrieve_user
     <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/controller&quot;</span>
 
     <span class="nd">@get</span><span class="p">()</span>
-    <span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="o">...</span>
+    <span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 
 
 <span class="n">internal_router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/internal&quot;</span><span class="p">,</span> <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">MyController</span><span class="p">])</span>
@@ -1702,8 +1690,7 @@ different sub-path, e.g. <code class="docutils literal notranslate"><span class=
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/handler&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">my_route_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="o">...</span>
+<span class="k">def</span> <span class="nf">my_route_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 
 
 <span class="n">internal_router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/internal&quot;</span><span class="p">,</span> <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">my_route_handler</span><span class="p">])</span>

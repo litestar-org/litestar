@@ -1511,8 +1511,7 @@ expected. Litestar comes with a simple mechanism for caching:</p>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/cached-path&quot;</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">my_cached_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="o">...</span>
+<span class="k">def</span> <span class="nf">my_cached_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
 <p>By setting <code class="docutils literal notranslate"><span class="pre">cache=True</span></code> in the route handler, caching for the route handler will be enabled for the
@@ -1527,8 +1526,7 @@ the response in cache indefinitely.</p>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/cached-path&quot;</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>  <span class="c1"># seconds</span>
-<span class="k">def</span> <span class="nf">my_cached_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="o">...</span>
+<span class="k">def</span> <span class="nf">my_cached_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
 <p>If you want the response to be cached indefinitely, you can pass the <a class="reference internal" href="../reference/config.html#litestar.config.response_cache.CACHE_FOREVER" title="litestar.config.response_cache.CACHE_FOREVER"><code class="xref py py-class docutils literal notranslate"><span class="pre">config.response_cache.CACHE_FOREVER</span></code></a>
@@ -1538,8 +1536,7 @@ sentinel instead:</p>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/cached-path&quot;</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="n">CACHE_FOREVER</span><span class="p">)</span>  <span class="c1"># seconds</span>
-<span class="k">def</span> <span class="nf">my_cached_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="o">...</span>
+<span class="k">def</span> <span class="nf">my_cached_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
 </section>
@@ -1583,8 +1580,7 @@ any <a class="reference internal" href="../reference/stores/base.html#litestar.s
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/cached-path&quot;</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache_key_builder</span><span class="o">=</span><span class="n">key_builder</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">cached_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="o">...</span>
+<span class="k">def</span> <span class="nf">cached_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
 </section>
