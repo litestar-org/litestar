@@ -1,0 +1,53 @@
+name: "PR merged"
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - develop
+      - main
+
+jobs:
+  close_and_notify:
+    name: Close issues and notify
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const prNumber = context.payload.number
+            const branch = context.baseRef
+            const isDevelop = branch === "develop"
+            const commentBody = `<!--closing-comment-->\nThis issue has been closed in #${prNumber}. The change will be included in the upcoming ${isDevelop ? "minor" : "patch"} release.`
+
+            const query = `query($number: Int!, $owner: String!, $name: String!) { repository(owner: $owner, name: $name) {
+                pullRequest(number: $number) {
+                      id
+                      closingIssuesReferences (first: 10) { edges { node { number } } }
+                      }
+                  }
+              }`
+            const res = await github.graphql(query, {number: prNumber, owner: context.repo.owner, name: context.repo.repo})
+            const linkedIssues = res.repository.pullRequest.closingIssuesReferences.edges.map(
+              edge => edge.node.number
+            )
+
+            for (const issueNumber of linkedIssues) {
+              const res = await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issueNumber,
+                  state: "closed",
+                  state_reason: "completed"
+              })
+              if (res.status === 200) {
+                await github.rest.issues.createComment({
+                      owner: context.repo.owner,
+                      repo: context.repo.repo,
+                      issue_number: issueNumber,
+                      body: commentBody,
+                })
+              }
+            }
