@@ -1,10 +1,14 @@
 from __future__ import annotations
 
+from typing import Generic, TypeVar
 
-class SecretValue:
+_SecretT = TypeVar("_SecretT", bound="str | bytes")
+
+
+class SecretValue(Generic[_SecretT]):
     """Represents a secret value that can be of type `str` or `bytes`."""
 
-    def __init__(self, secret_value: str | bytes):
+    def __init__(self, secret_value: _SecretT) -> None:
         """Initializes a SecretValue object with a secret value of type `str` or `bytes`.
 
         Args:
@@ -13,7 +17,7 @@ class SecretValue:
 
         self._secret_value = secret_value
 
-    def get_value(self) -> str | bytes:
+    def get_secret(self) -> _SecretT:
         """Returns the actual secret value.
 
         Returns:
@@ -22,14 +26,14 @@ class SecretValue:
 
         return self._secret_value
 
-    def _get_hidden_value(self) -> str | bytes:
+    def _get_obscured_representation(self) -> _SecretT:
         """Return the hidden representation of the secret value.
 
         Raises:
             NotImplementedError: Always raised to enforce implementation in subclasses.
         """
 
-        raise NotImplementedError("Subclasses must implement _get_hidden_value")
+        raise NotImplementedError("Subclasses must implement _get_obscured_representation")
 
     def __len__(self) -> int:
         """Returns the length of the actual secret value.
@@ -38,7 +42,7 @@ class SecretValue:
             int: Length of the secret value.
         """
 
-        return len(self.get_value())
+        return len(self.get_secret())
 
     def __str__(self) -> str:
         """Returns a string representation of the hidden secret value.
@@ -47,7 +51,7 @@ class SecretValue:
             str: String representation of the hidden secret value.
         """
 
-        return str(self._get_hidden_value())
+        return str(self._get_obscured_representation())
 
     def __repr__(self) -> str:
         """Returns a string representation of the object for debugging purposes.
@@ -57,7 +61,7 @@ class SecretValue:
         """
 
         class_name = self.__class__.__name__
-        return f"{class_name}({self._get_hidden_value()!r})"
+        return f"{class_name}({self._get_obscured_representation()!r})"
 
     def __eq__(self, other: object) -> bool:
         """Checks if the given object is equal to the current instance.
@@ -69,7 +73,7 @@ class SecretValue:
             bool: True if equal, False otherwise.
         """
 
-        return isinstance(other, self.__class__) and self.get_value() == other._secret_value
+        return isinstance(other, self.__class__) and self.get_secret() == other._secret_value
 
     def __hash__(self) -> int:
         """Returns the hash value of the actual secret value.
@@ -78,43 +82,30 @@ class SecretValue:
             int: Hash value of the secret value.
         """
 
-        return hash(self.get_value())
-
-    @staticmethod
-    def _hide_value(value: str | bytes) -> str:
-        """Hides the secret value.
-
-        Args:
-            value (str | bytes): The secret value to be hidden.
-
-        Returns:
-            str: The hidden representation of the secret value.
-        """
-
-        return "******" if value else ""
+        return hash(self.get_secret())
 
 
-class SecretString(SecretValue):
+class SecretString(SecretValue[str]):
     """Represents a secret string value."""
 
-    def _get_hidden_value(self) -> str:
+    def _get_obscured_representation(self) -> str:
         """Overrides the base class method to return the hidden string value.
 
         Returns:
             str: The hidden string representation of the secret value.
         """
 
-        return self._hide_value(self.get_value())
+        return "******"
 
 
-class SecretBytes(SecretValue):
+class SecretBytes(SecretValue[bytes]):
     """Represents a secret bytes value."""
 
-    def _get_hidden_value(self) -> bytes:
+    def _get_obscured_representation(self) -> bytes:
         """Overrides the base class method to return the hidden bytes value.
 
         Returns:
             bytes: The hidden bytes representation of the secret value.
         """
 
-        return self._hide_value(self.get_value()).encode()
+        return b"******"
