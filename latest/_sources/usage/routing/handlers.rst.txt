@@ -41,8 +41,7 @@ key word:
 
 
    @get(path="/some-path")
-   async def my_route_handler() -> None:
-       ...
+   async def my_route_handler() -> None: ...
 
 It can also be passed as an argument without the key-word:
 
@@ -52,8 +51,7 @@ It can also be passed as an argument without the key-word:
 
 
    @get("/some-path")
-   async def my_route_handler() -> None:
-       ...
+   async def my_route_handler() -> None: ...
 
 And the value for this argument can be either a string path, as in the above examples, or a list of string paths:
 
@@ -63,8 +61,7 @@ And the value for this argument can be either a string path, as in the above exa
 
 
    @get(["/some-path", "/some-other-path"])
-   async def my_route_handler() -> None:
-       ...
+   async def my_route_handler() -> None: ...
 
 This is particularly useful when you want to have optional :ref:`path parameters <usage/routing/parameters:Path Parameters>`:
 
@@ -76,8 +73,7 @@ This is particularly useful when you want to have optional :ref:`path parameters
    @get(
        ["/some-path", "/some-path/{some_id:int}"],
    )
-   async def my_route_handler(some_id: int = 1) -> None:
-       ...
+   async def my_route_handler(some_id: int = 1) -> None: ...
 
 .. _handler-function-kwargs:
 
@@ -123,8 +119,7 @@ For example:
        headers: Dict[str, str],
        query: Dict[str, Any],
        cookies: Dict[str, Any],
-   ) -> None:
-       ...
+   ) -> None: ...
 
 .. tip::
 
@@ -160,8 +155,7 @@ is aliased as the decorator called :func:`route <litestar.handlers.route>`:
 
 
    @route(path="/some-path", http_method=[HttpMethod.GET, HttpMethod.POST])
-   async def my_endpoint() -> None:
-       ...
+   async def my_endpoint() -> None: ...
 
 As mentioned above, ``route`` does is merely an alias for ``HTTPRouteHandler``\ , thus the below code is equivalent to the one
 above:
@@ -173,8 +167,7 @@ above:
 
 
    @HTTPRouteHandler(path="/some-path", http_method=[HttpMethod.GET, HttpMethod.POST])
-   async def my_endpoint() -> None:
-       ...
+   async def my_endpoint() -> None: ...
 
 
 
@@ -203,8 +196,7 @@ These are used exactly like ``route`` with the sole exception that you cannot co
    from pydantic import BaseModel
 
 
-   class Resource(BaseModel):
-       ...
+   class Resource(BaseModel): ...
 
 
    class PartialResourceDTO(PydanticDTO[Resource]):
@@ -212,40 +204,33 @@ These are used exactly like ``route`` with the sole exception that you cannot co
 
 
    @get(path="/resources")
-   async def list_resources() -> list[Resource]:
-       ...
+   async def list_resources() -> list[Resource]: ...
 
 
    @post(path="/resources")
-   async def create_resource(data: Resource) -> Resource:
-       ...
+   async def create_resource(data: Resource) -> Resource: ...
 
 
    @get(path="/resources/{pk:int}")
-   async def retrieve_resource(pk: int) -> Resource:
-       ...
+   async def retrieve_resource(pk: int) -> Resource: ...
 
 
    @head(path="/resources/{pk:int}")
-   async def retrieve_resource_head(pk: int) -> None:
-       ...
+   async def retrieve_resource_head(pk: int) -> None: ...
 
 
    @put(path="/resources/{pk:int}")
-   async def update_resource(data: Resource, pk: int) -> Resource:
-       ...
+   async def update_resource(data: Resource, pk: int) -> Resource: ...
 
 
    @patch(path="/resources/{pk:int}", dto=PartialResourceDTO)
    async def partially_update_resource(
        data: DTOData[PartialResourceDTO], pk: int
-   ) -> Resource:
-       ...
+   ) -> Resource: ...
 
 
    @delete(path="/resources/{pk:int}")
-   async def delete_resource(pk: int) -> None:
-       ...
+   async def delete_resource(pk: int) -> None: ...
 
 Although these decorators are merely subclasses of :class:`HTTPRouteHandler <litestar.handlers.HTTPRouteHandler>`
 that pre-set the ``http_method``, using *get*, *patch*, *put*, *delete*, or *post* instead of *route* makes the
@@ -456,8 +441,7 @@ keywords arguments passed to the function.
        ["/some-path", "/some-path/{id:int}", "/some-path/{id:int}/{val:str}"],
        name="handler_name",
    )
-   def handler(id: int = 1, val: str = "default") -> None:
-       ...
+   def handler(id: int = 1, val: str = "default") -> None: ...
 
 
    @get("/path-info")
@@ -496,8 +480,7 @@ All route handler decorators accept a key called ``opt`` which accepts a diction
 
 
    @get("/", opt={"my_key": "some-value"})
-   def handler() -> None:
-       ...
+   def handler() -> None: ...
 
 This dictionary can be accessed by a :doc:`route guard </usage/security/guards>`, or by accessing the ``route_handler``
 property on a :class:`request <litestar.connection.request.Request>`, or using the
@@ -512,8 +495,7 @@ as a key in the opt dictionary:
 
 
    @get("/", my_key="some-value")
-   def handler() -> None:
-       ...
+   def handler() -> None: ...
 
 
    assert handler.opt["my_key"] == "some-value"

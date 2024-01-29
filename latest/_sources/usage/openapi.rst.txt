@@ -61,8 +61,7 @@ handlers. You can omit a route handler from the schema by setting ``include_in_s
 
 
    @get(path="/some-path", include_in_schema=False)
-   def my_route_handler() -> None:
-       ...
+   def my_route_handler() -> None: ...
 
 You can also modify the generated schema for the route handler using the following kwargs:
 
@@ -125,8 +124,7 @@ You can also modify the generated schema for the route handler using the followi
    from litestar.openapi.datastructures import ResponseSpec
 
 
-   class Item(BaseModel):
-       ...
+   class Item(BaseModel): ...
 
 
    class ItemNotFound(BaseModel):
@@ -142,8 +140,7 @@ You can also modify the generated schema for the route handler using the followi
            )
        },
    )
-   def retrieve_item(pk: int) -> Item:
-       ...
+   def retrieve_item(pk: int) -> Item: ...
 
 You can also specify ``security`` and ``tags`` on higher level of the application, e.g. on a controller, router, or the
 app instance itself. For example:
@@ -165,8 +162,7 @@ app instance itself. For example:
 
 
    @get("/other", tags=["internal"], security=[{"apiKey": []}])
-   def internal_path_handler() -> None:
-       ...
+   def internal_path_handler() -> None: ...
 
 
    app = Litestar(

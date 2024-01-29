@@ -2051,8 +2051,7 @@ from the <a class="reference internal" href="security/guards.html"><span class="
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/secret&quot;</span><span class="p">,</span> <span class="n">guards</span><span class="o">=</span><span class="p">[</span><span class="n">secret_token_guard</span><span class="p">],</span> <span class="n">opt</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;secret&quot;</span><span class="p">:</span> <span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SECRET&quot;</span><span class="p">)})</span>
-<span class="k">def</span> <span class="nf">secret_endpoint</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="o">...</span>
+<span class="k">def</span> <span class="nf">secret_endpoint</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
 </div>
@@ -2104,8 +2103,7 @@ and powerful way to generate mock data from pydantic models and dataclasses.</p>
 
 <span class="nd">@runtime_checkable</span>
 <span class="k">class</span> <span class="nc">Service</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Item</span><span class="p">:</span>
-        <span class="o">...</span>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Item</span><span class="p">:</span> <span class="o">...</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/item&quot;</span><span class="p">)</span>
@@ -2167,8 +2165,7 @@ pydantic models and dataclasses based on type annotations. With it, we could rew
 
 <span class="nd">@runtime_checkable</span>
 <span class="k">class</span> <span class="nc">Service</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">get_one</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Item</span><span class="p">:</span>
-        <span class="o">...</span>
+    <span class="k">def</span> <span class="nf">get_one</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Item</span><span class="p">:</span> <span class="o">...</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/item&quot;</span><span class="p">)</span>

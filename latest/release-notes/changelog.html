@@ -1498,6 +1498,24 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.5.3">
+<h2>2.5.3<a class="headerlink" href="#2.5.3" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2024/01/29<section id="2.5.3-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.5.3-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Handle diverging ASGI <code class="docutils literal notranslate"><span class="pre">root_path</span></code> behaviour<a class="headerlink reference internal" href="#2.5.3-handle diverging asgi" id="2.5.3-handle diverging asgi">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Uvicorn <a class="reference external" href="https://github.com/encode/uvicorn/releases/tag/0.26.0">0.26.0</a>
+introduced a breaking change in its handling of the ASGI <code class="docutils literal notranslate"><span class="pre">root_path</span></code> behaviour,
+which, while adhering to the spec, diverges from the interpretation of other
+ASGI servers of this aspect of the spec (e.g. hypercorn and daphne do not follow
+uvicorn’s interpretation as of today). A fix was introduced that ensures
+consistent behaviour of applications in any case.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3041">litestar-org/litestar#3041</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3039">litestar-org/litestar#3039</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.5.2">
 <h2>2.5.2<a class="headerlink" href="#2.5.2" title="Permalink to this heading">#</a></h2>
 <strong>Released: </strong>2024/01/27<section id="2.5.2-bugfix">
@@ -2296,12 +2314,10 @@ such that code like this will type check properly:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span>
 
 
-<span class="k">class</span> <span class="nc">CustomException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="o">...</span>
+<span class="k">class</span> <span class="nc">CustomException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span> <span class="o">...</span>
 
 
-<span class="k">def</span> <span class="nf">handle_exc</span><span class="p">(</span><span class="n">req</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="n">CustomException</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-    <span class="o">...</span>
+<span class="k">def</span> <span class="nf">handle_exc</span><span class="p">(</span><span class="n">req</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="n">CustomException</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2520">litestar-org/litestar#2520</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2533">litestar-org/litestar#2533</a></span></p>
@@ -2551,16 +2567,16 @@ dedicated class method.</p>
 <p><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.6.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be
 configured using a separate config object. This can be set using both
 class inheritance and <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Annotated">Annotated</a>:</p>
-<div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.6.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be configured using a separate config object using <code class="docutils literal notranslate"><span class="pre">config</span></code> object.</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.6.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be configured using a separate config object using <code class="docutils literal notranslate"><span class="pre">config</span></code> object.</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyModelDTO</span><span class="p">(</span><span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">MyModel</span><span class="p">]):</span>
     <span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemyDTOConfig</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <p>or</p>
-<div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.6.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be configured using a separate config object using <code class="docutils literal notranslate"><span class="pre">Annotated</span></code>.</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.6.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be configured using a separate config object using <code class="docutils literal notranslate"><span class="pre">Annotated</span></code>.</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span> <span class="n">MyModelDTO</span> <span class="o">=</span> <span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="n">MyModel</span><span class="p">,</span> <span class="n">SQLAlchemyDTOConfig</span><span class="p">()]]</span>
 </pre></div>
 </div>
@@ -3207,8 +3223,8 @@ available.</p>
 where the originated.</p>
 <p>An optional <code class="docutils literal notranslate"><span class="pre">source</span></code> key has been added, signifying whether the value is from
 the body, a cookie, a header, or a query param.</p>
-<div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">before</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">before</span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;status_code&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">400</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;detail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Validation failed for POST http://localhost:8000/some-route&quot;</span><span class="p">,</span>
@@ -3222,8 +3238,8 @@ the body, a cookie, a header, or a query param.</p>
 </pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">after</span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">after</span><a class="headerlink" href="#id10" title="Permalink to this code">#</a></div>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;status_code&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">400</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;detail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Validation failed for POST http://localhost:8000/some-route&quot;</span><span class="p">,</span>
@@ -3653,13 +3669,13 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <p>Remove the <code class="docutils literal notranslate"><span class="pre">state</span></code> parameter from <code class="docutils literal notranslate"><span class="pre">AfterExceptionHookHandler</span></code> and
 <code class="docutils literal notranslate"><span class="pre">BeforeMessageSendHookHandler</span></code>.</p>
 <p><code class="docutils literal notranslate"><span class="pre">AfterExceptionHookHandler</span></code>s will have to be updated from</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">after_exception_handler</span><span class="p">(</span><span class="n">exc</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="o">...</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">after_exception_handler</span><span class="p">(</span>
+    <span class="n">exc</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">State</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
 <p>to</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">after_exception_handler</span><span class="p">(</span><span class="n">exc</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="o">...</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">after_exception_handler</span><span class="p">(</span><span class="n">exc</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
 <p>The state can still be accessed like so:</p>
@@ -3670,13 +3686,11 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <p><code class="docutils literal notranslate"><span class="pre">BeforeMessageSendHookHandler</span></code>s will have to be updated from</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">before_send_hook_handler</span><span class="p">(</span>
     <span class="n">message</span><span class="p">:</span> <span class="n">Message</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="o">...</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
 <p>to</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">before_send_hook_handler</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n">Message</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="o">...</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">before_send_hook_handler</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n">Message</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
 <p>where state can be accessed in the same manner:</p>
@@ -4251,13 +4265,11 @@ them into a value for a model field. See</p></li>
 <p><code class="xref py py-class docutils literal notranslate"><span class="pre">Annotated</span></code> can now be used in route handler and dependencies to specify additional
 information about the fields.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">gt</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
-    <span class="o">...</span>
+<span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">gt</span><span class="o">=</span><span class="mi">5</span><span class="p">))</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span> <span class="o">...</span>
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">gt</span><span class="o">=</span><span class="mi">5</span><span class="p">)])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
-    <span class="o">...</span>
+<span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">gt</span><span class="o">=</span><span class="mi">5</span><span class="p">)])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span> <span class="o">...</span>
 </pre></div>
 </div>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1462">litestar-org/litestar#1462</a></span></p>
@@ -4372,8 +4384,7 @@ application’s state on application shutdown, but only adding it on application
 </dd>
 <dt>Fix SQLAlchemy 1 Plugin - <code class="docutils literal notranslate"><span class="pre">'Request'</span> <span class="pre">object</span> <span class="pre">has</span> <span class="pre">no</span> <span class="pre">attribute</span> <span class="pre">'dict'</span></code><a class="headerlink reference internal" href="#2.0.0alpha3-fix sqlalchemy 1 plugin -" id="2.0.0alpha3-fix sqlalchemy 1 plugin -">#</a></dt><dd><div class="changelog-change docutils container">
 <p>An annotation such as</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">provide_user</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">Token</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
-    <span class="o">...</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">provide_user</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">Token</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
 <p>would result in the error <code class="docutils literal notranslate"><span class="pre">'Request'</span> <span class="pre">object</span> <span class="pre">has</span> <span class="pre">no</span> <span class="pre">attribute</span> <span class="pre">'dict'</span></code>.</p>
@@ -4941,6 +4952,10 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.5.3">2.5.3</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.5.3-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.5.2">2.5.2</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.5.2-bugfix">Bugfixes</a></li>
 </ul>

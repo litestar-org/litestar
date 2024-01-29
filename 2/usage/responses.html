@@ -1786,8 +1786,7 @@ to type this argument even when returning an empty or <code class="docutils lite
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">ASGIApp</span><span class="p">:</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">my_asgi_app</span><span class="p">(</span><span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="o">...</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">my_asgi_app</span><span class="p">(</span><span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 
     <span class="k">return</span> <span class="n">my_asgi_app</span>
 </pre></div>
@@ -1920,8 +1919,7 @@ a special class that allows to add OpenAPI attributes such as <cite>description<
 If you don’t need those, you can optionally define <cite>response_headers</cite> using a mapping - such as a dictionary -
 as well:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="n">response_headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;my-header&quot;</span><span class="p">:</span> <span class="s2">&quot;header-value&quot;</span><span class="p">})</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="o">...</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
 </div>
@@ -2318,8 +2316,7 @@ e.g.:</p>
 <p>If all you need for your cookies are key and value, you can supply them using a <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping[str,</span> <span class="pre">str]</span></code></a>
 - like a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> - instead:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="n">response_cookies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;my-cookie&quot;</span><span class="p">:</span> <span class="s2">&quot;cookie-value&quot;</span><span class="p">})</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="o">...</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
 </div>

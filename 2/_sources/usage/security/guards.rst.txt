@@ -80,8 +80,7 @@ allows admin users to access certain route handlers and then add it to a route h
 
 
    @post(path="/user", guards=[admin_user_guard])
-   def create_user(data: User) -> User:
-       ...
+   def create_user(data: User) -> User: ...
 
 Thus, only an admin user would be able to send a post request to the ``create_user`` handler.
 
@@ -98,8 +97,7 @@ handlers:
    from litestar.handlers.base import BaseRouteHandler
 
 
-   def my_guard(connection: ASGIConnection, handler: BaseRouteHandler) -> None:
-       ...
+   def my_guard(connection: ASGIConnection, handler: BaseRouteHandler) -> None: ...
 
 
    # controller
@@ -153,5 +151,4 @@ the following guard:
 
 
    @get(path="/secret", guards=[secret_token_guard], opt={"secret": environ.get("SECRET")})
-   def secret_endpoint() -> None:
-       ...
+   def secret_endpoint() -> None: ...

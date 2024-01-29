@@ -2141,8 +2141,7 @@ Flask</label><div class="sd-tab-content docutils">
 
 
 <span class="nd">@app</span><span class="o">.</span><span class="n">errorhandler</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">handle_exception</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
-    <span class="o">...</span>
+<span class="k">def</span> <span class="nf">handle_exception</span><span class="p">(</span><span class="n">e</span><span class="p">):</span> <span class="o">...</span>
 </pre></div>
 </div>
 </div>
@@ -2153,8 +2152,7 @@ Litestar</label><div class="sd-tab-content docutils">
 <span class="kn">from</span> <span class="nn">litestar.exceptions</span> <span class="kn">import</span> <span class="n">HTTPException</span>
 
 
-<span class="k">def</span> <span class="nf">handle_exception</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">exception</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span>
-    <span class="o">...</span>
+<span class="k">def</span> <span class="nf">handle_exception</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">exception</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">:</span> <span class="o">...</span>
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([],</span> <span class="n">exception_handlers</span><span class="o">=</span><span class="p">{</span><span class="n">HTTPException</span><span class="p">:</span> <span class="n">handle_exception</span><span class="p">})</span>

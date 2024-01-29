@@ -14,13 +14,11 @@ on which the root level controllers, routers, and route handler functions are re
 
 
    @get("/sub-path")
-   def sub_path_handler() -> None:
-       ...
+   def sub_path_handler() -> None: ...
 
 
    @get()
-   def root_handler() -> None:
-       ...
+   def root_handler() -> None: ...
 
 
    app = Litestar(route_handlers=[root_handler, sub_path_handler])
@@ -35,8 +33,7 @@ multiple paths, e.g.:
 
 
    @get(["/", "/sub-path"])
-   def handler() -> None:
-       ...
+   def handler() -> None: ...
 
 
    app = Litestar(route_handlers=[handler])
@@ -56,16 +53,14 @@ by the Litestar app instance:
 
 
    @get()
-   def root_handler() -> None:
-       ...
+   def root_handler() -> None: ...
 
 
    app = Litestar(route_handlers=[root_handler])
 
 
    @get("/sub-path")
-   def sub_path_handler() -> None:
-       ...
+   def sub_path_handler() -> None: ...
 
 
    app.register(sub_path_handler)
@@ -84,8 +79,7 @@ injected dependencies. For example:
    @get("/some-path")
    def route_handler(request: Request[Any, Any]) -> None:
        @get("/sub-path")
-       def sub_path_handler() -> None:
-           ...
+       def sub_path_handler() -> None: ...
 
        request.app.register(sub_path_handler)
 
@@ -114,8 +108,7 @@ similarly to the Litestar constructor:
 
 
    @get("/{order_id:int}")
-   def order_handler(order_id: int) -> None:
-       ...
+   def order_handler(order_id: int) -> None: ...
 
 
    order_router = Router(path="/orders", route_handlers=[order_handler])
@@ -156,22 +149,18 @@ better code organization and organize code by logical concerns.
        path = "/user-order"
 
        @post()
-       async def create_user_order(self, data: UserOrder) -> UserOrder:
-           ...
+       async def create_user_order(self, data: UserOrder) -> UserOrder: ...
 
        @get(path="/{order_id:uuid}")
-       async def retrieve_user_order(self, order_id: UUID4) -> UserOrder:
-           ...
+       async def retrieve_user_order(self, order_id: UUID4) -> UserOrder: ...
 
        @patch(path="/{order_id:uuid}", dto=PartialUserOrderDTO)
        async def update_user_order(
            self, order_id: UUID4, data: DTOData[PartialUserOrderDTO]
-       ) -> UserOrder:
-           ...
+       ) -> UserOrder: ...
 
        @delete(path="/{order_id:uuid}")
-       async def delete_user_order(self, order_id: UUID4) -> None:
-           ...
+       async def delete_user_order(self, order_id: UUID4) -> None: ...
 
 The above is a simple example of a "CRUD" controller for a model called ``UserOrder``. You can place as
 many :doc:`route handler methods </usage/routing/handlers>` on a controller,
@@ -204,8 +193,7 @@ Controllers
        path = "/controller"
 
        @get()
-       def handler(self) -> None:
-           ...
+       def handler(self) -> None: ...
 
 
    internal_router = Router(path="/internal", route_handlers=[MyController])
@@ -230,8 +218,7 @@ You can also register standalone route handlers multiple times:
 
 
    @get(path="/handler")
-   def my_route_handler() -> None:
-       ...
+   def my_route_handler() -> None: ...
 
 
    internal_router = Router(path="/internal", route_handlers=[my_route_handler])
