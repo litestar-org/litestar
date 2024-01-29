@@ -1,14 +1,14 @@
 from litestar.datastructures.secret_values import SecretBytes, SecretString
 
 
-def test_secret_string_get_value() -> None:
+def test_secret_string_get_secret() -> None:
     secret_string = SecretString("some_secret_value")
-    assert secret_string.get_value() == "some_secret_value"
+    assert secret_string.get_secret() == "some_secret_value"
 
 
-def test_secret_string_get_hidden_value() -> None:
+def test_secret_string_get_obscured_representation() -> None:
     secret_string = SecretString("some_secret_value")
-    assert secret_string._get_hidden_value() == SecretString._hide_value("some_secret_value")
+    assert secret_string._get_obscured_representation() == "******"
 
 
 def test_secret_string_len() -> None:
@@ -18,7 +18,7 @@ def test_secret_string_len() -> None:
 
 def test_secret_string_str() -> None:
     secret_string = SecretString("some_secret_value")
-    assert str(secret_string) == SecretString._hide_value("some_secret_value")
+    assert str(secret_string) == "******"
 
 
 def test_secret_string_repr() -> None:
@@ -40,14 +40,14 @@ def test_secret_string_hash() -> None:
     assert hash(SecretString("some_secret_value")) == hash("some_secret_value")
 
 
-def test_secret_bytes_get_value() -> None:
+def test_secret_bytes_get_secret() -> None:
     secret_bytes = SecretBytes(b"some_secret_value")
-    assert secret_bytes.get_value() == b"some_secret_value"
+    assert secret_bytes.get_secret() == b"some_secret_value"
 
 
-def test_secret_bytes_get_hidden_value() -> None:
+def test_secret_bytes_get_obscured_representation() -> None:
     secret_bytes = SecretBytes(b"some_secret_value")
-    assert secret_bytes._get_hidden_value() == SecretBytes._hide_value(b"some_secret_value").encode()
+    assert secret_bytes._get_obscured_representation() == b"******"
 
 
 def test_secret_bytes_len() -> None:
@@ -61,14 +61,14 @@ def test_secret_bytes_str() -> None:
 
 
 def test_secret_bytes_repr() -> None:
-    secret_bytes = SecretBytes("some_secret_value")
+    secret_bytes = SecretBytes(b"some_secret_value")
     assert repr(secret_bytes) == "SecretBytes(b'******')"
 
 
 def test_secret_bytes_eq() -> None:
-    secret_bytes1 = SecretBytes("some_secret_value")
-    secret_bytes2 = SecretBytes("some_secret_value")
-    secret_bytes3 = SecretBytes("other_secret")
+    secret_bytes1 = SecretBytes(b"some_secret_value")
+    secret_bytes2 = SecretBytes(b"some_secret_value")
+    secret_bytes3 = SecretBytes(b"other_secret")
 
     assert secret_bytes1 == secret_bytes2
     assert not (secret_bytes1 == secret_bytes3)
