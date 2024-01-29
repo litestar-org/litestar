@@ -287,7 +287,7 @@ class ExtractedResponseData(TypedDict, total=False):
     body: bytes
     status_code: int
     headers: dict[str, str]
-    cookies: dict[str, str]
+    cookies: list[dict[str, str]]
 
 
 class ResponseDataExtractor:
@@ -393,7 +393,7 @@ class ResponseDataExtractor:
             else headers
         )
 
-    def extract_cookies(self, messages: tuple[HTTPResponseStartEvent, HTTPResponseBodyEvent]) -> dict[str, str]:
+    def extract_cookies(self, messages: tuple[HTTPResponseStartEvent, HTTPResponseBodyEvent]) -> list[dict[str, str]]:
         """Extract cookies from a ``Message``
 
         Args:
@@ -404,9 +404,12 @@ class ResponseDataExtractor:
         Returns:
             The Response's cookies dict.
         """
-        if cookie_string := ";".join(
-            [x[1].decode("latin-1") for x in filter(lambda x: x[0].lower() == b"set-cookie", messages[0]["headers"])]
+        cookies: list[dict[str, str]] = []
+        for cookie_string in (
+            x[1].decode("latin-1") for x in filter(lambda x: x[0].lower() == b"set-cookie", messages[0]["headers"])
         ):
-            parsed_cookies = parse_cookie_string(cookie_string)
-            return _obfuscate(parsed_cookies, self.obfuscate_cookies) if self.obfuscate_cookies else parsed_cookies
-        return {}
+            parsed_cookie = parse_cookie_string(cookie_string)
+            if self.obfuscate_cookies:
+                parsed_cookie = _obfuscate(parsed_cookie, self.obfuscate_cookies)
+            cookies.append(parsed_cookie)
+        return cookies
