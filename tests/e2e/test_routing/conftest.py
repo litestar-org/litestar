@@ -29,7 +29,7 @@ def run_server(tmp_path: Path, request: FixtureRequest, monkeypatch: MonkeyPatch
 
         request.addfinalizer(kill)
 
-        for _ in range(10):
+        for _ in range(50):
             try:
                 httpx.get("http://127.0.0.1:9999/", timeout=0.1)
                 break
