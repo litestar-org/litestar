@@ -1566,6 +1566,42 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "rosstitmarsh",
+      "name": "Ross Titmarsh",
+      "avatar_url": "https://avatars.githubusercontent.com/u/23349806?v=4",
+      "profile": "https://github.com/rosstitmarsh",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "korneevm",
+      "name": "Mike Korneev",
+      "avatar_url": "https://avatars.githubusercontent.com/u/743250?v=4",
+      "profile": "https://github.com/korneevm",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "patrickneise",
+      "name": "Patrick Neise",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6312074?v=4",
+      "profile": "https://github.com/patrickneise",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "JeanArhancet",
+      "name": "Jean Arhancet",
+      "avatar_url": "https://avatars.githubusercontent.com/u/10811879?v=4",
+      "profile": "https://github.com/JeanArhancet",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,

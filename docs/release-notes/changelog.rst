@@ -3,6 +3,82 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.5.2
+    :date: 2024/01/27
+
+    .. change:: Ensure ``MultiDict`` and ``ImmutableMultiDict`` copy methods return the instance's type
+        :type: bugfix
+        :pr: 3009
+        :issue: 2549
+
+        Ensure :class:`~litestar.datastructures.MultiDict` and
+        :class:`~litestar.datastructures.ImmutableMultiDict` copy methods return a new
+        instance of ``MultiDict`` and ``ImmutableMultiDict``. Previously, these would
+        return a :class:`multidict.MultiDict` instance.
+
+    .. change:: Ensure ``exceptiongroup`` is installed on Python 3.11
+        :type: bugfix
+        :pr: 3035
+        :issue: 3029
+
+        Add the `exceptiongroup <https://github.com/agronholm/exceptiongroup>`_ package
+        as a required dependency on Python ``<3.11`` (previously ``<3.10``) as a
+        backport of `Exception Groups <https://docs.python.org/3/library/exceptions.html#exception-groups>`_
+
+
+.. changelog:: 2.5.1
+    :date: 2024/01/18
+
+    .. change:: Fix OpenAPI schema generation for Union of multiple ``msgspec.Struct``\ s and ``None``
+        :type: bugfix
+        :pr: 2982
+        :issue: 2971
+
+        The following code would raise a :exc:`TypeError`
+
+        .. code-block:: python
+
+            import msgspec
+
+            from litestar import get
+            from litestar.testing import create_test_client
+
+
+            class StructA(msgspec.Struct):
+                pass
+
+
+            class StructB(msgspec.Struct):
+                pass
+
+
+            @get("/")
+            async def handler() -> StructA | StructB | None:
+                return StructA()
+
+
+    .. change:: Fix misleading error message for missing dependencies provide by a package extra
+        :type: bugfix
+        :pr: 2921
+
+        Ensure that :exc:`MissingDependencyException` includes the correct name of the
+        package to install if the package name differs from the Litestar package extra.
+        (e.g. ``pip install litestar[jinja]`` vs ``pip install jinja2``). Previously the
+        exception assumed the same name for both the package and package-extra name.
+
+
+    .. change:: Fix OpenAPI schema file upload schema types for swagger
+        :type: bugfix
+        :pr: 2745
+        :issue: 2628
+
+        - Always set ``format`` as ``binary``
+        - Fix schema for swagger with multiple files, which requires the type of the
+          request body schema to be ``object`` with ``properties`` instead of a schema
+          of type ``array`` and ``items``.
+
+
+
 .. changelog:: 2.5.0
     :date: 2024/01/06
 
@@ -798,12 +874,10 @@
             from litestar import Litestar, Request, Response
 
 
-            class CustomException(Exception):
-                ...
+            class CustomException(Exception): ...
 
 
-            def handle_exc(req: Request, exc: CustomException) -> Response:
-                ...
+            def handle_exc(req: Request, exc: CustomException) -> Response: ...
 
     .. change:: Fix OpenAPI schema generation for variable length tuples
         :type: bugfix
@@ -2241,15 +2315,15 @@
 
         .. code-block:: python
 
-            async def after_exception_handler(exc: Exception, scope: Scope, state: State) -> None:
-                ...
+            async def after_exception_handler(
+                exc: Exception, scope: Scope, state: State
+            ) -> None: ...
 
         to
 
         .. code-block:: python
 
-            async def after_exception_handler(exc: Exception, scope: Scope) -> None:
-                ...
+            async def after_exception_handler(exc: Exception, scope: Scope) -> None: ...
 
         The state can still be accessed like so:
 
@@ -2265,16 +2339,14 @@
 
             async def before_send_hook_handler(
                 message: Message, state: State, scope: Scope
-            ) -> None:
-                ...
+            ) -> None: ...
 
 
         to
 
         .. code-block:: python
 
-            async def before_send_hook_handler(message: Message, scope: Scope) -> None:
-                ...
+            async def before_send_hook_handler(message: Message, scope: Scope) -> None: ...
 
         where state can be accessed in the same manner:
 
@@ -2914,14 +2986,12 @@
         .. code-block:: python
 
             @get("/")
-            def index(param: int = Parameter(gt=5)) -> dict[str, int]:
-                ...
+            def index(param: int = Parameter(gt=5)) -> dict[str, int]: ...
 
         .. code-block:: python
 
             @get("/")
-            def index(param: Annotated[int, Parameter(gt=5)]) -> dict[str, int]:
-                ...
+            def index(param: Annotated[int, Parameter(gt=5)]) -> dict[str, int]: ...
 
     .. change:: Support ``text/html`` Media-Type in ``Redirect`` response container
         :type: bugfix
@@ -3046,8 +3116,7 @@
 
         .. code-block:: python
 
-            async def provide_user(request: Request[User, Token, Any]) -> User:
-                ...
+            async def provide_user(request: Request[User, Token, Any]) -> User: ...
 
         would result in the error ``'Request' object has no attribute 'dict'``.
 

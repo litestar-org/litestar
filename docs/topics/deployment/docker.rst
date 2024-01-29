@@ -45,6 +45,7 @@ files in your project directory:
     :caption: app.py
 
     """Minimal Litestar application."""
+
     from asyncio import sleep
     from typing import Any, Dict
 

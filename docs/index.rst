@@ -155,6 +155,12 @@ A huge thank you to our current sponsors:
         </a>
         <p style="text-align: center;">Telemetry Sports</p>
       </div>
+      <div>
+        <a href="https://www.stok.kr/" title="Stok - Stack Up Your Assets!">
+            <img src="https://avatars.githubusercontent.com/u/144093421?s=400&v=4" width="150" alt="Stok">
+        </a>
+        <p style="text-align: center;">Stok</p>
+      </div>
     </div>
 
 We invite organizations and individuals to join our sponsorship program.
@@ -224,28 +230,24 @@ You can also use dataclasses (standard library and Pydantic),
         path = "/users"
 
         @post()
-        async def create_user(self, data: User) -> User:
-            ...
+        async def create_user(self, data: User) -> User: ...
 
         @get()
-        async def list_users(self) -> List[User]:
-            ...
+        async def list_users(self) -> List[User]: ...
 
         @patch(path="/{user_id:uuid}", dto=PartialUserDTO)
-        async def partial_update_user(self, user_id: UUID4, data: DTOData[User]) -> User:
-            ...
+        async def partial_update_user(
+            self, user_id: UUID4, data: DTOData[User]
+        ) -> User: ...
 
         @put(path="/{user_id:uuid}")
-        async def update_user(self, user_id: UUID4, data: User) -> User:
-            ...
+        async def update_user(self, user_id: UUID4, data: User) -> User: ...
 
         @get(path="/{user_id:uuid}")
-        async def get_user(self, user_id: UUID4) -> User:
-            ...
+        async def get_user(self, user_id: UUID4) -> User: ...
 
         @delete(path="/{user_id:uuid}")
-        async def delete_user(self, user_id: UUID4) -> None:
-            ...
+        async def delete_user(self, user_id: UUID4) -> None: ...
 
 
 When instantiating your app, import your *controller* into your application's

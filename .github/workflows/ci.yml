@@ -23,7 +23,7 @@ jobs:
 
       - name: Load cached Pre-Commit Dependencies
         id: cached-pre-commit-dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.cache/pre-commit/
           key: pre-commit-4|${{ env.pythonLocation }}|${{ hashFiles('.pre-commit-config.yaml') }}
@@ -41,7 +41,7 @@ jobs:
           python-version: "3.8"
           allow-prereleases: true
 
-      - uses: pdm-project/setup-pdm@v3
+      - uses: pdm-project/setup-pdm@v4
         name: Set up PDM
         with:
           python-version: "3.8"
@@ -66,7 +66,7 @@ jobs:
           python-version: "3.8"
           allow-prereleases: true
 
-      - uses: pdm-project/setup-pdm@v3
+      - uses: pdm-project/setup-pdm@v4
         name: Set up PDM
         with:
           python-version: "3.8"
@@ -92,6 +92,34 @@ jobs:
       coverage: ${{ (matrix.python-version == '3.12' || matrix.python-version == '3.8') }}
       python-version: ${{ matrix.python-version }}
 
+  upload-test-coverage:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: coverage-data
+
+      - name: Combine coverage files
+        run: |
+          python -Im pip install coverage covdefaults
+          python -Im coverage combine
+          python -Im coverage xml -i
+
+      - name: Fix coverage file for sonarcloud
+        run: sed -i "s/home\/runner\/work\/litestar\/litestar/github\/workspace/g" coverage.xml
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: coverage.xml
+
   test-platform-compat:
     if: github.event_name == 'push'
     strategy:
@@ -113,24 +141,6 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Download Artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: coverage-data
-
-      - name: Combine coverage files
-        run: |
-          python -Im pip install coverage covdefaults
-          python -Im coverage combine
-          python -Im coverage xml -i
-
-      - name: Fix coverage file for sonarcloud
-        run: sed -i "s/home\/runner\/work\/litestar\/litestar/github\/workspace/g" coverage.xml
 
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
@@ -172,7 +182,7 @@ jobs:
           python-version: "3.12"
           allow-prereleases: true
 
-      - uses: pdm-project/setup-pdm@v3
+      - uses: pdm-project/setup-pdm@v4
         name: Set up PDM
         with:
           python-version: "3.12"

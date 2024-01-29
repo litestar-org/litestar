@@ -196,7 +196,7 @@ def create_debug_response(request: Request, exc: Exception) -> Response:
         content=content,
         media_type=media_type,
         status_code=HTTP_500_INTERNAL_SERVER_ERROR,
-        type_encoders=_get_type_encoders_for_request(request) if request is not None else None,
+        type_encoders=_get_type_encoders_for_request(request),
     )
 
 

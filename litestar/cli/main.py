@@ -10,7 +10,7 @@ if TYPE_CHECKING or not RICH_CLICK_INSTALLED:  # pragma: no cover
     import click
     from click import Context, group, option, pass_context
     from click import Path as ClickPath
-else:
+else:  # pragma: no cover
     import rich_click as click
     from rich_click import Context, group, option, pass_context
     from rich_click import Path as ClickPath

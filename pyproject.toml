@@ -33,6 +33,7 @@ classifiers = [
 dependencies = [
   "anyio>=3",
   "httpx>=0.22",
+  "exceptiongroup; python_version < \"3.11\"",
   "importlib-metadata; python_version < \"3.10\"",
   "importlib-resources>=5.12.0; python_version < \"3.9\"",
   "msgspec>=0.18.2",
@@ -56,7 +57,7 @@ maintainers = [
 name = "litestar"
 readme = "README.md"
 requires-python = ">=3.8,<4.0"
-version = "2.5.0"
+version = "2.5.2"
 
 [project.urls]
 Blog = "https://blog.litestar.dev"
@@ -106,7 +107,6 @@ dev = [
   "starlette",
   "trio",
   "aiosqlite",
-  "exceptiongroup; python_version < \"3.11\"",
   "asyncpg>=0.29.0",
   "psycopg[pool,binary]>=3.1.10",
   "psycopg2-binary",
@@ -396,6 +396,7 @@ known-first-party = ["litestar", "tests", "examples"]
 ]
 "tests/unit/test_contrib/test_sqlalchemy/**/*.*" = ["UP006"]
 "tools/**/*.*" = ["D", "ARG", "EM", "TRY", "G", "FBT"]
+"tools/prepare_release.py" = ["S603", "S607"]
 
 [tool.unasyncd]
 add_editors_note = true

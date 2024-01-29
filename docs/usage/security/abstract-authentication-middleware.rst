@@ -41,7 +41,7 @@ Example: Implementing a JWTAuthenticationMiddleware
 Since the above is quite hard to grasp in the abstract, lets see an example.
 
 We start off by creating a user model. It can be implemented using pydantic, and ODM, ORM, etc. For the sake of the
-example here lets say it's a pydantic model:
+example here lets say it's a SQLAlchemy model:
 
 .. code-block:: python
     :caption: my_app/db/models.py
@@ -147,21 +147,22 @@ We can now create our authentication middleware:
             """
 
             # retrieve the auth header
+            auth_header = connection.headers.get(API_KEY_HEADER)
+            if not auth_header:
+                raise NotAuthorizedException()
 
-        auth_header = connection.headers.get(API_KEY_HEADER)
-        if not auth_header:
-            raise NotAuthorizedException()
+            # decode the token, the result is a ``Token`` model instance
+            token = decode_jwt_token(encoded_token=auth_header)
 
-        # decode the token, the result is a ``Token`` model instance
-        token = decode_jwt_token(encoded_token=auth_header)
-
-        engine = cast("AsyncEngine", connection.app.state.postgres_connection)
-        async with AsyncSession(engine) as async_session:
-            async with async_session.begin():
-                user = await async_session.execute(select(User).where(User.id == token.sub))
-        if not user:
-            raise NotAuthorizedException()
-        return AuthenticationResult(user=user, auth=token)
+            engine = cast("AsyncEngine", connection.app.state.postgres_connection)
+            async with AsyncSession(engine) as async_session:
+                async with async_session.begin():
+                    user = await async_session.execute(
+                        select(User).where(User.id == token.sub)
+                    )
+            if not user:
+                raise NotAuthorizedException()
+            return AuthenticationResult(user=user, auth=token)
 
 
 Finally, we need to pass our middleware to the Litestar constructor:
