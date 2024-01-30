@@ -7,6 +7,7 @@ from typing import (
     AsyncIterable,
     AsyncIterator,
     Awaitable,
+    Dict,
     Iterable,
     Iterator,
     Literal,
@@ -42,5 +43,5 @@ StreamType: TypeAlias = Union[Iterable[T], Iterator[T], AsyncIterable[T], AsyncI
 MaybePartial: TypeAlias = Union[T, partial]
 """A potentially partial callable."""
 
-SSEData: TypeAlias = Union[int, str, bytes, dict[str, Any], ServerSentEventMessage]
+SSEData: TypeAlias = Union[int, str, bytes, Dict[str, Any], ServerSentEventMessage]
 """A type alias for SSE data."""
