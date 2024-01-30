@@ -3,6 +3,7 @@ from __future__ import annotations
 from functools import partial
 from typing import (
     TYPE_CHECKING,
+    Any,
     AsyncIterable,
     AsyncIterator,
     Awaitable,
@@ -15,8 +16,11 @@ from typing import (
     Union,
 )
 
+from litestar.response.sse import ServerSentEventMessage
+
 if TYPE_CHECKING:
     from typing_extensions import TypeAlias
+
 
 T = TypeVar("T")
 
@@ -37,3 +41,6 @@ StreamType: TypeAlias = Union[Iterable[T], Iterator[T], AsyncIterable[T], AsyncI
 
 MaybePartial: TypeAlias = Union[T, partial]
 """A potentially partial callable."""
+
+SSEData: TypeAlias = int | str | bytes | dict[str, Any] | ServerSentEventMessage
+"""A type alias for SSE data."""

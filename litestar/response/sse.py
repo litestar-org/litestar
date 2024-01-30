@@ -12,7 +12,7 @@ from litestar.utils import AsyncIteratorWrapper
 
 if TYPE_CHECKING:
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
-    from litestar.types import ResponseCookies, ResponseHeaders, StreamType
+    from litestar.types import ResponseCookies, ResponseHeaders, SSEData, StreamType
 
 _LINE_BREAK_RE = re.compile(r"\r\n|\r|\n")
 DEFAULT_SEPARATOR = "\r\n"
@@ -21,11 +21,7 @@ DEFAULT_SEPARATOR = "\r\n"
 class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
     __slots__ = ("content_async_iterator", "event_id", "event_type", "retry_duration", "comment_message")
 
-    content_async_iterator: AsyncIteratorWrapper[
-        int | str | bytes | dict[str, Any] | ServerSentEventMessage
-    ] | AsyncIterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage] | AsyncIterator[
-        int | str | bytes | dict[str, Any] | ServerSentEventMessage
-    ]
+    content_async_iterator: AsyncIteratorWrapper[SSEData] | AsyncIterable[SSEData] | AsyncIterator[SSEData]
 
     def __init__(
         self,
@@ -135,7 +131,7 @@ class ServerSentEventMessage:
 class ServerSentEvent(Stream):
     def __init__(
         self,
-        content: str | bytes | StreamType[int | str | bytes | dict[str, Any] | ServerSentEventMessage],
+        content: str | bytes | StreamType[SSEData],
         *,
         background: BackgroundTask | BackgroundTasks | None = None,
         cookies: ResponseCookies | None = None,
