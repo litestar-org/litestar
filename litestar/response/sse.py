@@ -21,11 +21,15 @@ DEFAULT_SEPARATOR = "\r\n"
 class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
     __slots__ = ("content_async_iterator", "event_id", "event_type", "retry_duration", "comment_message")
 
-    content_async_iterator: AsyncIteratorWrapper[bytes | str] | AsyncIterable[str | bytes] | AsyncIterator[str | bytes]
+    content_async_iterator: AsyncIteratorWrapper[
+        int | str | bytes | dict[str, Any] | ServerSentEventMessage
+    ] | AsyncIterable[int | str | bytes | dict[str, Any] | ServerSentEventMessage] | AsyncIterator[
+        int | str | bytes | dict[str, Any] | ServerSentEventMessage
+    ]
 
     def __init__(
         self,
-        content: str | bytes | StreamType[int | str | bytes | dict[str, Any], ServerSentEventMessage],
+        content: str | bytes | StreamType[int | str | bytes | dict[str, Any] | ServerSentEventMessage],
         event_type: str | None = None,
         event_id: int | str | None = None,
         retry_duration: int | None = None,
@@ -56,7 +60,7 @@ class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
         if isinstance(content, (str, bytes)):
             self.content_async_iterator = AsyncIteratorWrapper([content])
         elif isinstance(content, (Iterable, Iterator)):
-            self.content_async_iterator = AsyncIteratorWrapper(content)  # type: ignore[arg-type]
+            self.content_async_iterator = AsyncIteratorWrapper(content)
         elif isinstance(content, (AsyncIterable, AsyncIterator, AsyncIteratorWrapper)):
             self.content_async_iterator = content
         else:
