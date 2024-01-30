@@ -131,7 +131,7 @@ class ServerSentEventMessage:
 class ServerSentEvent(Stream):
     def __init__(
         self,
-        content: str | bytes | StreamType[str | bytes],
+        content: str | bytes | StreamType[str | bytes | ServerSentEventMessage],
         *,
         background: BackgroundTask | BackgroundTasks | None = None,
         cookies: ResponseCookies | None = None,
