@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 
 T = TypeVar("T")
 
-__all__ = ("OptionalSequence", "SyncOrAsyncUnion", "AnyIOBackend", "StreamType", "MaybePartial")
+__all__ = ("OptionalSequence", "SyncOrAsyncUnion", "AnyIOBackend", "StreamType", "MaybePartial", "SSEData")
 
 OptionalSequence: TypeAlias = Optional[Sequence[T]]
 """Types 'T' as union of Sequence[T] and None."""
