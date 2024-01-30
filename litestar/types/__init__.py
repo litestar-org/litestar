@@ -73,7 +73,7 @@ from .composite_types import (
 )
 from .empty import Empty, EmptyType
 from .file_types import FileInfo, FileSystemProtocol
-from .helper_types import AnyIOBackend, MaybePartial, OptionalSequence, StreamType, SyncOrAsyncUnion
+from .helper_types import AnyIOBackend, MaybePartial, OptionalSequence, SSEData, StreamType, SyncOrAsyncUnion
 from .internal_types import (
     ControllerRouterHandler,
     ReservedKwargs,
@@ -155,6 +155,7 @@ __all__ = (
     "Send",
     "Serializer",
     "StreamType",
+    "SSEData",
     "SyncOrAsyncUnion",
     "TypeDecodersSequence",
     "TypeEncodersMap",
