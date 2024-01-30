@@ -42,5 +42,5 @@ StreamType: TypeAlias = Union[Iterable[T], Iterator[T], AsyncIterable[T], AsyncI
 MaybePartial: TypeAlias = Union[T, partial]
 """A potentially partial callable."""
 
-SSEData: TypeAlias = int | str | bytes | dict[str, Any] | ServerSentEventMessage
+SSEData: TypeAlias = Union[int, str, bytes, dict[str, Any], ServerSentEventMessage]
 """A type alias for SSE data."""
