@@ -25,7 +25,7 @@ class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
 
     def __init__(
         self,
-        content: str | bytes | StreamType[str | bytes],
+        content: str | bytes | StreamType[int | str | bytes | dict[str, Any], ServerSentEventMessage],
         event_type: str | None = None,
         event_id: int | str | None = None,
         retry_duration: int | None = None,
@@ -131,7 +131,7 @@ class ServerSentEventMessage:
 class ServerSentEvent(Stream):
     def __init__(
         self,
-        content: str | bytes | StreamType[str | bytes | ServerSentEventMessage],
+        content: str | bytes | StreamType[int | str | bytes | dict[str, Any] | ServerSentEventMessage],
         *,
         background: BackgroundTask | BackgroundTasks | None = None,
         cookies: ResponseCookies | None = None,
