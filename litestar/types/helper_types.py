@@ -17,10 +17,10 @@ from typing import (
     Union,
 )
 
-from litestar.response.sse import ServerSentEventMessage
-
 if TYPE_CHECKING:
     from typing_extensions import TypeAlias
+
+    from litestar.response.sse import ServerSentEventMessage
 
 
 T = TypeVar("T")
@@ -43,5 +43,5 @@ StreamType: TypeAlias = Union[Iterable[T], Iterator[T], AsyncIterable[T], AsyncI
 MaybePartial: TypeAlias = Union[T, partial]
 """A potentially partial callable."""
 
-SSEData: TypeAlias = Union[int, str, bytes, Dict[str, Any], ServerSentEventMessage]
+SSEData: TypeAlias = Union[int, str, bytes, Dict[str, Any], "ServerSentEventMessage"]
 """A type alias for SSE data."""
