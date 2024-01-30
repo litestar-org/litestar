@@ -12,7 +12,7 @@ from litestar.utils import AsyncIteratorWrapper
 
 if TYPE_CHECKING:
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
-    from litestar.types import ResponseCookies, ResponseHeaders, StreamType
+    from litestar.types import ResponseCookies, ResponseHeaders, SSEData, StreamType
 
 _LINE_BREAK_RE = re.compile(r"\r\n|\r|\n")
 DEFAULT_SEPARATOR = "\r\n"
@@ -21,11 +21,11 @@ DEFAULT_SEPARATOR = "\r\n"
 class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
     __slots__ = ("content_async_iterator", "event_id", "event_type", "retry_duration", "comment_message")
 
-    content_async_iterator: AsyncIteratorWrapper[bytes | str] | AsyncIterable[str | bytes] | AsyncIterator[str | bytes]
+    content_async_iterator: AsyncIterable[SSEData]
 
     def __init__(
         self,
-        content: str | bytes | StreamType[str | bytes],
+        content: str | bytes | StreamType[SSEData],
         event_type: str | None = None,
         event_id: int | str | None = None,
         retry_duration: int | None = None,
@@ -56,7 +56,7 @@ class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
         if isinstance(content, (str, bytes)):
             self.content_async_iterator = AsyncIteratorWrapper([content])
         elif isinstance(content, (Iterable, Iterator)):
-            self.content_async_iterator = AsyncIteratorWrapper(content)  # type: ignore[arg-type]
+            self.content_async_iterator = AsyncIteratorWrapper(content)
         elif isinstance(content, (AsyncIterable, AsyncIterator, AsyncIteratorWrapper)):
             self.content_async_iterator = content
         else:
@@ -130,7 +130,7 @@ class ServerSentEventMessage:
 class ServerSentEvent(Stream):
     def __init__(
         self,
-        content: str | bytes | StreamType[str | bytes],
+        content: str | bytes | StreamType[SSEData],
         *,
         background: BackgroundTask | BackgroundTasks | None = None,
         cookies: ResponseCookies | None = None,
