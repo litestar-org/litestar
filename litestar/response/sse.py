@@ -25,7 +25,7 @@ class _ServerSentEventIterator(AsyncIteratorWrapper[bytes]):
 
     def __init__(
         self,
-        content: str | bytes | StreamType[int | str | bytes | dict[str, Any] | ServerSentEventMessage],
+        content: str | bytes | StreamType[SSEData],
         event_type: str | None = None,
         event_id: int | str | None = None,
         retry_duration: int | None = None,
