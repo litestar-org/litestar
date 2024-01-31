@@ -3,6 +3,35 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.5.4
+    :date: 2024-01-31
+
+    .. change:: Handle `KeyError` when `root_path` is not present in ASGI scope
+        :type: bugfix
+        :pr: 3051
+
+        Nginx Unit ASGI server does not set "root_path" in the ASGI scope, which is expected as part of the changes done in #3039. This PR fixes the assumption that the key is always present and instead tries to optionally retrieve it.
+
+
+        Issue originaly reported over at [Discord](https://discord.com/channels/919193495116337154/919193495690936353/1202204676003745792)
+        ```
+        KeyError on GET /
+        'root_path'
+        ```
+
+    .. change:: ServerSentEvent typing error
+        :type: bugfix
+        :pr: 3048
+
+        fixes small typing error:
+
+        ```
+        error: Argument 1 to "ServerSentEvent" has incompatible type "AsyncIterable[ServerSentEventMessage]"; expected "str | bytes | Iterable[str | bytes] | Iterator[str | bytes] | AsyncIterable[str | bytes] | AsyncIterator[str | bytes]"  [arg-type]
+         ```
+
+        inside `test_sse` there was a `Any` I changed to trigger the test then solved it.
+
+
 .. changelog:: 2.5.3
     :date: 2024/01/29
 
