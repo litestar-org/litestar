@@ -1,6 +1,9 @@
-from typing import TYPE_CHECKING
+from pathlib import Path
+from typing import TYPE_CHECKING, Callable, List
 
+import httpx
 import pytest
+from _pytest.monkeypatch import MonkeyPatch
 
 from litestar import Litestar, MediaType, asgi, get, websocket
 from litestar.exceptions import ImproperlyConfiguredException
@@ -92,3 +95,36 @@ def test_does_not_support_asgi_handlers_on_same_level_as_websockets() -> None:
 
     with pytest.raises(ImproperlyConfiguredException):
         Litestar(route_handlers=[asgi_handler, regular_handler])
+
+
+@pytest.mark.parametrize(
+    "server_command",
+    [
+        pytest.param(["uvicorn", "app:app", "--port", "9999"], id="uvicorn"),
+        pytest.param(["hypercorn", "app:app", "--bind", "127.0.0.1:9999"], id="hypercorn"),
+        pytest.param(["daphne", "app:app", "--port", "9999"], id="daphne"),
+    ],
+)
+@pytest.mark.xdist_group("live_server_test")
+@pytest.mark.server_integration
+def test_path_mounting_live_server(
+    tmp_path: Path, monkeypatch: MonkeyPatch, server_command: List[str], run_server: Callable[[str, List[str]], None]
+) -> None:
+    app = """
+from litestar import asgi, Litestar
+from litestar.types import Receive, Scope, Send
+from litestar.response.base import ASGIResponse
+
+@asgi("/sub/path", is_mount=True)
+async def handler(scope: Scope, receive: Receive, send: Send) -> None:
+    response = ASGIResponse(body=scope["path"].encode())
+    await response(scope, receive, send)
+
+
+app = Litestar(route_handlers=[handler])
+"""
+    run_server(app, server_command)
+
+    res = httpx.get("http://127.0.0.1:9999/sub/path/fragment")
+    assert res.status_code == 200
+    assert res.text == "/fragment/"

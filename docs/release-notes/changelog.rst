@@ -3,6 +3,21 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.5.3
+    :date: 2024/01/29
+
+    .. change:: Handle diverging ASGI ``root_path`` behaviour
+        :type: bugfix
+        :pr: 3039
+        :issue: 3041
+
+        Uvicorn `0.26.0 <https://github.com/encode/uvicorn/releases/tag/0.26.0>`_
+        introduced a breaking change in its handling of the ASGI ``root_path`` behaviour,
+        which, while adhering to the spec, diverges from the interpretation of other
+        ASGI servers of this aspect of the spec (e.g. hypercorn and daphne do not follow
+        uvicorn's interpretation as of today). A fix was introduced that ensures
+        consistent behaviour of applications in any case.
+
 .. changelog:: 2.5.2
     :date: 2024/01/27
 
