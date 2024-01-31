@@ -14,10 +14,11 @@
 
 
         Issue originally reported over at [Discord](https://discord.com/channels/919193495116337154/919193495690936353/1202204676003745792)
-        ```
-        KeyError on GET /
-        'root_path'
-        ```
+
+        .. code-block::
+
+            KeyError on GET /
+            'root_path'
 
     .. change:: ServerSentEvent typing error
         :type: bugfix
@@ -25,9 +26,9 @@
 
         fixes small typing error:
 
-        ```
-        error: Argument 1 to "ServerSentEvent" has incompatible type "AsyncIterable[ServerSentEventMessage]"; expected "str | bytes | Iterable[str | bytes] | Iterator[str | bytes] | AsyncIterable[str | bytes] | AsyncIterator[str | bytes]"  [arg-type]
-         ```
+        .. code-block::
+
+            error: Argument 1 to "ServerSentEvent" has incompatible type "AsyncIterable[ServerSentEventMessage]"; expected "str | bytes | Iterable[str | bytes] | Iterator[str | bytes] | AsyncIterable[str | bytes] | AsyncIterator[str | bytes]"  [arg-type]
 
         inside `test_sse` there was a `Any` I changed to trigger the test then solved it.
 
