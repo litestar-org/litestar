@@ -6,7 +6,7 @@
 .. changelog:: 2.5.4
     :date: 2024-01-31
 
-    .. change:: Handle `KeyError` when `root_path` is not present in ASGI scope
+    .. change:: Handle ``KeyError`` when `root_path` is not present in ASGI scope
         :type: bugfix
         :pr: 3051
 
@@ -30,7 +30,7 @@
 
             error: Argument 1 to "ServerSentEvent" has incompatible type "AsyncIterable[ServerSentEventMessage]"; expected "str | bytes | Iterable[str | bytes] | Iterator[str | bytes] | AsyncIterable[str | bytes] | AsyncIterator[str | bytes]"  [arg-type]
 
-        inside `test_sse` there was a `Any` I changed to trigger the test then solved it.
+        inside ``test_sse`` there was a ``Any`` I changed to trigger the test then solved it.
 
 
 .. changelog:: 2.5.3
