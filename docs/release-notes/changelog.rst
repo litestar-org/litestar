@@ -13,7 +13,7 @@
         Nginx Unit ASGI server does not set "root_path" in the ASGI scope, which is expected as part of the changes done in #3039. This PR fixes the assumption that the key is always present and instead tries to optionally retrieve it.
 
 
-        Issue originaly reported over at [Discord](https://discord.com/channels/919193495116337154/919193495690936353/1202204676003745792)
+        Issue originally reported over at [Discord](https://discord.com/channels/919193495116337154/919193495690936353/1202204676003745792)
         ```
         KeyError on GET /
         'root_path'
