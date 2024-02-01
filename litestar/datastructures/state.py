@@ -188,8 +188,8 @@ class State(ImmutableState, MutableMapping[str, Any]):
              state: An object to initialize the state from. Can be a dict, an instance of 'ImmutableState', or a tuple of key value paris.
              deep_copy: Whether to 'deepcopy' the passed in state.
 
-        Examples:
         .. code-block:: python
+            :caption: Examples
 
             from litestar.datastructures import State
 
