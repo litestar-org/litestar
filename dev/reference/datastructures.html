@@ -2494,38 +2494,47 @@ the example MUST follow the prescribed serialization strategy for the parameter.
 </ul>
 </dd>
 </dl>
-<p>Examples:
-.. code-block:: python</p>
-<blockquote>
-<div><p>from litestar.datastructures import State</p>
-<p>state_dict = {“first”: 1, “second”: 2, “third”: 3, “fourth”: 4}
-state = State(state_dict)</p>
-<p># state can be accessed using ‘.’ notation
-assert state.fourth == 4
-del state.fourth</p>
-<p># state implements the Mapping type:
-assert len(state) == 3
-assert “first” in state
-assert not “fourth” in state
-assert state[“first”] == 1
-assert [(k, v) for k, v in state.items()] == [(“first”, 1), (“second”, 2), (“third”, 3)]</p>
-<p>state[“fourth”] = 4
-assert “fourth” in state
-del state[“fourth”]</p>
-<p># state implements __bool__
-assert state  # state is true when it has values.
-assert not State()  # state is empty when it has no values.</p>
-<p># it has shallow copy
-copied_state = state.copy()
-del copied_state.first
-assert state.first</p>
-<p># it has a ‘dict’ method to retrieve a shallow copy of the underlying dict
-inner_dict = state.dict()
-assert inner_dict == state_dict</p>
-<p># you can get an immutable copy of the state by calling ‘immutable_immutable_copy’
-immutable_copy = state.immutable_copy()
-del immutable_copy.first  #  raises AttributeError</p>
-</div></blockquote>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">Examples</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">State</span>
+
+<span class="n">state_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;first&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;second&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;third&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;fourth&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">}</span>
+<span class="n">state</span> <span class="o">=</span> <span class="n">State</span><span class="p">(</span><span class="n">state_dict</span><span class="p">)</span>
+
+<span class="c1"># state can be accessed using &#39;.&#39; notation</span>
+<span class="k">assert</span> <span class="n">state</span><span class="o">.</span><span class="n">fourth</span> <span class="o">==</span> <span class="mi">4</span>
+<span class="k">del</span> <span class="n">state</span><span class="o">.</span><span class="n">fourth</span>
+
+<span class="c1"># state implements the Mapping type:</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
+<span class="k">assert</span> <span class="s2">&quot;first&quot;</span> <span class="ow">in</span> <span class="n">state</span>
+<span class="k">assert</span> <span class="ow">not</span> <span class="s2">&quot;fourth&quot;</span> <span class="ow">in</span> <span class="n">state</span>
+<span class="k">assert</span> <span class="n">state</span><span class="p">[</span><span class="s2">&quot;first&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>
+<span class="k">assert</span> <span class="p">[(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span> <span class="o">==</span> <span class="p">[(</span><span class="s2">&quot;first&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;second&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;third&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)]</span>
+
+<span class="n">state</span><span class="p">[</span><span class="s2">&quot;fourth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="k">assert</span> <span class="s2">&quot;fourth&quot;</span> <span class="ow">in</span> <span class="n">state</span>
+<span class="k">del</span> <span class="n">state</span><span class="p">[</span><span class="s2">&quot;fourth&quot;</span><span class="p">]</span>
+
+<span class="c1"># state implements __bool__</span>
+<span class="k">assert</span> <span class="n">state</span>  <span class="c1"># state is true when it has values.</span>
+<span class="k">assert</span> <span class="ow">not</span> <span class="n">State</span><span class="p">()</span>  <span class="c1"># state is empty when it has no values.</span>
+
+<span class="c1"># it has shallow copy</span>
+<span class="n">copied_state</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="k">del</span> <span class="n">copied_state</span><span class="o">.</span><span class="n">first</span>
+<span class="k">assert</span> <span class="n">state</span><span class="o">.</span><span class="n">first</span>
+
+<span class="c1"># it has a &#39;dict&#39; method to retrieve a shallow copy of the underlying dict</span>
+<span class="n">inner_dict</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
+<span class="k">assert</span> <span class="n">inner_dict</span> <span class="o">==</span> <span class="n">state_dict</span>
+
+<span class="c1"># you can get an immutable copy of the state by calling &#39;immutable_immutable_copy&#39;</span>
+<span class="n">immutable_copy</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">immutable_copy</span><span class="p">()</span>
+<span class="k">del</span> <span class="n">immutable_copy</span><span class="o">.</span><span class="n">first</span>  <span class="c1">#  raises AttributeError</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
