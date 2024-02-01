@@ -79,7 +79,7 @@ class ASGIRouter:
         scope.setdefault("path_params", {})
 
         path = scope["path"]
-        if root_path := scope["root_path"]:
+        if root_path := scope.get("root_path", ""):
             path = path.split(root_path, maxsplit=1)[-1]
         normalized_path = normalize_path(path)
 
