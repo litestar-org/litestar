@@ -119,7 +119,9 @@ class SignatureModel(Struct):
             for err_message in messages
             if ("key" in err_message and err_message["key"] not in cls._dependency_name_set) or "key" not in err_message
         ]:
-            return ValidationException(detail=f"Validation failed for {method} {connection.url}", extra=client_errors)
+            return ValidationException(
+                detail=f"Validation failed for {method} {connection.url.path}", extra=client_errors
+            )
         return InternalServerException()
 
     @classmethod

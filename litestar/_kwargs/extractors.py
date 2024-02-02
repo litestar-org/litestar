@@ -107,7 +107,7 @@ def create_connection_value_extractor(
         except KeyError as e:
             param = alias_to_params[e.args[0]]
             raise ValidationException(
-                f"Missing required {param.param_type.value} parameter {param.field_alias!r} for url {connection.url}"
+                f"Missing required {param.param_type.value} parameter {param.field_alias!r} for path {connection.url.path}"
             ) from e
 
     return extractor
