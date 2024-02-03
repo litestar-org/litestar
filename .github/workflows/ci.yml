@@ -147,13 +147,14 @@ jobs:
           python -Im coverage combine
           python -Im coverage xml -i
 
-      - name: Fix coverage file for sonarcloud
+      - name: Fix coverage file name
         run: sed -i "s/home\/runner\/work\/litestar\/litestar/github\/workspace/g" coverage.xml
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
         with:
           files: coverage.xml
+          token: ${{ secrets.CODECOV_TOKEN }}
 
   test-platform-compat:
     if: github.event_name == 'push'
