@@ -9,7 +9,7 @@ from litestar.testing import create_test_client
 
 @pytest.mark.parametrize("base_model", [pydantic_v1.BaseModel, pydantic_v2.BaseModel])
 def test_inject_pydantic_model(base_model: type) -> None:
-    class Foo(base_model):
+    class Foo(base_model):  # type: ignore[misc]
         bar: str
 
     @get("/", dependencies={"foo": Provide(Foo, sync_to_thread=False)})
