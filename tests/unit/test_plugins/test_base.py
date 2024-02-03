@@ -8,9 +8,10 @@ from click import Group
 from litestar import Litestar, MediaType, get
 from litestar.constants import UNDEFINED_SENTINELS
 from litestar.contrib.attrs import AttrsSchemaPlugin
-from litestar.contrib.pydantic import PydanticInitPlugin, PydanticPlugin, PydanticSchemaPlugin
+from litestar.contrib.pydantic import PydanticDIPlugin, PydanticInitPlugin, PydanticPlugin, PydanticSchemaPlugin
 from litestar.contrib.sqlalchemy.plugins import SQLAlchemySerializationPlugin
 from litestar.plugins import CLIPluginProtocol, InitPluginProtocol, OpenAPISchemaPlugin, PluginRegistry
+from litestar.plugins.core import MsgspecDIPlugin
 from litestar.testing import create_test_client
 from litestar.typing import FieldDefinition
 
@@ -121,6 +122,17 @@ def test_app_get_default_plugins(
     any_pydantic = bool(init_plugin) or bool(schema_plugin)
     default_plugins = Litestar._get_default_plugins(plugins)  # type: ignore[arg-type]
     if not any_pydantic:
-        assert {type(p) for p in default_plugins} == {PydanticPlugin, AttrsSchemaPlugin}
+        assert {type(p) for p in default_plugins} == {
+            PydanticPlugin,
+            AttrsSchemaPlugin,
+            PydanticDIPlugin,
+            MsgspecDIPlugin,
+        }
     else:
-        assert {type(p) for p in default_plugins} == {PydanticInitPlugin, PydanticSchemaPlugin, AttrsSchemaPlugin}
+        assert {type(p) for p in default_plugins} == {
+            PydanticInitPlugin,
+            PydanticSchemaPlugin,
+            AttrsSchemaPlugin,
+            PydanticDIPlugin,
+            MsgspecDIPlugin,
+        }
