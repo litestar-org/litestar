@@ -487,18 +487,30 @@ class Litestar(Router):
 
     @staticmethod
     def _get_default_plugins(plugins: list[PluginProtocol]) -> list[PluginProtocol]:
+        from litestar.plugins.core import MsgspecDIPlugin
+
+        plugins.append(MsgspecDIPlugin())
+
         with suppress(MissingDependencyException):
-            from litestar.contrib.pydantic import PydanticInitPlugin, PydanticPlugin, PydanticSchemaPlugin
+            from litestar.contrib.pydantic import (
+                PydanticDIPlugin,
+                PydanticInitPlugin,
+                PydanticPlugin,
+                PydanticSchemaPlugin,
+            )
 
             pydantic_plugin_found = any(isinstance(plugin, PydanticPlugin) for plugin in plugins)
             pydantic_init_plugin_found = any(isinstance(plugin, PydanticInitPlugin) for plugin in plugins)
             pydantic_schema_plugin_found = any(isinstance(plugin, PydanticSchemaPlugin) for plugin in plugins)
+            pydantic_serialization_plugin_found = any(isinstance(plugin, PydanticDIPlugin) for plugin in plugins)
             if not pydantic_plugin_found and not pydantic_init_plugin_found and not pydantic_schema_plugin_found:
                 plugins.append(PydanticPlugin())
             elif not pydantic_plugin_found and pydantic_init_plugin_found and not pydantic_schema_plugin_found:
                 plugins.append(PydanticSchemaPlugin())
             elif not pydantic_plugin_found and not pydantic_init_plugin_found:
                 plugins.append(PydanticInitPlugin())
+            if not pydantic_plugin_found and not pydantic_serialization_plugin_found:
+                plugins.append(PydanticDIPlugin())
         with suppress(MissingDependencyException):
             from litestar.contrib.attrs import AttrsSchemaPlugin
 
