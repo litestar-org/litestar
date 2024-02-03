@@ -367,10 +367,10 @@ class BaseRouteHandler:
         if not isinstance(provider, Provide):
             provider = Provide(provider)
 
-        if self._resolved_dependencies is not Empty:
+        if self._resolved_dependencies is not Empty:  # pragma: no cover
             self._validate_dependency_is_unique(dependencies=self._resolved_dependencies, key=key, provider=provider)
 
-        if not getattr(provider, "parsed_signature", None):
+        if not getattr(provider, "parsed_fn_signature", None):
             dependency = unwrap_partial(provider.dependency)
             plugin: DIPlugin | None = None
             if plugin_registry:
