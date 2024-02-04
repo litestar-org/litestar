@@ -2144,7 +2144,7 @@ state, as well as allows users to decide whether state is mutable or immutable.<
 <dt class="sig sig-object py" id="litestar.datastructures.MultiDict">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.datastructures.</span></span><span class="sig-name descname"><span class="pre">MultiDict</span></span><a class="headerlink" href="#litestar.datastructures.MultiDict" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MultiDict</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>], <a class="reference internal" href="#litestar.datastructures.MultiMixin" title="litestar.datastructures.multi_dicts.MultiMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiMixin</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>], <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
-<p>MultiDict, using <a class="reference external" href="https://multidict.aio-libs.org/en/stable/multidict.html#multidict.MultiDictProxy" title="(in multidict v6.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiDict</span></code></a>.</p>
+<p>MultiDict, using <a class="reference external" href="https://multidict.aio-libs.org/en/stable/multidict/#multidict.MultiDictProxy" title="(in multidict v6.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiDict</span></code></a>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.datastructures.MultiDict.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MultiMapping</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.12)"><span class="pre">Mapping</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.12)"><span class="pre">Iterable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.datastructures.MultiDict.__init__" title="Permalink to this definition">#</a></dt>
@@ -2494,38 +2494,47 @@ the example MUST follow the prescribed serialization strategy for the parameter.
 </ul>
 </dd>
 </dl>
-<p>Examples:
-.. code-block:: python</p>
-<blockquote>
-<div><p>from litestar.datastructures import State</p>
-<p>state_dict = {“first”: 1, “second”: 2, “third”: 3, “fourth”: 4}
-state = State(state_dict)</p>
-<p># state can be accessed using ‘.’ notation
-assert state.fourth == 4
-del state.fourth</p>
-<p># state implements the Mapping type:
-assert len(state) == 3
-assert “first” in state
-assert not “fourth” in state
-assert state[“first”] == 1
-assert [(k, v) for k, v in state.items()] == [(“first”, 1), (“second”, 2), (“third”, 3)]</p>
-<p>state[“fourth”] = 4
-assert “fourth” in state
-del state[“fourth”]</p>
-<p># state implements __bool__
-assert state  # state is true when it has values.
-assert not State()  # state is empty when it has no values.</p>
-<p># it has shallow copy
-copied_state = state.copy()
-del copied_state.first
-assert state.first</p>
-<p># it has a ‘dict’ method to retrieve a shallow copy of the underlying dict
-inner_dict = state.dict()
-assert inner_dict == state_dict</p>
-<p># you can get an immutable copy of the state by calling ‘immutable_immutable_copy’
-immutable_copy = state.immutable_copy()
-del immutable_copy.first  #  raises AttributeError</p>
-</div></blockquote>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">Examples</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">State</span>
+
+<span class="n">state_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;first&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;second&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s2">&quot;third&quot;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s2">&quot;fourth&quot;</span><span class="p">:</span> <span class="mi">4</span><span class="p">}</span>
+<span class="n">state</span> <span class="o">=</span> <span class="n">State</span><span class="p">(</span><span class="n">state_dict</span><span class="p">)</span>
+
+<span class="c1"># state can be accessed using &#39;.&#39; notation</span>
+<span class="k">assert</span> <span class="n">state</span><span class="o">.</span><span class="n">fourth</span> <span class="o">==</span> <span class="mi">4</span>
+<span class="k">del</span> <span class="n">state</span><span class="o">.</span><span class="n">fourth</span>
+
+<span class="c1"># state implements the Mapping type:</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
+<span class="k">assert</span> <span class="s2">&quot;first&quot;</span> <span class="ow">in</span> <span class="n">state</span>
+<span class="k">assert</span> <span class="ow">not</span> <span class="s2">&quot;fourth&quot;</span> <span class="ow">in</span> <span class="n">state</span>
+<span class="k">assert</span> <span class="n">state</span><span class="p">[</span><span class="s2">&quot;first&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>
+<span class="k">assert</span> <span class="p">[(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">state</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span> <span class="o">==</span> <span class="p">[(</span><span class="s2">&quot;first&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;second&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;third&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)]</span>
+
+<span class="n">state</span><span class="p">[</span><span class="s2">&quot;fourth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span>
+<span class="k">assert</span> <span class="s2">&quot;fourth&quot;</span> <span class="ow">in</span> <span class="n">state</span>
+<span class="k">del</span> <span class="n">state</span><span class="p">[</span><span class="s2">&quot;fourth&quot;</span><span class="p">]</span>
+
+<span class="c1"># state implements __bool__</span>
+<span class="k">assert</span> <span class="n">state</span>  <span class="c1"># state is true when it has values.</span>
+<span class="k">assert</span> <span class="ow">not</span> <span class="n">State</span><span class="p">()</span>  <span class="c1"># state is empty when it has no values.</span>
+
+<span class="c1"># it has shallow copy</span>
+<span class="n">copied_state</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="k">del</span> <span class="n">copied_state</span><span class="o">.</span><span class="n">first</span>
+<span class="k">assert</span> <span class="n">state</span><span class="o">.</span><span class="n">first</span>
+
+<span class="c1"># it has a &#39;dict&#39; method to retrieve a shallow copy of the underlying dict</span>
+<span class="n">inner_dict</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
+<span class="k">assert</span> <span class="n">inner_dict</span> <span class="o">==</span> <span class="n">state_dict</span>
+
+<span class="c1"># you can get an immutable copy of the state by calling &#39;immutable_immutable_copy&#39;</span>
+<span class="n">immutable_copy</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">immutable_copy</span><span class="p">()</span>
+<span class="k">del</span> <span class="n">immutable_copy</span><span class="o">.</span><span class="n">first</span>  <span class="c1">#  raises AttributeError</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">

@@ -3,8 +3,22 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.5.5
+    :date: 2024/02/04
+
+    .. change:: Fix scope ``state`` key handling
+        :type: bugfix
+        :pr: 3070
+
+        Fix a regression introduced in #2751 that would wrongfully assume the ``state``
+        key is always present within the ASGI Scope. This is *only* the case when the
+        Litestar root application is invoked first, since we enforce such a key there,
+        but the presence of that key is not actually guaranteed by the ASGI spec and
+        some servers, such as hypercorn, do not provide it.
+
+
 .. changelog:: 2.5.4
-    :date: 2024-01-31
+    :date: 2024/01/31
 
     .. change:: Handle ``KeyError`` when `root_path` is not present in ASGI scope
         :type: bugfix
