@@ -224,6 +224,7 @@ markers = [
   "server_integration: Test integration with ASGI server"
 ]
 xfail_strict = true
+testpaths = ["tests", "docs/examples/testing"]
 
 [tool.mypy]
 packages = ["litestar", "tests"]

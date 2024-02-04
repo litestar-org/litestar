@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import abc
 from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any, Iterator, Protocol, TypeVar, Union, cast, runtime_checkable
 
 if TYPE_CHECKING:
+    from inspect import Signature
+
     from click import Group
 
     from litestar._openapi.schema_generation import SchemaCreator
@@ -23,6 +26,7 @@ __all__ = (
     "CLIPlugin",
     "CLIPluginProtocol",
     "PluginRegistry",
+    "DIPlugin",
 )
 
 
@@ -154,6 +158,26 @@ class SerializationPluginProtocol(Protocol):
         raise NotImplementedError()
 
 
+class DIPlugin(abc.ABC):
+    """Extend dependency injection"""
+
+    @abc.abstractmethod
+    def has_typed_init(self, type_: Any) -> bool:
+        """Return ``True`` if ``type_`` has type information available for its
+        :func:`__init__` method that cannot be extracted from this method's type
+        annotations (e.g. a Pydantic BaseModel subclass), and
+        :meth:`DIPlugin.get_typed_init` supports extraction of these annotations.
+        """
+        ...
+
+    @abc.abstractmethod
+    def get_typed_init(self, type_: Any) -> tuple[Signature, dict[str, Any]]:
+        r"""Return signature and type information about the ``type_``\ s :func:`__init__`
+        method.
+        """
+        ...
+
+
 @runtime_checkable
 class OpenAPISchemaPluginProtocol(Protocol):
     """Plugin protocol to extend the support of OpenAPI schema generation for non-library types."""
@@ -241,6 +265,7 @@ PluginProtocol = Union[
     OpenAPISchemaPluginProtocol,
     ReceiveRoutePlugin,
     SerializationPluginProtocol,
+    DIPlugin,
 ]
 
 PluginT = TypeVar("PluginT", bound=PluginProtocol)
@@ -250,9 +275,10 @@ class PluginRegistry:
     __slots__ = {
         "init": "Plugins that implement the InitPluginProtocol",
         "openapi": "Plugins that implement the OpenAPISchemaPluginProtocol",
-        "receive_route": "ReceiveRoutePlugin types",
+        "receive_route": "ReceiveRoutePlugin instances",
         "serialization": "Plugins that implement the SerializationPluginProtocol",
         "cli": "Plugins that implement the CLIPluginProtocol",
+        "di": "DIPlugin instances",
         "_plugins_by_type": None,
         "_plugins": None,
         "_get_plugins_of_type": None,
@@ -266,6 +292,7 @@ class PluginRegistry:
         self.receive_route = tuple(p for p in plugins if isinstance(p, ReceiveRoutePlugin))
         self.serialization = tuple(p for p in plugins if isinstance(p, SerializationPluginProtocol))
         self.cli = tuple(p for p in plugins if isinstance(p, CLIPluginProtocol))
+        self.di = tuple(p for p in plugins if isinstance(p, DIPlugin))
 
     def get(self, type_: type[PluginT] | str) -> PluginT:
         """Return the registered plugin of ``type_``.
