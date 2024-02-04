@@ -10,7 +10,7 @@ from litestar.utils import (
     get_litestar_scope_state,
     set_litestar_scope_state,
 )
-from litestar.utils.scope.state import ScopeState
+from litestar.utils.scope.state import CONNECTION_STATE_KEY, ScopeState
 
 if TYPE_CHECKING:
     from litestar.types.asgi_types import Scope
@@ -19,6 +19,13 @@ if TYPE_CHECKING:
 @pytest.fixture()
 def scope(create_scope: Callable[..., Scope]) -> Scope:
     return create_scope()
+
+
+def test_from_scope_without_state() -> None:
+    scope = {}
+    state = ScopeState.from_scope(scope)
+    assert "state" not in scope
+    assert scope[CONNECTION_STATE_KEY] is state
 
 
 @pytest.mark.parametrize(("pop",), [(True,), (False,)])
