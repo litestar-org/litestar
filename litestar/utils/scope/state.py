@@ -97,10 +97,8 @@ class ScopeState:
             A `ConnectionState` object.
         """
         base = scope["state"] if "state" in scope else scope
-        if state := base.get(CONNECTION_STATE_KEY):
-            return state  # type: ignore[no-any-return]
-        state = base[CONNECTION_STATE_KEY] = cls()
-        base[CONNECTION_STATE_KEY] = state
+        if (state := base.get(CONNECTION_STATE_KEY)) is None:
+            state = base[CONNECTION_STATE_KEY] = cls()
         return state
 
 
