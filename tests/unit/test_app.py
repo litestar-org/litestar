@@ -6,7 +6,7 @@ import logging
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from dataclasses import fields
-from typing import TYPE_CHECKING, List, Tuple
+from typing import TYPE_CHECKING, Callable, List, Tuple
 from unittest.mock import MagicMock, Mock, PropertyMock
 
 import pytest
@@ -219,6 +219,22 @@ def test_set_state() -> None:
 
     app = Litestar(state=State({"a": "b", "c": "d"}), on_app_init=[modify_state_in_hook])
     assert app.state._state == {"a": "b", "c": "D", "e": "f"}
+
+
+async def test_dont_override_initial_state(create_scope: Callable[..., Scope]) -> None:
+    app = Litestar()
+
+    scope = create_scope(headers=[], state={"foo": "bar"})
+
+    async def send(message: Message) -> None:
+        pass
+
+    async def receive() -> None:
+        pass
+
+    await app(scope, receive, send)  # type: ignore[arg-type]
+
+    assert scope["state"].get("foo") == "bar"
 
 
 def test_app_from_config(app_config_object: AppConfig) -> None:

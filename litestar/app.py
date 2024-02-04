@@ -537,7 +537,7 @@ class Litestar(Router):
             return
 
         scope["app"] = self
-        scope["state"] = {}
+        scope.setdefault("state", {})
         await self.asgi_handler(scope, receive, self._wrap_send(send=send, scope=scope))  # type: ignore[arg-type]
 
     async def _call_lifespan_hook(self, hook: LifespanHook) -> None:
