@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-import platform
+import os.path
 import sys
 from importlib import import_module
 from importlib.util import find_spec
@@ -17,8 +17,6 @@ __all__ = (
     "module_to_os_path",
 )
 
-PYTHON_38 = sys.version_info < (3, 9, 0)
-
 
 def module_to_os_path(dotted_path: str = "app") -> Path:
     """Find Module to OS Path.
@@ -27,7 +25,7 @@ def module_to_os_path(dotted_path: str = "app") -> Path:
     specified by `dotted_path`.
 
     Args:
-        dotted_path (str, optional): The path to the module. Defaults to "app".
+        dotted_path: The path to the module. Defaults to "app".
 
     Raises:
         TypeError: The module could not be found.
@@ -36,15 +34,12 @@ def module_to_os_path(dotted_path: str = "app") -> Path:
         Path: The path to the module.
     """
     try:
-        src = find_spec(dotted_path)
+        if (src := find_spec(dotted_path)) is None:  # pragma: no cov
+            raise TypeError(f"Couldn't find the path for {dotted_path}")
     except ModuleNotFoundError as e:
-        msg = "Couldn't find the path for %s"
-        raise TypeError(msg, dotted_path) from e
-    path_separator = "\\" if platform.system() == "Windows" else "/"
-    if PYTHON_38:
-        suffix = f"{path_separator}__init__.py"
-        return Path(str(src.origin)[: (-1 * len(suffix))] if src.origin.endswith(suffix) else src.origin)  # type: ignore[arg-type, union-attr]
-    return Path(str(src.origin).removesuffix(f"{path_separator}__init__.py"))  # type: ignore
+        raise TypeError(f"Couldn't find the path for {dotted_path}") from e
+
+    return Path(str(src.origin).rsplit(os.path.sep + "__init__.py", maxsplit=1)[0])  # type: ignore[union-attr]
 
 
 def import_string(dotted_path: str) -> Any:
@@ -54,7 +49,7 @@ def import_string(dotted_path: str) -> Any:
     last name in the path. Raise ImportError if the import failed.
 
     Args:
-        dotted_path (str): The path of the module to import.
+        dotted_path: The path of the module to import.
 
     Raises:
         ImportError: Could not import the module.
@@ -72,8 +67,8 @@ def import_string(dotted_path: str) -> Any:
         """Import and cache a class from a module.
 
         Args:
-            module_path (str): dotted path to module.
-            class_name (str): Class or function name.
+            module_path: dotted path to module.
+            class_name: Class or function name.
 
         Returns:
             object: The imported class or function
