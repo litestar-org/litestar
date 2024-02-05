@@ -36,7 +36,7 @@ if TYPE_CHECKING:
     from litestar.types import AnyCallable
 
 
-RICH_CLICK_INSTALLED = find_spec("rich-click") is not None
+RICH_CLICK_INSTALLED = find_spec("rich_click") is not None
 UVICORN_INSTALLED = find_spec("uvicorn") is not None
 JSBEAUTIFIER_INSTALLED = find_spec("jsbeautifier") is not None
 
