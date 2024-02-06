@@ -24,8 +24,7 @@ def scope(create_scope: Callable[..., Scope]) -> Scope:
 def test_from_scope_without_state() -> None:
     scope = {}  # type: ignore[var-annotated]
     state = ScopeState.from_scope(scope)  # type: ignore[arg-type]
-    assert "state" not in scope
-    assert scope[CONNECTION_STATE_KEY] is state
+    assert scope["state"][CONNECTION_STATE_KEY] is state
 
 
 @pytest.mark.parametrize(("pop",), [(True,), (False,)])
