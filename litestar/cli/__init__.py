@@ -4,7 +4,7 @@ from __future__ import annotations
 from importlib.util import find_spec
 
 # Ensure `rich_click` patching occurs before we do any imports from `click`.
-if find_spec("rich_click") is not None:
+if find_spec("rich_click") is not None:  # pragma: no cover
     import rich_click as click
     from rich_click.cli import patch as rich_click_patch
 
