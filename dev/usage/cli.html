@@ -1239,7 +1239,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="security/jwt.html">JWT Security Backends</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="static-files.html">Static Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="static-files.html">Static files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="stores.html">Stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="templating.html">Templating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="testing.html">Testing</a></li>
@@ -1618,6 +1618,14 @@ PYTHONPATH. Defaults to the current working directory.</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">LITESTAR_RELOAD_DIRS</span></code></p></td>
 <td><p>Specify directories to watch for reload.</p></td>
 </tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-I</span></code>, <code class="docutils literal notranslate"><span class="pre">--reload-include</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">LITESTAR_RELOAD_INCLUDES</span></code></p></td>
+<td><p>Specify glob patterns for files to include when watching for reload.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">-E</span></code>, <code class="docutils literal notranslate"><span class="pre">--reload-exclude</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">LITESTAR_RELOAD_EXCLUDES</span></code></p></td>
+<td><p>Specify glob patterns for files to exclude when watching for reload.</p></td>
+</tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-p</span></code>, <code class="docutils literal notranslate"><span class="pre">--port</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">LITESTAR_PORT</span></code></p></td>
 <td><p>Bind the server to this port [default: 8000]</p></td>
@@ -1668,6 +1676,30 @@ PYTHONPATH. Defaults to the current working directory.</p></td>
 </div>
 <p>To set multiple directories via an environment variable, use a comma-separated list:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">LITESTAR_RELOAD_DIRS</span><span class="o">=</span>.,../other-library/src
+</pre></div>
+</div>
+</section>
+<section id="reload-include">
+<h5>–reload-include<a class="headerlink" href="#reload-include" title="Permalink to this heading">#</a></h5>
+<p>The <code class="docutils literal notranslate"><span class="pre">--reload-include</span></code> flag allows you to specify glob patterns to include when watching for file changes. If you specify this flag, the <code class="docutils literal notranslate"><span class="pre">--reload</span></code> flag is implied. Furthermore, <code class="docutils literal notranslate"><span class="pre">.py</span></code> files are included implicitly by default.</p>
+<p>You can specify multiple glob patterns by passing the flag multiple times:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>litestar<span class="w"> </span>run<span class="w"> </span>--reload-include<span class="o">=</span><span class="s2">&quot;*.rst&quot;</span><span class="w"> </span>--reload-include<span class="o">=</span><span class="s2">&quot;*.yml&quot;</span>
+</pre></div>
+</div>
+<p>To set multiple directories via an environment variable, use a comma-separated list:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">LITESTAR_RELOAD_INCLUDES</span><span class="o">=</span>*.rst,*.yml
+</pre></div>
+</div>
+</section>
+<section id="reload-exclude">
+<h5>–reload-exclude<a class="headerlink" href="#reload-exclude" title="Permalink to this heading">#</a></h5>
+<p>The <code class="docutils literal notranslate"><span class="pre">--reload-exclude</span></code> flag allows you to specify glob patterns to exclude when watching for file changes. If you specify this flag, the <code class="docutils literal notranslate"><span class="pre">--reload</span></code> flag is implied.</p>
+<p>You can specify multiple glob patterns by passing the flag multiple times:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>litestar<span class="w"> </span>run<span class="w"> </span>--reload-exclude<span class="o">=</span><span class="s2">&quot;*.py&quot;</span><span class="w"> </span>--reload-exclude<span class="o">=</span><span class="s2">&quot;*.yml&quot;</span>
+</pre></div>
+</div>
+<p>To set multiple directories via an environment variable, use a comma-separated list:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">LITESTAR_RELOAD_EXCLUDES</span><span class="o">=</span>*.py,*.yml
 </pre></div>
 </div>
 </section>
@@ -1939,6 +1971,8 @@ You can achieve this by adding the special <code class="docutils literal notrans
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#run">run</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#cli-run-options">Options</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#reload-dir">–reload-dir</a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#reload-include">–reload-include</a></li>
+<li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#reload-exclude">–reload-exclude</a></li>
 <li class="toc-h5 nav-item toc-entry"><a class="reference internal nav-link" href="#ssl">SSL</a></li>
 </ul>
 </li>

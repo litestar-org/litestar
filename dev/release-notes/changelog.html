@@ -1237,7 +1237,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../usage/security/jwt.html">JWT Security Backends</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../usage/static-files.html">Static Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/static-files.html">Static files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/stores.html">Stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/templating.html">Templating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/testing.html">Testing</a></li>
@@ -1498,14 +1498,138 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.6.0">
+<h2>2.6.0<a class="headerlink" href="#2.6.0" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2024/02/06<section id="2.6.0-feature">
+<h3>Features<a class="headerlink" href="#2.6.0-feature" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Enable disabling configuring <code class="docutils literal notranslate"><span class="pre">root</span></code> logger within <code class="docutils literal notranslate"><span class="pre">LoggingConfig</span></code><a class="headerlink reference internal" href="#2.6.0-enable disabling configuring" id="2.6.0-enable disabling configuring">#</a></dt><dd><div class="changelog-change docutils container">
+<p>The option <a class="reference internal" href="../reference/logging/config.html#litestar.logging.config.LoggingConfig.configure_root_logger" title="litestar.logging.config.LoggingConfig.configure_root_logger"><code class="xref py py-attr docutils literal notranslate"><span class="pre">configure_root_logger</span></code></a> was
+added to <a class="reference internal" href="../reference/logging/config.html#litestar.logging.config.LoggingConfig" title="litestar.logging.config.LoggingConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoggingConfig</span></code></a> attribute. It is enabled by
+default to not implement a breaking change.</p>
+<p>When set to <code class="docutils literal notranslate"><span class="pre">False</span></code> the <code class="docutils literal notranslate"><span class="pre">root</span></code> logger will not be modified for <code class="docutils literal notranslate"><span class="pre">logging</span></code>
+or <code class="docutils literal notranslate"><span class="pre">picologging</span></code> loggers.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2969">litestar-org/litestar#2969</a></span></p>
+</div>
+</dd>
+<dt>Simplified static file handling and enhancements<a class="headerlink reference internal" href="#2.6.0-simplified static file handling and enhancements" id="2.6.0-simplified static file handling and enhancements">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Static file serving has been implemented with regular route handlers instead of
+a specialised ASGI app. At the moment, this is complementary to the usage of
+<a class="reference internal" href="../reference/static_files.html#litestar.static_files.StaticFilesConfig" title="litestar.static_files.StaticFilesConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">StaticFilesConfig</span></code></a> to maintain backwards
+compatibility.</p>
+<p>This achieves a few things:</p>
+<ul class="simple">
+<li><p>Fixes <a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2629">litestar-org/litestar#2629</a></p></li>
+<li><p>Circumvents special casing needed in the routing logic for the static files app</p></li>
+<li><p>Removes the need for a <code class="docutils literal notranslate"><span class="pre">static_files_config</span></code> attribute on the app</p></li>
+<li><p>Removes the need for a special <a class="reference internal" href="../reference/app.html#litestar.app.Litestar.url_for_static_asset" title="litestar.app.Litestar.url_for_static_asset"><code class="xref py py-meth docutils literal notranslate"><span class="pre">url_for_static_asset()</span></code></a>
+method on the app since <cite>route_reverse</cite> can be used instead</p></li>
+</ul>
+<p>Additionally:</p>
+<ul class="simple">
+<li><p>Most router options can now be passed to the
+<a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router" title="litestar.static_files.create_static_files_router"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_static_files_router()</span></code></a>, allowing further
+customisation</p></li>
+<li><p>A new <code class="docutils literal notranslate"><span class="pre">resolve_symlinks</span></code> flag has been added, defaulting to <code class="docutils literal notranslate"><span class="pre">True</span></code> to keep
+backwards compatibility</p></li>
+</ul>
+<p><strong>Usage</strong></p>
+<p>Instead of</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+    <span class="n">static_files_config</span><span class="o">=</span><span class="p">[</span><span class="n">StaticFilesConfig</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span><span class="p">,</span> <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;some_dir&quot;</span><span class="p">])]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>You can now simply use</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">create_static_files_router</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span><span class="p">,</span> <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;some_dir&quot;</span><span class="p">])</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../usage/static-files.html"><span class="doc">Static files</span></a></p>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2629">litestar-org/litestar#2629</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2960">litestar-org/litestar#2960</a></span></p>
+</div>
+</dd>
+<dt>Exclude Piccolo ORM columns with <code class="docutils literal notranslate"><span class="pre">secret=True</span></code> from <code class="docutils literal notranslate"><span class="pre">PydanticDTO</span></code> output<a class="headerlink reference internal" href="#2.6.0-exclude piccolo orm columns with" id="2.6.0-exclude piccolo orm columns with">#</a></dt><dd><div class="changelog-change docutils container">
+<p>For Piccolo columns with <code class="docutils literal notranslate"><span class="pre">secret=True</span></code> set, corresponding <code class="docutils literal notranslate"><span class="pre">PydanticDTO</span></code>
+attributes will be marked as <code class="docutils literal notranslate"><span class="pre">WRITE_ONLY</span></code> to prevent the column being included
+in <code class="docutils literal notranslate"><span class="pre">return_dto</span></code></p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3030">litestar-org/litestar#3030</a></span></p>
+</div>
+</dd>
+<dt>Allow discovering registered plugins by their fully qualified name<a class="headerlink reference internal" href="#2.6.0-allow discovering registered plugins by their fully qualified name" id="2.6.0-allow discovering registered plugins by their fully qualified name">#</a></dt><dd><div class="changelog-change docutils container">
+<p><cite>PluginRegistryPluginRegistry`</cite> now supports retrieving a plugin by its fully
+qualified name.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3027">litestar-org/litestar#3027</a></span></p>
+</div>
+</dd>
+<dt>Support externally typed classes as dependency providers<a class="headerlink reference internal" href="#2.6.0-support externally typed classes as dependency providers" id="2.6.0-support externally typed classes as dependency providers">#</a></dt><dd><div class="changelog-change docutils container">
+<ul class="simple">
+<li><p>Implement a new <a class="reference internal" href="../reference/plugins.html#litestar.plugins.DIPlugin" title="litestar.plugins.DIPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">DIPlugin</span></code></a> class that allows the
+generation of signatures for arbitrary types where their signature cannot be
+extracted from the type’s <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method</p></li>
+<li><p>Implement <code class="docutils literal notranslate"><span class="pre">DIPlugin</span></code>s for Pydantic and Msgspec to allow using their
+respective modelled types as dependency providers. These plugins will be
+registered by default</p></li>
+</ul>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2979">litestar-org/litestar#2979</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3066">litestar-org/litestar#3066</a></span></p>
+</div>
+</dd>
+<dt>Add structlog plugin<a class="headerlink reference internal" href="#2.6.0-add structlog plugin" id="2.6.0-add structlog plugin">#</a></dt><dd><div class="changelog-change docutils container">
+<p>A Structlog plugin to make it easier to configure structlog in a single place.</p>
+<p>The plugin:</p>
+<ul class="simple">
+<li><p>Detects if a logger has <code class="docutils literal notranslate"><span class="pre">setLevel</span></code> before calling</p></li>
+<li><p>Set even message name to be init-cap</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">set_level</span></code> interface to config</p></li>
+<li><p>Allows structlog printer to detect if console is TTY enabled. If so, a
+Struglog color formatter with Rich traceback printer is used</p></li>
+<li><p>Auto-configures stdlib logger to use the structlog logger</p></li>
+</ul>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2943">litestar-org/litestar#2943</a></span></p>
+</div>
+</dd>
+<dt>Add reload-include and reload-exclude to CLI run command<a class="headerlink reference internal" href="#2.6.0-add reload-include and reload-exclude to cli run command" id="2.6.0-add reload-include and reload-exclude to cli run command">#</a></dt><dd><div class="changelog-change docutils container">
+<p>The options <code class="docutils literal notranslate"><span class="pre">reload-exclude</span></code> and <code class="docutils literal notranslate"><span class="pre">reload-include</span></code> were added to the CLI
+<code class="docutils literal notranslate"><span class="pre">run</span></code> command to explicitly in-/exclude specific paths from the reloading
+watcher.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2875">litestar-org/litestar#2875</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2973">litestar-org/litestar#2973</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
+<section id="2.5.5">
+<h2>2.5.5<a class="headerlink" href="#2.5.5" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2024/02/04<section id="2.5.5-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.5.5-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Fix scope <code class="docutils literal notranslate"><span class="pre">state</span></code> key handling<a class="headerlink reference internal" href="#2.5.5-fix scope" id="2.5.5-fix scope">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a regression introduced in #2751 that would wrongfully assume the <code class="docutils literal notranslate"><span class="pre">state</span></code>
+key is always present within the ASGI Scope. This is <em>only</em> the case when the
+Litestar root application is invoked first, since we enforce such a key there,
+but the presence of that key is not actually guaranteed by the ASGI spec and
+some servers, such as hypercorn, do not provide it.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3070">litestar-org/litestar#3070</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.5.4">
 <h2>2.5.4<a class="headerlink" href="#2.5.4" title="Permalink to this heading">#</a></h2>
-<strong>Released: </strong>2024-01-31<section id="2.5.4-bugfix">
+<strong>Released: </strong>2024/01/31<section id="2.5.4-bugfix">
 <h3>Bugfixes<a class="headerlink" href="#2.5.4-bugfix" title="Permalink to this heading">#</a></h3>
 <dl>
 <dt>Handle <code class="docutils literal notranslate"><span class="pre">KeyError</span></code> when <cite>root_path</cite> is not present in ASGI scope<a class="headerlink reference internal" href="#2.5.4-handle" id="2.5.4-handle">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Nginx Unit ASGI server does not set “root_path” in the ASGI scope, which is expected as part of the changes done in #3039. This PR fixes the assumption that the key is always present and instead tries to optionally retrieve it.</p>
-<p>Issue originally reported over at [Discord](<a class="reference external" href="https://discord.com/channels/919193495116337154/919193495690936353/1202204676003745792">https://discord.com/channels/919193495116337154/919193495690936353/1202204676003745792</a>)</p>
+<p>Nginx Unit ASGI server does not set “root_path” in the ASGI scope, which is
+expected as part of the changes done in #3039. This PR fixes the assumption that
+the key is always present and instead tries to optionally retrieve it.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ne">KeyError</span> <span class="n">on</span> <span class="n">GET</span> <span class="o">/</span>
 <span class="s1">&#39;root_path&#39;</span>
 </pre></div>
@@ -4979,6 +5103,14 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.6.0">2.6.0</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.6.0-feature">Features</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.5.5">2.5.5</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.5.5-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.5.4">2.5.4</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.5.4-bugfix">Bugfixes</a></li>
 </ul>

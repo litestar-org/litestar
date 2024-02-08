@@ -1239,7 +1239,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="security/jwt.html">JWT Security Backends</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="static-files.html">Static Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="static-files.html">Static files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="stores.html">Stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="templating.html">Templating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="testing.html">Testing</a></li>
@@ -1522,14 +1522,14 @@ the contract for plugins that extend serialization functionality of the applicat
 <p><code class="docutils literal notranslate"><span class="pre">InitPluginProtocol</span></code> defines an interface that allows for customization of the application’s initialization process.
 Init plugins can define dependencies, add route handlers, configure middleware, and much more!</p>
 <p>Implementations of these plugins must define a single method:</p>
+</section>
 <section id="on-app-init-self-app-config-appconfig-appconfig">
-<h3><a class="reference internal" href="../reference/plugins.html#litestar.plugins.InitPluginProtocol.on_app_init" title="litestar.plugins.InitPluginProtocol.on_app_init"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_app_init(self,</span> <span class="pre">app_config:</span> <span class="pre">AppConfig)</span> <span class="pre">-&gt;</span> <span class="pre">AppConfig:</span></code></a><a class="headerlink" href="#on-app-init-self-app-config-appconfig-appconfig" title="Permalink to this heading">#</a></h3>
+<h2><a class="reference internal" href="../reference/plugins.html#litestar.plugins.InitPluginProtocol.on_app_init" title="litestar.plugins.InitPluginProtocol.on_app_init"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_app_init(self,</span> <span class="pre">app_config:</span> <span class="pre">AppConfig)</span> <span class="pre">-&gt;</span> <span class="pre">AppConfig:</span></code></a><a class="headerlink" href="#on-app-init-self-app-config-appconfig-appconfig" title="Permalink to this heading">#</a></h2>
 <p>The method accepts and must return an <a class="reference internal" href="../reference/config.html#litestar.config.app.AppConfig" title="litestar.config.app.AppConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></a> instance, which can be modified
 and is later used to instantiate the application.</p>
 <p>This method is invoked after any <code class="docutils literal notranslate"><span class="pre">on_app_init</span></code> hooks have been called, and each plugin is invoked in the order that
 they are provided in the <code class="docutils literal notranslate"><span class="pre">plugins</span></code> argument of the <a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">app</span></code></a>. Because of this, plugin
 authors should make it clear in their documentation if their plugin should be invoked before or after other plugins.</p>
-</section>
 <section id="example">
 <h3>Example<a class="headerlink" href="#example" title="Permalink to this heading">#</a></h3>
 <p>The following example shows a simple plugin that adds a route handler, and a dependency to the application.</p>
@@ -1621,20 +1621,20 @@ function. The modified <a class="reference internal" href="../reference/config.h
 <p>The SerializationPluginProtocol defines a contract for plugins that provide serialization functionality for data types
 that are otherwise unsupported by the framework.</p>
 <p>Implementations of these plugins must define the following methods.</p>
+</section>
 <section id="supports-type-self-field-definition-fielddefinition-bool">
-<h3><a class="reference internal" href="../reference/plugins.html#litestar.plugins.SerializationPluginProtocol" title="litestar.plugins.SerializationPluginProtocol"><code class="xref py py-meth docutils literal notranslate"><span class="pre">supports_type(self,</span> <span class="pre">field_definition:</span> <span class="pre">FieldDefinition)</span> <span class="pre">-&gt;</span> <span class="pre">bool:</span></code></a><a class="headerlink" href="#supports-type-self-field-definition-fielddefinition-bool" title="Permalink to this heading">#</a></h3>
+<h2><a class="reference internal" href="../reference/plugins.html#litestar.plugins.SerializationPluginProtocol" title="litestar.plugins.SerializationPluginProtocol"><code class="xref py py-meth docutils literal notranslate"><span class="pre">supports_type(self,</span> <span class="pre">field_definition:</span> <span class="pre">FieldDefinition)</span> <span class="pre">-&gt;</span> <span class="pre">bool:</span></code></a><a class="headerlink" href="#supports-type-self-field-definition-fielddefinition-bool" title="Permalink to this heading">#</a></h2>
 <p>The method takes a <a class="reference internal" href="../reference/typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldDefinition</span></code></a> instance as an argument and returns a <a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>
 indicating whether the plugin supports serialization for that type.</p>
 </section>
 <section id="create-dto-for-type-self-field-definition-fielddefinition-type-abstractdto">
-<h3><a class="reference internal" href="../reference/plugins.html#litestar.plugins.SerializationPluginProtocol.create_dto_for_type" title="litestar.plugins.SerializationPluginProtocol.create_dto_for_type"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_dto_for_type(self,</span> <span class="pre">field_definition:</span> <span class="pre">FieldDefinition)</span> <span class="pre">-&gt;</span> <span class="pre">type[AbstractDTO]:</span></code></a><a class="headerlink" href="#create-dto-for-type-self-field-definition-fielddefinition-type-abstractdto" title="Permalink to this heading">#</a></h3>
+<h2><a class="reference internal" href="../reference/plugins.html#litestar.plugins.SerializationPluginProtocol.create_dto_for_type" title="litestar.plugins.SerializationPluginProtocol.create_dto_for_type"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_dto_for_type(self,</span> <span class="pre">field_definition:</span> <span class="pre">FieldDefinition)</span> <span class="pre">-&gt;</span> <span class="pre">type[AbstractDTO]:</span></code></a><a class="headerlink" href="#create-dto-for-type-self-field-definition-fielddefinition-type-abstractdto" title="Permalink to this heading">#</a></h2>
 <p>This method accepts a <a class="reference internal" href="../reference/typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldDefinition</span></code></a> instance as an argument and must return a
 <a class="reference internal" href="../reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO" title="litestar.dto.base_dto.AbstractDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDTO</span></code></a> implementation that can be used to serialize and deserialize
 the type.</p>
 <p>During application startup, if a data or return annotation is encountered that is not a supported type, is supported by
 the plugin, and doesn’t otherwise have a <code class="docutils literal notranslate"><span class="pre">dto</span></code> or <code class="docutils literal notranslate"><span class="pre">return_dto</span></code> defined, the plugin is used to create a DTO type for
 that annotation.</p>
-</section>
 <section id="id1">
 <h3>Example<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
 <p>The following example shows the actual implementation of the <code class="docutils literal notranslate"><span class="pre">SerializationPluginProtocol</span></code> for
@@ -1664,6 +1664,100 @@ subtypes are not created for the same model.</p>
 <p>If the annotation is not in the <code class="docutils literal notranslate"><span class="pre">_type_dto_map</span></code> dictionary, the method creates a new DTO type for the annotation,
 adds it to the <code class="docutils literal notranslate"><span class="pre">_type_dto_map</span></code> dictionary, and returns it.</p>
 </section>
+</section>
+<section id="diplugin">
+<h2>DIPlugin<a class="headerlink" href="#diplugin" title="Permalink to this heading">#</a></h2>
+<p><a class="reference internal" href="../reference/plugins.html#litestar.plugins.DIPlugin" title="litestar.plugins.DIPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">DIPlugin</span></code></a> can be used to extend Litestar’s dependency
+injection by providing information about injectable types.</p>
+<p>Its main purpose it to facilitate the injection of callables with unknown signatures,
+for example Pydantic’s <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> classes; These are not supported natively since,
+while they are callables, their type information is not contained within their callable
+signature (their <a class="reference internal" href="../reference/di.html#litestar.di.Provide.__init__" title="litestar.di.Provide.__init__"><code class="xref py py-func docutils literal notranslate"><span class="pre">__init__()</span></code></a> method).</p>
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-2">
+Python 3.8+</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Dynamically generating signature information for a custom type</span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">Signature</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
+<span class="kn">from</span> <span class="nn">litestar.plugins</span> <span class="kn">import</span> <span class="n">DIPlugin</span>
+
+
+<span class="k">class</span> <span class="nc">MyBaseType</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">param</span> <span class="o">=</span> <span class="n">param</span>
+
+
+<span class="k">class</span> <span class="nc">MyDIPlugin</span><span class="p">(</span><span class="n">DIPlugin</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">has_typed_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="n">MyBaseType</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_typed_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Signature</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+        <span class="n">signature</span> <span class="o">=</span> <span class="n">Signature</span><span class="p">([</span><span class="n">Parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;param&quot;</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">Parameter</span><span class="o">.</span><span class="n">POSITIONAL_OR_KEYWORD</span><span class="p">)])</span>
+        <span class="n">annotations</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">signature</span><span class="p">,</span> <span class="n">annotations</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;injected&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">MyBaseType</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)})</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">injected</span><span class="p">:</span> <span class="n">MyBaseType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">injected</span><span class="o">.</span><span class="n">param</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">MyDIPlugin</span><span class="p">()])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-3">
+Python 3.9+</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Dynamically generating signature information for a custom type</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">Signature</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
+<span class="kn">from</span> <span class="nn">litestar.plugins</span> <span class="kn">import</span> <span class="n">DIPlugin</span>
+
+
+<span class="k">class</span> <span class="nc">MyBaseType</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">param</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">param</span> <span class="o">=</span> <span class="n">param</span>
+
+
+<span class="k">class</span> <span class="nc">MyDIPlugin</span><span class="p">(</span><span class="n">DIPlugin</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">has_typed_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">type_</span><span class="p">,</span> <span class="n">MyBaseType</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_typed_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">Signature</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+        <span class="n">signature</span> <span class="o">=</span> <span class="n">Signature</span><span class="p">([</span><span class="n">Parameter</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;param&quot;</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">Parameter</span><span class="o">.</span><span class="n">POSITIONAL_OR_KEYWORD</span><span class="p">)])</span>
+        <span class="n">annotations</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;param&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">signature</span><span class="p">,</span> <span class="n">annotations</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;injected&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">MyBaseType</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)})</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">injected</span><span class="p">:</span> <span class="n">MyBaseType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">injected</span><span class="o">.</span><span class="n">param</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">MyDIPlugin</span><span class="p">()])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="admonition">
+<p class="admonition-title">Run it</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/?param<span class="o">=</span>hello
+hello
+</pre></div>
+</div>
+</div>
 </section>
 </section>
 
@@ -1711,17 +1805,18 @@ adds it to the <code class="docutils literal notranslate"><span class="pre">_typ
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#initpluginprotocol">InitPluginProtocol</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#on-app-init-self-app-config-appconfig-appconfig"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_app_init(self,</span> <span class="pre">app_config:</span> <span class="pre">AppConfig)</span> <span class="pre">-&gt;</span> <span class="pre">AppConfig:</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#initpluginprotocol">InitPluginProtocol</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#on-app-init-self-app-config-appconfig-appconfig"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_app_init(self,</span> <span class="pre">app_config:</span> <span class="pre">AppConfig)</span> <span class="pre">-&gt;</span> <span class="pre">AppConfig:</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example">Example</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#serializationpluginprotocol">SerializationPluginProtocol</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#supports-type-self-field-definition-fielddefinition-bool"><code class="xref py py-meth docutils literal notranslate"><span class="pre">supports_type(self,</span> <span class="pre">field_definition:</span> <span class="pre">FieldDefinition)</span> <span class="pre">-&gt;</span> <span class="pre">bool:</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#create-dto-for-type-self-field-definition-fielddefinition-type-abstractdto"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_dto_for_type(self,</span> <span class="pre">field_definition:</span> <span class="pre">FieldDefinition)</span> <span class="pre">-&gt;</span> <span class="pre">type[AbstractDTO]:</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#serializationpluginprotocol">SerializationPluginProtocol</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#supports-type-self-field-definition-fielddefinition-bool"><code class="xref py py-meth docutils literal notranslate"><span class="pre">supports_type(self,</span> <span class="pre">field_definition:</span> <span class="pre">FieldDefinition)</span> <span class="pre">-&gt;</span> <span class="pre">bool:</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-dto-for-type-self-field-definition-fielddefinition-type-abstractdto"><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_dto_for_type(self,</span> <span class="pre">field_definition:</span> <span class="pre">FieldDefinition)</span> <span class="pre">-&gt;</span> <span class="pre">type[AbstractDTO]:</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Example</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#diplugin">DIPlugin</a></li>
 </ul>
   </nav></div>
 

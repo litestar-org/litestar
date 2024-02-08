@@ -1239,7 +1239,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="security/jwt.html">JWT Security Backends</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="static-files.html">Static Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="static-files.html">Static files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="stores.html">Stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="templating.html">Templating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="testing.html">Testing</a></li>
@@ -1603,9 +1603,9 @@ the part of the user. That is, if <code class="docutils literal notranslate"><sp
 <section id="using-structlog">
 <h2>Using StructLog<a class="headerlink" href="#using-structlog" title="Permalink to this heading">#</a></h2>
 <p><a class="reference external" href="https://www.structlog.org/en/stable/">StructLog</a> is a powerful structured-logging library. Litestar ships with a dedicated
-logging config for using it:</p>
+logging plugin and config for using it:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">litestar.logging</span> <span class="kn">import</span> <span class="n">StructLoggingConfig</span>
+<span class="kn">from</span> <span class="nn">litestar.plugins.structlog</span> <span class="kn">import</span> <span class="n">StructlogPlugin</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
@@ -1614,9 +1614,9 @@ logging config for using it:</p>
     <span class="k">return</span> <span class="kc">None</span>
 
 
-<span class="n">logging_config</span> <span class="o">=</span> <span class="n">StructLoggingConfig</span><span class="p">()</span>
+<span class="n">structlog_plugin</span> <span class="o">=</span> <span class="n">StructlogPlugin</span><span class="p">()</span>
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">my_router_handler</span><span class="p">],</span> <span class="n">logging_config</span><span class="o">=</span><span class="n">logging_config</span><span class="p">)</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">my_router_handler</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">StructlogPlugin</span><span class="p">()])</span>
 </pre></div>
 </div>
 </section>

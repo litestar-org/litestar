@@ -1239,7 +1239,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../usage/security/jwt.html">JWT Security Backends</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../usage/static-files.html">Static Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/static-files.html">Static files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/stores.html">Stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/templating.html">Templating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/testing.html">Testing</a></li>
@@ -1544,6 +1544,29 @@ document.write(`
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="litestar.plugins.DIPlugin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.</span></span><span class="sig-name descname"><span class="pre">DIPlugin</span></span><a class="headerlink" href="#litestar.plugins.DIPlugin" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>Extend dependency injection</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.plugins.DIPlugin.has_typed_init">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">has_typed_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#litestar.plugins.DIPlugin.has_typed_init" title="Permalink to this definition">#</a></dt>
+<dd><p>Return <code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="docutils literal notranslate"><span class="pre">type_</span></code> has type information available for its
+<a class="reference internal" href="di.html#litestar.di.Provide.__init__" title="litestar.di.Provide.__init__"><code class="xref py py-func docutils literal notranslate"><span class="pre">__init__()</span></code></a> method that cannot be extracted from this method’s type
+annotations (e.g. a Pydantic BaseModel subclass), and
+<a class="reference internal" href="#litestar.plugins.DIPlugin.get_typed_init" title="litestar.plugins.DIPlugin.get_typed_init"><code class="xref py py-meth docutils literal notranslate"><span class="pre">DIPlugin.get_typed_init()</span></code></a> supports extraction of these annotations.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.plugins.DIPlugin.get_typed_init">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_typed_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">type_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Signature</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.plugins.DIPlugin.get_typed_init" title="Permalink to this definition">#</a></dt>
+<dd><p>Return signature and type information about the <code class="docutils literal notranslate"><span class="pre">type_</span></code>s <a class="reference internal" href="di.html#litestar.di.Provide.__init__" title="litestar.di.Provide.__init__"><code class="xref py py-func docutils literal notranslate"><span class="pre">__init__()</span></code></a>
+method.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="litestar.plugins.CLIPlugin">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.</span></span><span class="sig-name descname"><span class="pre">CLIPlugin</span></span><a class="headerlink" href="#litestar.plugins.CLIPlugin" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#litestar.plugins.CLIPluginProtocol" title="litestar.plugins.base.CLIPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">CLIPluginProtocol</span></code></a></p>
@@ -1819,6 +1842,11 @@ determine if this value is supported by the plugin</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.SerializationPluginProtocol.supports_type"><code class="docutils literal notranslate"><span class="pre">SerializationPluginProtocol.supports_type()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.SerializationPluginProtocol.create_dto_for_type"><code class="docutils literal notranslate"><span class="pre">SerializationPluginProtocol.create_dto_for_type()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.SerializationPluginProtocol.__init__"><code class="docutils literal notranslate"><span class="pre">SerializationPluginProtocol.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.DIPlugin"><code class="docutils literal notranslate"><span class="pre">DIPlugin</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.DIPlugin.has_typed_init"><code class="docutils literal notranslate"><span class="pre">DIPlugin.has_typed_init()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.DIPlugin.get_typed_init"><code class="docutils literal notranslate"><span class="pre">DIPlugin.get_typed_init()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.CLIPlugin"><code class="docutils literal notranslate"><span class="pre">CLIPlugin</span></code></a><ul class="visible nav section-nav flex-column">
