@@ -57,7 +57,7 @@ maintainers = [
 name = "litestar"
 readme = "README.md"
 requires-python = ">=3.8,<4.0"
-version = "2.5.5"
+version = "2.6.0"
 
 [project.urls]
 Blog = "https://blog.litestar.dev"
@@ -224,6 +224,7 @@ markers = [
   "server_integration: Test integration with ASGI server"
 ]
 xfail_strict = true
+testpaths = ["tests", "docs/examples/testing"]
 
 [tool.mypy]
 packages = ["litestar", "tests"]

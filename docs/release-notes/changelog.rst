@@ -3,6 +3,125 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.6.0
+    :date: 2024/02/06
+
+    .. change:: Enable disabling configuring ``root`` logger within ``LoggingConfig``
+        :type: feature
+        :pr: 2969
+
+        The option :attr:`~litestar.logging.config.LoggingConfig.configure_root_logger` was
+        added to :class:`~litestar.logging.config.LoggingConfig` attribute. It is enabled by
+        default to not implement a breaking change.
+
+        When set to ``False`` the ``root`` logger will not be modified for ``logging``
+        or ``picologging`` loggers.
+
+    .. change:: Simplified static file handling and enhancements
+        :type: feature
+        :pr: 2960
+        :issue: 2629
+
+        Static file serving has been implemented with regular route handlers instead of
+        a specialised ASGI app. At the moment, this is complementary to the usage of
+        :class:`~litestar.static_files.StaticFilesConfig` to maintain backwards
+        compatibility.
+
+        This achieves a few things:
+
+        - Fixes https://github.com/litestar-org/litestar/issues/2629
+        - Circumvents special casing needed in the routing logic for the static files app
+        - Removes the need for a ``static_files_config`` attribute on the app
+        - Removes the need for a special :meth:`~litestar.app.Litestar.url_for_static_asset`
+          method on the app since `route_reverse` can be used instead
+
+        Additionally:
+
+        - Most router options can now be passed to the
+          :func:`~litestar.static_files.create_static_files_router`, allowing further
+          customisation
+        - A new ``resolve_symlinks`` flag has been added, defaulting to ``True`` to keep
+          backwards compatibility
+
+        **Usage**
+
+        Instead of
+
+        .. code-block:: python
+
+            app = Litestar(
+                static_files_config=[StaticFilesConfig(path="/static", directories=["some_dir"])]
+            )
+
+
+        You can now simply use
+
+        .. code-block:: python
+
+            app = Litestar(
+                route_handlers=[
+                    create_static_files_router(path="/static", directories=["some_dir"])
+                ]
+            )
+
+        .. seealso::
+            :doc:`/usage/static-files`
+
+
+    .. change:: Exclude Piccolo ORM columns with ``secret=True`` from ``PydanticDTO`` output
+        :type: feature
+        :pr: 3030
+
+        For Piccolo columns with ``secret=True`` set, corresponding ``PydanticDTO``
+        attributes will be marked as ``WRITE_ONLY`` to prevent the column being included
+        in ``return_dto``
+
+
+    .. change:: Allow discovering registered plugins by their fully qualified name
+        :type: feature
+        :pr: 3027
+
+        `PluginRegistryPluginRegistry`` now supports retrieving a plugin by its fully
+        qualified name.
+
+
+    .. change:: Support externally typed classes as dependency providers
+        :type: feature
+        :pr: 3066
+        :issue: 2979
+
+        - Implement a new :class:`~litestar.plugins.DIPlugin` class that allows the
+          generation of signatures for arbitrary types where their signature cannot be
+          extracted from the type's ``__init__`` method
+        - Implement ``DIPlugin``\ s for Pydantic and Msgspec to allow using their
+          respective modelled types as dependency providers. These plugins will be
+          registered by default
+
+    .. change:: Add structlog plugin
+        :type: feature
+        :pr: 2943
+
+        A Structlog plugin to make it easier to configure structlog in a single place.
+
+        The plugin:
+
+        - Detects if a logger has ``setLevel`` before calling
+        - Set even message name to be init-cap
+        - Add ``set_level`` interface to config
+        - Allows structlog printer to detect if console is TTY enabled. If so, a
+          Struglog color formatter with Rich traceback printer is used
+        - Auto-configures stdlib logger to use the structlog logger
+
+    .. change:: Add reload-include and reload-exclude to CLI run command
+        :type: feature
+        :pr: 2973
+        :issue: 2875
+
+        The options ``reload-exclude`` and ``reload-include`` were added to the CLI
+        ``run`` command to explicitly in-/exclude specific paths from the reloading
+        watcher.
+
+
 .. changelog:: 2.5.5
     :date: 2024/02/04
 
@@ -24,10 +143,9 @@
         :type: bugfix
         :pr: 3051
 
-        Nginx Unit ASGI server does not set "root_path" in the ASGI scope, which is expected as part of the changes done in #3039. This PR fixes the assumption that the key is always present and instead tries to optionally retrieve it.
-
-
-        Issue originally reported over at [Discord](https://discord.com/channels/919193495116337154/919193495690936353/1202204676003745792)
+        Nginx Unit ASGI server does not set "root_path" in the ASGI scope, which is
+        expected as part of the changes done in #3039. This PR fixes the assumption that
+        the key is always present and instead tries to optionally retrieve it.
 
         .. code-block::
 
