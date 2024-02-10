@@ -52,8 +52,8 @@ def _get_available_port() -> int:
         # Bind to a free port provided by the host
         try:
             sock.bind(("localhost", 0))
-        except OSError:
-            raise StartupError("Could not find an open port")
+        except OSError as e:
+            raise StartupError("Could not find an open port") from e
         else:
             return sock.getsockname()[1]
 
