@@ -306,7 +306,8 @@ We already have our route handler in place:
 
 
     @get(path="/secret", guards=[secret_token_guard], opt={"secret": environ.get("SECRET")})
-    def secret_endpoint() -> None: ...
+    def secret_endpoint() -> None:
+        ...
 
 We could thus test the guard function like so:
 
@@ -360,7 +361,8 @@ Let's say we have an API that talks to an external service and retrieves some da
 
     @runtime_checkable
     class Service(Protocol):
-        def get(self) -> Item: ...
+        def get(self) -> Item:
+            ...
 
 
     @get(path="/item")
@@ -424,7 +426,8 @@ pydantic models and dataclasses based on type annotations. With it, we could rew
 
     @runtime_checkable
     class Service(Protocol):
-        def get_one(self) -> Item: ...
+        def get_one(self) -> Item:
+            ...
 
 
     @get(path="/item")

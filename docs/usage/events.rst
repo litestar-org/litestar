@@ -120,7 +120,8 @@ The method :meth:`emit <litestar.events.BaseEventEmitterBackend.emit>` has the f
 
 .. code-block:: python
 
-    def emit(self, event_id: str, *args: Any, **kwargs: Any) -> None: ...
+    def emit(self, event_id: str, *args: Any, **kwargs: Any) -> None:
+        ...
 
 
 

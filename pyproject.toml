@@ -108,29 +108,26 @@ include = [
   '/CHANGELOG.rst',
 ]
 
-
-
-
 [tool.pdm]
 ignore_package_warnings = ["sphinx", "slotscheck"]
 
 [tool.pdm.dev-dependencies]
 dev = [
-    "beanie>=1.21.0",
-    "beautifulsoup4",
-    "fsspec",
-    "greenlet",
-    "hypothesis",
-    "python-dotenv",
-    "starlette",
-    "trio",
-    "aiosqlite",
-    "asyncpg>=0.29.0",
-    "psycopg[pool,binary]>=3.1.10",
-    "psycopg2-binary",
-    "psutil>=5.9.8",
-    "hypercorn>=0.16.0",
-    "daphne>=4.0.0",
+  "beanie>=1.21.0",
+  "beautifulsoup4",
+  "fsspec",
+  "greenlet",
+  "hypothesis",
+  "python-dotenv",
+  "starlette",
+  "trio",
+  "aiosqlite",
+  "asyncpg>=0.29.0",
+  "psycopg[pool,binary]>=3.1.10",
+  "psycopg2-binary",
+  "psutil>=5.9.8",
+  "hypercorn>=0.16.0",
+  "daphne>=4.0.0",
 ]
 dev-contrib = ["opentelemetry-sdk", "httpx-sse"]
 docs = [
@@ -146,19 +143,19 @@ docs = [
   "litestar-sphinx-theme @ git+https://github.com/litestar-org/litestar-sphinx-theme.git",
 ]
 linting = [
-    "ruff",
-    "mypy",
-    "pre-commit",
-    "slotscheck",
-    "pyright==1.1.344",
-    "blacken-docs",
-    "asyncpg-stubs",
-    "types-beautifulsoup4",
-    "types-pytest-lazy-fixture",
-    "types-python-jose",
-    "types-pyyaml",
-    "types-redis",
-    "types-psutil",
+  "ruff",
+  "mypy",
+  "pre-commit",
+  "slotscheck",
+  "pyright==1.1.344",
+  "blacken-docs",
+  "asyncpg-stubs",
+  "types-beautifulsoup4",
+  "types-pytest-lazy-fixture",
+  "types-python-jose",
+  "types-pyyaml",
+  "types-redis",
+  "types-psutil",
 ]
 test = [
   "covdefaults",
@@ -216,15 +213,14 @@ filterwarnings = [
   "ignore::DeprecationWarning:litestar.*",
   "ignore::pydantic.PydanticDeprecatedSince20::",
   "ignore:`general_plain_validator_function`:DeprecationWarning::",
-  "ignore: 'RichMultiCommand':DeprecationWarning::"  # this is coming from rich_click itself, nothing we can do about
-                                                     # that for now
+  "ignore: 'RichMultiCommand':DeprecationWarning::", # this is coming from rich_click itself, nothing we can do about # that for now
 ]
 markers = [
   "sqlalchemy_integration: SQLAlchemy integration tests",
-  "server_integration: Test integration with ASGI server"
+  "server_integration: Test integration with ASGI server",
 ]
-xfail_strict = true
 testpaths = ["tests", "docs/examples/testing"]
+xfail_strict = true
 
 [tool.mypy]
 packages = ["litestar", "tests"]
@@ -261,6 +257,8 @@ module = [
   "fsspec.*",
   "jsbeautifier.*",
   "pytimeparse.*",
+  "importlib_resources",
+  "exceptiongroup",
 ]
 
 [tool.pydantic-mypy]
@@ -271,7 +269,6 @@ warn_untyped_fields = true
 
 [tool.pyright]
 disableBytesTypePromotions = true
-reportUnnecessaryTypeIgnoreComments = true
 exclude = [
   "test_apps",
   "tools",
@@ -284,6 +281,7 @@ exclude = [
 ]
 include = ["litestar", "tests"]
 pythonVersion = "3.8"
+reportUnnecessaryTypeIgnoreComments = true
 
 [tool.slotscheck]
 strict-imports = false
