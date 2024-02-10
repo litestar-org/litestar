@@ -57,7 +57,7 @@ class MiddlewareWithArgsAndKwargs(BaseHTTPMiddleware):
     [
         BaseMiddlewareRequestLoggingMiddleware,
         Middleware(MiddlewareWithArgsAndKwargs, kwarg="123Jeronimo"),
-        Middleware(MiddlewareProtocolRequestLoggingMiddleware, kwarg="123Jeronimo"),
+        Middleware(MiddlewareProtocolRequestLoggingMiddleware, kwarg="123Jeronimo"),  # type: ignore[arg-type]
         DefineMiddleware(MiddlewareWithArgsAndKwargs, 1, kwarg="123Jeronimo"),  # type: ignore[arg-type]
         DefineMiddleware(MiddlewareProtocolRequestLoggingMiddleware, kwarg="123Jeronimo"),
     ],
