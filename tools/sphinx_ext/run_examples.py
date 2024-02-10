@@ -54,7 +54,8 @@ def _get_available_port() -> int:
             sock.bind(("localhost", 0))
         except OSError:
             raise StartupError("Could not find an open port")
-        return sock.getsockname()[1]
+        else:
+            return sock.getsockname()[1]
 
 
 @contextmanager
