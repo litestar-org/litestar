@@ -29,8 +29,6 @@ if TYPE_CHECKING:
 
 RGX_RUN = re.compile(r"# +?run:(.*)")
 
-AVAILABLE_PORTS = list(range(9000, 9999))
-
 
 logger = logging.getLogger("sphinx")
 
@@ -50,13 +48,14 @@ def _load_app_from_path(path: Path) -> Litestar:
 
 
 def _get_available_port() -> int:
-    while AVAILABLE_PORTS:
-        port = AVAILABLE_PORTS.pop(0)
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-            if sock.connect_ex(("127.0.0.1", port)) != 0:
-                return port
-
-    raise StartupError("Could not find an open port")
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        # Bind to a free port provided by the host
+        try:
+            sock.bind(("localhost", 0))
+        except OSError as e:
+            raise StartupError("Could not find an open port") from e
+        else:
+            return sock.getsockname()[1]
 
 
 @contextmanager
@@ -92,11 +91,10 @@ def run_app(path: Path) -> Generator[int, None, None]:
         except StartupError:
             time.sleep(0.2)
             count += 1
+            port = _get_available_port()
         finally:
             proc.kill()
-            AVAILABLE_PORTS.append(port)
 
-            port = _get_available_port()
     else:
         raise StartupError(f"App {path} failed to come online")
 
