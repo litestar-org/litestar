@@ -287,7 +287,7 @@ reportUnnecessaryTypeIgnoreComments = true
 strict-imports = false
 
 [tool.ruff]
-select = [
+lint.select = [
   "A", # flake8-builtins
   "B", # flake8-bugbear
   "BLE", # flake8-blind-except
@@ -324,7 +324,8 @@ select = [
   "YTT", # flake8-2020
 ]
 
-ignore = [
+line-length = 120
+lint.ignore = [
   "A003", # flake8-builtins - class attribute {name} is shadowing a python builtin
   "B010", # flake8-bugbear - do not call setattr with a constant attribute value
   "D100", # pydocstyle - missing docstring in public module
@@ -343,17 +344,16 @@ ignore = [
   "RUF012", # Ruff-specific rule - annotated with classvar
   "ISC001", # Ruff formatter incompatible
 ]
-line-length = 120
 src = ["litestar", "tests", "docs/examples"]
 target-version = "py38"
 
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "google"
 
-[tool.ruff.mccabe]
+[tool.ruff.lint.mccabe]
 max-complexity = 12
 
-[tool.ruff.pep8-naming]
+[tool.ruff.lint.pep8-naming]
 classmethod-decorators = [
   "classmethod",
   "pydantic.root_validator",
@@ -363,10 +363,10 @@ classmethod-decorators = [
   "sqlalchemy.orm.declared_attr",
 ]
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["litestar", "tests", "examples"]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "docs/**/*.*" = ["S", "B", "DTZ", "A", "TCH", "ERA", "D", "RET"]
 "docs/examples/**" = ["T201"]
 "docs/examples/application_hooks/before_send_hook.py" = ["UP006"]
