@@ -50,7 +50,10 @@ def _load_app_from_path(path: Path) -> Litestar:
 def _get_available_port() -> int:
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         # Bind to a free port provided by the host
-        sock.bind(("localhost", 0))
+        try:
+            sock.bind(("localhost", 0))
+        except OSError:
+            raise StartupError("Could not find an open port")
         return sock.getsockname()[1]
 
 
