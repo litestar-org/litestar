@@ -6,11 +6,12 @@ from uuid import uuid4
 
 import pytest
 from _pytest.fixtures import FixtureRequest
+from advanced_alchemy.exceptions import IntegrityError
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from litestar.contrib.sqlalchemy import base
-from litestar.repository.exceptions import ConflictError, RepositoryError
+from litestar.repository.exceptions import RepositoryError
 from litestar.repository.filters import LimitOffset
 from litestar.repository.testing.generic_mock_repository import (
     GenericAsyncMockRepository,
@@ -84,7 +85,7 @@ async def test_repo_raises_conflict_if_add_with_id(
     authors: list[UUIDAuthor], author_repository: AuthorRepository
 ) -> None:
     """Test mock repo raises conflict if add identified entity."""
-    with pytest.raises(ConflictError):
+    with pytest.raises(IntegrityError):
         await maybe_async(author_repository.add(authors[0]))
 
 
@@ -92,7 +93,7 @@ async def test_repo_raises_conflict_if_add_many_with_id(
     authors: list[UUIDAuthor], author_repository: AuthorRepository
 ) -> None:
     """Test mock repo raises conflict if add identified entity."""
-    with pytest.raises(ConflictError):
+    with pytest.raises(IntegrityError):
         await maybe_async(author_repository.add_many(authors))
 
 
