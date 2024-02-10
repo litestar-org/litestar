@@ -91,10 +91,10 @@ def run_app(path: Path) -> Generator[int, None, None]:
         except StartupError:
             time.sleep(0.2)
             count += 1
+            port = _get_available_port()
         finally:
             proc.kill()
 
-            port = _get_available_port()
     else:
         raise StartupError(f"App {path} failed to come online")
 
