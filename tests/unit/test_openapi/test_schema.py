@@ -318,10 +318,10 @@ def test_annotated_types() -> None:
     assert schema.properties["constrained_float"].maximum == 10  # type: ignore
     assert datetime.utcfromtimestamp(schema.properties["constrained_date"].exclusive_minimum) == datetime.fromordinal(  # type: ignore
         historical_date.toordinal()
-    )  # type: ignore
+    )
     assert datetime.utcfromtimestamp(schema.properties["constrained_date"].exclusive_maximum) == datetime.fromordinal(  # type: ignore
         today.toordinal()
-    )  # type: ignore
+    )
     assert schema.properties["constrained_lower_case"].description == "must be in lower case"  # type: ignore
     assert schema.properties["constrained_upper_case"].description == "must be in upper case"  # type: ignore
     assert schema.properties["constrained_is_ascii"].pattern == "[[:ascii:]]"  # type: ignore
