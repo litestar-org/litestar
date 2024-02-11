@@ -411,8 +411,7 @@ You can achieve this by adding the special ``app`` parameter to your CLI functio
 
 
    @click.command()
-   def my_command(app: Litestar) -> None:
-       ...
+   def my_command(app: Litestar) -> None: ...
 
 CLI Reference
 -------------

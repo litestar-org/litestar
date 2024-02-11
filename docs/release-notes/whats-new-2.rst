@@ -247,8 +247,7 @@ changed to be more strict and now only allows string values.
 
 
     @get(response_headers={"my-header": ResponseHeader(value="header-value")})
-    async def handler() -> str:
-        ...
+    async def handler() -> str: ...
 
 
 .. code-block:: python
@@ -258,16 +257,14 @@ changed to be more strict and now only allows string values.
 
 
     @get(response_headers=[ResponseHeader(name="my-header", value="header-value")])
-    async def handler() -> str:
-        ...
+    async def handler() -> str: ...
 
 
     # or
 
 
     @get(response_headers={"my-header": "header-value"})
-    async def handler() -> str:
-        ...
+    async def handler() -> str: ...
 
 
 Response cookies
@@ -279,16 +276,14 @@ Response cookies might now also be set using a
 .. code-block:: python
 
     @get("/", response_cookies=[Cookie(key="foo", value="bar")])
-    async def handler() -> None:
-        ...
+    async def handler() -> None: ...
 
 is equivalent to
 
 .. code-block:: python
 
     @get("/", response_cookies={"foo": "bar"})
-    async def handler() -> None:
-        ...
+    async def handler() -> None: ...
 
 
 SQLAlchemy Plugin
@@ -344,15 +339,13 @@ should be changed to include an additional ``scope`` parameter.
 .. code-block:: python
     :caption: 1.51
 
-    async def before_send(message: Message, state: State) -> None:
-        ...
+    async def before_send(message: Message, state: State) -> None: ...
 
 
 .. code-block:: python
     :caption: 2.x
 
-    async def before_send(message: Message, state: State, scope: Scope) -> None:
-        ...
+    async def before_send(message: Message, state: State, scope: Scope) -> None: ...
 
 
 
@@ -533,8 +526,7 @@ of :class:`~litestar.di.Provide` are not needed.
 
 .. code-block:: python
 
-    async def some_dependency() -> str:
-        ...
+    async def some_dependency() -> str: ...
 
 
     app = Litestar(dependencies={"some": Provide(some_dependency)})
@@ -543,8 +535,7 @@ is equivalent to
 
 .. code-block:: python
 
-    async def some_dependency() -> str:
-        ...
+    async def some_dependency() -> str: ...
 
 
     app = Litestar(dependencies={"some": some_dependency})
@@ -568,16 +559,14 @@ a thread pool, passing ``sync_to_thread=False`` will also silence the warning.
     :caption: 1.51
 
     @get()
-    def handler() -> None:
-        ...
+    def handler() -> None: ...
 
 
 .. code-block:: python
     :caption: 2.x
 
     @get(sync_to_thread=False)
-    def handler() -> None:
-        ...
+    def handler() -> None: ...
 
 or
 
@@ -585,8 +574,7 @@ or
     :caption: 2.x
 
     @get(sync_to_thread=True)
-    def handler() -> None:
-        ...
+    def handler() -> None: ...
 
 
 .. seealso::
@@ -674,14 +662,12 @@ dependencies to specify additional information about the fields
 .. code-block:: python
 
     @get("/")
-    def index(param: int = Parameter(gt=5)) -> dict[str, int]:
-        ...
+    def index(param: int = Parameter(gt=5)) -> dict[str, int]: ...
 
 .. code-block:: python
 
     @get("/")
-    def index(param: Annotated[int, Parameter(gt=5)]) -> dict[str, int]:
-        ...
+    def index(param: Annotated[int, Parameter(gt=5)]) -> dict[str, int]: ...
 
 
 Channels

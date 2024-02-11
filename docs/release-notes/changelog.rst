@@ -1051,12 +1051,10 @@
             from litestar import Litestar, Request, Response
 
 
-            class CustomException(Exception):
-                ...
+            class CustomException(Exception): ...
 
 
-            def handle_exc(req: Request, exc: CustomException) -> Response:
-                ...
+            def handle_exc(req: Request, exc: CustomException) -> Response: ...
 
     .. change:: Fix OpenAPI schema generation for variable length tuples
         :type: bugfix
@@ -2494,15 +2492,15 @@
 
         .. code-block:: python
 
-            async def after_exception_handler(exc: Exception, scope: Scope, state: State) -> None:
-                ...
+            async def after_exception_handler(
+                exc: Exception, scope: Scope, state: State
+            ) -> None: ...
 
         to
 
         .. code-block:: python
 
-            async def after_exception_handler(exc: Exception, scope: Scope) -> None:
-                ...
+            async def after_exception_handler(exc: Exception, scope: Scope) -> None: ...
 
         The state can still be accessed like so:
 
@@ -2518,16 +2516,14 @@
 
             async def before_send_hook_handler(
                 message: Message, state: State, scope: Scope
-            ) -> None:
-                ...
+            ) -> None: ...
 
 
         to
 
         .. code-block:: python
 
-            async def before_send_hook_handler(message: Message, scope: Scope) -> None:
-                ...
+            async def before_send_hook_handler(message: Message, scope: Scope) -> None: ...
 
         where state can be accessed in the same manner:
 
@@ -3167,14 +3163,12 @@
         .. code-block:: python
 
             @get("/")
-            def index(param: int = Parameter(gt=5)) -> dict[str, int]:
-                ...
+            def index(param: int = Parameter(gt=5)) -> dict[str, int]: ...
 
         .. code-block:: python
 
             @get("/")
-            def index(param: Annotated[int, Parameter(gt=5)]) -> dict[str, int]:
-                ...
+            def index(param: Annotated[int, Parameter(gt=5)]) -> dict[str, int]: ...
 
     .. change:: Support ``text/html`` Media-Type in ``Redirect`` response container
         :type: bugfix
@@ -3299,8 +3293,7 @@
 
         .. code-block:: python
 
-            async def provide_user(request: Request[User, Token, Any]) -> User:
-                ...
+            async def provide_user(request: Request[User, Token, Any]) -> User: ...
 
         would result in the error ``'Request' object has no attribute 'dict'``.
 
