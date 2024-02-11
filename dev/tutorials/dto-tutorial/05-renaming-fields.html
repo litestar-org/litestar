@@ -6,7 +6,7 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>Renaming fields &#8212; Litestar Framework</title>
   
@@ -1513,6 +1513,65 @@ declaring a renaming strategy.</p>
 <p>We can rename fields explicitly using the <a class="reference internal" href="../../reference/dto/config.html#litestar.dto.config.DTOConfig.rename_fields" title="litestar.dto.config.DTOConfig.rename_fields"><code class="xref py py-attr docutils literal notranslate"><span class="pre">rename_fields</span></code></a>
 attribute. This attribute is a dictionary that maps the original field name to the new field name.</p>
 <p>In this example, we rename the <code class="docutils literal notranslate"><span class="pre">address</span></code> field to <code class="docutils literal notranslate"><span class="pre">location</span></code>:</p>
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-0">
+Python 3.8+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="linenos"> 4</span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="linenos"> 5</span>
+<span class="linenos"> 6</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+<span class="linenos"> 7</span><span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DataclassDTO</span><span class="p">,</span> <span class="n">DTOConfig</span>
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span><span class="nd">@dataclass</span>
+<span class="linenos">11</span><span class="k">class</span> <span class="nc">Address</span><span class="p">:</span>
+<span class="linenos">12</span>    <span class="n">street</span><span class="p">:</span> <span class="nb">str</span>
+<span class="linenos">13</span>    <span class="n">city</span><span class="p">:</span> <span class="nb">str</span>
+<span class="linenos">14</span>    <span class="n">country</span><span class="p">:</span> <span class="nb">str</span>
+<span class="linenos">15</span>
+<span class="linenos">16</span>
+<span class="linenos">17</span><span class="nd">@dataclass</span>
+<span class="linenos">18</span><span class="k">class</span> <span class="nc">Person</span><span class="p">:</span>
+<span class="linenos">19</span>    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+<span class="linenos">20</span>    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
+<span class="linenos">21</span>    <span class="n">email</span><span class="p">:</span> <span class="nb">str</span>
+<span class="linenos">22</span>    <span class="n">address</span><span class="p">:</span> <span class="n">Address</span>
+<span class="linenos">23</span>    <span class="n">children</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Person</span><span class="p">]</span>
+<span class="linenos">24</span>
+<span class="linenos">25</span>
+<span class="linenos">26</span><span class="k">class</span> <span class="nc">ReadDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Person</span><span class="p">]):</span>
+<span class="linenos">27</span>    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span>
+<span class="hll"><span class="linenos">28</span>        <span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;email&quot;</span><span class="p">,</span> <span class="s2">&quot;address.street&quot;</span><span class="p">,</span> <span class="s2">&quot;children.0.email&quot;</span><span class="p">,</span> <span class="s2">&quot;children.0.address&quot;</span><span class="p">},</span>
+</span><span class="linenos">29</span>        <span class="n">rename_fields</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;address&quot;</span><span class="p">:</span> <span class="s2">&quot;location&quot;</span><span class="p">},</span>
+<span class="linenos">30</span>    <span class="p">)</span>
+<span class="linenos">31</span>
+<span class="linenos">32</span>
+<span class="linenos">33</span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/person/{name:str}&quot;</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="n">ReadDTO</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="linenos">34</span><span class="k">def</span> <span class="nf">get_person</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Person</span><span class="p">:</span>
+<span class="linenos">35</span>    <span class="c1"># Your logic to retrieve the person goes here</span>
+<span class="linenos">36</span>    <span class="c1"># For demonstration purposes, a placeholder Person instance is returned</span>
+<span class="linenos">37</span>    <span class="n">address</span> <span class="o">=</span> <span class="n">Address</span><span class="p">(</span><span class="n">street</span><span class="o">=</span><span class="s2">&quot;123 Main St&quot;</span><span class="p">,</span> <span class="n">city</span><span class="o">=</span><span class="s2">&quot;Cityville&quot;</span><span class="p">,</span> <span class="n">country</span><span class="o">=</span><span class="s2">&quot;Countryland&quot;</span><span class="p">)</span>
+<span class="linenos">38</span>    <span class="n">child1</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Child1&quot;</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="s2">&quot;child1@example.com&quot;</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="n">address</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="p">[])</span>
+<span class="linenos">39</span>    <span class="n">child2</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Child2&quot;</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="s2">&quot;child2@example.com&quot;</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="n">address</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="p">[])</span>
+<span class="linenos">40</span>    <span class="k">return</span> <span class="n">Person</span><span class="p">(</span>
+<span class="linenos">41</span>        <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+<span class="linenos">42</span>        <span class="n">age</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+<span class="linenos">43</span>        <span class="n">email</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;email_of_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">@example.com&quot;</span><span class="p">,</span>
+<span class="linenos">44</span>        <span class="n">address</span><span class="o">=</span><span class="n">address</span><span class="p">,</span>
+<span class="linenos">45</span>        <span class="n">children</span><span class="o">=</span><span class="p">[</span><span class="n">child1</span><span class="p">,</span> <span class="n">child2</span><span class="p">],</span>
+<span class="linenos">46</span>    <span class="p">)</span>
+<span class="linenos">47</span>
+<span class="linenos">48</span>
+<span class="linenos">49</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_person</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<input checked="checked" id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-1">
+Python 3.10+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
@@ -1563,6 +1622,8 @@ attribute. This attribute is a dictionary that maps the original field name to t
 <span class="linenos">48</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_person</span><span class="p">])</span>
 </pre></div>
 </div>
+</div>
+</div>
 <p>Notice how the <code class="docutils literal notranslate"><span class="pre">address</span></code> field is renamed to <code class="docutils literal notranslate"><span class="pre">location</span></code>.</p>
 <img alt="../../_images/explicit_field_renaming.png" class="align-center" src="../../_images/explicit_field_renaming.png" />
 </section>
@@ -1584,6 +1645,65 @@ attribute. This attribute is a dictionary that maps the original field name to t
 field name to the <code class="docutils literal notranslate"><span class="pre">rename_strategy</span></code> config.</p>
 </div>
 <p>Let’s modify our example to use the <code class="docutils literal notranslate"><span class="pre">upper</span></code> strategy:</p>
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-2">
+Python 3.8+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="linenos"> 4</span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<span class="linenos"> 5</span>
+<span class="linenos"> 6</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+<span class="linenos"> 7</span><span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DataclassDTO</span><span class="p">,</span> <span class="n">DTOConfig</span>
+<span class="linenos"> 8</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span><span class="nd">@dataclass</span>
+<span class="linenos">11</span><span class="k">class</span> <span class="nc">Address</span><span class="p">:</span>
+<span class="linenos">12</span>    <span class="n">street</span><span class="p">:</span> <span class="nb">str</span>
+<span class="linenos">13</span>    <span class="n">city</span><span class="p">:</span> <span class="nb">str</span>
+<span class="linenos">14</span>    <span class="n">country</span><span class="p">:</span> <span class="nb">str</span>
+<span class="linenos">15</span>
+<span class="linenos">16</span>
+<span class="linenos">17</span><span class="nd">@dataclass</span>
+<span class="linenos">18</span><span class="k">class</span> <span class="nc">Person</span><span class="p">:</span>
+<span class="linenos">19</span>    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+<span class="linenos">20</span>    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
+<span class="linenos">21</span>    <span class="n">email</span><span class="p">:</span> <span class="nb">str</span>
+<span class="linenos">22</span>    <span class="n">address</span><span class="p">:</span> <span class="n">Address</span>
+<span class="linenos">23</span>    <span class="n">children</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Person</span><span class="p">]</span>
+<span class="linenos">24</span>
+<span class="linenos">25</span>
+<span class="linenos">26</span><span class="k">class</span> <span class="nc">ReadDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Person</span><span class="p">]):</span>
+<span class="linenos">27</span>    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span>
+<span class="hll"><span class="linenos">28</span>        <span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;email&quot;</span><span class="p">,</span> <span class="s2">&quot;address.street&quot;</span><span class="p">,</span> <span class="s2">&quot;children.0.email&quot;</span><span class="p">,</span> <span class="s2">&quot;children.0.address&quot;</span><span class="p">},</span>
+</span><span class="linenos">29</span>        <span class="n">rename_strategy</span><span class="o">=</span><span class="s2">&quot;upper&quot;</span><span class="p">,</span>
+<span class="linenos">30</span>    <span class="p">)</span>
+<span class="linenos">31</span>
+<span class="linenos">32</span>
+<span class="linenos">33</span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/person/{name:str}&quot;</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="n">ReadDTO</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="linenos">34</span><span class="k">def</span> <span class="nf">get_person</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Person</span><span class="p">:</span>
+<span class="linenos">35</span>    <span class="c1"># Your logic to retrieve the person goes here</span>
+<span class="linenos">36</span>    <span class="c1"># For demonstration purposes, a placeholder Person instance is returned</span>
+<span class="linenos">37</span>    <span class="n">address</span> <span class="o">=</span> <span class="n">Address</span><span class="p">(</span><span class="n">street</span><span class="o">=</span><span class="s2">&quot;123 Main St&quot;</span><span class="p">,</span> <span class="n">city</span><span class="o">=</span><span class="s2">&quot;Cityville&quot;</span><span class="p">,</span> <span class="n">country</span><span class="o">=</span><span class="s2">&quot;Countryland&quot;</span><span class="p">)</span>
+<span class="linenos">38</span>    <span class="n">child1</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Child1&quot;</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="s2">&quot;child1@example.com&quot;</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="n">address</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="p">[])</span>
+<span class="linenos">39</span>    <span class="n">child2</span> <span class="o">=</span> <span class="n">Person</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Child2&quot;</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="s2">&quot;child2@example.com&quot;</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="n">address</span><span class="p">,</span> <span class="n">children</span><span class="o">=</span><span class="p">[])</span>
+<span class="linenos">40</span>    <span class="k">return</span> <span class="n">Person</span><span class="p">(</span>
+<span class="linenos">41</span>        <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+<span class="linenos">42</span>        <span class="n">age</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span>
+<span class="linenos">43</span>        <span class="n">email</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;email_of_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">@example.com&quot;</span><span class="p">,</span>
+<span class="linenos">44</span>        <span class="n">address</span><span class="o">=</span><span class="n">address</span><span class="p">,</span>
+<span class="linenos">45</span>        <span class="n">children</span><span class="o">=</span><span class="p">[</span><span class="n">child1</span><span class="p">,</span> <span class="n">child2</span><span class="p">],</span>
+<span class="linenos">46</span>    <span class="p">)</span>
+<span class="linenos">47</span>
+<span class="linenos">48</span>
+<span class="linenos">49</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_person</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-3">
+Python 3.10+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
@@ -1633,6 +1753,8 @@ field name to the <code class="docutils literal notranslate"><span class="pre">r
 <span class="linenos">47</span>
 <span class="linenos">48</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_person</span><span class="p">])</span>
 </pre></div>
+</div>
+</div>
 </div>
 <p>And the result:</p>
 <img alt="../../_images/field_renaming_strategy.png" class="align-center" src="../../_images/field_renaming_strategy.png" />
