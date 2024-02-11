@@ -79,10 +79,11 @@ class PiccoloDTO(AbstractDTO[T], Generic[T]):
     @classmethod
     def generate_field_definitions(cls, model_type: type[Table]) -> Generator[DTOFieldDefinition, None, None]:
         for column in model_type._meta.columns:
+            mark = Mark.WRITE_ONLY if column._meta.secret else Mark.READ_ONLY if column._meta.primary_key else None
             yield replace(
                 DTOFieldDefinition.from_field_definition(
                     field_definition=_parse_piccolo_type(column, _create_column_extra(column)),
-                    dto_field=DTOField(mark=Mark.READ_ONLY if column._meta.primary_key else None),
+                    dto_field=DTOField(mark=mark),
                     model_name=model_type.__name__,
                     default_factory=None,
                 ),
