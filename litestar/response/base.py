@@ -385,7 +385,9 @@ class Response(Generic[T]):
             if media_type == MediaType.MESSAGEPACK:
                 return encode_msgpack(content, enc_hook)
 
-            if media_type.startswith("application/json"):
+            if media_type.startswith("application/json") or (
+                media_type.startswith("application/") and media_type.endswith("+json")
+            ):
                 return encode_json(content, enc_hook)
 
             raise ImproperlyConfiguredException(f"unsupported media_type {media_type} for content {content!r}")
