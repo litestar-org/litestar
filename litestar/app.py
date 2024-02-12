@@ -457,7 +457,7 @@ class Litestar(Router):
             self.get_logger = self.logging_config.configure()
             self.logger = self.get_logger("litestar")
 
-        for static_config in self.static_files_config:
+        for static_config in self._static_files_config:
             self.register(static_config.to_static_files_app())
 
         self.asgi_handler = self._create_asgi_handler()
