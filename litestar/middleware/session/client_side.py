@@ -108,7 +108,10 @@ class ClientSideSessionBackend(BaseSessionBackend["CookieBackendConfig"]):
         return sorted(key for key in connection.cookies if self.cookie_re.fullmatch(key))
 
     def _create_session_cookies(self, data: list[bytes], cookie_params: dict[str, Any] | None = None) -> list[Cookie]:
-        """Create a list of cookies containing the session data."""
+        """Create a list of cookies containing the session data.
+        If the data is split into multiple cookies, the key will be of the format ``session-{segment number}``,
+        however if only one cookie is needed, the key will be ``session``.
+        """
         if cookie_params is None:
             cookie_params = dict(
                 extract_dataclass_items(
@@ -118,21 +121,23 @@ class ClientSideSessionBackend(BaseSessionBackend["CookieBackendConfig"]):
                 )
             )
 
-        def _cookie_chunk_key(i: int) -> str:
-            # If the data is split into multiple cookies, the key will be of the format `session-{segment number}`,
-            # however if only one cookie is needed, the key will be `session`.
-            if len(data) == 1:
-                return self.config.key
-            return f"{self.config.key}-{i}"
-
-        return [
-            Cookie(
-                value=datum.decode("utf-8"),
-                key=_cookie_chunk_key(i),
-                **cookie_params,
-            )
-            for i, datum in enumerate(data)
-        ]
+        if len(data) == 1:
+            return [
+                Cookie(
+                    value=data[0].decode("utf-8"),
+                    key=self.config.key,
+                    **cookie_params,
+                )
+            ]
+        else:
+            return [
+                Cookie(
+                    value=datum.decode("utf-8"),
+                    key=f"{self.config.key}-{i}",
+                    **cookie_params,
+                )
+                for i, datum in enumerate(data)
+            ]
 
     async def store_in_message(self, scope_session: ScopeSession, message: Message, connection: ASGIConnection) -> None:
         """Store data from ``scope_session`` in ``Message`` in the form of cookies. If the contents of ``scope_session``
