@@ -117,10 +117,18 @@ class ClientSideSessionBackend(BaseSessionBackend["CookieBackendConfig"]):
                     include={f for f in Cookie.__dict__ if f not in ("key", "secret")},
                 )
             )
+
+        def _cookie_chunk_key(i: int) -> str:
+            # If the data is split into multiple cookies, the key will be of the format `session-{segment number}`,
+            # however if only one cookie is needed, the key will be `session`.
+            if len(data) == 1:
+                return self.config.key
+            return f"{self.config.key}-{i}"
+
         return [
             Cookie(
                 value=datum.decode("utf-8"),
-                key=f"{self.config.key}-{i}",
+                key=_cookie_chunk_key(i),
                 **cookie_params,
             )
             for i, datum in enumerate(data)
