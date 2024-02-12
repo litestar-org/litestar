@@ -129,15 +129,15 @@ class ClientSideSessionBackend(BaseSessionBackend["CookieBackendConfig"]):
                     **cookie_params,
                 )
             ]
-        else:
-            return [
-                Cookie(
-                    value=datum.decode("utf-8"),
-                    key=f"{self.config.key}-{i}",
-                    **cookie_params,
-                )
-                for i, datum in enumerate(data)
-            ]
+
+        return [
+            Cookie(
+                value=datum.decode("utf-8"),
+                key=f"{self.config.key}-{i}",
+                **cookie_params,
+            )
+            for i, datum in enumerate(data)
+        ]
 
     async def store_in_message(self, scope_session: ScopeSession, message: Message, connection: ASGIConnection) -> None:
         """Store data from ``scope_session`` in ``Message`` in the form of cookies. If the contents of ``scope_session``
