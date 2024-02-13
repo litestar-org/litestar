@@ -135,7 +135,6 @@ docs = [
   "sphinx-autobuild>=2021.3.14",
   "sphinx-copybutton>=0.5.2",
   "sphinx-toolbox>=3.5.0",
-  "blacken-docs>=1.16.0",
   "sphinx-design>=0.5.0",
   "sphinx-click>=4.4.0",
   "sphinxcontrib-mermaid>=0.9.2",
@@ -143,12 +142,11 @@ docs = [
   "litestar-sphinx-theme @ git+https://github.com/litestar-org/litestar-sphinx-theme.git",
 ]
 linting = [
-  "ruff",
+  "ruff>=0.2.1",
   "mypy",
   "pre-commit",
   "slotscheck",
   "pyright==1.1.344",
-  "blacken-docs",
   "asyncpg-stubs",
   "types-beautifulsoup4",
   "types-pytest-lazy-fixture",
@@ -339,7 +337,7 @@ lint.ignore = [
   "D202", # pydocstyle - no blank lines allowed after function docstring
   "D205", # pydocstyle - 1 blank line required between summary line and description
   "D415", # pydocstyle - first line should end with a period, question mark, or exclamation point
-  "E501", # pycodestyle line too long, handled by black
+  "E501", # pycodestyle line too long, handled by ruff format
   "PLW2901", # pylint - for loop variable overwritten by assignment target
   "RUF012", # Ruff-specific rule - annotated with classvar
   "ISC001", # Ruff formatter incompatible
@@ -404,6 +402,10 @@ known-first-party = ["litestar", "tests", "examples"]
 "tests/unit/test_contrib/test_sqlalchemy/**/*.*" = ["UP006"]
 "tools/**/*.*" = ["D", "ARG", "EM", "TRY", "G", "FBT"]
 "tools/prepare_release.py" = ["S603", "S607"]
+
+[tool.ruff.format]
+docstring-code-format = true
+docstring-code-line-length = 88
 
 [tool.unasyncd]
 add_editors_note = true
