@@ -11,7 +11,5 @@ def test_json_suffix_responses() -> None:
             "title": "Server thinks it is a teapot",
             "type": "Server delusion",
             "status": 418,
-            "detail": None,
-            "instance": None,
         }
         assert res.headers["content-type"] == "application/problem+json"
