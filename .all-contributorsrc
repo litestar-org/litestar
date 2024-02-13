@@ -1602,6 +1602,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "betaprior",
+      "name": "Leo Alekseyev",
+      "avatar_url": "https://avatars.githubusercontent.com/u/338250?v=4",
+      "profile": "http://dnquark.com",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
