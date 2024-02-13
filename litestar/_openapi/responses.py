@@ -9,9 +9,10 @@ from operator import attrgetter
 from typing import TYPE_CHECKING, Any, Iterator
 
 from litestar._openapi.schema_generation import SchemaCreator
+from litestar._openapi.schema_generation.utils import get_formatted_examples
 from litestar.enums import MediaType
 from litestar.exceptions import HTTPException, ValidationException
-from litestar.openapi.spec import Example, OpenAPIResponse
+from litestar.openapi.spec import Example, OpenAPIResponse, Reference
 from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
 from litestar.openapi.spec.header import OpenAPIHeader
 from litestar.openapi.spec.media_type import OpenAPIMediaType
@@ -240,14 +241,20 @@ class ResponseFactory:
                 prefer_alias=False,
                 generate_examples=additional_response.generate_examples,
             )
-            schema = schema_creator.for_field_definition(
-                FieldDefinition.from_annotation(additional_response.data_container)
-            )
+            field_def = FieldDefinition.from_annotation(additional_response.data_container)
+            schema = schema_creator.for_field_definition(field_def)
+
+            examples: dict[str, Example | Reference] | None
+            if additional_response.examples:
+                examples = dict(get_formatted_examples(field_def, additional_response.examples))
+            else:
+                examples = None
+
             yield (
                 str(status_code),
                 OpenAPIResponse(
                     description=additional_response.description,
-                    content={additional_response.media_type: OpenAPIMediaType(schema=schema)},
+                    content={additional_response.media_type: OpenAPIMediaType(schema=schema, examples=examples)},
                 ),
             )
 
