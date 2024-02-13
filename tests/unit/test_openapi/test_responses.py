@@ -28,7 +28,7 @@ from litestar.exceptions import (
 from litestar.handlers import HTTPRouteHandler
 from litestar.openapi.config import OpenAPIConfig
 from litestar.openapi.datastructures import ResponseSpec
-from litestar.openapi.spec import OpenAPIHeader, OpenAPIMediaType, Reference, Schema
+from litestar.openapi.spec import Example, OpenAPIHeader, OpenAPIMediaType, Reference, Schema
 from litestar.openapi.spec.enums import OpenAPIType
 from litestar.response import File, Redirect, Stream, Template
 from litestar.response.base import T
@@ -438,6 +438,28 @@ def test_additional_responses_overlap_with_raises(create_factory: CreateFactoryF
     assert responses is not None
     assert responses["400"] is not None
     assert responses["400"].description == "Overwritten response"
+
+
+def test_additional_responses_with_custom_examples(create_factory: CreateFactoryFixture) -> None:
+    @get(responses={200: ResponseSpec(DataclassPerson, examples=[Example(value={"string": "example", "number": 1})])})
+    def handler() -> DataclassPerson:
+        return DataclassPersonFactory.build()
+
+    factory = create_factory(handler)
+    responses = factory.create_additional_responses()
+    status_code, response = next(responses)
+    assert response.content
+    assert response.content["application/json"].examples == {
+        "dataclassperson-example-1": Example(
+            value={
+                "string": "example",
+                "number": 1,
+            }
+        ),
+    }
+
+    with pytest.raises(StopIteration):
+        next(responses)
 
 
 def test_create_response_for_response_subclass(create_factory: CreateFactoryFixture) -> None:
