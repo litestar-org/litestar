@@ -344,9 +344,11 @@ class LoggingMiddlewareConfig:
 
                 logging_middleware_config = LoggingMiddlewareConfig()
 
+
                 @get("/")
                 def my_handler(request: Request) -> None:
                     ...
+
 
                 app = Litestar(
                     route_handlers=[my_handler],
