@@ -172,11 +172,11 @@ def create_static_files_router(
 
     @get("{file_path:path}", name=name)
     async def get_handler(file_path: PurePath) -> ASGIFileResponse:
-        return await static_files.handle(path=str(file_path), is_head_response=False)
+        return await static_files.handle(path=file_path.as_posix(), is_head_response=False)
 
     @head("/{file_path:path}", name=f"{name}/head")
     async def head_handler(file_path: PurePath) -> ASGIFileResponse:
-        return await static_files.handle(path=str(file_path), is_head_response=True)
+        return await static_files.handle(path=file_path.as_posix(), is_head_response=True)
 
     handlers = [get_handler, head_handler]
 
