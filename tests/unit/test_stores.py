@@ -9,16 +9,20 @@ from pathlib import Path
 from typing import TYPE_CHECKING, cast
 from unittest.mock import MagicMock, Mock, patch
 
+import msgspec
 import pytest
 from _pytest.fixtures import FixtureRequest
 from pytest_mock import MockerFixture
 from time_machine import Coordinates
 
+from litestar import Litestar, get
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.middleware.session.server_side import ServerSideSessionConfig
 from litestar.stores.file import FileStore
 from litestar.stores.memory import MemoryStore
 from litestar.stores.redis import RedisStore
 from litestar.stores.registry import StoreRegistry
+from litestar.testing import AsyncTestClient
 
 if TYPE_CHECKING:
     from redis.asyncio import Redis
@@ -366,3 +370,59 @@ async def test_file_store_handle_rename_fail(file_store: FileStore, mocker: Mock
     await file_store.set("foo", "bar")
     mock_unlink.assert_called_once()
     assert Path(mock_unlink.call_args_list[0].args[0]).with_suffix("") == file_store.path.joinpath("foo")
+
+
+# stores close
+@get()
+async def hget() -> int:
+    return 1
+
+
+class AppSettings(msgspec.Struct):
+    debug: bool
+    redis_url: str = "redis://localhost:6379"
+
+
+def get_app(app_settings: AppSettings) -> Litestar:
+    # setting up stores
+    session_store = RedisStore.with_client(url=app_settings.redis_url)
+    app = Litestar(
+        route_handlers=[hget],
+        middleware=[
+            ServerSideSessionConfig().middleware,
+        ],
+        stores={
+            "sessions": session_store,
+        },  # comment this and 2nd test pass
+        debug=app_settings.debug,
+    )
+    return app
+
+
+@pytest.fixture(scope="session")
+def anyio_backend() -> str:
+    return "asyncio"
+
+
+@pytest.fixture(scope="session")
+def app_settings_test():
+    return AppSettings(debug=True)
+
+
+@pytest.fixture(scope="session")
+def app_test(app_settings_test: AppSettings):
+    app = get_app(app_settings_test)
+    yield app
+
+
+@pytest.fixture  # add scope="session" and 2nd test pass
+async def client(app_test: Litestar):
+    async with AsyncTestClient(app=app_test) as c:
+        yield c
+
+
+@pytest.mark.anyio
+@pytest.mark.parametrize("p1, p2", [(1, 2), (3, 4)])
+async def test_param(client: AsyncTestClient, p1: int, p2: int):
+    response = await client.get("/")
+    assert response.status_code == 200
