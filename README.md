@@ -540,6 +540,7 @@ see [the contribution guide](CONTRIBUTING.rst).
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/korneevm"><img src="https://avatars.githubusercontent.com/u/743250?v=4?s=100" width="100px;" alt="Mike Korneev"/><br /><sub><b>Mike Korneev</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=korneevm" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/patrickneise"><img src="https://avatars.githubusercontent.com/u/6312074?v=4?s=100" width="100px;" alt="Patrick Neise"/><br /><sub><b>Patrick Neise</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=patrickneise" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/JeanArhancet"><img src="https://avatars.githubusercontent.com/u/10811879?v=4?s=100" width="100px;" alt="Jean Arhancet"/><br /><sub><b>Jean Arhancet</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/issues?q=author%3AJeanArhancet" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://dnquark.com"><img src="https://avatars.githubusercontent.com/u/338250?v=4?s=100" width="100px;" alt="Leo Alekseyev"/><br /><sub><b>Leo Alekseyev</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=betaprior" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
