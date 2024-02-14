@@ -1498,6 +1498,59 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.6.1">
+<h2>2.6.1<a class="headerlink" href="#2.6.1" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2024/02/14<section id="2.6.1-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.6.1-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>SQLAlchemy: Use <cite>IntegrityError</cite> instead of deprecated <cite>ConflictError</cite><a class="headerlink reference internal" href="#2.6.1-sqlalchemy: use" id="2.6.1-sqlalchemy: use">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Updated the repository to return <code class="docutils literal notranslate"><span class="pre">IntegrityError</span></code> instead of the now
+deprecated <code class="docutils literal notranslate"><span class="pre">ConflictError</span></code></p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3094">litestar-org/litestar#3094</a></span></p>
+</div>
+</dd>
+<dt>Remove usage of deprecated <cite>static_files</cite> property<a class="headerlink reference internal" href="#2.6.1-remove usage of deprecated" id="2.6.1-remove usage of deprecated">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Remove the usage of the deprecated <code class="docutils literal notranslate"><span class="pre">Litestar.static_files_config</span></code> in
+<code class="docutils literal notranslate"><span class="pre">Litestar.__init__</span></code>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3087">litestar-org/litestar#3087</a></span></p>
+</div>
+</dd>
+<dt>Sessions: Fix cookie naming for short cookies<a class="headerlink reference internal" href="#2.6.1-sessions: fix cookie naming for short cookies" id="2.6.1-sessions: fix cookie naming for short cookies">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Previously, cookie names always had a suffix of the form <code class="docutils literal notranslate"><span class="pre">&quot;-{i}&quot;</span></code> appended to
+them. With this change, the suffix is omitted if the cookie is short enough
+(&lt; 4 KB) to not be split into multiple chunks.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3090">litestar-org/litestar#3090</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3095">litestar-org/litestar#3095</a></span></p>
+</div>
+</dd>
+<dt>Static files: Fix path resolution for windows<a class="headerlink reference internal" href="#2.6.1-static files: fix path resolution for windows" id="2.6.1-static files: fix path resolution for windows">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix an issue with the path resolution on Windows introduced in
+<a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2960">litestar-org/litestar#2960</a> that would lead to 404s</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3102">litestar-org/litestar#3102</a></span></p>
+</div>
+</dd>
+<dt>Fix logging middleware with structlog causes application to return a <code class="docutils literal notranslate"><span class="pre">500</span></code> when request body is malformed<a class="headerlink reference internal" href="#2.6.1-fix logging middleware with structlog causes application to return a" id="2.6.1-fix logging middleware with structlog causes application to return a">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Gracefully handle malformed request bodies during parsing when using structlog;
+Instead of erroring out and returning a <code class="docutils literal notranslate"><span class="pre">500</span></code>, the raw body is now being used
+when an error occurs during parsing</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3063">litestar-org/litestar#3063</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3109">litestar-org/litestar#3109</a></span></p>
+</div>
+</dd>
+<dt>OpenAPI: Generate correct response schema for <code class="docutils literal notranslate"><span class="pre">ResponseSpec(None)</span></code><a class="headerlink reference internal" href="#2.6.1-openapi: generate correct response schema for" id="2.6.1-openapi: generate correct response schema for">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Explicitly declaring <code class="docutils literal notranslate"><span class="pre">responses={...:</span> <span class="pre">ResponseSpec(None)}</span></code> used to generate
+OpenAPI a <code class="docutils literal notranslate"><span class="pre">content</span></code> property, when it should be omitted.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3069">litestar-org/litestar#3069</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3098">litestar-org/litestar#3098</a></span></p>
+</div>
+</dd>
+<dt>Prevent exception handlers from extracting details from non-Litestar exceptions<a class="headerlink reference internal" href="#2.6.1-prevent exception handlers from extracting details from non-litestar exceptions" id="2.6.1-prevent exception handlers from extracting details from non-litestar exceptions">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug where exception classes that had a <code class="docutils literal notranslate"><span class="pre">status_code</span></code> attribute would be
+treated as Litestar exceptions and details from them would be extracted and
+added to the exception response.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3082">litestar-org/litestar#3082</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3106">litestar-org/litestar#3106</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.6.0">
 <h2>2.6.0<a class="headerlink" href="#2.6.0" title="Permalink to this heading">#</a></h2>
 <strong>Released: </strong>2024/02/06<section id="2.6.0-feature">
@@ -5175,6 +5228,10 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.6.1">2.6.1</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.6.1-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.6.0">2.6.0</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.6.0-feature">Features</a></li>
 </ul>
