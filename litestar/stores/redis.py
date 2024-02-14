@@ -74,9 +74,6 @@ class RedisStore(NamespacedStore):
     async def _shutdown(self) -> None:
         await self._redis.aclose(close_connection_pool=True)
 
-    async def __aenter__(self) -> None:
-        ...
-
     async def __aexit__(
         self,
         exc_type: type[BaseException] | None,
