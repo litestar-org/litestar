@@ -3,6 +3,65 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.6.1
+    :date: 2024/02/14
+
+    .. change:: SQLAlchemy: Use `IntegrityError` instead of deprecated `ConflictError`
+        :type: bugfix
+        :pr: 3094
+
+        Updated the repository to return ``IntegrityError`` instead of the now
+        deprecated ``ConflictError``
+
+    .. change:: Remove usage of deprecated `static_files` property
+        :type: bugfix
+        :pr: 3087
+
+        Remove the usage of the deprecated ``Litestar.static_files_config`` in
+        ``Litestar.__init__``.
+
+    .. change:: Sessions: Fix cookie naming for short cookies
+        :type: bugfix
+        :pr: 3095
+        :issue: 3090
+
+        Previously, cookie names always had a suffix of the form ``"-{i}"`` appended to
+        them. With this change, the suffix is omitted if the cookie is short enough
+        (< 4 KB) to not be split into multiple chunks.
+
+    .. change:: Static files: Fix path resolution for windows
+        :type: bugfix
+        :pr: 3102
+
+        Fix an issue with the path resolution on Windows introduced in
+        https://github.com/litestar-org/litestar/pull/2960 that would lead to 404s
+
+    .. change:: Fix logging middleware with structlog causes application to return a ``500`` when request body is malformed
+        :type: bugfix
+        :pr: 3109
+        :issue: 3063
+
+        Gracefully handle malformed request bodies during parsing when using structlog;
+        Instead of erroring out and returning a ``500``, the raw body is now being used
+        when an error occurs during parsing
+
+    .. change:: OpenAPI: Generate correct response schema for ``ResponseSpec(None)``
+        :type: bugfix
+        :pr: 3098
+        :issue: 3069
+
+        Explicitly declaring ``responses={...: ResponseSpec(None)}`` used to generate
+        OpenAPI a ``content`` property, when it should be omitted.
+
+    .. change:: Prevent exception handlers from extracting details from non-Litestar exceptions
+        :type: bugfix
+        :pr: 3106
+        :issue: 3082
+
+        Fix a bug where exception classes that had a ``status_code`` attribute would be
+        treated as Litestar exceptions and details from them would be extracted and
+        added to the exception response.
+
 .. changelog:: 2.6.0
     :date: 2024/02/06
 
