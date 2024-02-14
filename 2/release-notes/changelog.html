@@ -6,7 +6,7 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>2.x Changelog &#8212; Litestar Framework</title>
   
@@ -1237,7 +1237,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../usage/security/jwt.html">JWT Security Backends</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../usage/static-files.html">Static Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/static-files.html">Static files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/stores.html">Stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/templating.html">Templating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/testing.html">Testing</a></li>
@@ -1498,6 +1498,165 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.6.1">
+<h2>2.6.1<a class="headerlink" href="#2.6.1" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2024/02/14<section id="2.6.1-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.6.1-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>SQLAlchemy: Use <cite>IntegrityError</cite> instead of deprecated <cite>ConflictError</cite><a class="headerlink reference internal" href="#2.6.1-sqlalchemy: use" id="2.6.1-sqlalchemy: use">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Updated the repository to return <code class="docutils literal notranslate"><span class="pre">IntegrityError</span></code> instead of the now
+deprecated <code class="docutils literal notranslate"><span class="pre">ConflictError</span></code></p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3094">litestar-org/litestar#3094</a></span></p>
+</div>
+</dd>
+<dt>Remove usage of deprecated <cite>static_files</cite> property<a class="headerlink reference internal" href="#2.6.1-remove usage of deprecated" id="2.6.1-remove usage of deprecated">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Remove the usage of the deprecated <code class="docutils literal notranslate"><span class="pre">Litestar.static_files_config</span></code> in
+<code class="docutils literal notranslate"><span class="pre">Litestar.__init__</span></code>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3087">litestar-org/litestar#3087</a></span></p>
+</div>
+</dd>
+<dt>Sessions: Fix cookie naming for short cookies<a class="headerlink reference internal" href="#2.6.1-sessions: fix cookie naming for short cookies" id="2.6.1-sessions: fix cookie naming for short cookies">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Previously, cookie names always had a suffix of the form <code class="docutils literal notranslate"><span class="pre">&quot;-{i}&quot;</span></code> appended to
+them. With this change, the suffix is omitted if the cookie is short enough
+(&lt; 4 KB) to not be split into multiple chunks.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3090">litestar-org/litestar#3090</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3095">litestar-org/litestar#3095</a></span></p>
+</div>
+</dd>
+<dt>Static files: Fix path resolution for windows<a class="headerlink reference internal" href="#2.6.1-static files: fix path resolution for windows" id="2.6.1-static files: fix path resolution for windows">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix an issue with the path resolution on Windows introduced in
+<a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2960">litestar-org/litestar#2960</a> that would lead to 404s</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3102">litestar-org/litestar#3102</a></span></p>
+</div>
+</dd>
+<dt>Fix logging middleware with structlog causes application to return a <code class="docutils literal notranslate"><span class="pre">500</span></code> when request body is malformed<a class="headerlink reference internal" href="#2.6.1-fix logging middleware with structlog causes application to return a" id="2.6.1-fix logging middleware with structlog causes application to return a">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Gracefully handle malformed request bodies during parsing when using structlog;
+Instead of erroring out and returning a <code class="docutils literal notranslate"><span class="pre">500</span></code>, the raw body is now being used
+when an error occurs during parsing</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3063">litestar-org/litestar#3063</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3109">litestar-org/litestar#3109</a></span></p>
+</div>
+</dd>
+<dt>OpenAPI: Generate correct response schema for <code class="docutils literal notranslate"><span class="pre">ResponseSpec(None)</span></code><a class="headerlink reference internal" href="#2.6.1-openapi: generate correct response schema for" id="2.6.1-openapi: generate correct response schema for">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Explicitly declaring <code class="docutils literal notranslate"><span class="pre">responses={...:</span> <span class="pre">ResponseSpec(None)}</span></code> used to generate
+OpenAPI a <code class="docutils literal notranslate"><span class="pre">content</span></code> property, when it should be omitted.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3069">litestar-org/litestar#3069</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3098">litestar-org/litestar#3098</a></span></p>
+</div>
+</dd>
+<dt>Prevent exception handlers from extracting details from non-Litestar exceptions<a class="headerlink reference internal" href="#2.6.1-prevent exception handlers from extracting details from non-litestar exceptions" id="2.6.1-prevent exception handlers from extracting details from non-litestar exceptions">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug where exception classes that had a <code class="docutils literal notranslate"><span class="pre">status_code</span></code> attribute would be
+treated as Litestar exceptions and details from them would be extracted and
+added to the exception response.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3082">litestar-org/litestar#3082</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3106">litestar-org/litestar#3106</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
+<section id="2.6.0">
+<h2>2.6.0<a class="headerlink" href="#2.6.0" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2024/02/06<section id="2.6.0-feature">
+<h3>Features<a class="headerlink" href="#2.6.0-feature" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Enable disabling configuring <code class="docutils literal notranslate"><span class="pre">root</span></code> logger within <code class="docutils literal notranslate"><span class="pre">LoggingConfig</span></code><a class="headerlink reference internal" href="#2.6.0-enable disabling configuring" id="2.6.0-enable disabling configuring">#</a></dt><dd><div class="changelog-change docutils container">
+<p>The option <a class="reference internal" href="../reference/logging/config.html#litestar.logging.config.LoggingConfig.configure_root_logger" title="litestar.logging.config.LoggingConfig.configure_root_logger"><code class="xref py py-attr docutils literal notranslate"><span class="pre">configure_root_logger</span></code></a> was
+added to <a class="reference internal" href="../reference/logging/config.html#litestar.logging.config.LoggingConfig" title="litestar.logging.config.LoggingConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">LoggingConfig</span></code></a> attribute. It is enabled by
+default to not implement a breaking change.</p>
+<p>When set to <code class="docutils literal notranslate"><span class="pre">False</span></code> the <code class="docutils literal notranslate"><span class="pre">root</span></code> logger will not be modified for <code class="docutils literal notranslate"><span class="pre">logging</span></code>
+or <code class="docutils literal notranslate"><span class="pre">picologging</span></code> loggers.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2969">litestar-org/litestar#2969</a></span></p>
+</div>
+</dd>
+<dt>Simplified static file handling and enhancements<a class="headerlink reference internal" href="#2.6.0-simplified static file handling and enhancements" id="2.6.0-simplified static file handling and enhancements">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Static file serving has been implemented with regular route handlers instead of
+a specialised ASGI app. At the moment, this is complementary to the usage of
+<a class="reference internal" href="../reference/static_files.html#litestar.static_files.StaticFilesConfig" title="litestar.static_files.StaticFilesConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">StaticFilesConfig</span></code></a> to maintain backwards
+compatibility.</p>
+<p>This achieves a few things:</p>
+<ul class="simple">
+<li><p>Fixes <a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2629">litestar-org/litestar#2629</a></p></li>
+<li><p>Circumvents special casing needed in the routing logic for the static files app</p></li>
+<li><p>Removes the need for a <code class="docutils literal notranslate"><span class="pre">static_files_config</span></code> attribute on the app</p></li>
+<li><p>Removes the need for a special <a class="reference internal" href="../reference/app.html#litestar.app.Litestar.url_for_static_asset" title="litestar.app.Litestar.url_for_static_asset"><code class="xref py py-meth docutils literal notranslate"><span class="pre">url_for_static_asset()</span></code></a>
+method on the app since <cite>route_reverse</cite> can be used instead</p></li>
+</ul>
+<p>Additionally:</p>
+<ul class="simple">
+<li><p>Most router options can now be passed to the
+<a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router" title="litestar.static_files.create_static_files_router"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_static_files_router()</span></code></a>, allowing further
+customisation</p></li>
+<li><p>A new <code class="docutils literal notranslate"><span class="pre">resolve_symlinks</span></code> flag has been added, defaulting to <code class="docutils literal notranslate"><span class="pre">True</span></code> to keep
+backwards compatibility</p></li>
+</ul>
+<p><strong>Usage</strong></p>
+<p>Instead of</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+    <span class="n">static_files_config</span><span class="o">=</span><span class="p">[</span><span class="n">StaticFilesConfig</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span><span class="p">,</span> <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;some_dir&quot;</span><span class="p">])]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>You can now simply use</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">create_static_files_router</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span><span class="p">,</span> <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;some_dir&quot;</span><span class="p">])</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../usage/static-files.html"><span class="doc">Static files</span></a></p>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2629">litestar-org/litestar#2629</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2960">litestar-org/litestar#2960</a></span></p>
+</div>
+</dd>
+<dt>Exclude Piccolo ORM columns with <code class="docutils literal notranslate"><span class="pre">secret=True</span></code> from <code class="docutils literal notranslate"><span class="pre">PydanticDTO</span></code> output<a class="headerlink reference internal" href="#2.6.0-exclude piccolo orm columns with" id="2.6.0-exclude piccolo orm columns with">#</a></dt><dd><div class="changelog-change docutils container">
+<p>For Piccolo columns with <code class="docutils literal notranslate"><span class="pre">secret=True</span></code> set, corresponding <code class="docutils literal notranslate"><span class="pre">PydanticDTO</span></code>
+attributes will be marked as <code class="docutils literal notranslate"><span class="pre">WRITE_ONLY</span></code> to prevent the column being included
+in <code class="docutils literal notranslate"><span class="pre">return_dto</span></code></p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3030">litestar-org/litestar#3030</a></span></p>
+</div>
+</dd>
+<dt>Allow discovering registered plugins by their fully qualified name<a class="headerlink reference internal" href="#2.6.0-allow discovering registered plugins by their fully qualified name" id="2.6.0-allow discovering registered plugins by their fully qualified name">#</a></dt><dd><div class="changelog-change docutils container">
+<p><cite>PluginRegistryPluginRegistry`</cite> now supports retrieving a plugin by its fully
+qualified name.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3027">litestar-org/litestar#3027</a></span></p>
+</div>
+</dd>
+<dt>Support externally typed classes as dependency providers<a class="headerlink reference internal" href="#2.6.0-support externally typed classes as dependency providers" id="2.6.0-support externally typed classes as dependency providers">#</a></dt><dd><div class="changelog-change docutils container">
+<ul class="simple">
+<li><p>Implement a new <a class="reference internal" href="../reference/plugins.html#litestar.plugins.DIPlugin" title="litestar.plugins.DIPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">DIPlugin</span></code></a> class that allows the
+generation of signatures for arbitrary types where their signature cannot be
+extracted from the type’s <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method</p></li>
+<li><p>Implement <code class="docutils literal notranslate"><span class="pre">DIPlugin</span></code>s for Pydantic and Msgspec to allow using their
+respective modelled types as dependency providers. These plugins will be
+registered by default</p></li>
+</ul>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2979">litestar-org/litestar#2979</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3066">litestar-org/litestar#3066</a></span></p>
+</div>
+</dd>
+<dt>Add structlog plugin<a class="headerlink reference internal" href="#2.6.0-add structlog plugin" id="2.6.0-add structlog plugin">#</a></dt><dd><div class="changelog-change docutils container">
+<p>A Structlog plugin to make it easier to configure structlog in a single place.</p>
+<p>The plugin:</p>
+<ul class="simple">
+<li><p>Detects if a logger has <code class="docutils literal notranslate"><span class="pre">setLevel</span></code> before calling</p></li>
+<li><p>Set even message name to be init-cap</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">set_level</span></code> interface to config</p></li>
+<li><p>Allows structlog printer to detect if console is TTY enabled. If so, a
+Struglog color formatter with Rich traceback printer is used</p></li>
+<li><p>Auto-configures stdlib logger to use the structlog logger</p></li>
+</ul>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2943">litestar-org/litestar#2943</a></span></p>
+</div>
+</dd>
+<dt>Add reload-include and reload-exclude to CLI run command<a class="headerlink reference internal" href="#2.6.0-add reload-include and reload-exclude to cli run command" id="2.6.0-add reload-include and reload-exclude to cli run command">#</a></dt><dd><div class="changelog-change docutils container">
+<p>The options <code class="docutils literal notranslate"><span class="pre">reload-exclude</span></code> and <code class="docutils literal notranslate"><span class="pre">reload-include</span></code> were added to the CLI
+<code class="docutils literal notranslate"><span class="pre">run</span></code> command to explicitly in-/exclude specific paths from the reloading
+watcher.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2875">litestar-org/litestar#2875</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2973">litestar-org/litestar#2973</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.5.5">
 <h2>2.5.5<a class="headerlink" href="#2.5.5" title="Permalink to this heading">#</a></h2>
 <strong>Released: </strong>2024/02/04<section id="2.5.5-bugfix">
@@ -1521,8 +1680,9 @@ some servers, such as hypercorn, do not provide it.</p>
 <h3>Bugfixes<a class="headerlink" href="#2.5.4-bugfix" title="Permalink to this heading">#</a></h3>
 <dl>
 <dt>Handle <code class="docutils literal notranslate"><span class="pre">KeyError</span></code> when <cite>root_path</cite> is not present in ASGI scope<a class="headerlink reference internal" href="#2.5.4-handle" id="2.5.4-handle">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Nginx Unit ASGI server does not set “root_path” in the ASGI scope, which is expected as part of the changes done in #3039. This PR fixes the assumption that the key is always present and instead tries to optionally retrieve it.</p>
-<p>Issue originally reported over at [Discord](<a class="reference external" href="https://discord.com/channels/919193495116337154/919193495690936353/1202204676003745792">https://discord.com/channels/919193495116337154/919193495690936353/1202204676003745792</a>)</p>
+<p>Nginx Unit ASGI server does not set “root_path” in the ASGI scope, which is
+expected as part of the changes done in #3039. This PR fixes the assumption that
+the key is always present and instead tries to optionally retrieve it.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ne">KeyError</span> <span class="n">on</span> <span class="n">GET</span> <span class="o">/</span>
 <span class="s1">&#39;root_path&#39;</span>
 </pre></div>
@@ -2282,6 +2442,10 @@ an error response</p>
 <dt>Fix missing OpenAPI schema for generic response type annotations<a class="headerlink reference internal" href="#2.3.0-fix missing openapi schema for generic response type annotations" id="2.3.0-fix missing openapi schema for generic response type annotations">#</a></dt><dd><div class="changelog-change docutils container">
 <p>OpenAPI schemas are now correctly generated when a response type annotation
 contains a generic type such as</p>
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-0">
+Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">msgspec</span> <span class="kn">import</span> <span class="n">Struct</span>
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">Response</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">Optional</span>
@@ -2300,6 +2464,31 @@ contains a generic type such as</p>
         <span class="n">ResponseStruct</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="s2">&quot;Hello World&quot;</span><span class="p">),</span>
     <span class="p">)</span>
 </pre></div>
+</div>
+</div>
+<input checked="checked" id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-1">
+Python 3.10+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">msgspec</span> <span class="kn">import</span> <span class="n">Struct</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">Response</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Generic</span>
+
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">ResponseStruct</span><span class="p">(</span><span class="n">Struct</span><span class="p">,</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+    <span class="n">code</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">T</span> <span class="o">|</span> <span class="kc">None</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="n">ResponseStruct</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span>
+        <span class="n">ResponseStruct</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="s2">&quot;Hello World&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </div>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2383">litestar-org/litestar#2383</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2463">litestar-org/litestar#2463</a></span></p>
 </div>
@@ -3619,8 +3808,8 @@ natively encode</p></li>
 can otherwise manage</p></li>
 </ul>
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-0">
+<input id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-2">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">TypeVar</span>
@@ -3662,9 +3851,52 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-1">
+<input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-3">
 Python 3.9+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">TypeVar</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DTOConfig</span>
+<span class="kn">from</span> <span class="nn">litestar.dto.factory.dataclass_factory</span> <span class="kn">import</span> <span class="n">DataclassDTO</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
+
+
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+<span class="n">V</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Wrapped</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">]):</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
+    <span class="n">other</span><span class="p">:</span> <span class="n">V</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="n">dto</span><span class="o">=</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;age&quot;</span><span class="p">})]])</span>
+<span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Wrapped</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="n">Wrapped</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">User</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;John&quot;</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">42</span><span class="p">),</span> <span class="n">User</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Jane&quot;</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">43</span><span class="p">)],</span>
+        <span class="n">other</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">])</span>
+
+<span class="c1"># GET &quot;/&quot;: {&quot;data&quot;: [{&quot;name&quot;: &quot;John&quot;}, {&quot;name&quot;: &quot;Jane&quot;}], &quot;other&quot;: 2}</span>
+</pre></div>
+</div>
+</div>
+<input checked="checked" id="sd-tab-item-4" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-4">
+Python 3.10+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span>
 
@@ -4996,6 +5228,14 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.6.1">2.6.1</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.6.1-bugfix">Bugfixes</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.6.0">2.6.0</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.6.0-feature">Features</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.5.5">2.5.5</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.5.5-bugfix">Bugfixes</a></li>
 </ul>
