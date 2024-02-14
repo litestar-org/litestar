@@ -6,7 +6,7 @@ import shutil
 import string
 from datetime import timedelta
 from pathlib import Path
-from typing import TYPE_CHECKING, cast, Iterator
+from typing import TYPE_CHECKING, Iterator, cast
 from unittest.mock import MagicMock, Mock, patch
 
 import msgspec
