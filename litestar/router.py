@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
-from copy import copy
+from copy import copy, deepcopy
 from typing import TYPE_CHECKING, Any, Mapping, Sequence, cast
 
 from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
@@ -309,14 +309,12 @@ class Router:
             return value(owner=self).to_handler()  # pyright: ignore
 
         if isinstance(value, Router):
-            if value.owner:
-                raise ImproperlyConfiguredException(f"Router with path {value.path} has already been registered")
-
             if value is self:
                 raise ImproperlyConfiguredException("Cannot register a router on itself")
 
-            value.owner = self
-            return value
+            router_copy = deepcopy(value)
+            router_copy.owner = self
+            return router_copy
 
         if isinstance(value, (ASGIRouteHandler, HTTPRouteHandler, WebsocketRouteHandler)):
             value.owner = self
