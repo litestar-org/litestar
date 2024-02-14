@@ -78,18 +78,16 @@ class Store(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
     async def __aenter__(self) -> None:
-        ...
+        pass
 
-    @abstractmethod
     async def __aexit__(
         self,
         exc_type: type[BaseException] | None,
         exc_val: BaseException | None,
         exc_tb: TracebackType | None,
     ) -> None:
-        ...
+        pass
 
 
 class NamespacedStore(Store):
