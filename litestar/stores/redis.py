@@ -24,7 +24,7 @@ class RedisStore(NamespacedStore):
     __slots__ = ("_redis",)
 
     def __init__(
-        self, redis: Redis, namespace: str | None | EmptyType = Empty, automatic_store_lifetime: bool = False
+        self, redis: Redis, namespace: str | None | EmptyType = Empty, handle_client_shutdown: bool = False
     ) -> None:
         """Initialize :class:`RedisStore`
 
@@ -33,9 +33,7 @@ class RedisStore(NamespacedStore):
             namespace: A key prefix to simulate a namespace in redis. If not given,
                 defaults to ``LITESTAR``. Namespacing can be explicitly disabled by passing
                 ``None``. This will make :meth:`.delete_all` unavailable.
-            automatic_store_lifetime: If ``True``, the store lifetime will be handled automatically,
-            works only if you're using the :meth:`.with_client` method.
-            By default it is False and in that case you will have to handle the store lifetime manually.
+            handle_client_shutdown: If ``True``, handle the shutdown of the `redis` instance automatically during the store's lifespan. Should be set to `True` unless the shutdown is handled externally
         """
         self._redis = redis
         self.namespace: str | None = value_or_default(namespace, "LITESTAR")
