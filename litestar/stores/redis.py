@@ -37,7 +37,7 @@ class RedisStore(NamespacedStore):
         """
         self._redis = redis
         self.namespace: str | None = value_or_default(namespace, "LITESTAR")
-        self._automatic_store_lifetime = automatic_store_lifetime
+        self.handle_client_shutdown = handle_client_shutdown
 
         # script to get and renew a key in one atomic step
         self._get_and_renew_script = self._redis.register_script(
@@ -113,7 +113,8 @@ class RedisStore(NamespacedStore):
             password=password,
         )
         return cls(
-            redis=Redis(connection_pool=pool), namespace=namespace, automatic_store_lifetime=automatic_store_lifetime
+            redis=Redis(connection_pool=pool),
+            namespace=namespace,
         )
 
     def with_namespace(self, namespace: str) -> RedisStore:
