@@ -393,8 +393,7 @@ class Litestar(Router):
         )
         self._lifespan_managers = config.lifespan
         for store in self.stores._stores.values():
-            if store.handle_client_shutdown:
-                self._lifespan_managers.append(store)
+            self._lifespan_managers.append(store)
         self._server_lifespan_managers = [p.server_lifespan for p in config.plugins or [] if isinstance(p, CLIPlugin)]
         self.experimental_features = frozenset(config.experimental_features or [])
         self.get_logger: GetLogger = get_logger_placeholder
