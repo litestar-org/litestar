@@ -78,10 +78,10 @@ class Store(ABC):
         """
         raise NotImplementedError
 
-    async def __aenter__(self) -> None:
+    async def __aenter__(self) -> None:  # noqa: B027
         pass
 
-    async def __aexit__(
+    async def __aexit__(  # noqa: B027
         self,
         exc_type: type[BaseException] | None,
         exc_val: BaseException | None,
