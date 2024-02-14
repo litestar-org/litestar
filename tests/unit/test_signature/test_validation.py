@@ -74,7 +74,7 @@ def test_validation_failure_raises_400() -> None:
         response = client.get("/?param=thirteen")
 
     assert response.json() == {
-        "detail": "Validation failed for GET http://testserver.local/?param=thirteen",
+        "detail": "Validation failed for GET /?param=thirteen",
         "extra": [{"key": "param", "message": "Expected `int`, got `str`", "source": "query"}],
         "status_code": 400,
     }
@@ -94,7 +94,7 @@ def test_client_backend_error_precedence_over_server_error() -> None:
         response = client.get("/?param=thirteen")
 
     assert response.json() == {
-        "detail": "Validation failed for GET http://testserver.local/?param=thirteen",
+        "detail": "Validation failed for GET /?param=thirteen",
         "extra": [{"key": "param", "message": "Expected `int`, got `str`", "source": "query"}],
         "status_code": 400,
     }
