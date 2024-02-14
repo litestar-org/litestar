@@ -115,6 +115,7 @@ class RedisStore(NamespacedStore):
         return cls(
             redis=Redis(connection_pool=pool),
             namespace=namespace,
+            handle_client_shutdown=True,
         )
 
     def with_namespace(self, namespace: str) -> RedisStore:
