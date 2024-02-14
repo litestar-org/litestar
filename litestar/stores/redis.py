@@ -95,7 +95,6 @@ class RedisStore(NamespacedStore):
         username: str | None = None,
         password: str | None = None,
         namespace: str | None | EmptyType = Empty,
-        automatic_store_lifetime: bool = True,
     ) -> RedisStore:
         """Initialize a :class:`RedisStore` instance with a new class:`redis.asyncio.Redis` instance.
 
