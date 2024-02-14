@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from typing import TYPE_CHECKING, AsyncContextManager, cast
+from typing import TYPE_CHECKING, cast
 
 from redis.asyncio import Redis
 from redis.asyncio.connection import ConnectionPool
@@ -18,12 +18,14 @@ if TYPE_CHECKING:
     from types import TracebackType
 
 
-class RedisStore(NamespacedStore, AsyncContextManager):
+class RedisStore(NamespacedStore):
     """Redis based, thread and process safe asynchronous key/value store."""
 
     __slots__ = ("_redis",)
 
-    def __init__(self, redis: Redis, namespace: str | None | EmptyType = Empty) -> None:
+    def __init__(
+        self, redis: Redis, namespace: str | None | EmptyType = Empty, automatic_store_lifetime: bool = False
+    ) -> None:
         """Initialize :class:`RedisStore`
 
         Args:
@@ -31,10 +33,13 @@ class RedisStore(NamespacedStore, AsyncContextManager):
             namespace: A key prefix to simulate a namespace in redis. If not given,
                 defaults to ``LITESTAR``. Namespacing can be explicitly disabled by passing
                 ``None``. This will make :meth:`.delete_all` unavailable.
+            automatic_store_lifetime: If ``True``, the store lifetime will be handled automatically,
+            works only if you're using the :meth:`.with_client` method.
+            By default it is False and in that case you will have to handle the store lifetime manually.
         """
         self._redis = redis
-        self._should_close_store_manually = True
         self.namespace: str | None = value_or_default(namespace, "LITESTAR")
+        self._automatic_store_lifetime = automatic_store_lifetime
 
         # script to get and renew a key in one atomic step
         self._get_and_renew_script = self._redis.register_script(
@@ -68,11 +73,11 @@ class RedisStore(NamespacedStore, AsyncContextManager):
         """
         )
 
-    async def _on_shutdown(self) -> None:
-        await self._redis.aclose()
+    async def _shutdown(self) -> None:
+        await self._redis.aclose(close_connection_pool=True)
 
-    async def __aenter__(self) -> RedisStore:
-        return self
+    async def __aenter__(self) -> None:
+        ...
 
     async def __aexit__(
         self,
@@ -80,7 +85,7 @@ class RedisStore(NamespacedStore, AsyncContextManager):
         exc_val: BaseException | None,
         exc_tb: TracebackType | None,
     ) -> None:
-        await self._on_shutdown()
+        await self._shutdown()
 
     @classmethod
     def with_client(
@@ -92,6 +97,7 @@ class RedisStore(NamespacedStore, AsyncContextManager):
         username: str | None = None,
         password: str | None = None,
         namespace: str | None | EmptyType = Empty,
+        automatic_store_lifetime: bool = True,
     ) -> RedisStore:
         """Initialize a :class:`RedisStore` instance with a new class:`redis.asyncio.Redis` instance.
 
@@ -102,6 +108,7 @@ class RedisStore(NamespacedStore, AsyncContextManager):
             username: Redis username to use
             password: Redis password to use
             namespace: Virtual key namespace to use
+            automatic_store_lifetime: If ``True``, the store lifetime will be handled automatically, it is the default with this method.
         """
         pool = ConnectionPool.from_url(
             url=url,
@@ -111,9 +118,9 @@ class RedisStore(NamespacedStore, AsyncContextManager):
             username=username,
             password=password,
         )
-        i = cls(redis=Redis(connection_pool=pool), namespace=namespace)
-        i._should_close_store_manually = False
-        return i
+        return cls(
+            redis=Redis(connection_pool=pool), namespace=namespace, automatic_store_lifetime=automatic_store_lifetime
+        )
 
     def with_namespace(self, namespace: str) -> RedisStore:
         """Return a new :class:`RedisStore` with a nested virtual key namespace.

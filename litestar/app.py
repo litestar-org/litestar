@@ -388,7 +388,13 @@ class Litestar(Router):
 
         self._openapi_schema: OpenAPI | None = None
         self._debug: bool = True
+        self.stores: StoreRegistry = (
+            config.stores if isinstance(config.stores, StoreRegistry) else StoreRegistry(config.stores)
+        )
         self._lifespan_managers = config.lifespan
+        for store in self.stores._stores.values():
+            if store._automatic_store_lifetime:
+                self._lifespan_managers.append(store)
         self._server_lifespan_managers = [p.server_lifespan for p in config.plugins or [] if isinstance(p, CLIPlugin)]
         self.experimental_features = frozenset(config.experimental_features or [])
         self.get_logger: GetLogger = get_logger_placeholder
@@ -461,13 +467,6 @@ class Litestar(Router):
             self.register(static_config.to_static_files_app())
 
         self.asgi_handler = self._create_asgi_handler()
-
-        self.stores: StoreRegistry = (
-            config.stores if isinstance(config.stores, StoreRegistry) else StoreRegistry(config.stores)
-        )
-        for _, store in self.stores._stores.items():
-            if not store._should_close_store_manually:
-                self._lifespan_managers.append(store)
 
     @property
     @deprecated(version="2.6.0", kind="property", info="Use create_static_files router instead")
