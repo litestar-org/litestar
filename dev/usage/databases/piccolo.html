@@ -1589,10 +1589,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="k">await</span> <span class="n">create_db_tables</span><span class="p">(</span><span class="n">Task</span><span class="p">,</span> <span class="n">if_not_exists</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">tasks</span><span class="p">,</span> <span class="n">create_task</span><span class="p">,</span> <span class="n">delete_task</span><span class="p">,</span> <span class="n">update_task</span><span class="p">],</span>
-    <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span>
-<span class="p">)</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">tasks</span><span class="p">,</span> <span class="n">create_task</span><span class="p">,</span> <span class="n">delete_task</span><span class="p">,</span> <span class="n">update_task</span><span class="p">],</span> <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1679,10 +1676,7 @@ Python 3.10+</label><div class="sd-tab-content docutils">
     <span class="k">await</span> <span class="n">create_db_tables</span><span class="p">(</span><span class="n">Task</span><span class="p">,</span> <span class="n">if_not_exists</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">tasks</span><span class="p">,</span> <span class="n">create_task</span><span class="p">,</span> <span class="n">delete_task</span><span class="p">,</span> <span class="n">update_task</span><span class="p">],</span>
-    <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span>
-<span class="p">)</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">tasks</span><span class="p">,</span> <span class="n">create_task</span><span class="p">,</span> <span class="n">delete_task</span><span class="p">,</span> <span class="n">update_task</span><span class="p">],</span> <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
