@@ -73,7 +73,7 @@ class RedisStore(NamespacedStore):
 
     async def _shutdown(self) -> None:
         if self.handle_client_shutdown:
-            await self._redis.aclose(close_connection_pool=True)
+            await self._redis.aclose(close_connection_pool=True)  # type: ignore[attr-defined]
 
     async def __aexit__(
         self,

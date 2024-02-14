@@ -6,7 +6,7 @@ import shutil
 import string
 from datetime import timedelta
 from pathlib import Path
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, cast, Iterator
 from unittest.mock import MagicMock, Mock, patch
 
 import msgspec
@@ -404,12 +404,12 @@ def anyio_backend() -> str:
 
 
 @pytest.fixture(scope="session")
-def app_settings_test():
+def app_settings_test() -> AppSettings:
     return AppSettings(debug=True)
 
 
 @pytest.fixture(scope="session")
-def app_test(app_settings_test: AppSettings):
+def app_test(app_settings_test: AppSettings) -> Iterator[Litestar]:
     app = get_app(app_settings_test)
     yield app
 
