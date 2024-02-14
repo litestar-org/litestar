@@ -386,17 +386,16 @@ class AppSettings(msgspec.Struct):
 def get_app(app_settings: AppSettings) -> Litestar:
     # setting up stores
     session_store = RedisStore.with_client(url=app_settings.redis_url)
-    app = Litestar(
+    return Litestar(
         route_handlers=[hget],
         middleware=[
             ServerSideSessionConfig().middleware,
         ],
         stores={
             "sessions": session_store,
-        },  # comment this and 2nd test pass
+        },
         debug=app_settings.debug,
     )
-    return app
 
 
 @pytest.fixture(scope="session")
@@ -415,7 +414,7 @@ def app_test(app_settings_test: AppSettings):
     yield app
 
 
-@pytest.fixture  # add scope="session" and 2nd test pass
+@pytest.fixture
 async def client(app_test: Litestar):
     async with AsyncTestClient(app=app_test) as c:
         yield c

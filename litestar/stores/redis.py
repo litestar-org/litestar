@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from typing import cast
+from typing import TYPE_CHECKING, AsyncContextManager, cast
 
 from redis.asyncio import Redis
 from redis.asyncio.connection import ConnectionPool
@@ -14,8 +14,11 @@ from .base import NamespacedStore
 
 __all__ = ("RedisStore",)
 
+if TYPE_CHECKING:
+    from types import TracebackType
 
-class RedisStore(NamespacedStore):
+
+class RedisStore(NamespacedStore, AsyncContextManager):
     """Redis based, thread and process safe asynchronous key/value store."""
 
     __slots__ = ("_redis",)
@@ -30,6 +33,7 @@ class RedisStore(NamespacedStore):
                 ``None``. This will make :meth:`.delete_all` unavailable.
         """
         self._redis = redis
+        self._should_close_store_manually = True
         self.namespace: str | None = value_or_default(namespace, "LITESTAR")
 
         # script to get and renew a key in one atomic step
@@ -64,6 +68,20 @@ class RedisStore(NamespacedStore):
         """
         )
 
+    async def _on_shutdown(self) -> None:
+        await self._redis.aclose()
+
+    async def __aenter__(self) -> RedisStore:
+        return self
+
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> None:
+        await self._on_shutdown()
+
     @classmethod
     def with_client(
         cls,
@@ -93,7 +111,9 @@ class RedisStore(NamespacedStore):
             username=username,
             password=password,
         )
-        return cls(redis=Redis(connection_pool=pool), namespace=namespace)
+        i = cls(redis=Redis(connection_pool=pool), namespace=namespace)
+        i._should_close_store_manually = False
+        return i
 
     def with_namespace(self, namespace: str) -> RedisStore:
         """Return a new :class:`RedisStore` with a nested virtual key namespace.

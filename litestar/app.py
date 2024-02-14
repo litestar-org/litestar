@@ -465,6 +465,9 @@ class Litestar(Router):
         self.stores: StoreRegistry = (
             config.stores if isinstance(config.stores, StoreRegistry) else StoreRegistry(config.stores)
         )
+        for _, store in self.stores._stores.items():
+            if not store._should_close_store_manually:
+                self._lifespan_managers.append(store)
 
     @property
     @deprecated(version="2.6.0", kind="property", info="Use create_static_files router instead")
