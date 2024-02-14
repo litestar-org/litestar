@@ -175,7 +175,7 @@ class ConnectionDataExtractor:
             else:
                 value = extractor(connection)
             data[key] = value
-        return data
+        return cast("ExtractedRequestData", data)
 
     @staticmethod
     def extract_scheme(connection: ASGIConnection[Any, Any, Any, Any]) -> str:
@@ -307,7 +307,7 @@ class ConnectionDataExtractor:
                 key: repr(value) if isinstance(value, UploadFile) else value for key, value in form_data.multi_items()
             }
         except Exception as exc:
-            if self.skip_parse_on_exception:
+            if self.skip_parse_malformed_body:
                 return await request.body()
             raise exc
 

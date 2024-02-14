@@ -291,7 +291,7 @@ def test_logging_middleware_with_session_middleware(session_backend_config_memor
 def test_structlog_invalid_request_body_handled():
     # https://github.com/litestar-org/litestar/issues/3063
     @post("/")
-    async def hello_world(data: dict[str, Any]) -> dict[str, Any]:
+    async def hello_world(data: Dict[str, Any]) -> Dict[str, Any]:
         return data
 
     with create_test_client(
