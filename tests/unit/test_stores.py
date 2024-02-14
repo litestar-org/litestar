@@ -6,7 +6,7 @@ import shutil
 import string
 from datetime import timedelta
 from pathlib import Path
-from typing import TYPE_CHECKING, Iterator, cast
+from typing import TYPE_CHECKING, AsyncIterator, Iterator, cast
 from unittest.mock import MagicMock, Mock, patch
 
 import msgspec
@@ -372,19 +372,18 @@ async def test_file_store_handle_rename_fail(file_store: FileStore, mocker: Mock
     assert Path(mock_unlink.call_args_list[0].args[0]).with_suffix("") == file_store.path.joinpath("foo")
 
 
-# stores close
-@get()
-async def hget() -> int:
-    return 1
-
-
+# test to check if a RedisStore created through with_client() is properly closed
+# see https://github.com/litestar-org/litestar/issues/3083
 class AppSettings(msgspec.Struct):
     debug: bool
     redis_url: str = "redis://localhost:6379"
 
 
 def get_app(app_settings: AppSettings) -> Litestar:
-    # setting up stores
+    @get()
+    async def hget() -> int:
+        return 1
+
     session_store = RedisStore.with_client(url=app_settings.redis_url)
     return Litestar(
         route_handlers=[hget],
@@ -415,13 +414,14 @@ def app_test(app_settings_test: AppSettings) -> Iterator[Litestar]:
 
 
 @pytest.fixture
-async def client(app_test: Litestar):
+async def client(app_test: Litestar) -> AsyncIterator[AsyncTestClient]:
     async with AsyncTestClient(app=app_test) as c:
         yield c
 
 
+# the test failed when using the RedisStore on the 2nd set of parameters
 @pytest.mark.anyio
 @pytest.mark.parametrize("p1, p2", [(1, 2), (3, 4)])
-async def test_param(client: AsyncTestClient, p1: int, p2: int):
+async def test_param(client: AsyncTestClient, p1: int, p2: int) -> None:
     response = await client.get("/")
     assert response.status_code == 200
