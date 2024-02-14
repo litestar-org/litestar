@@ -95,8 +95,8 @@ Using Application State
 -----------------------
 
 As seen in the examples for the `on_startup / on_shutdown <#startup-and-shutdown>`_ ,
-callables passed to these hooks can receive an optional kwarg called ``app``, through which is the application's state object
-and other properites can be accessed.
+callables passed to these hooks can receive an optional kwarg called ``app``, through which the application's state object
+and other properties can be accessed.
 The advantage of using application ``state``, is that it can be accessed during multiple stages of the connection, and
 it can be injected into dependencies and route handlers.
 
