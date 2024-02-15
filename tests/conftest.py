@@ -15,7 +15,6 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from pytest_lazyfixture import lazy_fixture
 from redis.asyncio import Redis as AsyncRedis
-from redis.client import Redis
 from time_machine import travel
 
 from litestar.logging import LoggingConfig
@@ -306,13 +305,11 @@ def get_logger() -> GetLogger:
 
 @pytest.fixture()
 async def redis_client(docker_ip: str, redis_service: None) -> AsyncGenerator[AsyncRedis, None]:
-    # this is to get around some weirdness with pytest-asyncio and redis interaction
-    # on 3.8 and 3.9
-
-    Redis(host=docker_ip, port=6397).flushall()
     client: AsyncRedis = AsyncRedis(host=docker_ip, port=6397)
     yield client
     try:
         await client.aclose()  # type: ignore[attr-defined]
     except RuntimeError:
         pass
+    finally:
+        await client.flushall()
