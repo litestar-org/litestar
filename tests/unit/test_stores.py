@@ -423,6 +423,6 @@ async def client(app_test: Litestar) -> AsyncIterator[AsyncTestClient]:
 @pytest.mark.xdist_group("redis")
 @pytest.mark.anyio
 @pytest.mark.parametrize("p1, p2", [(1, 2), (3, 4)])
-async def test_param(client: AsyncTestClient, p1: int, p2: int) -> None:
+async def test_param(client: AsyncTestClient, p1: int, p2: int, redis_service: None) -> None:
     response = await client.get("/")
     assert response.status_code == 200
