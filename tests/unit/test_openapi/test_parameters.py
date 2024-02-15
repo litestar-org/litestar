@@ -337,7 +337,9 @@ def test_uuid_path_description_generation() -> None:
     async def uuid_path(id: Annotated[UUID, Parameter(description="UUID ID")]) -> UUID:
         return id
 
-    with create_test_client([str_path, uuid_path]) as client:
+    with create_test_client(
+        [str_path, uuid_path], openapi_config=OpenAPIConfig(title="Test API", version="1.0.0")
+    ) as client:
         response = client.get("/schema/openapi.json")
         assert response.json()["paths"]["/str/{id}"]["get"]["parameters"][0]["description"] == "String ID"
         assert response.json()["paths"]["/uuid/{id}"]["get"]["parameters"][0]["description"] == "UUID ID"
