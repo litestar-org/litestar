@@ -94,7 +94,7 @@ On the other hand, the shutdown hooks are invoked in their specified order.
 Using Application State
 -----------------------
 
-As seen in the examples for the `on_startup / on_shutdown <#startup-and-shutdown>`_ ,
+As seen in the examples for the `on_startup / on_shutdown <#startup-and-shutdown>`_,
 callables passed to these hooks can receive an optional kwarg called ``app``, through which the application's state object
 and other properties can be accessed.
 The advantage of using application ``state``, is that it can be accessed during multiple stages of the connection, and
