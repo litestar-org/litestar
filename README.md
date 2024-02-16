@@ -542,6 +542,9 @@ see [the contribution guide](CONTRIBUTING.rst).
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/JeanArhancet"><img src="https://avatars.githubusercontent.com/u/10811879?v=4?s=100" width="100px;" alt="Jean Arhancet"/><br /><sub><b>Jean Arhancet</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/issues?q=author%3AJeanArhancet" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://dnquark.com"><img src="https://avatars.githubusercontent.com/u/338250?v=4?s=100" width="100px;" alt="Leo Alekseyev"/><br /><sub><b>Leo Alekseyev</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=betaprior" title="Code">💻</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/aranvir"><img src="https://avatars.githubusercontent.com/u/75439739?v=4?s=100" width="100px;" alt="aranvir"/><br /><sub><b>aranvir</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=aranvir" title="Documentation">📖</a></td>
+    </tr>
   </tbody>
 </table>
 
