@@ -61,6 +61,27 @@ async def test_rate_limiting(unit: DurationUnit) -> None:
         assert response.status_code == HTTP_200_OK
 
 
+async def test_rate_limiting_multiple_options() -> None:
+    @get("/")
+    def handler() -> None:
+        return None
+
+    config = RateLimitConfig(rate_limit=[("hour", 3), ("minute", 1)])
+    app = Litestar(route_handlers=[handler], middleware=[config.middleware])
+
+    with travel(datetime.utcnow, tick=False) as frozen_time, TestClient(app=app) as client:
+        for _ in range(3):
+            response = client.get("/")
+            assert response.status_code == HTTP_200_OK
+            response = client.get("/")
+            assert response.status_code == HTTP_429_TOO_MANY_REQUESTS
+
+            frozen_time.shift(60)
+
+        response = client.get("/")
+        assert response.status_code == HTTP_429_TOO_MANY_REQUESTS
+
+
 async def test_non_default_store(memory_store: Store) -> None:
     @get("/")
     def handler() -> None:

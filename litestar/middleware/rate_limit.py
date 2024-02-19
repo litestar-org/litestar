@@ -55,8 +55,11 @@ class RateLimitMiddleware(AbstractMiddleware):
         )
         self.check_throttle_handler = cast("Callable[[Request], Awaitable[bool]] | None", config.check_throttle_handler)
         self.config = config
-        self.max_requests: int = config.rate_limit[1]
-        self.unit: DurationUnit = config.rate_limit[0]
+
+        self.offsets: list[tuple[int, int]] = [(DURATION_VALUES[unit], n) for unit, n in config.rate_limit]
+        self.offsets.sort(key=lambda x: x[0])
+        self.max_offset = max(self.offsets, key=lambda x: x[0])[0]
+        self.max_requests: int = 1
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """ASGI callable.
@@ -72,15 +75,25 @@ class RateLimitMiddleware(AbstractMiddleware):
         app = scope["app"]
         request: Request[Any, Any, Any] = app.request_class(scope)
         store = self.config.get_store_from_app(app)
+        now = int(time())
         if await self.should_check_request(request=request):
             key = self.cache_key_from_request(request=request)
             cache_object = await self.retrieve_cached_history(key, store)
-            if len(cache_object.history) >= self.max_requests:
-                raise TooManyRequestsException(
-                    headers=self.create_response_headers(cache_object=cache_object)
-                    if self.config.set_rate_limit_headers
-                    else None
-                )
+            curr_offset_idx = 0
+            for i in range(len(cache_object.history)):
+                # when the timestamp is out of the range of the current offset we should start checking against the next
+                # greater offset
+                if cache_object.history[i] <= now - self.offsets[curr_offset_idx][0] and curr_offset_idx < len(
+                    self.offsets
+                ):
+                    curr_offset_idx += 1
+                if i + 1 >= self.offsets[curr_offset_idx][1]:
+                    raise TooManyRequestsException(
+                        headers=self.create_response_headers(cache_object=cache_object)
+                        if self.config.set_rate_limit_headers
+                        else None
+                    )
+
             await self.set_cached_history(key=key, cache_object=cache_object, store=store)
             if self.config.set_rate_limit_headers:
                 send = self.create_send_wrapper(send=send, cache_object=cache_object)
@@ -146,7 +159,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         Returns:
             An :class:`CacheObject`.
         """
-        duration = DURATION_VALUES[self.unit]
+        duration = self.max_offset
         now = int(time())
         cached_string = await store.get(key)
         if cached_string:
@@ -172,7 +185,7 @@ class RateLimitMiddleware(AbstractMiddleware):
             None
         """
         cache_object.history = [int(time()), *cache_object.history]
-        await store.set(key, encode_json(cache_object), expires_in=DURATION_VALUES[self.unit])
+        await store.set(key, encode_json(cache_object), expires_in=self.max_offset)
 
     async def should_check_request(self, request: Request[Any, Any, Any]) -> bool:
         """Return a boolean indicating if a request should be checked for rate limiting.
@@ -204,7 +217,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         )
 
         return {
-            self.config.rate_limit_policy_header_key: f"{self.max_requests}; w={DURATION_VALUES[self.unit]}",
+            self.config.rate_limit_policy_header_key: f"{self.max_requests}; w={self.max_offset}",
             self.config.rate_limit_limit_header_key: str(self.max_requests),
             self.config.rate_limit_remaining_header_key: remaining_requests,
             self.config.rate_limit_reset_header_key: str(int(time()) - cache_object.reset),
@@ -215,8 +228,8 @@ class RateLimitMiddleware(AbstractMiddleware):
 class RateLimitConfig:
     """Configuration for ``RateLimitMiddleware``"""
 
-    rate_limit: tuple[DurationUnit, int]
-    """A tuple containing a time unit (second, minute, hour, day) and quantity, e.g. ("day", 1) or ("minute", 5)."""
+    rate_limit: tuple[DurationUnit, int] | list[tuple[DurationUnit, int]]
+    """An option for configuring the rate limit containing either a time unit (second, minute, hour, day) and quantity, e.g. ("day", 1) or ("minute", 5) or a list of these tuples """
     exclude: str | list[str] | None = field(default=None)
     """A pattern or list of patterns to skip in the rate limiting middleware."""
     exclude_opt_key: str | None = field(default=None)
@@ -243,6 +256,10 @@ class RateLimitConfig:
     def __post_init__(self) -> None:
         if self.check_throttle_handler:
             self.check_throttle_handler = ensure_async_callable(self.check_throttle_handler)  # type: ignore
+        if isinstance(self.rate_limit, tuple):
+            self.rate_limit = cast("list[tuple[DurationUnit, int]]", [self.rate_limit])
+        if len(self.rate_limit) == 0:
+            raise ValueError("Rate limit cannot be empty")
 
     @property
     def middleware(self) -> DefineMiddleware:
