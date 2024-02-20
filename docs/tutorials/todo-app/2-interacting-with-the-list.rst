@@ -114,7 +114,7 @@ as ``greeter(name="john")``, similar to how query parameters are injected.
 
 By using this pattern and combining it with those from the earlier section about
 receiving data you can now set up a route handler that takes in the title of a
-TODO-item, an updated item in form of a dataclass instance, and updates the item in the
+TODO item, an updated item in form of a dataclass instance, and updates the item in the
 list.
 
 
