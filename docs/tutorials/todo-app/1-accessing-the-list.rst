@@ -5,7 +5,7 @@ Intro
 -----
 
 The first thing you'll be setting up for our app is a route handler that returns a
-single TODO-list. A TODO-list in this case will be a list of dictionaries representing
+single TODO list. A TODO list in this case will be a list of dictionaries representing
 the items on that TODO list.
 
 .. literalinclude:: /examples/todo_app/get_list/dict.py
