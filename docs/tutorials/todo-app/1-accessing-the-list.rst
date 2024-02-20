@@ -64,7 +64,7 @@ Currently ``get_list`` will always return all items on the list, but what if you
 are interested in only those items with a specific status, for example all items that
 are not yet marked as *done*?
 
-For this you can employ query parameters; To define a query parameter, all that's needed
+For this you can employ query parameters; to define a query parameter, all that's needed
 is to add an otherwise unused parameter to the function. Litestar will recognize this
 and infer that it's going to be used as a query parameter. When a request is being made,
 the query parameter will be extracted from the URL, and passed to the function parameter
@@ -152,7 +152,7 @@ Converting and validating query parameters
 ++++++++++++++++++++++++++++++++++++++++++
 
 As mentioned earlier, type annotations can be used for more than static type checking
-in Litestar; They can also define and configure behaviour. In this case, you can get
+in Litestar; they can also define and configure behaviour. In this case, you can get
 Litestar to convert the query parameter to a boolean value, matching the values of the
 ``TodoItem.done`` attribute, and in the same step validate it, returning error responses
 for you should the supplied value not be a valid boolean.
