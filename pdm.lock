@@ -5,7 +5,7 @@
 groups = ["default", "standard", "jwt", "pydantic", "cli", "picologging", "dev-contrib", "piccolo", "prometheus", "dev", "mako", "test", "brotli", "cryptography", "linting", "attrs", "opentelemetry", "docs", "redis", "sqlalchemy", "full", "annotated-types", "jinja", "structlog", "minijinja"]
 strategy = ["cross_platform"]
 lock_version = "4.4.1"
-content_hash = "sha256:d15ae45eac6b6d77a630838b16d3e06192941b526fb6c53b46cf78bd7400d394"
+content_hash = "sha256:1d1c1763b12965e27e46f9b3a0609edc8dec8295c573e4c2e5af5f7ebfb3e588"
 
 [[package]]
 name = "accessible-pygments"
@@ -1570,7 +1570,7 @@ files = [
 [[package]]
 name = "litestar-sphinx-theme"
 version = "0.2.0"
-requires_python = ">=3.8,<4.0"
+requires_python = "<4.0,>=3.8"
 git = "https://github.com/litestar-org/litestar-sphinx-theme.git"
 revision = "c5ce66aadc8f910c24f54bf0d172798c237a67eb"
 summary = "A Sphinx theme for the Litestar organization"
@@ -3282,6 +3282,22 @@ dependencies = [
 files = [
     {file = "sphinx_design-0.5.0-py3-none-any.whl", hash = "sha256:1af1267b4cea2eedd6724614f19dcc88fe2e15aff65d06b2f6252cee9c4f4c1e"},
     {file = "sphinx_design-0.5.0.tar.gz", hash = "sha256:e8e513acea6f92d15c6de3b34e954458f245b8e761b45b63950f65373352ab00"},
+]
+
+[[package]]
+name = "sphinx-intl"
+version = "2.1.0"
+requires_python = ">=3.7"
+summary = "Sphinx utility that make it easy to translate and to apply translation."
+dependencies = [
+    "babel",
+    "click",
+    "setuptools",
+    "sphinx",
+]
+files = [
+    {file = "sphinx-intl-2.1.0.tar.gz", hash = "sha256:9d9849ae42515b39786824e99f1e30db0404c377b01bb022690fc932b0221c02"},
+    {file = "sphinx_intl-2.1.0-py3-none-any.whl", hash = "sha256:9798946b995989de691387651d70c3fc191275b587e2e519655541edfd7bbd68"},
 ]
 
 [[package]]

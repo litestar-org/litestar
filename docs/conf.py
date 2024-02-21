@@ -27,6 +27,12 @@ copyright = "2023, Litestar-Org"
 author = "Litestar-Org"
 release = os.getenv("_LITESTAR_DOCS_BUILD_VERSION", importlib.metadata.version("litestar").rsplit(".")[0])
 
+# -- Translations
+gettext_uuid = True
+gettext_compact = False
+locale_dirs = ["locale/"]
+language = "en"
+
 extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.autosectionlabel",

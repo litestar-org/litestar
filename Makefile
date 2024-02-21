@@ -146,7 +146,7 @@ docs-clean: 										## Dump the existing built docs
 
 docs-serve: docs-clean 								## Serve the docs locally
 	@echo "=> Serving documentation"
-	$(PDM) run sphinx-autobuild docs docs/_build/ -j auto --watch polyfactory --watch docs --watch tests --watch CONTRIBUTING.rst --port 8002
+	$(PDM) run sphinx-autobuild docs docs/_build/ -j auto --watch litestar --watch docs --watch tests --watch CONTRIBUTING.rst --port 8002
 
 docs: docs-clean 									## Dump the existing built docs and rebuild them
 	@echo "=> Building documentation"
@@ -159,3 +159,32 @@ docs-linkcheck: 									## Run the link check on the docs
 .PHONY: docs-linkcheck-full
 docs-linkcheck-full: 									## Run the full link check on the docs
 	@$(PDM) run sphinx-build -b linkcheck ./docs ./docs/_build -D linkcheck_anchors=0
+
+.PHONY: docs-generate-translation-files
+docs-generate-translation-files: 									## Generate the translation files for the docs
+	@$(PDM) run sphinx-build -b gettext docs/ docs/_build/gettext/
+
+.PHONY: docs-generate-translation-dirs
+docs-generate-translation-dirs: docs-generate-translation-files ## Generate the translation directories for the docs
+	@$(PDM) run sphinx-intl update -p ./docs/_build/gettext -l es -l tr -l he -l de -l cmn -l ar
+
+.PHONY: docs-translate
+docs-translate: docs-generate-translation-dirs 				## Translate the docs
+	@$(PDM) run sphinx-intl update-txconfig-resources --pot-dir ./docs/_build/gettext --locale-dir ./docs/locale --transifex-organization-name litestar --transifex-project-name litestar
+
+.PHONY: docs-push-translations
+docs-push-translations:             	## Push the translations to Transifex
+	@tx push --source
+
+.PHONY: docs-pull-translations
+docs-pull-translations:			 	## Pull the translations from Transifex
+	@tx pull --all
+
+.PHONY: docs-build-target-langues
+docs-build-target-langues: docs-translate 	## Build the docs for the target languages
+	@$(PDM) run sphinx-build -M html docs docs/_build/es -D language=es -E -a -j auto -W --keep-going
+	@$(PDM) run sphinx-build -M html docs docs/_build/tr -D language=tr -E -a -j auto -W --keep-going
+	@$(PDM) run sphinx-build -M html docs docs/_build/he -D language=he -E -a -j auto -W --keep-going
+	@$(PDM) run sphinx-build -M html docs docs/_build/de -D language=de -E -a -j auto -W --keep-going
+	@$(PDM) run sphinx-build -M html docs docs/_build/cmn -D language=cmn -E -a -j auto -W --keep-going
+	@$(PDM) run sphinx-build -M html docs docs/_build/ar -D language=ar -E -a -j auto -W --keep-going
