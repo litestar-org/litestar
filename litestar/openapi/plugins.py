@@ -411,7 +411,7 @@ class SwaggerRenderPlugin(OpenAPIRenderPlugin):
                 version will be used to construct the url.
             init_oauth: JSON to initialize Swagger UI OAuth2 by calling the `initOAuth` method.
                 Refer to the following URL for details:
-                    `Swagger-UI <https://swagger.io/docs/open-source-tools/swagger-ui/usage/oauth2/>`_.
+                `Swagger-UI <https://swagger.io/docs/open-source-tools/swagger-ui/usage/oauth2/>`_.
             path: Path to serve the OpenAPI UI at.
             **kwargs: Additional arguments to pass to the base class.
         """
