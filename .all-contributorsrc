@@ -1611,6 +1611,24 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "aranvir",
+      "name": "aranvir",
+      "avatar_url": "https://avatars.githubusercontent.com/u/75439739?v=4",
+      "profile": "https://github.com/aranvir",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "bunny-therapist",
+      "name": "bunny-therapist",
+      "avatar_url": "https://avatars.githubusercontent.com/u/87039365?v=4",
+      "profile": "https://github.com/bunny-therapist",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,

@@ -164,15 +164,7 @@ def test_app_config_object_used(app_config_object: AppConfig, monkeypatch: pytes
     # have been accessed during app instantiation.
     property_mocks: List[Tuple[str, Mock]] = []
     for field in fields(AppConfig):
-        if field.name == "response_cache_config":
-            property_mock = PropertyMock(return_value=ResponseCacheConfig())
-        if field.name in ["event_emitter_backend", "response_cache_config"]:
-            property_mock = PropertyMock(return_value=Mock())
-        else:
-            # default iterable return value allows the mock properties that need to be iterated over in
-            # `Litestar.__init__()` to not blow up, for other properties it shouldn't matter what the value is for the
-            # sake of this test.
-            property_mock = PropertyMock(return_value=[])
+        property_mock = PropertyMock()
         property_mocks.append((field.name, property_mock))
         monkeypatch.setattr(type(app_config_object), field.name, property_mock, raising=False)
 

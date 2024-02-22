@@ -35,15 +35,6 @@ repos:
         exclude: "tests/openapi/typescript_converter/test_converter|README.md"
         additional_dependencies:
           - tomli
-  - repo: https://github.com/asottile/blacken-docs
-    rev: 1.16.0
-    hooks:
-      - id: blacken-docs
-  - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: "v4.0.0-alpha.8"
-    hooks:
-      - id: prettier
-        exclude: "_templates|.git|.all-contributorsrc"
   - repo: https://github.com/python-formate/flake8-dunder-all
     rev: v0.3.1
     hooks:

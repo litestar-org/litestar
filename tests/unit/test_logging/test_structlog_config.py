@@ -1,3 +1,5 @@
+import datetime
+import sys
 from typing import Callable
 
 import pytest
@@ -130,7 +132,10 @@ def test_structlog_config_tty_default(capsys: CaptureFixture, monkeypatch: pytes
         log_messages = capsys.readouterr().out.splitlines()
         assert len(log_messages) == 1
 
-        assert log_messages[0].startswith("\x1b[")
+        if sys.platform.startswith("win"):
+            assert log_messages[0].startswith(str(datetime.datetime.now().year))
+        else:
+            assert log_messages[0].startswith("\x1b[")
 
 
 def test_structlog_config_specify_processors(capsys: CaptureFixture) -> None:
