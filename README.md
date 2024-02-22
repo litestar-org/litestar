@@ -544,6 +544,7 @@ see [the contribution guide](CONTRIBUTING.rst).
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/aranvir"><img src="https://avatars.githubusercontent.com/u/75439739?v=4?s=100" width="100px;" alt="aranvir"/><br /><sub><b>aranvir</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=aranvir" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/bunny-therapist"><img src="https://avatars.githubusercontent.com/u/87039365?v=4?s=100" width="100px;" alt="bunny-therapist"/><br /><sub><b>bunny-therapist</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=bunny-therapist" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
