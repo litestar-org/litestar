@@ -16,15 +16,17 @@ app = Litestar(
         title="Litestar Example",
         description="Example of litestar",
         version="0.0.1",
-        render_plugins=[SwaggerRenderPlugin(
-            init_oauth={
-                "clientId": "your-client-id",
-                "appName": "your-app-name",
-                "scopeSeparator": " ",
-                "scopes": "openid profile",
-                "useBasicAuthenticationWithAccessCodeGrant": True,
-                "usePkceWithAuthorizationCodeGrant": True,
-            }
-        )],
+        render_plugins=[
+            SwaggerRenderPlugin(
+                init_oauth={
+                    "clientId": "your-client-id",
+                    "appName": "your-app-name",
+                    "scopeSeparator": " ",
+                    "scopes": "openid profile",
+                    "useBasicAuthenticationWithAccessCodeGrant": True,
+                    "usePkceWithAuthorizationCodeGrant": True,
+                }
+            )
+        ],
     ),
 )
