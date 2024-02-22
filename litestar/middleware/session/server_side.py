@@ -77,6 +77,12 @@ class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):
         """
         await store.delete(session_id)
 
+    def get_session_id(self, connection: ASGIConnection) -> str | None:
+        session_id = connection.cookies.get(self.config.key)
+        if not session_id or session_id == "null":
+            session_id = self.generate_session_id()
+        return session_id
+
     def generate_session_id(self) -> str:
         """Generate a new session-ID, with
         n=:attr:`session_id_bytes <ServerSideSessionConfig.session_id_bytes>` random bytes.
@@ -106,7 +112,7 @@ class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):
         headers = MutableScopeHeaders.from_message(message)
         session_id = connection.cookies.get(self.config.key)
         if not session_id or session_id == "null":
-            session_id = self.generate_session_id()
+            session_id = scope["session_id"]
 
         cookie_params = dict(extract_dataclass_items(self.config, exclude_none=True, include=Cookie.__dict__.keys()))
 

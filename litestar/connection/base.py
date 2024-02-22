@@ -277,19 +277,22 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         """
         return self.app.get_logger()
 
-    def set_session(self, value: dict[str, Any] | DataContainerType | EmptyType) -> None:
+    def set_session(self, value: dict[str, Any] | DataContainerType | EmptyType) -> str | None:
         """Set the session in the connection's ``Scope``.
 
         If the :class:`SessionMiddleware <.middleware.session.base.SessionMiddleware>` is enabled, the session will be added
         to the response as a cookie header.
+        If a :class:`ServerSideSessionConfig <.middleware.session.server_side.ServerSideSessionConfig` is being used,
+        the corresponding session id will be returned.
 
         Args:
             value: Dictionary or pydantic model instance for the session data.
 
         Returns:
-            None.
+            Session id string if one exists, else None.
         """
         self.scope["session"] = value
+        return self.scope.get("session_id", None)
 
     def clear_session(self) -> None:
         """Remove the session from the connection's ``Scope``.
