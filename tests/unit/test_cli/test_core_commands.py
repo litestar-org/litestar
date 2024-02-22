@@ -350,21 +350,21 @@ def test_run_command_with_server_lifespan_plugin(
 @pytest.mark.parametrize(
     "app_content, schema_enabled, exclude_pattern_list, expected_result_routes_count",
     [
-        pytest.param(APP_FILE_CONTENT_ROUTES_EXAMPLE, False, (), 3, id="schema-enabled_no-exclude"),
+        pytest.param(APP_FILE_CONTENT_ROUTES_EXAMPLE, False, (), 3, id="schema-disabled_no-exclude"),
         pytest.param(
             APP_FILE_CONTENT_ROUTES_EXAMPLE,
             False,
             ("/foo", "/destroy/.*", "/java", "/haskell"),
             2,
-            id="schema-enabled_exclude",
+            id="schema-disabled_exclude",
         ),
-        pytest.param(APP_FILE_CONTENT_ROUTES_EXAMPLE, True, (), 12, id="schema-disabled_no-exclude"),
+        pytest.param(APP_FILE_CONTENT_ROUTES_EXAMPLE, True, (), 13, id="schema-enabled_no-exclude"),
         pytest.param(
             APP_FILE_CONTENT_ROUTES_EXAMPLE,
             True,
             ("/foo", "/destroy/.*", "/java", "/haskell"),
-            11,
-            id="schema-disabled_exclude",
+            12,
+            id="schema-enabled_exclude",
         ),
     ],
 )
