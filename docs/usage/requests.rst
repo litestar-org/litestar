@@ -138,3 +138,21 @@ for ``Body`` , by using :class:`RequestEncodingType.MESSAGEPACK <.enums.RequestE
 .. literalinclude:: /examples/request_data/msgpack_request.py
    :caption: msgpack_request.py
    :language: python
+
+
+Custom Request
+----------------
+
+Litestar supports custom ``request_class`` which can enrich default :class:`Request`.
+The example below illustrates how to implement custom request class for the whole application.
+
+.. literalinclude:: /examples/request_data/custom_request.py
+    :language: python
+
+.. admonition:: Layered architecture
+
+   Request classes are part of Litestar's layered architecture, which means you can
+   set a request class on every layer of the application. If you have set a request
+   class on multiple layers, the layer closest to the route handler will take precedence.
+
+   You can read more about this here: :ref:`usage/applications:layered architecture`

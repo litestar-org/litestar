@@ -413,7 +413,7 @@ class Litestar(Router):
         self.on_shutdown = config.on_shutdown
         self.on_startup = config.on_startup
         self.openapi_config = config.openapi_config
-        self.request_class = config.request_class or Request
+        self.request_class: type[Request] = config.request_class or Request
         self.response_cache_config = config.response_cache_config
         self.state = config.state
         self._static_files_config = config.static_files_config
@@ -449,6 +449,7 @@ class Litestar(Router):
             opt=config.opt,
             parameters=config.parameters,
             path="",
+            request_class=self.request_class,
             response_class=config.response_class,
             response_cookies=config.response_cookies,
             response_headers=config.response_headers,
