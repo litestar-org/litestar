@@ -89,7 +89,6 @@ class OpenAPIRenderPlugin:
         Args:
             router: The router that serves the OpenAPI UI.
         """
-        return
 
     def has_path(self, path: str) -> bool:
         """Check if the plugin has a path.
