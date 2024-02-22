@@ -444,6 +444,7 @@ class Litestar(Router):
             opt=config.opt,
             parameters=config.parameters,
             path="",
+            request_class=self.request_class,
             response_class=config.response_class,
             response_cookies=config.response_cookies,
             response_headers=config.response_headers,
