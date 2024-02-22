@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict
+from typing import TYPE_CHECKING, Any
 
 from litestar._openapi.datastructures import OpenAPIContext
 from litestar._openapi.path_item import create_path_item_for_route
-from litestar.di import Provide
 from litestar.enums import MediaType
 from litestar.exceptions import ImproperlyConfiguredException, NotFoundException
 from litestar.handlers import get
@@ -56,6 +55,7 @@ class OpenAPIPlugin(InitPluginProtocol, ReceiveRoutePlugin):
         "app",
         "included_routes",
         "_openapi_config",
+        "_openapi",
         "_openapi_schema",
     )
 
@@ -63,7 +63,8 @@ class OpenAPIPlugin(InitPluginProtocol, ReceiveRoutePlugin):
         self.app = app
         self.included_routes: dict[str, HTTPRoute] = {}
         self._openapi_config: OpenAPIConfig | None = None
-        self._openapi_schema: OpenAPI | None = None
+        self._openapi: OpenAPI | None = None
+        self._openapi_schema: dict[str, object] | None = None
 
     def _build_openapi(self) -> OpenAPI:
         openapi = self.openapi_config.to_openapi_schema()
@@ -76,12 +77,14 @@ class OpenAPIPlugin(InitPluginProtocol, ReceiveRoutePlugin):
         return openapi
 
     def provide_openapi(self) -> OpenAPI:
-        if not self._openapi_schema:
-            self._openapi_schema = self._build_openapi()
-        return self._openapi_schema
+        if not self._openapi:
+            self._openapi = self._build_openapi()
+        return self._openapi
 
-    def provide_openapi_schema(self) -> Dict[str, Any]:  # noqa: UP006
-        return self.provide_openapi().to_schema()
+    def provide_openapi_schema(self) -> dict[str, Any]:
+        if not self._openapi_schema:
+            self._openapi_schema = self.provide_openapi().to_schema()
+        return self._openapi_schema
 
     def create_openapi_router(self) -> Router:
         """Create a router for serving OpenAPI documentation and schema files.
@@ -130,8 +133,8 @@ class OpenAPIPlugin(InitPluginProtocol, ReceiveRoutePlugin):
                 openapi_json_found = True
 
             @get(paths, media_type=plugin.media_type, sync_to_thread=False)
-            def _handler(request: Request, __openapi_schema: Dict[str, Any]) -> bytes:  # noqa: UP006
-                return plugin.render(request, __openapi_schema)
+            def _handler(request: Request) -> bytes:
+                return plugin.render(request, self.provide_openapi_schema())
 
             return _handler
 
@@ -167,9 +170,6 @@ class OpenAPIPlugin(InitPluginProtocol, ReceiveRoutePlugin):
             if (controller := app_config.openapi_config.openapi_controller) is not None:
                 app_config.route_handlers.append(controller)
             else:
-                app_config.dependencies["_OpenAPIPlugin__openapi_schema"] = Provide(
-                    self.provide_openapi_schema, use_cache=True, sync_to_thread=False
-                )
                 app_config.route_handlers.append(self.create_openapi_router())
         return app_config
 
@@ -185,5 +185,5 @@ class OpenAPIPlugin(InitPluginProtocol, ReceiveRoutePlugin):
 
         if any(route_handler.resolve_include_in_schema() for route_handler, _ in route.route_handler_map.values()):
             # Force recompute the schema if a new route is added
-            self._openapi_schema = None
+            self._openapi = None
             self.included_routes[route.path] = route
