@@ -11,6 +11,7 @@ from litestar.middleware.rate_limit import (
     CacheObject,
     DurationUnit,
     RateLimitConfig,
+    _count_requests,
 )
 from litestar.serialization import decode_json, encode_json
 from litestar.static_files.config import StaticFilesConfig
@@ -41,7 +42,7 @@ async def test_rate_limiting(unit: DurationUnit) -> None:
         cache_object = CacheObject(**decode_json(value=cached_value))
         assert len(cache_object.history) == 1
 
-        assert response.headers.get(config.rate_limit_policy_header_key) == f"1; w={DURATION_VALUES[unit]}"
+        assert response.headers.get(config.rate_limit_policy_header_key) == f"1;w={DURATION_VALUES[unit]}"
         assert response.headers.get(config.rate_limit_limit_header_key) == "1"
         assert response.headers.get(config.rate_limit_remaining_header_key) == "0"
         assert response.headers.get(config.rate_limit_reset_header_key) == str(int(time()) - cache_object.reset)
@@ -50,7 +51,7 @@ async def test_rate_limiting(unit: DurationUnit) -> None:
 
         response = client.get("/")
         assert response.status_code == HTTP_429_TOO_MANY_REQUESTS
-        assert response.headers.get(config.rate_limit_policy_header_key) == f"1; w={DURATION_VALUES[unit]}"
+        assert response.headers.get(config.rate_limit_policy_header_key) == f"1;w={DURATION_VALUES[unit]}"
         assert response.headers.get(config.rate_limit_limit_header_key) == "1"
         assert response.headers.get(config.rate_limit_remaining_header_key) == "0"
         assert response.headers.get(config.rate_limit_reset_header_key) == str(int(time()) - cache_object.reset)
@@ -70,16 +71,82 @@ async def test_rate_limiting_multiple_options() -> None:
     app = Litestar(route_handlers=[handler], middleware=[config.middleware])
 
     with travel(datetime.utcnow, tick=False) as frozen_time, TestClient(app=app) as client:
-        for _ in range(3):
+        for _ in range(2):
             response = client.get("/")
             assert response.status_code == HTTP_200_OK
+            assert response.headers.get(config.rate_limit_policy_header_key) == "1;w=60, 3;w=3600"
+            assert response.headers.get(config.rate_limit_limit_header_key) == "1"
+            assert response.headers.get(config.rate_limit_remaining_header_key) == "0"
+
             response = client.get("/")
             assert response.status_code == HTTP_429_TOO_MANY_REQUESTS
+            assert response.headers.get(config.rate_limit_policy_header_key) == "1;w=60, 3;w=3600"
+            assert response.headers.get(config.rate_limit_limit_header_key) == "1"
+            assert response.headers.get(config.rate_limit_remaining_header_key) == "0"
 
             frozen_time.shift(60)
 
         response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.headers.get(config.rate_limit_policy_header_key) == "1;w=60, 3;w=3600"
+        assert response.headers.get(config.rate_limit_limit_header_key) == "3"
+        assert response.headers.get(config.rate_limit_remaining_header_key) == "0"
+
+        response = client.get("/")
         assert response.status_code == HTTP_429_TOO_MANY_REQUESTS
+        assert response.headers.get(config.rate_limit_policy_header_key) == "1;w=60, 3;w=3600"
+        assert response.headers.get(config.rate_limit_limit_header_key) == "3"
+        assert response.headers.get(config.rate_limit_remaining_header_key) == "0"
+
+
+async def test_rate_limiting_multiple_options_equal() -> None:
+    @get("/")
+    def handler() -> None:
+        return None
+
+    config = RateLimitConfig(rate_limit=[("hour", 3), ("minute", 3)])
+    app = Litestar(route_handlers=[handler], middleware=[config.middleware])
+
+    with TestClient(app=app) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.headers.get(config.rate_limit_policy_header_key) == "3;w=60, 3;w=3600"
+        assert response.headers.get(config.rate_limit_limit_header_key) == "3"
+        assert response.headers.get(config.rate_limit_remaining_header_key) == "2"
+
+
+async def test_rate_limiting_multiple_options_reverse() -> None:
+    @get("/")
+    def handler() -> None:
+        return None
+
+    config = RateLimitConfig(rate_limit=[("hour", 3), ("minute", 4)])
+    app = Litestar(route_handlers=[handler], middleware=[config.middleware])
+
+    with TestClient(app=app) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.headers.get(config.rate_limit_policy_header_key) == "4;w=60, 3;w=3600"
+        assert response.headers.get(config.rate_limit_limit_header_key) == "3"
+        assert response.headers.get(config.rate_limit_remaining_header_key) == "2"
+
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.headers.get(config.rate_limit_policy_header_key) == "4;w=60, 3;w=3600"
+        assert response.headers.get(config.rate_limit_limit_header_key) == "3"
+        assert response.headers.get(config.rate_limit_remaining_header_key) == "1"
+
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.headers.get(config.rate_limit_policy_header_key) == "4;w=60, 3;w=3600"
+        assert response.headers.get(config.rate_limit_limit_header_key) == "3"
+        assert response.headers.get(config.rate_limit_remaining_header_key) == "0"
+
+        response = client.get("/")
+        assert response.status_code == HTTP_429_TOO_MANY_REQUESTS
+        assert response.headers.get(config.rate_limit_policy_header_key) == "4;w=60, 3;w=3600"
+        assert response.headers.get(config.rate_limit_limit_header_key) == "3"
+        assert response.headers.get(config.rate_limit_remaining_header_key) == "0"
 
 
 async def test_non_default_store(memory_store: Store) -> None:
@@ -242,3 +309,14 @@ async def test_rate_limiting_works_with_mounted_apps(tmpdir: "Path") -> None:
         response = client.get("/src/static/test.css")
         assert response.status_code == HTTP_200_OK
         assert response.text == "styles content"
+
+
+def test_count_requests() -> None:
+    assert _count_requests([], [], 0) == {}
+    assert _count_requests([], [(1, 1), (2, 2)], 0) == {(1, 1): 0, (2, 2): 0}
+    requests = [20, 15, 5, 4, 3, 1]
+    assert _count_requests(requests, [(5, 1), (15, 1), (18, 1)], 20) == {(5, 1): 1, (15, 1): 2, (18, 1): 5}
+    assert requests == [20, 15, 5, 4, 3, 1]
+    assert _count_requests([0], [(1, 1)], 200) == {(1, 1): 0}
+    assert _count_requests([0], [(1, 1)], -200) == {(1, 1): 0}
+    assert _count_requests([0], [(200, 1)], 20) == {(200, 1): 1}

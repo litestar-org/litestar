@@ -56,10 +56,13 @@ class RateLimitMiddleware(AbstractMiddleware):
         self.check_throttle_handler = cast("Callable[[Request], Awaitable[bool]] | None", config.check_throttle_handler)
         self.config = config
 
-        self.offsets: list[tuple[int, int]] = [(DURATION_VALUES[unit], n) for unit, n in config.rate_limit]
-        self.offsets.sort(key=lambda x: x[0])
-        self.max_offset = max(self.offsets, key=lambda x: x[0])[0]
-        self.max_requests: int = 1
+        rate_limits = config.rate_limit if isinstance(config.rate_limit, list) else [config.rate_limit]
+        if len(rate_limits) == 0:
+            raise ValueError("rate_limit cannot be empty")
+
+        self.limits: list[tuple[int, int]] = [(DURATION_VALUES[unit], n) for unit, n in rate_limits]
+        self.limits.sort(key=lambda x: x[0])
+        self.max_limit = self.limits[-1][0]
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """ASGI callable.
@@ -79,34 +82,43 @@ class RateLimitMiddleware(AbstractMiddleware):
         if await self.should_check_request(request=request):
             key = self.cache_key_from_request(request=request)
             cache_object = await self.retrieve_cached_history(key, store)
-            curr_offset_idx = 0
-            for i in range(len(cache_object.history)):
-                # when the timestamp is out of the range of the current offset we should start checking against the next
-                # greater offset
-                if cache_object.history[i] <= now - self.offsets[curr_offset_idx][0] and curr_offset_idx < len(
-                    self.offsets
-                ):
-                    curr_offset_idx += 1
-                if i + 1 >= self.offsets[curr_offset_idx][1]:
-                    raise TooManyRequestsException(
-                        headers=self.create_response_headers(cache_object=cache_object)
-                        if self.config.set_rate_limit_headers
-                        else None
+            limit_usages = _count_requests(cache_object.history, self.limits, now)
+            limit_most_restrictive, n = min(
+                sorted(limit_usages.items(), key=lambda x: x[0][0], reverse=True), key=lambda x: x[0][1] - x[1]
+            )
+
+            if limit_most_restrictive[1] - n <= 0:
+                raise TooManyRequestsException(
+                    headers=self.create_response_headers(
+                        cache_object=cache_object,
+                        limit_most_restrictive=limit_most_restrictive,
+                        requests_remaining=limit_most_restrictive[1] - n,
                     )
+                    if self.config.set_rate_limit_headers
+                    else None
+                )
 
             await self.set_cached_history(key=key, cache_object=cache_object, store=store)
             if self.config.set_rate_limit_headers:
-                send = self.create_send_wrapper(send=send, cache_object=cache_object)
+                send = self.create_send_wrapper(
+                    send=send,
+                    cache_object=cache_object,
+                    limit_most_restrictive=limit_most_restrictive,
+                    requests_remaining=limit_most_restrictive[1] - n - 1,
+                )
 
         await self.app(scope, receive, send)  # pyright: ignore
 
-    def create_send_wrapper(self, send: Send, cache_object: CacheObject) -> Send:
+    def create_send_wrapper(
+        self, send: Send, cache_object: CacheObject, limit_most_restrictive: tuple[int, int], requests_remaining: int
+    ) -> Send:
         """Create a ``send`` function that wraps the original send to inject response headers.
 
         Args:
             send: The ASGI send function.
             cache_object: A StorageObject instance.
-
+            limit_most_restrictive: The most restrictive limit
+            requests_remaining: The number of remaining requests
         Returns:
             Send wrapper callable.
         """
@@ -123,7 +135,11 @@ class RateLimitMiddleware(AbstractMiddleware):
             if message["type"] == "http.response.start":
                 message.setdefault("headers", [])
                 headers = MutableScopeHeaders(message)
-                for key, value in self.create_response_headers(cache_object=cache_object).items():
+                for key, value in self.create_response_headers(
+                    cache_object=cache_object,
+                    limit_most_restrictive=limit_most_restrictive,
+                    requests_remaining=requests_remaining,
+                ).items():
                     headers.add(key, value)
             await send(message)
 
@@ -159,7 +175,7 @@ class RateLimitMiddleware(AbstractMiddleware):
         Returns:
             An :class:`CacheObject`.
         """
-        duration = self.max_offset
+        duration = self.max_limit
         now = int(time())
         cached_string = await store.get(key)
         if cached_string:
@@ -185,7 +201,7 @@ class RateLimitMiddleware(AbstractMiddleware):
             None
         """
         cache_object.history = [int(time()), *cache_object.history]
-        await store.set(key, encode_json(cache_object), expires_in=self.max_offset)
+        await store.set(key, encode_json(cache_object), expires_in=self.max_limit)
 
     async def should_check_request(self, request: Request[Any, Any, Any]) -> bool:
         """Return a boolean indicating if a request should be checked for rate limiting.
@@ -200,7 +216,9 @@ class RateLimitMiddleware(AbstractMiddleware):
             return await self.check_throttle_handler(request)
         return True
 
-    def create_response_headers(self, cache_object: CacheObject) -> dict[str, str]:
+    def create_response_headers(
+        self, cache_object: CacheObject, limit_most_restrictive: tuple[int, int], requests_remaining: int
+    ) -> dict[str, str]:
         """Create ratelimit response headers.
 
         Notes:
@@ -208,18 +226,19 @@ class RateLimitMiddleware(AbstractMiddleware):
 
         Args:
             cache_object:A :class:`CacheObject`.
+            limit_most_restrictive: The most restrictive limit applicable to this request
+            requests_remaining: The number of requests remaining before the limit is exceeded
 
         Returns:
             A dict of http headers.
         """
-        remaining_requests = str(
-            len(cache_object.history) - self.max_requests if len(cache_object.history) <= self.max_requests else 0
-        )
+
+        rate_limit_policy = ", ".join([f"{o[1]};w={o[0]}" for o in self.limits])
 
         return {
-            self.config.rate_limit_policy_header_key: f"{self.max_requests}; w={self.max_offset}",
-            self.config.rate_limit_limit_header_key: str(self.max_requests),
-            self.config.rate_limit_remaining_header_key: remaining_requests,
+            self.config.rate_limit_policy_header_key: rate_limit_policy,
+            self.config.rate_limit_limit_header_key: str(limit_most_restrictive[1]),
+            self.config.rate_limit_remaining_header_key: str(max(requests_remaining, 0)),
             self.config.rate_limit_reset_header_key: str(int(time()) - cache_object.reset),
         }
 
@@ -256,10 +275,6 @@ class RateLimitConfig:
     def __post_init__(self) -> None:
         if self.check_throttle_handler:
             self.check_throttle_handler = ensure_async_callable(self.check_throttle_handler)  # type: ignore
-        if isinstance(self.rate_limit, tuple):
-            self.rate_limit = cast("list[tuple[DurationUnit, int]]", [self.rate_limit])
-        if len(self.rate_limit) == 0:
-            raise ValueError("Rate limit cannot be empty")
 
     @property
     def middleware(self) -> DefineMiddleware:
@@ -291,3 +306,40 @@ class RateLimitConfig:
     def get_store_from_app(self, app: Litestar) -> Store:
         """Get the store defined in :attr:`store` from an :class:`Litestar <.app.Litestar>` instance."""
         return app.stores.get(self.store)
+
+
+def _count_requests(requests: list[int], limits: list[tuple[int, int]], time_now: int) -> dict[tuple[int, int], int]:
+    """Counts the number of requests within each limit's window. Runs in O(n+m) time.
+
+    Notes:
+        Assumes that `requests` are sorted in descending order and the `limits` are sorted in descending order based on
+        the size of the limit's time window.
+
+    Args:
+        requests: Timestamps representing the requests.
+        limits: The limits.
+        time_now: The current time used to calculate the limits' window ranges.
+
+    Returns:
+        A mapping from the limits to their usages.
+    """
+    count_by_limit: dict[tuple[int, int], int] = {w: 0 for w in limits}
+
+    if not requests or not limits:
+        return count_by_limit
+
+    requests.append(requests[-1] - limits[-1][0])
+    requests.insert(0, max(time_now, requests[0]) + 1)
+
+    curr_limit_idx = 0
+    left, right = 0, 1
+    while right < len(requests):
+        while curr_limit_idx < len(limits) and time_now - limits[curr_limit_idx][0] >= requests[right]:
+            count_by_limit[limits[curr_limit_idx]] = left
+            curr_limit_idx += 1
+        left += 1
+        right += 1
+
+    requests.pop()
+    requests.pop(0)
+    return count_by_limit
