@@ -198,7 +198,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
                 wherever you have access to :class:`Request <.connection.Request>` or
                 :class:`ASGI Scope <.types.Scope>`.
-            request_class: A custom subclass of :class:`Request <.connect.Request>` to be used as route handler's
+            request_class: A custom subclass of :class:`Request <.connection.Request>` to be used as route handler's
                 default request.
             response_class: A custom subclass of :class:`Response <.response.Response>` to be used as route handler's
                 default response.

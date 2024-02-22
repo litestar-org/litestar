@@ -408,7 +408,7 @@ class Litestar(Router):
         self.on_shutdown = config.on_shutdown
         self.on_startup = config.on_startup
         self.openapi_config = config.openapi_config
-        self.request_class = config.request_class or Request
+        self.request_class: type[Request] = config.request_class or Request
         self.response_cache_config = config.response_cache_config
         self.state = config.state
         self._static_files_config = config.static_files_config
