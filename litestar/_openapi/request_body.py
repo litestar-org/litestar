@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from litestar.dto import AbstractDTO
     from litestar.openapi.spec import Example
     from litestar.typing import FieldDefinition
+    from litestar.openapi.spec import Example, Reference
 
 
 def create_request_body(
