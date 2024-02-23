@@ -50,8 +50,9 @@ def create_request_body(
 
     examples: dict[str, Example | Reference] | None = None
     if isinstance(data_field.kwarg_definition, BodyKwarg) and data_field.kwarg_definition.examples:
-        examples = {
-            example.summary: example for example in data_field.kwarg_definition.examples if example.summary is not None
-        }
+        examples = {}
+        for example in data_field.kwarg_definition.examples:
+            if isinstance(example.summary, str) and isinstance(example.value, dict):
+                examples[example.summary] = example
 
     return RequestBody(required=True, content={media_type: OpenAPIMediaType(schema=schema, examples=examples)})
