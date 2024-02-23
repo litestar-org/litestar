@@ -168,6 +168,7 @@ def create_static_files_router(
         file_system=file_system,
         send_as_attachment=send_as_attachment,
         resolve_symlinks=resolve_symlinks,
+        cache_control=cache_control,
     )
 
     @get("{file_path:path}", name=name)
