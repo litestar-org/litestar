@@ -13,8 +13,8 @@ __all__ = ("create_request_body",)
 if TYPE_CHECKING:
     from litestar._openapi.datastructures import OpenAPIContext
     from litestar.dto import AbstractDTO
-    from litestar.typing import FieldDefinition
     from litestar.openapi.spec import Example, Reference
+    from litestar.typing import FieldDefinition
 
 
 def create_request_body(
