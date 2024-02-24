@@ -277,7 +277,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         """
         return self.app.get_logger()
 
-    def set_session(self, value: dict[str, Any] | DataContainerType | EmptyType) -> str | None:
+    def set_session(self, value: dict[str, Any] | DataContainerType | EmptyType) -> str | EmptyType:
         """Set the session in the connection's ``Scope``.
 
         If the :class:`SessionMiddleware <.middleware.session.base.SessionMiddleware>` is enabled, the session will be added
@@ -292,7 +292,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
             Session id string if one exists, else None.
         """
         self.scope["session"] = value
-        return self.scope.get("session_id", None)
+        return self.get_session_id()
 
     def clear_session(self) -> None:
         """Remove the session from the connection's ``Scope``.
@@ -304,6 +304,13 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
             None.
         """
         self.scope["session"] = Empty
+        self._connection_state.session_id = Empty
+
+    def set_session_id(self, value: str) -> None:
+        self._connection_state.session_id = value
+
+    def get_session_id(self) -> str | EmptyType:
+        return self._connection_state.session_id
 
     def url_for(self, name: str, **path_parameters: Any) -> str:
         """Return the url for a given route handler name.

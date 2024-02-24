@@ -77,9 +77,9 @@ class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):
         """
         await store.delete(session_id)
 
-    def get_session_id(self, connection: ASGIConnection) -> str | None:
-        session_id = connection.cookies.get(self.config.key)
-        if not session_id or session_id == "null":
+    def get_session_id(self, connection: ASGIConnection) -> str:
+        session_id = connection.get_session_id()
+        if not session_id or session_id == "null" or session_id == Empty:
             session_id = self.generate_session_id()
         return session_id
 
@@ -112,7 +112,7 @@ class ServerSideSessionBackend(BaseSessionBackend["ServerSideSessionConfig"]):
         headers = MutableScopeHeaders.from_message(message)
         session_id = connection.cookies.get(self.config.key)
         if not session_id or session_id == "null":
-            session_id = scope["session_id"]
+            session_id = self.get_session_id(connection)
 
         cookie_params = dict(extract_dataclass_items(self.config, exclude_none=True, include=Cookie.__dict__.keys()))
 

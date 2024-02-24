@@ -162,13 +162,16 @@ class BaseTestClient(Generic[T]):
 
     async def _set_session_data(self, data: dict[str, Any]) -> None:
         mutable_headers = MutableScopeHeaders()
+        connection = fake_asgi_connection(
+            app=self.app,
+            cookies=dict(self.cookies),  # type: ignore[arg-type]
+        )
+        session_id = "null"
+        if self._session_backend is not None:
+            session_id = self._session_backend.get_session_id(connection)
+        connection.set_session_id(session_id)
         await self.session_backend.store_in_message(
-            scope_session=data,
-            message=fake_http_send_message(mutable_headers),
-            connection=fake_asgi_connection(
-                app=self.app,
-                cookies=dict(self.cookies),  # type: ignore[arg-type]
-            ),
+            scope_session=data, message=fake_http_send_message(mutable_headers), connection=connection
         )
         response = Response(200, request=Request("GET", self.base_url), headers=mutable_headers.headers)
 

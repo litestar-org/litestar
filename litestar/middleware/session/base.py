@@ -146,14 +146,14 @@ class BaseSessionBackend(ABC, Generic[ConfigT]):
         return cast("dict[str, Any]", decode_json(value=data))
 
     @abstractmethod
-    def get_session_id(self, connection: ASGIConnection) -> str | None:
-        """Fetch or generate session id, if applicable.
+    def get_session_id(self, connection: ASGIConnection) -> str:
+        """Try to fetch session id from connection ScopeState. If one does not exist, generate one.
 
         Args:
             connection: Originating ASGIConnection containing the scope
 
         Returns:
-            Session id str or None, if not applicable.
+            Session id str or "null" if the concept of a session id does not apply.
         """
 
     @abstractmethod
@@ -252,6 +252,6 @@ class SessionMiddleware(AbstractMiddleware, Generic[BaseSessionBackendT]):
 
         connection = ASGIConnection[Any, Any, Any, Any](scope, receive=receive, send=send)
         scope["session"] = await self.backend.load_from_connection(connection)
-        scope["session_id"] = self.backend.get_session_id(connection)
+        connection.set_session_id(self.backend.get_session_id(connection))
 
         await self.app(scope, receive, self.create_send_wrapper(connection))
