@@ -32,11 +32,12 @@ from litestar.utils.path import normalize_path
 if TYPE_CHECKING:
     from litestar.openapi.controller import OpenAPIController
     from litestar.openapi.plugins import OpenAPIRenderPlugin
+    from litestar.router import Router
     from litestar.types.callable_types import OperationIDCreator
 
 __all__ = ("OpenAPIConfig",)
 
-enabled_plugin_map = {
+_enabled_plugin_map = {
     "elements": StoplightRenderPlugin,
     "openapi.json": JsonRenderPlugin,
     "openapi.yaml": YamlRenderPlugin,
@@ -111,9 +112,24 @@ class OpenAPIConfig:
     """Base path for the OpenAPI documentation endpoints.
 
     If no path is provided the default is ``/schema``.
+
+    Ignored if ``openapi_router`` is provided.
     """
     render_plugins: Sequence[OpenAPIRenderPlugin] = field(default=())
     """Plugins for rendering OpenAPI documentation UIs."""
+    openapi_router: Router | None = None
+    """A router for serving OpenAPI documentation and schema files.
+
+    If provided, ``path`` is ignored.
+
+    Ignored if the deprecated ``openapi_controller`` is provided.
+
+    Not required, however may be passed to customize the configuration of the router used to serve
+    the documentation endpoints. For example, to add middleware or guards to the router.
+
+    Handlers to serve the OpenAPI schema and documentation sites are added to this router according
+    to the ``render_plugins`` attribute, so routes shouldn't be added that conflict with these.
+    """
     openapi_controller: type[OpenAPIController] | None = None
     """Controller for generating OpenAPI routes.
 
@@ -143,8 +159,10 @@ class OpenAPIConfig:
             else self.enabled_endpoints
         )
 
-        if self.path and self.openapi_controller is not None:
+        if self.path:
             self.path = normalize_path(self.path)
+
+        if self.path and self.openapi_controller is not None:
             self.openapi_controller = type("OpenAPIController", (self.openapi_controller,), {"path": self.path})
 
         self.default_plugin: OpenAPIRenderPlugin | None = None
@@ -165,12 +183,12 @@ class OpenAPIConfig:
         """Handle deprecated config options."""
         if self.openapi_controller is not None:
             warn_deprecation(
-                "v2.5.0", "openapi_controller", "attribute", removal_in="v3.0.0", alternative="render_plugins"
+                "v2.7.0", "openapi_controller", "attribute", removal_in="v3.0.0", alternative="render_plugins"
             )
 
         if self.root_schema_site is not None:
             warn_deprecation(
-                "v2.5.0",
+                "v2.7.0",
                 "root_schema_site",
                 "attribute",
                 removal_in="v3.0.0",
@@ -180,7 +198,7 @@ class OpenAPIConfig:
 
         if self.enabled_endpoints is not None:
             warn_deprecation(
-                "v2.5.0",
+                "v2.7.0",
                 "enabled_endpoints",
                 "attribute",
                 removal_in="v3.0.0",
@@ -204,7 +222,7 @@ class OpenAPIConfig:
 
         self.render_plugins = rps = []
         for key in self.enabled_endpoints or ():
-            if plugin_type := enabled_plugin_map[key]:
+            if plugin_type := _enabled_plugin_map[key]:
                 plugin = plugin_type()
                 rps.append(plugin)
                 if is_default_plugin(plugin):

@@ -103,10 +103,19 @@ class OpenAPIPlugin(InitPluginProtocol, ReceiveRoutePlugin):
         Returns:
             The router.
         """
+        if (router := self.openapi_config.openapi_router) is None:
+            router = Router(
+                self.openapi_config.path or "/schema",
+                route_handlers=[],
+                include_in_schema=False,
+                dto=None,
+                return_dto=None,
+            )
+
         root_configured = False
         openapi_json_found = False
 
-        def create_handler(plugin: OpenAPIRenderPlugin) -> HTTPRouteHandler:
+        def create_handler(plugin_: OpenAPIRenderPlugin) -> HTTPRouteHandler:
             """Create a handler for serving the plugin's documentation site.
 
             If the plugin is the default plugin, a handler is created for the root path in addition
@@ -116,29 +125,30 @@ class OpenAPIPlugin(InitPluginProtocol, ReceiveRoutePlugin):
             flag is set to `True`, so that we don't create a handler for serving the JSON schema file.
 
             Args:
-                plugin: The plugin to create the handler for.
+                plugin_: The plugin to create the handler for.
 
             Returns:
                 The handler.
             """
-            paths = list(plugin.paths)
-            if plugin is self.openapi_config.default_plugin:
-                if not plugin.has_path("/"):
+            paths = list(plugin_.paths)
+            if plugin_ is self.openapi_config.default_plugin:
+                if not plugin_.has_path("/"):
                     paths.append("/")
                 nonlocal root_configured
                 root_configured = True
 
-            if plugin.has_path("/openapi.json"):
+            if plugin_.has_path("/openapi.json"):
                 nonlocal openapi_json_found
                 openapi_json_found = True
 
-            @get(paths, media_type=plugin.media_type, sync_to_thread=False)
+            @get(paths, media_type=plugin_.media_type, sync_to_thread=False)
             def _handler(request: Request) -> bytes:
-                return plugin.render(request, self.provide_openapi_schema())
+                return plugin_.render(request, self.provide_openapi_schema())
 
             return _handler
 
-        route_handlers = [create_handler(plugin) for plugin in self.openapi_config.render_plugins]
+        for plugin in self.openapi_config.render_plugins:
+            router.register(create_handler(plugin))
 
         not_found_handler_paths = ["/{path:str}"]
         if not root_configured:
@@ -147,18 +157,11 @@ class OpenAPIPlugin(InitPluginProtocol, ReceiveRoutePlugin):
         not_found_handler = get(not_found_handler_paths, media_type=MediaType.HTML, sync_to_thread=False)(
             handle_schema_path_not_found
         )
-        route_handlers.append(not_found_handler)
+        router.register(not_found_handler)
 
         if not openapi_json_found:
-            route_handlers.append(create_handler(JsonRenderPlugin()))
+            router.register(create_handler(JsonRenderPlugin()))
 
-        router = Router(
-            self.openapi_config.path or "/schema",
-            route_handlers=route_handlers,
-            include_in_schema=False,
-            dto=None,
-            return_dto=None,
-        )
         for plugin in self.openapi_config.render_plugins:
             plugin.receive_router(router)
 
