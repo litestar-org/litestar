@@ -51,7 +51,7 @@ class RapidocRenderPlugin(OpenAPIRenderPlugin):
             <meta charset="utf-8"/>
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <script src="{self.js_url}" crossorigin></script>
-            <style>{self.style}</style>
+            {self.style}
           </head>
         """
 

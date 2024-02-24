@@ -24,6 +24,7 @@ __all__ = (
 
 _favicon_url = "https://raw.githubusercontent.com/litestar-org/branding/main/assets/Branding%20-%20PNG%20-%20Transparent/Badge%20-%20Blue%20and%20Yellow.png"
 _default_favicon = f"<link rel='icon' type='image/png' href='{_favicon_url}'>"
+_default_style = "<style>body { margin: 0; padding: 0 }</style>"
 
 
 class OpenAPIRenderPlugin:
@@ -37,7 +38,7 @@ class OpenAPIRenderPlugin:
         path: str | Sequence[str],
         media_type: MediaType | OpenAPIMediaType = MediaType.HTML,
         favicon: str = _default_favicon,
-        style: str = "body { margin: 0; padding: 0 }",
+        style: str = _default_style,
     ) -> None:
         """Initialize the OpenAPI UI render plugin.
 
@@ -217,7 +218,7 @@ class RapidocRenderPlugin(OpenAPIRenderPlugin):
             <meta charset="utf-8"/>
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <script src="{self.js_url}" crossorigin></script>
-            <style>{self.style}</style>
+            {self.style}
           </head>
         """
 
@@ -290,9 +291,7 @@ class RedocRenderPlugin(OpenAPIRenderPlugin):
 
         head += f"""
             <script src="{self.js_url}" crossorigin></script>
-            <style>
-                {self.style}
-            </style>
+            {self.style}
           </head>
         """
 
@@ -362,7 +361,7 @@ class StoplightRenderPlugin(OpenAPIRenderPlugin):
             <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
             <link rel="stylesheet" href="{self.css_url}">
             <script src="{self.js_url}" crossorigin></script>
-            <style>{self.style}</style>
+            {self.style}
           </head>
         """
 
@@ -446,7 +445,7 @@ class SwaggerRenderPlugin(OpenAPIRenderPlugin):
             <link href="{self.css_url}" rel="stylesheet">
             <script src="{self.js_url}" crossorigin></script>
             <script src="{self.standalone_preset_js_url}" crossorigin></script>
-            <style>{self.style}</style>
+            {self.style}
           </head>
         """
 
