@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Mapping
 
 from litestar._openapi.schema_generation import SchemaCreator
+from litestar._openapi.schema_generation.utils import get_formatted_examples
 from litestar.enums import RequestEncodingType
-from litestar.openapi.spec import Example, Reference
 from litestar.openapi.spec.media_type import OpenAPIMediaType
 from litestar.openapi.spec.request_body import RequestBody
 from litestar.params import BodyKwarg
@@ -14,6 +14,7 @@ __all__ = ("create_request_body",)
 if TYPE_CHECKING:
     from litestar._openapi.datastructures import OpenAPIContext
     from litestar.dto import AbstractDTO
+    from litestar.openapi.spec import Example
     from litestar.typing import FieldDefinition
 
 
@@ -48,10 +49,8 @@ def create_request_body(
     else:
         schema = schema_creator.for_field_definition(data_field)
 
-    examples: dict[str, Example | Reference] | None = None
-    if isinstance(data_field.kwarg_definition, BodyKwarg) and data_field.kwarg_definition.examples:
-        examples = {
-            example.summary: example for example in data_field.kwarg_definition.examples if example.summary is not None
-        }
+    examples: Mapping[str, Example] | None = None
+    if isinstance(data_field.kwarg_definition, BodyKwarg) and isinstance(data_field.kwarg_definition.examples, list):
+        examples = get_formatted_examples(data_field, data_field.kwarg_definition.examples)
 
     return RequestBody(required=True, content={media_type: OpenAPIMediaType(schema=schema, examples=examples)})
