@@ -282,7 +282,7 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
 
         If the :class:`SessionMiddleware <.middleware.session.base.SessionMiddleware>` is enabled, the session will be added
         to the response as a cookie header.
-        If a :class:`ServerSideSessionConfig <.middleware.session.server_side.ServerSideSessionConfig` is being used,
+        If a :class:`ServerSideSessionConfig <.middleware.session.server_side.ServerSideSessionConfig>` is being used,
         the corresponding session id will be returned.
 
         Args:
