@@ -157,5 +157,5 @@ def test_example_in_request_body_schema_generation() -> None:
     schema = app.openapi_schema.to_schema()
 
     assert schema["paths"]["/example"]["post"]["requestBody"]["content"]["application/json"]["examples"] == {
-        "example": {"summary": "example", "value": {"name": "John", "age": 30}}
+        "data-example-1": {"summary": "example", "value": {"name": "John", "age": 30}}
     }
