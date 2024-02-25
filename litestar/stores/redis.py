@@ -124,7 +124,11 @@ class RedisStore(NamespacedStore):
         The current instances namespace will serve as a prefix for the namespace, so it
         can be considered the parent namespace.
         """
-        return type(self)(redis=self._redis, namespace=f"{self.namespace}_{namespace}" if self.namespace else namespace)
+        return type(self)(
+            redis=self._redis,
+            namespace=f"{self.namespace}_{namespace}" if self.namespace else namespace,
+            handle_client_shutdown=self.handle_client_shutdown,
+        )
 
     def _make_key(self, key: str) -> str:
         prefix = f"{self.namespace}:" if self.namespace else ""
