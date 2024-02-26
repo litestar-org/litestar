@@ -103,7 +103,6 @@ class RedisStore(NamespacedStore):
             username: Redis username to use
             password: Redis password to use
             namespace: Virtual key namespace to use
-            automatic_store_lifetime: If ``True``, the store lifetime will be handled automatically, it is the default with this method.
         """
         pool = ConnectionPool.from_url(
             url=url,
