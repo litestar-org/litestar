@@ -76,7 +76,6 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
 
         Client.__init__(
             self,
-            app=self.app,
             base_url=base_url,
             headers={"user-agent": "testclient"},
             follow_redirects=True,
