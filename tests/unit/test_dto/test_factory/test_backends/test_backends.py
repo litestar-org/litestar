@@ -197,6 +197,7 @@ def test_backend_create_openapi_schema(dto_factory: type[DataclassDTO]) -> None:
     schemas = creator.schema_registry.generate_components_schemas()
     assert isinstance(ref, Reference)
     schema = schemas[ref.value]
+    assert schema.title == "HandlerDCResponseBody"
     assert schema.properties is not None
     a, b, c = schema.properties["a"], schema.properties["b"], schema.properties["c"]
     assert isinstance(a, Schema)
@@ -209,6 +210,7 @@ def test_backend_create_openapi_schema(dto_factory: type[DataclassDTO]) -> None:
     assert c.items.type == "integer"
     assert isinstance(nested := schema.properties["nested"], Reference)  # noqa: RUF018
     nested_schema = schemas[nested.value]
+    assert nested_schema.title == "HandlerDCNestedDCResponseBody"
     assert nested_schema.properties is not None
     nested_a, nested_b = nested_schema.properties["a"], nested_schema.properties["b"]
     assert isinstance(nested_a, Schema)
