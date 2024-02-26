@@ -155,4 +155,4 @@ The example below illustrates how to implement custom request class for the whol
    set a request class on every layer of the application. If you have set a request
    class on multiple layers, the layer closest to the route handler will take precedence.
 
-   You can read more about this here: :ref:`usage/applications:layered architecture`
+   You can read more about this in the: :ref:`usage/applications:layered architecture` section
