@@ -4,13 +4,7 @@ from litestar.enums import HttpMethod
 from litestar.types import Receive, Scope, Send
 
 KITTEN_NAMES_MAP = {
-    HttpMethod.DELETE: "Dziewczynka",
-    HttpMethod.GET: "Pusia",
-    HttpMethod.HEAD: "Nepomuk",
-    HttpMethod.OPTIONS: "Boszko",
-    HttpMethod.PATCH: "Morro",
-    HttpMethod.POST: "Irinka",
-    HttpMethod.PATCH: "Kotel",
+    HttpMethod.GET: "Whiskers",
 }
 
 
@@ -22,7 +16,7 @@ class CustomRequest(Request):
     def __init__(self, scope: Scope, receive: Receive = empty_receive, send: Send = empty_send) -> None:
         """Initialize CustomRequest class."""
         super().__init__(scope=scope, receive=receive, send=send)
-        self.kitten_name = KITTEN_NAMES_MAP.get(scope["method"], "Kundzia")
+        self.kitten_name = KITTEN_NAMES_MAP.get(scope["method"], "Mittens")
 
 
 @get(path="/kitten-name")

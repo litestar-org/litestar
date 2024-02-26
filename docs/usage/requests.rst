@@ -148,8 +148,10 @@ Custom Request
 Litestar supports custom ``request_class`` instances, which can be used to further configure the default :class:`Request`.
 The example below illustrates how to implement custom request class for the whole application.
 
-.. literalinclude:: /examples/request_data/custom_request.py
-    :language: python
+.. dropdown:: Example of a custom request at the application level
+
+    .. literalinclude:: /examples/request_data/custom_request.py
+        :language: python
 
 .. admonition:: Layered architecture
 
