@@ -113,11 +113,13 @@ def docker_ip(docker_services: DockerServiceRegistry) -> str:
 
 
 async def redis_responsive(host: str) -> bool:
-    async with AsyncRedis(host=host, port=6397) as client:
-        try:
-            return await client.ping()
-        except (ConnectionError, RedisConnectionError):
-            return False
+    client: AsyncRedis = AsyncRedis(host=host, port=6397)
+    try:
+        return await client.ping()
+    except (ConnectionError, RedisConnectionError):
+        return False
+    finally:
+        await client.aclose()
 
 
 @pytest.fixture()
