@@ -167,7 +167,7 @@ across requests, then you might want to inject or inspect session data outside a
 
 .. attention::
 
-    - The Session Middleware must be enabled in Litestar app provided to the TestClient to use sessions.
+    - The session middleware must be enabled in the Litestar app provided to the :class:`TestClient <.testing.TestClient>` to use sessions.
     - If you are using the
       :class:`ClientSideSessionBackend <litestar.middleware.session.client_side.ClientSideSessionBackend>` you need to
       install the ``cryptography`` package. You can do so by installing ``litestar``:
@@ -188,7 +188,7 @@ across requests, then you might want to inject or inspect session data outside a
 
                 pipx install litestar[cryptography]
 
-        .. tab-item:: pdm
+        .. tab-item:: PDM
 
             .. code-block:: bash
                 :caption: Using `PDM <https://pdm.fming.dev/>`_
@@ -255,7 +255,7 @@ an instance of Litestar and then a test client using it. There are multiple use 
 generic logic that is decoupled from a specific Litestar app, or when you want to test endpoints in isolation.
 
 You can pass to this helper all the kwargs accepted by
-the litestar constructor, with the ``route_handlers`` kwarg being **required**. Yet unlike the Litestar app, which
+the Litestar constructor, with the ``route_handlers`` kwarg being **required**. Yet unlike the Litestar app, which
 expects ``route_handlers`` to be a list, here you can also pass individual values.
 
 For example, you can do this:
@@ -367,7 +367,7 @@ Using polyfactory
 ------------------------
 
 `Polyfactory <https://github.com/litestar-org/polyfactory>`__ offers an easy
-and powerful way to generate mock data from pydantic models and dataclasses.
+and powerful way to generate mock data from Pydantic models and dataclasses.
 
 Let's say we have an API that talks to an external service and retrieves some data:
 
@@ -427,7 +427,7 @@ We could test the ``/item`` route like so:
 
 While we can define the test data manually, as is done in the above, this can be quite cumbersome. That's
 where `polyfactory <https://github.com/litestar-org/polyfactory>`_ library comes in. It generates mock data for
-pydantic models and dataclasses based on type annotations. With it, we could rewrite the above example like so:
+Pydantic models and dataclasses based on type annotations. With it, we could rewrite the above example like so:
 
 
 .. code-block:: python
