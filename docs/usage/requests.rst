@@ -145,7 +145,7 @@ Custom Request
 
 .. versionadded:: 2.7.0
 
-Litestar supports custom ``request_class``es which can be used to further configure the default :class:`Request`.
+Litestar supports custom ``request_class`` instances, which can be used to further configure the default :class:`Request`.
 The example below illustrates how to implement custom request class for the whole application.
 
 .. literalinclude:: /examples/request_data/custom_request.py
