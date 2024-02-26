@@ -14,7 +14,6 @@ __all__ = ("StaticFiles",)
 
 
 if TYPE_CHECKING:
-    from litestar.datastructures.headers import CacheControlHeader
     from litestar.types import Receive, Scope, Send
     from litestar.types.composite_types import PathType
     from litestar.types.file_types import FileInfo, FileSystemProtocol
@@ -32,7 +31,7 @@ class StaticFiles:
         file_system: FileSystemProtocol,
         send_as_attachment: bool = False,
         resolve_symlinks: bool = True,
-        cache_control: CacheControlHeader | None = None,
+        headers: dict[str, str] | None = None,
     ) -> None:
         """Initialize the Application.
 
@@ -43,16 +42,13 @@ class StaticFiles:
             send_as_attachment: Whether to send the file with a ``content-disposition`` header of
              ``attachment`` or ``inline``
             resolve_symlinks: Resolve symlinks to the directories
-            cache_control: ``cache_control`` header set on the response
+            headers: Headers that will be sent with every response.
         """
         self.adapter = FileSystemAdapter(file_system)
         self.directories = tuple(Path(p).resolve() if resolve_symlinks else Path(p) for p in directories)
         self.is_html_mode = is_html_mode
         self.send_as_attachment = send_as_attachment
-        self.headers: dict[str, str] | None = None
-
-        if cache_control:
-            self.headers = {"cache-control": cache_control.to_header()}
+        self.headers = headers
 
     async def get_fs_info(
         self, directories: Sequence[PathType], file_path: PathType
