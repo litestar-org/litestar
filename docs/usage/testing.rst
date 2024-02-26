@@ -116,17 +116,43 @@ We would then be able to rewrite our test like so:
     .. tab-item:: Sync
         :sync: sync
 
-        .. literalinclude:: /examples/testing/test_health_check_sync.py
+        .. code-block:: python
             :caption: tests/test_health_check.py
-            :language: python
+
+            import pytest
+
+            from litestar.status_codes import HTTP_200_OK
+            from litestar.testing import TestClient
+
+            from app import app
+
+
+            def test_health_check_with_fixture(test_client: TestClient) -> None:
+                with test_client as client:
+                    response = client.get("/health-check")
+                    assert response.status_code == HTTP_200_OK
+                    assert response.text == "healthy"
 
 
     .. tab-item:: Async
         :sync: async
 
-        .. literalinclude:: /examples/testing/test_health_check_async.py
+        .. code-block:: python
             :caption: tests/test_health_check.py
-            :language: python
+
+            import pytest
+
+            from litestar.status_codes import HTTP_200_OK
+            from litestar.testing import AsyncTestClient
+
+            from app import app
+
+
+            async def test_health_check_with_fixture(test_client: AsyncTestClient) -> None:
+                async with test_client as client:
+                    response = await client.get("/health-check")
+                    assert response.status_code == HTTP_200_OK
+                    assert response.text == "healthy"
 
 
 Using sessions
