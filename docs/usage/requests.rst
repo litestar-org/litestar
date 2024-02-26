@@ -141,7 +141,9 @@ for ``Body`` , by using :class:`RequestEncodingType.MESSAGEPACK <.enums.RequestE
 
 
 Custom Request
-----------------
+--------------
+
+.. versionadded:: 2.7.0
 
 Litestar supports custom ``request_class`` which can enrich default :class:`Request`.
 The example below illustrates how to implement custom request class for the whole application.
