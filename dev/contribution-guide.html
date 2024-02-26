@@ -1558,7 +1558,7 @@ indicating what it changes. The style of the PR title should also follow
 <ul class="simple">
 <li><p>Code should be <a class="reference external" href="https://peps.python.org/pep-0020/">Pythonic and zen</a></p></li>
 <li><p>All code should be fully <a class="reference external" href="https://peps.python.org/pep-0484/">typed</a>. This is enforced via
-<a class="reference external" href="https://mypy.readthedocs.io/en/stable/">mypy</a> and <a class="reference external" href="https://github.com/microsoft/pyright/">pyright</a></p>
+<a class="reference external" href="https://mypy.readthedocs.io/en/stable/">mypy</a> and <a class="reference external" href="https://github.com/microsoft/pyright/">Pyright</a></p>
 <ul>
 <li><p>When requiring complex types, use a <a class="reference external" href="https://docs.python.org/3/library/typing.html#type-aliases">type alias</a>.
 Check <code class="docutils literal notranslate"><span class="pre">litestar/types</span></code> if a type alias for your use case already exists</p></li>
@@ -1579,7 +1579,7 @@ be checked on the PR using <a class="reference external" href="https://www.sonar
 across a function or method that doesn’t conform to this standard, please update it as you go</p></li>
 <li><p>When adding a new public interface, it has to be  included in the reference documentation located in
 <code class="docutils literal notranslate"><span class="pre">docs/reference</span></code>. If applicable, add or modify examples in the docs related to the new functionality implemented,
-following the guidelines established in <a class="reference internal" href="#adding-examples">Adding examples</a></p></li>
+following the guidelines established in <a class="reference internal" href="#adding-examples">Adding examples</a>.</p></li>
 </ul>
 <section id="writing-and-running-tests">
 <h3>Writing and running tests<a class="headerlink" href="#writing-and-running-tests" title="Permalink to this heading">#</a></h3>
@@ -1614,14 +1614,14 @@ enforce type safety. You can run them with:</p>
 </section>
 <section id="project-documentation">
 <h2>Project documentation<a class="headerlink" href="#project-documentation" title="Permalink to this heading">#</a></h2>
-<p>The documentation is located in the <code class="docutils literal notranslate"><span class="pre">/docs</span></code> directory and is <a class="reference external" href="https://docutils.sourceforge.io/rst.html">ReST</a> and
+<p>The documentation is located in the <code class="docutils literal notranslate"><span class="pre">/docs</span></code> directory and is <a class="reference external" href="https://docutils.sourceforge.io/rst.html">reST</a> and
 <a class="reference external" href="https://www.sphinx-doc.org/en/master/">Sphinx</a>. If you’re unfamiliar with any of those,
-<a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html">ReStructuredText primer</a> and
+<a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html">reStructuredText primer</a> and
 <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/quickstart.html">Sphinx quickstart</a> are recommended reads.</p>
 <section id="docs-theme-and-appearance">
 <h3>Docs theme and appearance<a class="headerlink" href="#docs-theme-and-appearance" title="Permalink to this heading">#</a></h3>
 <p>We welcome contributions that enhance / improve the appearance and usability of the docs. We use the excellent
-<a class="reference external" href="https://pradyunsg.me/furo/quickstart/">Furo</a> theme, which comes with a lot of options out of the box. If you wish to
+<a class="reference external" href="https://pydata-sphinx-theme.readthedocs.io/">PyData Sphinx Theme</a> theme, which comes with a lot of options out of the box. If you wish to
 contribute to the docs style / setup, or static site generation, you should consult the theme docs as a first step.</p>
 </section>
 <section id="running-the-docs-locally">
@@ -1635,13 +1635,13 @@ contribute to the docs style / setup, or static site generation, you should cons
 <p>We welcome contributions that enhance / improve the content of the docs. Feel free to add examples, clarify text,
 restructure the docs, etc., but make sure to follow these guidelines:</p>
 <ul class="simple">
-<li><p>Write text in idiomatic english, using simple language</p></li>
+<li><p>Write text in idiomatic English, using simple language</p></li>
 <li><p>Opt for <a class="reference external" href="https://en.wikipedia.org/wiki/Serial_comma">Oxford commas</a> when listing a series of terms</p></li>
 <li><p>Keep examples simple and self contained</p></li>
 <li><p>Provide links where applicable</p></li>
 <li><p>Use <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html">intersphinx</a> wherever possible when
 referencing external libraries</p></li>
-<li><p>Provide diagrams using <a class="reference external" href="https://mermaid.js.org/">mermaidjs</a> where applicable and possible</p></li>
+<li><p>Provide diagrams using <a class="reference external" href="https://mermaid.js.org/">Mermaid</a> where applicable and possible</p></li>
 </ul>
 <section id="adding-examples">
 <h4>Adding examples<a class="headerlink" href="#adding-examples" title="Permalink to this heading">#</a></h4>
@@ -1671,7 +1671,7 @@ and include their result in the documentation page when its being built. This on
 will be launched, and the requests specified in the comments will be run against it. The
 comments will be stripped from the result, and the output of the <code class="docutils literal notranslate"><span class="pre">curl</span></code> invocation inserted
 after the example code-block.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">run:</span></code> syntax is nothing special; Everything after the colon will be passed to
+<p>The <code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">run:</span></code> syntax is nothing special; everything after the colon will be passed to
 the <code class="docutils literal notranslate"><span class="pre">curl</span></code> command that’s being invoked. The URL is built automatically, so the
 specified path can just be a path relative to the app.</p>
 <p>In practice, this looks like the following:</p>
@@ -1744,7 +1744,7 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 <li><dl>
 <dt>Increment the version in <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> according to the <a class="reference external" href="https://litestar.dev/about/litestar-releases#version-numbering">versioning scheme</a></dt><dd><div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The version should follow <a class="reference external" href="https://semver.org/">semantic versioning</a> and <a class="reference external" href="https://www.python.org/dev/peps/pep-0440/">PEP 440</a>.</p>
+<p>The version should follow <a class="reference external" href="https://semver.org/">semantic versioning</a> and <a class="reference external" href="https://peps.python.org/pep-0440/">PEP 440</a>.</p>
 </div>
 </dd>
 </dl>
