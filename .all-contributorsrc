@@ -1629,6 +1629,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "benluo",
+      "name": "Ben Luo",
+      "avatar_url": "https://avatars.githubusercontent.com/u/70398?v=4",
+      "profile": "http://www.benluo.cc",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
