@@ -5,6 +5,7 @@ from _pytest.fixtures import FixtureRequest
 
 from litestar import Controller, WebSocket, delete, head, patch, put, websocket
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
+from litestar.stores.base import Store
 from litestar.testing import AsyncTestClient, WebSocketTestSession, create_test_client
 
 if TYPE_CHECKING:
@@ -23,7 +24,6 @@ from typing import Any, Type
 import pytest
 
 from litestar import Litestar, Request, get, post
-from litestar.stores.base import Store
 from litestar.testing import TestClient
 from litestar.utils.helpers import get_exception_group
 from tests.helpers import maybe_async, maybe_async_cm

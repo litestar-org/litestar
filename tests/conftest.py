@@ -81,6 +81,13 @@ def redis_store(redis_client: AsyncRedis) -> RedisStore:
 
 
 @pytest.fixture()
+async def redis_store_with_client() -> RedisStore:
+    store = RedisStore.with_client(url="redis://localhost:6397")
+    await store._redis.flushall()
+    yield store
+
+
+@pytest.fixture()
 def memory_store() -> MemoryStore:
     return MemoryStore()
 
@@ -91,10 +98,15 @@ def file_store(tmp_path: Path) -> FileStore:
 
 
 @pytest.fixture(
-    params=[pytest.param("redis_store", marks=pytest.mark.xdist_group("redis")), "memory_store", "file_store"]
+    params=[
+        lazy_fixture("redis_store"),
+        lazy_fixture("memory_store"),
+        lazy_fixture("file_store"),
+        lazy_fixture("redis_store_with_client"),
+    ]
 )
 def store(request: FixtureRequest) -> Store:
-    return cast("Store", request.getfixturevalue(request.param))
+    return cast("Store", request.param)
 
 
 @pytest.fixture

@@ -7,6 +7,7 @@ from uuid import uuid4
 
 import msgspec
 import pytest
+from pytest_lazyfixture import lazy_fixture
 
 from litestar import Litestar, Request, Response, get, post
 from litestar.config.compression import CompressionConfig
@@ -168,12 +169,20 @@ async def test_non_default_store_name(mock: MagicMock) -> None:
     assert await app.stores.get("some_store").exists("GET/")
 
 
+@pytest.mark.parametrize(
+    "store",
+    [
+        lazy_fixture("memory_store"),
+        lazy_fixture("file_store"),
+        lazy_fixture("redis_store"),
+    ],
+)
 async def test_with_stores(store: Store, mock: MagicMock) -> None:
     @get(cache=True)
     def handler() -> str:
         return mock()  # type: ignore[no-any-return]
 
-    app = Litestar([handler], stores={"response_cache": store})
+    app = Litestar([handler], stores={"response_cache": store}, debug=True)
 
     with TestClient(app=app) as client:
         response_one = client.get("/")
