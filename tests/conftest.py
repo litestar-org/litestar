@@ -85,7 +85,7 @@ def redis_store(redis_client: AsyncRedis) -> RedisStore:
 async def redis_store_with_client() -> RedisStore:
     store = RedisStore.with_client(url="redis://localhost:6397")
     await store._redis.flushall()
-    yield store
+    return store
 
 
 @pytest.fixture()

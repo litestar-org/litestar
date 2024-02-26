@@ -177,7 +177,7 @@ async def test_non_default_store_name(mock: MagicMock) -> None:
         lazy_fixture("redis_store"),
     ],
 )
-async def test_with_stores(store: Store, mock: MagicMock) -> None:
+async def test_with_stores(store: Store, mock: MagicMock, redis_service: None) -> None:
     @get(cache=True)
     def handler() -> str:
         return mock()  # type: ignore[no-any-return]

@@ -2,6 +2,7 @@ from queue import Empty
 from typing import TYPE_CHECKING, Callable, Dict, NoReturn, Optional, Union, cast
 
 from _pytest.fixtures import FixtureRequest
+from pytest_lazyfixture import lazy_fixture
 
 from litestar import Controller, WebSocket, delete, head, patch, put, websocket
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
@@ -67,6 +68,14 @@ async def test_test_client_set_session_data(
         assert session_data == (await maybe_async(client.get("/test"))).json()  # type: ignore[attr-defined]
 
 
+@pytest.mark.parametrize(
+    "store",
+    [
+        lazy_fixture("memory_store"),
+        lazy_fixture("file_store"),
+        lazy_fixture("redis_store"),
+    ],
+)
 @pytest.mark.parametrize("with_domain", [False, True])
 async def test_test_client_get_session_data(
     with_domain: bool,
