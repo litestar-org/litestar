@@ -426,6 +426,15 @@ class Litestar(Router):
         if self.pdb_on_exception:
             warn_pdb_on_exception()
 
+        try:
+            from starlette.exceptions import HTTPException as StarletteHTTPException
+
+            from litestar.middleware.exceptions.middleware import _starlette_exception_handler
+
+            config.exception_handlers.setdefault(StarletteHTTPException, _starlette_exception_handler)
+        except ImportError:
+            pass
+
         super().__init__(
             after_request=config.after_request,
             after_response=config.after_response,
