@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Dict, Optional
+from typing import TYPE_CHECKING, Dict, Optional, Union
 
 from litestar import HttpMethod, Request, Response, get, post, route
 from litestar.middleware.session.server_side import ServerSideSessionConfig
@@ -60,7 +60,7 @@ def test_integration(session_backend_config: "BaseBackendConfig") -> None:
 def test_session_id_correctness(session_backend_config: "BaseBackendConfig") -> None:
     # Test that `request.get_session_id()` is the same as in the cookies
     @route("/session", http_method=[HttpMethod.POST])
-    def session_handler(request: Request) -> Optional[Dict[str, bool]]:
+    def session_handler(request: Request) -> Optional[Dict[str, Union[str, None]]]:
         request.set_session({"foo": "bar"})
         return {"session_id": request.get_session_id()}
 
@@ -84,7 +84,7 @@ def test_session_id_correctness(session_backend_config: "BaseBackendConfig") -> 
 def test_keep_session_id(session_backend_config: "BaseBackendConfig") -> None:
     # Test that session is only created if not already exists
     @route("/session", http_method=[HttpMethod.POST])
-    def session_handler(request: Request) -> Optional[Dict[str, bool]]:
+    def session_handler(request: Request) -> Optional[Dict[str, Union[str, None]]]:
         request.set_session({"foo": "bar"})
         return {"session_id": request.get_session_id()}
 
