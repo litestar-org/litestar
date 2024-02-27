@@ -49,7 +49,7 @@ def test_flash_plugin(
 ) -> None:
     Path(tmp_path / "flash.html").write_text(template_str)
     text_expected = "".join(
-        [f'<span class="{category.value}">message {category.value}</span>' for category in category_enum.__members__.values()]
+        [f'<span class="{category.value}">message {category.value}</span>' for category in category_enum]
     )
 
     @get("/flash")
