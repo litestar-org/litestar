@@ -166,10 +166,10 @@ class BaseTestClient(Generic[T]):
             app=self.app,
             cookies=dict(self.cookies),  # type: ignore[arg-type]
         )
-        session_id = "null"
+        session_id = None
         if self._session_backend is not None:
             session_id = self._session_backend.get_session_id(connection)
-        connection.set_session_id(session_id)
+        connection._connection_state.session_id = session_id  # pyright: ignore [reportGeneralTypeIssues]
         await self.session_backend.store_in_message(
             scope_session=data, message=fake_http_send_message(mutable_headers), connection=connection
         )

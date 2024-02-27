@@ -206,8 +206,8 @@ class ClientSideSessionBackend(BaseSessionBackend["CookieBackendConfig"]):
                 return self.load_data(data)
         return {}
 
-    def get_session_id(self, connection: ASGIConnection) -> str:
-        return "null"
+    def get_session_id(self, connection: ASGIConnection) -> str | None:
+        return None
 
 
 @dataclass

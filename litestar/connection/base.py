@@ -9,6 +9,7 @@ from litestar.datastructures.state import State
 from litestar.datastructures.url import URL, Address, make_absolute_url
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types.empty import Empty
+from litestar.utils.empty import value_or_default
 from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
@@ -277,22 +278,19 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         """
         return self.app.get_logger()
 
-    def set_session(self, value: dict[str, Any] | DataContainerType | EmptyType) -> str | EmptyType:
+    def set_session(self, value: dict[str, Any] | DataContainerType | EmptyType) -> None:
         """Set the session in the connection's ``Scope``.
 
         If the :class:`SessionMiddleware <.middleware.session.base.SessionMiddleware>` is enabled, the session will be added
         to the response as a cookie header.
-        If a :class:`ServerSideSessionConfig <.middleware.session.server_side.ServerSideSessionConfig>` is being used,
-        the corresponding session id will be returned.
 
         Args:
             value: Dictionary or pydantic model instance for the session data.
 
         Returns:
-            Session id string if one exists, else None.
+            None
         """
         self.scope["session"] = value
-        return self.get_session_id()
 
     def clear_session(self) -> None:
         """Remove the session from the connection's ``Scope``.
@@ -306,11 +304,8 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
         self.scope["session"] = Empty
         self._connection_state.session_id = Empty
 
-    def set_session_id(self, value: str) -> None:
-        self._connection_state.session_id = value
-
-    def get_session_id(self) -> str | EmptyType:
-        return self._connection_state.session_id
+    def get_session_id(self) -> str | None:
+        return value_or_default(value=self._connection_state.session_id, default=None)
 
     def url_for(self, name: str, **path_parameters: Any) -> str:
         """Return the url for a given route handler name.

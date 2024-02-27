@@ -83,7 +83,7 @@ class ScopeState:
     msgpack: Any | EmptyType
     parsed_query: tuple[tuple[str, str], ...] | EmptyType
     response_compressed: bool | EmptyType
-    session_id: str | EmptyType
+    session_id: str | None | EmptyType
     url: URL | EmptyType
     _compat_ns: dict[str, Any]
 
