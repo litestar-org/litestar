@@ -1,4 +1,4 @@
-from enum import StrEnum
+from enum import Enum, StrEnum
 from pathlib import Path
 
 import pytest
@@ -20,7 +20,7 @@ text_html_mako = """<% messages = get_flashes() %>\\
 """
 
 
-class CustomCategory(StrEnum):
+class CustomCategory(str, Enum):
     custom1 = "custom1"
     custom2 = "custom2"
     custom3 = "custom3"
@@ -49,13 +49,13 @@ def test_flash_plugin(
 ) -> None:
     Path(tmp_path / "flash.html").write_text(template_str)
     text_expected = "".join(
-        [f'<span class="{category.name}">message {category.name}</span>' for category in category_enum]
+        [f'<span class="{category.value}">message {category.value}</span>' for category in category_enum]
     )
 
     @get("/flash")
     def flash_handler(request: Request) -> Template:
         for category in category_enum:
-            flash(request, f"message {category}", category=category.name)
+            flash(request, f"message {category.value}", category=category.value)
         return Template("flash.html")
 
     template_config = TemplateConfig(
