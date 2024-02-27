@@ -49,7 +49,7 @@ def test_flash_plugin(
 ) -> None:
     Path(tmp_path / "flash.html").write_text(template_str)
     text_expected = "".join(
-        [f'<span class="{category.value}">message {category.value}</span>' for category in category_enum]
+        [f'<span class="{category.value}">message {category.value}</span>' for category in category_enum]  # type: ignore[attr-defined]
     )
 
     @get("/flash")
@@ -58,7 +58,7 @@ def test_flash_plugin(
             flash(request, f"message {category.value}", category=category.value)
         return Template("flash.html")
 
-    template_config = TemplateConfig(
+    template_config: TemplateConfig = TemplateConfig(
         directory=Path(tmp_path),
         engine=engine,
     )
