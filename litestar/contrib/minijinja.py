@@ -142,9 +142,9 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
                 "You must provide either a directory or a minijinja Environment instance."
             )
 
-        self.register_template_callable("url_for", _transform_state(url_for))
-        self.register_template_callable("csrf_token", _transform_state(csrf_token))
-        self.register_template_callable("url_for_static_asset", _transform_state(url_for_static_asset))
+        self.register_template_callable("url_for", url_for)
+        self.register_template_callable("csrf_token", csrf_token)
+        self.register_template_callable("url_for_static_asset", url_for_static_asset)
 
     def get_template(self, template_name: str) -> MiniJinjaTemplate:
         """Retrieve a template by matching its name (dotted path) with files in the directory or directories provided.
@@ -172,7 +172,7 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
         Returns:
             None
         """
-        self.engine.add_global(key, pass_state(template_callable))
+        self.engine.add_global(key, pass_state(_transform_state(template_callable)))
 
     def render_string(self, template_string: str, context: Mapping[str, Any]) -> str:
         """Render a template from a string with the given context.
