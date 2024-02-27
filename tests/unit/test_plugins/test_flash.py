@@ -1,4 +1,4 @@
-from enum import Enum, StrEnum
+from enum import Enum
 from pathlib import Path
 
 import pytest
@@ -45,11 +45,11 @@ def test_flash_plugin(
     tmp_path: Path,
     engine: type[TemplateEngineProtocol],
     template_str: str,
-    category_enum: StrEnum,
+    category_enum: Enum,
 ) -> None:
     Path(tmp_path / "flash.html").write_text(template_str)
     text_expected = "".join(
-        [f'<span class="{category.value}">message {category.value}</span>' for category in category_enum]
+        [f'<span class="{category.value}">message {category.value}</span>' for category in category_enum.__members__.values()]
     )
 
     @get("/flash")
