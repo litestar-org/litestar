@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from enum import StrEnum
+from enum import Enum
 from typing import Any, Mapping
 
 from litestar.config.app import AppConfig
@@ -9,7 +9,7 @@ from litestar.template import TemplateConfig
 from litestar.template.base import _get_request_from_context
 
 
-class FlashDefaultCategory(StrEnum):
+class FlashDefaultCategory(str, Enum):
     """Default Flash message categories."""
 
     default = "default"
