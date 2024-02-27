@@ -7,6 +7,7 @@ from litestar.connection import ASGIConnection
 from litestar.plugins import InitPluginProtocol
 from litestar.template import TemplateConfig
 from litestar.template.base import _get_request_from_context
+from litestar.utils.scope.state import ScopeState
 
 
 class FlashDefaultCategory(str, Enum):
@@ -39,15 +40,11 @@ class FlashPlugin(InitPluginProtocol):
 
 def flash(connection: ASGIConnection, message: str, category: str) -> None:
     """Add a flash message to the request scope."""
-    if "_flash_messages" not in connection.state:
-        connection.state["_flash_messages"] = []
-    connection.state["_flash_messages"].append({"message": message, "category": category})
+    scope_state = ScopeState.from_scope(connection.scope)
+    scope_state.flash_messages.append({"message": message, "category": category})
 
 
 def get_flashes(context: Mapping[str, Any]) -> Any:
     """Get flash messages from the request scope, if any."""
-    scope = _get_request_from_context(context).scope
-
-    if "_flash_messages" in scope["state"]:
-        return scope["state"]["_flash_messages"] if len(scope["state"]["_flash_messages"]) else []
-    return []
+    scope_state = ScopeState.from_scope(_get_request_from_context(context).scope)
+    return scope_state.flash_messages
