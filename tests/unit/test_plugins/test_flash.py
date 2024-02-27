@@ -54,7 +54,7 @@ def test_flash_plugin(
 
     @get("/flash")
     def flash_handler(request: Request) -> Template:
-        for category in category_enum:
+        for category in category_enum:  # type: ignore[attr-defined]
             flash(request, f"message {category.value}", category=category.value)
         return Template("flash.html")
 
