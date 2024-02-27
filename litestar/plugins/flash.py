@@ -1,4 +1,3 @@
-import contextlib
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Mapping
@@ -35,17 +34,6 @@ class FlashPlugin(InitPluginProtocol):
 
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
         """Register the message callable on the template engine instance."""
-        with contextlib.suppress(ImportError):
-            # minijinja needs a different callable here
-            from litestar.contrib.minijinja import MiniJinjaTemplateEngine
-            from litestar.contrib.minijinja import get_flashes as minijinja_get_flashes
-
-            if isinstance(self.config.template_config.engine_instance, MiniJinjaTemplateEngine):
-                self.config.template_config.engine_instance.register_template_callable(
-                    "get_flashes", minijinja_get_flashes
-                )
-                return app_config
-
         self.config.template_config.engine_instance.register_template_callable("get_flashes", get_flashes)
         return app_config
 

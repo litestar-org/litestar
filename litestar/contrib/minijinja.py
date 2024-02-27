@@ -173,6 +173,8 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
         Returns:
             None
         """
+        if not hasattr(template_callable, "__wrapped__") and template_callable.__name__ in globals():
+            template_callable = _transform_state(template_callable)
         self.engine.add_global(key, pass_state(template_callable))
 
     def render_string(self, template_string: str, context: Mapping[str, Any]) -> str:
