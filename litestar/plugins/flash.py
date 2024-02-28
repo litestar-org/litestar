@@ -4,6 +4,7 @@ from typing import Any, Mapping
 
 from litestar.config.app import AppConfig
 from litestar.connection import ASGIConnection
+from litestar.contrib.minijinja import MiniJinjaTemplateEngine
 from litestar.plugins import InitPluginProtocol
 from litestar.template import TemplateConfig
 from litestar.template.base import _get_request_from_context
@@ -34,7 +35,10 @@ class FlashPlugin(InitPluginProtocol):
 
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
         """Register the message callable on the template engine instance."""
-        self.config.template_config.engine_instance.register_template_callable("get_flashes", get_flashes)
+        if isinstance(self.config.template_config.engine_instance, MiniJinjaTemplateEngine):
+            self.config.template_config.engine_instance.register_template_callable("get_flashes", get_flashes, True)
+        else:
+            self.config.template_config.engine_instance.register_template_callable("get_flashes", get_flashes)
         return app_config
 
 
