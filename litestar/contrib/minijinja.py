@@ -168,6 +168,7 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
         Args:
             key: The callable key, i.e. the value to use inside the template to call the callable.
             template_callable: A callable to register.
+            transform: If True, the callable will be transformed to receive a ``StateProtocol`` instance as first argument.
 
         Returns:
             None
