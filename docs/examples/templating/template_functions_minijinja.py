@@ -26,4 +26,4 @@ def index() -> Template:
     return Template(template_name="index.html.minijinja")
 
 
-app = Litestar(route_handlers=[index], template_config=template_config)
+app = Litestar(route_handlers=[index], template_config=template_config, debug=True)

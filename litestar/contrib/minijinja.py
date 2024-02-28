@@ -172,11 +172,11 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
         Returns:
             None
         """
-        print(key, template_callable.__name__)
-        print(hasattr(template_callable, "__wrapped__"))
-        print(template_callable.__name__ in globals())
-        print("===============")
-        if not hasattr(template_callable, "__wrapped__") or template_callable.__name__ not in globals():
+
+        def is_decorated(func):
+            return hasattr(func, "__wrapped__") or func.__name__ not in globals()
+
+        if not is_decorated(template_callable):
             template_callable = _transform_state(template_callable)
         self.engine.add_global(key, pass_state(template_callable))
 
@@ -209,9 +209,6 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
 def _minijinja_from_state(func: Callable, state: StateProtocol, *args: Any, **kwargs: Any) -> str:  # pragma: no cover
     template_context = {"request": state.lookup("request"), "csrf_input": state.lookup("csrf_input")}
     return cast(str, func(template_context, *args, **kwargs))
-
-
-# get_flashes = _transform_state(_get_flashes)
 
 
 def __getattr__(name: str) -> Any:
