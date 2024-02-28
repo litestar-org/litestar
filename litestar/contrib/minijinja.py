@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING, Any, Mapping, Protocol, TypeVar, cast
 from typing_extensions import ParamSpec
 
 from litestar.exceptions import ImproperlyConfiguredException, MissingDependencyException, TemplateNotFoundException
-from litestar.plugins.flash import get_flashes as _get_flashes
 from litestar.template.base import (
     TemplateCallableType,
     TemplateEngineProtocol,
@@ -173,7 +172,11 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
         Returns:
             None
         """
-        if not hasattr(template_callable, "__wrapped__") and template_callable.__name__ in globals():
+        print(key, template_callable.__name__)
+        print(hasattr(template_callable, "__wrapped__"))
+        print(template_callable.__name__ in globals())
+        print("===============")
+        if not hasattr(template_callable, "__wrapped__") or template_callable.__name__ not in globals():
             template_callable = _transform_state(template_callable)
         self.engine.add_global(key, pass_state(template_callable))
 
@@ -208,7 +211,7 @@ def _minijinja_from_state(func: Callable, state: StateProtocol, *args: Any, **kw
     return cast(str, func(template_context, *args, **kwargs))
 
 
-get_flashes = _transform_state(_get_flashes)
+# get_flashes = _transform_state(_get_flashes)
 
 
 def __getattr__(name: str) -> Any:
