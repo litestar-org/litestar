@@ -8,7 +8,7 @@ from typing_extensions import Annotated, get_type_hints
 from litestar.params import KwargDefinition
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
-from litestar.utils import is_class_and_subclass
+from litestar.utils import deprecated, is_class_and_subclass
 from litestar.utils.predicates import is_generic
 from litestar.utils.typing import (
     _substitute_typevars,
@@ -153,7 +153,8 @@ def pydantic_get_type_hints_with_generics_resolved(
     return {n: _substitute_typevars(type_, typevar_map) for n, type_ in model_annotations.items()}
 
 
-def pydantic_get_unwrapped_annotation_and_type_hints(annotation: Any) -> tuple[Any, dict[str, Any]]:
+@deprecated(version="2.6.2")
+def pydantic_get_unwrapped_annotation_and_type_hints(annotation: Any) -> tuple[Any, dict[str, Any]]:  # pragma:  pver
     """Get the unwrapped annotation and the type hints after resolving generics.
 
     Args:
@@ -167,12 +168,6 @@ def pydantic_get_unwrapped_annotation_and_type_hints(annotation: Any) -> tuple[A
         origin = pydantic_unwrap_and_get_origin(annotation)
         return origin or annotation, pydantic_get_type_hints_with_generics_resolved(annotation, include_extras=True)
     return annotation, get_type_hints(annotation, include_extras=True)
-
-
-def get_unwrapped_model_from_annotation(annotation: Any) -> Any:
-    if is_generic(annotation):
-        return pydantic_unwrap_and_get_origin(annotation) or annotation
-    return annotation
 
 
 def is_pydantic_2_model(
