@@ -17,6 +17,7 @@ if TYPE_CHECKING:
 
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
     from litestar.config.response_cache import CACHE_FOREVER
+    from litestar.connection import Request
     from litestar.datastructures import CacheControlHeader, ETag
     from litestar.dto import AbstractDTO
     from litestar.openapi.datastructures import ResponseSpec
@@ -70,6 +71,7 @@ class delete(HTTPRouteHandler):
         middleware: Sequence[Middleware] | None = None,
         name: str | None = None,
         opt: Mapping[str, Any] | None = None,
+        request_class: type[Request] | None = None,
         response_class: type[Response] | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
@@ -131,6 +133,8 @@ class delete(HTTPRouteHandler):
             name: A string identifying the route handler.
             opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
                 wherever you have access to :class:`Request <.connection.Request>` or :class:`ASGI Scope <.types.Scope>`.
+            request_class: A custom subclass of :class:`Request <.connection.Request>` to be used as route handler's
+                default request.
             response_class: A custom subclass of :class:`Response <.response.Response>` to be used as route handler's
                 default response.
             response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>` instances.
@@ -191,6 +195,7 @@ class delete(HTTPRouteHandler):
             opt=opt,
             path=path,
             raises=raises,
+            request_class=request_class,
             response_class=response_class,
             response_cookies=response_cookies,
             response_description=response_description,
@@ -234,6 +239,7 @@ class get(HTTPRouteHandler):
         middleware: Sequence[Middleware] | None = None,
         name: str | None = None,
         opt: Mapping[str, Any] | None = None,
+        request_class: type[Request] | None = None,
         response_class: type[Response] | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
@@ -295,6 +301,8 @@ class get(HTTPRouteHandler):
             name: A string identifying the route handler.
             opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
                 wherever you have access to :class:`Request <.connection.Request>` or :class:`ASGI Scope <.types.Scope>`.
+            request_class: A custom subclass of :class:`Request <.connection.Request>` to be used as route handler's
+                default request.
             response_class: A custom subclass of :class:`Response <.response.Response>` to be used as route handler's
                 default response.
             response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>` instances.
@@ -356,6 +364,7 @@ class get(HTTPRouteHandler):
             opt=opt,
             path=path,
             raises=raises,
+            request_class=request_class,
             response_class=response_class,
             response_cookies=response_cookies,
             response_description=response_description,
@@ -399,6 +408,7 @@ class head(HTTPRouteHandler):
         middleware: Sequence[Middleware] | None = None,
         name: str | None = None,
         opt: Mapping[str, Any] | None = None,
+        request_class: type[Request] | None = None,
         response_class: type[Response] | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
@@ -464,6 +474,8 @@ class head(HTTPRouteHandler):
             name: A string identifying the route handler.
             opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
                 wherever you have access to :class:`Request <.connection.Request>` or :class:`ASGI Scope <.types.Scope>`.
+            request_class: A custom subclass of :class:`Request <.connection.Request>` to be used as route handler's
+                default request.
             response_class: A custom subclass of :class:`Response <.response.Response>` to be used as route handler's
                 default response.
             response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>` instances.
@@ -525,6 +537,7 @@ class head(HTTPRouteHandler):
             opt=opt,
             path=path,
             raises=raises,
+            request_class=request_class,
             response_class=response_class,
             response_cookies=response_cookies,
             response_description=response_description,
@@ -581,6 +594,7 @@ class patch(HTTPRouteHandler):
         middleware: Sequence[Middleware] | None = None,
         name: str | None = None,
         opt: Mapping[str, Any] | None = None,
+        request_class: type[Request] | None = None,
         response_class: type[Response] | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
@@ -642,6 +656,8 @@ class patch(HTTPRouteHandler):
             name: A string identifying the route handler.
             opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
                 wherever you have access to :class:`Request <.connection.Request>` or :class:`ASGI Scope <.types.Scope>`.
+            request_class: A custom subclass of :class:`Request <.connection.Request>` to be used as route handler's
+                default request.
             response_class: A custom subclass of :class:`Response <.response.Response>` to be used as route handler's
                 default response.
             response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>` instances.
@@ -702,6 +718,7 @@ class patch(HTTPRouteHandler):
             opt=opt,
             path=path,
             raises=raises,
+            request_class=request_class,
             response_class=response_class,
             response_cookies=response_cookies,
             response_description=response_description,
@@ -745,6 +762,7 @@ class post(HTTPRouteHandler):
         middleware: Sequence[Middleware] | None = None,
         name: str | None = None,
         opt: Mapping[str, Any] | None = None,
+        request_class: type[Request] | None = None,
         response_class: type[Response] | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
@@ -806,6 +824,8 @@ class post(HTTPRouteHandler):
             name: A string identifying the route handler.
             opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
                 wherever you have access to :class:`Request <.connection.Request>` or :class:`ASGI Scope <.types.Scope>`.
+            request_class: A custom subclass of :class:`Request <.connection.Request>` to be used as route handler's
+                default request.
             response_class: A custom subclass of :class:`Response <.response.Response>` to be used as route handler's
                 default response.
             response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>` instances.
@@ -866,6 +886,7 @@ class post(HTTPRouteHandler):
             opt=opt,
             path=path,
             raises=raises,
+            request_class=request_class,
             response_class=response_class,
             response_cookies=response_cookies,
             response_description=response_description,
@@ -909,6 +930,7 @@ class put(HTTPRouteHandler):
         middleware: Sequence[Middleware] | None = None,
         name: str | None = None,
         opt: Mapping[str, Any] | None = None,
+        request_class: type[Request] | None = None,
         response_class: type[Response] | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
@@ -970,6 +992,8 @@ class put(HTTPRouteHandler):
             name: A string identifying the route handler.
             opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
                 wherever you have access to :class:`Request <.connection.Request>` or :class:`ASGI Scope <.types.Scope>`.
+            request_class: A custom subclass of :class:`Request <.connection.Request>` to be used as route handler's
+                default request.
             response_class: A custom subclass of :class:`Response <.response.Response>` to be used as route handler's
                 default response.
             response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>` instances.
@@ -1030,6 +1054,7 @@ class put(HTTPRouteHandler):
             opt=opt,
             path=path,
             raises=raises,
+            request_class=request_class,
             response_class=response_class,
             response_cookies=response_cookies,
             response_description=response_description,

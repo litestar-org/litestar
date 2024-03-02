@@ -4,6 +4,7 @@ from enum import Enum
 from typing import TYPE_CHECKING, AnyStr, Mapping, Sequence, TypedDict, cast
 
 from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
+from litestar.connection import Request
 from litestar.datastructures.cookie import Cookie
 from litestar.datastructures.response_header import ResponseHeader
 from litestar.enums import HttpMethod, MediaType
@@ -51,7 +52,6 @@ if TYPE_CHECKING:
     from litestar.app import Litestar
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
     from litestar.config.response_cache import CACHE_FOREVER
-    from litestar.connection import Request
     from litestar.datastructures import CacheControlHeader, ETag
     from litestar.dto import AbstractDTO
     from litestar.openapi.datastructures import ResponseSpec
@@ -98,6 +98,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         "operation_class",
         "operation_id",
         "raises",
+        "request_class",
         "response_class",
         "response_cookies",
         "response_description",
@@ -134,6 +135,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         middleware: Sequence[Middleware] | None = None,
         name: str | None = None,
         opt: Mapping[str, Any] | None = None,
+        request_class: type[Request] | None = None,
         response_class: type[Response] | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
@@ -196,6 +198,8 @@ class HTTPRouteHandler(BaseRouteHandler):
             opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
                 wherever you have access to :class:`Request <.connection.Request>` or
                 :class:`ASGI Scope <.types.Scope>`.
+            request_class: A custom subclass of :class:`Request <.connection.Request>` to be used as route handler's
+                default request.
             response_class: A custom subclass of :class:`Response <.response.Response>` to be used as route handler's
                 default response.
             response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>` instances.
@@ -257,6 +261,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.cache_key_builder = cache_key_builder
         self.etag = etag
         self.media_type: MediaType | str = media_type or ""
+        self.request_class = request_class
         self.response_class = response_class
         self.response_cookies: Sequence[Cookie] | None = narrow_response_cookies(response_cookies)
         self.response_headers: Sequence[ResponseHeader] | None = narrow_response_headers(response_headers)
@@ -295,6 +300,19 @@ class HTTPRouteHandler(BaseRouteHandler):
         super().__call__(fn)
         return self
 
+    def resolve_request_class(self) -> type[Request]:
+        """Return the closest custom Request class in the owner graph or the default Request class.
+
+        This method is memoized so the computation occurs only once.
+
+        Returns:
+            The default :class:`Request <.connection.Request>` class for the route handler.
+        """
+        return next(
+            (layer.request_class for layer in reversed(self.ownership_layers) if layer.request_class is not None),
+            Request,
+        )
+
     def resolve_response_class(self) -> type[Response]:
         """Return the closest custom Response class in the owner graph or the default Response class.
 
@@ -304,11 +322,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             The default :class:`Response <.response.Response>` class for the route handler.
         """
         return next(
-            (
-                layer.response_class
-                for layer in list(reversed(self.ownership_layers))
-                if layer.response_class is not None
-            ),
+            (layer.response_class for layer in reversed(self.ownership_layers) if layer.response_class is not None),
             Response,
         )
 
