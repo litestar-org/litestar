@@ -6,8 +6,8 @@ from litestar.enums import HttpMethod, MediaType
 from litestar.exceptions import HTTPException, ImproperlyConfiguredException
 from litestar.openapi.spec import Operation
 from litestar.response.file import ASGIFileResponse, File
+from litestar.types import Empty, TypeDecodersSequence
 from litestar.types.builtin_types import NoneType
-from litestar.types.empty import Empty
 from litestar.utils import is_class_and_subclass
 
 from .base import HTTPRouteHandler
@@ -93,6 +93,7 @@ class delete(HTTPRouteHandler):
         security: Sequence[SecurityRequirement] | None = None,
         summary: str | None = None,
         tags: Sequence[str] | None = None,
+        type_decoders: TypeDecodersSequence | None = None,
         type_encoders: TypeEncodersMap | None = None,
         **kwargs: Any,
     ) -> None:
@@ -163,6 +164,8 @@ class delete(HTTPRouteHandler):
             security: A sequence of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
             tags: A sequence of string tags that will be appended to the OpenAPI schema.
+            type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
+                hook for deserialization.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
@@ -208,6 +211,7 @@ class delete(HTTPRouteHandler):
             summary=summary,
             sync_to_thread=sync_to_thread,
             tags=tags,
+            type_decoders=type_decoders,
             type_encoders=type_encoders,
             **kwargs,
         )
@@ -261,6 +265,7 @@ class get(HTTPRouteHandler):
         security: Sequence[SecurityRequirement] | None = None,
         summary: str | None = None,
         tags: Sequence[str] | None = None,
+        type_decoders: TypeDecodersSequence | None = None,
         type_encoders: TypeEncodersMap | None = None,
         **kwargs: Any,
     ) -> None:
@@ -331,6 +336,8 @@ class get(HTTPRouteHandler):
             security: A sequence of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
             tags: A sequence of string tags that will be appended to the OpenAPI schema.
+            type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
+                hook for deserialization.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
@@ -377,6 +384,7 @@ class get(HTTPRouteHandler):
             summary=summary,
             sync_to_thread=sync_to_thread,
             tags=tags,
+            type_decoders=type_decoders,
             type_encoders=type_encoders,
             **kwargs,
         )
@@ -430,6 +438,7 @@ class head(HTTPRouteHandler):
         security: Sequence[SecurityRequirement] | None = None,
         summary: str | None = None,
         tags: Sequence[str] | None = None,
+        type_decoders: TypeDecodersSequence | None = None,
         type_encoders: TypeEncodersMap | None = None,
         **kwargs: Any,
     ) -> None:
@@ -504,6 +513,8 @@ class head(HTTPRouteHandler):
             security: A sequence of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
             tags: A sequence of string tags that will be appended to the OpenAPI schema.
+            type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
+                hook for deserialization.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
@@ -550,6 +561,7 @@ class head(HTTPRouteHandler):
             summary=summary,
             sync_to_thread=sync_to_thread,
             tags=tags,
+            type_decoders=type_decoders,
             type_encoders=type_encoders,
             **kwargs,
         )
@@ -616,6 +628,7 @@ class patch(HTTPRouteHandler):
         security: Sequence[SecurityRequirement] | None = None,
         summary: str | None = None,
         tags: Sequence[str] | None = None,
+        type_decoders: TypeDecodersSequence | None = None,
         type_encoders: TypeEncodersMap | None = None,
         **kwargs: Any,
     ) -> None:
@@ -686,6 +699,8 @@ class patch(HTTPRouteHandler):
             security: A sequence of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
             tags: A sequence of string tags that will be appended to the OpenAPI schema.
+            type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
+                hook for deserialization.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
@@ -731,6 +746,7 @@ class patch(HTTPRouteHandler):
             summary=summary,
             sync_to_thread=sync_to_thread,
             tags=tags,
+            type_decoders=type_decoders,
             type_encoders=type_encoders,
             **kwargs,
         )
@@ -784,6 +800,7 @@ class post(HTTPRouteHandler):
         security: Sequence[SecurityRequirement] | None = None,
         summary: str | None = None,
         tags: Sequence[str] | None = None,
+        type_decoders: TypeDecodersSequence | None = None,
         type_encoders: TypeEncodersMap | None = None,
         **kwargs: Any,
     ) -> None:
@@ -854,6 +871,8 @@ class post(HTTPRouteHandler):
             security: A sequence of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
             tags: A sequence of string tags that will be appended to the OpenAPI schema.
+            type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
+                hook for deserialization.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
@@ -899,6 +918,7 @@ class post(HTTPRouteHandler):
             summary=summary,
             sync_to_thread=sync_to_thread,
             tags=tags,
+            type_decoders=type_decoders,
             type_encoders=type_encoders,
             **kwargs,
         )
@@ -952,6 +972,7 @@ class put(HTTPRouteHandler):
         security: Sequence[SecurityRequirement] | None = None,
         summary: str | None = None,
         tags: Sequence[str] | None = None,
+        type_decoders: TypeDecodersSequence | None = None,
         type_encoders: TypeEncodersMap | None = None,
         **kwargs: Any,
     ) -> None:
@@ -1022,6 +1043,8 @@ class put(HTTPRouteHandler):
             security: A sequence of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
             tags: A sequence of string tags that will be appended to the OpenAPI schema.
+            type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
+                hook for deserialization.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
@@ -1067,6 +1090,7 @@ class put(HTTPRouteHandler):
             summary=summary,
             sync_to_thread=sync_to_thread,
             tags=tags,
+            type_decoders=type_decoders,
             type_encoders=type_encoders,
             **kwargs,
         )

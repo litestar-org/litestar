@@ -57,6 +57,7 @@ if TYPE_CHECKING:
     from litestar.openapi.datastructures import ResponseSpec
     from litestar.openapi.spec import SecurityRequirement
     from litestar.types.callable_types import AsyncAnyCallable, OperationIDCreator
+    from litestar.types.composite_types import TypeDecodersSequence
 
 __all__ = ("HTTPRouteHandler", "route")
 
@@ -157,6 +158,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         security: Sequence[SecurityRequirement] | None = None,
         summary: str | None = None,
         tags: Sequence[str] | None = None,
+        type_decoders: TypeDecodersSequence | None = None,
         type_encoders: TypeEncodersMap | None = None,
         **kwargs: Any,
     ) -> None:
@@ -228,6 +230,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             security: A sequence of dictionaries that contain information about which security scheme can be used on the endpoint.
             summary: Text used for the route's schema summary section.
             tags: A sequence of string tags that will be appended to the OpenAPI schema.
+            type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
@@ -248,6 +251,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             opt=opt,
             return_dto=return_dto,
             signature_namespace=signature_namespace,
+            type_decoders=type_decoders,
             type_encoders=type_encoders,
             **kwargs,
         )
