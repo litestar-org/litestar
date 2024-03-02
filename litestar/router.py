@@ -76,8 +76,8 @@ class Router:
         "security",
         "signature_namespace",
         "tags",
-        "type_encoders",
         "type_decoders",
+        "type_encoders",
         "websocket_class",
     )
 
@@ -108,8 +108,8 @@ class Router:
         signature_namespace: Mapping[str, Any] | None = None,
         signature_types: Sequence[Any] | None = None,
         tags: Sequence[str] | None = None,
-        type_encoders: TypeEncodersMap | None = None,
         type_decoders: TypeDecodersSequence | None = None,
+        type_encoders: TypeEncodersMap | None = None,
         websocket_class: type[WebSocket] | None = None,
     ) -> None:
         """Initialize a ``Router``.
@@ -161,8 +161,8 @@ class Router:
                 These types will be added to the signature namespace using their ``__name__`` attribute.
             tags: A sequence of string tags that will be appended to the schema of all route handlers under the
                 application.
-            type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization.
+            type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             websocket_class: A custom subclass of :class:`WebSocket <.connection.WebSocket>` to be used as the default for
                 all route handlers, controllers and other routers associated with the router instance.
         """
