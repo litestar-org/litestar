@@ -142,6 +142,8 @@ PYDANTIC_TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
 if pydantic_v2 is not None:  # pragma: no cover
     PYDANTIC_TYPE_MAP.update(
         {
+            pydantic_v2.SecretStr: Schema(type=OpenAPIType.STRING),
+            pydantic_v2.SecretBytes: Schema(type=OpenAPIType.STRING),
             pydantic_v2.ByteSize: Schema(type=OpenAPIType.INTEGER),
             pydantic_v2.EmailStr: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.EMAIL),
             pydantic_v2.IPvAnyAddress: Schema(

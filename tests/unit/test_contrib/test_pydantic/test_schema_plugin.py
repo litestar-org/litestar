@@ -8,6 +8,7 @@ from pydantic import v1 as pydantic_v1
 from pydantic.v1.generics import GenericModel
 from typing_extensions import Annotated
 
+from litestar._openapi.schema_generation import SchemaCreator
 from litestar.contrib.pydantic.pydantic_schema_plugin import PydanticSchemaPlugin
 from litestar.openapi.spec import OpenAPIType
 from litestar.openapi.spec.schema import Schema
@@ -65,3 +66,17 @@ def test_schema_generation_with_generic_classes(model: Type[Union[PydanticV1Gene
 )
 def test_is_pydantic_constrained_field(constrained: Any) -> None:
     PydanticSchemaPlugin.is_constrained_field(FieldDefinition.from_annotation(constrained))
+
+
+def test_v2_constrained_secrets() -> None:
+    # https://github.com/litestar-org/litestar/issues/3148
+    class Model(pydantic_v2.BaseModel):
+        string: pydantic_v2.SecretStr = pydantic_v2.Field(min_length=1)
+        bytes_: pydantic_v2.SecretBytes = pydantic_v2.Field(min_length=1)
+
+    schema = PydanticSchemaPlugin.for_pydantic_model(
+        FieldDefinition.from_annotation(Model), schema_creator=SchemaCreator(plugins=[PydanticSchemaPlugin()])
+    )
+    assert schema.properties
+    assert schema.properties["string"] == Schema(min_length=1, type=OpenAPIType.STRING)
+    assert schema.properties["bytes_"] == Schema(min_length=1, type=OpenAPIType.STRING)
