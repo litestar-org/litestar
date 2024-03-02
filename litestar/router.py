@@ -20,7 +20,7 @@ __all__ = ("Router",)
 
 
 if TYPE_CHECKING:
-    from litestar.connection import WebSocket
+    from litestar.connection import Request, WebSocket
     from litestar.datastructures import CacheControlHeader, ETag
     from litestar.dto import AbstractDTO
     from litestar.openapi.spec import SecurityRequirement
@@ -67,6 +67,7 @@ class Router:
         "parameters",
         "path",
         "registered_route_handler_ids",
+        "request_class",
         "response_class",
         "response_cookies",
         "response_headers",
@@ -97,6 +98,7 @@ class Router:
         middleware: Sequence[Middleware] | None = None,
         opt: Mapping[str, Any] | None = None,
         parameters: ParametersMap | None = None,
+        request_class: type[Request] | None = None,
         response_class: type[Response] | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
@@ -139,6 +141,8 @@ class Router:
                 paths.
             path: A path fragment that is prefixed to all route handlers, controllers and other routers associated
                 with the router instance.
+            request_class: A custom subclass of :class:`Request <.connection.Request>` to be used as the default for
+                all route handlers, controllers and other routers associated with the router instance.
             response_class: A custom subclass of :class:`Response <.response.Response>` to be used as the default for
                 all route handlers, controllers and other routers associated with the router instance.
             response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>` instances.
@@ -178,6 +182,7 @@ class Router:
         self.owner: Router | None = None
         self.parameters = dict(parameters or {})
         self.path = normalize_path(path)
+        self.request_class = request_class
         self.response_class = response_class
         self.response_cookies = narrow_response_cookies(response_cookies)
         self.response_headers = narrow_response_headers(response_headers)

@@ -19,7 +19,7 @@ __all__ = ("Controller",)
 
 
 if TYPE_CHECKING:
-    from litestar.connection import WebSocket
+    from litestar.connection import Request, WebSocket
     from litestar.datastructures import CacheControlHeader, ETag
     from litestar.dto import AbstractDTO
     from litestar.openapi.spec import SecurityRequirement
@@ -62,6 +62,7 @@ class Controller:
         "owner",
         "parameters",
         "path",
+        "request_class",
         "response_class",
         "response_cookies",
         "response_headers",
@@ -128,6 +129,10 @@ class Controller:
     """A path fragment for the controller.
 
     All route handlers under the controller will have the fragment appended to them. If not set it defaults to ``/``.
+    """
+    request_class: type[Request] | None
+    """A custom subclass of :class:`Request <.connection.Request>` to be used as the default request for all route
+    handlers under the controller.
     """
     response_class: type[Response] | None
     """A custom subclass of :class:`Response <.response.Response>` to be used as the default response for all route
