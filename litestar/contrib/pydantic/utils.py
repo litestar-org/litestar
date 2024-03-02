@@ -129,21 +129,28 @@ def pydantic_get_type_hints_with_generics_resolved(
     globalns: dict[str, Any] | None = None,
     localns: dict[str, Any] | None = None,
     include_extras: bool = False,
+    model_annotations: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     if pydantic_v2 is Empty or (pydantic_v1 is not Empty and is_class_and_subclass(annotation, pydantic_v1.BaseModel)):
         return get_type_hints_with_generics_resolved(annotation)
 
     origin = pydantic_unwrap_and_get_origin(annotation)
     if origin is None:
-        type_hints = get_type_hints(annotation, globalns=globalns, localns=localns, include_extras=include_extras)
+        if model_annotations is None:
+            model_annotations = get_type_hints(
+                annotation, globalns=globalns, localns=localns, include_extras=include_extras
+            )
         typevar_map = {p: p for p in annotation.__pydantic_generic_metadata__["parameters"]}
     else:
-        type_hints = get_type_hints(origin, globalns=globalns, localns=localns, include_extras=include_extras)
+        if model_annotations is None:
+            model_annotations = get_type_hints(
+                origin, globalns=globalns, localns=localns, include_extras=include_extras
+            )
         args = annotation.__pydantic_generic_metadata__["args"]
         parameters = origin.__pydantic_generic_metadata__["parameters"]
         typevar_map = dict(zip(parameters, args))
 
-    return {n: _substitute_typevars(type_, typevar_map) for n, type_ in type_hints.items()}
+    return {n: _substitute_typevars(type_, typevar_map) for n, type_ in model_annotations.items()}
 
 
 def pydantic_get_unwrapped_annotation_and_type_hints(annotation: Any) -> tuple[Any, dict[str, Any]]:
@@ -160,6 +167,12 @@ def pydantic_get_unwrapped_annotation_and_type_hints(annotation: Any) -> tuple[A
         origin = pydantic_unwrap_and_get_origin(annotation)
         return origin or annotation, pydantic_get_type_hints_with_generics_resolved(annotation, include_extras=True)
     return annotation, get_type_hints(annotation, include_extras=True)
+
+
+def get_unwrapped_model_from_annotation(annotation: Any) -> Any:
+    if is_generic(annotation):
+        return pydantic_unwrap_and_get_origin(annotation) or annotation
+    return annotation
 
 
 def is_pydantic_2_model(

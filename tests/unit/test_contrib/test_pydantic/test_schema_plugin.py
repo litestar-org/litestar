@@ -80,3 +80,30 @@ def test_v2_constrained_secrets() -> None:
     assert schema.properties
     assert schema.properties["string"] == Schema(min_length=1, type=OpenAPIType.STRING)
     assert schema.properties["bytes_"] == Schema(min_length=1, type=OpenAPIType.STRING)
+
+
+class V1ModelWithPrivateFields(pydantic_v1.BaseModel):
+    class Config:
+        underscore_fields_are_private = True
+
+    _field: str = pydantic_v1.PrivateAttr()
+    # include an invalid annotation here to ensure we never touch those fields
+    _underscore_field: "foo"  # noqa: F821
+
+
+class V2ModelWithPrivateFields(pydantic_v2.BaseModel):
+    class Config:
+        underscore_fields_are_private = True
+
+    _field: str = pydantic_v2.PrivateAttr()
+    # include an invalid annotation here to ensure we never touch those fields
+    _underscore_field: "foo"  # noqa: F821
+
+
+@pytest.mark.parametrize("model_class", [V1ModelWithPrivateFields, V2ModelWithPrivateFields])
+def test_exclude_private_fields(model_class: Type[Union[pydantic_v1.BaseModel, pydantic_v2.BaseModel]]) -> None:
+    # https://github.com/litestar-org/litestar/issues/3150
+    schema = PydanticSchemaPlugin.for_pydantic_model(
+        FieldDefinition.from_annotation(model_class), schema_creator=SchemaCreator(plugins=[PydanticSchemaPlugin()])
+    )
+    assert not schema.properties
