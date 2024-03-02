@@ -20,7 +20,7 @@ __all__ = ("Router",)
 
 
 if TYPE_CHECKING:
-    from litestar.connection import Request
+    from litestar.connection import Request, WebSocket
     from litestar.datastructures import CacheControlHeader, ETag
     from litestar.dto import AbstractDTO
     from litestar.openapi.spec import SecurityRequirement
@@ -78,6 +78,7 @@ class Router:
         "tags",
         "type_decoders",
         "type_encoders",
+        "websocket_class",
     )
 
     def __init__(
@@ -109,6 +110,7 @@ class Router:
         tags: Sequence[str] | None = None,
         type_decoders: TypeDecodersSequence | None = None,
         type_encoders: TypeEncodersMap | None = None,
+        websocket_class: type[WebSocket] | None = None,
     ) -> None:
         """Initialize a ``Router``.
 
@@ -161,6 +163,8 @@ class Router:
                 application.
             type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
+            websocket_class: A custom subclass of :class:`WebSocket <.connection.WebSocket>` to be used as the default for
+                all route handlers, controllers and other routers associated with the router instance.
         """
 
         self.after_request = ensure_async_callable(after_request) if after_request else None  # pyright: ignore
@@ -192,6 +196,7 @@ class Router:
         self.registered_route_handler_ids: set[int] = set()
         self.type_encoders = dict(type_encoders) if type_encoders is not None else None
         self.type_decoders = list(type_decoders) if type_decoders is not None else None
+        self.websocket_class = websocket_class
 
         for route_handler in route_handlers or []:
             self.register(value=route_handler)
