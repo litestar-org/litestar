@@ -19,6 +19,7 @@ __all__ = ("Controller",)
 
 
 if TYPE_CHECKING:
+    from litestar.connection import WebSocket
     from litestar.datastructures import CacheControlHeader, ETag
     from litestar.dto import AbstractDTO
     from litestar.openapi.spec import SecurityRequirement
@@ -70,6 +71,7 @@ class Controller:
         "tags",
         "type_encoders",
         "type_decoders",
+        "websocket_class",
     )
 
     after_request: AfterRequestHookHandler | None
@@ -154,6 +156,10 @@ class Controller:
     """A mapping of types to callables that transform them into types supported for serialization."""
     type_decoders: TypeDecodersSequence | None
     """A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization."""
+    websocket_class: type[WebSocket] | None
+    """A custom subclass of :class:`WebSocket <.connection.WebSocket>` to be used as the default websocket for all route
+    handlers under the controller.
+    """
 
     def __init__(self, owner: Router) -> None:
         """Initialize a controller.
