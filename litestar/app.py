@@ -216,8 +216,8 @@ class Litestar(Router):
         stores: StoreRegistry | dict[str, Store] | None = None,
         tags: Sequence[str] | None = None,
         template_config: TemplateConfigType | None = None,
-        type_encoders: TypeEncodersMap | None = None,
         type_decoders: TypeDecodersSequence | None = None,
+        type_encoders: TypeEncodersMap | None = None,
         websocket_class: type[WebSocket] | None = None,
         lifespan: Sequence[Callable[[Litestar], AbstractAsyncContextManager] | AbstractAsyncContextManager]
         | None = None,
@@ -308,9 +308,9 @@ class Litestar(Router):
             tags: A sequence of string tags that will be appended to the schema of all route handlers under the
                 application.
             template_config: An instance of :class:`TemplateConfig <.template.TemplateConfig>`
-            type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
                 hook for deserialization.
+            type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             websocket_class: An optional subclass of :class:`WebSocket <.connection.WebSocket>` to use for websocket
                 connections.
             experimental_features: An iterable of experimental features to enable
