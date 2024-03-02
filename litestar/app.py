@@ -418,7 +418,7 @@ class Litestar(Router):
         self.state = config.state
         self._static_files_config = config.static_files_config
         self.template_engine = config.template_config.engine_instance if config.template_config else None
-        self.websocket_class = config.websocket_class or WebSocket
+        self.websocket_class: type[WebSocket] = config.websocket_class or WebSocket
         self.debug = config.debug
         self.pdb_on_exception: bool = config.pdb_on_exception
         self.include_in_schema = include_in_schema
@@ -463,6 +463,7 @@ class Litestar(Router):
             type_encoders=config.type_encoders,
             type_decoders=config.type_decoders,
             include_in_schema=config.include_in_schema,
+            websocket_class=self.websocket_class,
         )
 
         for route_handler in config.route_handlers:

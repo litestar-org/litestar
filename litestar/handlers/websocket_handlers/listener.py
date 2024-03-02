@@ -61,6 +61,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         "connection_accept_handler": "Callback to accept a WebSocket connection. By default, calls WebSocket.accept",
         "on_accept": "Callback invoked after a WebSocket connection has been accepted",
         "on_disconnect": "Callback invoked after a WebSocket connection has been closed",
+        "weboscket_class": "WebSocket class",
         "_connection_lifespan": None,
         "_handle_receive": None,
         "_handle_send": None,
@@ -86,6 +87,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         return_dto: type[AbstractDTO] | None | EmptyType = Empty,
         signature_namespace: Mapping[str, Any] | None = None,
         type_encoders: TypeEncodersMap | None = None,
+        websocket_class: type[WebSocket] | None = None,
         **kwargs: Any,
     ) -> None:
         ...
@@ -110,6 +112,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         return_dto: type[AbstractDTO] | None | EmptyType = Empty,
         signature_namespace: Mapping[str, Any] | None = None,
         type_encoders: TypeEncodersMap | None = None,
+        websocket_class: type[WebSocket] | None = None,
         **kwargs: Any,
     ) -> None:
         ...
@@ -134,6 +137,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         return_dto: type[AbstractDTO] | None | EmptyType = Empty,
         signature_namespace: Mapping[str, Any] | None = None,
         type_encoders: TypeEncodersMap | None = None,
+        websocket_class: type[WebSocket] | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize ``WebsocketRouteHandler``
@@ -168,6 +172,8 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
                 modelling.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
+            websocket_class: A custom subclass of :class:`WebSocket <.connection.WebSocket>` to be used as route handler's
+                default websocket class.
         """
         if connection_lifespan and any([on_accept, on_disconnect, connection_accept_handler is not WebSocket.accept]):
             raise ImproperlyConfiguredException(
@@ -185,6 +191,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         self.on_accept = ensure_async_callable(on_accept) if on_accept else None
         self.on_disconnect = ensure_async_callable(on_disconnect) if on_disconnect else None
         self.type_encoders = type_encoders
+        self.websocket_class = websocket_class
 
         listener_dependencies = dict(dependencies or {})
 
@@ -209,6 +216,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
             signature_namespace=signature_namespace,
             dto=dto,
             return_dto=return_dto,
+            websocket_class=websocket_class,
             **kwargs,
         )
 
@@ -346,6 +354,11 @@ class WebsocketListener(ABC):
     """
     type_encoders: A mapping of types to callables that transform them into types supported for serialization.
     """
+    websocket_class: type[WebSocket] | None = None
+    """
+    websocket_class: A custom subclass of :class:`WebSocket <.connection.WebSocket>` to be used as route handler's
+    default websocket class.
+    """
 
     def __init__(self, owner: Router) -> None:
         """Initialize a WebsocketListener instance.
@@ -372,6 +385,7 @@ class WebsocketListener(ABC):
             return_dto=self.return_dto,
             signature_namespace=self.signature_namespace,
             type_encoders=self.type_encoders,
+            websocket_class=self.websocket_class,
         )(self.on_receive)
         handler.owner = self._owner
         return handler
