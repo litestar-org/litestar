@@ -1707,8 +1707,9 @@ On the other hand, the shutdown hooks are invoked in their specified order.</p>
 </section>
 <section id="using-application-state">
 <span id="application-state"></span><h2>Using Application State<a class="headerlink" href="#using-application-state" title="Permalink to this heading">#</a></h2>
-<p>As seen in the examples for the <a class="reference external" href="#before-after-startup">on_startup</a> / <a class="reference external" href="#before-after-shutdown">on_shutdown</a> ,
-callables passed to these hooks can receive an optional kwarg called <code class="docutils literal notranslate"><span class="pre">state</span></code>, which is the application’s state object.
+<p>As seen in the examples for the <cite>on_startup / on_shutdown &lt;Startup and Shutdown&gt;</cite>,
+callables passed to these hooks can receive an optional kwarg called <code class="docutils literal notranslate"><span class="pre">app</span></code>, through which the application’s state object
+and other properties can be accessed.
 The advantage of using application <code class="docutils literal notranslate"><span class="pre">state</span></code>, is that it can be accessed during multiple stages of the connection, and
 it can be injected into dependencies and route handlers.</p>
 <p>The Application State is an instance of the <a class="reference internal" href="../reference/datastructures.html#litestar.datastructures.State" title="litestar.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a> datastructure, and it is accessible
@@ -1909,8 +1910,7 @@ If a list is provided, it is called in the order it is given.</p>
 <section id="after-exception">
 <h3>After Exception<a class="headerlink" href="#after-exception" title="Permalink to this heading">#</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">after_exception</span></code> hook takes a <a class="reference internal" href="../reference/types.html#litestar.types.AfterExceptionHookHandler" title="litestar.types.AfterExceptionHookHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">sync</span> <span class="pre">or</span> <span class="pre">async</span> <span class="pre">callable</span></code></a> that is called with
-three arguments: the <code class="docutils literal notranslate"><span class="pre">exception</span></code> that occurred, the ASGI <code class="docutils literal notranslate"><span class="pre">scope</span></code> of the request or websocket connection, and the
-application <code class="docutils literal notranslate"><span class="pre">state</span></code>.</p>
+two arguments: the <code class="docutils literal notranslate"><span class="pre">exception</span></code> that occurred and the ASGI <code class="docutils literal notranslate"><span class="pre">scope</span></code> of the request or websocket connection.</p>
 <div class="literal-block-wrapper docutils container" id="id14">
 <div class="code-block-caption"><span class="caption-text">After Exception Hook</span><a class="headerlink" href="#id14" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
@@ -1961,7 +1961,7 @@ To handle exceptions you should define <a class="reference internal" href="excep
 <section id="before-send">
 <h3>Before Send<a class="headerlink" href="#before-send" title="Permalink to this heading">#</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">before_send</span></code> hook takes a <a class="reference internal" href="../reference/types.html#litestar.types.BeforeMessageSendHookHandler" title="litestar.types.BeforeMessageSendHookHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">sync</span> <span class="pre">or</span> <span class="pre">async</span> <span class="pre">callable</span></code></a> that is called when
-an ASGI message is sent. The hook receives the message instance and the application state.</p>
+an ASGI message is sent. The hook receives the message instance and the ASGI <code class="docutils literal notranslate"><span class="pre">scope</span></code>.</p>
 <div class="sd-tab-set docutils">
 <input id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-8">

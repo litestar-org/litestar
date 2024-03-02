@@ -1865,6 +1865,12 @@ with minimal boilerplate:</p>
 <p>Without any extra configuration, every call to <code class="docutils literal notranslate"><span class="pre">app.stores.get</span></code> with a unique name will return a namespace for this
 name only, while re-using the underlying Redis instance.</p>
 </section>
+<section id="store-lifetime">
+<h3>Store lifetime<a class="headerlink" href="#store-lifetime" title="Permalink to this heading">#</a></h3>
+<p>Stores may not be automatically closed when the application is shut down.
+This is the case in particular for the RedisStore if you are not using the class method <a class="reference internal" href="../reference/stores/redis.html#litestar.stores.redis.RedisStore.with_client" title="litestar.stores.redis.RedisStore.with_client"><code class="xref py py-meth docutils literal notranslate"><span class="pre">RedisStore.with_client</span></code></a> and passing in your own Redis instance.
+In this case you’re responsible to close the Redis instance yourself.</p>
+</section>
 </section>
 </section>
 
@@ -1927,6 +1933,7 @@ name only, while re-using the underlying Redis instance.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-default-factory">The default factory</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#using-the-registry-to-configure-integrations">Using the registry to configure integrations</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-the-default-factory-with-namespacing">Setting up the default factory with namespacing</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#store-lifetime">Store lifetime</a></li>
 </ul>
 </li>
 </ul>

@@ -711,11 +711,11 @@ instances.
 .. admonition:: Layered architecture
     :class: seealso
 
-   Response classes are part of Litestar's layered architecture, which means you can
-   set a response class on every layer of the application. If you have set a response
-   class on multiple layers, the layer closest to the route handler will take precedence.
+    Response classes are part of Litestar's layered architecture, which means you can
+    set a response class on every layer of the application. If you have set a response
+    class on multiple layers, the layer closest to the route handler will take precedence.
 
-   You can read more about this here: :ref:`usage/applications:layered architecture`
+    You can read more about this here: :ref:`usage/applications:layered architecture`
 
 Background Tasks
 ----------------

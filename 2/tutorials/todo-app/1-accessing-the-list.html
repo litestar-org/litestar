@@ -1509,7 +1509,7 @@ document.write(`
 <section id="intro">
 <h2>Intro<a class="headerlink" href="#intro" title="Permalink to this heading">#</a></h2>
 <p>The first thing you’ll be setting up for our app is a route handler that returns a
-single TODO-list. A TODO-list in this case will be a list of dictionaries representing
+single TODO list. A TODO list in this case will be a list of dictionaries representing
 the items on that TODO list.</p>
 <div class="sd-tab-set docutils">
 <input id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
@@ -1671,7 +1671,7 @@ knows how to turn these dataclasses into JSON and will do so for you automatical
 <p>Currently <code class="docutils literal notranslate"><span class="pre">get_list</span></code> will always return all items on the list, but what if you
 are interested in only those items with a specific status, for example all items that
 are not yet marked as <em>done</em>?</p>
-<p>For this you can employ query parameters; To define a query parameter, all that’s needed
+<p>For this you can employ query parameters; to define a query parameter, all that’s needed
 is to add an otherwise unused parameter to the function. Litestar will recognize this
 and infer that it’s going to be used as a query parameter. When a request is being made,
 the query parameter will be extracted from the URL, and passed to the function parameter
@@ -1887,7 +1887,7 @@ handle them for you!</p>
 <section id="converting-and-validating-query-parameters">
 <h3>Converting and validating query parameters<a class="headerlink" href="#converting-and-validating-query-parameters" title="Permalink to this heading">#</a></h3>
 <p>As mentioned earlier, type annotations can be used for more than static type checking
-in Litestar; They can also define and configure behaviour. In this case, you can get
+in Litestar; they can also define and configure behaviour. In this case, you can get
 Litestar to convert the query parameter to a boolean value, matching the values of the
 <code class="docutils literal notranslate"><span class="pre">TodoItem.done</span></code> attribute, and in the same step validate it, returning error responses
 for you should the supplied value not be a valid boolean.</p>
@@ -1981,7 +1981,7 @@ instead.</p>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>It is important to note that this conversion is not the result of calling
-<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> on the raw value. <code class="docutils literal notranslate"><span class="pre">bool(&quot;john&quot;)</span></code> would be <code class="docutils literal notranslate"><span class="pre">True</span></code>, since Python
+<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a> on the raw value. <code class="docutils literal notranslate"><span class="pre">bool(&quot;john&quot;)</span></code> would be <a class="reference external" href="https://docs.python.org/3/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code></a>, since Python
 considers all non-empty strings to be truthy.</p>
 <p>Litestar however supports customary boolean representation commonly used in the HTTP
 world; <code class="docutils literal notranslate"><span class="pre">true</span></code> and <code class="docutils literal notranslate"><span class="pre">1</span></code> are both converted to <a class="reference external" href="https://docs.python.org/3/library/constants.html#True" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">True</span></code></a>, while <code class="docutils literal notranslate"><span class="pre">false</span></code>
