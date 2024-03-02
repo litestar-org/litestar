@@ -136,7 +136,7 @@ def pydantic_get_type_hints_with_generics_resolved(
 
     origin = pydantic_unwrap_and_get_origin(annotation)
     if origin is None:
-        if model_annotations is None:
+        if model_annotations is None:  # pragma: no cover
             model_annotations = get_type_hints(
                 annotation, globalns=globalns, localns=localns, include_extras=include_extras
             )
