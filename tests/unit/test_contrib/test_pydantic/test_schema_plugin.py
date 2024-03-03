@@ -91,16 +91,36 @@ class V1ModelWithPrivateFields(pydantic_v1.BaseModel):
     _underscore_field: "foo"  # type: ignore[name-defined]  # noqa: F821
 
 
-class V2ModelWithPrivateFields(pydantic_v2.BaseModel):
+class V1GenericModelWithPrivateFields(pydantic_v1.generics.GenericModel, Generic[T]):
     class Config:
         underscore_fields_are_private = True
 
+    _field: str = pydantic_v1.PrivateAttr()
+    # include an invalid annotation here to ensure we never touch those fields
+    _underscore_field: "foo"  # type: ignore[name-defined]  # noqa: F821
+
+
+class V2ModelWithPrivateFields(pydantic_v2.BaseModel):
     _field: str = pydantic_v2.PrivateAttr()
     # include an invalid annotation here to ensure we never touch those fields
     _underscore_field: "foo"  # type: ignore[name-defined] # noqa: F821
 
 
-@pytest.mark.parametrize("model_class", [V1ModelWithPrivateFields, V2ModelWithPrivateFields])
+class V2GenericModelWithPrivateFields(pydantic_v2.BaseModel, Generic[T]):
+    _field: str = pydantic_v2.PrivateAttr()
+    # include an invalid annotation here to ensure we never touch those fields
+    _underscore_field: "foo"  # type: ignore[name-defined] # noqa: F821
+
+
+@pytest.mark.parametrize(
+    "model_class",
+    [
+        V1ModelWithPrivateFields,
+        V1GenericModelWithPrivateFields,
+        V2ModelWithPrivateFields,
+        V2GenericModelWithPrivateFields,
+    ],
+)
 def test_exclude_private_fields(model_class: Type[Union[pydantic_v1.BaseModel, pydantic_v2.BaseModel]]) -> None:
     # https://github.com/litestar-org/litestar/issues/3150
     schema = PydanticSchemaPlugin.for_pydantic_model(
