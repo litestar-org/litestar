@@ -163,7 +163,7 @@ def decode_json(value: str | bytes, target_type: type[T], type_decoders: TypeDec
     ...
 
 
-def decode_json(  # type: ignore
+def decode_json(  # type: ignore[misc]
     value: str | bytes,
     target_type: type[T] | EmptyType = Empty,  # pyright: ignore
     type_decoders: TypeDecodersSequence | None = None,
