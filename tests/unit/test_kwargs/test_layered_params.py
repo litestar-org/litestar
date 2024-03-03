@@ -115,7 +115,7 @@ def test_layered_parameters_validation(parameter: str, param_type: str) -> None:
         response = client.get("/router/controller/1", params=query, headers=headers)
 
         assert response.status_code == HTTP_400_BAD_REQUEST
-        assert response.json()["detail"].startswith(f"Missing required {param_type} parameter '{parameter}' for url")
+        assert response.json()["detail"].startswith(f"Missing required {param_type} parameter '{parameter}' for path")
 
 
 def test_layered_parameters_defaults_and_overrides() -> None:

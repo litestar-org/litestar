@@ -216,8 +216,8 @@ class Litestar(Router):
         stores: StoreRegistry | dict[str, Store] | None = None,
         tags: Sequence[str] | None = None,
         template_config: TemplateConfigType | None = None,
-        type_encoders: TypeEncodersMap | None = None,
         type_decoders: TypeDecodersSequence | None = None,
+        type_encoders: TypeEncodersMap | None = None,
         websocket_class: type[WebSocket] | None = None,
         lifespan: Sequence[Callable[[Litestar], AbstractAsyncContextManager] | AbstractAsyncContextManager]
         | None = None,
@@ -308,9 +308,9 @@ class Litestar(Router):
             tags: A sequence of string tags that will be appended to the schema of all route handlers under the
                 application.
             template_config: An instance of :class:`TemplateConfig <.template.TemplateConfig>`
-            type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
                 hook for deserialization.
+            type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             websocket_class: An optional subclass of :class:`WebSocket <.connection.WebSocket>` to use for websocket
                 connections.
             experimental_features: An iterable of experimental features to enable
@@ -388,7 +388,12 @@ class Litestar(Router):
 
         self._openapi_schema: OpenAPI | None = None
         self._debug: bool = True
+        self.stores: StoreRegistry = (
+            config.stores if isinstance(config.stores, StoreRegistry) else StoreRegistry(config.stores)
+        )
         self._lifespan_managers = config.lifespan
+        for store in self.stores._stores.values():
+            self._lifespan_managers.append(store)
         self._server_lifespan_managers = [p.server_lifespan for p in config.plugins or [] if isinstance(p, CLIPlugin)]
         self.experimental_features = frozenset(config.experimental_features or [])
         self.get_logger: GetLogger = get_logger_placeholder
@@ -408,12 +413,12 @@ class Litestar(Router):
         self.on_shutdown = config.on_shutdown
         self.on_startup = config.on_startup
         self.openapi_config = config.openapi_config
-        self.request_class = config.request_class or Request
+        self.request_class: type[Request] = config.request_class or Request
         self.response_cache_config = config.response_cache_config
         self.state = config.state
         self._static_files_config = config.static_files_config
         self.template_engine = config.template_config.engine_instance if config.template_config else None
-        self.websocket_class = config.websocket_class or WebSocket
+        self.websocket_class: type[WebSocket] = config.websocket_class or WebSocket
         self.debug = config.debug
         self.pdb_on_exception: bool = config.pdb_on_exception
         self.include_in_schema = include_in_schema
@@ -444,6 +449,7 @@ class Litestar(Router):
             opt=config.opt,
             parameters=config.parameters,
             path="",
+            request_class=self.request_class,
             response_class=config.response_class,
             response_cookies=config.response_cookies,
             response_headers=config.response_headers,
@@ -457,6 +463,7 @@ class Litestar(Router):
             type_encoders=config.type_encoders,
             type_decoders=config.type_decoders,
             include_in_schema=config.include_in_schema,
+            websocket_class=self.websocket_class,
         )
 
         for route_handler in config.route_handlers:
@@ -470,10 +477,6 @@ class Litestar(Router):
             self.register(static_config.to_static_files_app())
 
         self.asgi_handler = self._create_asgi_handler()
-
-        self.stores: StoreRegistry = (
-            config.stores if isinstance(config.stores, StoreRegistry) else StoreRegistry(config.stores)
-        )
 
     @property
     @deprecated(version="2.6.0", kind="property", info="Use create_static_files router instead")
