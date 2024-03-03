@@ -90,8 +90,8 @@ class BaseRouteHandler:
         return_dto: type[AbstractDTO] | None | EmptyType = Empty,
         signature_namespace: Mapping[str, Any] | None = None,
         signature_types: Sequence[Any] | None = None,
-        type_encoders: TypeEncodersMap | None = None,
         type_decoders: TypeDecodersSequence | None = None,
+        type_encoders: TypeEncodersMap | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize ``HTTPRouteHandler``.
@@ -115,8 +115,8 @@ class BaseRouteHandler:
                 modelling.
             signature_types: A sequence of types for use in forward reference resolution during signature modeling.
                 These types will be added to the signature namespace using their ``__name__`` attribute.
-            type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization.
+            type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         self._parsed_fn_signature: ParsedSignature | EmptyType = Empty
