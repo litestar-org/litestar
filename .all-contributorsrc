@@ -1631,6 +1631,24 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "benluo",
+      "name": "Ben Luo",
+      "avatar_url": "https://avatars.githubusercontent.com/u/70398?v=4",
+      "profile": "http://www.benluo.cc",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "hugovk",
+      "name": "Hugo van Kemenade",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1324225?v=4",
+      "profile": "https://github.com/hugovk",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
