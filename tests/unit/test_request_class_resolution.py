@@ -1,8 +1,9 @@
-from typing import Type, Union
+from typing import Optional, Type
 
 import pytest
 
 from litestar import Controller, HttpMethod, Litestar, Request, Router, get
+from litestar.handlers.http_handlers.base import HTTPRouteHandler
 
 RouterRequest: Type[Request] = type("RouterRequest", (Request,), {})
 ControllerRequest: Type[Request] = type("ControllerRequest", (Request,), {})
@@ -30,10 +31,10 @@ HandlerRequest: Type[Request] = type("HandlerRequest", (Request,), {})
     ),
 )
 def test_request_class_resolution_of_layers(
-    handler_request_class: Union[Type[Request], None],
-    controller_request_class: Union[Type[Request], None],
-    router_request_class: Union[Type[Request], None],
-    app_request_class: Union[Type[Request], None],
+    handler_request_class: Optional[Type[Request]],
+    controller_request_class: Optional[Type[Request]],
+    router_request_class: Optional[Type[Request]],
+    app_request_class: Optional[Type[Request]],
     has_default_app_class: bool,
     expected: Type[Request],
 ) -> None:
@@ -53,9 +54,9 @@ def test_request_class_resolution_of_layers(
     app = Litestar(route_handlers=[router])
 
     if app_request_class or not has_default_app_class:
-        app.request_class = app_request_class  # type: ignore
+        app.request_class = app_request_class  # type: ignore[assignment]
 
-    route_handler, _ = app.routes[0].route_handler_map[HttpMethod.GET]  # type: ignore
+    route_handler: HTTPRouteHandler = app.route_handler_method_map["/"][HttpMethod.GET]  # type: ignore[assignment]
 
     if handler_request_class:
         route_handler.request_class = handler_request_class
