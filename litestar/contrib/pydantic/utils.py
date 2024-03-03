@@ -132,7 +132,7 @@ def pydantic_get_type_hints_with_generics_resolved(
     model_annotations: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     if pydantic_v2 is Empty or (pydantic_v1 is not Empty and is_class_and_subclass(annotation, pydantic_v1.BaseModel)):
-        return get_type_hints_with_generics_resolved(annotation)
+        return get_type_hints_with_generics_resolved(annotation, type_hints=model_annotations)
 
     origin = pydantic_unwrap_and_get_origin(annotation)
     if origin is None:
