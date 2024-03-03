@@ -33,7 +33,7 @@ def test_parses_values_from_connection_kwargs_raises() -> None:
 
 def test_create_signature_validation() -> None:
     @get()
-    def my_fn(typed: int, untyped) -> None:  # type: ignore
+    def my_fn(typed: int, untyped) -> None:  # type: ignore[no-untyped-def]
         pass
 
     with pytest.raises(ImproperlyConfiguredException):
