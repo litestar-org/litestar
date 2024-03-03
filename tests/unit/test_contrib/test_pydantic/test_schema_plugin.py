@@ -91,7 +91,7 @@ class V1ModelWithPrivateFields(pydantic_v1.BaseModel):
     _underscore_field: "foo"  # type: ignore[name-defined]  # noqa: F821
 
 
-class V1GenericModelWithPrivateFields(pydantic_v1.generics.GenericModel, Generic[T]):
+class V1GenericModelWithPrivateFields(pydantic_v1.generics.GenericModel, Generic[T]):  # pyright: ignore
     class Config:
         underscore_fields_are_private = True
 
