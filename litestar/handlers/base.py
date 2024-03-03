@@ -149,7 +149,7 @@ class BaseRouteHandler:
         self.type_encoders = type_encoders
 
         self.paths = (
-            {normalize_path(p) for p in path} if path and isinstance(path, list) else {normalize_path(path or "/")}  # type: ignore
+            {normalize_path(p) for p in path} if path and isinstance(path, list) else {normalize_path(path or "/")}  # type: ignore[arg-type]
         )
 
     def __call__(self, fn: AsyncAnyCallable) -> Self:
@@ -523,7 +523,7 @@ class BaseRouteHandler:
     async def authorize_connection(self, connection: ASGIConnection) -> None:
         """Ensure the connection is authorized by running all the route guards in scope."""
         for guard in self.resolve_guards():
-            await guard(connection, copy(self))  # type: ignore
+            await guard(connection, copy(self))  # type: ignore[misc]
 
     @staticmethod
     def _validate_dependency_is_unique(dependencies: dict[str, Provide], key: str, provider: Provide) -> None:
