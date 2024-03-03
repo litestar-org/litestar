@@ -223,6 +223,8 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
             signature_namespace=signature_namespace,
             dto=dto,
             return_dto=return_dto,
+            type_decoders=type_decoders,
+            type_encoders=type_encoders,
             websocket_class=websocket_class,
             **kwargs,
         )
@@ -357,6 +359,11 @@ class WebsocketListener(ABC):
     """
     A mapping of names to types for use in forward reference resolution during signature modelling.
     """
+    type_decoders: TypeDecodersSequence | None = None
+    """
+    type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
+        hook for deserialization.
+    """
     type_encoders: TypeEncodersMap | None = None
     """
     type_encoders: A mapping of types to callables that transform them into types supported for serialization.
@@ -391,6 +398,7 @@ class WebsocketListener(ABC):
             path=self.path,
             return_dto=self.return_dto,
             signature_namespace=self.signature_namespace,
+            type_decoders=self.type_decoders,
             type_encoders=self.type_encoders,
             websocket_class=self.websocket_class,
         )(self.on_receive)
