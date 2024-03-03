@@ -577,7 +577,7 @@ class Litestar(Router):
         await self.asgi_handler(scope, receive, self._wrap_send(send=send, scope=scope))  # type: ignore[arg-type]
 
     async def _call_lifespan_hook(self, hook: LifespanHook) -> None:
-        ret = hook(self) if inspect.signature(hook).parameters else hook()  # type: ignore
+        ret = hook(self) if inspect.signature(hook).parameters else hook()  # type: ignore[call-arg]
 
         if is_async_callable(hook):  # pyright: ignore[reportGeneralTypeIssues]
             await ret

@@ -137,7 +137,7 @@ class KwargsModel:
             "headers": headers_extractor,
             "cookies": cookies_extractor,
             "query": query_extractor,
-            "body": body_extractor,  # type: ignore
+            "body": body_extractor,  # type: ignore[dict-item]
         }
 
         extractors: list[Callable[[dict[str, Any], ASGIConnection], None]] = [

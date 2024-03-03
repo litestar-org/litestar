@@ -543,7 +543,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             data = return_dto_type(request).data_to_encodable_type(data)
 
         response_handler = self.get_response_handler(is_response_type_data=isinstance(data, Response))
-        return await response_handler(app=app, data=data, request=request)  # type: ignore
+        return await response_handler(app=app, data=data, request=request)  # type: ignore[call-arg]
 
     def on_registration(self, app: Litestar) -> None:
         super().on_registration(app)

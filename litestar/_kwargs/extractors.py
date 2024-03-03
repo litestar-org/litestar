@@ -135,7 +135,7 @@ def create_query_default_dict(
 
     for k, v in parsed_query:
         if k in sequence_query_parameter_names:
-            output[k].append(v)  # type: ignore
+            output[k].append(v)  # type: ignore[union-attr]
         else:
             output[k] = v
 
