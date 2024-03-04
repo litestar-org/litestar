@@ -41,6 +41,7 @@ class ScopeState:
         "msgpack",
         "parsed_query",
         "response_compressed",
+        "session_id",
         "url",
         "_compat_ns",
     )
@@ -62,6 +63,7 @@ class ScopeState:
         self.msgpack = Empty
         self.parsed_query = Empty
         self.response_compressed = Empty
+        self.session_id = Empty
         self.url = Empty
         self._compat_ns: dict[str, Any] = {}
 
@@ -81,6 +83,7 @@ class ScopeState:
     msgpack: Any | EmptyType
     parsed_query: tuple[tuple[str, str], ...] | EmptyType
     response_compressed: bool | EmptyType
+    session_id: str | None | EmptyType
     url: URL | EmptyType
     _compat_ns: dict[str, Any]
 
