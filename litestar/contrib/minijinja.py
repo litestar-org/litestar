@@ -53,9 +53,7 @@ class StateProtocol(Protocol):
         ...
 
 
-def _transform_state(
-    func: TemplateCallableType[Mapping[str, Any], P, T],
-) -> TemplateCallableType[Mapping[str, Any], P, T]:
+def _transform_state(func: TemplateCallableType[Mapping[str, Any], P, T]) -> TemplateCallableType[StateProtocol, P, T]:
     """Transform a template callable to receive a ``StateProtocol`` instance as first argument.
 
     This is for wrapping callables like ``url_for()`` that receive a mapping as first argument so they can be used
@@ -181,7 +179,7 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
             return hasattr(func, "__wrapped__") or func.__name__ not in globals()
 
         if not is_decorated(template_callable):
-            template_callable = _transform_state(template_callable)
+            template_callable = _transform_state(template_callable)  # type: ignore[arg-type]
         self.engine.add_global(key, pass_state(template_callable))
 
     def render_string(self, template_string: str, context: Mapping[str, Any]) -> str:

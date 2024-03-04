@@ -45,8 +45,7 @@ class CustomCategory(str, Enum):
 )
 def test_flash_plugin(
     tmp_path: Path,
-    # would gladly remove the ignore that works in test_template, not sure why not here
-    engine: type[TemplateEngineProtocol],  # type: ignore[type-arg]
+    engine: type[TemplateEngineProtocol],
     template_str: str,
     category_enum: Enum,
 ) -> None:
