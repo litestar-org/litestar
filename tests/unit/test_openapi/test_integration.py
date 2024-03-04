@@ -371,3 +371,31 @@ def test_multiple_handlers_for_same_route() -> None:
     path_item = openapi.paths["/"]
     assert path_item.get is not None
     assert path_item.post is not None
+
+
+@pytest.mark.parametrize(("random_seed_one", "random_seed_two", "should_be_equal"), [(10, 10, True), (10, 20, False)])
+def test_seeding(random_seed_one: int, random_seed_two: int, should_be_equal: bool) -> None:
+    @post("/", sync_to_thread=False)
+    def post_handler(q: str) -> None:
+        ...
+
+    @get("/", sync_to_thread=False)
+    def get_handler(q: str) -> None:
+        ...
+
+    app = Litestar(
+        [get_handler, post_handler], openapi_config=OpenAPIConfig("Litestar", "v0.0.1", True, random_seed_one)
+    )
+    openapi_plugin = app.plugins.get(OpenAPIPlugin)
+    openapi_one = openapi_plugin.provide_openapi()
+
+    app = Litestar(
+        [get_handler, post_handler], openapi_config=OpenAPIConfig("Litestar", "v0.0.1", True, random_seed_two)
+    )
+    openapi_plugin = app.plugins.get(OpenAPIPlugin)
+    openapi_two = openapi_plugin.provide_openapi()
+
+    if should_be_equal:
+        assert openapi_one == openapi_two
+    else:
+        assert openapi_one != openapi_two
