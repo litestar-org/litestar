@@ -1498,6 +1498,19 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.6.3">
+<h2>2.6.3<a class="headerlink" href="#2.6.3" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2024-03-04<section id="2.6.3-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.6.3-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Pydantic V1 schema generation for PrivateAttr in GenericModel<a class="headerlink reference internal" href="#2.6.3-pydantic v1 schema generation for privateattr in genericmodel" id="2.6.3-pydantic v1 schema generation for privateattr in genericmodel">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fixes a bug that caused a <code class="docutils literal notranslate"><span class="pre">NameError</span></code> when a Pydantic V1 <code class="docutils literal notranslate"><span class="pre">GenericModel</span></code> has a private attribute of which the type annotation cannot be resolved at the time of schema generation.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3150">litestar-org/litestar#3150</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3161">litestar-org/litestar#3161</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.6.2">
 <h2>2.6.2<a class="headerlink" href="#2.6.2" title="Permalink to this heading">#</a></h2>
 <strong>Released: </strong>2024/03/02<section id="2.6.2-bugfix">
@@ -5305,6 +5318,10 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.6.3">2.6.3</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.6.3-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.6.2">2.6.2</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.6.2-bugfix">Bugfixes</a></li>
 </ul>
