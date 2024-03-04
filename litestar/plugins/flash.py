@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from enum import Enum
 from typing import Any, Mapping
 
 from litestar.config.app import AppConfig
@@ -9,14 +8,6 @@ from litestar.plugins import InitPluginProtocol
 from litestar.template import TemplateConfig
 from litestar.template.base import _get_request_from_context
 from litestar.utils.scope.state import ScopeState
-
-
-class FlashDefaultCategory(str, Enum):
-    """Default Flash message categories."""
-
-    default = "default"
-    danger = "danger"
-    success = "success"
 
 
 @dataclass

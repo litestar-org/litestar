@@ -9,7 +9,7 @@ from litestar import Request, get
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.contrib.mako import MakoTemplateEngine
 from litestar.contrib.minijinja import MiniJinjaTemplateEngine
-from litestar.plugins.flash import FlashConfig, FlashDefaultCategory, FlashPlugin, flash
+from litestar.plugins.flash import FlashConfig, FlashPlugin, flash
 from litestar.response import Template
 from litestar.template import TemplateConfig, TemplateEngineProtocol
 from litestar.testing import create_test_client
@@ -23,10 +23,16 @@ text_html_mako = """<% messages = get_flashes() %>\\
 
 
 class CustomCategory(str, Enum):
-    custom1 = "custom1"
-    custom2 = "custom2"
-    custom3 = "custom3"
-    custom4 = "custom4"
+    custom1 = "1"
+    custom2 = "2"
+    custom3 = "3"
+
+
+class FlashCategory(str, Enum):
+    info = "INFO"
+    error = "ERROR"
+    warning = "WARNING"
+    success = "SUCCESS"
 
 
 @pytest.mark.parametrize(
@@ -40,8 +46,8 @@ class CustomCategory(str, Enum):
 )
 @pytest.mark.parametrize(
     "category_enum",
-    (FlashDefaultCategory, CustomCategory),
-    ids=("default_category", "custom_category"),
+    (CustomCategory, FlashCategory),
+    ids=("custom_category", "flash_category"),
 )
 def test_flash_plugin(
     tmp_path: Path,
