@@ -3,6 +3,17 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.6.3
+    :date: 2024-03-04
+
+    .. change:: Pydantic V1 schema generation for PrivateAttr in GenericModel
+        :type: bugfix
+        :pr: 3161
+        :issue: 3150
+
+        Fixes a bug that caused a ``NameError`` when a Pydantic V1 ``GenericModel`` has a private attribute of which the type annotation cannot be resolved at the time of schema generation.
+
+
 .. changelog:: 2.6.2
     :date: 2024/03/02
 
