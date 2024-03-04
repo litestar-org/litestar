@@ -511,7 +511,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
                 self,
                 "GET",
                 url,
-                headers={**dict(headers or {}), **default_headers},  # type: ignore
+                headers={**dict(headers or {}), **default_headers},  # type: ignore[misc]
                 params=params,
                 cookies=cookies,
                 auth=auth,

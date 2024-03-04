@@ -157,10 +157,10 @@ class Controller:
 
     These types will be added to the signature namespace using their ``__name__`` attribute.
     """
-    type_encoders: TypeEncodersMap | None
-    """A mapping of types to callables that transform them into types supported for serialization."""
     type_decoders: TypeDecodersSequence | None
     """A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization."""
+    type_encoders: TypeEncodersMap | None
+    """A mapping of types to callables that transform them into types supported for serialization."""
     websocket_class: type[WebSocket] | None
     """A custom subclass of :class:`WebSocket <.connection.WebSocket>` to be used as the default websocket for all route
     handlers under the controller.

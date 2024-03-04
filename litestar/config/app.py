@@ -198,10 +198,10 @@ class AppConfig:
     """A list of string tags that will be appended to the schema of all route handlers under the application."""
     template_config: TemplateConfigType | None = field(default=None)
     """An instance of :class:`TemplateConfig <.template.TemplateConfig>`."""
-    type_encoders: TypeEncodersMap | None = field(default=None)
-    """A mapping of types to callables that transform them into types supported for serialization."""
     type_decoders: TypeDecodersSequence | None = field(default=None)
     """A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization."""
+    type_encoders: TypeEncodersMap | None = field(default=None)
+    """A mapping of types to callables that transform them into types supported for serialization."""
     websocket_class: type[WebSocket] | None = field(default=None)
     """An optional subclass of :class:`WebSocket <.connection.WebSocket>` to use for websocket connections."""
     multipart_form_part_limit: int = field(default=1000)
