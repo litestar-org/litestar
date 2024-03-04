@@ -53,7 +53,9 @@ class StateProtocol(Protocol):
         ...
 
 
-def _transform_state(func: TemplateCallableType[Mapping[str, Any], P, T]) -> TemplateCallableType[StateProtocol, P, T]:
+def _transform_state(
+    func: TemplateCallableType[Mapping[str, Any], P, T],
+) -> TemplateCallableType[Mapping[str, Any], P, T]:
     """Transform a template callable to receive a ``StateProtocol`` instance as first argument.
 
     This is for wrapping callables like ``url_for()`` that receive a mapping as first argument so they can be used
