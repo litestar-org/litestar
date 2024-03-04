@@ -1,3 +1,4 @@
+=======
 Plugins
 =======
 
@@ -123,3 +124,8 @@ signature (their :func:`__init__` method).
 .. literalinclude:: /examples/plugins/di_plugin.py
    :language: python
    :caption: Dynamically generating signature information for a custom type
+
+.. toctree::
+    :titlesonly:
+
+    flash_messages
