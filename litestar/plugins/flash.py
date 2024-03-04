@@ -36,7 +36,11 @@ class FlashPlugin(InitPluginProtocol):
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
         """Register the message callable on the template engine instance."""
         if isinstance(self.config.template_config.engine_instance, MiniJinjaTemplateEngine):
-            self.config.template_config.engine_instance.register_template_callable("get_flashes", get_flashes, True)
+            from litestar.contrib.minijinja import _transform_state
+
+            self.config.template_config.engine_instance.register_template_callable(
+                "get_flashes", _transform_state(get_flashes)
+            )
         else:
             self.config.template_config.engine_instance.register_template_callable("get_flashes", get_flashes)
         return app_config
