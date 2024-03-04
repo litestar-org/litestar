@@ -22,7 +22,7 @@ Usage
     metrics/index
     middleware/index
     openapi
-    plugins
+    plugins/indx
     responses
     security/index
     static-files
