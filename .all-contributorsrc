@@ -1649,6 +1649,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "error418",
+      "name": "Michael Gerbig",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7716544?v=4",
+      "profile": "https://error418.github.io",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
