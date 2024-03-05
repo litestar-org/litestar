@@ -9,7 +9,7 @@ import pytest
 import yaml
 from typing_extensions import Annotated
 
-from litestar import Controller, Litestar, get, post
+from litestar import Controller, Litestar, delete, get, patch, post
 from litestar._openapi.plugin import OpenAPIPlugin
 from litestar.app import DEFAULT_OPENAPI_CONFIG
 from litestar.enums import MediaType, OpenAPIMediaType, ParamType
@@ -399,3 +399,47 @@ def test_seeding(random_seed_one: int, random_seed_two: int, should_be_equal: bo
         assert openapi_one == openapi_two
     else:
         assert openapi_one != openapi_two
+
+
+def test_components_schemas_in_alphabetical_order() -> None:
+    # https://github.com/litestar-org/litestar/issues/3059
+
+    @dataclass
+    class A:
+        ...
+
+    @dataclass
+    class B:
+        ...
+
+    @dataclass
+    class C:
+        ...
+
+    class TestController(Controller):
+        @post("/", sync_to_thread=False)
+        def post_handler(self, data: B) -> None:
+            ...
+
+        @get("/", sync_to_thread=False)
+        def get_handler(self) -> A:
+            ...
+
+        @patch("/")
+        def patch_handler(self, data: C) -> A:
+            ...
+
+        @delete("/")
+        def delete_handler(self, data: B) -> None:
+            ...
+
+    app = Litestar([TestController], signature_types=[A, B, C])
+    openapi_plugin = app.plugins.get(OpenAPIPlugin)
+    openapi = openapi_plugin.provide_openapi()
+
+    expected_keys = [
+        "test_components_schemas_in_alphabetical_order.A",
+        "test_components_schemas_in_alphabetical_order.B",
+        "test_components_schemas_in_alphabetical_order.C",
+    ]
+    assert list(openapi.components.schemas.keys()) == expected_keys
