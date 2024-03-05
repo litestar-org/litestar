@@ -69,6 +69,7 @@ if TYPE_CHECKING:
     from litestar._openapi.datastructures import OpenAPIContext
     from litestar.openapi.spec import Example, Reference
     from litestar.plugins import OpenAPISchemaPluginProtocol
+    from litestar.types.serialization import PydanticFieldsList
 
 KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP: dict[str, str] = {
     "content_encoding": "content_encoding",
@@ -246,11 +247,26 @@ def create_schema_for_annotation(annotation: Any) -> Schema:
 
 
 class SchemaCreator:
-    __slots__ = ("generate_examples", "plugins", "prefer_alias", "schema_registry")
+    __slots__ = (
+        "exclude",
+        "exclude_defaults",
+        "exclude_none",
+        "exclude_unset",
+        "include",
+        "generate_examples",
+        "plugins",
+        "prefer_alias",
+        "schema_registry",
+    )
 
     def __init__(
         self,
+        exclude: PydanticFieldsList = None,
+        exclude_defaults: bool = False,
+        exclude_none: bool = False,
+        exclude_unset: bool = False,
         generate_examples: bool = False,
+        include: PydanticFieldsList = None,
         plugins: Iterable[OpenAPISchemaPluginProtocol] | None = None,
         prefer_alias: bool = True,
         schema_registry: SchemaRegistry | None = None,
@@ -258,12 +274,22 @@ class SchemaCreator:
         """Instantiate a SchemaCreator.
 
         Args:
+            exclude: Whether to exclude specified fields.
+            exclude_defaults: Whether to exclude default fields.
+            exclude_none: Whether to exclude None value fields.
+            exclude_unset: Whether to exclude not set fields.
             generate_examples: Whether to generate examples if none are given.
+            include: Whether to include only specified fields.
             plugins: A list of plugins.
             prefer_alias: Whether to prefer the alias name for the schema.
             schema_registry: A SchemaRegistry instance.
         """
+        self.exclude = exclude
+        self.exclude_defaults = exclude_defaults
+        self.exclude_none = exclude_none
+        self.exclude_unset = exclude_unset
         self.generate_examples = generate_examples
+        self.include = include
         self.plugins = plugins if plugins is not None else []
         self.prefer_alias = prefer_alias
         self.schema_registry = schema_registry or SchemaRegistry()
