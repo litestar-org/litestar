@@ -675,6 +675,16 @@ which is used in for sending pings, and ``retry_duration``, which dictates the d
     You can use different kinds of values for the iterator. It can be a callable returning a sync or async generator,
     a generator itself, a sync or async iterator class, or an instance of a sync or async iterator class.
 
+In your iterator function you can yield integers, strings or bytes, the message sent in that case will have ``message``
+as the ``event_type`` if the ServerSentEvent has no ``event_type`` set, otherwise it will use the ``event_type``
+specified, and the data will be the yielded value.
+
+If you want to send a different event type, you can use a dictionary with the keys ``event_type`` and ``data`` or the :class:`ServerSentMessage <.response.ServerSentEventMessage>` class.
+
+.. note::
+
+    You can further customize all the sse parameters, add comments, and set the retry duration by using the :class:`ServerSentEvent <.response.ServerSentEvent>` class directly or by using the :class:`ServerSentEventMessage <.response.ServerSentEventMessage>` or dictionaries with the appropriate keys.
+
 
 Template Responses
 ------------------
