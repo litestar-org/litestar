@@ -14,6 +14,8 @@ if TYPE_CHECKING:
     from pydantic.v1 import BaseModel as BaseModelV1
 
     from litestar.config.app import AppConfig
+    from litestar.types.serialization import PydanticFieldsList
+
 
 __all__ = (
     "PydanticDTO",
@@ -43,14 +45,39 @@ def _model_dump_json(model: BaseModel | BaseModelV1, by_alias: bool = False) -> 
 class PydanticPlugin(InitPluginProtocol):
     """A plugin that provides Pydantic integration."""
 
-    __slots__ = ("prefer_alias",)
+    __slots__ = (
+        "exclude",
+        "exclude_defaults",
+        "exclude_none",
+        "exclude_unset",
+        "include",
+        "prefer_alias",
+    )
 
-    def __init__(self, prefer_alias: bool = False) -> None:
+    def __init__(
+        self,
+        exclude: PydanticFieldsList = None,
+        exclude_defaults: bool = False,
+        exclude_none: bool = False,
+        exclude_unset: bool = False,
+        include: PydanticFieldsList = None,
+        prefer_alias: bool = False,
+    ) -> None:
         """Initialize ``PydanticPlugin``.
 
         Args:
+            exclude: OpenAPI and ``type_encoders`` will exclude specified fields
+            exclude_defaults: OpenAPI and ``type_encoders`` will exclude default fields
+            exclude_none: OpenAPI and ``type_encoders`` will exclude None fields
+            exclude_unset: OpenAPI and ``type_encoders`` will exclude not set fields
+            include: OpenAPI and ``type_encoders`` will include only specified fields
             prefer_alias: OpenAPI and ``type_encoders`` will export by alias
         """
+        self.exclude = exclude
+        self.exclude_defaults = exclude_defaults
+        self.exclude_none = exclude_none
+        self.exclude_unset = exclude_unset
+        self.include = include
         self.prefer_alias = prefer_alias
 
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
@@ -61,8 +88,22 @@ class PydanticPlugin(InitPluginProtocol):
         """
         app_config.plugins.extend(
             [
-                PydanticInitPlugin(prefer_alias=self.prefer_alias),
-                PydanticSchemaPlugin(prefer_alias=self.prefer_alias),
+                PydanticInitPlugin(
+                    exclude=self.exclude,
+                    exclude_defaults=self.exclude_defaults,
+                    exclude_none=self.exclude_none,
+                    exclude_unset=self.exclude_unset,
+                    include=self.include,
+                    prefer_alias=self.prefer_alias,
+                ),
+                PydanticSchemaPlugin(
+                    exclude=self.exclude,
+                    exclude_defaults=self.exclude_defaults,
+                    exclude_none=self.exclude_none,
+                    exclude_unset=self.exclude_unset,
+                    include=self.include,
+                    prefer_alias=self.prefer_alias,
+                ),
                 PydanticDIPlugin(),
             ]
         )

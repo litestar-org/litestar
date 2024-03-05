@@ -35,6 +35,7 @@ except ImportError:
 
 if TYPE_CHECKING:
     from litestar._openapi.schema_generation.schema import SchemaCreator
+    from litestar.types.serialization import PydanticFieldsList
 
 PYDANTIC_TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
     pydantic_v1.ByteSize: Schema(type=OpenAPIType.INTEGER),
@@ -203,9 +204,29 @@ if pydantic_v2 is not None:  # pragma: no cover
 
 
 class PydanticSchemaPlugin(OpenAPISchemaPlugin):
-    __slots__ = ("prefer_alias",)
+    __slots__ = (
+        "exclude",
+        "exclude_defaults",
+        "exclude_none",
+        "exclude_unset",
+        "include",
+        "prefer_alias",
+    )
 
-    def __init__(self, prefer_alias: bool = False) -> None:
+    def __init__(
+        self,
+        exclude: PydanticFieldsList = None,
+        exclude_defaults: bool = False,
+        exclude_none: bool = False,
+        exclude_unset: bool = False,
+        include: PydanticFieldsList = None,
+        prefer_alias: bool = False,
+    ) -> None:
+        self.exclude = exclude
+        self.exclude_defaults = exclude_defaults
+        self.exclude_none = exclude_none
+        self.exclude_unset = exclude_unset
+        self.include = include
         self.prefer_alias = prefer_alias
 
     @staticmethod
