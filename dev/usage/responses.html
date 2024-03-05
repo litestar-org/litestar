@@ -2691,6 +2691,14 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <p>You can use different kinds of values for the iterator. It can be a callable returning a sync or async generator,
 a generator itself, a sync or async iterator class, or an instance of a sync or async iterator class.</p>
 </div>
+<p>In your iterator function you can yield integers, strings or bytes, the message sent in that case will have <code class="docutils literal notranslate"><span class="pre">message</span></code>
+as the <code class="docutils literal notranslate"><span class="pre">event_type</span></code> if the ServerSentEvent has no <code class="docutils literal notranslate"><span class="pre">event_type</span></code> set, otherwise it will use the <code class="docutils literal notranslate"><span class="pre">event_type</span></code>
+specified, and the data will be the yielded value.</p>
+<p>If you want to send a different event type, you can use a dictionary with the keys <code class="docutils literal notranslate"><span class="pre">event_type</span></code> and <code class="docutils literal notranslate"><span class="pre">data</span></code> or the <a class="reference internal" href="../reference/response/index.html#litestar.response.ServerSentEventMessage" title="litestar.response.ServerSentEventMessage"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerSentMessage</span></code></a> class.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can further customize all the sse parameters, add comments, and set the retry duration by using the <a class="reference internal" href="../reference/response/index.html#litestar.response.ServerSentEvent" title="litestar.response.ServerSentEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerSentEvent</span></code></a> class directly or by using the <a class="reference internal" href="../reference/response/index.html#litestar.response.ServerSentEventMessage" title="litestar.response.ServerSentEventMessage"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServerSentEventMessage</span></code></a> or dictionaries with the appropriate keys.</p>
+</div>
 </section>
 <section id="template-responses">
 <h2>Template Responses<a class="headerlink" href="#template-responses" title="Permalink to this heading">#</a></h2>
