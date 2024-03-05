@@ -368,7 +368,8 @@ async def test_file_store_handle_rename_fail(file_store: FileStore, mocker: Mock
     assert Path(mock_unlink.call_args_list[0].args[0]).with_suffix("") == file_store.path.joinpath("foo")
 
 
-async def test_redis_store_with_client_shutdown() -> None:
+@pytest.mark.xdist_group("redis")
+async def test_redis_store_with_client_shutdown(redis_service: None) -> None:
     redis_store = RedisStore.with_client(url="redis://localhost:6397")
     assert await redis_store._redis.ping()
     # remove the private shutdown and the assert below fails
