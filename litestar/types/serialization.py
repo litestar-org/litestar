@@ -32,9 +32,9 @@ if TYPE_CHECKING:
         from pydantic.typing import AbstractSetIntStr, MappingIntStrAny
     except ImportError:
         BaseModel = Any  # type: ignore[assignment, misc]
-        IncEx = Any  # type: ignore[assignment, misc]
-        AbstractSetIntStr = Any  # type: ignore[assignment, misc]
-        MappingIntStrAny = Any  # type: ignore[assignment, misc]
+        IncEx = Any  # type: ignore[misc]
+        AbstractSetIntStr = Any
+        MappingIntStrAny = Any
 
     try:
         from attrs import AttrsInstance
