@@ -338,7 +338,7 @@ class FieldDefinition:
         if isinstance(self.kwarg_definition, ParameterKwarg) and self.kwarg_definition.required is not None:
             return self.kwarg_definition.required
 
-        return not self.is_optional and not self.is_any and (not self.has_default or self.default is None)
+        return not self.is_optional and not self.is_any and (not self.has_default)
 
     @property
     def is_annotated(self) -> bool:

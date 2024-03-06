@@ -254,11 +254,28 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
         if schema_creator.prefer_alias != self.prefer_alias:
             schema_creator.prefer_alias = True
         if is_pydantic_model_class(field_definition.annotation):
-            return self.for_pydantic_model(field_definition=field_definition, schema_creator=schema_creator)
+            return self.for_pydantic_model(
+                field_definition=field_definition,
+                schema_creator=schema_creator,
+                exclude=self.exclude,
+                exclude_defaults=self.exclude_defaults,
+                exclude_none=self.exclude_none,
+                exclude_unset=self.exclude_unset,
+                include=self.include,
+            )
         return PYDANTIC_TYPE_MAP[field_definition.annotation]  # pragma: no cover
 
     @classmethod
-    def for_pydantic_model(cls, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:  # pyright: ignore
+    def for_pydantic_model(
+        cls,
+        field_definition: FieldDefinition,
+        schema_creator: SchemaCreator,
+        exclude: PydanticFieldsList = None,
+        exclude_defaults: bool = False,
+        exclude_none: bool = False,
+        exclude_unset: bool = False,
+        include: PydanticFieldsList = None,
+    ) -> Schema:  # pyright: ignore
         """Create a schema object for a given pydantic model class.
 
         Args:
@@ -323,15 +340,41 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
             )
             for k, field_info in model_fields.items()
         }
-
         computed_field_definitions = create_field_definitions_for_computed_fields(
             annotation, schema_creator.prefer_alias
         )
         property_fields.update(computed_field_definitions)
 
+        # TODO: refactor
+        required = set()
+        exclude = exclude or set()
+        include = include or []
+
+        for prop in property_fields.values():
+            name = prop.name
+
+            if prop.is_required:
+                if name in exclude:
+                    continue
+
+                if exclude_none and (prop.is_optional or prop.is_none_type):
+                    continue
+
+                if exclude_defaults and prop.has_default:
+                    continue
+
+                if exclude_unset and prop.has_default:
+                    continue
+
+            if include:
+                if name in include:
+                    required.add(name)
+            elif prop.is_required:
+                required.add(name)
+
         return schema_creator.create_component_schema(
             field_definition,
-            required=sorted(f.name for f in property_fields.values() if f.is_required),
+            required=sorted(required),
             property_fields=property_fields,
             title=title,
             examples=None if example is None else [example],
