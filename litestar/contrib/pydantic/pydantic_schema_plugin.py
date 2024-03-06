@@ -282,11 +282,16 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
         Args:
             field_definition: FieldDefinition instance.
             schema_creator: An instance of the schema creator class
+            exclude: Whether to exclude specified fields
+            exclude_defaults: Whether to exclude default fields
+            exclude_none: Whether to exclude None value fields
+            exclude_unset: Whether to exclude not set fields
+            generate_examples: Whether to generate examples if none are given
+            include: Whether to include only specified fields
 
         Returns:
             A schema instance.
         """
-
         annotation = field_definition.annotation
         if is_generic(annotation):
             is_generic_model = True
@@ -346,36 +351,16 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
         )
         property_fields.update(computed_field_definitions)
 
-        # TODO: refactor
-        required = set()
-        exclude = exclude or set()
-        include = include or []
-
-        for prop in property_fields.values():
-            name = prop.name
-
-            if prop.is_required:
-                if name in exclude:
-                    continue
-
-                if exclude_none and (prop.is_optional or prop.is_none_type):
-                    continue
-
-                if exclude_defaults and prop.has_default:
-                    continue
-
-                if exclude_unset and prop.has_default:
-                    continue
-
-            if include:
-                if name in include:
-                    required.add(name)
-            elif prop.is_required:
-                required.add(name)
-
         return schema_creator.create_component_schema(
             field_definition,
-            required=sorted(required),
+            required=cls.get_required_fields(
+                property_fields,
+                exclude=exclude,
+                include=include,
+                exclude_none=exclude_none,
+                exclude_defaults=exclude_defaults,
+                exclude_unset=exclude_unset,
+            ),
             property_fields=property_fields,
             title=title,
             examples=(
@@ -386,3 +371,34 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
                 )
             ),
         )
+
+    @classmethod
+    def get_required_fields(
+        cls,
+        property_fields: dict[str, FieldDefinition],
+        exclude: PydanticFieldsList = None,
+        exclude_defaults: bool = False,
+        exclude_none: bool = False,
+        exclude_unset: bool = False,
+        include: PydanticFieldsList = None,
+    ) -> list[str]:
+        required = []
+        exclude = exclude or set()
+        include = include or []
+
+        for prop in property_fields.values():
+            name = prop.name
+
+            if any(
+                [
+                    prop.name in exclude,
+                    exclude_none and (prop.is_optional or prop.is_none_type),
+                    (exclude_defaults or exclude_unset) and prop.has_default,
+                ]
+            ):
+                continue
+
+            if name in include or (not include and prop.is_required):
+                required.append(name)
+
+        return sorted(required)
