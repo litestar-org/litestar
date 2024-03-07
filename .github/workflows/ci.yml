@@ -157,7 +157,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
   test-platform-compat:
-    if: github.event_name == 'push'
+    if: github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'test platform compat')
     strategy:
       fail-fast: false
       matrix:
