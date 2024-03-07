@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Mapping, Optional, cast
+from typing import Any, Dict, List, Literal, Mapping, Optional, Union, cast
 
 import pytest
 
@@ -7,6 +7,7 @@ from litestar.config.cors import CORSConfig
 from litestar.middleware.cors import CORSMiddleware
 from litestar.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
 from litestar.testing import create_test_client
+from litestar.types.asgi_types import Method
 
 
 def test_setting_cors_middleware() -> None:
@@ -51,7 +52,7 @@ def test_cors_simple_response(
     allow_credentials: bool,
     expose_headers: List[str],
     allow_headers: List[str],
-    allow_methods: List[str],
+    allow_methods: List[Union[Literal["*"], "Method"]],
 ) -> None:
     @get("/")
     def handler() -> Dict[str, str]:
