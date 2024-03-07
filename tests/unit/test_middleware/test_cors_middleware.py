@@ -38,16 +38,27 @@ def test_setting_cors_middleware() -> None:
 @pytest.mark.parametrize("origin", [None, "http://www.example.com", "https://moishe.zuchmir.com"])
 @pytest.mark.parametrize("allow_origins", ["*", "http://www.example.com", "https://moishe.zuchmir.com"])
 @pytest.mark.parametrize("allow_credentials", [True, False])
-@pytest.mark.parametrize("expose_headers", ["X-First-Header", "SomeOtherHeader", "X-Second-Header"])
+@pytest.mark.parametrize("expose_headers", [["x-first-header", "x-second-header", "x-third-header"], ["*"], ["x-first-header"]])
+@pytest.mark.parametrize("allow_headers", [["x-first-header", "x-second-header", "x-third-header"], ["*"], ["x-first-header"]])
+@pytest.mark.parametrize("allow_methods", [["GET", "POST", "PUT", "DELETE"], ["GET", "POST"], ["GET"]])
 def test_cors_simple_response(
-    origin: Optional[str], allow_origins: List[str], allow_credentials: bool, expose_headers: List[str]
+    origin: Optional[str],
+    allow_origins: List[str],
+    allow_credentials: bool,
+    expose_headers: List[str],
+    allow_headers: List[str],
+    allow_methods: List[str],
 ) -> None:
     @get("/")
     def handler() -> Dict[str, str]:
         return {"hello": "world"}
 
     cors_config = CORSConfig(
-        allow_origins=allow_origins, allow_credentials=allow_credentials, expose_headers=expose_headers
+        allow_origins=allow_origins,
+        allow_credentials=allow_credentials,
+        expose_headers=expose_headers,
+        allow_headers=allow_headers,
+        allow_methods=allow_methods,
     )
 
     with create_test_client(handler, cors_config=cors_config) as client:
@@ -58,6 +69,8 @@ def test_cors_simple_response(
         assert cors_config.expose_headers == expose_headers
         assert cors_config.allow_origins == allow_origins
         assert cors_config.allow_credentials == allow_credentials
+        assert cors_config.allow_headers == allow_headers
+        assert cors_config.allow_methods == allow_methods
 
         if origin:
             if cors_config.is_allow_all_origins:
@@ -68,10 +81,20 @@ def test_cors_simple_response(
                 assert response.headers.get("Access-Control-Expose-Headers") == ", ".join(
                     sorted(set(cors_config.expose_headers))
                 )
+            if cors_config.allow_headers:
+                assert response.headers.get("Access-Control-Allow-Headers") == ", ".join(
+                    sorted(set(cors_config.allow_headers))
+                )
+            if cors_config.allow_methods:
+                assert response.headers.get("Access-Control-Allow-Methods") == ", ".join(
+                    sorted(set(cors_config.allow_methods))
+                )
         else:
             assert "Access-Control-Allow-Origin" not in response.headers
             assert "Access-Control-Allow-Credentials" not in response.headers
             assert "Access-Control-Expose-Headers" not in response.headers
+            assert "Access-Control-Allow-Headers" not in response.headers
+            assert "Access-Control-Allow-Methods" not in response.headers
 
 
 @pytest.mark.parametrize("origin, should_apply_cors", (("http://www.example.com", True), (None, False)))
