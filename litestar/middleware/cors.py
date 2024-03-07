@@ -70,6 +70,12 @@ class CORSMiddleware(AbstractMiddleware):
                     headers["Access-Control-Allow-Origin"] = origin
                     headers["Vary"] = "Origin"
 
+                if self.config.allow_headers:
+                    headers["Access-Control-Allow-Headers"] = ", ".join(sorted(set(self.config.allow_headers)))
+
+                if self.config.allow_methods:
+                    headers["Access-Control-Allow-Methods"] = ", ".join(sorted(set(self.config.allow_methods)))
+
             await send(message)
 
         return wrapped_send
