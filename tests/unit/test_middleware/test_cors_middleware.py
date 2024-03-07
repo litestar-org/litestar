@@ -38,8 +38,12 @@ def test_setting_cors_middleware() -> None:
 @pytest.mark.parametrize("origin", [None, "http://www.example.com", "https://moishe.zuchmir.com"])
 @pytest.mark.parametrize("allow_origins", ["*", "http://www.example.com", "https://moishe.zuchmir.com"])
 @pytest.mark.parametrize("allow_credentials", [True, False])
-@pytest.mark.parametrize("expose_headers", [["x-first-header", "x-second-header", "x-third-header"], ["*"], ["x-first-header"]])
-@pytest.mark.parametrize("allow_headers", [["x-first-header", "x-second-header", "x-third-header"], ["*"], ["x-first-header"]])
+@pytest.mark.parametrize(
+    "expose_headers", [["x-first-header", "x-second-header", "x-third-header"], ["*"], ["x-first-header"]]
+)
+@pytest.mark.parametrize(
+    "allow_headers", [["x-first-header", "x-second-header", "x-third-header"], ["*"], ["x-first-header"]]
+)
 @pytest.mark.parametrize("allow_methods", [["GET", "POST", "PUT", "DELETE"], ["GET", "POST"], ["GET"]])
 def test_cors_simple_response(
     origin: Optional[str],
