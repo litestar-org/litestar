@@ -25,6 +25,7 @@ class PsycoPgChannelsBackend(ChannelsBackend):
         await self._exit_stack.enter_async_context(self._listener_conn)
 
     async def on_shutdown(self) -> None:
+        await self._listener_conn.close()
         await self._exit_stack.aclose()
 
     async def publish(self, data: bytes, channels: Iterable[str]) -> None:
