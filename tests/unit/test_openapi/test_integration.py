@@ -422,11 +422,11 @@ def test_components_schemas_in_alphabetical_order() -> None:
             ...
 
         @get("/", sync_to_thread=False)
-        def get_handler(self) -> A:
+        def get_handler(self) -> A:  # type: ignore[empty-body]
             ...
 
         @patch("/", sync_to_thread=False)
-        def patch_handler(self, data: C) -> A:
+        def patch_handler(self, data: C) -> A:  # type: ignore[empty-body]
             ...
 
         @delete("/", sync_to_thread=False)
