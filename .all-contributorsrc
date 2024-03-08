@@ -1658,6 +1658,17 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "crisog",
+      "name": "CrisOG",
+      "avatar_url": "https://avatars.githubusercontent.com/u/40803711?v=4",
+      "profile": "https://github.com/crisog",
+      "contributions": [
+        "bug",
+        "code",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
