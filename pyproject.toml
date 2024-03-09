@@ -108,26 +108,28 @@ include = [
   '/CHANGELOG.rst',
 ]
 
+
 [tool.pdm]
 ignore_package_warnings = ["sphinx", "slotscheck"]
 
 [tool.pdm.dev-dependencies]
 dev = [
-  "beanie>=1.21.0",
-  "beautifulsoup4",
-  "fsspec",
-  "greenlet",
-  "hypothesis",
-  "python-dotenv",
-  "starlette",
-  "trio",
-  "aiosqlite",
-  "asyncpg>=0.29.0",
-  "psycopg[pool,binary]>=3.1.10",
-  "psycopg2-binary",
-  "psutil>=5.9.8",
-  "hypercorn>=0.16.0",
-  "daphne>=4.0.0",
+    "beanie>=1.21.0",
+    "beautifulsoup4",
+    "fsspec",
+    "greenlet",
+    "hypothesis",
+    "python-dotenv",
+    "starlette",
+    "trio",
+    "aiosqlite",
+    "asyncpg>=0.29.0",
+    "psycopg[pool,binary]>=3.1.10",
+    "psycopg2-binary",
+    "psutil>=5.9.8",
+    "hypercorn>=0.16.0",
+    "daphne>=4.0.0",
+    "pytest-playwright>=0.4.4",
 ]
 dev-contrib = ["opentelemetry-sdk", "httpx-sse"]
 docs = [
