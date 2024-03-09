@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 class StaticFiles:
     """ASGI App that handles file sending."""
 
-    __slots__ = ("is_html_mode", "directories", "adapter", "send_as_attachment")
+    __slots__ = ("is_html_mode", "directories", "adapter", "send_as_attachment", "headers")
 
     def __init__(
         self,
@@ -30,6 +30,8 @@ class StaticFiles:
         directories: Sequence[PathType],
         file_system: FileSystemProtocol,
         send_as_attachment: bool = False,
+        resolve_symlinks: bool = True,
+        headers: dict[str, str] | None = None,
     ) -> None:
         """Initialize the Application.
 
@@ -39,11 +41,14 @@ class StaticFiles:
             file_system: The file_system spec to use for serving files.
             send_as_attachment: Whether to send the file with a ``content-disposition`` header of
              ``attachment`` or ``inline``
+            resolve_symlinks: Resolve symlinks to the directories
+            headers: Headers that will be sent with every response.
         """
         self.adapter = FileSystemAdapter(file_system)
-        self.directories = tuple(Path(p).resolve() for p in directories)
+        self.directories = tuple(Path(p).resolve() if resolve_symlinks else Path(p) for p in directories)
         self.is_html_mode = is_html_mode
         self.send_as_attachment = send_as_attachment
+        self.headers = headers
 
     async def get_fs_info(
         self, directories: Sequence[PathType], file_path: PathType
@@ -82,7 +87,11 @@ class StaticFiles:
         if scope["type"] != ScopeType.HTTP or scope["method"] not in {"GET", "HEAD"}:
             raise MethodNotAllowedException()
 
-        split_path = scope["path"].split("/")
+        res = await self.handle(path=scope["path"], is_head_response=scope["method"] == "HEAD")
+        await res(scope=scope, receive=receive, send=send)
+
+    async def handle(self, path: str, is_head_response: bool) -> ASGIFileResponse:
+        split_path = path.split("/")
         filename = split_path[-1]
         joined_path = Path(*split_path)
         resolved_path, fs_info = await self.get_fs_info(directories=self.directories, file_path=joined_path)
@@ -98,15 +107,15 @@ class StaticFiles:
             )
 
         if fs_info and fs_info["type"] == "file":
-            await ASGIFileResponse(
+            return ASGIFileResponse(
                 file_path=resolved_path or joined_path,
                 file_info=fs_info,
                 file_system=self.adapter.file_system,
                 filename=filename,
                 content_disposition_type=content_disposition_type,
-                is_head_response=scope["method"] == "HEAD",
-            )(scope, receive, send)
-            return
+                is_head_response=is_head_response,
+                headers=self.headers,
+            )
 
         if self.is_html_mode:
             # for some reason coverage doesn't catch these two lines
@@ -116,16 +125,16 @@ class StaticFiles:
             )
 
             if fs_info and fs_info["type"] == "file":
-                await ASGIFileResponse(
+                return ASGIFileResponse(
                     file_path=resolved_path or joined_path,
                     file_info=fs_info,
                     file_system=self.adapter.file_system,
                     filename=filename,
                     status_code=HTTP_404_NOT_FOUND,
                     content_disposition_type=content_disposition_type,
-                    is_head_response=scope["method"] == "HEAD",
-                )(scope, receive, send)
-                return
+                    is_head_response=is_head_response,
+                    headers=self.headers,
+                )
 
         raise NotFoundException(
             f"no file or directory match the path {resolved_path or joined_path} was found"

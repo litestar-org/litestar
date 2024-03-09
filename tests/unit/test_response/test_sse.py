@@ -1,4 +1,4 @@
-from typing import Any, AsyncIterator, Iterator, List
+from typing import AsyncIterator, Iterator, List
 
 import anyio
 import pytest
@@ -10,6 +10,7 @@ from litestar.exceptions import ImproperlyConfiguredException
 from litestar.response import ServerSentEvent
 from litestar.response.sse import ServerSentEventMessage
 from litestar.testing import create_async_test_client
+from litestar.types import SSEData
 
 
 async def test_sse_steaming_response() -> None:
@@ -61,7 +62,7 @@ async def test_sse_steaming_response() -> None:
 async def test_various_sse_inputs(input: str, expected_events: List[HTTPXServerSentEvent]) -> None:
     @get("/testme")
     async def handler() -> ServerSentEvent:
-        async def numbers() -> AsyncIterator[Any]:
+        async def numbers() -> AsyncIterator[SSEData]:
             for i in range(1, 6):
                 await anyio.sleep(0.001)
                 if input == "integer":

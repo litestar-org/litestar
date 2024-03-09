@@ -44,7 +44,7 @@ Workflow
 5. (Optional) Run ``pre-commit run --all-files`` to run linters and formatters. This step is optional and will be executed
    automatically by git before you make a commit, but you may want to run it manually in order to apply fixes
 6. Commit your changes to git. Note - we follow [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/),
-   which are enforced using a `pre-commit` hook.
+   which are enforced using a ``pre-commit`` hook.
 7. Push the changes to your fork
 8. Open a `pull request <https://docs.github.com/en/pull-requests>`_. Give the pull request a descriptive title
    indicating what it changes. The style of the PR title should also follow
@@ -56,7 +56,7 @@ Guidelines for writing code
 
 - Code should be `Pythonic and zen <https://peps.python.org/pep-0020/>`_
 - All code should be fully `typed <https://peps.python.org/pep-0484/>`_. This is enforced via
-  `mypy <https://mypy.readthedocs.io/en/stable/>`_ and `pyright <https://github.com/microsoft/pyright/>`_
+  `mypy <https://mypy.readthedocs.io/en/stable/>`_ and `Pyright <https://github.com/microsoft/pyright/>`_
 
   * When requiring complex types, use a `type alias <https://docs.python.org/3/library/typing.html#type-aliases>`_.
     Check ``litestar/types`` if a type alias for your use case already exists
@@ -76,7 +76,7 @@ Guidelines for writing code
   across a function or method that doesn't conform to this standard, please update it as you go
 - When adding a new public interface, it has to be  included in the reference documentation located in
   ``docs/reference``. If applicable, add or modify examples in the docs related to the new functionality implemented,
-  following the guidelines established in `Adding examples`_
+  following the guidelines established in `Adding examples`_.
 
 
 Writing and running tests
@@ -115,16 +115,16 @@ Our type checkers are run on Python 3.8 in CI, so you should make sure to run th
 Project documentation
 ---------------------
 
-The documentation is located in the ``/docs`` directory and is `ReST <https://docutils.sourceforge.io/rst.html>`_ and
+The documentation is located in the ``/docs`` directory and is `reST <https://docutils.sourceforge.io/rst.html>`_ and
 `Sphinx <https://www.sphinx-doc.org/en/master/>`_. If you're unfamiliar with any of those,
-`ReStructuredText primer <https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_ and
+`reStructuredText primer <https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_ and
 `Sphinx quickstart <https://www.sphinx-doc.org/en/master/usage/quickstart.html>`_ are recommended reads.
 
 Docs theme and appearance
 +++++++++++++++++++++++++
 
 We welcome contributions that enhance / improve the appearance and usability of the docs. We use the excellent
-`Furo <https://pradyunsg.me/furo/quickstart/>`_ theme, which comes with a lot of options out of the box. If you wish to
+`PyData Sphinx Theme <https://pydata-sphinx-theme.readthedocs.io/>`_ theme, which comes with a lot of options out of the box. If you wish to
 contribute to the docs style / setup, or static site generation, you should consult the theme docs as a first step.
 
 Running the docs locally
@@ -142,13 +142,13 @@ Writing and editing docs
 We welcome contributions that enhance / improve the content of the docs. Feel free to add examples, clarify text,
 restructure the docs, etc., but make sure to follow these guidelines:
 
-- Write text in idiomatic english, using simple language
+- Write text in idiomatic English, using simple language
 - Opt for `Oxford commas <https://en.wikipedia.org/wiki/Serial_comma>`_ when listing a series of terms
 - Keep examples simple and self contained
 - Provide links where applicable
 - Use `intersphinx <https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html>`_ wherever possible when
   referencing external libraries
-- Provide diagrams using `mermaidjs <https://mermaid.js.org/>`_ where applicable and possible
+- Provide diagrams using `Mermaid <https://mermaid.js.org/>`_ where applicable and possible
 
 Adding examples
 ~~~~~~~~~~~~~~~
@@ -182,7 +182,7 @@ will be launched, and the requests specified in the comments will be run against
 comments will be stripped from the result, and the output of the ``curl`` invocation inserted
 after the example code-block.
 
-The ``# run:`` syntax is nothing special; Everything after the colon will be passed to
+The ``# run:`` syntax is nothing special; everything after the colon will be passed to
 the ``curl`` command that's being invoked. The URL is built automatically, so the
 specified path can just be a path relative to the app.
 
@@ -237,7 +237,7 @@ Creating a new release
 
 1. Increment the version in ``pyproject.toml`` according to the `versioning scheme <https://litestar.dev/about/litestar-releases#version-numbering>`_
     .. note::
-      The version should follow `semantic versioning <https://semver.org/>`_ and `PEP 440 <https://www.python.org/dev/peps/pep-0440/>`_.
+      The version should follow `semantic versioning <https://semver.org/>`_ and `PEP 440 <https://peps.python.org/pep-0440/>`_.
 
 2. Commit and push.
 2. `Draft a new release <https://github.com/litestar-org/litestar/releases/new>`_ on GitHub

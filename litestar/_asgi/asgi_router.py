@@ -77,7 +77,12 @@ class ASGIRouter:
         The main entry point to the Router class.
         """
         scope.setdefault("path_params", {})
-        normalized_path = normalize_path(scope["path"])
+
+        path = scope["path"]
+        if root_path := scope.get("root_path", ""):
+            path = path.split(root_path, maxsplit=1)[-1]
+        normalized_path = normalize_path(path)
+
         asgi_app, scope["route_handler"], scope["path"], scope["path_params"] = self.handle_routing(
             path=normalized_path, method=scope.get("method")
         )

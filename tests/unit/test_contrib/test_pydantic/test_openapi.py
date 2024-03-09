@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 from types import ModuleType
 from typing import Any, Callable, Pattern, Type, Union, cast
@@ -257,10 +257,18 @@ def test_create_date_constrained_field_schema_pydantic_v1(annotation: Any) -> No
     schema = create_date_constrained_field_schema(field_definition.annotation, field_definition.kwarg_definition)
     assert schema.type == OpenAPIType.STRING
     assert schema.format == OpenAPIFormat.DATE
-    assert (date.fromtimestamp(schema.exclusive_minimum) if schema.exclusive_minimum else None) == annotation.gt
-    assert (date.fromtimestamp(schema.minimum) if schema.minimum else None) == annotation.ge
-    assert (date.fromtimestamp(schema.exclusive_maximum) if schema.exclusive_maximum else None) == annotation.lt
-    assert (date.fromtimestamp(schema.maximum) if schema.maximum else None) == annotation.le
+    assert (datetime.utcfromtimestamp(schema.exclusive_minimum) if schema.exclusive_minimum else None) == (
+        datetime.fromordinal(annotation.gt.toordinal()) if annotation.gt is not None else None
+    )
+    assert (datetime.utcfromtimestamp(schema.minimum) if schema.minimum else None) == (
+        datetime.fromordinal(annotation.ge.toordinal()) if annotation.ge is not None else None
+    )
+    assert (datetime.utcfromtimestamp(schema.exclusive_maximum) if schema.exclusive_maximum else None) == (
+        datetime.fromordinal(annotation.lt.toordinal()) if annotation.lt is not None else None
+    )
+    assert (datetime.utcfromtimestamp(schema.maximum) if schema.maximum else None) == (
+        datetime.fromordinal(annotation.le.toordinal()) if annotation.le is not None else None
+    )
 
 
 @pytest.mark.parametrize("annotation", constrained_dates_v2)
@@ -272,22 +280,26 @@ def test_create_date_constrained_field_schema_pydantic_v2(annotation: Any) -> No
     assert schema.type == OpenAPIType.STRING
     assert schema.format == OpenAPIFormat.DATE
     assert any(
-        getattr(m, "gt", None) == (date.fromtimestamp(schema.exclusive_minimum) if schema.exclusive_minimum else None)
+        (datetime.fromordinal(getattr(m, "gt", None).toordinal()) if getattr(m, "gt", None) is not None else None)  # type: ignore[union-attr]
+        == (datetime.utcfromtimestamp(schema.exclusive_minimum) if schema.exclusive_minimum else None)
         for m in field_definition.metadata
         if m
     )
     assert any(
-        getattr(m, "ge", None) == (date.fromtimestamp(schema.minimum) if schema.minimum else None)
+        (datetime.fromordinal(getattr(m, "ge", None).toordinal()) if getattr(m, "ge", None) is not None else None)  # type: ignore[union-attr]
+        == (datetime.utcfromtimestamp(schema.minimum) if schema.minimum else None)
         for m in field_definition.metadata
         if m
     )
     assert any(
-        getattr(m, "lt", None) == (date.fromtimestamp(schema.exclusive_maximum) if schema.exclusive_maximum else None)
+        (datetime.fromordinal(getattr(m, "lt", None).toordinal()) if getattr(m, "lt", None) is not None else None)  # type: ignore[union-attr]
+        == (datetime.utcfromtimestamp(schema.exclusive_maximum) if schema.exclusive_maximum else None)
         for m in field_definition.metadata
         if m
     )
     assert any(
-        getattr(m, "le", None) == (date.fromtimestamp(schema.maximum) if schema.maximum else None)
+        (datetime.fromordinal(getattr(m, "le", None).toordinal()) if getattr(m, "le", None) is not None else None)  # type: ignore[union-attr]
+        == (datetime.utcfromtimestamp(schema.maximum) if schema.maximum else None)
         for m in field_definition.metadata
         if m
     )
@@ -334,6 +346,7 @@ def test_spec_generation(cls: Any) -> None:
                         "items": {"type": "object", "additionalProperties": {"type": "string"}},
                     },
                 },
+                "union": {"oneOf": [{"type": "integer"}, {"items": {"type": "string"}, "type": "array"}]},
                 "pets": {
                     "oneOf": [
                         {"type": "null"},
@@ -345,7 +358,7 @@ def test_spec_generation(cls: Any) -> None:
                 },
             },
             "type": "object",
-            "required": ["complex", "first_name", "id", "last_name"],
+            "required": ["complex", "first_name", "id", "last_name", "union"],
             "title": f"{cls.__name__}",
         }
 
@@ -549,7 +562,7 @@ def test_create_schema_for_pydantic_model_with_annotated_model_attribute(
         f"""
 {'from __future__ import annotations' if with_future_annotations else ''}
 from typing_extensions import Annotated
-{'from pydantic import BaseModel' if pydantic_version == 'v1' else 'from pydantic.v1 import BaseModel'}
+{'from pydantic import BaseModel' if pydantic_version == 'v2' else 'from pydantic.v1 import BaseModel'}
 
 class Foo(BaseModel):
     foo: Annotated[int, "Foo description"]
