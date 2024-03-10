@@ -1981,6 +1981,50 @@ Async</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </section>
+<section id="custom-websocket">
+<h2>Custom WebSocket<a class="headerlink" href="#custom-websocket" title="Permalink to this heading">#</a></h2>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.7.0.</span></p>
+</div>
+<p>Litestar supports custom <code class="docutils literal notranslate"><span class="pre">websocket_class</span></code> instances, which can be used to further configure the default <a class="reference internal" href="../reference/connection.html#litestar.connection.WebSocket" title="litestar.connection.WebSocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocket</span></code></a>.
+The example below illustrates how to implement custom websocket class for the whole application.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Example of a custom websocket at the application level<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">websocket_listener</span>
+<span class="kn">from</span> <span class="nn">litestar.types.asgi_types</span> <span class="kn">import</span> <span class="n">WebSocketMode</span>
+
+
+<span class="k">class</span> <span class="nc">CustomWebSocket</span><span class="p">(</span><span class="n">WebSocket</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">receive_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">:</span> <span class="n">WebSocketMode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return fixed response for every websocket message.&quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">receive_data</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;Fixed response&quot;</span>
+
+
+<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">data</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">handler</span><span class="p">],</span> <span class="n">websocket_class</span><span class="o">=</span><span class="n">CustomWebSocket</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details><div class="admonition-layered-architecture admonition">
+<p class="admonition-title">Layered architecture</p>
+<p>WebSocket classes are part of Litestar’s layered architecture, which means you can
+set a websocket class on every layer of the application. If you have set a webscoket
+class on multiple layers, the layer closest to the route handler will take precedence.</p>
+<p>You can read more about this in the <a class="reference internal" href="applications.html#layered-architecture"><span class="std std-ref">Layered architecture</span></a> section</p>
+</div>
+</section>
 </section>
 
 
@@ -2038,6 +2082,7 @@ Async</label><div class="sd-tab-content docutils">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#interacting-with-the-websocket-directly">Interacting with the WebSocket directly</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#customising-connection-acceptance">Customising connection acceptance</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#class-based-websocket-handling">Class based WebSocket handling</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-websocket">Custom WebSocket</a></li>
 </ul>
   </nav></div>
 
