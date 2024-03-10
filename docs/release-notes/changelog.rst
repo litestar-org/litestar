@@ -40,8 +40,12 @@
                     "200": {
                         "content": {
                         "application/json": {
-                            "schema": {...},
-                            "examples": ...
+                            "schema": {},
+                            "examples": "..."}}
+                        }}
+                    }}
+                }
+            }
 
 
     .. change:: support "+json"-suffixed response media types
