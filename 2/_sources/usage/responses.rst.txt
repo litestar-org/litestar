@@ -77,6 +77,17 @@ As previously mentioned, the default ``media_type`` is ``MediaType.JSON``. which
 If you need to return other values and would like to extend serialization you can do
 this :ref:`custom responses <usage/responses:Custom Responses>`.
 
+You can also set an application media type string with the ``+json`` suffix
+defined in `RFC 6839 <https://datatracker.ietf.org/doc/html/rfc6839#section-3.1>`_
+as the ``media_type`` and it will be recognized and serialized as json.
+For example, you can use ``application/problem+json``
+(see `RFC 7807 <https://datatracker.ietf.org/doc/html/rfc7807#section-6.1>`_)
+and it will work just like json but have the appropriate content-type header
+and show up in the generated OpenAPI schema.
+
+.. literalinclude:: /examples/responses/json_suffix_responses.py
+    :language: python
+
 MessagePack responses
 +++++++++++++++++++++
 
@@ -674,6 +685,16 @@ which is used in for sending pings, and ``retry_duration``, which dictates the d
 
     You can use different kinds of values for the iterator. It can be a callable returning a sync or async generator,
     a generator itself, a sync or async iterator class, or an instance of a sync or async iterator class.
+
+In your iterator function you can yield integers, strings or bytes, the message sent in that case will have ``message``
+as the ``event_type`` if the ServerSentEvent has no ``event_type`` set, otherwise it will use the ``event_type``
+specified, and the data will be the yielded value.
+
+If you want to send a different event type, you can use a dictionary with the keys ``event_type`` and ``data`` or the :class:`ServerSentMessage <.response.ServerSentEventMessage>` class.
+
+.. note::
+
+    You can further customize all the sse parameters, add comments, and set the retry duration by using the :class:`ServerSentEvent <.response.ServerSentEvent>` class directly or by using the :class:`ServerSentEventMessage <.response.ServerSentEventMessage>` or dictionaries with the appropriate keys.
 
 
 Template Responses

@@ -1621,6 +1621,20 @@ are too large to fit a single cookie, it will be split across several cookies, f
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.middleware.session.client_side.ClientSideSessionBackend.get_session_id">
+<span class="sig-name descname"><span class="pre">get_session_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../connection.html#litestar.connection.ASGIConnection" title="litestar.connection.ASGIConnection"><span class="pre">ASGIConnection</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.get_session_id" title="Permalink to this definition">#</a></dt>
+<dd><p>Try to fetch session id from connection ScopeState. If one does not exist, generate one.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>connection</strong> – Originating ASGIConnection containing the scope</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Session id str or None if the concept of a session id does not apply.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -1759,6 +1773,7 @@ are too large to fit a single cookie, it will be split across several cookies, f
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.get_cookie_keys"><code class="docutils literal notranslate"><span class="pre">ClientSideSessionBackend.get_cookie_keys()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.store_in_message"><code class="docutils literal notranslate"><span class="pre">ClientSideSessionBackend.store_in_message()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.load_from_connection"><code class="docutils literal notranslate"><span class="pre">ClientSideSessionBackend.load_from_connection()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.get_session_id"><code class="docutils literal notranslate"><span class="pre">ClientSideSessionBackend.get_session_id()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.middleware.session.client_side.CookieBackendConfig"><code class="docutils literal notranslate"><span class="pre">CookieBackendConfig</span></code></a><ul class="visible nav section-nav flex-column">
