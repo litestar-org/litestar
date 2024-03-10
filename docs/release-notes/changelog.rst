@@ -6,18 +6,12 @@
 .. changelog:: 2.7.0
     :date: 2024-03-10
 
-    .. change:: add the redis mark to appropriate test
-        :type: bugfix
-        :pr: 3174
-
-        Include ``xdist_group`` marker to potentially address CI issues on Windows and MacOS.
-
     .. change:: missing cors headers in response
         :type: bugfix
         :pr: 3179
         :issue: 3178
 
-        Addresses issues outlined on #3178
+        Addresses issues outlined on https://github.com/litestar-org/litestar/issues/3178
 
     .. change:: sending empty data in sse in js client
         :type: bugfix
@@ -25,9 +19,9 @@
 
         Fixes an issue with SSE where JavaScript clients fail to receive an event without data.
         The `spec <https://html.spec.whatwg.org/multipage/server-sent-events.html#parsing-an-event-stream>`_ is not clear in whether or not an event without data is ok.
-        Considering the EventSource "client" is not ok with it, and that it's so easy DX-wise to make the mistake not explicitly sending it, this PR fixes it by defaulting to the empty-string
+        Considering the EventSource "client" is not ok with it, and that it's so easy DX-wise to make the mistake not explicitly sending it, this change fixes it by defaulting to the empty-string
 
-    .. change:: Support `ResponseSpec(..., examples=[...])`
+    .. change:: Support ``ResponseSpec(..., examples=[...])``
         :type: feature
         :pr: 3100
         :issue: 3068
@@ -57,7 +51,7 @@
 
         Giving route handlers a response media type of the form "application/<something>+json" automatically uses json encoding for the response.
 
-    .. change:: Allow reusable `Router` instances
+    .. change:: Allow reusable ``Router`` instances
         :type: feature
         :pr: 3103
         :issue: 3012
@@ -71,32 +65,32 @@
         already used for controllers and handlers, so this only harmonizes the
         implementation.
 
-    .. change:: only display path in `ValidationException`s
+    .. change:: only display path in ``ValidationException``\ s
         :type: feature
         :pr: 3064
         :issue: 3061
 
         Fixed an issue where ``ValidationException`` exposes the full URL in the error response, leaking internal IP(s) or other similar infra related information.
 
-    .. change:: expose request_class to other layers
+    .. change:: expose ``request_class`` to other layers
         :type: feature
         :pr: 3125
 
-        Expose `request_class` to other layers
+        Expose ``request_class`` to other layers
 
-    .. change:: expose websocket_class
+    .. change:: expose ``websocket_class``
         :type: feature
         :pr: 3152
 
-        Expose `websocket_class` to other layers
+        Expose ``websocket_class`` to other layers
 
-    .. change:: Add `type_decoders` Router and route handlers
+    .. change:: Add ``type_decoders`` to Router and route handlers
         :type: feature
         :pr: 3153
 
         Added ``type_decoders`` to ``__init__`` method for handler, routers and decorators to keep consistency with ``type_encoders`` parameter
 
-    .. change:: Pass `type_decoders` in WebsocketListenerRouteHandler
+    .. change:: Pass ``type_decoders`` in ``WebsocketListenerRouteHandler``
         :type: feature
         :pr: 3162
 
@@ -117,14 +111,14 @@
         :type: feature
         :pr: 3166
 
-        This PR allows for the random seed used for generating the examples in the OpenAPI schema (when ``create_examples`` is set to ``True``) to be configured by the user.
-        This is related to #3059 however whether this PR is enough to close that issue or not is not confirmed.
+        This change allows for the random seed used for generating the examples in the OpenAPI schema (when ``create_examples`` is set to ``True``) to be configured by the user.
+        This is related to #3059 however whether this change is enough to close that issue or not is not confirmed.
 
     .. change:: generate openapi components schemas in a deterministic order
         :type: feature
         :pr: 3172
 
-        This PR ensuress that the insertion into the ``Components.schemas`` dictionary of the OpenAPI spec will be in alphabetical order (based on the normalized name of the ``Schema``).
+        This change ensuress that the insertion into the ``Components.schemas`` dictionary of the OpenAPI spec will be in alphabetical order (based on the normalized name of the ``Schema``).
 
 
 .. changelog:: 2.6.3
