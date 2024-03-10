@@ -75,7 +75,7 @@ def _pr_number_from_commit(comp: Comp) -> int:
     match = re.search(r"\(#(\d+)\)$", message_head)
     if not match:
         raise ValueError(f"Could not find PR number for commit {message_head!r}")
-    return int(match.group(1))
+    return int(match[1])
 
 
 class _Thing:
