@@ -116,7 +116,7 @@ def test_get_picologging_logger() -> None:
 def test_connection_logger(handlers: Any, listener: Any) -> None:
     @get("/")
     def handler(request: Request) -> Dict[str, bool]:
-        return {"isinstance": isinstance(request.logger.handlers[0], listener)}  # type: ignore
+        return {"isinstance": isinstance(request.logger.handlers[0], listener)}  # type: ignore[attr-defined]
 
     with create_test_client(route_handlers=[handler], logging_config=LoggingConfig(handlers=handlers)) as client:
         response = client.get("/")
@@ -141,7 +141,7 @@ def test_root_logger(handlers: Any, listener: Any) -> None:
     logging_config = LoggingConfig(handlers=handlers)
     get_logger = logging_config.configure()
     root_logger = get_logger()
-    assert isinstance(root_logger.handlers[0], listener)  # type: ignore
+    assert isinstance(root_logger.handlers[0], listener)  # type: ignore[attr-defined]
 
 
 @pytest.mark.parametrize(
@@ -183,4 +183,4 @@ def test_customizing_handler(handlers: Any, listener: Any, monkeypatch: pytest.M
     logging_config = LoggingConfig(handlers=handlers)
     get_logger = logging_config.configure()
     root_logger = get_logger()
-    assert isinstance(root_logger.handlers[0], listener)  # type: ignore
+    assert isinstance(root_logger.handlers[0], listener)  # type: ignore[attr-defined]

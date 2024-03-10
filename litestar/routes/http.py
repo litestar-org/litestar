@@ -73,8 +73,8 @@ class HTTPRoute(BaseRoute):
         Returns:
             None
         """
-        request: Request[Any, Any, Any] = scope["app"].request_class(scope=scope, receive=receive, send=send)
         route_handler, parameter_model = self.route_handler_map[scope["method"]]
+        request: Request[Any, Any, Any] = route_handler.resolve_request_class()(scope=scope, receive=receive, send=send)
 
         if route_handler.resolve_guards():
             await route_handler.authorize_connection(connection=request)
