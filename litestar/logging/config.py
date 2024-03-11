@@ -30,9 +30,9 @@ if TYPE_CHECKING:
 try:
     from structlog.types import BindableLogger, Processor, WrappedLogger
 except ImportError:
-    BindableLogger = Any  # type: ignore
-    Processor = Any  # type: ignore
-    WrappedLogger = Any  # type: ignore
+    BindableLogger = Any  # type: ignore[assignment, misc]
+    Processor = Any  # type: ignore[misc]
+    WrappedLogger = Any  # type: ignore[misc]
 
 
 default_handlers: dict[str, dict[str, Any]] = {

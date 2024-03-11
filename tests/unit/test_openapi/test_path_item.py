@@ -29,7 +29,7 @@ def route(person_controller: type[Controller]) -> HTTPRoute:
 
 @pytest.fixture()
 def routes_with_router(person_controller: type[Controller]) -> tuple[HTTPRoute, HTTPRoute]:
-    class PersonControllerV2(person_controller):  # type: ignore
+    class PersonControllerV2(person_controller):  # type: ignore[misc, valid-type]
         pass
 
     router_v1 = Router(path="/v1", route_handlers=[person_controller])
@@ -106,7 +106,7 @@ def test_unique_operation_ids_for_multiple_http_methods_with_handler_level_opera
     index = find_index(app.routes, lambda x: x.path_format == "/")
     route_with_multiple_methods = cast("HTTPRoute", app.routes[index])
     factory = create_factory(route_with_multiple_methods)
-    factory.context.openapi_config.operation_id_creator = lambda x: "abc"  # type: ignore
+    factory.context.openapi_config.operation_id_creator = lambda x: "abc"  # type: ignore[assignment, misc]
     schema = create_factory(route_with_multiple_methods).create_path_item()
     assert schema.get
     assert schema.get.operation_id

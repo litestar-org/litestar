@@ -123,7 +123,7 @@ def test_exception_handler_middleware_exception_handlers_mapping() -> None:
         return Response(content={"an": "error"}, status_code=HTTP_500_INTERNAL_SERVER_ERROR)
 
     app = Litestar(route_handlers=[handler], exception_handlers={Exception: exception_handler}, openapi_config=None)
-    assert app.asgi_router.root_route_map_node.children["/"].asgi_handlers["GET"][0].exception_handlers == {  # type: ignore
+    assert app.asgi_router.root_route_map_node.children["/"].asgi_handlers["GET"][0].exception_handlers == {  # type: ignore[attr-defined]
         Exception: exception_handler,
         StarletteHTTPException: _starlette_exception_handler,
     }

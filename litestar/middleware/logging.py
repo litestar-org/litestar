@@ -41,7 +41,7 @@ try:
 
     structlog_installed = True
 except ImportError:
-    BindableLogger = object  # type: ignore
+    BindableLogger = object  # type: ignore[assignment, misc]
     structlog_installed = False
 
 
