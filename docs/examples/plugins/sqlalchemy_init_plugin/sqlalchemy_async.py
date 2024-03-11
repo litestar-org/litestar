@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy import text
 
 from litestar import Litestar, get
-from litestar.contrib.sqlalchemy.plugins import SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
+from litestar.plugins.sqlalchemy import SQLAlchemyAsyncConfig, SQLAlchemyPlugin
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
@@ -26,5 +26,5 @@ sqlalchemy_config = SQLAlchemyAsyncConfig(connection_string="sqlite+aiosqlite://
 
 app = Litestar(
     route_handlers=[async_sqlalchemy_init],
-    plugins=[SQLAlchemyInitPlugin(config=sqlalchemy_config)],
+    plugins=[SQLAlchemyPlugin(config=sqlalchemy_config)],
 )

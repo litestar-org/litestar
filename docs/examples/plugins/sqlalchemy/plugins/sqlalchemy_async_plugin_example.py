@@ -9,8 +9,6 @@ from litestar import Litestar, post
 from litestar.contrib.sqlalchemy.plugins import SQLAlchemyAsyncConfig, SQLAlchemyPlugin
 
 if TYPE_CHECKING:
-    from typing import List
-
     from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -25,7 +23,7 @@ class TodoItem(Base):
 
 
 @post("/")
-async def add_item(data: TodoItem, db_session: AsyncSession) -> List[TodoItem]:
+async def add_item(data: TodoItem, db_session: AsyncSession) -> list[TodoItem]:
     async with db_session.begin():
         db_session.add(data)
     return (await db_session.execute(select(TodoItem))).scalars().all()

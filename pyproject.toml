@@ -180,7 +180,7 @@ requires = ["hatchling"]
 
 [tool.codespell]
 ignore-words-list = "selectin"
-skip = 'pdm.lock,docs/examples/contrib/sqlalchemy/us_state_lookup.json'
+skip = 'pdm.lock,docs/examples/plugins/sqlalchemy/us_state_lookup.json'
 
 [tool.coverage.run]
 concurrency = ["multiprocessing", "thread"]

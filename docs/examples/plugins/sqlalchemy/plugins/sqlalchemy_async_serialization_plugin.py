@@ -8,7 +8,7 @@ from litestar import Litestar, post
 from litestar.contrib.sqlalchemy.plugins import SQLAlchemySerializationPlugin
 
 if TYPE_CHECKING:
-    from typing import List
+    pass
 
 
 class Base(DeclarativeBase):
@@ -21,8 +21,8 @@ class TodoItem(Base):
     done: Mapped[bool]
 
 
-@post("/", sync_to_thread=False)
-def add_item(data: TodoItem) -> List[TodoItem]:
+@post("/")
+async def add_item(data: TodoItem) -> list[TodoItem]:
     return [data]
 
 

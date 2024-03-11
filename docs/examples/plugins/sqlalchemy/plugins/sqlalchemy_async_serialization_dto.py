@@ -8,7 +8,7 @@ from litestar import Litestar, post
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
 
 if TYPE_CHECKING:
-    from typing import List
+    pass
 
 
 class Base(DeclarativeBase):
@@ -22,7 +22,7 @@ class TodoItem(Base):
 
 
 @post("/", dto=SQLAlchemyDTO[TodoItem])
-async def add_item(data: TodoItem) -> List[TodoItem]:
+async def add_item(data: TodoItem) -> list[TodoItem]:
     return [data]
 
 

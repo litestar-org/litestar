@@ -9,15 +9,18 @@ from pydantic import TypeAdapter
 from sqlalchemy import ForeignKey, select
 from sqlalchemy.orm import Mapped, mapped_column, relationship, selectinload
 
-from litestar import Litestar, get
-from litestar.contrib.sqlalchemy.base import UUIDAuditBase, UUIDBase
-from litestar.contrib.sqlalchemy.plugins import AsyncSessionConfig, SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
-from litestar.contrib.sqlalchemy.repository import SQLAlchemyAsyncRepository
-from litestar.controller import Controller
+from litestar import Controller, Litestar, delete, get, patch, post
 from litestar.di import Provide
-from litestar.handlers.http_handlers.decorators import delete, patch, post
 from litestar.pagination import OffsetPagination
 from litestar.params import Parameter
+from litestar.plugins.sqlalchemy import (
+    AsyncSessionConfig,
+    SQLAlchemyAsyncConfig,
+    SQLAlchemyPlugin,
+    UUIDAuditBase,
+    UUIDBase,
+)
+from litestar.plugins.sqlalchemy.repository import SQLAlchemyAsyncRepository
 from litestar.repository.filters import LimitOffset
 
 if TYPE_CHECKING:
@@ -126,9 +129,9 @@ class AuthorController(Controller):
     ) -> OffsetPagination[Author]:
         """List authors."""
         results, total = await authors_repo.list_and_count(limit_offset)
-        type_adapter = TypeAdapter(list[Author])
+
         return OffsetPagination[Author](
-            items=type_adapter.validate_python(results),
+            items=TypeAdapter(list[Author]).validate_python(results),
             total=total,
             limit=limit_offset.limit,
             offset=limit_offset.offset,
@@ -179,7 +182,7 @@ class AuthorController(Controller):
         raw_obj.update({"id": author_id})
         obj = await authors_repo.update(AuthorModel(**raw_obj))
         await authors_repo.session.commit()
-        return Author.from_orm(obj)
+        return Author.model_validate(obj)
 
     @delete(path="/authors/{author_id:uuid}")
     async def delete_author(
@@ -195,22 +198,16 @@ class AuthorController(Controller):
         await authors_repo.session.commit()
 
 
-session_config = AsyncSessionConfig(expire_on_commit=False)
-sqlalchemy_config = SQLAlchemyAsyncConfig(
-    connection_string="sqlite+aiosqlite:///test.sqlite", session_config=session_config
-)  # Create 'db_session' dependency.
-sqlalchemy_plugin = SQLAlchemyInitPlugin(config=sqlalchemy_config)
-
-
-async def on_startup() -> None:
-    """Initializes the database."""
-    async with sqlalchemy_config.get_engine().begin() as conn:
-        await conn.run_sync(UUIDBase.metadata.create_all)
-
-
 app = Litestar(
     route_handlers=[AuthorController],
-    on_startup=[on_startup],
-    plugins=[SQLAlchemyInitPlugin(config=sqlalchemy_config)],
+    plugins=[
+        SQLAlchemyPlugin(
+            config=SQLAlchemyAsyncConfig(
+                connection_string="sqlite+aiosqlite:///test.sqlite",
+                session_config=AsyncSessionConfig(expire_on_commit=False),
+                create_all=True,
+            )
+        )
+    ],
     dependencies={"limit_offset": Provide(provide_limit_offset_pagination)},
 )

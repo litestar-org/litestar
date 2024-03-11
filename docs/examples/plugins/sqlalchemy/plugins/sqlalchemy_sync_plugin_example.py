@@ -9,8 +9,6 @@ from litestar import Litestar, post
 from litestar.contrib.sqlalchemy.plugins import SQLAlchemyPlugin, SQLAlchemySyncConfig
 
 if TYPE_CHECKING:
-    from typing import List
-
     from sqlalchemy.orm import Session
 
 
@@ -25,7 +23,7 @@ class TodoItem(Base):
 
 
 @post("/", sync_to_thread=True)
-def add_item(data: TodoItem, db_session: Session) -> List[TodoItem]:
+def add_item(data: TodoItem, db_session: Session) -> list[TodoItem]:
     with db_session.begin():
         db_session.add(data)
     return db_session.execute(select(TodoItem)).scalars().all()

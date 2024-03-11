@@ -1,4 +1,4 @@
-from advanced_alchemy import filters, types
+from advanced_alchemy import filters, repository, service, types
 from advanced_alchemy.base import (
     AuditColumns,
     BigIntAuditBase,
@@ -30,6 +30,8 @@ __all__ = (
     "orm_registry",
     "filters",
     "types",
+    "repository",
+    "service",
     "AuditColumns",
     "BigIntAuditBase",
     "BigIntBase",
