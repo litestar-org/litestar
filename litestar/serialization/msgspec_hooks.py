@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections import deque
 from datetime import date, datetime, time
 from decimal import Decimal
+from enum import Enum, EnumMeta
 from functools import partial
 from ipaddress import (
     IPv4Address,
@@ -52,6 +53,8 @@ DEFAULT_TYPE_ENCODERS: TypeEncodersMap = {
     deque: list,
     Decimal: lambda val: int(val) if val.as_tuple().exponent >= 0 else float(val),
     Pattern: lambda val: val.pattern,
+    Enum: lambda val: val.value if val else None,
+    EnumMeta: lambda val: None,
     # support subclasses of stdlib types, If no previous type matched, these will be
     # the last type in the mro, so we use this to (attempt to) convert a subclass into
     # its base class. # see https://github.com/jcrist/msgspec/issues/248
@@ -144,23 +147,19 @@ def encode_json(value: Any, serializer: Callable[[Any], Any] | None = None) -> b
 
 
 @overload
-def decode_json(value: str | bytes) -> Any:
-    ...
+def decode_json(value: str | bytes) -> Any: ...
 
 
 @overload
-def decode_json(value: str | bytes, type_decoders: TypeDecodersSequence | None) -> Any:
-    ...
+def decode_json(value: str | bytes, type_decoders: TypeDecodersSequence | None) -> Any: ...
 
 
 @overload
-def decode_json(value: str | bytes, target_type: type[T]) -> T:
-    ...
+def decode_json(value: str | bytes, target_type: type[T]) -> T: ...
 
 
 @overload
-def decode_json(value: str | bytes, target_type: type[T], type_decoders: TypeDecodersSequence | None) -> T:
-    ...
+def decode_json(value: str | bytes, target_type: type[T], type_decoders: TypeDecodersSequence | None) -> T: ...
 
 
 def decode_json(  # type: ignore[misc]
@@ -213,23 +212,19 @@ def encode_msgpack(value: Any, serializer: Callable[[Any], Any] | None = default
 
 
 @overload
-def decode_msgpack(value: bytes) -> Any:
-    ...
+def decode_msgpack(value: bytes) -> Any: ...
 
 
 @overload
-def decode_msgpack(value: bytes, type_decoders: TypeDecodersSequence | None) -> Any:
-    ...
+def decode_msgpack(value: bytes, type_decoders: TypeDecodersSequence | None) -> Any: ...
 
 
 @overload
-def decode_msgpack(value: bytes, target_type: type[T]) -> T:
-    ...
+def decode_msgpack(value: bytes, target_type: type[T]) -> T: ...
 
 
 @overload
-def decode_msgpack(value: bytes, target_type: type[T], type_decoders: TypeDecodersSequence | None) -> T:
-    ...
+def decode_msgpack(value: bytes, target_type: type[T], type_decoders: TypeDecodersSequence | None) -> T: ...
 
 
 def decode_msgpack(  # type: ignore[misc]
