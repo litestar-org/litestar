@@ -147,19 +147,23 @@ def encode_json(value: Any, serializer: Callable[[Any], Any] | None = None) -> b
 
 
 @overload
-def decode_json(value: str | bytes) -> Any: ...
+def decode_json(value: str | bytes) -> Any:
+    ...
 
 
 @overload
-def decode_json(value: str | bytes, type_decoders: TypeDecodersSequence | None) -> Any: ...
+def decode_json(value: str | bytes, type_decoders: TypeDecodersSequence | None) -> Any:
+    ...
 
 
 @overload
-def decode_json(value: str | bytes, target_type: type[T]) -> T: ...
+def decode_json(value: str | bytes, target_type: type[T]) -> T:
+    ...
 
 
 @overload
-def decode_json(value: str | bytes, target_type: type[T], type_decoders: TypeDecodersSequence | None) -> T: ...
+def decode_json(value: str | bytes, target_type: type[T], type_decoders: TypeDecodersSequence | None) -> T:
+    ...
 
 
 def decode_json(  # type: ignore[misc]
@@ -212,19 +216,23 @@ def encode_msgpack(value: Any, serializer: Callable[[Any], Any] | None = default
 
 
 @overload
-def decode_msgpack(value: bytes) -> Any: ...
+def decode_msgpack(value: bytes) -> Any:
+    ...
 
 
 @overload
-def decode_msgpack(value: bytes, type_decoders: TypeDecodersSequence | None) -> Any: ...
+def decode_msgpack(value: bytes, type_decoders: TypeDecodersSequence | None) -> Any:
+    ...
 
 
 @overload
-def decode_msgpack(value: bytes, target_type: type[T]) -> T: ...
+def decode_msgpack(value: bytes, target_type: type[T]) -> T:
+    ...
 
 
 @overload
-def decode_msgpack(value: bytes, target_type: type[T], type_decoders: TypeDecodersSequence | None) -> T: ...
+def decode_msgpack(value: bytes, target_type: type[T], type_decoders: TypeDecodersSequence | None) -> T:
+    ...
 
 
 def decode_msgpack(  # type: ignore[misc]
