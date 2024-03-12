@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections import deque
 from datetime import date, datetime, time
 from decimal import Decimal
+from enum import Enum, EnumMeta
 from functools import partial
 from ipaddress import (
     IPv4Address,
@@ -52,6 +53,8 @@ DEFAULT_TYPE_ENCODERS: TypeEncodersMap = {
     deque: list,
     Decimal: lambda val: int(val) if val.as_tuple().exponent >= 0 else float(val),
     Pattern: lambda val: val.pattern,
+    Enum: lambda val: val.value if val else None,
+    EnumMeta: lambda val: None,
     # support subclasses of stdlib types, If no previous type matched, these will be
     # the last type in the mro, so we use this to (attempt to) convert a subclass into
     # its base class. # see https://github.com/jcrist/msgspec/issues/248
