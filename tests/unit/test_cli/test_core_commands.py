@@ -292,9 +292,9 @@ def test_run_command_quiet_console(
     monkeypatch.delenv("LITESTAR_QUIET_CONSOLE", raising=False)
     result = runner.invoke(cli_command, ["--app", app_path, "run"])
     assert result.exit_code == 0
-    normal_output = console.file.getvalue()
-    assert "Using Litestar from env:" in normal_output  # type: ignore
-    assert "Starting server process" in result.stdout  # type: ignore
+    normal_output = console.file.getvalue()  # type: ignore[attr-defined]
+    assert "Using Litestar from env:" in normal_output
+    assert "Starting server process" in result.stdout
     del result
     console = Console(file=io.StringIO())
     monkeypatch.setattr(_utils, "console", console)
@@ -302,10 +302,9 @@ def test_run_command_quiet_console(
     assert os.getenv("LITESTAR_QUIET_CONSOLE") == "1"
     result = runner.invoke(cli_command, ["--app", app_path, "run"])
     assert result.exit_code == 0
-    quiet_output = console.file.getvalue()
-    assert "Starting server process" not in result.stdout  # type: ignore
-    assert "Using Litestar from env:" not in quiet_output  # type: ignore
-    _env = _utils.LitestarEnv.from_env(app_path=app_path)
+    quiet_output = console.file.getvalue()  # type: ignore[attr-defined]
+    assert "Starting server process" not in result.stdout
+    assert "Using Litestar from env:" not in quiet_output
     console.clear()
 
 
@@ -321,16 +320,16 @@ def test_run_command_custom_app_name(
     monkeypatch.delenv("LITESTAR_APP_NAME", raising=False)
     result = runner.invoke(cli_command, ["--app", app_path, "run"])
     assert result.exit_code == 0
-    _output = console.file.getvalue()
-    assert "Using Litestar from env:" in _output  # type: ignore
+    _output = console.file.getvalue()  # type: ignore[attr-defined]
+    assert "Using Litestar from env:" in _output
     console = Console(file=io.StringIO())
     monkeypatch.setattr(_utils, "console", console)
     monkeypatch.setenv("LITESTAR_APP_NAME", "My Stuff")
     assert os.getenv("LITESTAR_APP_NAME") == "My Stuff"
     result = runner.invoke(cli_command, ["--app", app_path, "run"])
     assert result.exit_code == 0
-    _output = console.file.getvalue()
-    assert "Using My Stuff from env:" in _output  # type: ignore
+    _output = console.file.getvalue()  # type: ignore[attr-defined]
+    assert "Using My Stuff from env:" in _output
 
 
 @pytest.mark.usefixtures("mock_uvicorn_run", "unset_env")
