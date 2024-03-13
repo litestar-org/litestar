@@ -46,7 +46,7 @@ async def socket_handler(socket: "WebSocket") -> None:
 )
 def test_opt_settings(decorator: "RouteHandlerType", handler: Callable) -> None:
     base_opt = {"base": 1, "kwarg_value": 0}
-    result = decorator("/", opt=base_opt, kwarg_value=2)(handler)  # type: ignore
+    result = decorator("/", opt=base_opt, kwarg_value=2)(handler)  # type: ignore[arg-type, call-arg]
     assert result.opt == {"base": 1, "kwarg_value": 2}
 
 

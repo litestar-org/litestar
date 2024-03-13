@@ -32,8 +32,15 @@ class OpenAPIPlugin(InitPluginProtocol, ReceiveRoutePlugin):
         self._openapi_schema: OpenAPI | None = None
 
     def _build_openapi_schema(self) -> OpenAPI:
-        openapi = self.openapi_config.to_openapi_schema()
-        context = OpenAPIContext(openapi_config=self.openapi_config, plugins=self.app.plugins.openapi)
+        openapi_config = self.openapi_config
+
+        if openapi_config.create_examples:
+            from litestar._openapi.schema_generation.examples import ExampleFactory
+
+            ExampleFactory.seed_random(openapi_config.random_seed)
+
+        openapi = openapi_config.to_openapi_schema()
+        context = OpenAPIContext(openapi_config=openapi_config, plugins=self.app.plugins.openapi)
         openapi.paths = {
             route.path_format or "/": create_path_item_for_route(context, route)
             for route in self.included_routes.values()

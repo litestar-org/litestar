@@ -57,7 +57,7 @@ maintainers = [
 name = "litestar"
 readme = "README.md"
 requires-python = ">=3.8,<4.0"
-version = "2.6.1"
+version = "2.7.0"
 
 [project.urls]
 Blog = "https://blog.litestar.dev"
@@ -227,6 +227,7 @@ python_version = "3.8"
 
 disallow_any_generics = false
 disallow_untyped_decorators = true
+enable_error_code = "ignore-without-code"
 implicit_reexport = false
 show_error_codes = true
 strict = true

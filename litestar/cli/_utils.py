@@ -441,7 +441,7 @@ def validate_ssl_file_paths(certfile_arg: str | None, keyfile_arg: str | None) -
             raise LitestarCLIException(f"File provided for {argname} was not found: {path}")
         resolved_paths.append(str(path))
 
-    return tuple(resolved_paths)  # type: ignore
+    return tuple(resolved_paths)  # type: ignore[return-value]
 
 
 def create_ssl_files(
