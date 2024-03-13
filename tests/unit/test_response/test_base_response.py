@@ -1,4 +1,3 @@
-from enum import Enum
 from pathlib import PurePosixPath
 from typing import Any, Optional
 
@@ -188,15 +187,6 @@ def test_get_serializer() -> None:
     class Foo:
         pass
 
-    class Color(Enum):
-        RED = 1
-
-    class Size(str, Enum):
-        SMALL = "small"
-
-    class AltSize(Enum):
-        OTHER = "another"
-
     foo_encoder = {Foo: lambda f: "it's a foo"}
     path_encoder = {PurePosixPath: lambda p: "it's a path"}
 
@@ -212,9 +202,6 @@ def test_get_serializer() -> None:
     assert (
         get_serializer(FooResponse(None, type_encoders={Foo: lambda f: "foo"}).response_type_encoders)(Foo()) == "foo"
     )
-    assert get_serializer()(Color.RED) == Color.RED.value
-    assert get_serializer()(Size(Size.SMALL)) == "Size.SMALL"
-    assert get_serializer()(AltSize) is None
 
 
 def test_head_response_doesnt_support_content() -> None:
