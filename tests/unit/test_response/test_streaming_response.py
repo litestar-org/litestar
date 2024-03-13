@@ -3,6 +3,7 @@
 https://github.com/encode/starlette/blob/master/tests/test_responses.py And are meant to ensure our compatibility with
 their API.
 """
+
 from itertools import cycle
 from typing import TYPE_CHECKING, AsyncIterator, Iterator
 

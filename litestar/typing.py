@@ -38,12 +38,10 @@ T = TypeVar("T", bound=KwargDefinition)
 
 class _KwargMetaExtractor(Protocol):
     @staticmethod
-    def matches(annotation: Any, name: str | None, default: Any) -> bool:
-        ...
+    def matches(annotation: Any, name: str | None, default: Any) -> bool: ...
 
     @staticmethod
-    def extract(annotation: Any, default: Any) -> Any:
-        ...
+    def extract(annotation: Any, default: Any) -> Any: ...
 
 
 _KWARG_META_EXTRACTORS: set[_KwargMetaExtractor] = set()

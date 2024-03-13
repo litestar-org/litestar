@@ -2,6 +2,7 @@
 Some tests in this file were adapted from: https://github.com/encode/starlette/blob/master/tests/test_websockets.py And
 were meant to ensure our compatibility with their API.
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Literal

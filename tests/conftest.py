@@ -70,8 +70,7 @@ def anyio_backend(request: pytest.FixtureRequest) -> str:
 
 @pytest.fixture()
 def mock_asgi_app() -> ASGIApp:
-    async def asgi_app(scope: Scope, receive: Receive, send: Send) -> None:
-        ...
+    async def asgi_app(scope: Scope, receive: Receive, send: Send) -> None: ...
 
     return asgi_app
 

@@ -34,8 +34,7 @@ def test_raises_when_sync_handler_user() -> None:
     with pytest.raises(ImproperlyConfiguredException):
 
         @websocket(path="/")  # type: ignore[arg-type]
-        def sync_websocket_handler(socket: WebSocket) -> None:
-            ...
+        def sync_websocket_handler(socket: WebSocket) -> None: ...
 
         sync_websocket_handler.on_registration(Litestar())
 
@@ -44,8 +43,7 @@ def test_raises_when_data_kwarg_is_used() -> None:
     with pytest.raises(ImproperlyConfiguredException):
 
         @websocket(path="/")
-        async def websocket_handler_with_data_kwarg(socket: WebSocket, data: Any) -> None:
-            ...
+        async def websocket_handler_with_data_kwarg(socket: WebSocket, data: Any) -> None: ...
 
         websocket_handler_with_data_kwarg.on_registration(Litestar())
 
@@ -54,8 +52,7 @@ def test_raises_when_request_kwarg_is_used() -> None:
     with pytest.raises(ImproperlyConfiguredException):
 
         @websocket(path="/")
-        async def websocket_handler_with_request_kwarg(socket: WebSocket, request: Any) -> None:
-            ...
+        async def websocket_handler_with_request_kwarg(socket: WebSocket, request: Any) -> None: ...
 
         websocket_handler_with_request_kwarg.on_registration(Litestar())
 
@@ -64,7 +61,6 @@ def test_raises_when_body_kwarg_is_used() -> None:
     with pytest.raises(ImproperlyConfiguredException):
 
         @websocket(path="/")
-        async def websocket_handler_with_request_kwarg(socket: WebSocket, body: bytes) -> None:
-            ...
+        async def websocket_handler_with_request_kwarg(socket: WebSocket, body: bytes) -> None: ...
 
         websocket_handler_with_request_kwarg.on_registration(Litestar())
