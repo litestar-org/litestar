@@ -111,8 +111,9 @@ class LitestarEnv:
         quiet_console = getenv("LITESTAR_QUIET_CONSOLE") or False
         if app_path and getenv("LITESTAR_APP") is None:
             os.environ["LITESTAR_APP"] = app_path
-        if app_path and not quiet_console:
-            console.print(f"Using {app_name} app from env: [bright_blue]{app_path!r}")
+        if app_path:
+            if not quiet_console:
+                console.print(f"Using {app_name} from env: [bright_blue]{app_path!r}")
             loaded_app = _load_app_from_path(app_path)
         else:
             loaded_app = _autodiscover_app(cwd)
