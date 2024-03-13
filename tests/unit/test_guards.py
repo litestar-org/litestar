@@ -32,8 +32,7 @@ def app_guard(connection: "ASGIConnection", _: "BaseRouteHandler") -> None:
 
 def test_guards_with_http_handler() -> None:
     @get(path="/secret", guards=[local_guard])
-    def my_http_route_handler() -> None:
-        ...
+    def my_http_route_handler() -> None: ...
 
     with create_test_client(guards=[app_guard], route_handlers=[my_http_route_handler]) as client:
         response = client.get("/secret")
@@ -87,8 +86,7 @@ def test_guards_with_websocket_handler() -> None:
 
 def test_guards_layering_for_same_route_handler() -> None:
     @get(path="/http", guards=[local_guard])
-    def http_route_handler() -> None:
-        ...
+    def http_route_handler() -> None: ...
 
     router = Router(path="/router", route_handlers=[http_route_handler], guards=[router_guard])
     app = Litestar(route_handlers=[http_route_handler, router], guards=[app_guard])

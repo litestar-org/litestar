@@ -345,8 +345,7 @@ class LoggingMiddlewareConfig:
 
 
                 @get("/")
-                def my_handler(request: Request) -> None:
-                    ...
+                def my_handler(request: Request) -> None: ...
 
 
                 app = Litestar(

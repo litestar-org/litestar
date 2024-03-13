@@ -12,8 +12,7 @@ if TYPE_CHECKING:
 @pytest.fixture()
 def handler() -> HTTPRouteHandler:
     @get("/handler", tags=["handler"])
-    def _handler() -> Any:
-        ...
+    def _handler() -> Any: ...
 
     return _handler
 
@@ -25,8 +24,7 @@ def controller() -> Type[Controller]:
         tags = ["controller"]
 
         @get(tags=["handler", "a"])
-        def _handler(self) -> Any:
-            ...
+        def _handler(self) -> Any: ...
 
     return _Controller
 

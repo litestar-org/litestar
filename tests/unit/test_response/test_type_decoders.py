@@ -24,12 +24,10 @@ def controller() -> Type[Controller]:
         type_decoders = [controller_decoder]
 
         @get("/http", type_decoders=[handler_decoder])
-        def http(self) -> Any:
-            ...
+        def http(self) -> Any: ...
 
         @websocket_listener("/ws", type_decoders=[handler_decoder])
-        async def handler(self, data: str) -> None:
-            ...
+        async def handler(self, data: str) -> None: ...
 
     return MyController
 
@@ -49,8 +47,7 @@ def websocket_listener_handler() -> Type[WebsocketListener]:
 @pytest.fixture(scope="module")
 def http_handler() -> HTTPRouteHandler:
     @get("/http", type_decoders=[handler_decoder])
-    def http() -> Any:
-        ...
+    def http() -> Any: ...
 
     return http
 
@@ -58,8 +55,7 @@ def http_handler() -> HTTPRouteHandler:
 @pytest.fixture(scope="module")
 def websocket_handler() -> WebsocketListenerRouteHandler:
     @websocket_listener("/ws", type_decoders=[handler_decoder])
-    async def websocket(data: str) -> None:
-        ...
+    async def websocket(data: str) -> None: ...
 
     return websocket
 
