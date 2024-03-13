@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from litestar.connection.request import Request
     from litestar.openapi.spec.open_api import OpenAPI
 
-_OPENAPI_JSON_ROUTER_NAME: Final[str] = "__litestar_openapi_json"
+_OPENAPI_JSON_ROUTER_NAME: Final = "__litestar_openapi_json"
 
 
 class OpenAPIController(Controller):
