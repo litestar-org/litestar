@@ -189,7 +189,7 @@ def run_command(
 
     if pdb:
         os.environ["LITESTAR_PDB"] = "1"
-
+    quiet_console = os.getenv("LITESTAR_QUIET_CONSOLE") or False
     if not UVICORN_INSTALLED:
         console.print(
             r"uvicorn is not installed. Please install the standard group, litestar\[standard], to use this command."
@@ -228,9 +228,9 @@ def run_command(
         else validate_ssl_file_paths(ssl_certfile, ssl_keyfile)
     )
 
-    console.rule("[yellow]Starting server process", align="left")
-
-    show_app_info(app)
+    if not quiet_console:
+        console.rule("[yellow]Starting server process", align="left")
+        show_app_info(app)
     with _server_lifespan(app):
         if workers == 1 and not reload:
             import uvicorn
