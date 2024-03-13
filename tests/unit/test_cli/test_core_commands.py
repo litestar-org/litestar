@@ -1,3 +1,4 @@
+import io
 import os
 import re
 import sys
@@ -9,9 +10,10 @@ import pytest
 from _pytest.monkeypatch import MonkeyPatch
 from click.testing import CliRunner
 from pytest_mock import MockerFixture
+from rich.console import Console
 
 from litestar import __version__ as litestar_version
-from litestar.cli._utils import remove_default_schema_routes, remove_routes_with_patterns
+from litestar.cli import _utils
 from litestar.cli.main import litestar_group as cli_command
 from litestar.exceptions import LitestarWarning
 
@@ -279,6 +281,58 @@ def test_run_command_debug(
 
 
 @pytest.mark.usefixtures("mock_uvicorn_run", "unset_env")
+def test_run_command_quiet_console(
+    app_file: Path, runner: CliRunner, monkeypatch: MonkeyPatch, create_app_file: CreateAppFileFixture
+) -> None:
+    console = Console(file=io.StringIO())
+    monkeypatch.setattr(_utils, "console", console)
+
+    path = create_app_file("_create_app_with_path.py", content=CREATE_APP_FILE_CONTENT)
+    app_path = f"{path.stem}:create_app"
+    monkeypatch.delenv("LITESTAR_QUIET_CONSOLE", raising=False)
+    result = runner.invoke(cli_command, ["--app", app_path, "run"])
+    assert result.exit_code == 0
+    normal_output = console.file.getvalue()  # type: ignore[attr-defined]
+    assert "Using Litestar from env:" in normal_output
+    assert "Starting server process" in result.stdout
+    del result
+    console = Console(file=io.StringIO())
+    monkeypatch.setattr(_utils, "console", console)
+    monkeypatch.setenv("LITESTAR_QUIET_CONSOLE", "1")
+    assert os.getenv("LITESTAR_QUIET_CONSOLE") == "1"
+    result = runner.invoke(cli_command, ["--app", app_path, "run"])
+    assert result.exit_code == 0
+    quiet_output = console.file.getvalue()  # type: ignore[attr-defined]
+    assert "Starting server process" not in result.stdout
+    assert "Using Litestar from env:" not in quiet_output
+    console.clear()
+
+
+@pytest.mark.usefixtures("mock_uvicorn_run", "unset_env")
+def test_run_command_custom_app_name(
+    app_file: Path, runner: CliRunner, monkeypatch: MonkeyPatch, create_app_file: CreateAppFileFixture
+) -> None:
+    console = Console(file=io.StringIO())
+    monkeypatch.setattr(_utils, "console", console)
+
+    path = create_app_file("_create_app_with_path.py", content=CREATE_APP_FILE_CONTENT)
+    app_path = f"{path.stem}:create_app"
+    monkeypatch.delenv("LITESTAR_APP_NAME", raising=False)
+    result = runner.invoke(cli_command, ["--app", app_path, "run"])
+    assert result.exit_code == 0
+    _output = console.file.getvalue()  # type: ignore[attr-defined]
+    assert "Using Litestar from env:" in _output
+    console = Console(file=io.StringIO())
+    monkeypatch.setattr(_utils, "console", console)
+    monkeypatch.setenv("LITESTAR_APP_NAME", "My Stuff")
+    assert os.getenv("LITESTAR_APP_NAME") == "My Stuff"
+    result = runner.invoke(cli_command, ["--app", app_path, "run"])
+    assert result.exit_code == 0
+    _output = console.file.getvalue()  # type: ignore[attr-defined]
+    assert "Using My Stuff from env:" in _output
+
+
+@pytest.mark.usefixtures("mock_uvicorn_run", "unset_env")
 def test_run_command_pdb(
     app_file: Path,
     runner: CliRunner,
@@ -425,7 +479,7 @@ def test_remove_default_schema_routes() -> None:
     api_config = MagicMock()
     api_config.openapi_controller.path = "/schema"
 
-    results = remove_default_schema_routes(http_routes, api_config)  # type: ignore[arg-type]
+    results = _utils.remove_default_schema_routes(http_routes, api_config)  # type: ignore[arg-type]
     assert len(results) == 3
     for result in results:
         words = re.split(r"(^\/[a-z]+)", result.path)
@@ -441,7 +495,7 @@ def test_remove_routes_with_patterns() -> None:
         http_routes.append(http_route)
 
     patterns = ("/destroy", "/pizza", "[]")
-    results = remove_routes_with_patterns(http_routes, patterns)  # type: ignore[arg-type]
+    results = _utils.remove_routes_with_patterns(http_routes, patterns)  # type: ignore[arg-type]
     paths = [route.path for route in results]
     assert len(paths) == 2
     for route in ["/", "/foo"]:
