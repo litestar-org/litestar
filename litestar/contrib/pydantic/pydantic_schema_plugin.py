@@ -257,36 +257,20 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
             return self.for_pydantic_model(
                 field_definition=field_definition,
                 schema_creator=schema_creator,
-                exclude=self.exclude,
-                exclude_defaults=self.exclude_defaults,
-                exclude_none=self.exclude_none,
-                exclude_unset=self.exclude_unset,
-                include=self.include,
             )
         return PYDANTIC_TYPE_MAP[field_definition.annotation]  # pragma: no cover
 
-    @classmethod
     def for_pydantic_model(
-        cls,
+        self,
         field_definition: FieldDefinition,
         schema_creator: SchemaCreator,
-        exclude: PydanticFieldsList = None,
-        exclude_defaults: bool = False,
-        exclude_none: bool = False,
-        exclude_unset: bool = False,
-        include: PydanticFieldsList = None,
     ) -> Schema:  # pyright: ignore
         """Create a schema object for a given pydantic model class.
 
         Args:
             field_definition: FieldDefinition instance.
             schema_creator: An instance of the schema creator class
-            exclude: Whether to exclude specified fields
-            exclude_defaults: Whether to exclude default fields
-            exclude_none: Whether to exclude None value fields
-            exclude_unset: Whether to exclude not set fields
             generate_examples: Whether to generate examples if none are given
-            include: Whether to include only specified fields
 
         Returns:
             A schema instance.
@@ -352,13 +336,13 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
 
         return schema_creator.create_component_schema(
             field_definition,
-            required=cls.get_required_fields(
+            required=self.get_required_fields(
                 property_fields,
-                exclude=exclude,
-                include=include,
-                exclude_none=exclude_none,
-                exclude_defaults=exclude_defaults,
-                exclude_unset=exclude_unset,
+                exclude=self.exclude,
+                include=self.include,
+                exclude_none=self.exclude_none,
+                exclude_defaults=self.exclude_defaults,
+                exclude_unset=self.exclude_unset,
             ),
             property_fields=property_fields,
             title=title,
