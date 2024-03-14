@@ -177,16 +177,14 @@ def test_required_schema_fields(plugin_params: dict, required_fields: dict) -> N
         default_none_field: None = None
         none_field: None
 
-    schema_v1 = PydanticSchemaPlugin().for_pydantic_model(
+    schema_v1 = PydanticSchemaPlugin(**plugin_params).for_pydantic_model(
         FieldDefinition.from_annotation(ModelV1),
-        schema_creator=SchemaCreator(plugins=[PydanticSchemaPlugin()]),
-        **plugin_params,
+        schema_creator=SchemaCreator(plugins=[PydanticSchemaPlugin(**plugin_params)]),
     )
 
-    schema_v2 = PydanticSchemaPlugin().for_pydantic_model(
+    schema_v2 = PydanticSchemaPlugin(**plugin_params).for_pydantic_model(
         FieldDefinition.from_annotation(ModelV2),
-        schema_creator=SchemaCreator(plugins=[PydanticSchemaPlugin()]),
-        **plugin_params,
+        schema_creator=SchemaCreator(plugins=[PydanticSchemaPlugin(**plugin_params)]),
     )
 
     assert schema_v1.required == required_fields  # type:ignore[comparison-overlap]

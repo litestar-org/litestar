@@ -368,7 +368,7 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
 
             if any(
                 [
-                    prop.name in exclude,
+                    name in exclude,
                     exclude_none and (prop.is_optional or prop.is_none_type),
                     (exclude_defaults or exclude_unset) and prop.has_default,
                 ]
