@@ -29,13 +29,11 @@ else:
 
 
 @overload
-async def maybe_async(obj: Awaitable[T]) -> T:
-    ...
+async def maybe_async(obj: Awaitable[T]) -> T: ...
 
 
 @overload
-async def maybe_async(obj: T) -> T:
-    ...
+async def maybe_async(obj: T) -> T: ...
 
 
 async def maybe_async(obj: Awaitable[T] | T) -> T:
