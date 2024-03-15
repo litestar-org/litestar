@@ -96,7 +96,7 @@ The ``run`` command executes a Litestar application using `uvicorn <https://www.
     This feature is intended for development purposes only and should not be used to deploy production applications.
 
 .. attention::
-   CLI options take precedence over environmen variables!
+   CLI options take precedence over environment variables!
 
 .. _cli-run-options:
 
