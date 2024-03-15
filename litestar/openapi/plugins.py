@@ -318,7 +318,7 @@ class RedocRenderPlugin(OpenAPIRenderPlugin):
 class ScalarRenderPlugin(OpenAPIRenderPlugin):
     """Plugin to render an OpenAPI schema using Scalar.
 
-    .. versionadded:: 2.5.0
+    .. versionadded:: 2.8.0
     """
 
     _default_litestar_css_url = "https://raw.githubusercontent.com/litestar-org/branding/main/assets/openapi/scalar.css"
@@ -327,7 +327,7 @@ class ScalarRenderPlugin(OpenAPIRenderPlugin):
     def __init__(
         self,
         *,
-        version: str = "1.8.0",
+        version: str = "1.19.5",
         js_url: str | None = None,
         css_url: str | None = None,
         path: str | Sequence[str] = "/scalar",
