@@ -78,6 +78,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         "_resolved_before_request",
         "_response_handler_mapping",
         "_resolved_include_in_schema",
+        "_resolved_response_class",
         "_resolved_request_class",
         "_resolved_tags",
         "_resolved_security",
@@ -291,6 +292,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self._resolved_before_request: AsyncAnyCallable | None | EmptyType = Empty
         self._response_handler_mapping: ResponseHandlerMap = {"default_handler": Empty, "response_type_handler": Empty}
         self._resolved_include_in_schema: bool | EmptyType = Empty
+        self._resolved_response_class: type[Response] | EmptyType = Empty
         self._resolved_request_class: type[Request] | EmptyType = Empty
         self._resolved_security: list[SecurityRequirement] | EmptyType = Empty
         self._resolved_tags: list[str] | EmptyType = Empty
@@ -331,10 +333,13 @@ class HTTPRouteHandler(BaseRouteHandler):
         Returns:
             The default :class:`Response <.response.Response>` class for the route handler.
         """
-        return next(
-            (layer.response_class for layer in reversed(self.ownership_layers) if layer.response_class is not None),
-            Response,
-        )
+        if self._resolved_response_class is Empty:
+            self._resolved_response_class = next(
+                (layer.response_class for layer in reversed(self.ownership_layers) if layer.response_class is not None),
+                Response,
+            )
+
+        return cast("type[Response]", self._resolved_response_class)
 
     def resolve_response_headers(self) -> frozenset[ResponseHeader]:
         """Return all header parameters in the scope of the handler function.
