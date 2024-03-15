@@ -182,27 +182,33 @@ class OpenAPIConfig:
 
     def _issue_deprecations(self) -> None:
         """Handle deprecated config options."""
+        deprecated_in = "v2.8.0"
+        removed_in = "v3.0.0"
         if self.openapi_controller is not None:
             warn_deprecation(
-                "v2.7.0", "openapi_controller", "attribute", removal_in="v3.0.0", alternative="render_plugins"
+                deprecated_in,
+                "openapi_controller",
+                "attribute",
+                removal_in=removed_in,
+                alternative="render_plugins",
             )
 
         if self.root_schema_site is not None:
             warn_deprecation(
-                "v2.7.0",
+                deprecated_in,
                 "root_schema_site",
                 "attribute",
-                removal_in="v3.0.0",
+                removal_in=removed_in,
                 alternative="render_plugins",
                 info="Any 'render_plugin' with path '/' or first 'render_plugin' in list will be served at the OpenAPI root.",
             )
 
         if self.enabled_endpoints is not None:
             warn_deprecation(
-                "v2.7.0",
+                deprecated_in,
                 "enabled_endpoints",
                 "attribute",
-                removal_in="v3.0.0",
+                removal_in=removed_in,
                 alternative="render_plugins",
                 info="Configure a 'render_plugin' to enable an endpoint.",
             )

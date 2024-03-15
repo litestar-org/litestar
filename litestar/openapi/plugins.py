@@ -454,7 +454,7 @@ class StoplightRenderPlugin(OpenAPIRenderPlugin):
     def render(self, request: Request, openapi_schema: dict[str, Any]) -> bytes:
         """Render an HTML page for StopLight Elements.
 
-       .. note:: Override this method to customize the template.
+        .. note:: Override this method to customize the template.
 
         Args:
             request: The request.
