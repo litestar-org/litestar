@@ -47,6 +47,7 @@ if TYPE_CHECKING:
     from litestar import Router
     from litestar.dto import AbstractDTO
     from litestar.types.asgi_types import WebSocketMode
+    from litestar.types.composite_types import TypeDecodersSequence
 
 __all__ = ("WebsocketListener", "WebsocketListenerRouteHandler", "websocket_listener")
 
@@ -61,6 +62,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         "connection_accept_handler": "Callback to accept a WebSocket connection. By default, calls WebSocket.accept",
         "on_accept": "Callback invoked after a WebSocket connection has been accepted",
         "on_disconnect": "Callback invoked after a WebSocket connection has been closed",
+        "weboscket_class": "WebSocket class",
         "_connection_lifespan": None,
         "_handle_receive": None,
         "_handle_send": None,
@@ -85,10 +87,11 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         opt: dict[str, Any] | None = None,
         return_dto: type[AbstractDTO] | None | EmptyType = Empty,
         signature_namespace: Mapping[str, Any] | None = None,
+        type_decoders: TypeDecodersSequence | None = None,
         type_encoders: TypeEncodersMap | None = None,
+        websocket_class: type[WebSocket] | None = None,
         **kwargs: Any,
-    ) -> None:
-        ...
+    ) -> None: ...
 
     @overload
     def __init__(
@@ -109,10 +112,11 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         opt: dict[str, Any] | None = None,
         return_dto: type[AbstractDTO] | None | EmptyType = Empty,
         signature_namespace: Mapping[str, Any] | None = None,
+        type_decoders: TypeDecodersSequence | None = None,
         type_encoders: TypeEncodersMap | None = None,
+        websocket_class: type[WebSocket] | None = None,
         **kwargs: Any,
-    ) -> None:
-        ...
+    ) -> None: ...
 
     def __init__(
         self,
@@ -133,7 +137,9 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         opt: dict[str, Any] | None = None,
         return_dto: type[AbstractDTO] | None | EmptyType = Empty,
         signature_namespace: Mapping[str, Any] | None = None,
+        type_decoders: TypeDecodersSequence | None = None,
         type_encoders: TypeEncodersMap | None = None,
+        websocket_class: type[WebSocket] | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize ``WebsocketRouteHandler``
@@ -166,8 +172,12 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
                 outbound response data.
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature
                 modelling.
+            type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
+                hook for deserialization.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
+            websocket_class: A custom subclass of :class:`WebSocket <.connection.WebSocket>` to be used as route handler's
+                default websocket class.
         """
         if connection_lifespan and any([on_accept, on_disconnect, connection_accept_handler is not WebSocket.accept]):
             raise ImproperlyConfiguredException(
@@ -184,7 +194,9 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         self.connection_accept_handler = connection_accept_handler
         self.on_accept = ensure_async_callable(on_accept) if on_accept else None
         self.on_disconnect = ensure_async_callable(on_disconnect) if on_disconnect else None
+        self.type_decoders = type_decoders
         self.type_encoders = type_encoders
+        self.websocket_class = websocket_class
 
         listener_dependencies = dict(dependencies or {})
 
@@ -209,6 +221,9 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
             signature_namespace=signature_namespace,
             dto=dto,
             return_dto=return_dto,
+            type_decoders=type_decoders,
+            type_encoders=type_encoders,
+            websocket_class=websocket_class,
             **kwargs,
         )
 
@@ -342,9 +357,19 @@ class WebsocketListener(ABC):
     """
     A mapping of names to types for use in forward reference resolution during signature modelling.
     """
+    type_decoders: TypeDecodersSequence | None = None
+    """
+    type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
+        hook for deserialization.
+    """
     type_encoders: TypeEncodersMap | None = None
     """
     type_encoders: A mapping of types to callables that transform them into types supported for serialization.
+    """
+    websocket_class: type[WebSocket] | None = None
+    """
+    websocket_class: A custom subclass of :class:`WebSocket <.connection.WebSocket>` to be used as route handler's
+    default websocket class.
     """
 
     def __init__(self, owner: Router) -> None:
@@ -371,7 +396,9 @@ class WebsocketListener(ABC):
             path=self.path,
             return_dto=self.return_dto,
             signature_namespace=self.signature_namespace,
+            type_decoders=self.type_decoders,
             type_encoders=self.type_encoders,
+            websocket_class=self.websocket_class,
         )(self.on_receive)
         handler.owner = self._owner
         return handler

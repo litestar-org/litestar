@@ -91,8 +91,7 @@ def test_pydantic_v2_validation_error_raises_400(meta: Any) -> None:
 
 def test_default_error_handling() -> None:
     @post("/{param:int}")
-    def my_route_handler(param: int, data: PydanticPerson) -> None:
-        ...
+    def my_route_handler(param: int, data: PydanticPerson) -> None: ...
 
     with create_test_client(my_route_handler) as client:
         response = client.post("/123", json={"first_name": "moishe"})
@@ -103,8 +102,7 @@ def test_default_error_handling() -> None:
 
 def test_default_error_handling_v1() -> None:
     @post("/{param:int}")
-    def my_route_handler(param: int, data: PydanticV1Person) -> None:
-        ...
+    def my_route_handler(param: int, data: PydanticV1Person) -> None: ...
 
     with create_test_client(my_route_handler) as client:
         response = client.post("/123", json={"first_name": "moishe"})
@@ -134,8 +132,7 @@ def test_signature_model_invalid_input(
         length_param: str = Parameter(min_length=2),
         int_header: int = Parameter(header="X-SOME-INT"),
         int_cookie: int = Parameter(cookie="int-cookie"),
-    ) -> None:
-        ...
+    ) -> None: ...
 
     with create_test_client(route_handlers=[test], signature_types=[Parent]) as client:
         client.cookies.update({"int-cookie": "cookie"})

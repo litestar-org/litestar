@@ -29,7 +29,7 @@ def route(person_controller: type[Controller]) -> HTTPRoute:
 
 @pytest.fixture()
 def routes_with_router(person_controller: type[Controller]) -> tuple[HTTPRoute, HTTPRoute]:
-    class PersonControllerV2(person_controller):  # type: ignore
+    class PersonControllerV2(person_controller):  # type: ignore[misc, valid-type]
         pass
 
     router_v1 = Router(path="/v1", route_handlers=[person_controller])
@@ -106,7 +106,7 @@ def test_unique_operation_ids_for_multiple_http_methods_with_handler_level_opera
     index = find_index(app.routes, lambda x: x.path_format == "/")
     route_with_multiple_methods = cast("HTTPRoute", app.routes[index])
     factory = create_factory(route_with_multiple_methods)
-    factory.context.openapi_config.operation_id_creator = lambda x: "abc"  # type: ignore
+    factory.context.openapi_config.operation_id_creator = lambda x: "abc"  # type: ignore[assignment, misc]
     schema = create_factory(route_with_multiple_methods).create_path_item()
     assert schema.get
     assert schema.get.operation_id
@@ -155,12 +155,10 @@ def test_create_path_item_use_handler_docstring_true(route: HTTPRoute, create_fa
 
 def test_operation_id_validation() -> None:
     @get(path="/1", operation_id="handler")
-    def handler_1() -> None:
-        ...
+    def handler_1() -> None: ...
 
     @get(path="/2", operation_id="handler")
-    def handler_2() -> None:
-        ...
+    def handler_2() -> None: ...
 
     app = Litestar(route_handlers=[handler_1, handler_2])
 
@@ -182,12 +180,10 @@ def test_operation_override() -> None:
             ]
 
     @get(path="/1")
-    def handler_1() -> None:
-        ...
+    def handler_1() -> None: ...
 
     @get(path="/2", operation_class=CustomOperation)
-    def handler_2() -> None:
-        ...
+    def handler_2() -> None: ...
 
     app = Litestar(route_handlers=[handler_1, handler_2])
 
@@ -207,12 +203,10 @@ def test_operation_override() -> None:
 
 def test_handler_excluded_from_schema(create_factory: CreateFactoryFixture) -> None:
     @get("/", sync_to_thread=False)
-    def handler_1() -> None:
-        ...
+    def handler_1() -> None: ...
 
     @delete("/", include_in_schema=False, sync_to_thread=False)
-    def handler_2() -> None:
-        ...
+    def handler_2() -> None: ...
 
     app = Litestar(route_handlers=[handler_1, handler_2])
     index = find_index(app.routes, lambda x: x.path_format == "/")

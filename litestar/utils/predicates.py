@@ -47,7 +47,7 @@ if TYPE_CHECKING:
 try:
     import attrs
 except ImportError:
-    attrs = Empty  # type: ignore
+    attrs = Empty  # type: ignore[assignment]
 
 __all__ = (
     "is_annotated_type",
@@ -148,7 +148,7 @@ def is_generic(annotation: Any) -> bool:
     Returns:
         True if the annotation is a subclass of :data:`Generic <typing.Generic>` otherwise ``False``.
     """
-    return is_class_and_subclass(annotation, Generic)  # type: ignore
+    return is_class_and_subclass(annotation, Generic)  # type: ignore[arg-type]
 
 
 def is_mapping(annotation: Any) -> TypeGuard[Mapping[Any, Any]]:
@@ -200,7 +200,7 @@ def is_non_string_sequence(annotation: Any) -> TypeGuard[Sequence[Any]]:
     try:
         return not issubclass(origin or annotation, (str, bytes)) and issubclass(
             origin or annotation,
-            (  # type: ignore
+            (  # type: ignore[arg-type]
                 Tuple,
                 List,
                 Set,

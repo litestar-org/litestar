@@ -27,19 +27,15 @@ def test_get_fn_type_hints_asgi_app() -> None:
     assert get_fn_type_hints(app) == {"scope": Scope, "receive": Receive, "send": Send, "return": NoneType}
 
 
-def func(a: int, b: str, c: float) -> None:
-    ...
+def func(a: int, b: str, c: float) -> None: ...
 
 
 class C:
-    def __init__(self, a: int, b: str, c: float) -> None:
-        ...
+    def __init__(self, a: int, b: str, c: float) -> None: ...
 
-    def method(self, a: int, b: str, c: float) -> None:
-        ...
+    def method(self, a: int, b: str, c: float) -> None: ...
 
-    def __call__(self, a: int, b: str, c: float) -> None:
-        ...
+    def __call__(self, a: int, b: str, c: float) -> None: ...
 
 
 @pytest.mark.parametrize("fn", [func, C, C(1, "2", 3.0).method, C(1, "2", 3.0)])
@@ -53,8 +49,7 @@ def test_get_fn_type_hints_class_no_init() -> None:
     Ref: https://github.com/litestar-org/litestar/issues/1504
     """
 
-    class C:
-        ...
+    class C: ...
 
     assert get_fn_type_hints(C) == {}
 
@@ -139,8 +134,7 @@ def test_field_definition_from_parameter_annotation_property() -> None:
 def test_parsed_signature() -> None:
     """Test ParsedSignature."""
 
-    def fn(foo: int, bar: Optional[List[int]] = None) -> None:
-        ...
+    def fn(foo: int, bar: Optional[List[int]] = None) -> None: ...
 
     parsed_sig = ParsedSignature.from_fn(fn, get_fn_type_hints(fn))
     assert parsed_sig.return_type.annotation is NoneType
