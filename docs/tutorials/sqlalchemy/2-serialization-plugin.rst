@@ -21,7 +21,7 @@ function, making the implementation even more concise.
 Compare handlers before and after Serialization Plugin
 ======================================================
 
-Once more, lets compare the sets of application handlers before and after our refactoring:
+Once more, let's compare the sets of application handlers before and after our refactoring:
 
 .. tab-set::
 
@@ -37,7 +37,7 @@ Once more, lets compare the sets of application handlers before and after our re
         .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_no_plugins.py
             :language: python
             :linenos:
-            :lines: 79-100
+            :lines: 69-100
 
 Very nice! But, we can do better.
 
