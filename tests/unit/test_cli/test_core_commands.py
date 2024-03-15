@@ -425,7 +425,7 @@ def test_remove_default_schema_routes() -> None:
     api_config = MagicMock()
     api_config.openapi_controller.path = "/schema"
 
-    results = remove_default_schema_routes(http_routes, api_config)  # type: ignore
+    results = remove_default_schema_routes(http_routes, api_config)  # type: ignore[arg-type]
     assert len(results) == 3
     for result in results:
         words = re.split(r"(^\/[a-z]+)", result.path)
@@ -441,7 +441,7 @@ def test_remove_routes_with_patterns() -> None:
         http_routes.append(http_route)
 
     patterns = ("/destroy", "/pizza", "[]")
-    results = remove_routes_with_patterns(http_routes, patterns)  # type: ignore
+    results = remove_routes_with_patterns(http_routes, patterns)  # type: ignore[arg-type]
     paths = [route.path for route in results]
     assert len(paths) == 2
     for route in ["/", "/foo"]:

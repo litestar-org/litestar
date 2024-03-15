@@ -242,7 +242,7 @@ class RateLimitConfig:
 
     def __post_init__(self) -> None:
         if self.check_throttle_handler:
-            self.check_throttle_handler = ensure_async_callable(self.check_throttle_handler)  # type: ignore
+            self.check_throttle_handler = ensure_async_callable(self.check_throttle_handler)  # type: ignore[arg-type]
 
     @property
     def middleware(self) -> DefineMiddleware:
@@ -259,8 +259,7 @@ class RateLimitConfig:
 
 
                 @get("/")
-                def my_handler(request: Request) -> None:
-                    ...
+                def my_handler(request: Request) -> None: ...
 
 
                 app = Litestar(route_handlers=[my_handler], middleware=[throttle_config.middleware])

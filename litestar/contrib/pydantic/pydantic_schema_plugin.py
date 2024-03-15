@@ -211,7 +211,7 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
 
     @staticmethod
     def is_plugin_supported_type(value: Any) -> bool:
-        return isinstance(value, _supported_types) or is_class_and_subclass(value, _supported_types)  # type: ignore
+        return isinstance(value, _supported_types) or is_class_and_subclass(value, _supported_types)  # type: ignore[arg-type]
 
     @staticmethod
     def is_undefined_sentinel(value: Any) -> bool:

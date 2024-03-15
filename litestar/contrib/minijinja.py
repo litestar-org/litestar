@@ -28,8 +28,7 @@ if TYPE_CHECKING:
 
     C = TypeVar("C", bound="Callable")
 
-    def pass_state(func: C) -> C:
-        ...
+    def pass_state(func: C) -> C: ...
 
 else:
     from minijinja import pass_state
@@ -49,8 +48,7 @@ class StateProtocol(Protocol):
     env: Environment
     name: str
 
-    def lookup(self, key: str) -> Any | None:
-        ...
+    def lookup(self, key: str) -> Any | None: ...
 
 
 def _transform_state(func: TemplateCallableType[Mapping[str, Any], P, T]) -> TemplateCallableType[StateProtocol, P, T]:
