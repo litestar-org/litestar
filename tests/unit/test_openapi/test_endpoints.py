@@ -216,17 +216,6 @@ def test_openapi_stoplight_elements_offline(
     ("openapi_controller", "render_plugins"),
     [
         (
-            type(
-                "OfflineOpenAPIController",
-                (OpenAPIController,),
-                {
-                    "scalar_css_url": OFFLINE_LOCATION_CSS_URL,
-                    "scalar_js_url": OFFLINE_LOCATION_JS_URL,
-                },
-            ),
-            [],
-        ),
-        (
             None,
             [
                 ScalarRenderPlugin(
