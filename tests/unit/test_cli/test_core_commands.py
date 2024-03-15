@@ -261,12 +261,12 @@ def test_run_command_with_app_factory(
     (
         (
             ("--reload", True),
-            ("LITESTAR_RELOAD", True),
+            ("LITESTAR_RELOAD", False),
             "--reload",
         ),
         (
             ("--reload-dir", [".", "../somewhere_else"]),
-            ("LITESTAR_RELOAD_DIRS", [".", "../somewhere_else"]),
+            ("LITESTAR_RELOAD_DIRS", ["../somewhere_else3", "../somewhere_else2"]),
             ["--reload-dir=.", "--reload-dir=../somewhere_else"],
         ),
         (
@@ -296,12 +296,12 @@ def test_run_command_with_app_factory(
         ),
         (
             ("-d", True),
-            ("LITESTAR_DEBUG", True),
+            ("LITESTAR_DEBUG", False),
             ("LITESTAR_DEBUG", "1"),
         ),
         (
             ("--pdb", True),
-            ("LITESTAR_PDB", True),
+            ("LITESTAR_PDB", False),
             ("LITESTAR_PDB", "1"),
         ),
     ),
