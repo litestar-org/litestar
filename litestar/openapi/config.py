@@ -120,14 +120,13 @@ class OpenAPIConfig:
     render_plugins: Sequence[OpenAPIRenderPlugin] = field(default=())
     """Plugins for rendering OpenAPI documentation UIs."""
     openapi_router: Router | None = None
-    """A router for serving OpenAPI documentation and schema files.
+    """An optional router for serving OpenAPI documentation and schema files.
 
     If provided, ``path`` is ignored.
 
-    Ignored if the deprecated ``openapi_controller`` is provided.
+    This parameter is also ignored if the deprecated :class:`OpenAPIConfig <.openapi.OpenAPIConfig>` ``openapi_controller`` kwarg is provided.
 
-    Not required, however may be passed to customize the configuration of the router used to serve
-    the documentation endpoints. For example, to add middleware or guards to the router.
+    The ``openapi_router`` is not required, but it can be passed to customize the configuration of the router used to serve the documentation endpoints. For example, you can add middleware or guards to the router.
 
     Handlers to serve the OpenAPI schema and documentation sites are added to this router according
     to the ``render_plugins`` attribute, so routes shouldn't be added that conflict with these.
