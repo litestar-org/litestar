@@ -41,7 +41,7 @@ else:
             Args:
                 queue: The queue to send messages to
                 *handlers: A list of handlers which will handle entries placed on the queue
-                respect_handler_level: If respect_handler_level is True, a handler's level is respected (compared with the level for the message) when deciding whether to pass messages to that handler
+                respect_handler_level: If ``respect_handler_level`` is ``True``, a handler's level is respected (compared with the level for the message) when deciding whether to pass messages to that handler
             """
             super().__init__(queue, *handlers, respect_handler_level=respect_handler_level)
             self.start()
