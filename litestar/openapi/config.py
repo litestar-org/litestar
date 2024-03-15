@@ -137,7 +137,7 @@ class OpenAPIConfig:
     Must be subclass of :class:`OpenAPIController <litestar.openapi.controller.OpenAPIController>`.
     """
     root_schema_site: Literal["redoc", "swagger", "elements", "rapidoc"] | None = None
-    """The static schema generator to use for the "root" path of `/schema/`."""
+    """The static schema generator to use for the "root" path of ``/schema/``."""
     enabled_endpoints: set[str] | None = None
     """A set of the enabled documentation sites and schema download endpoints."""
 
