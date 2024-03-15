@@ -607,8 +607,7 @@ class SwaggerRenderPlugin(OpenAPIRenderPlugin):
     def render_oauth2_redirect() -> bytes:
         """Render an HTML oauth2-redirect.html page for Swagger-UI.
 
-        Notes:
-            - override this method to customize the template.
+        .. note:: Override this method to customize the template.
 
         Returns:
             A rendered html string.
