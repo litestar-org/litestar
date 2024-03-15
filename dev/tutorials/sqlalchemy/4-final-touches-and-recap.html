@@ -1595,12 +1595,12 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="linenos">76</span>    <span class="n">create_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="linenos">77</span>    <span class="n">before_send_handler</span><span class="o">=</span><span class="n">autocommit_before_send_handler</span><span class="p">,</span>
 <span class="linenos">78</span><span class="p">)</span>
-<span class="hll"><span class="linenos">79</span>
-</span><span class="linenos">80</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+<span class="linenos">79</span>
+<span class="linenos">80</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
 <span class="linenos">81</span>    <span class="p">[</span><span class="n">get_list</span><span class="p">,</span> <span class="n">add_item</span><span class="p">,</span> <span class="n">update_item</span><span class="p">],</span>
 <span class="linenos">82</span>    <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;transaction&quot;</span><span class="p">:</span> <span class="n">provide_transaction</span><span class="p">},</span>
-<span class="linenos">83</span>    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemyPlugin</span><span class="p">(</span><span class="n">db_config</span><span class="p">)],</span>
-<span class="linenos">84</span><span class="p">)</span>
+<span class="hll"><span class="linenos">83</span>    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemyPlugin</span><span class="p">(</span><span class="n">db_config</span><span class="p">)],</span>
+</span><span class="linenos">84</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1685,12 +1685,12 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="linenos">76</span>    <span class="n">metadata</span><span class="o">=</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="p">,</span>
 <span class="linenos">77</span>    <span class="n">create_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="linenos">78</span>    <span class="n">before_send_handler</span><span class="o">=</span><span class="n">autocommit_before_send_handler</span><span class="p">,</span>
-<span class="hll"><span class="linenos">79</span><span class="p">)</span>
-</span><span class="linenos">80</span>
+<span class="linenos">79</span><span class="p">)</span>
+<span class="linenos">80</span>
 <span class="linenos">81</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
 <span class="linenos">82</span>    <span class="p">[</span><span class="n">get_list</span><span class="p">,</span> <span class="n">add_item</span><span class="p">,</span> <span class="n">update_item</span><span class="p">],</span>
-<span class="linenos">83</span>    <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;transaction&quot;</span><span class="p">:</span> <span class="n">provide_transaction</span><span class="p">},</span>
-<span class="linenos">84</span>    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemyPlugin</span><span class="p">(</span><span class="n">db_config</span><span class="p">)],</span>
+<span class="hll"><span class="linenos">83</span>    <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;transaction&quot;</span><span class="p">:</span> <span class="n">provide_transaction</span><span class="p">},</span>
+</span><span class="linenos">84</span>    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemyPlugin</span><span class="p">(</span><span class="n">db_config</span><span class="p">)],</span>
 <span class="linenos">85</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1776,12 +1776,12 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 <span class="linenos">76</span>    <span class="n">create_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="linenos">77</span>    <span class="n">before_send_handler</span><span class="o">=</span><span class="n">autocommit_before_send_handler</span><span class="p">,</span>
 <span class="linenos">78</span><span class="p">)</span>
-<span class="hll"><span class="linenos">79</span>
-</span><span class="linenos">80</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+<span class="linenos">79</span>
+<span class="linenos">80</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
 <span class="linenos">81</span>    <span class="p">[</span><span class="n">get_list</span><span class="p">,</span> <span class="n">add_item</span><span class="p">,</span> <span class="n">update_item</span><span class="p">],</span>
 <span class="linenos">82</span>    <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;transaction&quot;</span><span class="p">:</span> <span class="n">provide_transaction</span><span class="p">},</span>
-<span class="linenos">83</span>    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemyPlugin</span><span class="p">(</span><span class="n">db_config</span><span class="p">)],</span>
-<span class="linenos">84</span><span class="p">)</span>
+<span class="hll"><span class="linenos">83</span>    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemyPlugin</span><span class="p">(</span><span class="n">db_config</span><span class="p">)],</span>
+</span><span class="linenos">84</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1858,11 +1858,11 @@ handlers via the <code class="docutils literal notranslate"><span class="pre">tr
 <p>Finally, we define our application, using the
 <a class="reference internal" href="../../reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin" title="litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyPlugin</span></code></a> to configure SQLAlchemy and manage the
 engine and session lifecycle, and register our <code class="docutils literal notranslate"><span class="pre">transaction</span></code> dependency.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span>    <span class="n">before_send_handler</span><span class="o">=</span><span class="n">autocommit_before_send_handler</span><span class="p">,</span>
-<span class="linenos">2</span><span class="p">)</span>
-<span class="linenos">3</span>
-<span class="linenos">4</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-<span class="linenos">5</span>    <span class="p">[</span><span class="n">get_list</span><span class="p">,</span> <span class="n">add_item</span><span class="p">,</span> <span class="n">update_item</span><span class="p">],</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+<span class="linenos">2</span>    <span class="p">[</span><span class="n">get_list</span><span class="p">,</span> <span class="n">add_item</span><span class="p">,</span> <span class="n">update_item</span><span class="p">],</span>
+<span class="linenos">3</span>    <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;transaction&quot;</span><span class="p">:</span> <span class="n">provide_transaction</span><span class="p">},</span>
+<span class="linenos">4</span>    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">SQLAlchemyPlugin</span><span class="p">(</span><span class="n">db_config</span><span class="p">)],</span>
+<span class="linenos">5</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="admonition seealso">
