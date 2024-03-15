@@ -33,7 +33,7 @@ if sys.version_info < (3, 12):
 else:
 
     class LoggingQueueListener(QueueListener):
-        """Custom `QueueListener` which starts and stops the listening process."""
+        """Custom ``QueueListener`` which starts and stops the listening process."""
 
         def __init__(self, queue: Queue[LogRecord], *handlers: Handler, respect_handler_level: bool = False) -> None:
             """Initialize `LoggingQueueListener`.
