@@ -144,7 +144,7 @@ A huge thank you to our current sponsors:
 
     <div style="display: flex; justify-content: center; align-items: center; gap: 8px;">
       <div>
-        <a href="https://scalar.com">
+        <a href="https://github.com/scalar/scalar">
           <img src="https://raw.githubusercontent.com/litestar-org/branding/main/assets/sponsors/scalar.svg" alt="Scalar.com" style="border-radius: 10px; width: auto; max-height: 150px;"/>
         </a>
         <p style="text-align: center;">Scalar.com</p>

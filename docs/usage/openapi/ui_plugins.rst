@@ -8,7 +8,7 @@ to understand and interact with the API.
 In addition to serving a default JSON representation of the OpenAPI specification, built-in UI Plugins are available to
 support a range of popular OpenAPI documentation tools, including:
 
-- `Scalar <https://scalar.com/>`_
+- `Scalar <https://github.com/scalar/scalar/>`_
 - `RapiDoc <https://rapidocweb.com/>`_
 - `ReDoc <https://redocly.com/>`_
 - `Stoplight Elements <https://stoplight.io/open-source/elements>`_
