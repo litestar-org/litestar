@@ -4,6 +4,16 @@ from litestar.openapi.config import OpenAPIConfig
 from litestar.testing import TestClient, create_test_client
 
 
+def test_scalar_simple() -> None:
+    from docs.examples.openapi.plugins.scalar_simple import app
+
+    with TestClient(app=app) as client:
+        resp = client.get("/schema/scalar")
+        assert resp.status_code == 200
+        assert resp.headers["content-type"] == "text/html; charset=utf-8"
+        assert "Litestar Example" in resp.text
+
+
 def test_rapidoc_simple() -> None:
     from docs.examples.openapi.plugins.rapidoc_simple import app
 

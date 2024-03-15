@@ -8,6 +8,7 @@ to understand and interact with the API.
 In addition to serving a default JSON representation of the OpenAPI specification, built-in UI Plugins are available to
 support a range of popular OpenAPI documentation tools, including:
 
+- `Scalar <https://scalar.com/>`_
 - `RapiDoc <https://rapidocweb.com/>`_
 - `ReDoc <https://redocly.com/>`_
 - `Stoplight Elements <https://stoplight.io/open-source/elements>`_
@@ -24,6 +25,11 @@ Using OpenAPI UI Plugins
 Using OpenAPI UI Plugins is as simple as importing the plugin, instantiating it, and adding it to the OpenAPIConfig.
 
 .. tab-set::
+
+    .. tab-item:: scalar
+
+        .. literalinclude:: /examples/openapi/plugins/scalar_simple.py
+            :language: python
 
     .. tab-item:: rapidoc
 
@@ -83,6 +89,11 @@ Here's some examples of configuring the plugins:
 
 .. tab-set::
 
+    .. tab-item:: scalar
+
+        .. literalinclude:: /examples/openapi/plugins/scalar_config.py
+            :language: python
+
     .. tab-item:: rapidoc
 
         .. literalinclude:: /examples/openapi/plugins/rapidoc_config.py
@@ -136,6 +147,7 @@ being enabled:
 
 - ``/schema/openapi.json``
 - ``/schema/redoc``
+- ``/schema/scalar``
 - ``/schema/rapidoc``
 - ``/schema/elements``
 - ``/schema/swagger``
@@ -143,10 +155,11 @@ being enabled:
 - ``/schema/openapi.yaml``
 
 In ``v3.0.0``, the :attr:`OpenAPIConfig.enabled_endpoints` attribute will be removed, and only a single UI plugin will be
-enabled by default, in addition to the ``openapi.json`` endpoint which will always be enabled.
+enabled by default, in addition to the ``openapi.json`` endpoint which will always be enabled. ``Scalar`` will also
+become the default UI plugin in ``v3.0.0``.
 
-Backward compatibility with root_schema_site
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Backward compatibility with ``root_schema_site``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Litestar has always supported a ``root_schema_site`` attribute on the :class:`OpenAPIConfig` class. This attribute
 allowed you to elect to serve a UI at the OpenAPI root path, e.g., by default ``redoc`` would be served at both
@@ -241,3 +254,15 @@ We that you can preset your clientId or enable PKCE support.
 
 .. literalinclude:: /examples/openapi/plugins/swagger_ui_oauth.py
     :language: python
+
+Customizing the OpenAPI UI
+--------------------------
+
+Currently, the ``Scalar`` OpenAPI UI plugin supports customization of its style and behavior by
+overriding the default ``css_url`` and ``js_url`` attributes on its render plugin class.
+
+.. literalinclude:: /examples/openapi/plugins/scalar_customized.py
+            :language: python
+
+To learn more about customizing the ``Scalar`` UI,
+see the `Scalar documentation <https://docs.scalar.com/>`_.
