@@ -81,17 +81,17 @@ def test_serving_multiple_uis() -> None:
 
 
 def test_custom_plugin() -> None:
-    from docs.examples.openapi.plugins.custom_plugin import RapidocRenderPlugin
+    from docs.examples.openapi.plugins.custom_plugin import ScalarRenderPlugin
 
     openapi_config = OpenAPIConfig(
         title="My API",
         description="This is the description of my API",
         version="0.1.0",
-        render_plugins=[RapidocRenderPlugin()],
+        render_plugins=[ScalarRenderPlugin()],
     )
 
     with create_test_client(route_handlers=[], openapi_config=openapi_config) as client:
-        resp = client.get("/schema/rapidoc")
+        resp = client.get("/schema/scalar")
         assert resp.status_code == 200
         assert resp.headers["content-type"] == "text/html; charset=utf-8"
         assert "My API" in resp.text
