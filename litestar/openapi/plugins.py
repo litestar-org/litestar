@@ -327,8 +327,7 @@ class ScalarRenderPlugin(OpenAPIRenderPlugin):
     .. versionadded:: 2.8.0
     """
 
-    _default_litestar_css_url = "https://cdn.jsdelivr.net/gh/litestar-org/branding@main/assets/openapi/scalar.css"
-    _default_scalar_css_url = "/schema/_litestar-internal/scalar.css"
+    _default_css_url = "https://cdn.jsdelivr.net/gh/litestar-org/branding@main/assets/openapi/scalar.css"
 
     def __init__(
         self,
@@ -352,7 +351,7 @@ class ScalarRenderPlugin(OpenAPIRenderPlugin):
             **kwargs: Additional arguments to pass to the base class.
         """
         self.js_url = js_url or f"https://cdn.jsdelivr.net/npm/@scalar/api-reference@{version}"
-        self.css_url = css_url or self._default_scalar_css_url
+        self.css_url = css_url or self._default_css_url
         super().__init__(path=path, **kwargs)
 
     def render(self, request: Request, openapi_schema: dict[str, Any]) -> bytes:
@@ -396,38 +395,6 @@ class ScalarRenderPlugin(OpenAPIRenderPlugin):
                         {body}
                     </html>
                 """.encode()
-
-    def receive_router(self, router: Router) -> None:
-        """Receive the router that serves the OpenAPI UI.
-
-        Adds a route to serve the Scalar.com OpenAPI UI CSS
-        pulled from the Litestar GitHub branding repo.
-
-        Args:
-            router: The router that serves the OpenAPI UI.
-        """
-        if self.css_url == self._default_scalar_css_url:
-            router.register(
-                get("/_litestar-internal/scalar.css", media_type=MediaType.CSS, sync_to_thread=False)(
-                    self.render_scalar_css
-                ),
-            )
-
-    def render_scalar_css(self) -> bytes:
-        """Fetch and render the Scalar CSS file from GitHub.
-
-        Returns:
-            The CSS content as bytes.
-        """
-        try:
-            with httpx.Client() as client:
-                response = client.get(self._default_litestar_css_url)
-                response.raise_for_status()
-                return response.content
-        except httpx.HTTPError:
-            here = Path(__file__).parent
-            css_path = here / "styles/scalar.css"
-            return css_path.read_bytes()
 
 
 class StoplightRenderPlugin(OpenAPIRenderPlugin):
