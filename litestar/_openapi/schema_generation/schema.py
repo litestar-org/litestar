@@ -246,17 +246,7 @@ def create_schema_for_annotation(annotation: Any) -> Schema:
 
 
 class SchemaCreator:
-    __slots__ = (
-        "exclude",
-        "exclude_defaults",
-        "exclude_none",
-        "exclude_unset",
-        "include",
-        "generate_examples",
-        "plugins",
-        "prefer_alias",
-        "schema_registry",
-    )
+    __slots__ = ("generate_examples", "plugins", "prefer_alias", "schema_registry")
 
     def __init__(
         self,
