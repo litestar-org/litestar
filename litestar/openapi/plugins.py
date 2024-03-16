@@ -56,9 +56,6 @@ class OpenAPIRenderPlugin:
         self.favicon = favicon
         self.style = style
 
-    def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(paths={self.paths!r}, media_type={self.media_type!r})"
-
     @staticmethod
     def render_json(request: Request, openapi_schema: dict[str, Any]) -> bytes:
         """Render the OpenAPI schema as JSON.
