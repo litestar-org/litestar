@@ -267,8 +267,7 @@ class RedocRenderPlugin(OpenAPIRenderPlugin):
     def render(self, request: Request, openapi_schema: dict[str, Any]) -> bytes:
         """Render an HTML page for Redoc.
 
-        Notes:
-            - override this method to customize the template.
+        .. note:: override this method to customize the template.
 
         Args:
             request: The request.
@@ -517,7 +516,7 @@ class SwaggerRenderPlugin(OpenAPIRenderPlugin):
                 the url.
             standalone_preset_js_url: Download url for the Swagger Standalone Preset JS bundle. If not provided, the
                 version will be used to construct the url.
-            init_oauth: JSON to initialize Swagger UI OAuth2 by calling the `initOAuth` method.
+            init_oauth: JSON to initialize Swagger UI OAuth2 by calling the ``initOAuth`` method.
                 Refer to the following URL for details:
                 `Swagger-UI <https://swagger.io/docs/open-source-tools/swagger-ui/usage/oauth2/>`_.
             path: Path to serve the OpenAPI UI at.
