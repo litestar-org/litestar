@@ -131,7 +131,7 @@ def test_dependency_not_provided_and_no_default() -> None:
 
 
 def test_dependency_provided_on_controller() -> None:
-    """Ensures that we don't only consider the handler's dependencies when checking that an explicit non-optional
+    """Ensures that we do not only consider the handler's dependencies when checking that an explicit non-optional
     dependency has been provided.
     """
 

@@ -184,7 +184,7 @@ class AbstractSyncRepository(Generic[T], metaclass=ABCMeta):
         """Update or create instance.
 
         Updates instance with the attribute values present on ``data``, or creates a new instance if
-        one doesn't exist.
+        one does not exist.
 
         Args:
             data: Instance to update existing, or be created. Identifier used to determine if an
@@ -203,7 +203,7 @@ class AbstractSyncRepository(Generic[T], metaclass=ABCMeta):
         """Update or create multiple instances.
 
         Update instances with the attribute values present on ``data``, or create a new instance if
-        one doesn't exist.
+        one does not exist.
 
         Args:
             data: Instances to update or created. Identifier used to determine if an
@@ -257,7 +257,7 @@ class AbstractSyncRepository(Generic[T], metaclass=ABCMeta):
             The filtered objects
 
         Raises:
-            RepositoryError: if a named attribute doesn't exist on :attr:`model_type <AbstractAsyncRepository.model_type>`.
+            RepositoryError: if a named attribute does not exist on :attr:`model_type <AbstractAsyncRepository.model_type>`.
         """
 
     @staticmethod

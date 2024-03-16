@@ -103,7 +103,7 @@ A basic example
     :language: python
 
 
-If you run the code you'll see that ``CONNECTION`` has been reset after the handler function
+If you run the code you will see that ``CONNECTION`` has been reset after the handler function
 returned:
 
 .. code-block:: python
@@ -299,7 +299,7 @@ You can inject dependencies into other dependencies - exactly like you would int
 
    @get("/true-or-false")
    def true_or_false_handler(injected_bool: bool) -> str:
-       return "its true!" if injected_bool else "nope, its false..."
+       return "it is true!" if injected_bool else "nope, it is false..."
 
 
    app = Litestar(
@@ -356,7 +356,7 @@ default should be used by the function.
     :language: python
 
 
-This doesn't fail, but due to the way the application determines parameter types, it is inferred to be a query
+This does not fail, but due to the way the application determines parameter types, it is inferred to be a query
 parameter.
 
 

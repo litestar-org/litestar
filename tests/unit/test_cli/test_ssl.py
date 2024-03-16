@@ -211,7 +211,7 @@ def test_file_parent_doesnt_exist(
     assert isinstance(result.exception, SystemExit)
     exc = get_click_exception(result.exception)
     assert "Could not create file, parent directory for" in exc.message
-    assert "doesn't exist" in exc.message
+    assert "does not exist" in exc.message
 
 
 def test_without_cryptography_installed(

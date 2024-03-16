@@ -54,7 +54,7 @@ HTMX Response Classes
 HTMXTemplate Response Classes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The most common  use-case for `htmx` to render an html page or html snippet. Litestar makes this easy by providing
+The most common use case for `htmx` to render an html page or html snippet. Litestar makes this easy by providing
 an :class:`HTMXTemplate <litestar.contrib.htmx.response.HTMXTemplate>` response:
 
 .. code-block:: python
@@ -86,10 +86,10 @@ an :class:`HTMXTemplate <litestar.contrib.htmx.response.HTMXTemplate>` response:
     - ``trigger_event``, ``params``, and ``after parameters`` are linked to one another.
     - If you are triggering an event then ``after`` is required and it must be one of ``receive``, ``settle``, or ``swap``.
 
-HTMX provides two types of responses - one that doesn't allow changes to the DOM and one that does.
+HTMX provides two types of responses - one that does not allow changes to the DOM and one that does.
 Litestar supports both of these:
 
-1 - Responses that don't make any changes to DOM.
+1 - Responses that do not make any changes to DOM.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Use :class:`HXStopPolling <litestar.contrib.htmx.response.HXStopPolling>` to stop polling for a response.

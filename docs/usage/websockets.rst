@@ -33,12 +33,12 @@ sent over the connection. The low level details will be handled behind the curta
 
 This handler will accept connections on ``/``, and wait to receive data. Once a message
 has been received, it will be passed into the handler function defined, via the ``data``
-parameter. This works like a regular route handler, so it's possible to specify the
+parameter. This works like a regular route handler, so it is possible to specify the
 type of data which should be received, and it will be converted accordingly.
 
 .. note::
     Contrary to websocket route handlers, function decorated with
-    :class:`websocket_listener <.handlers.websocket_listener>` don't have to be
+    :class:`websocket_listener <.handlers.websocket_listener>` do not have to be
     asynchronous.
 
 
@@ -122,8 +122,8 @@ individually for receiving and sending data.
     :class:`bytes` respectively, but this is not the case. Listeners can receive and
     send data in any format, independently of the mode. The mode only affects how
     data is encoded during transport (i.e. on the protocol level). In most cases the
-    default mode - ``text`` - is all that's needed. Binary transport is usually employed
-    when sending binary blobs that don't have a meaningful string representation, such
+    default mode - ``text`` - is all that is needed. Binary transport is usually employed
+    when sending binary blobs that do not have a meaningful string representation, such
     as images.
 
 

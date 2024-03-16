@@ -18,7 +18,7 @@ In the above there are two components:
 2. The decorated function ``get_user`` defines a parameter with the same name as the parameter defined in the ``path`` kwarg.
 
 The correlation of parameter name ensures that the value of the path parameter will be injected into the function when
-it's called.
+it is called.
 
 Supported Path Parameter Types
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -54,8 +54,8 @@ datetime typed parameter.
 
 .. note::
 
-    You only need to define the parameter in the function declaration if it's actually used inside the function. If the
-    path parameter is part of the path, but the function doesn't use it, it's fine to omit it. It will still be validated
+    You only need to define the parameter in the function declaration if it is actually used inside the function. If the
+    path parameter is part of the path, but the function does not use it, it is fine to omit it. It will still be validated
     and added to the openapi schema correctly.
 
 
@@ -108,8 +108,8 @@ a :class:`ValidationException <.exceptions.http_exceptions.ValidationException>`
 Default values
 ~~~~~~~~~~~~~~
 
-In this example, ``param`` will have the value ``"hello"`` if it's not specified in the request.
-If it's passed as a query parameter however, it will be overwritten:
+In this example, ``param`` will have the value ``"hello"`` if it is not specified in the request.
+If it is passed as a query parameter however, it will be overwritten:
 
 .. literalinclude:: /examples/parameters/query_params_default.py
     :language: python
@@ -118,7 +118,7 @@ If it's passed as a query parameter however, it will be overwritten:
 Optional parameters
 ~~~~~~~~~~~~~~~~~~~
 
-Instead of only setting a default value, it's also possible to make a query parameter
+Instead of only setting a default value, it is also possible to make a query parameter
 entirely optional.
 
 Here, we give a default value of ``None`` , but still declare the type of the query parameter
@@ -145,7 +145,7 @@ Alternative names and constraints
 ---------------------------------
 
 Sometimes you might want to "remap" query parameters to allow a different name in the URL
-than what's being used in the handler function. This can be done by making use of
+than what is being used in the handler function. This can be done by making use of
 :func:`Parameter <.params.Parameter>`.
 
 .. literalinclude:: /examples/parameters/query_params_remap.py
@@ -196,20 +196,17 @@ functions, but also on other layers of the application:
 .. literalinclude:: /examples/parameters/layered_parameters.py
     :language: python
 
-
-
 In the above we declare parameters on the app, router and controller levels in addition to those declared in the route
-handler. Let's look at these closer.
-
+handler. Now, examine these more closely.
 
 * ``app_param`` is a cookie param with the key ``special-cookie``. We type it as ``str`` by passing this as an arg to
   the ``Parameter`` function. This is required for us to get typing in the OpenAPI docs. Additionally, this parameter is
   assumed to be required because it is not explicitly declared as ``required=False``. This is important because the route
   handler function does not declare a parameter called ``app_param`` at all, but it will still require this param to be
   sent as part of the request of validation will fail.
-* ``router_param`` is a header param with the key ``MyHeader``. Because its declared as ``required=False`` , it will not fail
+* ``router_param`` is a header param with the key ``MyHeader``. Because it is declared as ``required=False`` , it will not fail
   validation if not present unless explicitly declared by a route handler - and in this case it is. Thus, it is actually
-  required for the router handler function that declares it as an ``str`` and not an ``Optional[str]``. If a string value is
+  required for the router handler function that declares it as an ``str`` and not an ``str | None``. If a string value is
   provided, it will be tested against the provided regex.
 * ``controller_param`` is a query param with the key ``controller_param``. It has an ``lt=100`` defined on the controller,
   which

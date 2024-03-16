@@ -33,7 +33,7 @@ ReturnDTO = SQLAlchemyDTO[A]
 def update_a(data: A) -> A:
     # this shows that "b" was not parsed out of the inbound data
     assert "b" not in vars(data)
-    # Now we'll create an instance of B and assign it"
+    # Now we will create an instance of B and assign it"
     # This includes a reference back to ``a`` which is not serialized in the return data
     # because default ``max_nested_depth`` is set to 1
     data.b = B(id=data.b_id, a=data)

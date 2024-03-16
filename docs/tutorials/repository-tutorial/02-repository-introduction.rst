@@ -1,12 +1,12 @@
 Interacting with repositories
 -----------------------------
-Now that we've covered the modeling basics, we are able to create our first repository
+Now that we have covered the modeling basics, we are able to create our first repository
 class.  The repository classes include all of the standard CRUD operations as well as a
 few advanced features such as pagination, filtering and bulk operations.
 
 .. tip:: The full code for this tutorial can be found below in the :ref:`Full Code <02-repo-full-code>` section.
 
-Before we jump in to the code, let's take a look at the available functions available in
+Before we jump in to the code, let us take a look at the available functions available in
 the the synchronous and asynchronous repositories.
 
 .. dropdown:: Available Functions in the Repositories
@@ -56,7 +56,7 @@ the the synchronous and asynchronous repositories.
       exceed this limit into multiple queries that are concatenated together before
       return. You do not need to account for this in your own code.
 
-In the following examples, we'll cover a few ways that you can use the repository within
+In the following examples, we will cover a few ways that you can use the repository within
 your applications.
 
 Model Repository
@@ -64,7 +64,7 @@ Model Repository
 
 Here we import the
 :class:`SQLAlchemyAsyncRepository <advanced_alchemy.repository.SQLAlchemyAsyncRepository>`
-class and create an ``AuthorRepository`` repository class. This is all that's required
+class and create an ``AuthorRepository`` repository class. This is all that is required
 to include all of the integrated repository features.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_crud.py
@@ -76,8 +76,8 @@ to include all of the integrated repository features.
 Repository Context Manager
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Since we'll be using the repository outside of a Litestar application in this script,
-we'll make a simple context manager to automatically handle the creation (and cleanup)
+Since we will be using the repository outside of a Litestar application in this script,
+we will make a simple context manager to automatically handle the creation (and cleanup)
 of our Author repository.
 
 The ``repository_factory`` method will do the following for us:
@@ -96,7 +96,7 @@ The ``repository_factory`` method will do the following for us:
 Creating, Updating and Removing Data
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To illustrate a few ways you can manipulate data in your database, we'll go through the
+To illustrate a few ways you can manipulate data in your database, we will go through the
 various CRUD operations:
 
 Creating Data: Here's a simple insert operation to populate our new Author table:
@@ -123,7 +123,7 @@ Removing Data: The ``remove`` method accepts the primary key of the row you want
         :lines: 71-75
         :linenos:
 
-Now that we've seen how to do single-row operations, let's look at the bulk methods we
+Now that we have seen how to do single-row operations, let us look at the bulk methods we
 can use.
 
 
@@ -131,10 +131,10 @@ Working with Bulk Data Operations
 ---------------------------------
 In this section, we delve into the powerful capabilities of the repository classes for
 handling bulk data operations. Our example illustrates how we can efficiently manage
-data in our database. Specifically, we'll use a JSON file containing information about
+data in our database. Specifically, we will use a JSON file containing information about
 US states and their abbreviations.
 
-Here's what we're going to cover:
+Here's what we are going to cover:
 
 Fixture Data Loading
 ^^^^^^^^^^^^^^^^^^^^
@@ -164,7 +164,7 @@ You can review the JSON source file here:
 Bulk Insert
 ^^^^^^^^^^^
 
-We'll use our fixture data to demonstrate a bulk insert operation. This operation allows
+We will use our fixture data to demonstrate a bulk insert operation. This operation allows
 you to add multiple records to your database in a single transaction, improving
 performance when working with larger data sets.
 
@@ -177,7 +177,7 @@ performance when working with larger data sets.
 Paginated Data Selection
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-Next, let's explore how to select multiple records with pagination. This functionality
+Next, let us explore how to select multiple records with pagination. This functionality
 is useful for handling large amounts of data by breaking the data into manageable
 'pages' or subsets.  ``LimitOffset`` is one of several filter types you can use with the
 repository.
@@ -204,7 +204,7 @@ executing row-by-row.
 Counts
 ^^^^^^
 
-Finally, we'll demonstrate how to count the number of records remaining in the database.
+Finally, we will demonstrate how to count the number of records remaining in the database.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_repository_bulk_operations.py
     :language: python

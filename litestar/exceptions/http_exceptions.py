@@ -114,7 +114,7 @@ class NotFoundException(ClientException, ValueError):
 
 
 class MethodNotAllowedException(ClientException):
-    """Server knows the request method, but the target resource doesn't support this method."""
+    """Server knows the request method, but the target resource does not support this method."""
 
     status_code = HTTP_405_METHOD_NOT_ALLOWED
 

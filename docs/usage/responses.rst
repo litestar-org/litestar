@@ -22,7 +22,7 @@ Litestar take care of the rest:
 
 In the example above, the route handler function returns an instance of the ``Resource`` pydantic class. This value will
 then be used by Litestar to construct an instance of the :class:`Response <litestar.response.Response>`
-class using defaults values: the response status code will be set to ``200`` and it's ``Content-Type`` header will be set
+class using defaults values: the response status code will be set to ``200`` and it is ``Content-Type`` header will be set
 to ``application/json``. The ``Resource`` instance will be serialized into JSON and set as the response body.
 
 
@@ -145,7 +145,7 @@ For ``MediaType.HTML``, route handlers should return a :class:`str` or :class:`b
 
 .. tip::
 
-   It's a good idea to use a :ref:`template engine <usage/templating:template engines>` for more complex HTML responses
+   It is a good idea to use a :ref:`template engine <usage/templating:template engines>` for more complex HTML responses
    and to write the template itself in a separate file rather than a string.
 
 
@@ -203,7 +203,7 @@ If ``status_code`` is not set by the user, the following defaults are used:
 
 .. tip::
 
-   While you can write integers as the value for ``status_code``, e.g. ``200``, it's best practice to use constants (also in
+   While you can write integers as the value for ``status_code``, e.g. ``200``, it is best practice to use constants (also in
    tests). Litestar includes easy to use statuses that are exported from ``litestar.status_codes``, e.g. ``HTTP_200_OK``
    and ``HTTP_201_CREATED``. Another option is the :class:`http.HTTPStatus` enum from the standard library, which also offers
    extra functionality.
@@ -368,7 +368,7 @@ The respective descriptions will be used for the OpenAPI documentation.
 
     :class:`ResponseHeader <litestar.datastructures.response_header.ResponseHeader>` is
     a special class that allows to add OpenAPI attributes such as `description` or `documentation_only`.
-    If you don't need those, you can optionally define `response_headers` using a mapping - such as a dictionary -
+    If you do not need those, you can optionally define `response_headers` using a mapping - such as a dictionary -
     as well:
 
     .. code-block:: python
@@ -415,7 +415,7 @@ In the above we set the response header using an ``after_request_handler`` funct
 handler function is applied on the router, we also set the documentation for it on the router.
 
 We can use this pattern to fine-tune the OpenAPI documentation more granularly by overriding header specification as
-required. For example, lets say we have a router level header being set and a local header with the same key but a
+required. For example, let us say we have a router level header being set and a local header with the same key but a
 different value range:
 
 .. literalinclude:: /examples/responses/response_headers_4.py
@@ -453,7 +453,7 @@ control values that will be returned from each endpoint:
 
 * When calling ``/population`` the response will have ``cache-control`` with ``max-age=2628288`` (1 month).
 * When calling ``/chance_of_rain`` the response will have ``cache-control`` with ``max-age=86400`` (1 day).
-* When calling ``/timestamp`` the response will have ``cache-control`` with ``no-store`` which means don't store the result
+* When calling ``/timestamp`` the response will have ``cache-control`` with ``no-store`` which means do not store the result
   in any cache.
 
 ETag
@@ -504,7 +504,7 @@ e.g.:
     :language: python
 
 
-Of the two declarations of ``my-cookie`` only the route handler one will be used, because its lower level:
+Of the two declarations of ``my-cookie`` only the route handler one will be used, because it is lower level:
 
 .. code-block:: text
 
@@ -532,7 +532,7 @@ Of the two declarations of ``my-cookie`` only the route handler one will be used
 Setting Cookies dynamically
 ++++++++++++++++++++++++++++
 
-While the above scheme works great for static cookie values, it doesn't allow for dynamic cookies. Because cookies are
+While the above scheme works great for static cookie values, it does not allow for dynamic cookies. Because cookies are
 fundamentally a type of response header, we can utilize the same patterns we use to
 setting :ref:`set headers headers <usage/responses:setting headers dynamically>`.
 
@@ -566,7 +566,7 @@ In the above we set the cookie using an ``after_request_handler`` function on th
 handler function is applied on the router, we also set the documentation for it on the router.
 
 We can use this pattern to fine-tune the OpenAPI documentation more granular by overriding cookie specification as
-required. For example, lets say we have a router level cookie being set and a local cookie with the same key but a
+required. For example, let us say we have a router level cookie being set and a local cookie with the same key but a
 different value range:
 
 .. literalinclude:: /examples/responses/response_cookies_5.py
@@ -720,8 +720,8 @@ path like value, and a context dictionary that maps string keys into values that
 Custom Responses
 ----------------
 
-While Litestar supports the serialization of many types by default, sometimes you want to return something that's not
-supported. In those cases it's convenient to make use of a custom response class.
+While Litestar supports the serialization of many types by default, sometimes you want to return something that is not
+supported. In those cases it is convenient to make use of a custom response class.
 
 The example below illustrates how to deal with :class:`MultiDict <.datastructures.MultiDict>`
 instances.

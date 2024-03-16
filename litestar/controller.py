@@ -220,7 +220,7 @@ class Controller:
         self_handlers.sort(key=attrgetter("handler_id"))
         for self_handler in self_handlers:
             route_handler = deepcopy(self_handler)
-            # at the point we get a reference to the handler function, it's unbound, so
+            # at the point we get a reference to the handler function, it is unbound, so
             # we replace it with a regular bound method here
             route_handler._fn = types.MethodType(route_handler._fn, self)
             route_handler.owner = self

@@ -1,8 +1,8 @@
 .. py:currentmodule:: litestar
 
 
-What's changed in 2.0?
-======================
+What has changed in 2.0?
+========================
 
 This document is an overview of the changes between version **1.51** and **2.0**.
 For a detailed list of all changes, including changes between versions leading up to the
@@ -11,7 +11,7 @@ For a detailed list of all changes, including changes between versions leading u
 Starlite → Litestar
 -------------------
 
-We're thrilled to introduce some exciting changes in our latest release, version 2!
+We are thrilled to introduce some exciting changes in our latest release, version 2!
 The most noteworthy transformation you will notice is the rebranding of our project,
 previously known as Starlite, now stepping into the limelight as Litestar.
 

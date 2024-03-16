@@ -24,9 +24,9 @@ _XADD_EXPIRE_SCRIPT = (_resource_path / "_redis_xadd_expire.lua").read_text()
 
 
 class _LazyEvent:
-    """A lazy proxy to asyncio.Event that only creates the event once it's accessed.
+    """A lazy proxy to asyncio.Event that only creates the event once it is accessed.
 
-    It ensures that the Event is created within a running event loop. If it's not, there can be an issue where a future
+    It ensures that the Event is created within a running event loop. If it is not, there can be an issue where a future
     within the event itself is attached to a different loop.
 
     This happens in our tests and could also happen when a user creates an instance of the backend outside an event loop
@@ -143,9 +143,9 @@ class RedisChannelsPubSubBackend(RedisChannelsBackend):
 
             channel: str = message["channel"].decode()
             data: bytes = message["data"]
-            # redis handles the unsubscibes with a queue; Unsubscribing doesn't mean the
+            # redis handles the unsubscibes with a queue; Unsubscribing does not mean the
             # unsubscribe will happen immediately after requesting it, so we could
-            # receive a message on a channel that, from a client's perspective, it's not
+            # receive a message on a channel that, from a client's perspective, it is not
             # subscribed to anymore
             if channel.encode() in self._pub_sub.channels.keys() - self._pub_sub.pending_unsubscribe_channels:
                 yield channel, data
@@ -239,7 +239,7 @@ class RedisChannelsStreamBackend(RedisChannelsBackend):
         """
         stream_ids: dict[str, bytes] = {}
         while True:
-            # We wait for subscribed channels, because we can't pass an empty dict to
+            # We wait for subscribed channels, because we cannot pass an empty dict to
             # xread and block for subscribers
             stream_keys = [self._make_key(c) for c in await self._get_subscribed_channels()]
 

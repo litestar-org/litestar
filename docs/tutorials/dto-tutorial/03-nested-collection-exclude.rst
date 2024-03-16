@@ -11,7 +11,7 @@ we use the index of the type parameter to indicate which type the exclusion shou
 excludes the ``b`` field from the first type parameter of ``a``, ``a.1.b`` excludes the ``b`` field from the second type
 parameter of ``a``, and so on.
 
-To demonstrate, lets add a self-referencing ``children`` relationship to our ``Person`` model:
+To demonstrate, let us add a self-referencing ``children`` relationship to our ``Person`` model:
 
 .. literalinclude:: /examples/data_transfer_objects/factory/tutorial/nested_collection_exclude.py
    :language: python
@@ -31,6 +31,6 @@ Here's the output:
     :align: center
 
 Fantastic! Our ``children`` are now represented in the output, and their emails and addresses are excluded. However,
-astute readers may have noticed that we didn't exclude the ``children`` field of ``Person.children``
-(e.g., ``children.0.children``), yet that field is not represented in the output. To understand why, we'll next look at
+astute readers may have noticed that we did not exclude the ``children`` field of ``Person.children``
+(e.g., ``children.0.children``), yet that field is not represented in the output. To understand why, we will next look at
 the :attr:`max_nested_depth <litestar.dto.config.DTOConfig.max_nested_depth>` configuration option.

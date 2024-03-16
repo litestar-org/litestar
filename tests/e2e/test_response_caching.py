@@ -309,7 +309,7 @@ def test_on_multiple_handlers(mock: MagicMock) -> None:
         assert first_post_response.text == "post_response"
         assert mock.call_count == 1
 
-        # GET request to verify it doesn't use the cache created by the previous POST request
+        # GET request to verify it does not use the cache created by the previous POST request
         get_response = client.get("/cached-local")
         assert get_response.status_code == HTTP_200_OK
         assert get_response.text == "get_response"

@@ -89,7 +89,7 @@ The following sources can be accessed using annotated function kwargs:
 - :doc:`/usage/requests`
 - :doc:`injected dependencies </usage/dependency-injection>`
 
-Additionally, you can specify the following special kwargs, what's called "reserved keywords" internally:
+Additionally, you can specify the following special kwargs, what is called "reserved keywords" internally:
 
 
 * ``cookies``: injects the request :class:`cookies <.datastructures.cookie.Cookie>` as a parsed dictionary.
@@ -563,7 +563,7 @@ This module defines our domain type in some central place.
 .. literalinclude:: /examples/signature_namespace/domain.py
     :language: python
 
-This module defines our controller, note that we don't import ``Model`` into the runtime namespace, nor do we require
+This module defines our controller, note that we do not import ``Model`` into the runtime namespace, nor do we require
 any directives to control behavior of linters.
 
 .. literalinclude:: /examples/signature_namespace/controller.py

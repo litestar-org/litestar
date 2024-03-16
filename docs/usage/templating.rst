@@ -373,7 +373,7 @@ back to the server when the form is submitted, and is checked by the CSRF middle
 Passing template context
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
-Passing context to the template is very simple - its one of the kwargs expected by the
+Passing context to the template is very simple - it is one of the kwargs expected by the
 :class:`Template <litestar.response.Template>` container, so simply pass a string keyed dictionary of values:
 
 .. code-block:: python
@@ -410,7 +410,7 @@ Built-in callables
 
 ``url_for_static_asset``
     URLs for static files can be created using the ``url_for_static_asset`` function.
-    It's signature and behaviour are identical to
+    It is signature and behaviour are identical to
     :meth:`app.url_for_static_asset <litestar.app.Litestar.url_for_static_asset>`.
 
 

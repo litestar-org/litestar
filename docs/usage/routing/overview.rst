@@ -227,7 +227,7 @@ You can also register standalone route handlers multiple times:
 
    Litestar(route_handlers=[internal_router, partner_router, consumer_router])
 
-When the handler function is registered, it's actually copied. Thus, each router has its own unique instance of
+When the handler function is registered, it is actually copied. Thus, each router has its own unique instance of
 the route handler. Path behaviour is identical to that of controllers above, namely, the route handler
 function will be accessible in the following paths: ``/internal/handler`` , ``/partner/handler``, and ``/consumer/handler``.
 

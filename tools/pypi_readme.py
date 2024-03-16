@@ -10,7 +10,7 @@ def generate_pypi_readme() -> None:
     output = re.sub(r"<!-- contributors-start -->[\w\W]*<!-- contributors-end -->", "", output)
     output = re.sub(r"<!-- ALL-CONTRIBUTORS-BADGE:START[\w\W]*<!-- ALL-CONTRIBUTORS-BADGE:END -->", "", output)
 
-    # ensure a newline here so the other pre-commit hooks don't complain
+    # ensure a newline here so the other pre-commit hooks do not complain
     output = output.strip() + "\n"
     Path("docs/PYPI_README.md").write_text(output)
 

@@ -45,7 +45,7 @@ Route handlers
 
 Route handlers tell your Litestar application what to do when it gets a request.
 They are named this way because they typically handle a single URL path (or *route*),
-which is the part of the URL that's specific to your application. In our current
+which is the part of the URL that is specific to your application. In our current
 example, the only route handler we have is for ``hello_world``, and it is using the
 ``/`` path.
 
@@ -69,7 +69,7 @@ Litestar that you only want to use this function when a ``GET`` request is being
 
 .. note::
 
-    The syntax used in this example (the ``@get`` notation) is called a decorator. It's
+    The syntax used in this example (the ``@get`` notation) is called a decorator. It is
     a function that takes another function as its argument (in this case ``hello_world``)
     and replaces it with the return value of the decorator function.
     Without the decorator, the example would look like this:
@@ -109,7 +109,7 @@ This means that it will return a :class:`string <str>`, and lets Litestar know t
 you would like to send the return value as-is.
 
 .. note::
-    While type annotations by default don't have any influence on runtime behaviour,
+    While type annotations by default do not have any influence on runtime behaviour,
     Litestar uses them for many things, for example to validate incoming request data.
 
     If you are using a static type checker - such as

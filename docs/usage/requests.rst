@@ -96,7 +96,7 @@ To access a single file simply type ``data`` as :class:`UploadFile <.datastructu
 
     :class:`UploadFile <.datastructures.UploadFile>` wraps
     :class:`SpooledTemporaryFile <tempfile.SpooledTemporaryFile>` so it can be used asynchronously. Inside a synchronous
-    function we don't need this wrapper, so we can use its :meth:`read <io.TextIOBase.read>` method directly.
+    function we do not need this wrapper, so we can use its :meth:`read <io.TextIOBase.read>` method directly.
 
 
 

@@ -4,7 +4,7 @@ Accessing the list
 Intro
 -----
 
-The first thing you'll be setting up for our app is a route handler that returns a
+The first thing you will be setting up for our app is a route handler that returns a
 single TODO list. A TODO list in this case will be a list of dictionaries representing
 the items on that TODO list.
 
@@ -14,7 +14,7 @@ the items on that TODO list.
     :linenos:
 
 
-If you run the app and visit http://127.0.0.1:8000/ in your browser you'll see the
+If you run the app and visit http://127.0.0.1:8000/ in your browser you will see the
 following output:
 
 .. figure:: images/get_todo_list.png
@@ -64,9 +64,9 @@ Currently ``get_list`` will always return all items on the list, but what if you
 are interested in only those items with a specific status, for example all items that
 are not yet marked as *done*?
 
-For this you can employ query parameters; to define a query parameter, all that's needed
+For this you can employ query parameters; to define a query parameter, all that is needed
 is to add an otherwise unused parameter to the function. Litestar will recognize this
-and infer that it's going to be used as a query parameter. When a request is being made,
+and infer that it is going to be used as a query parameter. When a request is being made,
 the query parameter will be extracted from the URL, and passed to the function parameter
 of the same name.
 
@@ -94,7 +94,7 @@ as done. For example, ``?done=john`` gives the same result as ``?done=0``.
 
 An easy solution for this would be to simply check if the query parameter is either
 ``1`` or ``0``, and return a response with an HTTP status code that indicates an
-error if it's something else:
+error if it is something else:
 
 .. literalinclude:: /examples/todo_app/get_list/query_param_validate_manually.py
     :caption: app.py
@@ -141,8 +141,8 @@ returning a normal response, it will send a response with the HTTP status code g
     Try to access http://127.0.0.1?done=john now and you will get this error message
 
 
-Now we've got that out of the way, but your code has grown to be quite complex for such
-a simple task. You're probably thinking
+Now we have got that out of the way, but your code has grown to be quite complex for such
+a simple task. You Arere probably thinking
 `"there must be a better way!" <https://www.youtube.com/watch?t=566&v=p33CVV29OG8>`_,
 and there is! Instead of doing these things manually, you can also just let Litestar
 handle them for you!
@@ -169,7 +169,7 @@ for you should the supplied value not be a valid boolean.
     results in this descriptive error message
 
 
-**What's happening here?**
+**What is happening here?**
 
 Since :class:`bool` is being used as the type annotation for the ``done`` parameter,
 Litestar will try to convert the value into a :class:`bool` first. Since ``john``
@@ -239,7 +239,7 @@ supplied.
 
 
 .. tip::
-    In this instance, the default has been set to :obj:`None`, since we don't want to do
+    In this instance, the default has been set to :obj:`None`, since we do not want to do
     any filtering if no ``done`` status is specified. If instead you wanted to only
     display not-done items by default, you could set the value to :obj:`False` instead.
 

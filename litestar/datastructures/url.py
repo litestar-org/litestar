@@ -178,7 +178,7 @@ class URL:
         path = scope.get("root_path", "") + scope["path"]
         query_string = scope.get("query_string", b"")
 
-        # we use iteration here because it's faster, and headers might not yet be cached
+        # we use iteration here because it is faster, and headers might not yet be cached
         host = next(
             (
                 header_value.decode("latin-1")

@@ -385,7 +385,7 @@ class CacheControlHeader(Header):
         Returns:
             The value converted to the expected type
         """
-        # bool values shouldn't be initiated since they should have been caught earlier in the from_header method and
+        # bool values should not be initiated since they should have been caught earlier in the from_header method and
         # set with a value of True
         expected_type = field_definition.raw
         if expected_type is bool:

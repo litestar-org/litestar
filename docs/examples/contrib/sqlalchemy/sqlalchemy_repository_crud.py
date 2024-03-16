@@ -37,7 +37,7 @@ engine = create_async_engine(
 session_factory = async_sessionmaker(engine, expire_on_commit=False)
 
 
-# let's make a simple context manager as an example here.
+# let us make a simple context manager as an example here.
 @asynccontextmanager
 async def repository_factory() -> AsyncIterator[AuthorRepository]:
     async with session_factory() as db_session:
@@ -95,16 +95,16 @@ async def run_script() -> None:
     author = await create_author()
     author_id = author.id
 
-    # 2) Let's update the Author record.
+    # 2) Let us update the Author record.
     console.print("2) Updating a record.")
     author.dod = datetime.strptime("1940-12-21", "%Y-%m-%d").date()
     await update_author(author)
 
-    # 3) Let's delete the record we just created.
+    # 3) Let us delete the record we just created.
     console.print("3) Removing a record.")
     await remove_author(author_id)
 
-    # 4) Let's verify the record no longer exists.
+    # 4) Let us verify the record no longer exists.
     console.print("4) Select one or none.")
     _should_be_none = await get_author_if_exists(author_id)
 

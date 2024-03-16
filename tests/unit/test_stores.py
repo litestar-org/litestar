@@ -96,7 +96,7 @@ async def test_get_and_renew(store: Store, renew_for: int | timedelta, frozen_da
 @pytest.mark.parametrize("renew_for", [10, timedelta(seconds=10)])
 @pytest.mark.xdist_group("redis")
 async def test_get_and_renew_redis(redis_store: RedisStore, renew_for: int | timedelta) -> None:
-    # we can't sleep() in frozen datetime, and frozen datetime doesn't affect the redis
+    # we cannot sleep() in frozen datetime, and frozen datetime does not affect the redis
     # instance, so we test this separately
     await redis_store.set("foo", b"bar", expires_in=1)
     await redis_store.get("foo", renew_for=renew_for)
@@ -213,7 +213,7 @@ async def test_redis_delete_all(redis_store: RedisStore) -> None:
         assert await redis_store.get(key) is None
 
     stored_value = await redis_store._redis.get("test_key")
-    assert stored_value == b"test_value"  # check it doesn't delete other values
+    assert stored_value == b"test_value"  # check it does not delete other values
 
 
 @pytest.mark.xdist_group("redis")

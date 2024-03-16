@@ -26,7 +26,7 @@ As you can see, ``authenticate_request`` is an async function that receives a co
 an :class:`AuthenticationResult <.middleware.authentication.AuthenticationResult>` instance, which is a pydantic model
 that has two attributes:
 
-1. ``user``: a non-optional value representing a user. It's typed as ``Any`` so it receives any value, including ``None``.
+1. ``user``: a non-optional value representing a user. It is typed as ``Any`` so it receives any value, including ``None``.
 2. ``auth``: an optional value representing the authentication scheme. Defaults to ``None``.
 
 These values are then set as part of the "scope" dictionary, and they are made available as
@@ -38,10 +38,10 @@ and :attr:`Request.auth <.connection.ASGIConnection.auth>` respectively, for HTT
 Example: Implementing a JWTAuthenticationMiddleware
 ---------------------------------------------------
 
-Since the above is quite hard to grasp in the abstract, lets see an example.
+Since the above is quite hard to grasp in the abstract, let us see an example.
 
 We start off by creating a user model. It can be implemented using pydantic, and ODM, ORM, etc. For the sake of the
-example here lets say it's a SQLAlchemy model:
+example here let us say it is a SQLAlchemy model:
 
 .. code-block:: python
     :caption: my_app/db/models.py
@@ -181,7 +181,7 @@ Finally, we need to pass our middleware to the Litestar constructor:
 
     app = Litestar(route_handlers=[...], middleware=[auth_mw])
 
-That's it. The ``JWTAuthenticationMiddleware`` will now run for every request, and we would be able to access these in a
+That is it. The ``JWTAuthenticationMiddleware`` will now run for every request, and we would be able to access these in a
 http route handler in the following way:
 
 .. code-block:: python
@@ -218,7 +218,7 @@ Or for a websocket route:
        assert isinstance(user, User)
        assert isinstance(auth, Token)
 
-And if you'd like to exclude individual routes outside those configured:
+And if you would like to exclude individual routes outside those configured:
 
 .. code-block:: python
 

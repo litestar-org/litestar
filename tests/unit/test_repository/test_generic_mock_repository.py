@@ -134,7 +134,7 @@ def test_generic_mock_repository_filter_collection_by_kwargs_and_semantics(autho
 def test_generic_mock_repository_raises_repository_exception_if_named_attribute_doesnt_exist(
     author_repository: AuthorRepository,
 ) -> None:
-    """Test that a repo exception is raised if a named attribute doesn't
+    """Test that a repo exception is raised if a named attribute does not
     exist."""
     with pytest.raises(RepositoryError):
         _ = author_repository.filter_collection_by_kwargs(author_repository.collection, cricket="ball")

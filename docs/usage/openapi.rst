@@ -220,8 +220,8 @@ the :class:`OpenAPIConfig <.openapi.OpenAPIConfig>`.
 You can use your own subclass of :class:`OpenAPIController <.openapi.controller.OpenAPIController>` by setting it as
 the controller to use in the :class:`OpenAPIConfig <.openapi.OpenAPIConfig>` ``openapi_controller`` kwarg.
 
-For example, lets say we wanted to change the base path of the OpenAPI related endpoints from ``/schema`` to
-``/api-docs``, in this case we'd the following:
+For example, let us say we wanted to change the base path of the OpenAPI related endpoints from ``/schema`` to
+``/api-docs``, in this case we would have the following:
 
 .. code-block:: python
 

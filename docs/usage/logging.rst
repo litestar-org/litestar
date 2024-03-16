@@ -108,7 +108,7 @@ Using Picologging
 ^^^^^^^^^^^^^^^^^
 
 `Picologging <https://github.com/microsoft/picologging>`_ is a high performance logging library that is developed by
-Microsoft. Litestar will default to using this library automatically if its installed - requiring zero configuration on
+Microsoft. Litestar will default to using this library automatically if it is installed - requiring zero configuration on
 the part of the user. That is, if ``picologging`` is present the previous example will work with it automatically.
 
 Using StructLog
