@@ -45,4 +45,7 @@ prometheus_config = PrometheusConfig(
 
 
 # Creating the litestar app instance with our custom PrometheusConfig and PrometheusController.
-app = Litestar(route_handlers=[CustomPrometheusController], middleware=[prometheus_config.middleware])
+app = Litestar(
+    route_handlers=[CustomPrometheusController],
+    middleware=[prometheus_config.middleware],
+)

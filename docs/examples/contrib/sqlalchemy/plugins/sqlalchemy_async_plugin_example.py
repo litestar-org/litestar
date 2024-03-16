@@ -36,6 +36,8 @@ async def init_db(app: Litestar) -> None:
         await conn.run_sync(Base.metadata.create_all)
 
 
-config = SQLAlchemyAsyncConfig(connection_string="sqlite+aiosqlite:///todo_async.sqlite")
+config = SQLAlchemyAsyncConfig(
+    connection_string="sqlite+aiosqlite:///todo_async.sqlite"
+)
 plugin = SQLAlchemyPlugin(config=config)
 app = Litestar(route_handlers=[add_item], plugins=[plugin], on_startup=[init_db])

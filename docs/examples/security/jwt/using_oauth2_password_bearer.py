@@ -28,7 +28,9 @@ MOCK_DB: Dict[str, User] = {}
 # Notes:
 # - 'User' can be any arbitrary value you decide upon.
 # - The callable can be either sync or async - both will work.
-async def retrieve_user_handler(token: "Token", connection: "ASGIConnection[Any, Any, Any, Any]") -> Optional[User]:
+async def retrieve_user_handler(
+    token: "Token", connection: "ASGIConnection[Any, Any, Any, Any]"
+) -> Optional[User]:
     # logic here to retrieve the user instance
     return MOCK_DB.get(token.sub)
 
@@ -46,7 +48,9 @@ oauth2_auth = OAuth2PasswordBearerAuth[User](
 
 # Given an instance of 'OAuth2PasswordBearerAuth' we can create a login handler function:
 @post("/login")
-async def login_handler(request: "Request[Any, Any, Any]", data: "User") -> "Response[OAuth2Login]":
+async def login_handler(
+    request: "Request[Any, Any, Any]", data: "User"
+) -> "Response[OAuth2Login]":
     MOCK_DB[str(data.id)] = data
     # if we do not define a response body, the login process will return a standard OAuth2 login response.  Note the `Response[OAuth2Login]` return type.
 

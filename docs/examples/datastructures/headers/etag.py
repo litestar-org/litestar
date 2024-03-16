@@ -51,4 +51,6 @@ def get_population_count_dynamic() -> Response[str]:
     )
 
 
-app = Litestar(route_handlers=[MyController, get_population_count], etag=ETag(value="bar"))
+app = Litestar(
+    route_handlers=[MyController, get_population_count], etag=ETag(value="bar")
+)

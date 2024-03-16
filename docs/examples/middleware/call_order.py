@@ -13,7 +13,9 @@ def create_test_middleware(middleware_id: int) -> Type[MiddlewareProtocol]:
         def __init__(self, app: "ASGIApp") -> None:
             self.app = app
 
-        async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+        async def __call__(
+            self, scope: "Scope", receive: "Receive", send: "Send"
+        ) -> None:
             litestar_app = scope["app"]
             litestar_app.state.setdefault("middleware_calls", [])
             litestar_app.state["middleware_calls"].append(middleware_id)

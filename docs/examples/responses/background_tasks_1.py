@@ -15,7 +15,9 @@ async def logging_task(identifier: str, message: str) -> None:
 def greeter(name: str) -> Response[Dict[str, str]]:
     return Response(
         {"hello": name},
-        background=BackgroundTask(logging_task, "greeter", message=f"was called with name {name}"),
+        background=BackgroundTask(
+            logging_task, "greeter", message=f"was called with name {name}"
+        ),
     )
 
 

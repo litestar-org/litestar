@@ -14,7 +14,11 @@ from sqlalchemy.types import String
 
 from litestar import Litestar, get, post
 from litestar.contrib.sqlalchemy.base import UUIDAuditBase
-from litestar.contrib.sqlalchemy.plugins import AsyncSessionConfig, SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
+from litestar.contrib.sqlalchemy.plugins import (
+    AsyncSessionConfig,
+    SQLAlchemyAsyncConfig,
+    SQLAlchemyInitPlugin,
+)
 from litestar.contrib.sqlalchemy.repository import ModelT, SQLAlchemyAsyncRepository
 from litestar.di import Provide
 
@@ -35,7 +39,9 @@ class SlugKey:
     """Slug unique Field Model Mixin."""
 
     __abstract__ = True
-    slug: Mapped[str] = mapped_column(String(length=100), nullable=False, unique=True, sort_order=-9)
+    slug: Mapped[str] = mapped_column(
+        String(length=100), nullable=False, unique=True, sort_order=-9
+    )
 
 
 # this class can be re-used with any model that has the `SlugKey` Mixin
@@ -66,7 +72,9 @@ class SQLAlchemyAsyncSlugRepository(SQLAlchemyAsyncRepository[ModelT]):
             return slug
         # generate a random 4 digit alphanumeric string to make the slug unique and
         # avoid another DB lookup.
-        random_string = "".join(random.choices(string.ascii_lowercase + string.digits, k=4))
+        random_string = "".join(
+            random.choices(string.ascii_lowercase + string.digits, k=4)
+        )
         return f"{slug}-{random_string}"
 
     @staticmethod
@@ -84,7 +92,11 @@ class SQLAlchemyAsyncSlugRepository(SQLAlchemyAsyncRepository[ModelT]):
         Returns:
             str: a slugified string of the value parameter
         """
-        value = unicodedata.normalize("NFKD", value).encode("ascii", "ignore").decode("ascii")
+        value = (
+            unicodedata.normalize("NFKD", value)
+            .encode("ascii", "ignore")
+            .decode("ascii")
+        )
         value = re.sub(r"[^\w\s-]", "", value.lower())
         return re.sub(r"[-\s]+", "-", value).strip("-_")
 
@@ -178,7 +190,9 @@ async def create_blog(
 
 app = Litestar(
     route_handlers=[create_blog, get_blogs, get_blog_details],
-    dependencies={"blog_post_repo": Provide(provide_blog_post_repo, sync_to_thread=False)},
+    dependencies={
+        "blog_post_repo": Provide(provide_blog_post_repo, sync_to_thread=False)
+    },
     on_startup=[on_startup],
     plugins=[SQLAlchemyInitPlugin(config=sqlalchemy_config)],
 )

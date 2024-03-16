@@ -11,7 +11,9 @@ def my_template_function(ctx: StateProtocol) -> str:
 
 
 def register_template_callables(engine: MiniJinjaTemplateEngine) -> None:
-    engine.register_template_callable(key="check_context_key", template_callable=my_template_function)
+    engine.register_template_callable(
+        key="check_context_key", template_callable=my_template_function
+    )
 
 
 template_config = TemplateConfig(

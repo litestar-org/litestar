@@ -16,7 +16,9 @@ def test_with_portal() -> None:
         await anyio.sleep(value)
         return value
 
-    with create_test_client(route_handlers=[]) as test_client, test_client.portal() as portal:
+    with create_test_client(
+        route_handlers=[]
+    ) as test_client, test_client.portal() as portal:
         # start a background task with the portal
         future: Future[float] = portal.start_task_soon(get_float, 0.25)
         # do other work

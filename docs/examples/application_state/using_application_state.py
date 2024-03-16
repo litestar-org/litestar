@@ -32,7 +32,12 @@ async def my_dependency(state: State) -> Any:
     logger.info("state value in dependency: %s", state.value)
 
 
-@get("/", dependencies={"dep": Provide(my_dependency)}, middleware=[middleware_factory], sync_to_thread=False)
+@get(
+    "/",
+    dependencies={"dep": Provide(my_dependency)},
+    middleware=[middleware_factory],
+    sync_to_thread=False,
+)
 def get_handler(state: State, request: Request, dep: Any) -> None:
     """Handlers can receive state via injection."""
     logger.info("state value in handler from `State`: %s", state.value)

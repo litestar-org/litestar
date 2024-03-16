@@ -7,7 +7,9 @@ from litestar.channels.backends.memory import MemoryChannelsBackend
 async def handler(socket: WebSocket, channels: ChannelsPlugin) -> None:
     await socket.accept()
 
-    async with await channels.subscribe(["some_channel"]) as subscriber, subscriber.run_in_background(socket.send_text):
+    async with await channels.subscribe(
+        ["some_channel"]
+    ) as subscriber, subscriber.run_in_background(socket.send_text):
         while True:
             response = await socket.receive_text()
             await subscriber.send(response)
@@ -15,5 +17,7 @@ async def handler(socket: WebSocket, channels: ChannelsPlugin) -> None:
 
 app = Litestar(
     [handler],
-    plugins=[ChannelsPlugin(backend=MemoryChannelsBackend(), channels=["some_channel"])],
+    plugins=[
+        ChannelsPlugin(backend=MemoryChannelsBackend(), channels=["some_channel"])
+    ],
 )

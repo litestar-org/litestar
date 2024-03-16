@@ -57,21 +57,27 @@ async def create_author() -> Author:
                 dob=datetime.strptime("1896-09-24", "%Y-%m-%d").date(),
             )
         )
-        console.print(f"Created Author record for {obj.name} with primary key {obj.id}.")
+        console.print(
+            f"Created Author record for {obj.name} with primary key {obj.id}."
+        )
         return obj
 
 
 async def update_author(obj: Author) -> Author:
     async with repository_factory() as repo:
         obj = await repo.update(obj)
-        console.print(f"Updated Author record for {obj.name} with primary key {obj.id}.")
+        console.print(
+            f"Updated Author record for {obj.name} with primary key {obj.id}."
+        )
         return obj
 
 
 async def remove_author(id: UUID) -> Author:
     async with repository_factory() as repo:
         obj = await repo.delete(id)
-        console.print(f"Deleted Author record for {obj.name} with primary key {obj.id}.")
+        console.print(
+            f"Deleted Author record for {obj.name} with primary key {obj.id}."
+        )
         return obj
 
 
@@ -79,7 +85,9 @@ async def get_author_if_exists(id: UUID) -> Author | None:
     async with repository_factory() as repo:
         obj = await repo.get_one_or_none(id=id)
         if obj is not None:
-            console.print(f"Found Author record for {obj.name} with primary key {obj.id}.")
+            console.print(
+                f"Found Author record for {obj.name} with primary key {obj.id}."
+            )
         else:
             console.print(f"Could not find Author with primary key {id}.")
         return obj

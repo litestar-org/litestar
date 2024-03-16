@@ -73,7 +73,9 @@ async def get_todo_list(done: Optional[bool], session: AsyncSession) -> List[Tod
 
 
 @get("/")
-async def get_list(transaction: AsyncSession, done: Optional[bool] = None) -> List[TodoItem]:
+async def get_list(
+    transaction: AsyncSession, done: Optional[bool] = None
+) -> List[TodoItem]:
     return await get_todo_list(done, transaction)
 
 
@@ -84,7 +86,9 @@ async def add_item(data: TodoItem, transaction: AsyncSession) -> TodoItem:
 
 
 @put("/{item_title:str}")
-async def update_item(item_title: str, data: TodoItem, transaction: AsyncSession) -> TodoItem:
+async def update_item(
+    item_title: str, data: TodoItem, transaction: AsyncSession
+) -> TodoItem:
     todo_item = await get_todo_by_title(item_title, transaction)
     todo_item.title = data.title
     todo_item.done = data.done
