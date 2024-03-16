@@ -90,7 +90,7 @@ sessions or LRU caches:
 Deleting expired values
 #######################
 
-When using a :class:`MemoryStore <.memory.MemoryStore>` or :class:`FileStore <.file.FileStore>`, expired data won't be
+When using a :class:`MemoryStore <.memory.MemoryStore>` or :class:`FileStore <.file.FileStore>`, expired data will not be
 deleted automatically. Instead, it will only happen when the data is being accessed, or if this process is invoked
 explicitly via :meth:`MemoryStore.delete_expired <.memory.MemoryStore.delete_expired>` or
 :meth:`FileStore.delete_expired <.file.FileStore.delete_expired>` respectively.

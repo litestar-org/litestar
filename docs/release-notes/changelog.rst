@@ -3568,7 +3568,7 @@
         :issue: 1451
         :pr: 1474
 
-        The media type in :class:`Redirect <litestar.response.RedirectResponse>` won't be forced to ``text/plain`` anymore and
+        The media type in :class:`Redirect <litestar.response.RedirectResponse>` will not be forced to ``text/plain`` anymore and
         now supports setting arbitrary media types.
 
 
