@@ -1,4 +1,5 @@
 """Plugin for creating and retrieving flash messages."""
+
 from dataclasses import dataclass
 from typing import Any, Mapping
 
