@@ -188,7 +188,7 @@ regular route handlers:
 
 .. important::
     Injected dependencies work on the level of the underlying **route handler**. This
-    means they won't be re-evaluated every time the listener function is called.
+    means they will not be re-evaluated every time the listener function is called.
 
 The following example makes use of :ref:`yield dependencies <yield_dependencies>` and
 the fact that dependencies are only evaluated once for every connection; The step after

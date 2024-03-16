@@ -10,7 +10,7 @@ from litestar.params import Dependency
 def hello_world(non_optional_dependency: Annotated[int, Dependency()]) -> dict[str, Any]:
     """Notice we have not provided the dependency to the route.
 
-    This is not great, however by explicitly marking dependencies, Litestar won't let the app start.
+    This is not great, however by explicitly marking dependencies, Litestar will not let the app start.
     """
     return {"hello": non_optional_dependency}
 
