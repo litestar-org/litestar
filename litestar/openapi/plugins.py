@@ -25,7 +25,7 @@ __all__ = (
     "YamlRenderPlugin",
 )
 
-_favicon_url = "https://raw.githubusercontent.com/litestar-org/branding/main/assets/Branding%20-%20PNG%20-%20Transparent/Badge%20-%20Blue%20and%20Yellow.png"
+_favicon_url = "https://cdn.jsdelivr.net/gh/litestar-org/branding@main/assets/Branding%20-%20PNG%20-%20Transparent/Badge%20-%20Blue%20and%20Yellow.png"
 _default_favicon = f"<link rel='icon' type='image/png' href='{_favicon_url}'>"
 _default_style = "<style>body { margin: 0; padding: 0 }</style>"
 
@@ -321,7 +321,7 @@ class ScalarRenderPlugin(OpenAPIRenderPlugin):
     .. versionadded:: 2.8.0
     """
 
-    _default_litestar_css_url = "https://raw.githubusercontent.com/litestar-org/branding/main/assets/openapi/scalar.css"
+    _default_litestar_css_url = "https://cdn.jsdelivr.net/gh/litestar-org/branding@main/assets/openapi/scalar.css"
     _default_scalar_css_url = "/schema/_litestar-internal/scalar.css"
 
     def __init__(
