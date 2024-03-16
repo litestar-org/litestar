@@ -25,7 +25,10 @@ PY_FUNC = "py:func"
 project = "Litestar"
 copyright = "2023, Litestar-Org"
 author = "Litestar-Org"
-release = os.getenv("_LITESTAR_DOCS_BUILD_VERSION", importlib.metadata.version("litestar").rsplit(".")[0])
+release = os.getenv(
+    "_LITESTAR_DOCS_BUILD_VERSION",
+    importlib.metadata.version("litestar").rsplit(".")[0],
+)
 
 extensions = [
     "sphinx.ext.intersphinx",
@@ -71,7 +74,11 @@ napoleon_attr_annotations = True
 
 autoclass_content = "class"
 autodoc_class_signature = "separated"
-autodoc_default_options = {"special-members": "__init__", "show-inheritance": True, "members": True}
+autodoc_default_options = {
+    "special-members": "__init__",
+    "show-inheritance": True,
+    "members": True,
+}
 autodoc_member_order = "bysource"
 autodoc_typehints_format = "short"
 
@@ -133,7 +140,10 @@ nitpick_ignore = [
     (PY_CLASS, "NoneType"),
     (PY_CLASS, "litestar._openapi.schema_generation.schema.SchemaCreator"),
     (PY_CLASS, "litestar._signature.model.SignatureModel"),
-    (PY_CLASS, "litestar.contrib.sqlalchemy.plugins.init.config.compat._CreateEngineMixin"),
+    (
+        PY_CLASS,
+        "litestar.contrib.sqlalchemy.plugins.init.config.compat._CreateEngineMixin",
+    ),
     (PY_CLASS, "litestar.utils.signature.ParsedSignature"),
     (PY_CLASS, "litestar.utils.sync.AsyncCallable"),
     # types in changelog that no longer exist
@@ -166,11 +176,17 @@ nitpick_ignore = [
     (PY_CLASS, "advanced_alchemy.config.EngineConfig"),
     (PY_CLASS, "advanced_alchemy.config.common.GenericAlembicConfig"),
     (PY_CLASS, "advanced_alchemy.extensions.litestar.plugins.SQLAlchemyPlugin"),
-    (PY_CLASS, "advanced_alchemy.extensions.litestar.plugins.SQLAlchemySerializationPlugin"),
+    (
+        PY_CLASS,
+        "advanced_alchemy.extensions.litestar.plugins.SQLAlchemySerializationPlugin",
+    ),
     (PY_CLASS, "advanced_alchemy.extensions.litestar.plugins.SQLAlchemyInitPlugin"),
     (PY_CLASS, "advanced_alchemy.extensions.litestar.config.SQLAlchemySyncConfig"),
     (PY_CLASS, "advanced_alchemy.extensions.litestar.config.SQLAlchemyAsyncConfig"),
-    (PY_METH, "advanced_alchemy.extensions.litestar.plugins.SQLAlchemySerializationPlugin.create_dto_for_type"),
+    (
+        PY_METH,
+        "advanced_alchemy.extensions.litestar.plugins.SQLAlchemySerializationPlugin.create_dto_for_type",
+    ),
     (PY_CLASS, "advanced_alchemy.config.AsyncSessionConfig"),
     (PY_CLASS, "advanced_alchemy.config.SyncSessionConfig"),
     (PY_CLASS, "advanced_alchemy.types.JsonB"),
@@ -219,7 +235,9 @@ nitpick_ignore_regex = [
 # would be added as: "litestar.testing.AsyncTestClient.exit_stack": {"AsyncExitStack"},
 ignore_missing_refs = {
     # No idea what autodoc is doing here. Possibly unfixable on our end
-    "litestar.template.base.TemplateEngineProtocol.get_template": {"litestar.template.base.T_co"},
+    "litestar.template.base.TemplateEngineProtocol.get_template": {
+        "litestar.template.base.T_co"
+    },
     "litestar.template": {"litestar.template.base.T_co"},
     "litestar.openapi.OpenAPIController.security": {"SecurityRequirement"},
     "litestar.response.file.async_file_iterator": {"FileSystemAdapter"},
@@ -231,10 +249,14 @@ ignore_missing_refs = {
         ".*(ConnectionT|EngineT|SessionT|SessionMakerT|SlotsBase)"
     ),
     re.compile(r"litestar\.dto.*"): re.compile(".*T|.*FieldDefinition|Empty"),
-    re.compile(r"litestar\.template\.(config|TemplateConfig).*"): re.compile(".*EngineType"),
+    re.compile(r"litestar\.template\.(config|TemplateConfig).*"): re.compile(
+        ".*EngineType"
+    ),
     "litestar.concurrency.set_asyncio_executor": {"ThreadPoolExecutor"},
     "litestar.concurrency.get_asyncio_executor": {"ThreadPoolExecutor"},
-    re.compile(r"litestar\.channels\.backends\.asyncpg.*"): {"asyncpg.connection.Connection"},
+    re.compile(r"litestar\.channels\.backends\.asyncpg.*"): {
+        "asyncpg.connection.Connection"
+    },
 }
 
 # Do not warn about broken links to the following:
@@ -329,9 +351,15 @@ html_theme_options = {
 
 
 def update_html_context(
-    app: Sphinx, pagename: str, templatename: str, context: dict[str, Any], doctree: document
+    app: Sphinx,
+    pagename: str,
+    templatename: str,
+    context: dict[str, Any],
+    doctree: document,
 ) -> None:
-    context["generate_toctree_html"] = partial(context["generate_toctree_html"], startdepth=0)
+    context["generate_toctree_html"] = partial(
+        context["generate_toctree_html"], startdepth=0
+    )
 
 
 def delayed_setup(app: Sphinx) -> None:

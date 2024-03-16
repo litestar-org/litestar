@@ -154,8 +154,8 @@ class ServerSentEvent(Stream):
             encoding: The encoding to be used for the response headers.
             headers: A string keyed dictionary of response headers. Header keys are insensitive.
             status_code: The response status code. Defaults to 200.
-            event_type: The type of the SSE event. If given, the browser will sent the event to any 'event-listener'
-                declared for it (e.g. via 'addEventListener' in JS).
+            event_type: The type of the SSE event. If given, the browser will send the event to any ``event-listener``
+                declared for it (e.g., via ``addEventListener`` in JS).
             event_id: The event ID. This sets the event source's 'last event id'.
             retry_duration: Retry duration in milliseconds.
             comment_message: A comment message. This value is ignored by clients and is used mostly for pinging.
