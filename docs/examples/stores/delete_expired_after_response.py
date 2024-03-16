@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from litestar import Litestar, Request
 from litestar.stores.memory import MemoryStore
@@ -7,9 +7,9 @@ memory_store = MemoryStore()
 
 
 async def after_response(request: Request) -> None:
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     last_cleared = request.app.state.get("store_last_cleared", now)
-    if datetime.utcnow() - last_cleared > timedelta(seconds=30):
+    if datetime.now(timezone.utc) - last_cleared > timedelta(seconds=30):
         await memory_store.delete_expired()
     app.state["store_last_cleared"] = now
 

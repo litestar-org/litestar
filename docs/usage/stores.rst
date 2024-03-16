@@ -1,10 +1,6 @@
-:tocdepth: 4
-
+======
 Stores
 ======
-
-.. py:currentmodule:: litestar.stores
-
 
 When developing applications, oftentimes a simply storage mechanism is needed, for example when
 :doc:`caching response data</usage/caching>` or storing data for
@@ -15,7 +11,6 @@ Litestar provides several low level key value stores, offering an asynchronous i
 thread- and process-safe manner. These stores are centrally managed via a
 :class:`registry <litestar.stores.registry.StoreRegistry>`, allowing easy access throughout the whole application and
 third party integration (for example plugins).
-
 
 Built-in stores
 ---------------
@@ -35,14 +30,16 @@ Built-in stores
     A store backend by `redis <https://redis.io/>`_. It offers all the guarantees and features of Redis, making it
     suitable for almost all applications. Offers `namespacing`_.
 
-.. admonition:: Why not memcached?
+.. |Memcached| replace:: Memcached
+.. Memcached: https://memcached.org/
+
+.. admonition:: Why not |Memcached| ?
     :class: info
 
-    Memcached is not a supported backend, and will likely also not be added in the future. The reason for this is simply
-    that it is hard to support memcached properly, since it is missing a lot of basic functionality like checking a key's
+    |Memcached| is not a supported backend, and will likely also not be added in the future. The reason for this is simply
+    that it is hard to support |memcached| properly, since it is missing a lot of basic functionality like checking a key's
     expiry time, or something like Redis' `SCAN <https://redis.io/commands/scan/>`_ command, which allows to implement
     pattern-based deletion of keys.
-
 
 Interacting with a store
 ------------------------
@@ -53,39 +50,31 @@ The most fundamental operations of a store are:
 - :meth:`set <.base.Store.set>`: To set a value in the store
 - :meth:`delete <.base.Store.delete>`: To delete a stored value
 
-
 Getting and setting values
 ++++++++++++++++++++++++++
 
-
 .. literalinclude:: /examples/stores/get_set.py
-    :language: python
-
+    :caption: Getting and setting values in a :class:`MemoryStore <litestar.stores.memory.MemoryStore>`
 
 Setting an expiry time
 ++++++++++++++++++++++
 
-The :meth:`set <.base.Store.set>` method has an optional parameter ``expires_in``, allowing to specify a time after
-which a stored value should expire.
-
+The :meth:`set <.base.Store.set>` method has an optional parameter :paramref:`~.base.Store.set.expires_in`,
+allowing to specify a time after which a stored value should expire.
 
 .. literalinclude:: /examples/stores/expiry.py
-    :language: python
+    :caption: Setting a value with an expiry time in a :class:`MemoryStore <litestar.stores.memory.MemoryStore>`
 
-
-.. note::
-    It is up to the individual store to decide how to handle expired values, and implementations may differ. The
+.. note:: It is up to the individual store to decide how to handle expired values, and implementations may differ. The
     :class:`redis based store <.redis.RedisStore>` for example uses Redis' native expiry mechanism to handle this,
     while the :class:`FileStore <.file.FileStore>` only deletes expired values when they are trying to be accessed,
     or explicitly deleted via the :meth:`delete_expired <.file.FileStore.delete_expired>` method.
 
-
 It is also possible to extend the expiry time on each access, which is useful for applications such as server side
-sessions or LRU caches:
+sessions or `LRU caches <https://en.wikipedia.org/wiki/Cache_replacement_policies#Least_recently_used_(LRU)>`_:
 
 .. literalinclude:: /examples/stores/expiry_renew_on_get.py
-    :language: python
-
+    :caption: Renewing the expiry time on each access using the :paramref:`~.base.Store.get.renew_for` parameter
 
 Deleting expired values
 #######################
@@ -95,26 +84,23 @@ deleted automatically. Instead, it will only happen when the data is being acces
 explicitly via :meth:`MemoryStore.delete_expired <.memory.MemoryStore.delete_expired>` or
 :meth:`FileStore.delete_expired <.file.FileStore.delete_expired>` respectively.
 
-It is a good practice to call ``delete_expired`` periodically, to ensure the size of the stored values does not grow
-indefinitely.
+It is a good practice to call :meth:`delete_expired <.file.FileStore.delete_expired>` periodically,
+to ensure the size of the stored values does not grow indefinitely.
 
 In this example, an :ref:`after_response <after_response>` handler is used to delete expired items at most every 30
-second:
+seconds:
 
 .. literalinclude:: /examples/stores/delete_expired_after_response.py
-    :language: python
+    :caption: Periodically deleting expired items using an :ref:`after_response <after_response>` handler
 
 When using the :class:`FileStore <.file.FileStore>`, expired items may also be deleted on startup:
 
-
 .. literalinclude:: /examples/stores/delete_expired_on_startup.py
-    :language: python
+    :caption: Deleting expired items from a :class:`FileStore <.file.FileStore>` on application startup
 
-
-.. note::
-    For the :class:`MemoryStore <.memory.MemoryStore>`, this is not needed as the data is simply stored in a dictionary.
-    This means that every time a new instance of this store is created, it will start out empty.
-
+.. note:: For the :class:`MemoryStore <.memory.MemoryStore>`, this is not needed as the data is
+    simply stored in a dictionary. This means that every time a new instance of this store is created,
+    it will start out empty.
 
 What can be stored
 ++++++++++++++++++
@@ -135,8 +121,8 @@ to store a very wide variety of data.
     the value. This means that it is technically possible to store arbitrary objects in this store, and get the same
     object back. However, this is not reflected in the store's typing, as the underlying :class:`Store <.base.Store>`
     interface does not guarantee this behaviour, and it is not guaranteed that
-    :class:`MemoryStore <.memory.MemoryStore>` will always behave in this case.
 
+    :class:`MemoryStore <.memory.MemoryStore>` will always behave in this case.
 
 Namespacing
 +++++++++++
@@ -154,24 +140,23 @@ will only affect itself and its child namespaces.
 When using the :class:`RedisStore <.redis.RedisStore>`, this allows to reuse the same underlying
 :class:`Redis <redis.asyncio.Redis>` instance and connection, while ensuring isolation.
 
-.. note::
-    :class:`RedisStore <.redis.RedisStore>` uses the ``LITESTAR`` namespace by default; all keys created by this store,
-    will use the ``LITESTAR`` prefix when storing data in redis.
+.. note:: :class:`RedisStore <.redis.RedisStore>` uses the ``LITESTAR`` namespace by default;
+    all keys created by this store will use the ``LITESTAR`` prefix when storing data in Redis.
     :meth:`RedisStore.delete_all <.redis.RedisStore.delete_all>` is implemented in such a way that it will only delete
     keys matching the current namespace, making it safe and side-effect free.
 
     This can be turned off by explicitly passing ``namespace=None`` to the store when creating a new instance.
 
-
 .. literalinclude:: /examples/stores/namespacing.py
-    :language: python
+    :caption: Creating or unsetting namespaced stores using the
+      :meth:`with_namespace <.base.NamespacedStore.with_namespace>` method
 
-Even though all three stores defined here use the same Redis instance, calling ``delete_all`` on the ``cache_store``
-will not affect data within the ``session_store``.
+Even though all three stores defined here use the same Redis instance, calling
+:meth:`RedisStore.delete_all <.redis.RedisStore.delete_all>` on the ``cache_store`` will not affect
+data within the ``session_store``.
 
 Defining stores hierarchically like this still allows to easily clear everything, by simply calling
 :meth:`delete_all <.base.Store.delete_all>` on the root store.
-
 
 Managing stores with the registry
 ---------------------------------
@@ -188,10 +173,8 @@ It operates on a few basic principles:
 - If a store has been requested that has not been registered yet, a store of that name will be created and registered
   using the `the default factory`_
 
-
 .. literalinclude:: /examples/stores/registry.py
-    :language: python
-
+    :caption: Using the :class:`StoreRegistry <litestar.stores.registry.StoreRegistry>` to manage stores
 
 This pattern offers isolation of stores, and an easy way to configure stores used by middlewares and other Litestar
 features or third party integrations.
@@ -200,19 +183,18 @@ In the following example, the store set up by the
 :class:`RateLimitMiddleware <litestar.middleware.rate_limit.RateLimitMiddleware>` is accessed via the registry:
 
 .. literalinclude:: /examples/stores/registry_access_integration.py
-    :language: python
-
+    :caption: Accessing a store used by the
+      :class:`RateLimitMiddleware <litestar.middleware.rate_limit.RateLimitMiddleware>` via the registry
 
 This works because :class:`RateLimitMiddleware <litestar.middleware.rate_limit.RateLimitMiddleware>` will request
 its store internally via ``app.stores.get`` as well.
 
-
 The default factory
 +++++++++++++++++++
 
-The pattern above is made possible by using the registry's default factory; A callable that gets invoked
-every time a store is requested that has not been registered yet. It is similar to the ``default`` argument to
-:meth:`dict.get`.
+The pattern above is made possible by using the registry's default factory; A :term:`callable <python:callable>`
+that gets invoked every time a store is requested that has not been registered yet.
+It is similar to the ``default`` argument to :meth:`dict.get`.
 
 By default, the default factory is a function that returns a new
 :class:`MemoryStore <litestar.stores.memory.MemoryStore>` instance. This behaviour can be changed by supplying a
@@ -221,11 +203,11 @@ custom ``default_factory`` method to the registry.
 To make use of this, a registry instance can be passed directly to the application:
 
 .. literalinclude:: /examples/stores/registry_default_factory.py
-    :language: python
+    :caption: Customizing the default factory of the :class:`StoreRegistry <litestar.stores.registry.StoreRegistry>`
+      to return a shared :class:`MemoryStore <litestar.stores.memory.MemoryStore>` instance
 
 The registry will now return the same :class:`MemoryStore <litestar.stores.memory.MemoryStore>` every time an undefined
 store is being requested.
-
 
 Using the registry to configure integrations
 ++++++++++++++++++++++++++++++++++++++++++++
@@ -233,19 +215,18 @@ Using the registry to configure integrations
 This mechanism also allows to control the stores used by various integrations, such as middlewares:
 
 .. literalinclude:: /examples/stores/registry_configure_integrations.py
-    :language: python
-
+    :caption: Configuring stores used by integrations via the
+      :class:`StoreRegistry <litestar.stores.registry.StoreRegistry>`
 
 In this example, the registry is being set up with stores using the ``sessions`` and ``response_cache`` keys. These are
 not magic constants, but instead configuration values that can be changed. Those names just happen to be their default
 values. Adjusting those default values allows to easily reuse stores, without the need for a more complex setup:
 
 .. literalinclude:: /examples/stores/configure_integrations_set_names.py
-    :language: python
+    :caption: Reusing stores for multiple integrations by adjusting their default store names
 
 Now the rate limit middleware and response caching will use the ``redis`` store, while sessions will be store in the
 ``file`` store.
-
 
 Setting up the default factory with namespacing
 +++++++++++++++++++++++++++++++++++++++++++++++
@@ -254,16 +235,18 @@ The default factory can be used in conjunction with `namespacing`_ to create iso
 with minimal boilerplate:
 
 .. literalinclude:: /examples/stores/registry_default_factory_namespacing.py
-    :language: python
-
+    :caption: Creating isolated, namespaced stores using the :meth:`StoreRegistry.__init__` method with a
+      custom ``default_factory`` in conjunction with the
+      :meth:`RedisStore.with_namespace <litestar.stores.redis.RedisStore.with_namespace>` method
 
 Without any extra configuration, every call to ``app.stores.get`` with a unique name will return a namespace for this
 name only, while re-using the underlying Redis instance.
-
 
 Store lifetime
 ++++++++++++++
 
 Stores may not be automatically closed when the application is shut down.
-This is the case in particular for the RedisStore if you are not using the class method :meth:`RedisStore.with_client <.redis.RedisStore.with_client>` and passing in your own Redis instance.
+This is the case in particular for the :class:`RedisStore <litestar.stores.redis.RedisStore>` if you are not
+using the class method :meth:`RedisStore.with_client <.redis.RedisStore.with_client>` and passing in your own
+Redis instance.
 In this case you are responsible to close the Redis instance yourself.
