@@ -134,7 +134,6 @@ class OpenAPIPlugin(InitPluginProtocol, ReceiveRoutePlugin):
 
             Args:
                 plugin_: The plugin to create the handler for.
-                handler_name: The name of the handler.
 
             Returns:
                 The handler.
