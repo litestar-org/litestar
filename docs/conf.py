@@ -38,6 +38,7 @@ extensions = [
     "sphinx_copybutton",
     "sphinxcontrib.mermaid",
     "sphinx_click",
+    "sphinx_paramlinks",
 ]
 
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]

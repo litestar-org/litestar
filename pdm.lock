@@ -5,7 +5,7 @@
 groups = ["default", "standard", "jwt", "pydantic", "cli", "picologging", "dev-contrib", "piccolo", "prometheus", "dev", "mako", "test", "brotli", "cryptography", "linting", "attrs", "opentelemetry", "docs", "redis", "sqlalchemy", "full", "annotated-types", "jinja", "structlog", "minijinja"]
 strategy = ["cross_platform"]
 lock_version = "4.4.1"
-content_hash = "sha256:d15ae45eac6b6d77a630838b16d3e06192941b526fb6c53b46cf78bd7400d394"
+content_hash = "sha256:e4d80b58b3b234802f314ccdeec3ca0971c2967e14f88fe2307b39faf90429a6"
 
 [[package]]
 name = "accessible-pygments"
@@ -1573,7 +1573,7 @@ files = [
 [[package]]
 name = "litestar-sphinx-theme"
 version = "0.2.0"
-requires_python = ">=3.8,<4.0"
+requires_python = "<4.0,>=3.8"
 git = "https://github.com/litestar-org/litestar-sphinx-theme.git"
 revision = "c5ce66aadc8f910c24f54bf0d172798c237a67eb"
 summary = "A Sphinx theme for the Litestar organization"
@@ -3299,6 +3299,18 @@ dependencies = [
 files = [
     {file = "sphinx_jinja2_compat-0.2.0.post1-py3-none-any.whl", hash = "sha256:f9d329174bdde8db19dc12c62528367196eb2f6b46c91754eca604acd0c0f6ad"},
     {file = "sphinx_jinja2_compat-0.2.0.post1.tar.gz", hash = "sha256:974289a12a9f402108dead621e9c15f7004e945d5cfcaea8d6419e94d3fa95a3"},
+]
+
+[[package]]
+name = "sphinx-paramlinks"
+version = "0.6.0"
+summary = "Allows param links in Sphinx function/method descriptions to be linkable"
+dependencies = [
+    "Sphinx>=4.0.0",
+    "docutils",
+]
+files = [
+    {file = "sphinx-paramlinks-0.6.0.tar.gz", hash = "sha256:746a0816860aa3fff5d8d746efcbec4deead421f152687411db1d613d29f915e"},
 ]
 
 [[package]]

@@ -131,15 +131,16 @@ dev = [
 ]
 dev-contrib = ["opentelemetry-sdk", "httpx-sse"]
 docs = [
-  "sphinx>=7.1.2",
-  "sphinx-autobuild>=2021.3.14",
-  "sphinx-copybutton>=0.5.2",
-  "sphinx-toolbox>=3.5.0",
-  "sphinx-design>=0.5.0",
-  "sphinx-click>=4.4.0",
-  "sphinxcontrib-mermaid>=0.9.2",
-  "auto-pytabs[sphinx]>=0.4.0",
-  "litestar-sphinx-theme @ git+https://github.com/litestar-org/litestar-sphinx-theme.git",
+    "sphinx>=7.1.2",
+    "sphinx-autobuild>=2021.3.14",
+    "sphinx-copybutton>=0.5.2",
+    "sphinx-toolbox>=3.5.0",
+    "sphinx-design>=0.5.0",
+    "sphinx-click>=4.4.0",
+    "sphinxcontrib-mermaid>=0.9.2",
+    "auto-pytabs[sphinx]>=0.4.0",
+    "litestar-sphinx-theme @ git+https://github.com/litestar-org/litestar-sphinx-theme.git",
+    "sphinx-paramlinks>=0.6.0",
 ]
 linting = [
   "ruff>=0.2.1",
