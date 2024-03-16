@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING, Any, Sequence
 
-import httpx
 import msgspec
 import yaml
 
