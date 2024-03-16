@@ -1,8 +1,13 @@
 from __future__ import annotations
 
 from litestar import Litestar
-from litestar.contrib.sqlalchemy.plugins import SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
-from litestar.contrib.sqlalchemy.plugins.init.config.asyncio import autocommit_before_send_handler
+from litestar.contrib.sqlalchemy.plugins import (
+    SQLAlchemyAsyncConfig,
+    SQLAlchemyInitPlugin,
+)
+from litestar.contrib.sqlalchemy.plugins.init.config.asyncio import (
+    autocommit_before_send_handler,
+)
 
 config = SQLAlchemyAsyncConfig(
     connection_string="sqlite+aiosqlite:///:memory:",

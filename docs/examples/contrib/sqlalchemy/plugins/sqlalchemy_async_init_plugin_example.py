@@ -6,7 +6,10 @@ from sqlalchemy import select
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from litestar import Litestar, post
-from litestar.contrib.sqlalchemy.plugins import SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
+from litestar.contrib.sqlalchemy.plugins import (
+    SQLAlchemyAsyncConfig,
+    SQLAlchemyInitPlugin,
+)
 
 if TYPE_CHECKING:
     from typing import Any, Dict, List
@@ -24,7 +27,9 @@ class TodoItem(Base):
 
 
 @post("/")
-async def add_item(data: Dict[str, Any], db_session: AsyncSession) -> List[Dict[str, Any]]:
+async def add_item(
+    data: Dict[str, Any], db_session: AsyncSession
+) -> List[Dict[str, Any]]:
     todo_item = TodoItem(**data)
     async with db_session.begin():
         db_session.add(todo_item)
@@ -43,6 +48,8 @@ async def init_db(app: Litestar) -> None:
         await conn.run_sync(Base.metadata.create_all)
 
 
-config = SQLAlchemyAsyncConfig(connection_string="sqlite+aiosqlite:///todo_async.sqlite")
+config = SQLAlchemyAsyncConfig(
+    connection_string="sqlite+aiosqlite:///todo_async.sqlite"
+)
 plugin = SQLAlchemyInitPlugin(config=config)
 app = Litestar(route_handlers=[add_item], plugins=[plugin], on_startup=[init_db])

@@ -10,7 +10,9 @@ from litestar.params import Body
 
 @post(path="/")
 async def handle_file_upload(
-    data: Annotated[Dict[str, UploadFile], Body(media_type=RequestEncodingType.MULTI_PART)],
+    data: Annotated[
+        Dict[str, UploadFile], Body(media_type=RequestEncodingType.MULTI_PART)
+    ],
 ) -> Dict[str, str]:
     file_contents = {}
     for name, file in data.items():

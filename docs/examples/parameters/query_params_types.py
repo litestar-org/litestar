@@ -5,7 +5,9 @@ from litestar import Litestar, get
 
 
 @get("/", sync_to_thread=False)
-def index(date: datetime, number: int, floating_number: float, strings: List[str]) -> Dict[str, Any]:
+def index(
+    date: datetime, number: int, floating_number: float, strings: List[str]
+) -> Dict[str, Any]:
     return {
         "datetime": date + timedelta(days=1),
         "int": number,

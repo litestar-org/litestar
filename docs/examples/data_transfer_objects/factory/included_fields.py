@@ -29,7 +29,9 @@ class User(Base):
     name: Mapped[str]
     password: Mapped[str] = mapped_column(info=dto_field("private"))
     created_at: Mapped[datetime] = mapped_column(info=dto_field("read-only"))
-    address_id: Mapped[UUID] = mapped_column(ForeignKey("address.id"), info=dto_field("private"))
+    address_id: Mapped[UUID] = mapped_column(
+        ForeignKey("address.id"), info=dto_field("private")
+    )
     address: Mapped[Address] = relationship(info=dto_field("read-only"))
     pets: Mapped[List[Pets]] = relationship(info=dto_field("read-only"))
 
@@ -47,7 +49,9 @@ ReadUserDTO = SQLAlchemyDTO[Annotated[User, config]]
 @post("/users", dto=UserDTO, return_dto=ReadUserDTO, sync_to_thread=False)
 def create_user(data: User) -> User:
     data.created_at = datetime.min
-    data.address = Address(street="123 Main St", city="Anytown", state="NY", zip="12345")
+    data.address = Address(
+        street="123 Main St", city="Anytown", state="NY", zip="12345"
+    )
     data.pets = [Pets(id=1, name="Fido"), Pets(id=2, name="Spot")]
     return data
 

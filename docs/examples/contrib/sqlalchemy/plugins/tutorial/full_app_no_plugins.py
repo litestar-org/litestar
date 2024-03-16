@@ -57,7 +57,9 @@ async def get_todo_by_title(todo_name: str, session: AsyncSession) -> TodoItem:
         raise NotFoundException(detail=f"TODO {todo_name!r} not found") from e
 
 
-async def get_todo_list(done: Optional[bool], session: AsyncSession) -> Sequence[TodoItem]:
+async def get_todo_list(
+    done: Optional[bool], session: AsyncSession
+) -> Sequence[TodoItem]:
     query = select(TodoItem)
     if done is not None:
         query = query.where(TodoItem.done.is_(done))

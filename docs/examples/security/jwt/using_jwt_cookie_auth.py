@@ -28,7 +28,9 @@ MOCK_DB: Dict[str, User] = {}
 # Notes:
 # - 'User' can be any arbitrary value you decide upon.
 # - The callable can be either sync or async - both will work.
-async def retrieve_user_handler(token: "Token", connection: "ASGIConnection[Any, Any, Any, Any]") -> Optional[User]:
+async def retrieve_user_handler(
+    token: "Token", connection: "ASGIConnection[Any, Any, Any, Any]"
+) -> Optional[User]:
     # logic here to retrieve the user instance
     return MOCK_DB.get(token.sub)
 

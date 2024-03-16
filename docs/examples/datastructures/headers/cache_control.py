@@ -12,7 +12,11 @@ class MyController(Controller):
         """This endpoint uses the cache control value defined in the controller which overrides the app value."""
         return 0.5
 
-    @get("/timestamp", cache_control=CacheControlHeader(no_store=True), sync_to_thread=False)
+    @get(
+        "/timestamp",
+        cache_control=CacheControlHeader(no_store=True),
+        sync_to_thread=False,
+    )
     def get_server_time(self) -> float:
         """This endpoint overrides the cache control value defined in the controller."""
         return time.time()

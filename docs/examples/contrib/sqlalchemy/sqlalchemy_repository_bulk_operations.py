@@ -66,17 +66,23 @@ def run_script() -> None:
         # 1) Load the JSON data into the US States table.
         repo = USStateRepository(session=db_session)
         fixture = open_fixture(here, USStateRepository.model_type.__tablename__)  # type: ignore
-        objs = repo.add_many([USStateRepository.model_type(**raw_obj) for raw_obj in fixture])
+        objs = repo.add_many(
+            [USStateRepository.model_type(**raw_obj) for raw_obj in fixture]
+        )
         db_session.commit()
         console.print(f"Created {len(objs)} new objects.")
 
         # 2) Select paginated data and total row count.
         created_objs, total_objs = repo.list_and_count(LimitOffset(limit=10, offset=0))
-        console.print(f"Selected {len(created_objs)} records out of a total of {total_objs}.")
+        console.print(
+            f"Selected {len(created_objs)} records out of a total of {total_objs}."
+        )
 
         # 3) Let us remove the batch of records selected.
         deleted_objs = repo.delete_many([new_obj.id for new_obj in created_objs])
-        console.print(f"Removed {len(deleted_objs)} records out of a total of {total_objs}.")
+        console.print(
+            f"Removed {len(deleted_objs)} records out of a total of {total_objs}."
+        )
 
         # 4) Let us count the remaining rows
         remaining_count = repo.count()

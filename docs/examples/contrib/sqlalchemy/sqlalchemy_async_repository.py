@@ -11,7 +11,11 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship, selectinload
 
 from litestar import Litestar, get
 from litestar.contrib.sqlalchemy.base import UUIDAuditBase, UUIDBase
-from litestar.contrib.sqlalchemy.plugins import AsyncSessionConfig, SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
+from litestar.contrib.sqlalchemy.plugins import (
+    AsyncSessionConfig,
+    SQLAlchemyAsyncConfig,
+    SQLAlchemyInitPlugin,
+)
 from litestar.contrib.sqlalchemy.repository import SQLAlchemyAsyncRepository
 from litestar.controller import Controller
 from litestar.di import Provide
@@ -37,7 +41,9 @@ class AuthorModel(UUIDBase):
     __tablename__ = "author"  #  type: ignore[assignment]
     name: Mapped[str]
     dob: Mapped[date | None]
-    books: Mapped[list[BookModel]] = relationship(back_populates="author", lazy="noload")
+    books: Mapped[list[BookModel]] = relationship(
+        back_populates="author", lazy="noload"
+    )
 
 
 # The `AuditBase` class includes the same UUID` based primary key (`id`) and 2
@@ -47,7 +53,9 @@ class BookModel(UUIDAuditBase):
     __tablename__ = "book"  #  type: ignore[assignment]
     title: Mapped[str]
     author_id: Mapped[UUID] = mapped_column(ForeignKey("author.id"))
-    author: Mapped[AuthorModel] = relationship(lazy="joined", innerjoin=True, viewonly=True)
+    author: Mapped[AuthorModel] = relationship(
+        lazy="joined", innerjoin=True, viewonly=True
+    )
 
 
 # we will explicitly define the schema instead of using DTO objects for clarity.
@@ -148,7 +156,10 @@ class AuthorController(Controller):
         return Author.model_validate(obj)
 
     # we override the authors_repo to use the version that joins the Books in
-    @get(path="/authors/{author_id:uuid}", dependencies={"authors_repo": Provide(provide_author_details_repo)})
+    @get(
+        path="/authors/{author_id:uuid}",
+        dependencies={"authors_repo": Provide(provide_author_details_repo)},
+    )
     async def get_author(
         self,
         authors_repo: AuthorRepository,

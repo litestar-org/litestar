@@ -32,4 +32,8 @@ def on_startup(app: Litestar) -> None:
     app.state.message = "value injected during send"
 
 
-app = Litestar(route_handlers=[handler], on_startup=[on_startup], before_send=[before_send_hook_handler])
+app = Litestar(
+    route_handlers=[handler],
+    on_startup=[on_startup],
+    before_send=[before_send_hook_handler],
+)

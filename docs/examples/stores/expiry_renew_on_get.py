@@ -9,7 +9,9 @@ async def main() -> None:
     await store.set("foo", b"bar", expires_in=1)
     await sleep(0.5)
 
-    await store.get("foo", renew_for=1)  # this will reset the time to live to one second
+    await store.get(
+        "foo", renew_for=1
+    )  # this will reset the time to live to one second
 
     await sleep(1)
     # it has now been 1.5 seconds since the key was set with a life time of one second,

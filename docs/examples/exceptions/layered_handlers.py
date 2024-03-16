@@ -14,7 +14,9 @@ def app_exception_handler(request: Request, exc: HTTPException) -> Response:
     )
 
 
-def router_handler_exception_handler(request: Request, exc: ValidationException) -> Response:
+def router_handler_exception_handler(
+    request: Request, exc: ValidationException
+) -> Response:
     return Response(
         content={"error": "validation error", "path": request.url.path},
         status_code=400,

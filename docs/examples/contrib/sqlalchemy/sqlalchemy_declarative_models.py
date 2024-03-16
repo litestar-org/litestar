@@ -7,7 +7,11 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from litestar import Litestar, get
 from litestar.contrib.sqlalchemy.base import UUIDAuditBase, UUIDBase
-from litestar.contrib.sqlalchemy.plugins import AsyncSessionConfig, SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
+from litestar.contrib.sqlalchemy.plugins import (
+    AsyncSessionConfig,
+    SQLAlchemyAsyncConfig,
+    SQLAlchemyInitPlugin,
+)
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
@@ -44,7 +48,9 @@ async def on_startup() -> None:
 
 
 @get(path="/authors")
-async def get_authors(db_session: "AsyncSession", db_engine: "AsyncEngine") -> list[Author]:
+async def get_authors(
+    db_session: "AsyncSession", db_engine: "AsyncEngine"
+) -> list[Author]:
     """Interact with SQLAlchemy engine and session."""
     return list(await db_session.scalars(select(Author)))
 

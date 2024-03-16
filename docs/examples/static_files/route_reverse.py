@@ -8,4 +8,6 @@ app = Litestar(
 )
 
 
-print(app.route_reverse(name="static", file_path="/some_file.txt"))  # /static/some_file.txt
+print(
+    app.route_reverse(name="static", file_path="/some_file.txt")
+)  # /static/some_file.txt

@@ -6,7 +6,10 @@ from sqlalchemy import select
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from litestar import Litestar, post
-from litestar.contrib.sqlalchemy.plugins import SQLAlchemyInitPlugin, SQLAlchemySyncConfig
+from litestar.contrib.sqlalchemy.plugins import (
+    SQLAlchemyInitPlugin,
+    SQLAlchemySyncConfig,
+)
 
 if TYPE_CHECKING:
     from typing import Any, Dict, List

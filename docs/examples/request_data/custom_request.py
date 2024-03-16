@@ -13,7 +13,9 @@ class CustomRequest(Request):
 
     __slots__ = ("kitten_name",)
 
-    def __init__(self, scope: Scope, receive: Receive = empty_receive, send: Send = empty_send) -> None:
+    def __init__(
+        self, scope: Scope, receive: Receive = empty_receive, send: Send = empty_send
+    ) -> None:
         """Initialize CustomRequest class."""
         super().__init__(scope=scope, receive=receive, send=send)
         self.kitten_name = KITTEN_NAMES_MAP.get(scope["method"], "Mittens")

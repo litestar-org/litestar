@@ -5,14 +5,19 @@ from typing import TYPE_CHECKING
 from sqlalchemy import text
 
 from litestar import Litestar, get
-from litestar.contrib.sqlalchemy.plugins import SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
+from litestar.contrib.sqlalchemy.plugins import (
+    SQLAlchemyAsyncConfig,
+    SQLAlchemyInitPlugin,
+)
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 
 
 @get(path="/sqlalchemy-app")
-async def async_sqlalchemy_init(db_session: AsyncSession, db_engine: AsyncEngine) -> str:
+async def async_sqlalchemy_init(
+    db_session: AsyncSession, db_engine: AsyncEngine
+) -> str:
     """Interact with SQLAlchemy engine and session."""
     one = (await db_session.execute(text("SELECT 1"))).scalar_one()
 
@@ -22,7 +27,9 @@ async def async_sqlalchemy_init(db_session: AsyncSession, db_engine: AsyncEngine
     return f"{one} {two}"
 
 
-sqlalchemy_config = SQLAlchemyAsyncConfig(connection_string="sqlite+aiosqlite:///test.sqlite")
+sqlalchemy_config = SQLAlchemyAsyncConfig(
+    connection_string="sqlite+aiosqlite:///test.sqlite"
+)
 
 app = Litestar(
     route_handlers=[async_sqlalchemy_init],

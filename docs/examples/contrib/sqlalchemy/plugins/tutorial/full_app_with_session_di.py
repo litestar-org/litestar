@@ -79,7 +79,9 @@ async def get_todo_list(done: Optional[bool], session: AsyncSession) -> List[Tod
 
 
 @get("/")
-async def get_list(transaction: AsyncSession, done: Optional[bool] = None) -> TodoCollectionType:
+async def get_list(
+    transaction: AsyncSession, done: Optional[bool] = None
+) -> TodoCollectionType:
     return [serialize_todo(todo) for todo in await get_todo_list(done, transaction)]
 
 
@@ -91,7 +93,9 @@ async def add_item(data: TodoType, transaction: AsyncSession) -> TodoType:
 
 
 @put("/{item_title:str}")
-async def update_item(item_title: str, data: TodoType, transaction: AsyncSession) -> TodoType:
+async def update_item(
+    item_title: str, data: TodoType, transaction: AsyncSession
+) -> TodoType:
     todo_item = await get_todo_by_title(item_title, transaction)
     todo_item.title = data["title"]
     todo_item.done = data["done"]

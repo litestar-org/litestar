@@ -31,10 +31,16 @@ class MyController(Controller):
 router = Router(
     path="/router-path",
     route_handlers=[MyController],
-    response_cookies=[Cookie(key="router-cookie", value="router value", description="router level cookie")],
+    response_cookies=[
+        Cookie(
+            key="router-cookie", value="router value", description="router level cookie"
+        )
+    ],
 )
 
 app = Litestar(
     route_handlers=[router],
-    response_cookies=[Cookie(key="app-cookie", value="app value", description="app level cookie")],
+    response_cookies=[
+        Cookie(key="app-cookie", value="app value", description="app level cookie")
+    ],
 )

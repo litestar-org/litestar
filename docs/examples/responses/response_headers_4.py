@@ -43,7 +43,9 @@ router = Router(
     after_request=after_request_handler,
     response_headers=[
         ResponseHeader(
-            name="Random-Header", description="a random number in the range 1 - 100", documentation_only=True
+            name="Random-Header",
+            description="a random number in the range 1 - 100",
+            documentation_only=True,
         )
     ],
 )

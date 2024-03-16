@@ -35,8 +35,12 @@ def get_person(name: str) -> Person:
     # Your logic to retrieve the person goes here
     # For demonstration purposes, a placeholder Person instance is returned
     address = Address(street="123 Main St", city="Cityville", country="Countryland")
-    child1 = Person(name="Child1", age=10, email="child1@example.com", address=address, children=[])
-    child2 = Person(name="Child2", age=8, email="child2@example.com", address=address, children=[])
+    child1 = Person(
+        name="Child1", age=10, email="child1@example.com", address=address, children=[]
+    )
+    child2 = Person(
+        name="Child2", age=8, email="child2@example.com", address=address, children=[]
+    )
     return Person(
         name=name,
         age=30,

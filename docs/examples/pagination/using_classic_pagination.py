@@ -28,7 +28,9 @@ class PersonClassicPaginator(AbstractSyncClassicPaginator[Person]):
         return round(len(self.data) / page_size)
 
     def get_items(self, page_size: int, current_page: int) -> List[Person]:
-        return [self.data[i : i + page_size] for i in range(0, len(self.data), page_size)][current_page - 1]
+        return [
+            self.data[i : i + page_size] for i in range(0, len(self.data), page_size)
+        ][current_page - 1]
 
 
 paginator = PersonClassicPaginator()
