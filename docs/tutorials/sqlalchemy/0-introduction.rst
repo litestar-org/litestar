@@ -6,7 +6,7 @@ SQLAlchemy in the manner described by the
 `SQLAlchemy documentation <https://docs.sqlalchemy.org/en/20/orm/extensions/asyncio.html#synopsis-orm>`_, and so if you
 are looking for more information about any of the SQLAlchemy code, this will be a great place to start.
 
-You Willll notice that we use a couple of Litestar features that you may not have encountered yet:
+You will notice that we use a couple of Litestar features that you may not have encountered yet:
 
 1. Management and injection of :ref:`application state <application-state>`
 2. Use of a :ref:`Lifespan context manager <lifespan-context-managers>`
