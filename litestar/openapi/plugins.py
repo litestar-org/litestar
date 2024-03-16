@@ -364,7 +364,7 @@ class ScalarRenderPlugin(OpenAPIRenderPlugin):
         head = f"""
                   <head>
                     <title>{openapi_schema["info"]["title"]}</title>
-                    <style>{self.style}</style>
+                    {self.style}
                     <meta charset="utf-8"/>
                     <meta name="viewport" content="width=device-width, initial-scale=1">
                     {self.favicon}
