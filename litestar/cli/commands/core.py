@@ -228,7 +228,7 @@ def run_command(
         else validate_ssl_file_paths(ssl_certfile, ssl_keyfile)
     )
 
-    if not quiet_console:
+    if not quiet_console and sys.stdout.isatty():
         console.rule("[yellow]Starting server process", align="left")
         show_app_info(app)
     with _server_lifespan(app):
