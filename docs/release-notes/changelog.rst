@@ -130,7 +130,7 @@
         Fix an issue with SSE where JavaScript clients fail to receive an event without data.
         The `spec <https://html.spec.whatwg.org/multipage/server-sent-events.html#parsing-an-event-stream>`_ is
         not clear in whether or not an event without data is ok.
-        Considering the EventSource "client" is not ok with it, and that it's so easy DX-wise to make the mistake not
+        Considering the EventSource "client" is not ok with it, and that it is so easy DX-wise to make the mistake not
         explicitly sending it, this change fixes it by defaulting to the empty-string
 
     .. change:: Support ``ResponseSpec(..., examples=[...])``
@@ -175,7 +175,7 @@
         It was not possible to re-attach a router instance once it was attached. This
         makes that possible.
 
-        The router instance now gets deepcopied when it's registered to another router.
+        The router instance now gets deepcopied when it is registered to another router.
 
         The application startup performance gets a hit here, but the same approach is
         already used for controllers and handlers, so this only harmonizes the
@@ -303,7 +303,7 @@
 
         Fix schema generation for ``pydantic.SecretStr`` and ``pydantic.SecretBytes``
         which, when constrained, would not be recognised as such with Pydantic V2 since
-        they're not subtypes of their respective bases anymore.
+        they are not subtypes of their respective bases anymore.
 
     .. change:: Fix OpenAPI schema generation for Pydantic private attributes
         :type: bugfix
@@ -739,7 +739,7 @@
             await backend.subscribe(["foo", "bar"])  # subscribe to two channels
             await backend.publish(
                 b"something", ["foo"]
-            )  # publish a message to a channel we're subscribed to
+            )  # publish a message to a channel we are subscribed to
 
             # start the stream after publishing. Depending on the backend
             # the previously published message might be in the stream
@@ -1150,7 +1150,7 @@
         This hook works similar to the regular ``lifespan`` context manager, with the
         difference being is that it is only called once for the entire server lifespan,
         not for each application startup phase. Note that these only differ when running
-        with an ASGI server that's using multiple worker processes.
+        with an ASGI server that is using multiple worker processes.
 
     .. change:: Allow rendering templates directly from strings
         :type: feature
@@ -1832,7 +1832,7 @@
         :pr: 2231
 
         Set correctly the detail attribute on :class:`LitestarException` and :class:`HTTPException`
-        regardless of whether it's passed positionally or by name.
+        regardless of whether it is passed positionally or by name.
 
     .. change:: Filters not available in ``exists()``
         :type: bugfix
@@ -1847,7 +1847,7 @@
 
         Allows importing from ``litestar.contrib.sqlalchemy.base`` even if Pydantic is not installed.
 
-    .. change:: Don't add content type for responses that don't have a body
+    .. change:: Do not add content type for responses that do not have a body
         :type: bugfix
         :pr: 2263
         :issue: 2106
@@ -2209,7 +2209,7 @@
         :pr: 1879
         :issue: 1853
 
-        If type annotations aren't available for a given column/relationship, they may
+        If type annotations are not available for a given column/relationship, they may
         be inferred from the mapped object.
 
         For columns, the :attr:`~sqlalchemy.engine.interfaces.ReflectedColumn.type`\ 's
@@ -2781,7 +2781,7 @@
 
         When :class:`~litestar.typing.ParsedType` was introduced,
         :meth:`~litestar.typing.ParsedType.is_subclass_of` any union was deliberately
-        left to return ``False`` with the intention of waiting for some use-cases to
+        left to return ``False`` with the intention of waiting for some use cases to
         arrive.
 
         This behaviour was changed to address an issue where a handler may be typed to
@@ -3101,7 +3101,7 @@
         ``~litestar.contrib.sqlalchemy.base.BigIntPrimaryKey`` mixin, providing a
         ``BigInt`` primary key column, with a fallback to ``Integer`` for sqlite.
 
-    .. change:: SQLAlchemy repository: Store GUIDs as binary on databases that don't have a native GUID type
+    .. change:: SQLAlchemy repository: Store GUIDs as binary on databases that do not have a native GUID type
         :type: feature
         :pr: 1657
 
@@ -3180,7 +3180,7 @@
         :pr: 1671
         :issue: 1446
 
-        An unknown media type in places where Litestar can't infer the type from the
+        An unknown media type in places where Litestar cannot infer the type from the
         return annotation, an :exc:`ImproperlyConfiguredException` will now be raised.
 
 
@@ -3231,7 +3231,7 @@
         :pr: 1506
 
         The ``--app-dir`` option was added to the root CLI command, allowing to set the
-        run applications from a path that's not the current working directory.
+        run applications from a path that is not the current working directory.
 
 
     .. change:: WebSockets: Data iterators
@@ -3364,7 +3364,7 @@
 
         Add a ``match_fields`` argument to
         ``litestar.contrib.sqlalchemy.repository.SQLAlchemyAsyncRepository.get_or_create``.
-        This lets you lookup a model using a subset of the kwargs you've provided. If the remaining kwargs are different
+        This lets you lookup a model using a subset of the kwargs you have provided. If the remaining kwargs are different
         from the retrieved model's stored values, an update is performed.
 
     .. change:: Repository: Extend filter types
@@ -4262,7 +4262,7 @@
         :type: bugfix
         :pr: 1223
 
-        ``starlite.contrib.jwt.jwt_auth.JWTCookieAuth`` didn't set the ``domain`` configuration value on the response
+        ``starlite.contrib.jwt.jwt_auth.JWTCookieAuth`` did not set the ``domain`` configuration value on the response
         cookie.
 
 

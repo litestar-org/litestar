@@ -147,7 +147,7 @@ def test_app_params_defined_on_app_config_object() -> None:
         if name in {"on_app_init", "initial_state", "_preferred_validation_backend"}:
             continue
         assert name in app_config_fields
-    # ensure there are not fields defined on AppConfig that aren't in the Litestar signature
+    # ensure there are not fields defined on AppConfig that are not in the Litestar signature
     assert not (app_config_fields - set(litestar_signature.parameters.keys()))
 
 
@@ -155,7 +155,7 @@ def test_app_config_object_used(app_config_object: AppConfig, monkeypatch: pytes
     """Ensure that the properties on the `AppConfig` object are accessed within the `Litestar` constructor.
 
     In the test we replace every field on the `AppConfig` type with a property mock so that we can check that it has at
-    least been accessed. It doesn't actually check that we do the right thing with it, but is a guard against the case
+    least been accessed. It does not actually check that we do the right thing with it, but is a guard against the case
     of adding a parameter to the `Litestar` signature and to the `AppConfig` object, and using the value from the
     parameter downstream from construction of the `AppConfig` object.
     """
@@ -168,7 +168,7 @@ def test_app_config_object_used(app_config_object: AppConfig, monkeypatch: pytes
         property_mocks.append((field.name, property_mock))
         monkeypatch.setattr(type(app_config_object), field.name, property_mock, raising=False)
 
-    # Things that we don't actually need to call for this test
+    # Things that we do not actually need to call for this test
     monkeypatch.setattr(Litestar, "register", MagicMock())
     monkeypatch.setattr(Litestar, "_create_asgi_handler", MagicMock())
     monkeypatch.setattr(Router, "__init__", MagicMock())

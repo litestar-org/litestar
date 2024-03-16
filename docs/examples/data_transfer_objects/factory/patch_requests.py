@@ -15,7 +15,7 @@ class Person:
 
 
 class PatchDTO(DataclassDTO[Person]):
-    """Don't allow client to set the id, and allow partial updates."""
+    """Do not allow client to set the id, and allow partial updates."""
 
     config = DTOConfig(exclude={"id"}, partial=True)
 

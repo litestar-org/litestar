@@ -2,7 +2,7 @@ Recap and assembling the final application
 ===========================================
 
 So far we have looked at the different parts of the application in isolation, but now
-it's time to put them all together and assemble a complete application.
+it is time to put them all together and assemble a complete application.
 
 
 Final application

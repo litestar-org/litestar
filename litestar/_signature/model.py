@@ -56,8 +56,8 @@ __all__ = (
 
 class ErrorMessage(TypedDict):
     # key may not be set in some cases, like when a query param is set but
-    # doesn't match the required length during `attrs` validation
-    # in this case, we don't show a key at all as it will be empty
+    # does not match the required length during `attrs` validation
+    # in this case, we do not show a key at all as it will be empty
     key: NotRequired[str]
     message: str
     source: NotRequired[Literal["body"] | ParamType]

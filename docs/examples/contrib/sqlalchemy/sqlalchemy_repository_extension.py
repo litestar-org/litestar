@@ -74,7 +74,7 @@ class SQLAlchemyAsyncSlugRepository(SQLAlchemyAsyncRepository[ModelT]):
         """slugify.
 
         Convert to ASCII if 'allow_unicode' is False. Convert spaces or repeated
-        dashes to single dashes. Remove characters that aren't alphanumerics,
+        dashes to single dashes. Remove characters that are not alphanumerics,
         underscores, or hyphens. Convert to lowercase. Also strip leading and
         trailing whitespace, dashes, and underscores.
 

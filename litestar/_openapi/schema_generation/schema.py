@@ -370,7 +370,7 @@ class SchemaCreator:
             format=OpenAPIFormat.BINARY,
         )
 
-        # If the type is `dict[str, UploadFile]`, then it's the same as a `list[UploadFile]`
+        # If the type is `dict[str, UploadFile]`, then it is the same as a `list[UploadFile]`
         # but we will internally convert that into a `dict[str, UploadFile]`.
         if field_definition.is_non_string_sequence or field_definition.is_mapping:
             property_key = "files"
@@ -561,10 +561,10 @@ class SchemaCreator:
                         value = get_json_schema_formatted_examples(cast("list[Example]", value))
 
                     # we only want to transfer values from the `KwargDefinition` to `Schema` if the schema object
-                    # doesn't already have a value for that property. For example, if a field is a constrained date,
+                    # does not already have a value for that property. For example, if a field is a constrained date,
                     # by this point, we have already set the `exclusive_minimum` and/or `exclusive_maximum` fields
                     # to floating point timestamp values on the schema object. However, the original `date` objects
-                    # that define those constraints on `KwargDefinition` are still `date` objects. We don't want to
+                    # that define those constraints on `KwargDefinition` are still `date` objects. We do not want to
                     # overwrite them here.
                     if getattr(schema, schema_key, None) is None:
                         setattr(schema, schema_key, value)

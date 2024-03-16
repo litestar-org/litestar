@@ -85,7 +85,7 @@ def url_quote(value: str | bytes) -> str:
 
 
 def unique_name_for_scope(base_name: str, scope: Container[str]) -> str:
-    """Create a name derived from ``base_name`` that's unique within ``scope``"""
+    """Create a name derived from ``base_name`` that is unique within ``scope``"""
     i = 0
     while True:
         if (unique_name := f"{base_name}_{i}") not in scope:

@@ -45,7 +45,7 @@ Our ``User`` model will now look like this:
            """Determines whether the user is an admin user"""
            return self.role == UserRole.ADMIN
 
-Given that the User model has a "role" property we can use it to authorize a request. Let's create a guard that only
+Given that the User model has a "role" property we can use it to authorize a request. Let us create a guard that only
 allows admin users to access certain route handlers and then add it to a route handler function:
 
 .. code-block:: python
@@ -133,7 +133,7 @@ The route handler "opt" key
 Occasionally there might be a need to set some values on the route handler itself - these can be permissions, or some
 other flag. This can be achieved with :ref:`the opts kwarg <handler_opts>` of route handler
 
-To illustrate this lets say we want to have an endpoint that is guarded by a "secret" token, to which end we create
+To illustrate this let us say we want to have an endpoint that is guarded by a "secret" token, to which end we create
 the following guard:
 
 .. code-block:: python

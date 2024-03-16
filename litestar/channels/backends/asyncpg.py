@@ -76,7 +76,7 @@ class AsyncPgChannelsBackend(ChannelsBackend):
         while True:
             channel, message = await self._queue.get()
             self._queue.task_done()
-            # an UNLISTEN may be in transit while we're getting here, so we double-check
+            # an UNLISTEN may be in transit while we are getting here, so we double-check
             # that we are actually supposed to deliver this message
             if channel in self._subscribed_channels:
                 yield channel, message

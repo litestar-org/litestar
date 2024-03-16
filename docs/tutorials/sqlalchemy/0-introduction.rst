@@ -6,7 +6,7 @@ SQLAlchemy in the manner described by the
 `SQLAlchemy documentation <https://docs.sqlalchemy.org/en/20/orm/extensions/asyncio.html#synopsis-orm>`_, and so if you
 are looking for more information about any of the SQLAlchemy code, this will be a great place to start.
 
-You'll notice that we use a couple of Litestar features that you may not have encountered yet:
+You Willll notice that we use a couple of Litestar features that you may not have encountered yet:
 
 1. Management and injection of :ref:`application state <application-state>`
 2. Use of a :ref:`Lifespan context manager <lifespan-context-managers>`
@@ -22,7 +22,7 @@ The full app
 While it may look imposing, this app only has minor behavioral differences to the previous example. It is still an app
 that maintains a TODO list, that allows for adding, updating and viewing the collection of TODO items.
 
-Don't worry if there are things in this example that you don't understand. We will cover all of the components in detail
+Do not worry if there are things in this example that you do not understand. We will cover all of the components in detail
 in the following sections.
 
 .. literalinclude::
@@ -116,7 +116,7 @@ to what we would expect from a conventional API.
 Next steps
 ==========
 
-Lets start cleaning this app up a little.
+Now we can start cleaning this app up a little.
 
 One of the standout issues is that we repeat the logic to create a database session in every handler. This is
 something that we can fix with dependency injection.

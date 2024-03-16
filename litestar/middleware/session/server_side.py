@@ -174,7 +174,7 @@ class ServerSideSessionConfig(BaseBackendConfig[ServerSideSessionBackend]):  # p
     session_id_bytes: int = field(default=32)
     """Number of bytes used to generate a random session-ID."""
     renew_on_access: bool = field(default=False)
-    """Renew expiry times of sessions when they're being accessed"""
+    """Renew expiry times of sessions when they are being accessed"""
     key: str = field(default="session")
     """Key to use for the cookie inside the header, e.g. ``session=<data>`` where ``session`` is the cookie key and
     ``<data>`` is the session data.

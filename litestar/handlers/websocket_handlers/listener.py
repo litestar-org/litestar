@@ -255,7 +255,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         )
 
     def _validate_handler_function(self) -> None:
-        """Validate the route handler function once it's set by inspecting its return annotations."""
+        """Validate the route handler function once it is set by inspecting its return annotations."""
         # validation occurs in the call method
 
     @property

@@ -103,13 +103,13 @@ The ``ChannelsPlugin``
 .. currentmodule:: litestar.channels.plugin
 
 The :class:`ChannelsPlugin` acts as the central entity for managing channels and
-subscribers. It's used to publish messages, control how data is stored, and manage
+subscribers. It is used to publish messages, control how data is stored, and manage
 subscribers, route handlers, and configuration.
 
 
 .. tip::
     The plugin makes itself available as a dependency under the ``channels`` key, which
-    means it's not necessary to import it and instead, it can be used from within route
+    means it is not necessary to import it and instead, it can be used from within route
     handlers or other callables within the dependency tree directly
 
 
@@ -160,7 +160,7 @@ This method is non-blocking, even though channels and the associated
 :term:`backends <backend>` are fundamentally asynchronous.
 
 Calling ``publish`` effectively enqueues a message to be sent to the backend, from which
-follows that there's no guarantee that an event will be available in the backend
+follows that there is no guarantee that an event will be available in the backend
 immediately after this call.
 
 Alternatively, the asynchronous :meth:`wait_published <ChannelsPlugin.wait_published>`
@@ -287,7 +287,7 @@ provides two methods to handle this stream:
     exits with an error, the task will be cancelled instead.
 
     .. tip::
-        It's possible to force the task to stop immediately, by passing ``join=False`` to
+        It is possible to force the task to stop immediately, by passing ``join=False`` to
         :meth:`run_in_background <Subscriber.run_in_background>`, which will
         lead to the cancellation of the task. By default this only happens when the context is
         left with an exception.
@@ -352,7 +352,7 @@ Managing backpressure
 
 Each subscriber manages its own backlog: A queue of unprocessed :term:`events <event>`.
 By default, this backlog is unlimited in size, allowing it to grow indefinitely. For
-most applications, this should be no issue, but when the recipient consistently can't
+most applications, this should be no issue, but when the recipient consistently can not
 process messages faster than they come in, an application might opt to handle this case.
 
 The channels plugin provides two different strategies for managing this backpressure:

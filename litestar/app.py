@@ -113,7 +113,7 @@ DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Litestar API", version="1.0.0")
 class HandlerIndex(TypedDict):
     """Map route handler names to a mapping of paths + route handler.
 
-    It's returned from the 'get_handler_index_by_name' utility method.
+    It is returned from the 'get_handler_index_by_name' utility method.
     """
 
     paths: list[str]
@@ -768,7 +768,7 @@ class Litestar(Router):
                     component.type not in allow_str_instead or not isinstance(val, str)
                 ):
                     raise NoRouteMatchFoundException(
-                        f"Received type for path parameter {component.name} doesn't match declared type {component.type}"
+                        f"Received type for path parameter {component.name} does not match declared type {component.type}"
                     )
                 output.append(str(val))
             else:

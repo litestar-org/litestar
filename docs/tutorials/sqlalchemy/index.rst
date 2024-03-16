@@ -16,8 +16,8 @@ Install SQLAlchemy
 To follow this tutorial, you will need SQLAlchemy installed. You can install it with ``pip install 'sqlalchemy[aiosqlite]'``, or let
 Litestar install it for you by installing the ``sqlalchemy`` extra (e.g., ``pip install 'litestar[standard,sqlalchemy]' aiosqlite``).
 
-What's in this tutorial?
-========================
+What is in this tutorial?
+=========================
 
 This tutorial builds on the `TODO app tutorial <../todo-app>`_ by adding a database backend using
 `SQLAlchemy <https://www.sqlalchemy.org/>`_.

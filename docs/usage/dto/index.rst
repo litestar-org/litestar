@@ -43,7 +43,7 @@ The following is a short summary of the interaction between each of the particip
 
 Data moves between each of the participants in the DTO chart, and as it does so, different actions are performed on the
 data, and it takes different forms depending on the direction of data transfer, and the participants on either end of
-the transfer. Lets take a look at each of these data movements:
+the transfer. Now we can take a look at each of these data movements:
 
 Client → Litestar → DTO
 ~~~~~~~~~~~~~~~~~~~~~~~~~

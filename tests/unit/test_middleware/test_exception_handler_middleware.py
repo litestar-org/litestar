@@ -354,7 +354,7 @@ def test_get_debug_from_scope(get_logger: "GetLogger", caplog: "LogCaptureFixtur
 def test_get_symbol_name_where_type_doesnt_support_bool() -> None:
     class Test:
         def __bool__(self) -> bool:
-            raise TypeError("This type doesn't support bool")
+            raise TypeError("This type does not support bool")
 
         def method(self) -> None:
             raise RuntimeError("Oh no!")

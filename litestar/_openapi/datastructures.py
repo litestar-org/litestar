@@ -150,7 +150,7 @@ class SchemaRegistry:
                 self.set_reference_paths(name_, registered_schema)
                 components_schemas[name_] = registered_schema.schema
 
-        # Sort them by name to ensure they're always generated in the same order.
+        # Sort them by name to ensure they are always generated in the same order.
         return {name: components_schemas[name] for name in sorted(components_schemas.keys())}
 
 

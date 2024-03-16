@@ -70,7 +70,7 @@ class AbstractDTO(Generic[T]):
         if field_definition.is_forward_ref:
             raise InvalidAnnotationException("Forward references are not supported as type argument to DTO")
 
-        # if a configuration is not provided, and the type narrowing is a type var, we don't want to create a subclass
+        # if a configuration is not provided, and the type narrowing is a type var, we do not want to create a subclass
         config = cls.get_dto_config_from_annotated_type(field_definition)
 
         if not config:

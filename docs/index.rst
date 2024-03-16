@@ -279,7 +279,7 @@ Philosophy
   OOP, by placing **class-based controllers** at its core.
 - Litestar is **not** a microframework. Unlike frameworks such as FastAPI, Starlette, or Flask, Litestar includes a lot
   of functionalities out of the box needed for a typical modern web application, such as ORM integration,
-  client- and server-side sessions, caching, OpenTelemetry integration, and many more. It's not aiming to be "the next
+  client- and server-side sessions, caching, OpenTelemetry integration, and many more. It is not aiming to be "the next
   Django" (for example, it will never feature its own ORM), but its scope is not micro either.
 
 

@@ -39,7 +39,7 @@ Built-in stores
     :class: info
 
     Memcached is not a supported backend, and will likely also not be added in the future. The reason for this is simply
-    that it's hard to support memcached properly, since it's missing a lot of basic functionality like checking a key's
+    that it is hard to support memcached properly, since it is missing a lot of basic functionality like checking a key's
     expiry time, or something like Redis' `SCAN <https://redis.io/commands/scan/>`_ command, which allows to implement
     pattern-based deletion of keys.
 
@@ -76,7 +76,7 @@ which a stored value should expire.
 .. note::
     It is up to the individual store to decide how to handle expired values, and implementations may differ. The
     :class:`redis based store <.redis.RedisStore>` for example uses Redis' native expiry mechanism to handle this,
-    while the :class:`FileStore <.file.FileStore>` only deletes expired values when they're trying to be accessed,
+    while the :class:`FileStore <.file.FileStore>` only deletes expired values when they are trying to be accessed,
     or explicitly deleted via the :meth:`delete_expired <.file.FileStore.delete_expired>` method.
 
 
@@ -95,7 +95,7 @@ deleted automatically. Instead, it will only happen when the data is being acces
 explicitly via :meth:`MemoryStore.delete_expired <.memory.MemoryStore.delete_expired>` or
 :meth:`FileStore.delete_expired <.file.FileStore.delete_expired>` respectively.
 
-It's a good practice to call ``delete_expired`` periodically, to ensure the size of the stored values does not grow
+It is a good practice to call ``delete_expired`` periodically, to ensure the size of the stored values does not grow
 indefinitely.
 
 In this example, an :ref:`after_response <after_response>` handler is used to delete expired items at most every 30
@@ -132,7 +132,7 @@ to store a very wide variety of data.
 .. admonition:: Technical details
 
     :class:`MemoryStore <.memory.MemoryStore>` differs from this, because it does not do any encoding before storing
-    the value. This means that it's technically possible to store arbitrary objects in this store, and get the same
+    the value. This means that it is technically possible to store arbitrary objects in this store, and get the same
     object back. However, this is not reflected in the store's typing, as the underlying :class:`Store <.base.Store>`
     interface does not guarantee this behaviour, and it is not guaranteed that
     :class:`MemoryStore <.memory.MemoryStore>` will always behave in this case.
@@ -211,7 +211,7 @@ The default factory
 +++++++++++++++++++
 
 The pattern above is made possible by using the registry's default factory; A callable that gets invoked
-every time a store is requested that hasn't been registered yet. It's similar to the ``default`` argument to
+every time a store is requested that has not been registered yet. It is similar to the ``default`` argument to
 :meth:`dict.get`.
 
 By default, the default factory is a function that returns a new
@@ -266,4 +266,4 @@ Store lifetime
 
 Stores may not be automatically closed when the application is shut down.
 This is the case in particular for the RedisStore if you are not using the class method :meth:`RedisStore.with_client <.redis.RedisStore.with_client>` and passing in your own Redis instance.
-In this case you're responsible to close the Redis instance yourself.
+In this case you are responsible to close the Redis instance yourself.

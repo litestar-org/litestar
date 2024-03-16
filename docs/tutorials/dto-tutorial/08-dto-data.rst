@@ -1,7 +1,7 @@
 Accessing the data
 ------------------
 
-Sometimes, it doesn't make sense for data to be immediately parsed into an instance of the target class. We just saw an
+Sometimes, it does not make sense for data to be immediately parsed into an instance of the target class. We just saw an
 example of this in the previous section, :ref:`read-only-fields`. When required fields are excluded from, or do not
 exist in the client submitted data we will get an error upon instantiation of the class.
 
@@ -35,5 +35,5 @@ And our app is back to a working state:
 
     See :ref:`dto-create-instance-nested-data` for more information.
 
-The :class:`DTOData <litestar.dto.data_structures.DTOData>` type has some other useful methods, and we'll take a look at those
+The :class:`DTOData <litestar.dto.data_structures.DTOData>` type has some other useful methods, and we will take a look at those
 in the next section: :ref:`updating`.

@@ -253,7 +253,7 @@ class TransferFunctionFactory:
         """
         value_expr = f"{source_name}['{field_name}']"
 
-        # if we expect an optional item, it's faster to check if it exists beforehand
+        # if we expect an optional item, it is faster to check if it exists beforehand
         if expect_optional:
             with self._start_block(f"if '{field_name}' in {source_name}:"):
                 yield value_expr
@@ -273,7 +273,7 @@ class TransferFunctionFactory:
 
         value_expr = f"{source_name}.{field_name}"
 
-        # if we expect an optional attribute it's faster to check with hasattr
+        # if we expect an optional attribute it is faster to check with hasattr
         if expect_optional:
             with self._start_block(f"if hasattr({source_name}, '{field_name}'):"):
                 yield value_expr
@@ -388,7 +388,7 @@ class TransferFunctionFactory:
 
         if field_definitions := tuple(f for f in field_definitions if self.is_data_field or not f.is_excluded):
             if len(field_definitions) > 1 and ("." in source_instance_name or "[" in source_instance_name):
-                # If there's more than one field we have to access, we check if it is
+                # If there is more than one field we have to access, we check if it is
                 # nested. If it is nested, we assign it to a local variable to avoid
                 # repeated lookups. This is only a small performance improvement for
                 # regular attributes, but can be quite significant for properties or

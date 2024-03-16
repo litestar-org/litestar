@@ -303,7 +303,7 @@ html_theme_options = {
             },
         },
         "Release notes": {
-            "What's new in 2.0": "release-notes/whats-new-2",
+            "What is new in 2.0": "release-notes/whats-new-2",
             "2.x Changelog": "https://docs.litestar.dev/2/release-notes/changelog.html",
             "1.x Changelog": "https://docs.litestar.dev/1/release-notes/changelog.html",
         },

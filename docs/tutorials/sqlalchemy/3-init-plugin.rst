@@ -1,7 +1,7 @@
 Using the init plugin
 ---------------------
 
-In our example application, we've seen that we need to manage the database engine within the scope of the application's
+In our example application, we have seen that we need to manage the database engine within the scope of the application's
 lifespan, and the session within the scope of a request. This is a common pattern, and the
 :class:`SQLAlchemyInitPlugin <litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin>` plugin provides assistance for
 this.
@@ -31,4 +31,4 @@ dependency provider, instead of creating our own session.
 Next steps
 ==========
 
-Next up, we'll make one final change to our application, and then we'll be recap!
+Next up, we will make one final change to our application, and then we will be recap!

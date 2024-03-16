@@ -42,7 +42,7 @@ Litestar supports the following strategies:
     You can also define your own strategies by passing a callable that receives the field name, and returns the new
     field name to the ``rename_strategy`` config.
 
-Let's modify our example to use the ``upper`` strategy:
+Let us modify our example to use the ``upper`` strategy:
 
 .. literalinclude:: /examples/data_transfer_objects/factory/tutorial/field_renaming_strategy.py
    :language: python

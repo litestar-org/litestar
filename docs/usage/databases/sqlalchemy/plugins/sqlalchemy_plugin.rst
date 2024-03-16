@@ -87,7 +87,7 @@ Next, we set up an API endpoint at the root  (``"/"``)  that allows adding a ``T
 Initializing the Database
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-We create a function ``init_db`` that we'll use to initialize the database when the app starts up.
+We create a function ``init_db`` that we will use to initialize the database when the app starts up.
 
 .. important::
 

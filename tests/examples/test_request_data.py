@@ -82,9 +82,9 @@ def test_request_data_8() -> None:
 
 def test_request_data_9() -> None:
     with TestClient(app=app_9) as client:
-        response = client.post("/", files={"hello": b"there", "i'm": "steve"})
+        response = client.post("/", files={"hello": b"there", "i am": "steve"})
         assert response.status_code == 201
-        assert response.json() == {"hello": "there", "i'm": "steve"}
+        assert response.json() == {"hello": "there", "i am": "steve"}
 
 
 def test_request_data_10() -> None:

@@ -49,7 +49,7 @@ def test_get_fn_type_hints(fn: Any) -> None:
 
 
 def test_get_fn_type_hints_class_no_init() -> None:
-    """Test that get_fn_type_hints works with classes that don't have an __init__ method.
+    """Test that get_fn_type_hints works with classes that do not have an __init__ method.
 
     Ref: https://github.com/litestar-org/litestar/issues/1504
     """

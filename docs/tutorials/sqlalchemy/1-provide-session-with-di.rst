@@ -5,7 +5,7 @@ Providing the session with DI
 In our original script, we had to repeat the logic to construct a session instance for every request type. This is not
 very `DRY <https://en.wikipedia.org/wiki/Don%27t_repeat_yourself>`_.
 
-In this section, we'll use dependency injection to centralize the session creation logic and make it available to all
+In this section, we will use dependency injection to centralize the session creation logic and make it available to all
 handlers.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_session_di.py
@@ -43,8 +43,8 @@ This is automatically provided by Litestar's dependency injection system at runt
     :emphasize-lines: 2
 
 One final improvement in this script is exception handling. In the previous version, a
-:class:`litestar.exceptions.ClientException` is raised inside the ``add_item()`` handler if there's an integrity error
-raised during the insertion of the new TODO item. In our latest revision, we've been able to centralize this handling
+:class:`litestar.exceptions.ClientException` is raised inside the ``add_item()`` handler if there is an integrity error
+raised during the insertion of the new TODO item. In our latest revision, we have been able to centralize this handling
 to occur inside the ``provide_transaction()`` function.
 
 .. literalinclude:: /examples/contrib/sqlalchemy/plugins/tutorial/full_app_with_session_di.py
@@ -59,7 +59,7 @@ insertion of new items.
 Compare handlers before and after DI
 ====================================
 
-Just for fun, lets compare the sets of application handlers before and after we introduced dependency injection for our
+Just for fun, let us compare the sets of application handlers before and after we introduced dependency injection for our
 session object:
 
 .. tab-set::
@@ -83,6 +83,6 @@ Much better!
 Next steps
 ==========
 
-One of the niceties that we've lost is the ability to receive and return data to/from our handlers as instances of our
+One of the niceties that we have lost is the ability to receive and return data to/from our handlers as instances of our
 data model. In the original TODO application, we modelled with Python dataclasses which are natively supported for
 (de)serialization by Litestar. In the next section, we will look at how we can get this functionality back!

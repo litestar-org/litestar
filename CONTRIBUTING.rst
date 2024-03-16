@@ -18,7 +18,7 @@ Setting up the environment
 1. Install `PDM <https://pdm.fming.dev/latest/>`_
 2. Run ``pdm install`` or ``make install`` to create a
    `virtual environment <https://docs.python.org/3/tutorial/venv.html>`_ and install the required development dependencies
-3. If you're working on the documentation and need to build it locally, install the extra dependencies
+3. If you are working on the documentation and need to build it locally, install the extra dependencies
    with ``pdm install -G:docs`` or ``make docs-install``
 4. Install `pre-commit <https://pre-commit.com/>`_
 5. Run ``pre-commit install --install-hooks`` or ``make install`` to install pre-commit hooks
@@ -62,18 +62,18 @@ Guidelines for writing code
     Check ``litestar/types`` if a type alias for your use case already exists
   * If something cannot be typed correctly due to a limitation of the type checkers, you may use
     `typing.cast <https://docs.python.org/3/library/typing.html#typing.cast>`_ to rectify the situation. However, you
-    should only use as a last resort if you've exhausted all other options of
+    should only use as a last resort if you have exhausted all other options of
     `type narrowing <https://mypy.readthedocs.io/en/stable/type_narrowing.html>`_, such as
     `isinstance() <https://docs.python.org/3/library/functions.html#isinstance>`_ checks and
     `type guards <https://docs.python.org/3/library/typing.html#typing.TypeGuard>`_
-  * You may use ``type: ignore`` if you ensured that a line is correct, but mypy / pyright has issues with it. Don't use
+  * You may use ``type: ignore`` if you ensured that a line is correct, but mypy / pyright has issues with it. Do not use
     blank ``type: ignore`` though, and instead supply the specific error code, e.g. ``type: ignore[attr-defined]``
 
-- If you are adding or modifying existing code, ensure that it's fully tested. 100% test coverage is mandatory, and will
+- If you are adding or modifying existing code, ensure that it is fully tested. 100% test coverage is mandatory, and will
   be checked on the PR using `SonarCloud <https://www.sonarsource.com/products/sonarcloud/>`_
 - All functions, methods, classes, and attributes should be documented with a docstring. We use the
   `Google docstring style <https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html>`_. If you come
-  across a function or method that doesn't conform to this standard, please update it as you go
+  across a function or method that does not conform to this standard, please update it as you go
 - When adding a new public interface, it has to be  included in the reference documentation located in
   ``docs/reference``. If applicable, add or modify examples in the docs related to the new functionality implemented,
   following the guidelines established in `Adding examples`_.
@@ -96,7 +96,7 @@ The ``Makefile`` includes several commands for running tests:
 The tests make use of `pytest-xdist <https://pytest-xdist.readthedocs.io>`_ to speed up
 test runs. These are enabled by default when running ``make test``, ``make test-all``
 or ``make coverage``. Due to the nature of pytest-xdist, attaching a debugger isn't as
-straightforward. For debugging, it's recommended to run the tests individually with
+straightforward. For debugging, it is recommended to run the tests individually with
 ``pytest <test name>`` or via an IDE, which will skip pytest-xdist.
 
 Running type checkers
@@ -116,7 +116,7 @@ Project documentation
 ---------------------
 
 The documentation is located in the ``/docs`` directory and is `reST <https://docutils.sourceforge.io/rst.html>`_ and
-`Sphinx <https://www.sphinx-doc.org/en/master/>`_. If you're unfamiliar with any of those,
+`Sphinx <https://www.sphinx-doc.org/en/master/>`_. If you are unfamiliar with any of those,
 `reStructuredText primer <https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html>`_ and
 `Sphinx quickstart <https://www.sphinx-doc.org/en/master/usage/quickstart.html>`_ are recommended reads.
 
@@ -183,7 +183,7 @@ comments will be stripped from the result, and the output of the ``curl`` invoca
 after the example code-block.
 
 The ``# run:`` syntax is nothing special; everything after the colon will be passed to
-the ``curl`` command that's being invoked. The URL is built automatically, so the
+the ``curl`` command that is being invoked. The URL is built automatically, so the
 specified path can just be a path relative to the app.
 
 In practice, this looks like the following:

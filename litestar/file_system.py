@@ -64,7 +64,7 @@ class FileSystemAdapter:
         self.file_system = file_system
 
     async def info(self, path: PathType) -> FileInfo:
-        """Proxies the call to the underlying FS Spec's ``info`` method, ensuring it's done in an async fashion and with
+        """Proxies the call to the underlying FS Spec's ``info`` method, ensuring it is done in an async fashion and with
         strong typing.
 
         Args:

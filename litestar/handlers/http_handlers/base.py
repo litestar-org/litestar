@@ -352,7 +352,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         for layer in self.ownership_layers:
             if layer_response_headers := layer.response_headers:
                 if isinstance(layer_response_headers, Mapping):
-                    # this can't happen unless you manually set response_headers on an instance, which would result in a
+                    # this cannot happen unless you manually set response_headers on an instance, which would result in a
                     # type-checking error on everything but the controller. We cover this case nevertheless
                     resolved_response_headers.update(
                         {name: ResponseHeader(name=name, value=value) for name, value in layer_response_headers.items()}
@@ -379,7 +379,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         for layer in reversed(self.ownership_layers):
             if layer_response_cookies := layer.response_cookies:
                 if isinstance(layer_response_cookies, Mapping):
-                    # this can't happen unless you manually set response_cookies on an instance, which would result in a
+                    # this cannot happen unless you manually set response_cookies on an instance, which would result in a
                     # type-checking error on everything but the controller. We cover this case nevertheless
                     response_cookies.update(
                         {Cookie(key=key, value=value) for key, value in layer_response_cookies.items()}
@@ -575,7 +575,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         if return_type.annotation is Empty:
             raise ImproperlyConfiguredException(
                 "A return value of a route handler function should be type annotated. "
-                "If your function doesn't return a value, annotate it as returning 'None'."
+                "If your function does not return a value, annotate it as returning 'None'."
             )
 
         if (

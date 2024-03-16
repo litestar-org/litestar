@@ -290,7 +290,7 @@ Another helper is the :class:`RequestFactory <litestar.testing.RequestFactory>` 
 you need to test logic that expects to receive a request object.
 
 For example, suppose we want to unit test a ``guard`` function in isolation.
-To illustrate this, we'll reuse the examples from the :doc:`route guards </usage/security/guards>` documentation:
+To illustrate this, we will reuse the examples from the :doc:`route guards </usage/security/guards>` documentation:
 
 .. code-block:: python
     :caption: Defining a guard function in ``my_app/guards.py`` that checks for a secret token

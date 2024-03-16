@@ -68,7 +68,7 @@ class CORSMiddleware(AbstractMiddleware):
                     headers["Access-Control-Allow-Origin"] = origin
                     headers["Vary"] = "Origin"
 
-                # We don't want to overwrite this for preflight requests.
+                # We do not want to overwrite this for preflight requests.
                 allow_headers = headers.get("Access-Control-Allow-Headers")
                 if not allow_headers and self.config.allow_headers:
                     headers["Access-Control-Allow-Headers"] = ", ".join(sorted(set(self.config.allow_headers)))

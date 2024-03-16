@@ -1,7 +1,7 @@
 Declaring DTOs on app layers
 -----------------------------
 
-So far we've seen DTO declared per handler. Let's have a look at a script that declares multiple handlers - something
+So far we have seen DTO declared per handler. Let us have a look at a script that declares multiple handlers - something
 more typical of a real application.
 
 .. literalinclude:: /examples/data_transfer_objects/factory/tutorial/multiple_handlers.py
@@ -9,7 +9,7 @@ more typical of a real application.
    :linenos:
 
 DTOs can be defined on any :ref:`layer <layered-architecture>` of the application which gives us a chance to tidy up our
-code a bit. Let's move the handlers into a controller and define the DTOs there.
+code a bit. Let us move the handlers into a controller and define the DTOs there.
 
 .. literalinclude:: /examples/data_transfer_objects/factory/tutorial/controller.py
    :language: python

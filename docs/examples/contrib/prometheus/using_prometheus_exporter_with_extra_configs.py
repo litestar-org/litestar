@@ -10,7 +10,7 @@ class CustomPrometheusController(PrometheusController):
     openmetrics_format = True
 
 
-# Let's assume this as our extra custom labels which we want our metrics to have.
+# Let us assume this as our extra custom labels which we want our metrics to have.
 # The values can be either a string or a callable that returns a string.
 def custom_label_callable(request: Request[Any, Any, Any]) -> str:
     return "v2.0"

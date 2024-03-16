@@ -64,7 +64,7 @@ class MemoryStore(Store):
                 return None
 
             if renew_for and storage_obj.expires_at:
-                # don't use .set() here, so we can hold onto the lock for the whole operation
+                # do not use .set() here, so we can hold onto the lock for the whole operation
                 storage_obj = StorageObject.new(data=storage_obj.data, expires_in=renew_for)
                 self._store[key] = storage_obj
 

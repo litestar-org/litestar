@@ -76,7 +76,7 @@ This method accepts a :class:`FieldDefinition <litestar.typing.FieldDefinition>`
 the type.
 
 During application startup, if a data or return annotation is encountered that is not a supported type, is supported by
-the plugin, and doesn't otherwise have a ``dto`` or ``return_dto`` defined, the plugin is used to create a DTO type for
+the plugin, and does not otherwise have a ``dto`` or ``return_dto`` defined, the plugin is used to create a DTO type for
 that annotation.
 
 Example

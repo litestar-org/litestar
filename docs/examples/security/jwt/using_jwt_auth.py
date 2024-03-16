@@ -10,7 +10,7 @@ from litestar.openapi.config import OpenAPIConfig
 from litestar.security.jwt import JWTAuth, Token
 
 
-# Let's assume we have a User model that is a pydantic model.
+# Let us assume we have a User model that is a pydantic model.
 # This though is not required - we need some sort of user class -
 # but it can be any arbitrary value, e.g. an SQLAlchemy model, a representation of a MongoDB  etc.
 class User(BaseModel):

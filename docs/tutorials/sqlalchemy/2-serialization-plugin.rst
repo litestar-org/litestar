@@ -12,16 +12,16 @@ Here's the code:
     :linenos:
     :emphasize-lines: 11,76-77,82-83,88,90-91,98
 
-We've simply imported the plugin and added it to our app's plugins list, and now we can receive and return our
+We have simply imported the plugin and added it to our app's plugins list, and now we can receive and return our
 SQLAlchemy data models directly to and from our handler.
 
-We've also been able to remove the ``TodoType`` and ``TodoCollectionType`` aliases, and the ``serialize_todo()``
+We have also been able to remove the ``TodoType`` and ``TodoCollectionType`` aliases, and the ``serialize_todo()``
 function, making the implementation even more concise.
 
 Compare handlers before and after Serialization Plugin
 ======================================================
 
-Once more, let's compare the sets of application handlers before and after our refactoring:
+Once more, let us compare the sets of application handlers before and after our refactoring:
 
 .. tab-set::
 
@@ -44,8 +44,8 @@ Very nice! But, we can do better.
 Next steps
 ==========
 
-In our application, we've had to build a bit of scaffolding to integrate SQLAlchemy with our application. We've had to
+In our application, we have had to build a bit of scaffolding to integrate SQLAlchemy with our application. We have had to
 define the ``db_connection()`` lifespan context manager, and the ``provide_transaction()`` dependency provider.
 
-Next we'll look at how the :class:`SQLAlchemyInitPlugin <litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin>` can
+Next we will look at how the :class:`SQLAlchemyInitPlugin <litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin>` can
 help us.

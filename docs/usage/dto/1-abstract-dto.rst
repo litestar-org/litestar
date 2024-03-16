@@ -31,7 +31,7 @@ However, we do have some issues with the above example. Firstly, the user's pass
 response from the handler. Secondly, the user is able to set the ``created_at`` field on the model, which should only
 ever be set once, and defined internally.
 
-Let's explore how we can configure DTOs to manage scenarios like these.
+Let us explore how we can configure DTOs to manage scenarios like these.
 
 .. _dto-marking-fields:
 
@@ -171,7 +171,7 @@ an instance of our data model.
 In the following example, we create a ``Person`` model, that is a :func:`dataclass <dataclasses.dataclass>` with 3
 required fields, ``id``, ``name``, and ``age``.
 
-We also create a DTO that doesn't allow clients to set the ``id`` field on the ``Person`` model and set it on the
+We also create a DTO that does not allow clients to set the ``id`` field on the ``Person`` model and set it on the
 handler.
 
 .. literalinclude:: /examples/data_transfer_objects/factory/dto_data_problem_statement.py
@@ -195,7 +195,7 @@ type of the data that it will contain, and provides useful methods for interacti
     :emphasize-lines: 7,25,27
     :linenos:
 
-In the above example, we've injected an instance of :class:`DTOData <litestar.dto.data_structures.DTOData>` into our handler,
+In the above example, we have injected an instance of :class:`DTOData <litestar.dto.data_structures.DTOData>` into our handler,
 and have used that to create our ``Person`` instance, after augmenting the client data with a server generated ``id``
 value.
 
@@ -219,7 +219,7 @@ nested model with excluded fields.
 
 The double-underscore syntax ``address__id`` passed as a keyword argument to the
 :meth:`create_instance() <litestar.dto.data_structures.DTOData.create_instance>` method call is used to specify a value for a
-nested attribute. In this case, it's used to provide a value for the ``id`` attribute of the ``Address`` instance nested
+nested attribute. In this case, it is used to provide a value for the ``id`` attribute of the ``Address`` instance nested
 within the ``Person`` instance.
 
 This is a common convention in Python for dealing with nested structures. The double underscore can be interpreted as
@@ -272,7 +272,7 @@ This can be overridden by setting the
 Wrapping Return Data
 --------------------
 
-Litestar's DTO Factory types are versatile enough to manage your data, even when it's nested within generic wrappers.
+Litestar's DTO Factory types are versatile enough to manage your data, even when it is nested within generic wrappers.
 
 The following example demonstrates a route handler that returns DTO managed data wrapped in a generic type. The
 wrapper is used to deliver additional metadata about the response - in this case, a count of the number of items
@@ -302,7 +302,7 @@ should describe an instance attribute that will be populated with the data.
        data: List[T]
 
 
-Now, create a DTO for your data object and configure it using ``DTOConfig``. In this example, we're excluding
+Now, create a DTO for your data object and configure it using ``DTOConfig``. In this example, we are excluding
 ``password`` and ``created_at`` from the final output.
 
 .. code-block:: python
@@ -356,7 +356,7 @@ Litestar offers paginated response wrapper types, and DTO Factory types can hand
     :language: python
     :linenos:
 
-The DTO is defined and configured, in our example, we're excluding ``password`` and ``created_at`` fields from the final
+The DTO is defined and configured, in our example, we are excluding ``password`` and ``created_at`` fields from the final
 representation of our users.
 
 .. code-block:: python

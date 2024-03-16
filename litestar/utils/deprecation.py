@@ -86,7 +86,7 @@ def deprecated(
         info: Additional information
         pending: Use ``PendingDeprecationWarning`` instead of ``DeprecationWarning``
         kind: Type of the deprecated callable. If ``None``, will use ``inspect`` to figure
-            out if it's a function or method
+            out if it is a function or method
 
     Returns:
         A decorator wrapping the function call with a warning

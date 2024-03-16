@@ -188,7 +188,7 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
         return self._find_or_raise_not_found(item_id)
 
     async def get_or_create(self, match_fields: list[str] | str | None = None, **kwargs: Any) -> tuple[ModelT, bool]:
-        """Get instance identified by ``kwargs`` or create if it doesn't exist.
+        """Get instance identified by ``kwargs`` or create if it does not exist.
 
         Args:
             match_fields: a list of keys to use to match the existing model.  When empty, all fields are matched.
@@ -302,7 +302,7 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
         """Update or create instance.
 
         Updates instance with the attribute values present on ``data``, or creates a new instance if
-        one doesn't exist.
+        one does not exist.
 
         Args:
             data: Instance to update existing, or be created. Identifier used to determine if an
@@ -324,7 +324,7 @@ class GenericAsyncMockRepository(AbstractAsyncRepository[ModelT], Generic[ModelT
         """Update or create multiple instance.
 
         Update instance with the attribute values present on ``data``, or create a new instance if
-        one doesn't exist.
+        one does not exist.
 
         Args:
             data: List of instances to update existing, or be created. Identifier used to determine if an
@@ -567,7 +567,7 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
         return self._find_or_raise_not_found(item_id)
 
     def get_or_create(self, match_fields: list[str] | str | None = None, **kwargs: Any) -> tuple[ModelT, bool]:
-        """Get instance identified by ``kwargs`` or create if it doesn't exist.
+        """Get instance identified by ``kwargs`` or create if it does not exist.
 
         Args:
             match_fields: a list of keys to use to match the existing model.  When empty, all fields are matched.
@@ -680,7 +680,7 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
         """Update or create instance.
 
         Updates instance with the attribute values present on ``data``, or creates a new instance if
-        one doesn't exist.
+        one does not exist.
 
         Args:
             data: Instance to update existing, or be created. Identifier used to determine if an
@@ -700,7 +700,7 @@ class GenericSyncMockRepository(AbstractSyncRepository[ModelT], Generic[ModelT])
         """Update or create multiple instance.
 
         Update instance with the attribute values present on ``data``, or create a new instance if
-        one doesn't exist.
+        one does not exist.
 
         Args:
             data: List of instances to update existing, or be created. Identifier used to determine if an

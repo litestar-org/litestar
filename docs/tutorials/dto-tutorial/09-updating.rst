@@ -3,7 +3,7 @@
 Updating instances
 ------------------
 
-In this section we'll see how to update existing instances using :class:`DTOData <litestar.dto.data_structures.DTOData>`.
+In this section we will see how to update existing instances using :class:`DTOData <litestar.dto.data_structures.DTOData>`.
 
 PUT handlers
 ============

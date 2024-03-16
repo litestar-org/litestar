@@ -75,7 +75,7 @@ def merge_parameter_sets(first: set[ParameterDefinition], second: set[ParameterD
     result: set[ParameterDefinition] = first.intersection(second)
     difference = first.symmetric_difference(second)
     for param in difference:
-        # add the param if it's either required or no-other param in difference is the same but required
+        # add the param if it is either required or no-other param in difference is the same but required
         if param.is_required or not any(p.field_alias == param.field_alias and p.is_required for p in difference):
             result.add(param)
     return result

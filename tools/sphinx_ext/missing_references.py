@@ -65,7 +65,7 @@ def on_warn_missing_reference(app: Sphinx, domain: str, node: Node) -> bool | No
             # for reference
             return True
 
-    # for various other autodoc issues that can't be resolved automatically, we check the exact path to be able
+    # for various other autodoc issues that cannot be resolved automatically, we check the exact path to be able
     # to suppress specific warnings
     source_line = get_source_line(node)[0]
     source = source_line.split(" ")[-1]

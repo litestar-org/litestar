@@ -11,7 +11,7 @@ Data Transfer Object Tutorial
     `Developing a basic TODO application <../todo-app>`_ tutorial.
 
 In this tutorial, we will walk through the process of modelling a simple data structure, and demonstrate how Litestar's
-DTO factories can be used to help us build flexible applications. Lets get started!
+DTO factories can be used to help us build flexible applications. Now we can get started!
 
 .. literalinclude:: /examples/data_transfer_objects/factory/tutorial/initial_pattern.py
     :language: python
@@ -33,7 +33,7 @@ In Litestar, this pattern works "out-of-the-box" - that is, returning :func:`dat
 instances from handlers is natively supported. Litestar will take that dataclass instance, and transform it into
 :class:`bytes` that can be sent over the network.
 
-Lets run it and see for ourselves!
+Now we can run it and see for ourselves!
 
 Save the above script as ``app.py``, run it using the ``litestar run`` command, and then visit
 `<http://localhost:8000/person/peter>`_ in your browser. You should see the

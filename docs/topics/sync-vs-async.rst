@@ -3,7 +3,7 @@ Sync vs. Async
 
 
 Litestar supports synchronous as well as asynchronous callables in almost all places
-where it's possible to do so. In general, three different modes of execution are
+where it is possible to do so. In general, three different modes of execution are
 supported:
 
 - Running asynchronous callables directly
@@ -62,11 +62,11 @@ I/O bound
 
 CPU bound
     Operations that do not wait on I/O can be usually considered CPU bound. Since they
-    don't wait for external resources, their execution speed is bound to the CPU, i.e.
+    do not wait for external resources, their execution speed is bound to the CPU, i.e.
     how fast it can execute the instructions given.
 
     They do not benefit from asynchronous execution like I/O bound tasks, since they
-    don't spend a significant amount of time waiting.
+    do not spend a significant amount of time waiting.
 
 
 Asynchronous CPU-bound tasks
@@ -91,7 +91,7 @@ operations, such as calling synchronous functions that are I/O bound.
 **Why not use async by default?**
 
 It might be tempting to look at this and think a function should be async by default,
-unless it's performing blocking operations synchronously, but this is not the case.
+unless it is performing blocking operations synchronously, but this is not the case.
 Async itself has an overhead attached to it which, while very small, can in some
 situations become non negligible. A synchronous function performing non-blocking
 operations will outperform an asynchronous function doing the same.
@@ -116,7 +116,7 @@ a thread pool.
 **Why not make this the default for synchronous functions?**
 
 Running in a thread pool has a very high overhead, greatly reducing an application's
-performance. Its use should therefore be restricted to cases where it's absolutely
+performance. Its use should therefore be restricted to cases where it is absolutely
 necessary.
 
 

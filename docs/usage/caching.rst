@@ -4,7 +4,7 @@ Caching
 Caching responses
 ------------------
 
-Sometimes it's desirable to cache some responses, especially if these involve expensive calculations, or when polling is
+Sometimes it is desirable to cache some responses, especially if these involve expensive calculations, or when polling is
 expected. Litestar comes with a simple mechanism for caching:
 
 .. code-block:: python

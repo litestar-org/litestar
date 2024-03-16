@@ -101,7 +101,7 @@ class CompressionMiddleware(AbstractMiddleware):
         bytes_buffer = BytesIO()
 
         facade: CompressionFacade
-        # We can't use `self.config.compression_facade` directly if the compression is `gzip` since
+        # We cannot use `self.config.compression_facade` directly if the compression is `gzip` since
         # it may be being used as a fallback.
         if compression_encoding == CompressionEncoding.GZIP:
             facade = GzipCompression(buffer=bytes_buffer, compression_encoding=compression_encoding, config=self.config)

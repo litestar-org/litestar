@@ -1,7 +1,7 @@
 Working with Controllers and Repositories
 -----------------------------------------
-We've been working our way up the stack, starting with the database models, and now we
-are ready to use the repository in an actual route.  Let's see how we can use this in a
+We have been working our way up the stack, starting with the database models, and now we
+are ready to use the repository in an actual route.  Let us see how we can use this in a
 controller.
 
 .. tip:: The full code for this tutorial can be found below in the :ref:`Full Code <03-repo-full-code>` section.
@@ -17,10 +17,10 @@ parameters.
     :lines: 78-80
     :linenos:
 
-Because we'll be using the SQLAlchemy plugin in Litestar, the session is automatically
+Because we will be using the SQLAlchemy plugin in Litestar, the session is automatically
 configured as a dependency.
 
-By default, the repository doesn't add any additional query options to your base
+By default, the repository does not add any additional query options to your base
 statement, but provides the flexibility to override it, allowing you to pass your own
 statement:
 
@@ -48,7 +48,7 @@ interacting with the ``Author`` model:
 In our list detail endpoint, we use the pagination filter for limiting the amount of
 data returned, allowing us to retrieve large datasets in smaller, more manageable chunks.
 
-In the above examples, we've used the asynchronous repository implementation. However,
+In the above examples, we have used the asynchronous repository implementation. However,
 Litestar also supports synchronous database drivers with an identical implementation.
 Here's a corresponding synchronous version of the previous example:
 
@@ -60,7 +60,7 @@ Here's a corresponding synchronous version of the previous example:
         :linenos:
 
 The examples above enable a feature-complete CRUD service that includes pagination! In
-the next section, we'll explore how to extend the built-in repository to add additional
+the next section, we will explore how to extend the built-in repository to add additional
 functionality to our application.
 
 .. _03-repo-full-code:

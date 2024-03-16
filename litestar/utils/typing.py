@@ -283,7 +283,7 @@ def _substitute_typevars(obj: Any, typevar_map: Mapping[Any, Any]) -> Any:
         return obj[args]
 
     if isinstance(obj, TypeVar):
-        # If there's a mapped type for the TypeVar already, then it should be returned instead
+        # If there is a mapped type for the TypeVar already, then it should be returned instead
         # of considering __constraints__ or __bound__. For a generic `Foo[T]`, if Foo[int] is given
         # then int should be returned and if `Foo` is given then the __bounds__ and __constraints__
         # should be considered.

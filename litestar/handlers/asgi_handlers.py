@@ -73,7 +73,7 @@ class ASGIRouteHandler(BaseRouteHandler):
         )
 
     def _validate_handler_function(self) -> None:
-        """Validate the route handler function once it's set by inspecting its return annotations."""
+        """Validate the route handler function once it is set by inspecting its return annotations."""
         super()._validate_handler_function()
 
         if not self.parsed_fn_signature.return_type.is_subclass_of(NoneType):

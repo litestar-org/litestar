@@ -26,7 +26,7 @@ application trusts. This attack often uses social engineering that tricks the vi
 maliciously crafted, unauthorized request for a particular Web application. The user’s browser then sends this
 maliciously crafted request to the targeted Web application. If the user is in an active session with the Web application,
 the application treats this new request as an authorized request submitted by the user. Thus, the attacker can force the
-user to perform an action the user didn't intend, for example:
+user to perform an action the user did not intend, for example:
 
 
 .. code-block:: text
@@ -135,7 +135,7 @@ Allowed Hosts
 -------------
 
 Another common security mechanism is to require that each incoming request has a "Host" or "X-Forwarded-Host" header,
-and then to restrict hosts to a specific set of domains - what's called "allowed hosts".
+and then to restrict hosts to a specific set of domains - what is called "allowed hosts".
 
 Litestar includes an :class:`AllowedHostsMiddleware <.middleware.allowed_hosts.AllowedHostsMiddleware>` class that can be
 easily enabled by either passing an instance of :class:`AllowedHostsConfig <.config.allowed_hosts.AllowedHostsConfig>` or a

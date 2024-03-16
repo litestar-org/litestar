@@ -44,7 +44,7 @@ follows:
 
        async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None: ...
 
-The ``__init__`` method receives and sets "app". *It's important to understand* that app is not an instance of Litestar in
+The ``__init__`` method receives and sets "app". *It is important to understand* that app is not an instance of Litestar in
 this case, but rather the next middleware in the stack, which is also an ASGI app.
 
 The ``__call__`` method makes this class into a ``callable``, i.e. once instantiated this class acts like a function, that
@@ -88,8 +88,8 @@ specifies:
 Responding using the MiddlewareProtocol
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Once a middleware finishes doing whatever its doing, it should pass ``scope``, ``receive``, and ``send`` to an ASGI app
-and await it. This is what's happening in the above example with: ``await self.app(scope, receive, send)``. Let's
+Once a middleware finishes doing whatever it is doing, it should pass ``scope``, ``receive``, and ``send`` to an ASGI app
+and await it. This is what is happening in the above example with: ``await self.app(scope, receive, send)``. Let us
 explore another example - redirecting the request to a different url from a middleware:
 
 .. code-block:: python
@@ -121,7 +121,7 @@ Modifying ASGI Requests and Responses using the MiddlewareProtocol
 
 .. important::
 
-    If you'd like to modify a :class:`Response <.response.Response>` object after it was created for a route
+    If you would like to modify a :class:`Response <.response.Response>` object after it was created for a route
     handler function but before the actual response message is transmitted, the correct place to do this is using the
     special life-cycle hook called :ref:`after_request <after_request>`. The instructions in this section are for how to
     modify the ASGI response message itself, which is a step further in the response process.
@@ -130,7 +130,7 @@ Using the :class:`MiddlewareProtocol <.middleware.base.MiddlewareProtocol>` you 
 incoming and outgoing data in a request / response cycle by "wrapping" that respective ``receive`` and ``send`` ASGI
 functions.
 
-To demonstrate this, lets say we want to append a header with a timestamp to all outgoing responses. We could achieve
+To demonstrate this, let us say we want to append a header with a timestamp to all outgoing responses. We could achieve
 this by doing the following:
 
 .. code-block:: python
@@ -219,7 +219,7 @@ Using DefineMiddleware to pass arguments
 ----------------------------------------
 
 Litestar offers a simple way to pass positional arguments (``*args``) and key-word arguments (``**kwargs``) to middleware
-using the :class:`DefineMiddleware <litestar.middleware.base.DefineMiddleware>` class. Let's extend
+using the :class:`DefineMiddleware <litestar.middleware.base.DefineMiddleware>` class. Let us extend
 the factory function used in the examples above to take some args and kwargs and then use ``DefineMiddleware`` to pass
 these values to our middleware:
 

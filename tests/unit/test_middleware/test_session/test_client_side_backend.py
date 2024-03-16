@@ -115,7 +115,7 @@ def test_set_session_cookies(cookie_session_backend_config: "CookieBackendConfig
 
     @get(path="/test_short_cookie")
     def handler_short_cookie(request: Request) -> None:
-        # Check the naming of a cookie that's short enough to not get broken into chunks
+        # Check the naming of a cookie that is short enough to not get broken into chunks
         request.session.update(create_session())
 
     with create_test_client(

@@ -1,13 +1,13 @@
 Making the list interactive
 ============================
 
-So far, our TODO list application is not very useful, since it's static. You can't update items,
+So far, our TODO list application is not very useful, since it is static. You cannot update items,
 nor add or remove them.
 
 Receiving incoming data
 -----------------------
 
-Let's start by implementing a route handler that handles the creation of new items.
+Let us start by implementing a route handler that handles the creation of new items.
 In the previous step you used the ``get`` decorator, which responds to the ``GET``
 HTTP method. In this case we want to react to ``POST`` requests, so we are going to use
 the corresponding ``post`` decorator.
@@ -76,7 +76,7 @@ Create dynamic routes using path parameters
 
 The next task on the list is updating an item's status. For this, a way to refer to a
 specific item on the list is needed. This could be done using query parameters, but
-there's an easier, and more semantically coherent way of expressing this: path
+there is an easier, and more semantically coherent way of expressing this: path
 parameters.
 
 .. code-block:: python
@@ -90,8 +90,8 @@ So far all the paths in your application are static, meaning they are expressed 
 constant string which does not change. In fact, the only path used so far is ``/``.
 
 Path parameters allow you to construct dynamic paths and later refer to the dynamically
-captured parts. This may sound complex at first, but it's actually quite simple; you can
-think of it as a regular expression that's being used on the requested path.
+captured parts. This may sound complex at first, but it is actually quite simple; you can
+think of it as a regular expression that is being used on the requested path.
 
 Path parameters consist of two parts: an expression inside the path, describing the
 parameter, and a corresponding function parameter of the same name in the route handler

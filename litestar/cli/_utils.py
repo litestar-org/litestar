@@ -131,7 +131,7 @@ class LoadedApp:
 class LitestarGroup(Group):
     """:class:`click.Group` subclass that automatically injects ``app`` and ``env` kwargs into commands that request it.
 
-    Use this as the ``cls`` for :class:`click.Group` if you're extending the internal CLI with a group. For ``command``s
+    Use this as the ``cls`` for :class:`click.Group` if you are extending the internal CLI with a group. For ``command``s
     added directly to the root group this is not needed.
     """
 
@@ -232,7 +232,7 @@ def _inject_args(func: Callable[P, T]) -> Callable[P, T]:
         needs_app = "app" in params
         needs_env = "env" in params
         if needs_env or needs_app:
-            # only resolve this if actually requested. Commands that don't need an env or app should be able to run
+            # only resolve this if actually requested. Commands that do not need an env or app should be able to run
             # without
             if not isinstance(ctx.obj, LitestarEnv):
                 ctx.obj = ctx.obj()
@@ -453,7 +453,7 @@ def create_ssl_files(
             raise LitestarCLIException(f"Path provided for {argname} is a directory: {path}")
         if not (parent_dir := path.parent).exists():
             raise LitestarCLIException(
-                f"Could not create file, parent directory for {argname} doesn't exist: {parent_dir}"
+                f"Could not create file, parent directory for {argname} does not exist: {parent_dir}"
             )
         resolved_paths.append(path)
 

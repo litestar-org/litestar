@@ -15,7 +15,7 @@ class Person:
 
 
 class WriteDTO(DataclassDTO[Person]):
-    """Don't allow client to set the id."""
+    """Do not allow client to set the id."""
 
     config = DTOConfig(exclude={"id"})
 

@@ -35,14 +35,14 @@ class PsycoPgChannelsBackend(ChannelsBackend):
 
     async def subscribe(self, channels: Iterable[str]) -> None:
         for channel in set(channels) - self._subscribed_channels:
-            # can't use placeholders in LISTEN
+            # cannot use placeholders in LISTEN
             await self._listener_conn.execute(f"LISTEN {_safe_quote(channel)};")  # pyright: ignore
 
             self._subscribed_channels.add(channel)
 
     async def unsubscribe(self, channels: Iterable[str]) -> None:
         for channel in channels:
-            # can't use placeholders in UNLISTEN
+            # cannot use placeholders in UNLISTEN
             await self._listener_conn.execute(f"UNLISTEN {_safe_quote(channel)};")  # pyright: ignore
         self._subscribed_channels = self._subscribed_channels - set(channels)
 
