@@ -90,7 +90,7 @@ HTMX provides two types of responses - one that does not allow changes to the DO
 Litestar supports both of these:
 
 1 - Responses that do not make any changes to DOM.
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Use :class:`HXStopPolling <litestar.contrib.htmx.response.HXStopPolling>` to stop polling for a response.
 
