@@ -11,7 +11,7 @@ Litestar's test client is built on top of
 the `httpx <https://github.com/encode/httpx>`_ library. To use the test client you should pass to it an
 instance of Litestar as the ``app`` kwarg.
 
-Let's say we have a very simple app with a health check endpoint:
+Suppose we have a very simple app with a health check endpoint:
 
 .. code-block:: python
     :caption: my_app/main.py
@@ -68,7 +68,7 @@ We would then test it using the test client like so:
                     assert response.text == "healthy"
 
 
-Since we would probably need to use the client in multiple places, it's better to make it into a pytest fixture:
+Since we would probably need to use the client in multiple places, it is better to make it into a pytest fixture:
 
 
 .. tab-set::
@@ -156,7 +156,7 @@ across requests, then you might want to inject or inspect session data outside a
     - The Session Middleware must be enabled in Litestar app provided to the TestClient to use sessions.
     - If you are using the
       :class:`ClientSideSessionBackend <litestar.middleware.session.client_side.ClientSideSessionBackend>` you need to
-      install the ``cryptography`` package. You can do so by installing ``litestar``:
+      install the ``cryptography`` package. You can do so by installing ``litestar`` with the ``[cryptography]`` extra:
 
     .. tab-set::
 
@@ -218,20 +218,20 @@ across requests, then you might want to inject or inspect session data outside a
 Using a blocking portal
 +++++++++++++++++++++++
 
-The :class:`TestClient <.testing.TestClient>` uses a feature of `anyio <https://anyio.readthedocs.io/en/stable/>`_ called
-a **Blocking Portal**.
+The :class:`TestClient <.testing.TestClient>` uses a feature of `anyio <https://anyio.readthedocs.io/en/stable/>`_
+called a :class:`Blocking Portal <anyio:anyio.from_thread.BlockingPortal>`.
 
-The :class:`anyio.abc.BlockingPortal` allows :class:`TestClient <.testing.TestClient>`
-to execute asynchronous functions using a synchronous call. ``TestClient`` creates a blocking portal to manage
-``Litestar``'s async logic, and it allows ``TestClient``'s API to remain fully synchronous.
+The :class:`Blocking Portal <anyio:anyio.from_thread.BlockingPortal>` allows :class:`TestClient <.testing.TestClient>`
+to execute asynchronous functions using a synchronous call. :class:`TestClient <.testing.TestClient>` creates
+a blocking portal to manage ``Litestar``'s async logic, and it allows
+:class:`TestClient <.testing.TestClient>`'s API to remain fully synchronous.
 
-Any tests that are using an instance of ``TestClient`` can also make use of the blocking portal to execute asynchronous functions
-without the test itself being asynchronous.
+Any tests that are using an instance of :class:`TestClient <.testing.TestClient>` can also
+make use of the blocking portal to execute asynchronous functions without the test itself being asynchronous.
 
 .. literalinclude:: /examples/testing/test_with_portal.py
    :caption: Using a blocking portal
    :language: python
-
 
 Creating a test app
 -------------------
@@ -241,13 +241,15 @@ an instance of Litestar and then a test client using it. There are multiple use 
 generic logic that is decoupled from a specific Litestar app, or when you want to test endpoints in isolation.
 
 You can pass to this helper all the kwargs accepted by
-the litestar constructor, with the ``route_handlers`` kwarg being **required**. Yet unlike the Litestar app, which
-expects ``route_handlers`` to be a list, here you can also pass individual values.
+the litestar constructor, with the :attr:`~litestar.config.app.AppConfig.route_handlers` kwarg being **required**.
+Yet unlike the Litestar app, which expects :attr:`~litestar.config.app.AppConfig.route_handlers` to be a :class:`list`,
+here you can also pass individual values.
 
 For example, you can do this:
 
 .. code-block:: python
-    :caption: my_app/tests/test_health_check.py
+    :caption: Testing a health check endpoint by passing a list of route handlers to ``create_test_client``
+        via ``my_app/tests/test_health_check.py``
 
     from litestar.status_codes import HTTP_200_OK
     from litestar.testing import create_test_client
@@ -264,7 +266,8 @@ For example, you can do this:
 But also this:
 
 .. code-block:: python
-    :caption: my_app/tests/test_health_check.py
+    :caption: Testing a health check endpoint by passing a single route handler to ``create_test_client``
+        via ``my_app/tests/test_health_check.py``
 
     from litestar.status_codes import HTTP_200_OK
     from litestar.testing import create_test_client
@@ -283,15 +286,14 @@ RequestFactory
 --------------
 
 Another helper is the :class:`RequestFactory <litestar.testing.RequestFactory>` class, which creates instances of
-:class:`litestar.connection.request.Request <litestar.connection.request.Request>`. The use case for this helper is when
+:class:`~litestar.connection.request.Request`. The use case for this helper is when
 you need to test logic that expects to receive a request object.
 
-For example, lets say we wanted to unit test a *guard* function in isolation, to which end we'll reuse the examples
-from the :doc:`route guards </usage/security/guards>` documentation:
-
+For example, suppose we want to unit test a ``guard`` function in isolation.
+To illustrate this, we'll reuse the examples from the :doc:`route guards </usage/security/guards>` documentation:
 
 .. code-block:: python
-    :caption: my_app/guards.py
+    :caption: Defining a guard function in ``my_app/guards.py`` that checks for a secret token
 
     from litestar import Request
     from litestar.exceptions import NotAuthorizedException
@@ -301,14 +303,15 @@ from the :doc:`route guards </usage/security/guards>` documentation:
     def secret_token_guard(request: Request, route_handler: BaseRouteHandler) -> None:
         if (
             route_handler.opt.get("secret")
-            and not request.headers.get("Secret-Header", "") == route_handler.opt["secret"]
+            and request.headers.get("Secret-Header", "")
+            != route_handler.opt["secret"]
         ):
             raise NotAuthorizedException()
 
 We already have our route handler in place:
 
 .. code-block:: python
-    :caption: my_app/secret.py
+    :caption: Our route handler in ``my_app/main.py``
 
     from os import environ
 
@@ -320,10 +323,10 @@ We already have our route handler in place:
     @get(path="/secret", guards=[secret_token_guard], opt={"secret": environ.get("SECRET")})
     def secret_endpoint() -> None: ...
 
-We could thus test the guard function like so:
+We could then test the guard function like so:
 
 .. code-block:: python
-    :caption: tests/guards/test_secret_token_guard.py
+    :caption: Testing the ``secret_token_guard`` function via ``my_app/tests/test_guards.py``
 
     import pytest
 
@@ -349,16 +352,16 @@ We could thus test the guard function like so:
         secret_token_guard(request=request, route_handler=copied_endpoint_handler)
 
 
-Using polyfactory
-------------------------
+Using `polyfactory <https://github.com/litestar-org/polyfactory>`_
+------------------------------------------------------------------
 
-`Polyfactory <https://github.com/litestar-org/polyfactory>`__ offers an easy
+`Polyfactory <https://github.com/litestar-org/polyfactory>`_ offers an easy
 and powerful way to generate mock data from pydantic models and dataclasses.
 
-Let's say we have an API that talks to an external service and retrieves some data:
+Suppose we have an API that talks to an external service and retrieves some data:
 
 .. code-block:: python
-    :caption: main.py
+    :caption: Example of a service that retrieves an item from an external source in ``my_app/main.py``
 
     from typing import Protocol, runtime_checkable
 
@@ -383,15 +386,14 @@ Let's say we have an API that talks to an external service and retrieves some da
 We could test the ``/item`` route like so:
 
 .. code-block:: python
-    :caption: tests/conftest.py
+    :caption: Testing the ``/item`` route via ``tests/test_get_item.py``
 
     import pytest
+    from my_app.main import Item, Service, get_item
 
     from litestar.di import Provide
     from litestar.status_codes import HTTP_200_OK
     from litestar.testing import create_test_client
-
-    from my_app.main import Service, Item, get_item
 
 
     @pytest.fixture()
@@ -404,29 +406,27 @@ We could test the ``/item`` route like so:
             def get_one(self) -> Item:
                 return item
 
-        with create_test_client(
-            route_handlers=get_item, dependencies={"service": Provide(lambda: MyService())}
-        ) as client:
+        with create_test_client(route_handlers=get_item, dependencies={"service": Provide(lambda: MyService())}) as client:
             response = client.get("/item")
             assert response.status_code == HTTP_200_OK
             assert response.json() == item.dict()
 
-While we can define the test data manually, as is done in the above, this can be quite cumbersome. That's
+While we can define the test data manually, as is done in the above, this can be quite cumbersome. That is
 where `polyfactory <https://github.com/litestar-org/polyfactory>`_ library comes in. It generates mock data for
 pydantic models and dataclasses based on type annotations. With it, we could rewrite the above example like so:
 
-
 .. code-block:: python
-    :caption: main.py
+    :caption: Example of using ``polyfactory`` to generate mock data for the ``Item`` model in ``my_app/main.py``
 
     from typing import Protocol, runtime_checkable
 
     import pytest
-    from pydantic import BaseModel
     from polyfactory.factories.pydantic_factory import ModelFactory
-    from litestar.status_codes import HTTP_200_OK
+    from pydantic import BaseModel
+
     from litestar import get
     from litestar.di import Provide
+    from litestar.status_codes import HTTP_200_OK
     from litestar.testing import create_test_client
 
 
@@ -459,7 +459,8 @@ pydantic models and dataclasses based on type annotations. With it, we could rew
                 return item
 
         with create_test_client(
-            route_handlers=get_item, dependencies={"service": Provide(lambda: MyService())}
+            route_handlers=get_item,
+            dependencies={"service": Provide(lambda: MyService())}
         ) as client:
             response = client.get("/item")
             assert response.status_code == HTTP_200_OK

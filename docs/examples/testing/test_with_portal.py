@@ -8,7 +8,8 @@ from litestar.testing import create_test_client
 def test_with_portal() -> None:
     """This example shows how to manage asynchronous tasks using a portal.
 
-    The test function itself is not async. Asynchronous functions are executed and awaited using the portal.
+    The test function itself is not async.
+    Asynchronous functions are executed and awaited using the portal.
     """
 
     async def get_float(value: float) -> float:
