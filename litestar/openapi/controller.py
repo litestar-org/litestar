@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 from functools import cached_property
-from typing import TYPE_CHECKING, Any, Callable, Final, Literal
+from typing import TYPE_CHECKING, Any, Callable, Literal
 
 from yaml import dump as dump_yaml
 
-from litestar.constants import OPENAPI_NOT_INITIALIZED
+from litestar.constants import OPENAPI_JSON_HANDLER_NAME, OPENAPI_NOT_INITIALIZED
 from litestar.controller import Controller
 from litestar.enums import MediaType, OpenAPIMediaType
 from litestar.exceptions import ImproperlyConfiguredException
@@ -22,8 +22,6 @@ __all__ = ("OpenAPIController",)
 if TYPE_CHECKING:
     from litestar.connection.request import Request
     from litestar.openapi.spec.open_api import OpenAPI
-
-_OPENAPI_JSON_ROUTER_NAME: Final = "__litestar_openapi_json"
 
 
 class OpenAPIController(Controller):
@@ -181,7 +179,7 @@ class OpenAPIController(Controller):
         media_type=OpenAPIMediaType.OPENAPI_JSON,
         include_in_schema=False,
         sync_to_thread=False,
-        name=_OPENAPI_JSON_ROUTER_NAME,
+        name=OPENAPI_JSON_HANDLER_NAME,
     )
     def retrieve_schema_json(self, request: Request[Any, Any, Any]) -> ASGIResponse:
         """Return the OpenAPI schema as JSON with an ``application/vnd.oai.openapi+json`` Content-Type header.
@@ -471,7 +469,7 @@ class OpenAPIController(Controller):
         body = f"""
           <body>
             <elements-api
-                apiDescriptionUrl="{request.app.route_reverse(_OPENAPI_JSON_ROUTER_NAME)}"
+                apiDescriptionUrl="{request.app.route_reverse(OPENAPI_JSON_HANDLER_NAME)}"
                 router="hash"
                 layout="sidebar"
             />
@@ -502,7 +500,7 @@ class OpenAPIController(Controller):
 
         body = f"""
           <body>
-            <rapi-doc spec-url="{request.app.route_reverse(_OPENAPI_JSON_ROUTER_NAME)}" />
+            <rapi-doc spec-url="{request.app.route_reverse(OPENAPI_JSON_HANDLER_NAME)}" />
           </body>
         """
 

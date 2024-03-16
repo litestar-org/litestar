@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Any
 
 from litestar._openapi.datastructures import OpenAPIContext
 from litestar._openapi.path_item import create_path_item_for_route
+from litestar.constants import OPENAPI_JSON_HANDLER_NAME
 from litestar.enums import MediaType
 from litestar.exceptions import ImproperlyConfiguredException, NotFoundException
 from litestar.handlers import get
@@ -133,6 +134,7 @@ class OpenAPIPlugin(InitPluginProtocol, ReceiveRoutePlugin):
 
             Args:
                 plugin_: The plugin to create the handler for.
+                handler_name: The name of the handler.
 
             Returns:
                 The handler.
@@ -144,11 +146,13 @@ class OpenAPIPlugin(InitPluginProtocol, ReceiveRoutePlugin):
                 nonlocal root_configured
                 root_configured = True
 
+            handler_name = None
             if plugin_.has_path("/openapi.json"):
                 nonlocal openapi_json_found
                 openapi_json_found = True
+                handler_name = OPENAPI_JSON_HANDLER_NAME
 
-            @get(paths, media_type=plugin_.media_type, sync_to_thread=False)
+            @get(paths, media_type=plugin_.media_type, sync_to_thread=False, name=handler_name)
             def _handler(request: Request) -> bytes:
                 return plugin_.render(request, self.provide_openapi_schema())
 

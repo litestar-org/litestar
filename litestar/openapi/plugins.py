@@ -7,6 +7,7 @@ import httpx
 import msgspec
 import yaml
 
+from litestar.constants import OPENAPI_JSON_HANDLER_NAME
 from litestar.enums import MediaType, OpenAPIMediaType
 from litestar.handlers import get
 from litestar.serialization import encode_json, get_serializer
@@ -80,6 +81,15 @@ class OpenAPIRenderPlugin:
             The rendered HTML.
         """
         raise NotImplementedError
+
+    @staticmethod
+    def get_openapi_json_route(request: Request) -> str:
+        """Get the route for the OpenAPI JSON schema.
+
+        Returns:
+            The route for the OpenAPI JSON schema.
+        """
+        return request.app.route_reverse(OPENAPI_JSON_HANDLER_NAME)
 
     def receive_router(self, router: Router) -> None:
         """Receive the router that serves the OpenAPI UI.
@@ -221,9 +231,9 @@ class RapidocRenderPlugin(OpenAPIRenderPlugin):
           </head>
         """
 
-        body = """
+        body = f"""
           <body>
-            <rapi-doc spec-url="openapi.json" />
+            <rapi-doc spec-url="{self.get_openapi_json_route(request)}" />
           </body>
         """
 
@@ -374,7 +384,7 @@ class ScalarRenderPlugin(OpenAPIRenderPlugin):
                 </noscript>
                 <script
                   id="api-reference"
-                  data-url="openapi.json">
+                  data-url="{self.get_openapi_json_route(request)}">
                 </script>
                 <script src="{self.js_url}" crossorigin></script>
                 """
@@ -471,10 +481,10 @@ class StoplightRenderPlugin(OpenAPIRenderPlugin):
           </head>
         """
 
-        body = """
+        body = f"""
           <body>
             <elements-api
-                apiDescriptionUrl="openapi.json"
+                apiDescriptionUrl="{self.get_openapi_json_route(request)}"
                 router="hash"
                 layout="sidebar"
             />
