@@ -8,7 +8,6 @@ from litestar.openapi.plugins import OpenAPIRenderPlugin
 
 
 class ScalarRenderPlugin(OpenAPIRenderPlugin):
-
     def __init__(
         self,
         *,

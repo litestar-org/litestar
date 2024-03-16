@@ -249,19 +249,19 @@ Inside the ``render`` method, we construct the HTML to render the UI, and return
 
   .. literalinclude:: /examples/openapi/plugins/custom_plugin.py
     :language: python
-    :lines: 26-36
+    :lines: 25-35
 
 - ``body``: Constructs the HTML ``<body>``, including a link to the OpenAPI JSON, and the JavaScript bundle:
 
   .. literalinclude:: /examples/openapi/plugins/custom_plugin.py
     :language: python
-    :lines: 38-44
+    :lines: 37-43
 
 - Finally, returns a complete HTML document (as a byte string), combining head and body.
 
   .. literalinclude:: /examples/openapi/plugins/custom_plugin.py
     :language: python
-    :lines: 46-52
+    :lines: 45-51
 
 Interacting with the ``Router``
 -------------------------------
