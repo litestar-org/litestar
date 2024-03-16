@@ -220,13 +220,12 @@ function via the ``socket`` argument:
 Customising connection acceptance
 ---------------------------------
 
-By default, Litestar will accept all incoming connections by awaiting ``WebSocket.accept()`` without arguments.
+By default, Litestar will accept all incoming connections by awaiting :meth:`WebSocket.accept` without arguments.
 This behavior can be customized by passing a custom ``connection_accept_handler`` function. Litestar will await this
 function to accept the connection.
 
 .. literalinclude:: /examples/websockets/setting_custom_connection_headers.py
     :language: python
-
 
 Class based WebSocket handling
 ------------------------------
@@ -254,9 +253,13 @@ encapsulate more complex logic.
 Custom WebSocket
 ----------------
 
-.. versionadded:: 2.7.0
+.. versionadded:: v2.7.0
+    See :ref:`v2.7.0 release notes <release-notes/changelog:2.7.0>`.
 
-Litestar supports custom ``websocket_class`` instances, which can be used to further configure the default :class:`WebSocket`.
+The ``Litestar`` instance supports subclasses of :class:`Websocket <.connection.websocket.WebSocket>`
+and passing them into the :attr:`websocket_class` attribute. This attribute should be set to a subclass of
+which can be used to further configure the default :class:`WebSocket`.
+
 The example below illustrates how to implement custom websocket class for the whole application.
 
 .. dropdown:: Example of a custom websocket at the application level
@@ -266,8 +269,8 @@ The example below illustrates how to implement custom websocket class for the wh
 
 .. admonition:: Layered architecture
 
-   WebSocket classes are part of Litestar's layered architecture, which means you can
-   set a websocket class on every layer of the application. If you have set a webscoket
+   :class:`Websocket <.connection.websocket.WebSocket>` classes are part of Litestar's layered architecture, which means you can
+   set a websocket class on every layer of the application. If you have set a websocket
    class on multiple layers, the layer closest to the route handler will take precedence.
 
    You can read more about this in the :ref:`usage/applications:layered architecture` section
