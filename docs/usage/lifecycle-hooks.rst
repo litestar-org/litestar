@@ -25,8 +25,7 @@ and returns either ``None`` or a value that can be used in a response.
 If a value is returned, the router handler for this request will be bypassed.
 
 .. literalinclude:: /examples/lifecycle_hooks/before_request.py
-    :language: python
-
+    :caption: Using the ``before_request`` hook to modify the request or return an early response
 
 .. _after_request:
 
@@ -39,8 +38,7 @@ instance as its first parameter, and returns a ``Response`` instance. The ``Resp
 instance returned does not necessarily have to be the one that was received.
 
 .. literalinclude:: /examples/lifecycle_hooks/after_request.py
-    :language: python
-
+    :caption: Using the ``after_request`` hook to modify the response
 
 .. _after_response:
 
@@ -55,14 +53,10 @@ This hook is meant for data post-processing, transmission of data to third party
 services, gathering of metrics, etc.
 
 .. literalinclude:: /examples/lifecycle_hooks/after_response.py
-    :language: python
+    :caption: Using the ``after_response`` hook to gather metrics
 
-
-.. note::
-
-    Since the request has already been returned by the time the `after_response` is called,
-    the updated state of `COUNTER` is not reflected in the response.
-
+.. note:: Since the request has already been returned by the time the ``after_response`` is called,
+    the updated state of ``COUNTER`` is not reflected in the response.
 
 Layered hooks
 -------------
@@ -76,6 +70,5 @@ Layered hooks
     You can read more about this here:
     :ref:`Layered architecture <usage/applications:layered architecture>`
 
-
 .. literalinclude:: /examples/lifecycle_hooks/layered_hooks.py
-   :language: python
+    :caption: Using layered lifecycle hooks
