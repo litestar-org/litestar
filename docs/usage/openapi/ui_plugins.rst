@@ -266,8 +266,8 @@ Inside the ``render`` method, we construct the HTML to render the UI, and return
 Interacting with the ``Router``
 -------------------------------
 
-Internally, an instance of :class:`Router` is constructed to serve the OpenAPI endpoints. The ``Router`` is available
-to plugins via the :meth:`OpenAPIRenderPlugin.receive_router` method.
+An instance of :class:`Router` is used to serve the OpenAPI endpoints and is made available to plugins via the
+:meth:`OpenAPIRenderPlugin.receive_router` method.
 
 This can be used for a variety of purposes, including adding additional routes to the ``Router``.
 
@@ -277,9 +277,12 @@ This can be used for a variety of purposes, including adding additional routes t
 OAuth2 in Swagger UI
 --------------------
 
-When using Swagger, OAuth2 settings can be configured via :attr:`swagger_ui_init_oauth <litestar.openapi.controller.OpenAPIController.swagger_ui_init_oauth>`, which can be set to a dictionary containing the parameters described in the Swagger UI documentation for OAuth2 `here <https://swagger.io/docs/open-source-tools/swagger-ui/usage/oauth2/>`_.
+When using Swagger, OAuth2 settings can be configured via
+:attr:`swagger_ui_init_oauth <litestar.openapi.controller.OpenAPIController.swagger_ui_init_oauth>`, which can be set to
+a dictionary containing the parameters described in the Swagger UI documentation for OAuth2
+`here <https://swagger.io/docs/open-source-tools/swagger-ui/usage/oauth2/>`_.
 
-We that you can preset your clientId or enable PKCE support.
+With that, you can preset your clientId or enable PKCE support.
 
 .. literalinclude:: /examples/openapi/plugins/swagger_ui_oauth.py
     :language: python
