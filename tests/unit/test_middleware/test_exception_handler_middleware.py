@@ -116,8 +116,7 @@ def test_default_handle_python_http_exception_handling(
 
 def test_exception_handler_middleware_exception_handlers_mapping() -> None:
     @get("/")
-    def handler() -> None:
-        ...
+    def handler() -> None: ...
 
     def exception_handler(request: Request, exc: Exception) -> Response:
         return Response(content={"an": "error"}, status_code=HTTP_500_INTERNAL_SERVER_ERROR)

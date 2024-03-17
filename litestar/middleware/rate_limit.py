@@ -259,8 +259,7 @@ class RateLimitConfig:
 
 
                 @get("/")
-                def my_handler(request: Request) -> None:
-                    ...
+                def my_handler(request: Request) -> None: ...
 
 
                 app = Litestar(route_handlers=[my_handler], middleware=[throttle_config.middleware])

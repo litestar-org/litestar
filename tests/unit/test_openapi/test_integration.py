@@ -356,12 +356,10 @@ class Model:
 
 def test_multiple_handlers_for_same_route() -> None:
     @post("/", sync_to_thread=False)
-    def post_handler() -> None:
-        ...
+    def post_handler() -> None: ...
 
     @get("/", sync_to_thread=False)
-    def get_handler() -> None:
-        ...
+    def get_handler() -> None: ...
 
     app = Litestar([get_handler, post_handler])
     openapi_plugin = app.plugins.get(OpenAPIPlugin)
@@ -376,12 +374,10 @@ def test_multiple_handlers_for_same_route() -> None:
 @pytest.mark.parametrize(("random_seed_one", "random_seed_two", "should_be_equal"), [(10, 10, True), (10, 20, False)])
 def test_seeding(random_seed_one: int, random_seed_two: int, should_be_equal: bool) -> None:
     @post("/", sync_to_thread=False)
-    def post_handler(q: str) -> None:
-        ...
+    def post_handler(q: str) -> None: ...
 
     @get("/", sync_to_thread=False)
-    def get_handler(q: str) -> None:
-        ...
+    def get_handler(q: str) -> None: ...
 
     app = Litestar(
         [get_handler, post_handler], openapi_config=OpenAPIConfig("Litestar", "v0.0.1", True, random_seed_one)
@@ -405,21 +401,17 @@ def test_components_schemas_in_alphabetical_order() -> None:
     # https://github.com/litestar-org/litestar/issues/3059
 
     @dataclass
-    class A:
-        ...
+    class A: ...
 
     @dataclass
-    class B:
-        ...
+    class B: ...
 
     @dataclass
-    class C:
-        ...
+    class C: ...
 
     class TestController(Controller):
         @post("/", sync_to_thread=False)
-        def post_handler(self, data: B) -> None:
-            ...
+        def post_handler(self, data: B) -> None: ...
 
         @get("/", sync_to_thread=False)
         def get_handler(self) -> A:  # type: ignore[empty-body]
@@ -430,8 +422,7 @@ def test_components_schemas_in_alphabetical_order() -> None:
             ...
 
         @delete("/", sync_to_thread=False)
-        def delete_handler(self, data: B) -> None:
-            ...
+        def delete_handler(self, data: B) -> None: ...
 
     app = Litestar([TestController], signature_types=[A, B, C])
     openapi_plugin = app.plugins.get(OpenAPIPlugin)

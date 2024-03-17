@@ -262,8 +262,7 @@ class Response(Generic[T]):
         self.response_type_encoders = {**(self.type_encoders or {}), **(type_encoders or {})}
 
     @overload
-    def set_cookie(self, /, cookie: Cookie) -> None:
-        ...
+    def set_cookie(self, /, cookie: Cookie) -> None: ...
 
     @overload
     def set_cookie(
@@ -277,8 +276,7 @@ class Response(Generic[T]):
         secure: bool = False,
         httponly: bool = False,
         samesite: Literal["lax", "strict", "none"] = "lax",
-    ) -> None:
-        ...
+    ) -> None: ...
 
     def set_cookie(  # type: ignore[misc]
         self,

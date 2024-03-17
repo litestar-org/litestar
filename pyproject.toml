@@ -146,6 +146,7 @@ linting = [
   "mypy",
   "pre-commit",
   "slotscheck",
+  "codecov-cli",
   "pyright==1.1.344",
   "asyncpg-stubs",
   "types-beautifulsoup4",
