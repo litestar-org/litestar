@@ -7,20 +7,21 @@ Using the Python debugger
 You can configure Litestar to drop into the :doc:`Python Debugger <python:library/pdb>`
 when an exception occurs. This can be configured in different ways:
 
-Configuring ``Litestar`` with the ``pdb_on_exception`` option
+#. Configuring :class:`~litestar.app.Litestar` with the :paramref:`~litestar.app.Litestar.pdb_on_exception` option
+
     .. code-block:: python
+        :caption: Using the :paramref:`~litestar.app.Litestar.pdb_on_exception` parameter
 
         app = Litestar(pdb_on_exception=True)
 
+#. Using the ``--pdb`` flag when running your application via the CLI
 
-Running your app with the CLI and using the ``--pdb`` flag
     .. code-block:: shell
+        :caption: Using the ``--pdb`` flag
 
         litestar run --pdb
-
-Using the ``LITESTAR_PDB`` environment variable
+#. Setting the ``LITESTAR_PDB`` environment variable
     ``LITESTAR_PDB=1``
-
 
 Debugging with an IDE
 ---------------------
@@ -34,95 +35,98 @@ Intellij / PyCharm
 Using the CLI
 *************
 
-1. Create a new debug configuration via ``Run`` > ``Edit Configurations``
-2. Select ``Module name`` option and set it to ``litestar``
-3. Add the ``run`` parameter and optionally additional parameters you want to pass
-   to the CLI
+.. dropdown:: Click to see the steps
 
-   .. image:: /images/debugging/pycharm-config-cli.png
+        #. Create a new debug configuration via ``Run`` > ``Edit Configurations``
+        #. Select ``Module name`` option and set it to ``litestar``
+        #. Add the ``run`` parameter and optionally additional parameters you want to pass
+           to the CLI
 
-4. Run your application in the debugger via ``Run`` > ``Debug Litestar``
+           .. image:: /images/debugging/pycharm-config-cli.png
 
-   .. image:: /images/debugging/pycharm-debug.png
-        :align: center
+        #. Run your application in the debugger via ``Run`` > ``Debug Litestar``
 
+           .. image:: /images/debugging/pycharm-debug.png
+                :align: center
 
-.. important::
-    Breakpoints inside route handlers might not work correctly when used in conjunction
+.. important:: Breakpoints inside route handlers might not work correctly when used in conjunction
     with the ``--reload`` and ``--web-concurrency`` parameters. If you want to use the
     CLI while making use of these options, you can attach the debugger manually to the
     running uvicorn process via ``Run`` > ``Attach to process``.
 
-
 Using uvicorn
 *************
 
-1. Create a new debug configuration via ``Run`` > ``Edit Configurations``
-2. Select ``Module name`` option and set it to ``uvicorn``
-3. Add the ``app:app`` parameter (or the equivalent path to your application object)
+.. dropdown:: Click to see the steps
 
-   .. image:: /images/debugging/pycharm-config-uvicorn.png
+        #. Create a new debug configuration via ``Run`` > ``Edit Configurations``
+        #. Select ``Module name`` option and set it to ``uvicorn``
+        #. Add the ``app:app`` parameter (or the equivalent path to your application object)
 
-4. Run your application in the debugger via ``Run`` > ``Debug Litestar``
+           .. image:: /images/debugging/pycharm-config-uvicorn.png
 
-   .. image:: /images/debugging/pycharm-debug.png
-        :align: center
+        #. Run your application in the debugger via ``Run`` > ``Debug Litestar``
 
+           .. image:: /images/debugging/pycharm-debug.png
+                :align: center
 
 VS Code
 +++++++
 
-
 Using the CLI
 *************
 
+.. dropdown:: Click to see the steps
 
-1. Add a new debugging configuration via ``Run`` > ``Add configuration``
-    .. image:: /images/debugging/vs-code-add-config.png
-        :align: center
-2. From the ``Select a debug configuration`` dialog, select ``Module``
-    .. image:: /images/debugging/vs-code-select-config.png
-3. Enter ``litestar`` as the module name
-    .. image:: /images/debugging/vs-code-config-litestar.png
-4. In the opened JSON file, alter the configuration as follows:
-    .. code-block:: json
+        #. Add a new debugging configuration via ``Run`` > ``Add configuration``
+            .. image:: /images/debugging/vs-code-add-config.png
+                :align: center
+        #. From the ``Select a debug configuration`` dialog, select ``Module``
+            .. image:: /images/debugging/vs-code-select-config.png
+        #. Enter ``litestar`` as the module name
+            .. image:: /images/debugging/vs-code-config-litestar.png
+        #. In the opened JSON file, alter the configuration as follows:
+            .. code-block:: json
+                :caption: Configuring the debugger to run your application via the CLI
 
-        {
-            "name": "Python: Litestar app",
-            "type": "python",
-            "request": "launch",
-            "module": "litestar",
-            "justMyCode": true,
-            "args": ["run"]
-        }
+                {
+                    "name": "Python: Litestar app",
+                    "type": "python",
+                    "request": "launch",
+                    "module": "litestar",
+                    "justMyCode": true,
+                    "args": ["run"]
+                }
 
-5. Run your application via the debugger via ``Run`` > ``Start debugging``
-    .. image:: /images/debugging/vs-code-debug.png
-        :align: center
-
+        #. Run your application via the debugger via ``Run`` > ``Start debugging``
+            .. image:: /images/debugging/vs-code-debug.png
+                :align: center
 
 Using uvicorn
 **************
 
-1. Add a new debugging configuration via ``Run`` > ``Add configuration``
-    .. image:: /images/debugging/vs-code-add-config.png
-        :align: center
-2. From the ``Select a debug configuration`` dialog, select ``Module``
-    .. image:: /images/debugging/vs-code-select-config.png
-3. Enter ``uvicorn`` as the module name
-    .. image:: /images/debugging/vs-code-config-litestar.png
-4. In the opened JSON file, alter the configuration as follows:
-    .. code-block:: json
+.. dropdown:: Click to see the steps
 
-        {
-            "name": "Python: Litestar app",
-            "type": "python",
-            "request": "launch",
-            "module": "uvicorn",
-            "justMyCode": true,
-            "args": ["app:app"]
-        }
+        #. Add a new debugging configuration via ``Run`` > ``Add configuration``
+            .. image:: /images/debugging/vs-code-add-config.png
+                :align: center
+        #. From the ``Select a debug configuration`` dialog, select ``Module``
+            .. image:: /images/debugging/vs-code-select-config.png
+        #. Enter ``uvicorn`` as the module name
+            .. image:: /images/debugging/vs-code-config-litestar.png
+        #. In the opened JSON file, alter the configuration as follows:
+            .. code-block:: json
+                :caption: Configuring the debugger to run your application via uvicorn
 
-5. Run your application via the debugger via ``Run`` > ``Start debugging``
-    .. image:: /images/debugging/vs-code-debug.png
-        :align: center
+                {
+                    "name": "Python: Litestar app",
+                    "type": "python",
+                    "request": "launch",
+                    "module": "uvicorn",
+                    "justMyCode": true,
+                    "args": ["app:app"]
+                }
+
+        #. Run your application via the debugger via ``Run`` > ``Start debugging``
+            .. image:: /images/debugging/vs-code-debug.png
+                :align: center
