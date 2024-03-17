@@ -338,7 +338,7 @@ def _autodiscover_app(cwd: Path) -> LoadedApp:
             if return_annotation in ("Litestar", Litestar):
                 app_string = f"{import_path}:{attr}"
                 os.environ["LITESTAR_APP"] = app_string
-                if not quiet_console and sys.stdout.isatty():  # pragma: nocover
+                if not quiet_console and sys.stdout.isatty():
                     console.print(f"Using {app_name} factory from [bright_blue]{app_string}")
                 return LoadedApp(app=value(), app_path=f"{app_string}", is_factory=True)
 
