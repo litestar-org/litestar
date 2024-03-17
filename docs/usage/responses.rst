@@ -811,7 +811,7 @@ into the :class:`BackgroundTask <.background_tasks.BackgroundTask>`.
     :class:`BackgroundTask <.background_tasks.BackgroundTask>` is typed with :class:`ParamSpec <typing.ParamSpec>`,
     enabling correct type checking for arguments and keyword arguments passed to it.
 
-Route decorators (e.g. :class:`get <.handlers.get>`, :class:`get <.handlers.post>`, etc.) also allow
+Route decorators (e.g. :class:`@get() <.handlers.get>`, :class:`@post() <.handlers.post>`, etc.) also allow
 passing in a background task with the ``background`` kwarg:
 
 .. dropdown:: Background Task Passed into Decorator
