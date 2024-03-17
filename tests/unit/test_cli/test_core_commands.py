@@ -262,9 +262,22 @@ def test_run_command_with_autodiscover_app_factory(
         assert len(result.output) == 0
 
 
+@pytest.mark.parametrize("quiet_console", [True, False])
+@pytest.mark.parametrize("tty_enabled", [True, False])
 def test_run_command_with_app_factory(
-    runner: CliRunner, mock_uvicorn_run: MagicMock, create_app_file: CreateAppFileFixture
+    runner: CliRunner,
+    mock_uvicorn_run: MagicMock,
+    create_app_file: CreateAppFileFixture,
+    tty_enabled: bool,
+    quiet_console: bool,
+    mocker: MockerFixture,
+    monkeypatch: MonkeyPatch,
 ) -> None:
+    monkeypatch.delenv("LITESTAR_QUIET_CONSOLE", raising=False)
+    if quiet_console:
+        monkeypatch.setenv("LITESTAR_QUIET_CONSOLE", "true")
+    mocker.patch.object(core, "isatty", return_value=tty_enabled)
+    mocker.patch.object(_utils, "isatty", return_value=tty_enabled)
     path = create_app_file("_create_app_with_path.py", content=CREATE_APP_FILE_CONTENT)
     app_path = f"{path.stem}:create_app"
     result = runner.invoke(cli_command, ["--app", app_path, "run"])
@@ -282,6 +295,10 @@ def test_run_command_with_app_factory(
         ssl_certfile=None,
         ssl_keyfile=None,
     )
+    if tty_enabled and not quiet_console:
+        assert len(result.output) > 0
+    else:
+        assert len(result.output) == 0
 
 
 @pytest.mark.parametrize(
