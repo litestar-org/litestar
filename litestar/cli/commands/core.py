@@ -104,6 +104,10 @@ def _run_uvicorn_in_subprocess(
 
 
 class CommaSplittedPath(click.Path):
+    """A Click Path that splits the input string by commas.
+
+    .. versionadded:: 2.8.0
+    """
     envvar_list_splitter = ","
 
 
