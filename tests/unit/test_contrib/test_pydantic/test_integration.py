@@ -91,26 +91,24 @@ def test_pydantic_v2_validation_error_raises_400(meta: Any) -> None:
 
 def test_default_error_handling() -> None:
     @post("/{param:int}")
-    def my_route_handler(param: int, data: PydanticPerson) -> None:
-        ...
+    def my_route_handler(param: int, data: PydanticPerson) -> None: ...
+
+    with create_test_client(my_route_handler) as client:
+        response = client.post("/123", json={"first_name": "moishe"})
+        extra = response.json().get("extra")
+        assert extra is not None
+        assert len(extra) == 5
+
+
+def test_default_error_handling_v1() -> None:
+    @post("/{param:int}")
+    def my_route_handler(param: int, data: PydanticV1Person) -> None: ...
 
     with create_test_client(my_route_handler) as client:
         response = client.post("/123", json={"first_name": "moishe"})
         extra = response.json().get("extra")
         assert extra is not None
         assert len(extra) == 4
-
-
-def test_default_error_handling_v1() -> None:
-    @post("/{param:int}")
-    def my_route_handler(param: int, data: PydanticV1Person) -> None:
-        ...
-
-    with create_test_client(my_route_handler) as client:
-        response = client.post("/123", json={"first_name": "moishe"})
-        extra = response.json().get("extra")
-        assert extra is not None
-        assert len(extra) == 3
 
 
 def test_signature_model_invalid_input(
@@ -134,8 +132,7 @@ def test_signature_model_invalid_input(
         length_param: str = Parameter(min_length=2),
         int_header: int = Parameter(header="X-SOME-INT"),
         int_cookie: int = Parameter(cookie="int-cookie"),
-    ) -> None:
-        ...
+    ) -> None: ...
 
     with create_test_client(route_handlers=[test], signature_types=[Parent]) as client:
         client.cookies.update({"int-cookie": "cookie"})
@@ -172,3 +169,35 @@ def test_signature_model_invalid_input(
                     "key": "other_child.val.1",
                 },
             ]
+
+
+class V1ModelWithPrivateFields(pydantic_v1.BaseModel):
+    class Config:
+        underscore_fields_are_private = True
+
+    _field: str = pydantic_v1.PrivateAttr()
+    # include an invalid annotation here to ensure we never touch those fields
+    _underscore_field: "foo"  # type: ignore[name-defined] # noqa: F821
+    bar: str
+
+
+class V2ModelWithPrivateFields(pydantic_v2.BaseModel):
+    class Config:
+        underscore_fields_are_private = True
+
+    _field: str = pydantic_v2.PrivateAttr()
+    # include an invalid annotation here to ensure we never touch those fields
+    _underscore_field: "foo"  # type: ignore[name-defined] # noqa: F821
+    bar: str
+
+
+@pytest.mark.parametrize("model_type", [V1ModelWithPrivateFields, V2ModelWithPrivateFields])
+def test_private_fields(model_type: Type[Union[pydantic_v1.BaseModel, pydantic_v2.BaseModel]]) -> None:
+    @post("/")
+    async def handler(data: V2ModelWithPrivateFields) -> V2ModelWithPrivateFields:
+        return data
+
+    with create_test_client([handler]) as client:
+        res = client.post("/", json={"bar": "value"})
+        assert res.status_code == 201
+        assert res.json() == {"bar": "value"}

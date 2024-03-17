@@ -14,7 +14,7 @@ from click import Group
 from pytest import MonkeyPatch
 
 from litestar import Litestar, MediaType, Request, Response, get
-from litestar.config.app import AppConfig
+from litestar.config.app import AppConfig, ExperimentalFeatures
 from litestar.config.response_cache import ResponseCacheConfig
 from litestar.contrib.sqlalchemy.plugins import SQLAlchemySerializationPlugin
 from litestar.datastructures import MutableScopeHeaders, State
@@ -254,8 +254,7 @@ def test_before_send() -> None:
 
 def test_using_custom_http_exception_handler() -> None:
     @get("/{param:int}")
-    def my_route_handler(param: int) -> None:
-        ...
+    def my_route_handler(param: int) -> None: ...
 
     def my_custom_handler(_: Request, __: Exception) -> Response:
         return Response(content="custom message", media_type=MediaType.TEXT, status_code=HTTP_400_BAD_REQUEST)
@@ -446,3 +445,8 @@ def test_lifespan_context_and_shutdown_hook_execution_order() -> None:
     assert events[1] == "ctx_1"
     assert events[2] == "hook_a"
     assert events[3] == "hook_b"
+
+
+def test_use_dto_codegen_feature_flag_warns() -> None:
+    with pytest.warns(LitestarWarning, match="Use of redundant experimental feature flag DTO_CODEGEN"):
+        Litestar(experimental_features=[ExperimentalFeatures.DTO_CODEGEN])

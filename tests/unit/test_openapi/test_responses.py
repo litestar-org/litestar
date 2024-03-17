@@ -527,4 +527,4 @@ def test_file_response_media_type(content_media_type: Any, expected: Any, create
         return File("test.txt")
 
     response = create_factory(handler).create_success_response()
-    assert next(iter(response.content.values())).schema.content_media_type == expected  # type: ignore
+    assert next(iter(response.content.values())).schema.content_media_type == expected  # type: ignore[union-attr]

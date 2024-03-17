@@ -3,6 +3,229 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.7.0
+    :date: 2024-03-10
+
+    .. change:: missing cors headers in response
+        :type: bugfix
+        :pr: 3179
+        :issue: 3178
+
+        Set CORS Middleware headers as per spec.
+        Addresses issues outlined on https://github.com/litestar-org/litestar/issues/3178
+
+    .. change:: sending empty data in sse in js client
+        :type: bugfix
+        :pr: 3176
+
+        Fix an issue with SSE where JavaScript clients fail to receive an event without data.
+        The `spec <https://html.spec.whatwg.org/multipage/server-sent-events.html#parsing-an-event-stream>`_ is not clear in whether or not an event without data is ok.
+        Considering the EventSource "client" is not ok with it, and that it's so easy DX-wise to make the mistake not explicitly sending it, this change fixes it by defaulting to the empty-string
+
+    .. change:: Support ``ResponseSpec(..., examples=[...])``
+        :type: feature
+        :pr: 3100
+        :issue: 3068
+
+        Allow defining custom examples for the responses via ``ResponseSpec``.
+        The examples set this way are always generated locally, for each response:
+        Examples that go within the schema definition cannot be set by this.
+
+        .. code-block:: json
+
+            {
+            "paths": {
+                "/": {
+                "get": {
+                    "responses": {
+                    "200": {
+                        "content": {
+                        "application/json": {
+                            "schema": {},
+                            "examples": "..."}}
+                        }}
+                    }}
+                }
+            }
+
+
+    .. change:: support "+json"-suffixed response media types
+        :type: feature
+        :pr: 3096
+        :issue: 3088
+
+        Automatically encode responses with media type of the form "application/<something>+json" as json.
+
+    .. change:: Allow reusable ``Router`` instances
+        :type: feature
+        :pr: 3103
+        :issue: 3012
+
+        It was not possible to re-attach a router instance once it was attached. This
+        makes that possible.
+
+        The router instance now gets deecopied when it's registered to another router.
+
+        The application startup performance gets a hit here, but the same approach is
+        already used for controllers and handlers, so this only harmonizes the
+        implementation.
+
+    .. change:: only display path in ``ValidationException``\ s
+        :type: feature
+        :pr: 3064
+        :issue: 3061
+
+        Fix an issue where ``ValidationException`` exposes the full URL in the error response, leaking internal IP(s) or other similar infra related information.
+
+    .. change:: expose ``request_class`` to other layers
+        :type: feature
+        :pr: 3125
+
+        Expose ``request_class`` to other layers
+
+    .. change:: expose ``websocket_class``
+        :type: feature
+        :pr: 3152
+
+        Expose ``websocket_class`` to other layers
+
+    .. change:: Add ``type_decoders`` to Router and route handlers
+        :type: feature
+        :pr: 3153
+
+        Add ``type_decoders`` to ``__init__`` method for handler, routers and decorators to keep consistency with ``type_encoders`` parameter
+
+    .. change:: Pass ``type_decoders`` in ``WebsocketListenerRouteHandler``
+        :type: feature
+        :pr: 3162
+
+        Pass ``type_decoders`` to parent's ``__init__`` in ``WebsocketListenerRouteHandler`` init, otherwise ``type_decoders`` will be ``None``
+        replace params order in docs, ``__init__`` (`decoders` before `encoders`)
+
+    .. change:: 3116 enhancement session middleware
+        :type: feature
+        :pr: 3127
+        :issue: 3116
+
+        For server side sessions, the session id is now generated before the route handler. Thus, on first visit, a session id will be available inside the route handler's scope instead of afterwards
+        A new abstract method ``get_session_id`` was added to ``BaseSessionBackend`` since this method will be called for both ClientSideSessions and ServerSideSessions. Only for ServerSideSessions it will return an actual id.
+        Using ``request.set_session(...)`` will return the session id for ServerSideSessions and None for ClientSideSessions
+        The session auth MiddlewareWrapper now refers to the Session Middleware via the configured backend, instead of it being hardcoded
+
+    .. change:: make random seed for openapi example generation configurable
+        :type: feature
+        :pr: 3166
+
+        Allow random seed used for generating the examples in the OpenAPI schema (when ``create_examples`` is set to ``True``) to be configured by the user.
+        This is related to https://github.com/litestar-org/litestar/issues/3059 however whether this change is enough to close that issue or not is not confirmed.
+
+    .. change:: generate openapi components schemas in a deterministic order
+        :type: feature
+        :pr: 3172
+
+        Ensure that the insertion into the ``Components.schemas`` dictionary of the OpenAPI spec will be in alphabetical order (based on the normalized name of the ``Schema``).
+
+
+.. changelog:: 2.6.3
+    :date: 2024-03-04
+
+    .. change:: Pydantic V1 schema generation for PrivateAttr in GenericModel
+        :type: bugfix
+        :pr: 3161
+        :issue: 3150
+
+        Fixes a bug that caused a ``NameError`` when a Pydantic V1 ``GenericModel`` has a private attribute of which the type annotation cannot be resolved at the time of schema generation.
+
+
+.. changelog:: 2.6.2
+    :date: 2024/03/02
+
+    .. change:: DTO msgspec meta constraints not being included in transfer model
+        :type: bugfix
+        :pr: 3113
+        :issue: 3026
+
+        Fix an issue where msgspec constraints set in ``msgspec.Meta`` would not be
+        honoured by the DTO.
+
+        In the given example, the ``min_length=3`` constraint would be ignored by the
+        model generated by ``MsgspecDTO``.
+
+        .. code-block:: python
+
+            from typing import Annotated
+
+            import msgspec
+            from litestar import post, Litestar
+            from litestar.dto import MsgspecDTO
+
+            class Request(msgspec.Struct):
+                foo: Annotated[str, msgspec.Meta(min_length=3)]
+
+            @post("/example/", dto=MsgspecDTO[Request])
+            async def example(data: Request) -> Request:
+                return data
+
+        Constraints like these are now transferred.
+
+        Two things to note are:
+
+        - For DTOs with ``DTOConfig(partial=True)`` we cannot transfer the length
+          constraints as they are only supported on fields that as subtypes of ``str``,
+          ``bytes`` or a collection type, but ``partial=True`` sets all fields as
+          ``T | UNSET``
+        - For the ``PiccoloDTO``, fields which are not required will also drop the
+          length constraints. A warning about this will be raised here.
+
+    .. change:: Missing control header for static files
+        :type: bugfix
+        :pr: 3131
+        :issue: 3129
+
+        Fix an issue where a ``cache_control`` that is set on a router created by
+        ``create_static_files_router`` wasn't passed to the generated handler
+
+    .. change:: Fix OpenAPI schema generation for Pydantic v2 constrained ``Secret`` types
+        :type: bugfix
+        :pr: 3149
+        :issue: 3148
+
+        Fix schema generation for ``pydantic.SecretStr`` and ``pydantic.SecretBytes``
+        which, when constrained, would not be recognised as such with Pydantic V2 since
+        they're not subtypes of their respective bases anymore.
+
+    .. change:: Fix OpenAPI schema generation for Pydantic private attributes
+        :type: bugfix
+        :pr: 3151
+        :issue: 3150
+
+        Fix a bug that caused a :exc:`NameError` when trying to resolve forward
+        references in Pydantic private fields.
+
+        Although private fields were respected excluded from the schema, it was still
+        attempted to extract their type annotation. This was fixed by not relying on
+        ``typing.get_type_hints`` to get the type information, but instead using
+        Pydantic's own APIs, allowing us to only extract information about the types of
+        relevant fields.
+
+    .. change:: OpenAPI description not set for UUID based path parameters in OpenAPI
+        :type: bugfix
+        :pr: 3118
+        :issue: 2967
+
+        Resolved a bug where the description was not set for UUID-based path
+        parameters in OpenAPI due to the reason mentioned in the issue.
+
+    .. change:: Fix ``RedisStore`` client created with ``with_client`` unclosed
+        :type: bugfix
+        :pr: 3111
+        :issue: 3083
+
+        Fix a bug where, when a :class:`~litestar.stores.redis.RedisStore` was created
+        with the :meth:`~litestar.stores.redis.RedisStore.with_client` method, that
+        client wasn't closed explicitly
+
+
 .. changelog:: 2.6.1
     :date: 2024/02/14
 

@@ -24,6 +24,7 @@ if TYPE_CHECKING:
         TimeoutTypes,
         URLTypes,
     )
+    from typing_extensions import Self
 
     from litestar.middleware.session.base import BaseBackendConfig
 
@@ -85,7 +86,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
             timeout=timeout,
         )
 
-    async def __aenter__(self) -> AsyncTestClient[T]:
+    async def __aenter__(self) -> Self:
         async with AsyncExitStack() as stack:
             self.blocking_portal = portal = stack.enter_context(self.portal())
             self.lifespan_handler = LifeSpanHandler(client=self)
