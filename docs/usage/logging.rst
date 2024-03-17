@@ -4,31 +4,30 @@ Logging
 Application and request level loggers can be configured using the :class:`~litestar.logging.config.LoggingConfig`:
 
 .. code-block:: python
+    :caption: Configuring application and request level logging
 
-   import logging
+    import logging
 
-   from litestar import Litestar, Request, get
-   from litestar.logging import LoggingConfig
+    from litestar import Litestar, Request, get
+    from litestar.logging import LoggingConfig
 
 
-   @get("/")
-   def my_router_handler(request: Request) -> None:
+    @get("/")
+    def my_router_handler(request: Request) -> None:
        request.logger.info("inside a request")
        return None
 
 
-   logging_config = LoggingConfig(
+    logging_config = LoggingConfig(
        root={"level": logging.getLevelName(logging.INFO), "handlers": ["console"]},
        formatters={
            "standard": {"format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"}
        },
-   )
+    )
 
-   app = Litestar(route_handlers=[my_router_handler], logging_config=logging_config)
+    app = Litestar(route_handlers=[my_router_handler], logging_config=logging_config)
 
-.. attention::
-
-    Litestar configures a non-blocking :class:`~litestar.logging.standard.QueueListenerHandler` which
+.. attention:: Litestar configures a non-blocking :class:`~litestar.logging.standard.QueueListenerHandler` which
     is keyed as ``queue_listener`` in the logging configuration. The above example is using this handler,
     which is optimal for async applications.
 
@@ -42,6 +41,7 @@ can be integrated with :class:`~litestar.logging.config.LoggingConfig` as the ``
 By using ``logging_config()()`` you can build a ``logger`` to be used around your project.
 
 .. code-block:: python
+    :caption: Using standard library logging with Litestar's :class:`~litestar.logging.config.LoggingConfig`
 
     import logging
 
@@ -72,6 +72,7 @@ By using ``logging_config()()`` you can build a ``logger`` to be used around you
 The above example is the same as using logging without the Litestar :class:`~litestar.logging.config.LoggingConfig`
 
 .. code-block:: python
+    :caption: Using standard library logging without Litestar's :class:`~litestar.logging.config.LoggingConfig`
 
     import logging
 
@@ -118,20 +119,21 @@ Using StructLog
 Litestar ships with a dedicated logging plugin and config for using it:
 
 .. code-block:: python
+    :caption: Using StructLog with Litestar
 
-   from litestar import Litestar, Request, get
-   from litestar.plugins.structlog import StructlogPlugin
+    from litestar import Litestar, Request, get
+    from litestar.plugins.structlog import StructlogPlugin
 
 
-   @get("/")
-   def my_router_handler(request: Request) -> None:
+    @get("/")
+    def my_router_handler(request: Request) -> None:
        request.logger.info("inside a request")
        return None
 
 
-   structlog_plugin = StructlogPlugin()
+    structlog_plugin = StructlogPlugin()
 
-   app = Litestar(route_handlers=[my_router_handler], plugins=[StructlogPlugin()])
+    app = Litestar(route_handlers=[my_router_handler], plugins=[StructlogPlugin()])
 
 Subclass Logging Configs
 ^^^^^^^^^^^^^^^^^^^^^^^^
