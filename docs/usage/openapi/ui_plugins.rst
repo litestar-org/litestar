@@ -170,7 +170,7 @@ In ``v3.0.0``, the :attr:`OpenAPIConfig.enabled_endpoints` attribute will be rem
 enabled by default, in addition to the ``openapi.json`` endpoint which will always be enabled. ``Scalar`` will also
 become the default UI plugin in ``v3.0.0``.
 
-To adopt the future behavior, explicitly set the :attr:`OpenAPIConfig.render_plugins` field an instance of
+To adopt the future behavior, explicitly set the :attr:`OpenAPIConfig.render_plugins` field to an instance of
 :class:`ScalarRenderPlugin`:
 
 .. literalinclude:: /examples/openapi/plugins/scalar_simple.py
