@@ -108,6 +108,7 @@ class CommaSplittedPath(click.Path):
 
     .. versionadded:: 2.8.0
     """
+
     envvar_list_splitter = ","
 
 
