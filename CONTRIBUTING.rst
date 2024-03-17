@@ -95,7 +95,7 @@ The ``Makefile`` includes several commands for running tests:
 
 The tests make use of `pytest-xdist <https://pytest-xdist.readthedocs.io>`_ to speed up
 test runs. These are enabled by default when running ``make test``, ``make test-all``
-or ``make coverage``. Due to the nature of pytest-xdist, attaching a debugger isn't as
+or ``make coverage``. Due to the nature of pytest-xdist, attaching a debugger is not as
 straightforward. For debugging, it is recommended to run the tests individually with
 ``pytest <test name>`` or via an IDE, which will skip pytest-xdist.
 

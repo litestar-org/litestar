@@ -47,7 +47,7 @@ def get_exception_handler(exception_handlers: ExceptionHandlersMap, exc: Excepti
     If no status code match exists, each class in the MRO of the exception type is checked and
     the first matching handler is returned.
 
-    Finally, if a ``500`` handler is registered, it will be returned for any exception that isn't a
+    Finally, if a ``500`` handler is registered, it will be returned for any exception that is not a
     subclass of :class:`HTTPException <litestar.exceptions.HTTPException>`.
 
     Args:
