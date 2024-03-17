@@ -23,4 +23,6 @@ async def index(request: Request) -> Template:
     )
 
 
-app = Litestar(plugins=[flash_plugin], route_handlers=[index], template_config=template_config)
+app = Litestar(
+    plugins=[flash_plugin], route_handlers=[index], template_config=template_config
+)

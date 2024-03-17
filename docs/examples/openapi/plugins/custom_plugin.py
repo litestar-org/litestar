@@ -17,12 +17,18 @@ class ScalarRenderPlugin(OpenAPIRenderPlugin):
         path: str | Sequence[str] = "/scalar",
         **kwargs: Any,
     ) -> None:
-        self.js_url = js_url or f"https://cdn.jsdelivr.net/npm/@scalar/api-reference@{version}"
+        self.js_url = (
+            js_url or f"https://cdn.jsdelivr.net/npm/@scalar/api-reference@{version}"
+        )
         self.css_url = css_url
         super().__init__(path=path, **kwargs)
 
     def render(self, request: Request, openapi_schema: dict[str, Any]) -> bytes:
-        style_sheet_link = f'<link rel="stylesheet" type="text/css" href="{self.css_url}">' if self.css_url else ""
+        style_sheet_link = (
+            f'<link rel="stylesheet" type="text/css" href="{self.css_url}">'
+            if self.css_url
+            else ""
+        )
         head = f"""
                   <head>
                     <title>{openapi_schema["info"]["title"]}</title>
