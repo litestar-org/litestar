@@ -316,14 +316,14 @@ def _autodiscover_app(cwd: Path) -> LoadedApp:
             if isinstance(value, Litestar):
                 app_string = f"{import_path}:{attr}"
                 os.environ["LITESTAR_APP"] = app_string
-                if not quiet_console and  isatty():
+                if not quiet_console and isatty():
                     console.print(f"Using {app_name} app from [bright_blue]{app_string}")
                 return LoadedApp(app=value, app_path=app_string, is_factory=False)
 
         if hasattr(module, "create_app"):
             app_string = f"{import_path}:create_app"
             os.environ["LITESTAR_APP"] = app_string
-            if not quiet_console and  isatty():
+            if not quiet_console and isatty():
                 console.print(f"Using {app_name} factory from [bright_blue]{app_string}")
             return LoadedApp(app=module.create_app(), app_path=app_string, is_factory=True)
 
