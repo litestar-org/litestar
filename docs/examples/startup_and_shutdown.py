@@ -5,13 +5,15 @@ from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
 from litestar import Litestar
 
-DB_URI = os.environ.get("DATABASE_URI", "postgresql+asyncpg://postgres:mysecretpassword@pg.db:5432/db")
+DB_URI = os.environ.get(
+    "DATABASE_URI", "postgresql+asyncpg://postgres:mysecretpassword@pg.db:5432/db"
+)
 
 
 def get_db_connection(app: Litestar) -> AsyncEngine:
     """Returns the db engine.
 
-    If it doesn't exist, creates it and saves it in on the application state object
+    If it does not exist, creates it and saves it in on the application state object
     """
     if not getattr(app.state, "engine", None):
         app.state.engine = create_async_engine(DB_URI)

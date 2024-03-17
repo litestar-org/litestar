@@ -114,7 +114,7 @@ async def test_delete_idempotence(
     await server_side_session_backend.set("foo", session_data, memory_store)
 
     await server_side_session_backend.delete("foo", memory_store)
-    await server_side_session_backend.delete("foo", memory_store)  # ensure this doesn't raise an error
+    await server_side_session_backend.delete("foo", memory_store)  # ensure this does not raise an error
 
 
 async def test_max_age_expires(

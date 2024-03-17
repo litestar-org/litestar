@@ -35,9 +35,9 @@ def module_to_os_path(dotted_path: str = "app") -> Path:
     """
     try:
         if (src := find_spec(dotted_path)) is None:  # pragma: no cover
-            raise TypeError(f"Couldn't find the path for {dotted_path}")
+            raise TypeError(f"Could not find the path for {dotted_path}")
     except ModuleNotFoundError as e:
-        raise TypeError(f"Couldn't find the path for {dotted_path}") from e
+        raise TypeError(f"Could not find the path for {dotted_path}") from e
 
     return Path(str(src.origin).rsplit(os.path.sep + "__init__.py", maxsplit=1)[0])
 
@@ -82,7 +82,7 @@ def import_string(dotted_path: str) -> Any:
     try:
         module_path, class_name = dotted_path.rsplit(".", 1)
     except ValueError as e:
-        msg = "%s doesn't look like a module path"
+        msg = "%s does not look like a module path"
         raise ImportError(msg, dotted_path) from e
 
     try:

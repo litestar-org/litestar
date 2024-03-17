@@ -41,7 +41,7 @@ order, once the ASGI server (uvicorn, hypercorn, etc.) emits the respective even
 A classic use case for this is database connectivity. Often, we want to establish a database connection on application
 startup, and then close it gracefully upon shutdown.
 
-For example, lets create a database connection using the async engine from
+For example, let us create a database connection using the async engine from
 `SQLAlchemy <https://docs.sqlalchemy.org/en/latest/orm/extensions/asyncio.html>`_. We create two functions, one to get or
 establish the connection, and another to close it, and then pass them to the Litestar constructor:
 
@@ -101,7 +101,7 @@ it can be injected into dependencies and route handlers.
 The Application State is an instance of the :class:`State <.datastructures.state.State>` datastructure, and it is accessible
 via the :class:`app.state <.app.Litestar>` attribute. As such it can be accessed wherever the app instance is accessible.
 
-It's important to understand in this context that the application instance is injected into the ASGI ``scope`` mapping for
+It is important to understand in this context that the application instance is injected into the ASGI ``scope`` mapping for
 each connection (i.e. request or websocket connection) as ``scope["app"].state``. This makes the application accessible
 wherever the scope mapping is available, e.g. in middleware, on :class:`Request <.connection.request.Request>` and
 :class:`Websocket <.connection.websocket.WebSocket>` instances (accessible as ``request.app`` / ``socket.app``), and many
@@ -158,8 +158,8 @@ When using this pattern you can specify the class to use for the state object. T
 checkers, rather Litestar will instantiate a new state instance based on the type you set there. This allows users to
 use custom classes for State, e.g.:
 
-While this is very powerful, it might encourage users to follow anti-patterns: it's important to emphasize that using
-state can lead to code that's hard to reason about and bugs that are difficult to understand, due to changes in
+While this is very powerful, it might encourage users to follow anti-patterns: it is important to emphasize that using
+state can lead to code that is hard to reason about and bugs that are difficult to understand, due to changes in
 different ASGI contexts. As such, this pattern should be used only when it is the best choice and in a limited fashion.
 To discourage its use, Litestar also offers a builtin ``ImmutableState`` class. You can use this class to type state and
 ensure that no mutation of state is allowed:

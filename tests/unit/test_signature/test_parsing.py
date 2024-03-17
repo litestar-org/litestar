@@ -187,7 +187,7 @@ def test_collection_union_struct_fields(with_optional: bool) -> None:
 
 
 def test_dto_data_typed_as_any() -> None:
-    """DTOs already validate the payload, we don't need the signature model to do it too.
+    """DTOs already validate the payload, we do not need the signature model to do it too.
 
     https://github.com/litestar-org/litestar/issues/2149
     """

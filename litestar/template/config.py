@@ -20,8 +20,8 @@ EngineType = TypeVar("EngineType", bound=TemplateEngineProtocol)
 class TemplateConfig(Generic[EngineType]):
     """Configuration for Templating.
 
-    To enable templating, pass an instance of this class to the :class:`Litestar <litestar.app.Litestar>` constructor using the
-    'template_config' key.
+    To enable templating, pass an instance of this class to the :class:`Litestar <litestar.app.Litestar>` constructor
+    using the :paramref:`template_config <litestar.app.Litestar.template_config>` parameter.
     """
 
     engine: type[EngineType] | EngineType | None = field(default=None)

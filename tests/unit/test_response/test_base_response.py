@@ -89,7 +89,7 @@ def test_delete_cookie() -> None:
         assert client.cookies.get("test") == "abc"
         response = client.get("/delete")
         assert response.cookies.get("test") is None
-        # the commented out assert fails, because of the starlette test client's behaviour - which doesn't clear
+        # the commented out assert fails, because of the starlette test client's behaviour - which does not clear
         # cookies.
 
 
@@ -187,18 +187,18 @@ def test_get_serializer() -> None:
     class Foo:
         pass
 
-    foo_encoder = {Foo: lambda f: "it's a foo"}
-    path_encoder = {PurePosixPath: lambda p: "it's a path"}
+    foo_encoder = {Foo: lambda f: "it is a foo"}
+    path_encoder = {PurePosixPath: lambda p: "it is a path"}
 
     class FooResponse(Response):
         type_encoders = foo_encoder
 
     assert get_serializer() is default_serializer
 
-    assert get_serializer(type_encoders=foo_encoder)(Foo()) == "it's a foo"
-    assert get_serializer(type_encoders=path_encoder)(PurePosixPath()) == "it's a path"
+    assert get_serializer(type_encoders=foo_encoder)(Foo()) == "it is a foo"
+    assert get_serializer(type_encoders=path_encoder)(PurePosixPath()) == "it is a path"
 
-    assert get_serializer(FooResponse(None).type_encoders)(Foo()) == "it's a foo"
+    assert get_serializer(FooResponse(None).type_encoders)(Foo()) == "it is a foo"
     assert (
         get_serializer(FooResponse(None, type_encoders={Foo: lambda f: "foo"}).response_type_encoders)(Foo()) == "foo"
     )

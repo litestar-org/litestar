@@ -25,7 +25,7 @@ Using the ``LITESTAR_PDB`` environment variable
 Debugging with an IDE
 ---------------------
 
-You can easily attach your IDEs debugger to your application, whether you're running it
+You can easily attach your IDEs debugger to your application, whether you are running it
 via the CLI or a webserver like `uvicorn <https://www.uvicorn.org/>`_.
 
 Intellij / PyCharm

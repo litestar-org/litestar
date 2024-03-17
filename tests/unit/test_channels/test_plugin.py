@@ -414,7 +414,7 @@ async def test_backlog(
 
 
 async def test_shutdown_idempotent(memory_backend: MemoryChannelsBackend) -> None:
-    # calling shutdown repeatedly or before startup shouldn't cause any issues
+    # calling shutdown repeatedly or before startup should not cause any issues
     plugin = ChannelsPlugin(backend=memory_backend, arbitrary_channels_allowed=True)
     await plugin._on_shutdown()
     await plugin._on_startup()

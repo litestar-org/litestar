@@ -6,13 +6,16 @@ from pydantic import BaseModel, EmailStr, SecretStr
 from litestar import Litestar, Request, get, post
 from litestar.connection import ASGIConnection
 from litestar.exceptions import NotAuthorizedException
-from litestar.middleware.session.server_side import ServerSideSessionBackend, ServerSideSessionConfig
+from litestar.middleware.session.server_side import (
+    ServerSideSessionBackend,
+    ServerSideSessionConfig,
+)
 from litestar.openapi.config import OpenAPIConfig
 from litestar.security.session_auth import SessionAuth
 from litestar.stores.memory import MemoryStore
 
 
-# Let's assume we have a User model that is a pydantic model.
+# Let us assume we have a User model that is a pydantic model.
 # This though is not required - we need some sort of user class -
 # but it can be any arbitrary value, e.g. an SQLAlchemy model,
 # a representation of a MongoDB  etc.

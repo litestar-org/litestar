@@ -158,10 +158,10 @@ class _Thing:
         return prs
 
     async def _get_first_time_contributions(self, prs: dict[str, list[PRInfo]]) -> list[PRInfo]:
-        # there's probably a way to peel this information out of the GraphQL API but
+        # there is probably a way to peel this information out of the GraphQL API but
         # this was easier to implement, and it works well enough ¯\_(ツ)_/¯
-        # the logic is: if we don't find a commit to the main branch, dated before the
-        # first commit within this release, it's the user's first contribution
+        # the logic is: if we do not find a commit to the main branch, dated before the
+        # first commit within this release, it is the user's first contribution
         prs_by_user_login: dict[str, list[PRInfo]] = defaultdict(list)
         for pr in [p for type_prs in prs.values() for p in type_prs]:
             prs_by_user_login[pr.user.login].append(pr)
@@ -265,10 +265,10 @@ def build_gh_release_notes(release_info: ReleaseInfo) -> str:
     # but with three important differences:
     # 1. PRs are sorted into categories
     # 2. The conventional commit type is stripped from the title
-    # 3. It works with our release branch process. GitHub doesn't pick up (all) commits
+    # 3. It works with our release branch process. GitHub does not pick up (all) commits
     #    made there depending on how things were merged
     doc = GHReleaseWriter()
-    doc.add_line("## What's changed")
+    doc.add_line("## What has changed")
     if fixes := release_info.pull_requests.get("fix"):
         doc.add_line("\n### Bugfixes")
         doc.add_pr_descriptions(fixes)
@@ -355,7 +355,7 @@ def _write_changelog_entry(changelog_entry: str) -> None:
 
 
 def update_pyproject_version(new_version: str) -> None:
-    # can't use tomli-w / tomllib for this as is messes up the formatting
+    # cannot use tomli-w / tomllib for this as is messes up the formatting
     pyproject = pathlib.Path("pyproject.toml")
     content = pyproject.read_text()
     content = re.sub(r'(\nversion ?= ?")\d\.\d\.\d("\s*\n)', rf"\g<1>{new_version}\g<2>", content)

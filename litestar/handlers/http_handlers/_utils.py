@@ -109,7 +109,7 @@ def normalize_headers(headers: frozenset[ResponseHeader]) -> dict[str, str]:
     """
     return {
         header.name: cast("str", header.value)  # we know value to be a string at this point because we validate it
-        # that it's not None when initializing a header with documentation_only=True
+        # that it is not None when initializing a header with documentation_only=True
         for header in headers
         if not header.documentation_only
     }

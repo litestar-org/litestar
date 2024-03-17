@@ -146,7 +146,7 @@ def test_structlog_config_specify_processors(capsys: CaptureFixture) -> None:
         assert isinstance(client.app.logger.bind(), BindableLogger)
 
         client.app.logger.info("message1", key="value1")
-        # Log twice to make sure issue #882 doesn't appear again
+        # Log twice to make sure issue #882 does not appear again
         client.app.logger.info("message2", key="value2")
 
         log_messages = [decode_json(value=x) for x in capsys.readouterr().out.splitlines()]

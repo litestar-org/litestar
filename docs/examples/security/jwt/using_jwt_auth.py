@@ -10,7 +10,7 @@ from litestar.openapi.config import OpenAPIConfig
 from litestar.security.jwt import JWTAuth, Token
 
 
-# Let's assume we have a User model that is a pydantic model.
+# Let us assume we have a User model that is a pydantic model.
 # This though is not required - we need some sort of user class -
 # but it can be any arbitrary value, e.g. an SQLAlchemy model, a representation of a MongoDB  etc.
 class User(BaseModel):
@@ -28,7 +28,9 @@ MOCK_DB: Dict[str, User] = {}
 # Notes:
 # - 'User' can be any arbitrary value you decide upon.
 # - The callable can be either sync or async - both will work.
-async def retrieve_user_handler(token: Token, connection: "ASGIConnection[Any, Any, Any, Any]") -> Optional[User]:
+async def retrieve_user_handler(
+    token: Token, connection: "ASGIConnection[Any, Any, Any, Any]"
+) -> Optional[User]:
     # logic here to retrieve the user instance
     return MOCK_DB.get(token.sub)
 
@@ -48,7 +50,9 @@ async def login_handler(data: User) -> Response[User]:
     MOCK_DB[str(data.id)] = data
     # you can do whatever you want to update the response instance here
     # e.g. response.set_cookie(...)
-    return jwt_auth.login(identifier=str(data.id), token_extras={"email": data.email}, response_body=data)
+    return jwt_auth.login(
+        identifier=str(data.id), token_extras={"email": data.email}, response_body=data
+    )
 
 
 # We also have some other routes, for example:

@@ -71,7 +71,7 @@ parsers_map: dict[Any, Callable[[Any], Any]] = {
 class BaseRoute(ABC):
     """Base Route class used by Litestar.
 
-    It's an abstract class meant to be extended.
+    It is an abstract class meant to be extended.
     """
 
     __slots__ = (

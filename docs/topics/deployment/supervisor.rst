@@ -10,7 +10,7 @@ Use When
 --------
 
 ``supervisor`` is ideal for managing Python web applications that need continuous uptime and robust process control.
-It's particularly useful when you need extensive process management, monitoring, log management, and
+It is particularly useful when you need extensive process management, monitoring, log management, and
 customized control over the start, stop, and restart of application processes.
 
 For detailed understanding and further information, refer to the official
@@ -81,8 +81,8 @@ After you have created the config file, you will need to reload the ``supervisor
 
 Now you are ready to start your application.
 
-#. Start the service if it's not already running: ``sudo supervisorctl start exampleapp``.
-#. Ensure it's operating correctly by checking the output for errors: ``sudo supervisorctl status exampleapp``.
+#. Start the service if it is not already running: ``sudo supervisorctl start exampleapp``.
+#. Ensure it is operating correctly by checking the output for errors: ``sudo supervisorctl status exampleapp``.
 #. Once confirmed, your Litestar application should be accessible (By default at ``http://0.0.0.0:8000``).
 
 After that, you are done! You can now use ``supervisor`` to manage your application.

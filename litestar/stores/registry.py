@@ -27,9 +27,9 @@ class StoreRegistry:
 
         Args:
             stores: A dictionary mapping store names to stores, used to initialize the registry
-            default_factory: A callable used by :meth:`StoreRegistry.get` to provide a store, if the requested name hasn't
-                been registered yet. This callable receives the requested name and should return a
-                :class:`Store <.base.Store>` instance.
+            default_factory: A callable used by :meth:`StoreRegistry.get` to provide a store
+                if the requested name has not been registered yet.
+                This callable receives the requested name and should return a :class:`Store <.base.Store>` instance.
         """
         self._stores = stores or {}
         self._default_factory = default_factory

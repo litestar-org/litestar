@@ -59,7 +59,7 @@ def test_response_cookies_mapping() -> None:
 
 
 def test_response_cookies_mapping_unresolved() -> None:
-    # this should never happen, as there's no way to create this situation which type-checks.
+    # this should never happen, as there is no way to create this situation which type-checks.
     # we test for it nevertheless
 
     @get()

@@ -227,7 +227,7 @@ class HTTPRoute(BaseRoute):
         if not (cached_response_data := await store.get(key=cache_key)):
             return None
 
-        # we use the regular msgspec.msgpack.decode here since we don't need any of
+        # we use the regular msgspec.msgpack.decode here since we do not need any of
         # the added decoders
         messages = _decode_msgpack_plain(cached_response_data)
 

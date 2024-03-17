@@ -16,7 +16,9 @@ class MyDIPlugin(DIPlugin):
         return issubclass(type_, MyBaseType)
 
     def get_typed_init(self, type_: Any) -> Tuple[Signature, Dict[str, Any]]:
-        signature = Signature([Parameter(name="param", kind=Parameter.POSITIONAL_OR_KEYWORD)])
+        signature = Signature(
+            [Parameter(name="param", kind=Parameter.POSITIONAL_OR_KEYWORD)]
+        )
         annotations = {"param": str}
         return signature, annotations
 

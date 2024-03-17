@@ -16,8 +16,8 @@ to make working with models easier.
 Modeling
 --------
 
-We'll begin by modelling the entities and relationships between authors and books.
-We'll start by creating the ``Author`` table, utilizing the
+We will begin by modelling the entities and relationships between authors and books.
+We will start by creating the ``Author`` table, utilizing the
 :class:`UUIDBase <advanced_alchemy.base.UUIDBase>` class. To keep things
 simple, our first model will encompass only three fields: ``id``, ``name``, and ``dob``.
 
@@ -75,7 +75,7 @@ Additional features provided by the built-in base models include:
 - A custom :class:`JsonB <advanced_alchemy.types.JsonB>` type that uses
   native ``JSONB`` where possible and ``Binary`` or ``Blob`` as an alternative.
 
-Let's build on this as we look at the repository classes.
+Let us build on this as we look at the repository classes.
 
 .. _01-repo-full-code:
 

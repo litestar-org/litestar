@@ -31,6 +31,10 @@ def delete_session_handler(request: Request) -> None:
 
 
 app = Litestar(
-    route_handlers=[check_session_handler, create_session_handler, delete_session_handler],
+    route_handlers=[
+        check_session_handler,
+        create_session_handler,
+        delete_session_handler,
+    ],
     middleware=[session_config.middleware],
 )

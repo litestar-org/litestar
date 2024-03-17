@@ -3,7 +3,9 @@ from litestar.exceptions import HTTPException, ValidationException
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 
 
-def validation_exception_handler(request: Request, exc: ValidationException) -> Response:
+def validation_exception_handler(
+    request: Request, exc: ValidationException
+) -> Response:
     return Response(
         media_type=MediaType.TEXT,
         content=f"validation error: {exc.detail}",

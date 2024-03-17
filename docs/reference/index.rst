@@ -10,11 +10,11 @@ API reference
     background_tasks
     channels/index
     cli
+    concurrency
     config
     connection
     contrib/index
     controller
-    concurrency
     data_extractors
     datastructures
     di

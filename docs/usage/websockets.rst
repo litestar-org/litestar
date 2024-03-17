@@ -33,12 +33,12 @@ sent over the connection. The low level details will be handled behind the curta
 
 This handler will accept connections on ``/``, and wait to receive data. Once a message
 has been received, it will be passed into the handler function defined, via the ``data``
-parameter. This works like a regular route handler, so it's possible to specify the
+parameter. This works like a regular route handler, so it is possible to specify the
 type of data which should be received, and it will be converted accordingly.
 
 .. note::
     Contrary to websocket route handlers, function decorated with
-    :class:`websocket_listener <.handlers.websocket_listener>` don't have to be
+    :class:`websocket_listener <.handlers.websocket_listener>` do not have to be
     asynchronous.
 
 
@@ -122,8 +122,8 @@ individually for receiving and sending data.
     :class:`bytes` respectively, but this is not the case. Listeners can receive and
     send data in any format, independently of the mode. The mode only affects how
     data is encoded during transport (i.e. on the protocol level). In most cases the
-    default mode - ``text`` - is all that's needed. Binary transport is usually employed
-    when sending binary blobs that don't have a meaningful string representation, such
+    default mode - ``text`` - is all that is needed. Binary transport is usually employed
+    when sending binary blobs that do not have a meaningful string representation, such
     as images.
 
 
@@ -188,7 +188,7 @@ regular route handlers:
 
 .. important::
     Injected dependencies work on the level of the underlying **route handler**. This
-    means they won't be re-evaluated every time the listener function is called.
+    means they will not be re-evaluated every time the listener function is called.
 
 The following example makes use of :ref:`yield dependencies <yield_dependencies>` and
 the fact that dependencies are only evaluated once for every connection; The step after
@@ -220,13 +220,12 @@ function via the ``socket`` argument:
 Customising connection acceptance
 ---------------------------------
 
-By default, Litestar will accept all incoming connections by awaiting ``WebSocket.accept()`` without arguments.
+By default, Litestar will accept all incoming connections by awaiting :meth:`WebSocket.accept` without arguments.
 This behavior can be customized by passing a custom ``connection_accept_handler`` function. Litestar will await this
 function to accept the connection.
 
 .. literalinclude:: /examples/websockets/setting_custom_connection_headers.py
     :language: python
-
 
 Class based WebSocket handling
 ------------------------------
@@ -254,9 +253,13 @@ encapsulate more complex logic.
 Custom WebSocket
 ----------------
 
-.. versionadded:: 2.7.0
+.. versionadded:: v2.7.0
+    See :ref:`v2.7.0 release notes <release-notes/changelog:2.7.0>`.
 
-Litestar supports custom ``websocket_class`` instances, which can be used to further configure the default :class:`WebSocket`.
+The ``Litestar`` instance supports subclasses of :class:`Websocket <.connection.websocket.WebSocket>`
+and passing them into the :attr:`websocket_class` attribute. This attribute should be set to a subclass of
+which can be used to further configure the default :class:`WebSocket`.
+
 The example below illustrates how to implement custom websocket class for the whole application.
 
 .. dropdown:: Example of a custom websocket at the application level
@@ -266,8 +269,8 @@ The example below illustrates how to implement custom websocket class for the wh
 
 .. admonition:: Layered architecture
 
-   WebSocket classes are part of Litestar's layered architecture, which means you can
-   set a websocket class on every layer of the application. If you have set a webscoket
+   :class:`Websocket <.connection.websocket.WebSocket>` classes are part of Litestar's layered architecture, which means you can
+   set a websocket class on every layer of the application. If you have set a websocket
    class on multiple layers, the layer closest to the route handler will take precedence.
 
    You can read more about this in the :ref:`usage/applications:layered architecture` section

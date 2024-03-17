@@ -22,7 +22,7 @@ When we try to create a new ``Person`` instance with an ``id`` field specified, 
 .. image:: images/read_only_fields_error.png
    :align: center
 
-What's happening? The DTO is trying to construct an instance of the ``Person`` model but we have excluded the ``id``
+What is happening? The DTO is trying to construct an instance of the ``Person`` model but we have excluded the ``id``
 field from the accepted client data. The ``id`` field is required by the ``Person`` model, so the model constructor
 raises an error.
 

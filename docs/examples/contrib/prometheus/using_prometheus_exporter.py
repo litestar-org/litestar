@@ -9,4 +9,6 @@ prometheus_config = PrometheusConfig()
 # If you want to change the path and format you can do it by subclassing the PrometheusController class.
 
 # Creating the litestar app instance with our custom PrometheusConfig and PrometheusController.
-app = Litestar(route_handlers=[PrometheusController], middleware=[prometheus_config.middleware])
+app = Litestar(
+    route_handlers=[PrometheusController], middleware=[prometheus_config.middleware]
+)

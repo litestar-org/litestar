@@ -118,7 +118,7 @@ class StaticFiles:
             )
 
         if self.is_html_mode:
-            # for some reason coverage doesn't catch these two lines
+            # for some reason coverage does not catch these two lines
             filename = "404.html"  # pragma: no cover
             resolved_path, fs_info = await self.get_fs_info(  # pragma: no cover
                 directories=self.directories, file_path=filename

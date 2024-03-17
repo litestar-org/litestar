@@ -42,7 +42,7 @@ every request:
 
    app = Litestar(route_handlers=[...], middleware=[middleware_factory])
 
-In the above example, Litestar will call the ``middleware_factory`` function and pass to it ``app``. It's important to
+In the above example, Litestar will call the ``middleware_factory`` function and pass to it ``app``. It is important to
 understand that this kwarg does not designate the Litestar application but rather the next ``ASGIApp`` in the stack. It
 will then insert the returned ``my_middleware`` function into the stack of every route in the application -
 because we declared it on the application level.
@@ -59,7 +59,7 @@ because we declared it on the application level.
 Middleware Call Order
 ---------------------
 
-Since it's also possible to define multiple middlewares on every layer, the call order for
+Since it is also possible to define multiple middlewares on every layer, the call order for
 middlewares will be **top to bottom** and **left to right**. This means for each layer, the
 middlewares will be called in the order they have been passed, while the layers will be
 traversed in the usual order:
