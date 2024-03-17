@@ -1,7 +1,7 @@
 Exceptions and exception handling
 =================================
 
-Litestar define a base exception called :class:`~litestar.exceptions.LitestarException>` which serves
+Litestar define a base exception called :class:`~litestar.exceptions.LitestarException` which serves
 as a basis to all other exceptions.
 
 In general, Litestar will raise two types of exceptions:
