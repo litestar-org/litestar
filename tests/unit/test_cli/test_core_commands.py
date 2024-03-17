@@ -59,6 +59,7 @@ def mock_show_app_info(mocker: MockerFixture) -> MagicMock:
     ],
 )
 @pytest.mark.parametrize("tty_enabled", [True, False])
+@pytest.mark.parametrize("quiet_console", [True, False])
 def test_run_command(
     mock_show_app_info: MagicMock,
     mocker: MockerFixture,
@@ -78,10 +79,14 @@ def test_run_command(
     create_app_file: CreateAppFileFixture,
     set_in_env: bool,
     tty_enabled: bool,
+    quiet_console: bool,
     mock_subprocess_run: MagicMock,
     mock_uvicorn_run: MagicMock,
     tmp_project_dir: Path,
 ) -> None:
+    monkeypatch.delenv("LITESTAR_QUIET_CONSOLE")
+    if quiet_console:
+        monkeypatch.setenv("LITESTAR_QUIET_CONSOLE", "true")
     mocker.patch.object(core, "isatty", return_value=tty_enabled)
     mocker.patch.object(_utils, "isatty", return_value=tty_enabled)
     args = []
@@ -200,12 +205,14 @@ def test_run_command(
             ssl_keyfile=None,
         )
 
-    if tty_enabled:
+    if tty_enabled and not quiet_console:
         mock_show_app_info.assert_called_once()
     else:
         mock_show_app_info.assert_not_called()
 
 
+@pytest.mark.parametrize("quiet_console", [True, False])
+@pytest.mark.parametrize("tty_enabled", [True, False])
 @pytest.mark.parametrize(
     "file_name,file_content,factory_name",
     [
@@ -222,12 +229,20 @@ def test_run_command_with_autodiscover_app_factory(
     file_content: str,
     factory_name: str,
     patch_autodiscovery_paths: Callable[[List[str]], None],
+    tty_enabled: bool,
+    quiet_console: bool,
     create_app_file: CreateAppFileFixture,
+    mocker: MockerFixture,
+    monkeypatch: MonkeyPatch,
 ) -> None:
+    monkeypatch.delenv("LITESTAR_QUIET_CONSOLE", raising=False)
+    if quiet_console:
+        monkeypatch.setenv("LITESTAR_QUIET_CONSOLE", "true")
+    mocker.patch.object(core, "isatty", return_value=tty_enabled)
+    mocker.patch.object(_utils, "isatty", return_value=tty_enabled)
     patch_autodiscovery_paths([file_name])
     path = create_app_file(file_name, content=file_content)
     result = runner.invoke(cli_command, "run")
-
     assert result.exception is None
     assert result.exit_code == 0
 
@@ -241,6 +256,10 @@ def test_run_command_with_autodiscover_app_factory(
         ssl_certfile=None,
         ssl_keyfile=None,
     )
+    if tty_enabled and not quiet_console:
+        assert len(result.output) > 0
+    else:
+        assert len(result.output) == 0
 
 
 def test_run_command_with_app_factory(
