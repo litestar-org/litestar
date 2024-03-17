@@ -74,22 +74,11 @@ class LitestarEnv:
     """Information about the current Litestar environment variables."""
 
     app_path: str
-    debug: bool
     app: Litestar
     cwd: Path
     host: str | None = None
     port: int | None = None
-    fd: int | None = None
-    uds: str | None = None
-    reload: bool | None = None
-    reload_dirs: tuple[str, ...] | None = None
-    reload_include: tuple[str, ...] | None = None
-    reload_exclude: tuple[str, ...] | None = None
-    web_concurrency: int | None = None
     is_app_factory: bool = False
-    certfile_path: str | None = None
-    keyfile_path: str | None = None
-    create_self_signed_cert: bool = False
 
     @classmethod
     def from_env(cls, app_path: str | None, app_dir: Path | None = None) -> LitestarEnv:
@@ -119,31 +108,14 @@ class LitestarEnv:
             loaded_app = _autodiscover_app(cwd)
 
         port = getenv("LITESTAR_PORT")
-        web_concurrency = getenv("WEB_CONCURRENCY")
-        uds = getenv("LITESTAR_UNIX_DOMAIN_SOCKET")
-        fd = getenv("LITESTAR_FILE_DESCRIPTOR")
-        reload_dirs = tuple(s.strip() for s in getenv("LITESTAR_RELOAD_DIRS", "").split(",") if s) or None
-        reload_include = tuple(s.strip() for s in getenv("LITESTAR_RELOAD_INCLUDES", "").split(",") if s) or None
-        reload_exclude = tuple(s.strip() for s in getenv("LITESTAR_RELOAD_EXCLUDES", "").split(",") if s) or None
 
         return cls(
             app_path=loaded_app.app_path,
             app=loaded_app.app,
-            debug=_bool_from_env("LITESTAR_DEBUG"),
             host=getenv("LITESTAR_HOST"),
             port=int(port) if port else None,
-            uds=uds,
-            fd=int(fd) if fd else None,
-            reload=_bool_from_env("LITESTAR_RELOAD"),
-            reload_dirs=reload_dirs,
-            reload_include=reload_include,
-            reload_exclude=reload_exclude,
-            web_concurrency=int(web_concurrency) if web_concurrency else None,
             is_app_factory=loaded_app.is_factory,
             cwd=cwd,
-            certfile_path=getenv("LITESTAR_SSL_CERT_PATH"),
-            keyfile_path=getenv("LITESTAR_SSL_KEY_PATH"),
-            create_self_signed_cert=_bool_from_env("LITESTAR_CREATE_SELF_SIGNED_CERT"),
         )
 
 
