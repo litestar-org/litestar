@@ -115,7 +115,7 @@ class OpenAPIConfig:
 
     If no path is provided the default is ``/schema``.
 
-    Ignored if :attr:`openapi_router` is provided.
+    Ignored if ``openapi_router`` is provided.
     """
     render_plugins: Sequence[OpenAPIRenderPlugin] = field(default=())
     """Plugins for rendering OpenAPI documentation UIs."""
@@ -124,32 +124,22 @@ class OpenAPIConfig:
 
     If provided, ``path`` is ignored.
 
-    This parameter is also ignored if the deprecated :attr:`openapi_router <.openapi.OpenAPIConfig.openapi_controller>`
-    kwarg is provided.
+    This parameter is also ignored if the deprecated :class:`OpenAPIConfig <.openapi.OpenAPIConfig>` ``openapi_controller`` kwarg is provided.
 
-    :attr:`openapi_router` is not required, but it can be passed to customize the configuration of the router used to
-    serve the documentation endpoints. For example, you can add middleware or guards to the router.
+    The ``openapi_router`` is not required, but it can be passed to customize the configuration of the router used to serve the documentation endpoints. For example, you can add middleware or guards to the router.
 
-    Handlers to serve the OpenAPI schema and documentation sites are added to this router according to
-    :attr:`render_plugins`, so routes shouldn't be added that conflict with these.
+    Handlers to serve the OpenAPI schema and documentation sites are added to this router according
+    to the ``render_plugins`` attribute, so routes shouldn't be added that conflict with these.
     """
     openapi_controller: type[OpenAPIController] | None = None
     """Controller for generating OpenAPI routes.
 
     Must be subclass of :class:`OpenAPIController <litestar.openapi.controller.OpenAPIController>`.
-
-    .. deprecated:: v2.8.0
     """
     root_schema_site: Literal["redoc", "swagger", "elements", "rapidoc"] | None = None
-    """The static schema generator to use for the "root" path of ``/schema/``.
-
-    .. deprecated:: v2.8.0
-    """
+    """The static schema generator to use for the "root" path of ``/schema/``."""
     enabled_endpoints: set[str] | None = None
-    """A set of the enabled documentation sites and schema download endpoints.
-
-    .. deprecated:: v2.8.0
-    """
+    """A set of the enabled documentation sites and schema download endpoints."""
 
     def __post_init__(self) -> None:
         self._issue_deprecations()

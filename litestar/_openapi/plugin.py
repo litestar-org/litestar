@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from litestar._openapi.datastructures import OpenAPIContext
-from litestar._openapi.path_item import create_path_item_for_route, merge_path_item_operations
+from litestar._openapi.path_item import create_path_item_for_route
 from litestar.constants import OPENAPI_JSON_HANDLER_NAME
 from litestar.enums import MediaType
 from litestar.exceptions import ImproperlyConfiguredException, NotFoundException
@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from litestar.handlers import HTTPRouteHandler
     from litestar.openapi.config import OpenAPIConfig
     from litestar.openapi.plugins import OpenAPIRenderPlugin
-    from litestar.openapi.spec import OpenAPI, PathItem
+    from litestar.openapi.spec import OpenAPI
     from litestar.routes import BaseRoute
 
 
