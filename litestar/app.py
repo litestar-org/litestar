@@ -864,7 +864,7 @@ class Litestar(Router):
         Returns:
             None
         """
-        self.plugins.get(OpenAPIPlugin)._build_openapi_schema()
+        self.plugins.get(OpenAPIPlugin)._build_openapi()
 
     def emit(self, event_id: str, *args: Any, **kwargs: Any) -> None:
         """Emit an event to all attached listeners.
