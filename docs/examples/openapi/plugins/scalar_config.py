@@ -1,3 +1,3 @@
 from litestar.openapi.plugins import ScalarRenderPlugin
 
-scalar_plugin = ScalarRenderPlugin(version="1.19.5", js_url=None, path="/scalar")
+scalar_plugin = ScalarRenderPlugin(version="1.19.5", path="/scalar")
