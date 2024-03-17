@@ -50,7 +50,7 @@ def create_request_body(
         schema = schema_creator.for_field_definition(data_field)
 
     examples: Mapping[str, Example] | None = None
-    if isinstance(data_field.kwarg_definition, BodyKwarg) and isinstance(data_field.kwarg_definition.examples, list):
+    if isinstance(data_field.kwarg_definition, BodyKwarg) and data_field.kwarg_definition.examples is not None:
         examples = get_formatted_examples(data_field, data_field.kwarg_definition.examples)
 
     return RequestBody(required=True, content={media_type: OpenAPIMediaType(schema=schema, examples=examples)})
