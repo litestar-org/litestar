@@ -84,7 +84,7 @@ def test_run_command(
     mock_uvicorn_run: MagicMock,
     tmp_project_dir: Path,
 ) -> None:
-    monkeypatch.delenv("LITESTAR_QUIET_CONSOLE")
+    monkeypatch.delenv("LITESTAR_QUIET_CONSOLE", raising=False)
     if quiet_console:
         monkeypatch.setenv("LITESTAR_QUIET_CONSOLE", "true")
     mocker.patch.object(core, "isatty", return_value=tty_enabled)
