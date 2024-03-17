@@ -550,6 +550,7 @@ def remove_default_schema_routes(
     )
     return remove_routes_with_patterns(routes, (schema_path,))
 
+
 def isatty() -> bool:
     """Detect if a terminal is TTY enabled.
 

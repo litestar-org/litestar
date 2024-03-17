@@ -36,6 +36,7 @@ def mock_isatty(mocker: MockerFixture) -> MagicMock:
     mocker.patch("litestar.cli._utils.isatty", new_callable=mock)
     return mock
 
+
 @pytest.fixture()
 def mock_show_app_info(mocker: MockerFixture) -> MagicMock:
     return mocker.patch("litestar.cli.commands.core.show_app_info")
@@ -209,6 +210,7 @@ def test_run_command(
         mock_show_app_info.assert_called_once()
     else:
         mock_show_app_info.assert_not_called()
+
 
 @pytest.mark.parametrize(
     "file_name,file_content,factory_name",
@@ -403,7 +405,11 @@ def test_run_command_debug(
 
 @pytest.mark.usefixtures("mock_uvicorn_run", "unset_env")
 def test_run_command_quiet_console(
-    app_file: Path, runner: CliRunner, monkeypatch: MonkeyPatch, create_app_file: CreateAppFileFixture,     mock_isatty: MagicMock,
+    app_file: Path,
+    runner: CliRunner,
+    monkeypatch: MonkeyPatch,
+    create_app_file: CreateAppFileFixture,
+    mock_isatty: MagicMock,
 ) -> None:
     mock_isatty.return_value = True
     console = Console(file=io.StringIO(), force_interactive=True)
@@ -432,7 +438,11 @@ def test_run_command_quiet_console(
 
 @pytest.mark.usefixtures("mock_uvicorn_run", "unset_env")
 def test_run_command_custom_app_name(
-    app_file: Path, runner: CliRunner, monkeypatch: MonkeyPatch, create_app_file: CreateAppFileFixture,   mock_isatty: MagicMock,
+    app_file: Path,
+    runner: CliRunner,
+    monkeypatch: MonkeyPatch,
+    create_app_file: CreateAppFileFixture,
+    mock_isatty: MagicMock,
 ) -> None:
     mock_isatty.return_value = True
 
