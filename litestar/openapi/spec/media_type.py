@@ -32,7 +32,7 @@ class OpenAPIMediaType(BaseSchemaObject):
     example provided by the schema.
     """
 
-    examples: dict[str, Example | Reference] | Mapping[str, Example] | None = None
+    examples: dict[str, Example | Reference] | None = None
     """Examples of the media type.
 
     Each example object SHOULD match the media type and specified schema if present.
