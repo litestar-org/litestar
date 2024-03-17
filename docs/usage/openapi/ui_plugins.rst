@@ -19,7 +19,6 @@ Litestar maintains and ships with UI plugins for a range of popular popular Open
 Each plugin is easily configurable, allowing developers to customize aspects like version, paths, CSS and JavaScript
 resources.
 
-
 Using OpenAPI UI Plugins
 ------------------------
 
@@ -31,43 +30,42 @@ Using OpenAPI UI Plugins is as simple as importing the plugin, instantiating it,
         :sync: scalar
 
         .. literalinclude:: /examples/openapi/plugins/scalar_simple.py
-            :language: python
+            :caption: Using the Scalar OpenAPI UI plugin
 
     .. tab-item:: rapidoc
         :sync: rapidoc
 
         .. literalinclude:: /examples/openapi/plugins/rapidoc_simple.py
-            :language: python
+            :caption: Using the RapiDoc OpenAPI UI plugin
 
     .. tab-item:: redoc
         :sync: redoc
 
         .. literalinclude:: /examples/openapi/plugins/redoc_simple.py
-            :language: python
+            :caption: Using the ReDoc OpenAPI UI plugin
 
     .. tab-item:: stoplight
         :sync: stoplight
 
         .. literalinclude:: /examples/openapi/plugins/stoplight_simple.py
-            :language: python
+            :caption: Using the Stoplight Elements OpenAPI UI plugin
 
     .. tab-item:: swagger
         :sync: swagger
 
         .. literalinclude:: /examples/openapi/plugins/swagger_ui_simple.py
-            :language: python
+            :caption: Using the Swagger UI OpenAPI UI plugin
 
     .. tab-item:: yaml
         :sync: yaml
 
         .. literalinclude:: /examples/openapi/plugins/yaml_simple.py
-            :language: python
+            :caption: Using the YAML OpenAPI UI plugin
 
     .. tab-item:: multiple
 
         .. literalinclude:: /examples/openapi/plugins/serving_multiple_uis.py
             :caption: Any combination of UIs can be served.
-            :language: python
 
 Configuring OpenAPI UI Plugins
 ------------------------------
@@ -91,7 +89,7 @@ Most plugins support the following additional options:
 - ``js_url``: The URL to the JS bundle. If provided, this will override the ``version`` option.
 - ``css_url``: The URL to the CSS bundle. If provided, this will override the ``version`` option.
 
-Here's some example plugin configurations:
+Here are some example plugin configurations:
 
 .. tab-set::
 
@@ -99,31 +97,31 @@ Here's some example plugin configurations:
         :sync: scalar
 
         .. literalinclude:: /examples/openapi/plugins/scalar_config.py
-            :language: python
+            :caption: Configuring the Scalar OpenAPI UI plugin
 
     .. tab-item:: rapidoc
         :sync: rapidoc
 
         .. literalinclude:: /examples/openapi/plugins/rapidoc_config.py
-            :language: python
+            :caption: Configuring the RapiDoc OpenAPI UI plugin
 
     .. tab-item:: redoc
         :sync: redoc
 
         .. literalinclude:: /examples/openapi/plugins/redoc_config.py
-            :language: python
+            :caption: Configuring the ReDoc OpenAPI UI plugin
 
     .. tab-item:: stoplight
         :sync: stoplight
 
         .. literalinclude:: /examples/openapi/plugins/stoplight_config.py
-            :language: python
+            :caption: Configuring the Stoplight Elements OpenAPI UI plugin
 
     .. tab-item:: swagger
         :sync: swagger
 
         .. literalinclude:: /examples/openapi/plugins/swagger_ui_config.py
-            :language: python
+            :caption: Configuring the Swagger UI OpenAPI UI plugin
 
 Configuring the OpenAPI Root Path
 ---------------------------------
@@ -134,7 +132,7 @@ This can be changed by setting the :attr:`OpenAPIConfig.path` attribute.
 In the following example, we configure the OpenAPI root path to be ``/docs``:
 
 .. literalinclude:: /examples/openapi/customize_path.py
-    :language: python
+    :caption: Configuring the OpenAPI root path
 
 This will result in any of the OpenAPI endpoints being served at ``/docs`` instead of ``/schema``, e.g.,
 ``/docs/openapi.json``.
@@ -174,7 +172,7 @@ To adopt the future behavior, explicitly set the :attr:`OpenAPIConfig.render_plu
 :class:`ScalarRenderPlugin`:
 
 .. literalinclude:: /examples/openapi/plugins/scalar_simple.py
-    :language: python
+    :caption: Opting in to future behavior of OpenAPI UI plugins
     :lines: 13-21
 
 Backward compatibility with ``root_schema_site``
@@ -196,26 +194,28 @@ Building your own OpenAPI UI Plugin
 If Litestar does not have built-in support for your OpenAPI UI framework of choice, you can easily create your own
 plugin by subclassing :class:`OpenAPIRenderPlugin` and implementing the :meth:`OpenAPIRenderPlugin.render` method.
 
-To demonstrate building a custom plugin, we'll look at a plugin very similar to the :class:`ScalarRenderPlugin` that is
-maintained by Litestar. Here's the finished product:
+To demonstrate building a custom plugin, we will look at a plugin very similar to the :class:`ScalarRenderPlugin` that is
+maintained by Litestar. Here is the finished product:
 
-.. literalinclude:: /examples/openapi/plugins/custom_plugin.py
-    :language: python
+.. dropdown:: Custom OpenAPI UI plugin example
 
-Class definition
+    .. literalinclude:: /examples/openapi/plugins/custom_plugin.py
+        :caption: Custom OpenAPI UI plugin example
+
+Class Definition
 ~~~~~~~~~~~~~~~~
 
 The class ``ScalarRenderPlugin`` inherits from :class:`OpenAPIRenderPlugin`:
 
 .. literalinclude:: /examples/openapi/plugins/custom_plugin.py
-    :language: python
+    :caption: Defining the custom OpenAPI UI plugin class
     :lines: 10
 
 ``__init__`` Constructor
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. literalinclude:: /examples/openapi/plugins/custom_plugin.py
-    :language: python
+    :caption: Defining the constructor of the custom OpenAPI UI plugin
     :lines: 11-22
 
 We support configuration via the following arguments:
@@ -229,39 +229,39 @@ We support configuration via the following arguments:
 And we construct a url for the Scalar JavaScript bundle if one is not provided:
 
 .. literalinclude:: /examples/openapi/plugins/custom_plugin.py
-    :language: python
+    :caption: Constructing the URL for the Scalar JavaScript bundle
     :lines: 20
 
 ``render()``
 ~~~~~~~~~~~~
 
-.. literalinclude:: /examples/openapi/plugins/custom_plugin.py
-    :language: python
-    :lines: 24
-
 Finally we define the ``render`` method, which is called by Litestar to render the UI. It receives the a
 :class:`Request` object and the ``openapi_schema`` as a dictionary.
 
+.. literalinclude:: /examples/openapi/plugins/custom_plugin.py
+    :caption: Defining the render method of the custom OpenAPI UI plugin
+    :lines: 24
+
 Inside the ``render`` method, we construct the HTML to render the UI, and return it as a string.
 
-- ``head``: Defines the HTML ``<head>`` section, including the title from ``openapi_schema``, any additional styles
+* ``head``: Defines the HTML ``<head>`` section, including the title from ``openapi_schema``, any additional styles
   (``self.style``), the favicon and custom style sheet if one is provided:
 
-  .. literalinclude:: /examples/openapi/plugins/custom_plugin.py
-    :language: python
-    :lines: 25-35
+    .. literalinclude:: /examples/openapi/plugins/custom_plugin.py
+        :caption: Constructing the HTML head section in the custom OpenAPI UI plugin
+        :lines: 25-35
 
-- ``body``: Constructs the HTML ``<body>``, including a link to the OpenAPI JSON, and the JavaScript bundle:
+* ``body``: Constructs the HTML ``<body>``, including a link to the OpenAPI JSON, and the JavaScript bundle:
 
-  .. literalinclude:: /examples/openapi/plugins/custom_plugin.py
-    :language: python
-    :lines: 37-43
+    .. literalinclude:: /examples/openapi/plugins/custom_plugin.py
+        :caption: Constructing the HTML body in the custom OpenAPI UI plugin
+        :lines: 37-43
 
-- Finally, returns a complete HTML document (as a byte string), combining head and body.
+* Finally, returns a complete HTML document (as a byte string), combining head and body.
 
-  .. literalinclude:: /examples/openapi/plugins/custom_plugin.py
-    :language: python
-    :lines: 45-51
+    .. literalinclude:: /examples/openapi/plugins/custom_plugin.py
+        :caption: Returning the complete HTML document in the custom OpenAPI UI plugin
+        :lines: 45-51
 
 Interacting with the ``Router``
 -------------------------------
@@ -272,20 +272,20 @@ An instance of :class:`Router` is used to serve the OpenAPI endpoints and is mad
 This can be used for a variety of purposes, including adding additional routes to the ``Router``.
 
 .. literalinclude:: /examples/openapi/plugins/receive_router.py
-    :language: python
+    :caption: Interacting with the Router in an OpenAPI UI plugin
 
 OAuth2 in Swagger UI
 --------------------
 
 When using Swagger, OAuth2 settings can be configured via
 :attr:`swagger_ui_init_oauth <litestar.openapi.controller.OpenAPIController.swagger_ui_init_oauth>`, which can be set to
-a dictionary containing the parameters described in the Swagger UI documentation for OAuth2
-`here <https://swagger.io/docs/open-source-tools/swagger-ui/usage/oauth2/>`_.
+a dictionary containing the parameters described in `the Swagger UI documentation for OAuth2
+<https://swagger.io/docs/open-source-tools/swagger-ui/usage/oauth2/>`_.
 
-With that, you can preset your clientId or enable PKCE support.
+With that, you can preset your ``clientId`` or enable `PKCE <https://oauth.net/2/pkce/>`_ support.
 
 .. literalinclude:: /examples/openapi/plugins/swagger_ui_oauth.py
-    :language: python
+    :caption: Configuring OAuth2 settings for Swagger UI
 
 Customizing the OpenAPI UI
 --------------------------
@@ -294,7 +294,7 @@ Style and behavior of the OpenAPI UI can be customized by overriding the default
 on the render plugin class, for example:
 
 .. literalinclude:: /examples/openapi/plugins/scalar_customized.py
-    :language: python
+    :caption: Customizing the Scalar OpenAPI UI
 
 To learn more about customizing the ``Scalar`` UI, see the `Scalar documentation <https://docs.scalar.com/>`_.
 

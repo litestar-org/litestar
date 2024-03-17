@@ -24,9 +24,9 @@ value for :paramref:`~litestar.app.Litestar.openapi_config`:
 .. code-block:: python
     :caption: Disabling schema generation
 
-   from litestar import Litestar
+    from litestar import Litestar
 
-   app = Litestar(route_handlers=[...], openapi_config=None)
+    app = Litestar(route_handlers=[...], openapi_config=None)
 
 Configuring schema generation on a route handler
 -------------------------------------------------
@@ -269,8 +269,10 @@ the generated OpenAPI schemas by creating a subclass of :class:`Operation <.open
 This option can be helpful in situations where request data needs to be manually parsed as
 Litestar will not know how to create the OpenAPI operation data by default.
 
-.. literalinclude:: /examples/openapi/customize_operation_class.py
-    :caption: Customize Components Example
+.. dropdown:: Click to see example
+
+    .. literalinclude:: /examples/openapi/customize_operation_class.py
+        :caption: Customize Components Example
 
 The above example will result in an OpenAPI schema object that looks like this:
 
