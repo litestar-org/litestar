@@ -1,12 +1,16 @@
 Exceptions and exception handling
 =================================
 
-Litestar define a base exception called :class:`LitestarException <litestar.exceptions.LitestarException>` which serves
+Litestar define a base exception called :class:`~litestar.exceptions.LitestarException>` which serves
 as a basis to all other exceptions.
 
 In general, Litestar will raise two types of exceptions:
 
-- Exceptions that arise during application init, which fall
+- Exceptions that arise during application ``init``, which fall into two categories:
+  - Configuration exceptions, i.e. exceptions that are raised when the application is being initialized, such as missing
+    dependencies, or improperly configured plugins.
+  - Application exceptions, i.e. exceptions that are raised as part of the normal application flow, i.e.
+    exceptions in route handlers, dependencies, and middleware, that should be serialized in some fashion.
 - Exceptions that are raised as part of the normal application flow, i.e.
   exceptions in route handlers, dependencies, and middleware, that should be serialized in some fashion.
 
@@ -14,9 +18,9 @@ Configuration Exceptions
 ------------------------
 
 For missing extra dependencies, Litestar will raise either
-:class:`MissingDependencyException <litestar.exceptions.MissingDependencyException>`. For example, if you try to use the
-:doc:`SQLAlchemyPlugin </usage/databases/sqlalchemy/plugins/index>` without having SQLAlchemy installed, this will be raised when you
-start the application.
+:class:`MissingDependencyException <litestar.exceptions.MissingDependencyException>`.
+For example, if you try to use the :doc:`SQLAlchemyPlugin </usage/databases/sqlalchemy/plugins/index>` without having
+SQLAlchemy installed, this will be raised when you start the application.
 
 For other configuration issues, Litestar will raise
 :class:`ImproperlyConfiguredException <litestar.exceptions.ImproperlyConfiguredException>` with a message explaining the
@@ -30,15 +34,15 @@ which inherits from :class:`LitestarException <.exceptions.LitestarException>`. 
 into a JSON response of the following schema:
 
 .. code-block:: json
+    :caption: Example JSON response for an HTTPException
 
-   {
+    {
      "status_code": 500,
      "detail": "Internal Server Error",
      "extra": {}
-   }
+    }
 
 Litestar also offers several pre-configured exception subclasses with pre-set error codes that you can use, such as:
-
 
 .. py:currentmodule:: litestar.exceptions.http_exceptions
 
@@ -60,9 +64,8 @@ Litestar also offers several pre-configured exception subclasses with pre-set er
 | :class:`ServiceUnavailableException`   | 503         | HTTP status code 503                     |
 +----------------------------------------+-------------+------------------------------------------+
 
-When a value fails ``pydantic`` validation, the result will be a :class:`ValidationException` with the ``extra`` key set to the
-pydantic validation errors. Thus, this data will be made available for the API consumers by default.
-
+When a value fails Pydantic validation, the result will be a :class:`ValidationException` with the ``extra`` key set
+to the Pydantic validation errors. Thus, this data will be made available for the API consumers by default.
 
 Exception handling
 ------------------
@@ -76,15 +79,14 @@ or exception classes to callables. For example, if you would like to replace the
 exception handler with a handler that returns plain-text responses you could do this:
 
 .. literalinclude:: /examples/exceptions/override_default_handler.py
-    :language: python
-
+    :caption: Overriding the default exception handler
 
 The above will define a top level exception handler that will apply the ``plain_text_exception_handler`` function to all
-exceptions that inherit from ``HTTPException``. You could of course be more granular:
+exceptions that inherit from :class:`~litestar.exceptions.http_exceptions.HTTPException`.
+You could of course be more granular:
 
 .. literalinclude:: /examples/exceptions/per_exception_handlers.py
-    :language: python
-
+    :caption: Per-exception handlers
 
 The choice whether to use a single function that has switching logic inside it, or multiple functions depends on your
 specific needs.
@@ -92,11 +94,10 @@ specific needs.
 While it does not make much sense to have different functions with a top-level exception handling,
 Litestar supports defining exception handlers on all layers of the app, with the lower layers overriding layer above
 them. In the following example, the exception handler for the route handler function will only handle
-the ``ValidationException`` occurring within that route handler:
+the :class:`~litestar.exceptions.http_exceptions.ValidationException` occurring within that route handler:
 
 .. literalinclude:: /examples/exceptions/layered_handlers.py
-    :language: python
-
+    :caption: Layered exception handlers
 
 Exception handling layers
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -105,14 +106,12 @@ Since Litestar allows users to define both exception handlers and middlewares in
 route handlers, controllers, routers, or the app layer, multiple layers of exception handlers are required to ensure that
 exceptions are handled correctly:
 
-
 .. figure:: /images/exception-handlers.jpg
     :width: 400px
 
     Exception Handlers
 
-
 As a result of the above structure, the exceptions raised by the ASGI Router itself, namely ``404 Not Found``
-and ``405 Method Not Allowed`` are handled only by exception handlers defined on the app layer. Thus, if you want to affect
-these exceptions, you will need to pass the exception handlers for them to the Litestar constructor and cannot use other
-layers for this purpose.
+and ``405 Method Not Allowed`` are handled only by exception handlers defined on the app layer.
+Thus, if you want to affect these exceptions, you will need to pass the exception handlers for them to the
+Litestar constructor and cannot use other layers for this purpose.
