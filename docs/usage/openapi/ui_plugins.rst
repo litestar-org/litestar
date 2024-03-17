@@ -145,7 +145,7 @@ OpenAPI UI plugins are a new feature introduced in ``v2.8.0``.
 Providing a subclass of OpenAPIController
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. deprecated:: v2.8.0
+.. deprecated:: 2.8.0
 
 The previous method of configuring elements such as the root path and styling was to subclass
 :class:`OpenAPIController`, and set it on the :attr:`OpenAPIConfig.openapi_controller` attribute. This approach is now

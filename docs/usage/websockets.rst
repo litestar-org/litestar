@@ -253,7 +253,7 @@ encapsulate more complex logic.
 Custom WebSocket
 ----------------
 
-.. versionadded:: v2.7.0
+.. versionadded:: 2.7.0
     See :ref:`v2.7.0 release notes <release-notes/changelog:2.7.0>`.
 
 The ``Litestar`` instance supports subclasses of :class:`Websocket <.connection.websocket.WebSocket>`
