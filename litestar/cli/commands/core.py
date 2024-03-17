@@ -18,6 +18,7 @@ from litestar.cli._utils import (
     LitestarEnv,
     console,
     create_ssl_files,
+    isatty,
     remove_default_schema_routes,
     remove_routes_with_patterns,
     show_app_info,
@@ -228,7 +229,7 @@ def run_command(
         else validate_ssl_file_paths(ssl_certfile, ssl_keyfile)
     )
 
-    if not quiet_console and sys.stdout.isatty():
+    if not quiet_console and isatty():
         console.rule("[yellow]Starting server process", align="left")
         show_app_info(app)
     with _server_lifespan(app):

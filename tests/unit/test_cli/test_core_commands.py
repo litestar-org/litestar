@@ -30,6 +30,13 @@ project_base = Path(__file__).parent.parent.parent
 
 
 @pytest.fixture()
+def mock_isatty(mocker: MockerFixture) -> MagicMock:
+    mock = MagicMock()
+    mocker.patch("litestar.cli.commands.core.isatty", new_callable=mock)
+    mocker.patch("litestar.cli._utils.isatty", new_callable=mock)
+    return mock
+
+@pytest.fixture()
 def mock_show_app_info(mocker: MockerFixture) -> MagicMock:
     return mocker.patch("litestar.cli.commands.core.show_app_info")
 
@@ -57,8 +64,10 @@ def mock_show_app_info(mocker: MockerFixture) -> MagicMock:
         (False, None, None, None, 2),
     ],
 )
+@pytest.mark.parametrize("tty_enabled", [True, False])
 def test_run_command(
     mock_show_app_info: MagicMock,
+    mock_isatty: MagicMock,
     runner: CliRunner,
     monkeypatch: MonkeyPatch,
     reload: Optional[bool],
@@ -74,10 +83,12 @@ def test_run_command(
     custom_app_file: Optional[Path],
     create_app_file: CreateAppFileFixture,
     set_in_env: bool,
+    tty_enabled: bool,
     mock_subprocess_run: MagicMock,
     mock_uvicorn_run: MagicMock,
     tmp_project_dir: Path,
 ) -> None:
+    mock_isatty.return_value = tty_enabled
     args = []
     if custom_app_file:
         args.extend(["--app", f"{custom_app_file.stem}:app"])
@@ -195,8 +206,10 @@ def test_run_command(
             ssl_keyfile=None,
         )
 
-    mock_show_app_info.assert_called_once()
-
+    if tty_enabled:
+        mock_show_app_info.assert_called_once()
+    else:
+        mock_show_app_info.assert_not_called()
 
 @pytest.mark.parametrize(
     "file_name,file_content,factory_name",
@@ -282,9 +295,10 @@ def test_run_command_debug(
 
 @pytest.mark.usefixtures("mock_uvicorn_run", "unset_env")
 def test_run_command_quiet_console(
-    app_file: Path, runner: CliRunner, monkeypatch: MonkeyPatch, create_app_file: CreateAppFileFixture
+    app_file: Path, runner: CliRunner, monkeypatch: MonkeyPatch, create_app_file: CreateAppFileFixture,     mock_isatty: MagicMock,
 ) -> None:
-    console = Console(file=io.StringIO())
+    mock_isatty.return_value = True
+    console = Console(file=io.StringIO(), force_interactive=True)
     monkeypatch.setattr(_utils, "console", console)
 
     path = create_app_file("_create_app_with_path.py", content=CREATE_APP_FILE_CONTENT)
@@ -293,10 +307,10 @@ def test_run_command_quiet_console(
     result = runner.invoke(cli_command, ["--app", app_path, "run"])
     assert result.exit_code == 0
     normal_output = console.file.getvalue()  # type: ignore[attr-defined]
-    assert "Using Litestar from env:" in normal_output
+    assert "Using Litestar app from env:" in normal_output
     assert "Starting server process" in result.stdout
     del result
-    console = Console(file=io.StringIO())
+    console = Console(file=io.StringIO(), force_interactive=True)
     monkeypatch.setattr(_utils, "console", console)
     monkeypatch.setenv("LITESTAR_QUIET_CONSOLE", "1")
     assert os.getenv("LITESTAR_QUIET_CONSOLE") == "1"
@@ -304,15 +318,17 @@ def test_run_command_quiet_console(
     assert result.exit_code == 0
     quiet_output = console.file.getvalue()  # type: ignore[attr-defined]
     assert "Starting server process" not in result.stdout
-    assert "Using Litestar from env:" not in quiet_output
+    assert "Using Litestar app from env:" not in quiet_output
     console.clear()
 
 
 @pytest.mark.usefixtures("mock_uvicorn_run", "unset_env")
 def test_run_command_custom_app_name(
-    app_file: Path, runner: CliRunner, monkeypatch: MonkeyPatch, create_app_file: CreateAppFileFixture
+    app_file: Path, runner: CliRunner, monkeypatch: MonkeyPatch, create_app_file: CreateAppFileFixture,   mock_isatty: MagicMock,
 ) -> None:
-    console = Console(file=io.StringIO())
+    mock_isatty.return_value = True
+
+    console = Console(file=io.StringIO(), force_interactive=True)
     monkeypatch.setattr(_utils, "console", console)
 
     path = create_app_file("_create_app_with_path.py", content=CREATE_APP_FILE_CONTENT)
@@ -321,15 +337,15 @@ def test_run_command_custom_app_name(
     result = runner.invoke(cli_command, ["--app", app_path, "run"])
     assert result.exit_code == 0
     _output = console.file.getvalue()  # type: ignore[attr-defined]
-    assert "Using Litestar from env:" in _output
-    console = Console(file=io.StringIO())
+    assert "Using Litestar app from env:" in _output
+    console = Console(file=io.StringIO(), force_interactive=True)
     monkeypatch.setattr(_utils, "console", console)
     monkeypatch.setenv("LITESTAR_APP_NAME", "My Stuff")
     assert os.getenv("LITESTAR_APP_NAME") == "My Stuff"
     result = runner.invoke(cli_command, ["--app", app_path, "run"])
     assert result.exit_code == 0
     _output = console.file.getvalue()  # type: ignore[attr-defined]
-    assert "Using My Stuff from env:" in _output
+    assert "Using My Stuff app from env:" in _output
 
 
 @pytest.mark.usefixtures("mock_uvicorn_run", "unset_env")
