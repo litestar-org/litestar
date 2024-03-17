@@ -145,19 +145,9 @@ class OpenAPIConfig:
         self._issue_deprecations()
 
         self.root_schema_site = self.root_schema_site or _DEFAULT_SCHEMA_SITE
+
         self.enabled_endpoints = (
-            {
-                "redoc",
-                "swagger",
-                "elements",
-                "rapidoc",
-                "openapi.json",
-                "openapi.yaml",
-                "openapi.yml",
-                "oauth2-redirect.html",
-            }
-            if self.enabled_endpoints is None
-            else self.enabled_endpoints
+            set(_enabled_plugin_map.keys()) if self.enabled_endpoints is None else self.enabled_endpoints
         )
 
         if self.path:
