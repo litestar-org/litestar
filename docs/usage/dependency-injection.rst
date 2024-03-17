@@ -4,76 +4,76 @@ Dependency Injection
 Litestar has a simple but powerful dependency injection system that allows for declaring dependencies on all layers of
 the application:
 
-.. code-block:: python
+.. dropdown:: Example of Dependency Injection
 
-   from litestar import Controller, Router, Litestar, get
-   from litestar.di import Provide
+    .. code-block:: python
+        :caption: Injecting dependencies on different layers of the application through
+          :ref:`usage/applications:layered architecture`
 
-
-   async def bool_fn() -> bool: ...
-
-
-   async def dict_fn() -> dict: ...
+        from litestar import Controller, Litestar, Router, get
+        from litestar.di import Provide
 
 
-   async def list_fn() -> list: ...
+        async def bool_fn() -> bool: ...
 
 
-   async def int_fn() -> int: ...
+        async def dict_fn() -> dict: ...
 
 
-   class MyController(Controller):
-       path = "/controller"
-       # on the controller
-       dependencies = {"controller_dependency": Provide(list_fn)}
-
-       # on the route handler
-       @get(path="/handler", dependencies={"local_dependency": Provide(int_fn)})
-       def my_route_handler(
-           self,
-           app_dependency: bool,
-           router_dependency: dict,
-           controller_dependency: list,
-           local_dependency: int,
-       ) -> None: ...
-
-       # on the router
+        async def list_fn() -> list: ...
 
 
-   my_router = Router(
-       path="/router",
-       dependencies={"router_dependency": Provide(dict_fn)},
-       route_handlers=[MyController],
-   )
+        async def int_fn() -> int: ...
 
-   # on the app
-   app = Litestar(
-       route_handlers=[my_router], dependencies={"app_dependency": Provide(bool_fn)}
-   )
+
+        class MyController(Controller):
+            path = "/controller"
+            # on the controller
+            dependencies = {"controller_dependency": Provide(list_fn)}
+
+            # on the route handler
+            @get(path="/handler", dependencies={"local_dependency": Provide(int_fn)})
+            def my_route_handler(
+                self,
+                app_dependency: bool,
+                router_dependency: dict,
+                controller_dependency: list,
+                local_dependency: int,
+            ) -> None: ...
+
+            # on the router
+
+
+        my_router = Router(
+            path="/router",
+            dependencies={"router_dependency": Provide(dict_fn)},
+            route_handlers=[MyController],
+        )
+
+        # on the app
+        app = Litestar(route_handlers=[my_router], dependencies={"app_dependency": Provide(bool_fn)})
 
 The above example illustrates how dependencies are declared on the different layers of the application.
 
-Dependencies can be either callables - sync or async functions, methods, or class instances that implement the
-:meth:`object.__call__` method, or classes. These are in turn wrapped inside an instance of the
-:class:`Provide <.di.Provide>` class.
-
+Dependencies can be either a :term:`callable` - sync or async functions, methods, or class instances that implement the
+:meth:`~object.__call__` method, or :term:`classes <python:class>`.
+These are in turn wrapped inside an instance of the :class:`~.di.Provide` class.
 
 .. include:: /admonitions/sync-to-thread-info.rst
-
 
 Pre-requisites and scope
 ------------------------
 
 The pre-requisites for dependency injection are these:
 
+#. Dependencies **must** be :term:`callables <python:callable>`.
+#. Dependencies can receive :term:`kwargs <argument>` and a ``self`` arg but **not**
+   :term:`positional arguments <argument>`.
+#. The :term:`kwarg <argument>` name and the dependency key **must** be identical.
+#. The dependency **must** be declared using the ``Provide`` class.
+#. The dependency **must** be in the ``scope`` of the handler function.
 
-#. dependencies must be callables.
-#. dependencies can receive kwargs and a ``self`` arg but not positional args.
-#. the kwarg name and the dependency key must be identical.
-#. the dependency must be declared using the ``Provide`` class.
-#. the dependency must be in the *scope* of the handler function.
-
-What is *scope* in this context? Dependencies are **isolated** to the context in which they are declared. Thus, in the
+What is ``scope`` in this context? Dependencies are **isolated** to the context in which they are declared. Thus, in the
 above example, the ``local_dependency`` can only be accessed within the specific route handler on which it was declared;
 The ``controller_dependency`` is available only for route handlers on that specific controller; And the ``router
 dependency`` is available only to the route handlers registered on that particular router. Only the ``app_dependency``
@@ -84,7 +84,7 @@ is available to all route handlers.
 Dependencies with yield (cleanup step)
 --------------------------------------
 
-In addition to simple callables, dependencies can also be (async) generator functions, which allows
+In addition to simple :term:`callable`'s, dependencies can also be (async) :term:`generator` functions, which allows
 to execute an additional cleanup step, such as closing a connection, after the handler function
 has returned.
 
@@ -94,24 +94,22 @@ has returned.
     The cleanup stage is executed **after** the handler function returns, but **before** the
     response is sent (in case of HTTP requests)
 
-
 A basic example
 ~~~~~~~~~~~~~~~
 
 .. literalinclude:: /examples/dependency_injection/dependency_yield_simple.py
-    :caption: dependencies.py
-    :language: python
-
+    :caption: Using a generator function as a dependency in ``dependencies.py``
 
 If you run the code you will see that ``CONNECTION`` has been reset after the handler function
 returned:
 
 .. code-block:: python
+    :caption: Testing the generator dependency with a :class:`~litestar.testing.client.sync_client.TestClient`
 
-   from litestar.testing import TestClient
-   from dependencies import app, CONNECTION
+    from litestar.testing import TestClient
+    from dependencies import app, CONNECTION
 
-   with TestClient(app=app) as client:
+    with TestClient(app=app) as client:
        print(client.get("/").json())  # {"open": True}
        print(CONNECTION)  # {"open": False}
 
@@ -119,21 +117,22 @@ Handling exceptions
 ~~~~~~~~~~~~~~~~~~~
 
 If an exception occurs within the handler function, it will be raised **within** the
-generator, at the point where it first ``yield`` ed. This makes it possible to adapt behaviour
-of the dependency based on exceptions, for example rolling back a database session on error
-and committing otherwise.
+generator, at the point where it first :ref:`yielded <python:yield>`.
+This makes it possible to adapt behavior of the dependency based on exceptions, for example rolling back a database
+session on error and committing otherwise.
 
-.. literalinclude:: /examples/dependency_injection/dependency_yield_exceptions.py
-    :caption: dependencies.py
-    :language: python
+.. dropdown:: Example of handling exceptions within a generator dependency
 
+    .. literalinclude:: /examples/dependency_injection/dependency_yield_exceptions.py
+        :caption: Handling exceptions within a generator dependency
 
 .. code-block:: python
+    :caption: Testing the generator dependency with a :class:`~litestar.testing.client.sync_client.TestClient`
 
-   from litestar.testing import TestClient
-   from dependencies import STATE, app
+    from litestar.testing import TestClient
+    from dependencies import STATE, app
 
-   with TestClient(app=app) as client:
+    with TestClient(app=app) as client:
        response = client.get("/John")
        print(response.json())  # {"John": "hello"}
        print(STATE)  # {"result": "OK", "connection": "closed"}
@@ -142,15 +141,15 @@ and committing otherwise.
        print(response.status_code)  # 500
        print(STATE)  # {"result": "error", "connection": "closed"}
 
-
 .. admonition:: Best Practice
     :class: tip
 
-    You should always wrap `yield` in a `try`/`finally` block, regardless of whether you
-    want to handle exceptions, to ensure that the cleanup code is run even when exceptions
-    occurred:
+    You should always wrap :ref:`yield <python:yield>` in a :ref:`try <python:try>` / :ref:`finally <python:finally>`
+    block, regardless of whether you want to handle exceptions, to ensure that the cleanup code is run even when
+    xceptions occurred:
 
     .. code-block:: python
+        :caption: Always wrap yield in a :ref:`try <python:try>` / :ref:`finally <python:finally>` block
 
         def generator_dependency():
             try:
@@ -158,40 +157,36 @@ and committing otherwise.
             finally:
                 ...  # cleanup code
 
-
-.. attention::
-
-   Do not re-raise exceptions within the dependency. Exceptions caught within these
-   dependencies will still be handled by the regular mechanisms without an explicit
-   re-raise
-
+**Do not** re-raise exceptions within the dependency. Exceptions caught within these dependencies will still be
+handled by the regular mechanisms without an explicit re-raise
 
 Dependency keyword arguments
 ----------------------------
 
-As stated above dependencies can receive kwargs but no args. The reason for this is that dependencies are parsed using
-the same mechanism that parses route handler functions, and they too - like route handler functions, can have data
-injected into them.
+As stated above dependencies can receive :term:`kwargs <argument>` but no :term:`args <argument>`.
+The reason for this is that dependencies are parsed using the same mechanism that parses route handler functions,
+and they too - like route handler functions, can have data injected into them.
 
-In fact, you can inject the same data that you
-can :ref:`inject into route handlers <usage/routing/handlers:"reserved" keyword arguments>`.
+In fact, you can inject the same data that you can
+:ref:`inject into route handlers <usage/routing/handlers:"reserved" keyword arguments>`.
 
 .. code-block:: python
+    :caption: Injecting data into dependencies
 
-   from litestar import Controller, patch
-   from litestar.di import Provide
-   from pydantic import BaseModel, UUID4
+    from litestar import Controller, patch
+    from litestar.di import Provide
+    from pydantic import BaseModel, UUID4
 
 
-   class User(BaseModel):
+    class User(BaseModel):
        id: UUID4
        name: str
 
 
-   async def retrieve_db_user(user_id: UUID4) -> User: ...
+    async def retrieve_db_user(user_id: UUID4) -> User: ...
 
 
-   class UserController(Controller):
+    class UserController(Controller):
        path = "/user"
        dependencies = {"user": Provide(retrieve_db_user)}
 
@@ -203,9 +198,6 @@ method ``retrieve_db_user`` which receives a ``user_id`` kwarg and retrieves the
 The ``UserController`` class maps the ``retrieve_db_user`` provider to the key ``user`` in its ``dependencies`` dictionary. This
 in turn makes it available as a kwarg in the ``get_user`` method.
 
-
-
-
 Dependency overrides
 --------------------
 
@@ -213,18 +205,19 @@ Because dependencies are declared at each level of the app using a string keyed 
 very simple:
 
 .. code-block:: python
+    :caption: Overriding dependencies at different levels of the application
 
-   from litestar import Controller, get
-   from litestar.di import Provide
-
-
-   def bool_fn() -> bool: ...
+    from litestar import Controller, get
+    from litestar.di import Provide
 
 
-   def dict_fn() -> dict: ...
+    def bool_fn() -> bool: ...
 
 
-   class MyController(Controller):
+    def dict_fn() -> dict: ...
+
+
+    class MyController(Controller):
        path = "/controller"
        # on the controller
        dependencies = {"some_dependency": Provide(dict_fn)}
@@ -239,84 +232,81 @@ very simple:
 The lower scoped route handler function declares a dependency with the same key as the one declared on the higher scoped
 controller. The lower scoped dependency therefore overrides the higher scoped one.
 
+The :class:`~.di.Provide` class
+-------------------------------
 
-The ``Provide`` class
-----------------------
-
-The :class:`Provide <.di.Provide>` class is a wrapper used for dependency injection. To inject a callable you must wrap
-it in ``Provide``:
+The :class:`~.di.Provide` class is a wrapper used for dependency injection. To inject a callable you must wrap
+it in :class:`~.di.Provide`:
 
 .. code-block:: python
+    :caption: Using the :class:`~.di.Provide` class for dependency injection
 
-   from random import randint
-   from litestar import get
-   from litestar.di import Provide
+    from random import randint
+    from litestar import get
+    from litestar.di import Provide
 
 
-   def my_dependency() -> int:
+    def my_dependency() -> int:
        return randint(1, 10)
 
 
-   @get(
+    @get(
        "/some-path",
        dependencies={
            "my_dep": Provide(
                my_dependency,
            )
        },
-   )
-   def my_handler(my_dep: int) -> None: ...
+    )
+    def my_handler(my_dep: int) -> None: ...
 
+.. attention:: If :paramref:`~.di.Provide.use_cache` is ``True``, the return value of the function will be
+    memoized the first time it is called and then will be used. There is no sophisticated comparison of kwargs, LRU
+    implementation, etc., so you should be careful when you choose to use this option.
 
-.. attention::
-
-    If :class:`Provide.use_cache <.di.Provide>` is ``True``, the return value of the function will be memoized the first
-    time it is called and then will be used. There is no sophisticated comparison of kwargs, LRU implementation, etc., so
-    you should be careful when you choose to use this option. Note that dependencies will only be called once per
-    request, even with ``Provide.use_cache`` set to ``False``.
-
-
+    Note that dependencies will only be called once per request, even with :paramref:`~.di.Provide.use_cache` set to
+    ``False``.
 
 Dependencies within dependencies
 --------------------------------
 
 You can inject dependencies into other dependencies - exactly like you would into regular functions.
 
-.. code-block:: python
+.. dropdown:: Example of injecting dependencies into other dependencies
 
-   from litestar import Litestar, get
-   from litestar.di import Provide
-   from random import randint
+    .. code-block:: python
+        :caption: Injecting dependencies into other dependencies
 
-
-   def first_dependency() -> int:
-       return randint(1, 10)
-
-
-   def second_dependency(injected_integer: int) -> bool:
-       return injected_integer % 2 == 0
+        from litestar import Litestar, get
+        from litestar.di import Provide
+        from random import randint
 
 
-   @get("/true-or-false")
-   def true_or_false_handler(injected_bool: bool) -> str:
-       return "it is true!" if injected_bool else "nope, it is false..."
+        def first_dependency() -> int:
+           return randint(1, 10)
 
 
-   app = Litestar(
-       route_handlers=[true_or_false_handler],
-       dependencies={
-           "injected_integer": Provide(first_dependency),
-           "injected_bool": Provide(second_dependency),
-       },
-   )
-
-.. note::
-
-   The rules for `dependency overrides`_ apply here as well.
+        def second_dependency(injected_integer: int) -> bool:
+           return injected_integer % 2 == 0
 
 
-The ``Dependency`` function
-----------------------------
+        @get("/true-or-false")
+        def true_or_false_handler(injected_bool: bool) -> str:
+           return "it is true!" if injected_bool else "nope, it is false..."
+
+
+        app = Litestar(
+           route_handlers=[true_or_false_handler],
+           dependencies={
+               "injected_integer": Provide(first_dependency),
+               "injected_bool": Provide(second_dependency),
+           },
+        )
+
+.. note:: The rules for `dependency overrides`_ apply here as well.
+
+The :func:`Dependency <litestar.params.Dependency>` function
+-------------------------------------------------------------
 
 Dependency validation
 ~~~~~~~~~~~~~~~~~~~~~
@@ -326,55 +316,46 @@ internal server error:
 
 .. literalinclude:: /examples/dependency_injection/dependency_validation_error.py
     :caption: Dependency validation error
-    :language: python
 
-
-Dependency validation can be toggled using the :class:`Dependency <litestar.params.Dependency>` function.
+Dependency validation can be toggled using the :func:`Dependency <litestar.params.Dependency>` function.
 
 .. literalinclude:: /examples/dependency_injection/dependency_skip_validation.py
     :caption: Dependency validation error
-    :language: python
 
+This may be useful for reasons of efficiency, or if Pydantic cannot validate a certain type, but use with caution!
 
-This may be useful for reasons of efficiency, or if pydantic cannot validate a certain type, but use with caution!
+:func:`Dependency <litestar.params.Dependency>` function as a marker
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Dependency function as a marker
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The :class:`Dependency <litestar.params.Dependency>` function can also be used as a marker that gives us a bit more detail
-about your application.
+The :func:`Dependency <litestar.params.Dependency>` function can also be used as a marker that gives us a bit more
+detail about your application.
 
 Exclude dependencies with default values from OpenAPI docs
 ***********************************************************
 
 Depending on your application design, it is possible to have a dependency declared in a handler or
-:class:`Provide <.di.Provide>` function that has a default value. If the dependency isn't provided for the route, the
+:class:`~.di.Provide` function that has a default value. If the dependency is not provided for the route, the
 default should be used by the function.
 
 .. literalinclude:: /examples/dependency_injection/dependency_with_default.py
     :caption: Dependency with default value
-    :language: python
-
 
 This does not fail, but due to the way the application determines parameter types, it is inferred to be a query
 parameter.
-
 
 By declaring the parameter to be a dependency, Litestar knows to exclude it from the docs:
 
 .. literalinclude:: /examples/dependency_injection/dependency_with_dependency_fn_and_default.py
     :caption: Dependency with default value
-    :language: python
 
-
-Early detection if a dependency isn't provided
+Early detection if a dependency is not provided
 ***********************************************
 
-The other side of the same coin is when a dependency isn't provided, and no default is specified. Without the dependency
-marker, the parameter is assumed to be a query parameter and the route will most likely fail when accessed.
+The other side of the same coin is when a dependency is not provided, and no default is specified.
+Without the dependency marker, the parameter is assumed to be a query parameter and the route will most likely
+fail when accessed.
 
 If the parameter is marked as a dependency, this allows us to fail early instead:
 
 .. literalinclude:: /examples/dependency_injection/dependency_non_optional_not_provided.py
    :caption: Dependency not provided error
-   :language: python
