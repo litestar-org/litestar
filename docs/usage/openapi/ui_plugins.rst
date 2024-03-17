@@ -216,7 +216,7 @@ The class ``ScalarRenderPlugin`` inherits from :class:`OpenAPIRenderPlugin`:
 
 .. literalinclude:: /examples/openapi/plugins/custom_plugin.py
     :language: python
-    :lines: 12-23
+    :lines: 11-22
 
 We support configuration via the following arguments:
 
@@ -230,14 +230,14 @@ And we construct a url for the Scalar JavaScript bundle if one is not provided:
 
 .. literalinclude:: /examples/openapi/plugins/custom_plugin.py
     :language: python
-    :lines: 21
+    :lines: 20
 
 ``render()``
 ~~~~~~~~~~~~
 
 .. literalinclude:: /examples/openapi/plugins/custom_plugin.py
     :language: python
-    :lines: 25
+    :lines: 24
 
 Finally we define the ``render`` method, which is called by Litestar to render the UI. It receives the a
 :class:`Request` object and the ``openapi_schema`` as a dictionary.
