@@ -7,6 +7,7 @@ as a basis to all other exceptions.
 In general, Litestar will raise two types of exceptions:
 
 - Exceptions that arise during application ``init``, which fall into two categories:
+
   - Configuration exceptions, i.e. exceptions that are raised when the application is being initialized, such as missing
     dependencies, or improperly configured plugins.
   - Application exceptions, i.e. exceptions that are raised as part of the normal application flow, i.e.
