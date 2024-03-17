@@ -14,6 +14,7 @@ from rich.console import Console
 
 from litestar import __version__ as litestar_version
 from litestar.cli import _utils
+from litestar.cli.commands import core
 from litestar.cli.main import litestar_group as cli_command
 from litestar.exceptions import LitestarWarning
 
@@ -27,14 +28,6 @@ from . import (
 from .conftest import CreateAppFileFixture
 
 project_base = Path(__file__).parent.parent.parent
-
-
-@pytest.fixture()
-def mock_isatty(mocker: MockerFixture) -> MagicMock:
-    mock = MagicMock()
-    mocker.patch("litestar.cli.commands.core.isatty", new_callable=mock)
-    mocker.patch("litestar.cli._utils.isatty", new_callable=mock)
-    return mock
 
 
 @pytest.fixture()
@@ -68,7 +61,7 @@ def mock_show_app_info(mocker: MockerFixture) -> MagicMock:
 @pytest.mark.parametrize("tty_enabled", [True, False])
 def test_run_command(
     mock_show_app_info: MagicMock,
-    mock_isatty: MagicMock,
+    mocker: MockerFixture,
     runner: CliRunner,
     monkeypatch: MonkeyPatch,
     reload: Optional[bool],
@@ -89,7 +82,8 @@ def test_run_command(
     mock_uvicorn_run: MagicMock,
     tmp_project_dir: Path,
 ) -> None:
-    mock_isatty.return_value = tty_enabled
+    mocker.patch.object(core, "isatty", return_value=tty_enabled)
+    mocker.patch.object(_utils, "isatty", return_value=tty_enabled)
     args = []
     if custom_app_file:
         args.extend(["--app", f"{custom_app_file.stem}:app"])
@@ -406,12 +400,13 @@ def test_run_command_debug(
 @pytest.mark.usefixtures("mock_uvicorn_run", "unset_env")
 def test_run_command_quiet_console(
     app_file: Path,
+    mocker: MockerFixture,
     runner: CliRunner,
     monkeypatch: MonkeyPatch,
     create_app_file: CreateAppFileFixture,
-    mock_isatty: MagicMock,
 ) -> None:
-    mock_isatty.return_value = True
+    mocker.patch.object(core, "isatty", return_value=True)
+    mocker.patch.object(_utils, "isatty", return_value=True)
     console = Console(file=io.StringIO(), force_interactive=True)
     monkeypatch.setattr(_utils, "console", console)
 
@@ -442,9 +437,10 @@ def test_run_command_custom_app_name(
     runner: CliRunner,
     monkeypatch: MonkeyPatch,
     create_app_file: CreateAppFileFixture,
-    mock_isatty: MagicMock,
+    mocker: MockerFixture,
 ) -> None:
-    mock_isatty.return_value = True
+    mocker.patch.object(core, "isatty", return_value=True)
+    mocker.patch.object(_utils, "isatty", return_value=True)
 
     console = Console(file=io.StringIO(), force_interactive=True)
     monkeypatch.setattr(_utils, "console", console)
