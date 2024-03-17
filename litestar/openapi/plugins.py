@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Sequence
 
 import msgspec
@@ -29,7 +30,7 @@ _default_favicon = f"<link rel='icon' type='image/png' href='{_favicon_url}'>"
 _default_style = "<style>body { margin: 0; padding: 0 }</style>"
 
 
-class OpenAPIRenderPlugin:
+class OpenAPIRenderPlugin(ABC):
     """Base class for OpenAPI UI render plugins."""
 
     paths: list[str]
@@ -68,6 +69,7 @@ class OpenAPIRenderPlugin:
         """
         return encode_json(openapi_schema, serializer=get_serializer(request.route_handler.resolve_type_encoders()))
 
+    @abstractmethod
     def render(self, request: Request, openapi_schema: dict[str, Any]) -> bytes:
         """Render the OpenAPI UI.
 
@@ -98,6 +100,7 @@ class OpenAPIRenderPlugin:
         Args:
             router: The router that serves the OpenAPI UI.
         """
+        return
 
     def has_path(self, path: str) -> bool:
         """Check if the plugin has a path.
