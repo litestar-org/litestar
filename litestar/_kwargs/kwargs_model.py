@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import itertools
 from typing import TYPE_CHECKING, Any, Callable
 
 from anyio import create_task_group
@@ -448,13 +449,10 @@ class KwargsModel:
         dependency_keys = set(dependencies.keys())
 
         parameter_names = {
-            *(
-                k
-                for k, f in field_definitions.items()
-                if isinstance(f.kwarg_definition, ParameterKwarg)
-                and (f.kwarg_definition.header or f.kwarg_definition.query or f.kwarg_definition.cookie)
-            ),
-            *list(layered_parameters.keys()),
+            k
+            for k, f in itertools.chain(field_definitions.items(), layered_parameters.items())
+            if isinstance(f.kwarg_definition, ParameterKwarg)
+            and (f.kwarg_definition.header or f.kwarg_definition.query or f.kwarg_definition.cookie)
         }
 
         intersection = (
