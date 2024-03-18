@@ -12,12 +12,10 @@ from litestar import Request, get
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.logging.config import LoggingConfig, _get_default_handlers, default_handlers, default_picologging_handlers
 from litestar.logging.picologging import QueueListenerHandler as PicologgingQueueListenerHandler
+from litestar.logging.standard import QueueListenerHandler as StandardQueueListenerHandler
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 from tests.helpers import cleanup_logging_impl
-
-if sys.version_info < (3, 12, 0):
-    from litestar.logging.standard import QueueListenerHandler as StandardQueueListenerHandler
 
 if TYPE_CHECKING:
     from _pytest.capture import CaptureFixture
