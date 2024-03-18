@@ -8,6 +8,7 @@ from uuid import UUID, uuid1, uuid4
 import pytest
 
 from litestar import Litestar, MediaType, get, post
+from litestar.controller import Controller
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.params import Parameter
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST
@@ -186,3 +187,18 @@ def test_optional_path_parameter() -> None:
         response = client.get("/hello")
         assert response.status_code == HTTP_200_OK
         assert response.text == "hello"
+
+
+def test_layered_path_parameters() -> None:
+    class HandlerController(Controller):
+        path = "/{foo:int}"
+        parameters = {"foo": Parameter(description="Foo parameter.")}
+
+        @get("/", sync_to_thread=False)
+        def identity(self, foo: int) -> int:
+            return foo
+
+    with create_test_client(route_handlers=[HandlerController]) as client:
+        response = client.get("/10")
+
+        assert response.json() == 10
