@@ -4,13 +4,24 @@ from collections import abc, deque
 from copy import deepcopy
 from dataclasses import dataclass, is_dataclass, replace
 from inspect import Parameter, Signature
-from typing import Any, AnyStr, Callable, Collection, ForwardRef, Literal, Mapping, Protocol, Sequence, TypeVar, cast
+from typing import (
+    Any,
+    AnyStr,
+    Callable,
+    Collection,
+    ForwardRef,
+    Literal,
+    Mapping,
+    Protocol,
+    Sequence,
+    TypeVar,
+    cast,
+)
 
 from msgspec import UnsetType
 from typing_extensions import NotRequired, Required, Self, get_args, get_origin, get_type_hints, is_typeddict
 
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.openapi.spec import Example
 from litestar.params import BodyKwarg, DependencyKwarg, KwargDefinition, ParameterKwarg
 from litestar.types import Empty
 from litestar.types.builtin_types import NoneType, UnionTypes
@@ -81,10 +92,11 @@ def _parse_metadata(value: Any, is_sequence_container: bool, extra: dict[str, An
         **cast("dict[str, Any]", extra or getattr(value, "extra", None) or {}),
         **(getattr(value, "json_schema_extra", None) or {}),
     }
+    example_list: list[Any] | None
     if example := extra.pop("example", None):
-        example_list = [Example(value=example)]
+        example_list = [example]
     elif examples := getattr(value, "examples", None):
-        example_list = [Example(value=example) for example in cast("list[str]", examples)]
+        example_list = examples
     else:
         example_list = None
 

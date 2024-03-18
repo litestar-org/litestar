@@ -82,7 +82,7 @@ def test_process_schema_result() -> None:
     assert kwarg_definition.examples
     for signature_key, schema_key in KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP.items():
         if schema_key == "examples":
-            assert schema.examples == {"str-example-1": kwarg_definition.examples[0]}
+            assert schema.examples == [kwarg_definition.examples[0].value]
         else:
             assert getattr(schema, schema_key) == getattr(kwarg_definition, signature_key)
 
@@ -225,7 +225,7 @@ def test_schema_hashing() -> None:
             Schema(type=OpenAPIType.NUMBER),
             Schema(type=OpenAPIType.OBJECT, properties={"key": Schema(type=OpenAPIType.STRING)}),
         ],
-        examples={"example-1": Example(value=None), "example-2": Example(value=[1, 2, 3])},
+        examples=[None, [1, 2, 3]],
     )
     assert hash(schema)
 
@@ -289,7 +289,7 @@ def test_create_schema_from_msgspec_annotated_type() -> None:
     schema = get_schema_for_field_definition(FieldDefinition.from_kwarg(name="Lookup", annotation=Lookup))
 
     assert schema.properties["id"].type == OpenAPIType.STRING  # type: ignore[index, union-attr]
-    assert schema.properties["id"].examples == {"id-example-1": Example(value="example")}  # type: ignore[index, union-attr]
+    assert schema.properties["id"].examples == ["example"]  # type: ignore[index, union-attr]
     assert schema.properties["id"].description == "description"  # type: ignore[index]
     assert schema.properties["id"].title == "title"  # type: ignore[index, union-attr]
     assert schema.properties["id"].max_length == 16  # type: ignore[index, union-attr]
