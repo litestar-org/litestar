@@ -87,7 +87,7 @@ Improving performance with the codegen backend
 
 
 The DTO backend is the part that does the heavy lifting for all the DTO features. It
-is responsible for the transforming, parsing, validation and parsing. Because of this,
+is responsible for the transforming, validation and parsing. Because of this,
 it is also the part with the most significant performance impact. To reduce the overhead
 introduced by the DTOs, the DTO codegen backend was introduced; A DTO backend that
 increases efficiency by generating optimized Python code at runtime to perform all the
