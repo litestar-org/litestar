@@ -147,12 +147,12 @@ or dependency to access the application state:
 .. code-block:: python
     :caption: Accessing application :class:`~.datastructures.state.State` in a handler function
 
-   from litestar import get
-   from litestar.datastructures import State
+    from litestar import get
+    from litestar.datastructures import State
 
 
-   @get("/")
-   def handler(state: State) -> None: ...
+    @get("/")
+    def handler(state: State) -> None: ...
 
 When using this pattern you can specify the class to use for the state object. This type is not merely for type
 checkers, rather Litestar will instantiate a new ``state`` instance based on the type you set there.
