@@ -260,14 +260,17 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
             model_config = model.model_config
             model_field_info = model.model_fields
             title = model_config.get("title")
-            example = model_config.get("example")
+            json_schema_extra = model_config.get("json_schema_extra")
             is_v2_model = True
         else:
             model_config = annotation.__config__
             model_field_info = model.__fields__
             title = getattr(model_config, "title", None)
-            example = getattr(model_config, "example", None)
+            json_schema_extra = getattr(model_config, "json_schema_extra", None)
             is_v2_model = False
+
+        if json_schema_extra and callable(json_schema_extra):  # pragma: no cover
+            raise ValueError("`json_schema_extra` callables are not supported")
 
         model_fields: dict[str, pydantic_v1.fields.FieldInfo | pydantic_v2.fields.FieldInfo] = {  # pyright: ignore
             k: getattr(f, "field_info", f) for k, f in model_field_info.items()
@@ -313,5 +316,5 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
             required=sorted(f.name for f in property_fields.values() if f.is_required),
             property_fields=property_fields,
             title=title,
-            examples=None if example is None else [example],
+            extra=json_schema_extra,
         )

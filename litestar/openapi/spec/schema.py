@@ -638,6 +638,14 @@ class Schema(BaseSchemaObject):
     discouraged, and later versions of this specification may remove it.
     """
 
+    extra: Mapping[str, Any] | None = None
+    """Container for extensions to the generated JSON schema. This can be used to store local extensions/customizations,
+    e.g. `json_schema_extra` from Pydantic modes and fields.
+
+    The values are applied to the generated JSON schema after dumping it into mapping type. Values are merged over in a
+    non-recursive manner.
+    """
+
     def __hash__(self) -> int:
         return _recursive_hash(self)
 
