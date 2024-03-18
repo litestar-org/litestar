@@ -116,6 +116,8 @@ class KwargDefinition:
     """Extensions to the generated schema.
 
     If set, will overwrite the matching fields in the generated schema.
+    
+    .. versionadded:: 2.8.0
     """
 
     @property
