@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass, fields, is_dataclass
 from enum import Enum
-from typing import Any
+from typing import Any, Mapping
 
 __all__ = ("BaseSchemaObject",)
 
@@ -39,8 +39,13 @@ class BaseSchemaObject:
         recursively.
         """
         result: dict[str, Any] = {}
+        extra: Mapping[str, Any] | None = None
 
         for field in fields(self):
+            if field.name == "extra":
+                extra = getattr(self, field.name)
+                continue
+
             value = _normalize_value(getattr(self, field.name, None))
 
             if value is not None:
@@ -52,5 +57,8 @@ class BaseSchemaObject:
                     key = _normalize_key(field.name)
 
                 result[key] = value
+
+        if extra:
+            result.update(extra)
 
         return result

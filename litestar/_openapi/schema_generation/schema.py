@@ -596,6 +596,7 @@ class SchemaCreator:
         openapi_type: OpenAPIType = OpenAPIType.OBJECT,
         title: str | None = None,
         examples: Mapping[str, Example] | None = None,
+        extra: Mapping[str, Any] | None = None,
     ) -> Schema:
         """Create a schema for the components/schemas section of the OpenAPI spec.
 
@@ -611,6 +612,7 @@ class SchemaCreator:
             openapi_type: The OpenAPI type, defaults to ``OpenAPIType.OBJECT``.
             title: The schema title, generated if not provided.
             examples: A mapping of example names to ``Example`` instances, not required.
+            extra: Extra kwargs to add/overwrite in the generated schema.
 
         Returns:
             A schema instance.
@@ -621,4 +623,5 @@ class SchemaCreator:
         schema.type = openapi_type
         schema.properties = {k: self.for_field_definition(v) for k, v in property_fields.items()}
         schema.examples = examples
+        schema.extra = extra
         return schema
