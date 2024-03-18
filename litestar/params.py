@@ -116,7 +116,7 @@ class KwargDefinition:
     """Extensions to the generated schema.
 
     If set, will overwrite the matching fields in the generated schema.
-    
+
     .. versionadded:: 2.8.0
     """
 
@@ -237,6 +237,8 @@ def Parameter(
         title: String value used in the title section of the OpenAPI schema for the given parameter.
         schema_extra: Extensions to the generated schema. If set, will overwrite the matching fields in the generated
             schema.
+
+            .. versionadded:: 2.8.0
     """
     return ParameterKwarg(
         annotation=annotation,
