@@ -4,7 +4,7 @@ from typing import Callable, Dict, List, Type
 import pytest
 from typing_extensions import Annotated
 
-from litestar import Controller, Litestar, post
+from litestar import Controller, Litestar, get, post
 from litestar._openapi.datastructures import OpenAPIContext
 from litestar._openapi.request_body import create_request_body
 from litestar.datastructures.upload_file import UploadFile
@@ -53,6 +53,31 @@ def test_create_request_body(person_controller: Type[Controller], create_request
             if "data" in handler_fields:
                 request_body = create_request(route_handler, handler_fields["data"])
                 assert request_body
+
+
+def test_request_body_schema_extra() -> None:
+    @dataclass
+    class RequestBody:
+        foo: str
+
+    @get()
+    async def handler(
+        body1: Annotated[
+            RequestBody,
+            Body(
+                title="Default title",
+                schema_extra={
+                    "title": "Overridden title",
+                },
+            ),
+        ],
+    ) -> Any:
+        return body1
+
+    app = Litestar([handler])
+    schema = app.openapi_schema.to_schema()
+    resp = next(iter(schema["components"]["schemas"].values()))
+    assert resp["title"] == "Overridden title"
 
 
 def test_upload_single_file_schema_generation() -> None:
