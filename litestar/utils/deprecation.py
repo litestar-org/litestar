@@ -12,7 +12,9 @@ __all__ = ("deprecated", "warn_deprecation")
 
 T = TypeVar("T")
 P = ParamSpec("P")
-DeprecatedKind = Literal["function", "method", "classmethod", "attribute", "property", "class", "parameter", "import"]
+DeprecatedKind = Literal[
+    "function", "method", "classmethod", "attribute", "property", "class", "parameter", "import", "environment"
+]
 
 
 def warn_deprecation(
