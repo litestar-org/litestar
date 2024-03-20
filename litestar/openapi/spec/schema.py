@@ -610,11 +610,7 @@ class Schema(BaseSchemaObject):
     """
 
     examples: list[Any] | None = None
-    """The value of this must be an array containing the example values directly or a mapping of string
-    to an ``Example`` instance.
-
-    This is based on the ``examples`` keyword of JSON Schema.
-    """
+    """The value of this must be an array containing the example values."""
 
     discriminator: Discriminator | None = None
     """Adds support for polymorphism.
