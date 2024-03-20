@@ -137,8 +137,7 @@ def test_request_factory_create_with_params() -> None:
         pass
 
     @get("/path")
-    def handler() -> None:
-        ...
+    def handler() -> None: ...
 
     app = Litestar(route_handlers=[])
     server = "litestar.org"

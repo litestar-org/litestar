@@ -91,8 +91,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         type_encoders: TypeEncodersMap | None = None,
         websocket_class: type[WebSocket] | None = None,
         **kwargs: Any,
-    ) -> None:
-        ...
+    ) -> None: ...
 
     @overload
     def __init__(
@@ -117,8 +116,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         type_encoders: TypeEncodersMap | None = None,
         websocket_class: type[WebSocket] | None = None,
         **kwargs: Any,
-    ) -> None:
-        ...
+    ) -> None: ...
 
     def __init__(
         self,

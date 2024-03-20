@@ -1,6 +1,7 @@
 """DTO backends do the heavy lifting of decoding and validating raw bytes into domain models, and
 back again, to bytes.
 """
+
 from __future__ import annotations
 
 from dataclasses import replace
@@ -58,8 +59,7 @@ class CompositeTypeHandler(Protocol):
         rename_fields: dict[str, str],
         unique_name: str,
         nested_depth: int,
-    ) -> CompositeType:
-        ...
+    ) -> CompositeType: ...
 
 
 class DTOBackend:

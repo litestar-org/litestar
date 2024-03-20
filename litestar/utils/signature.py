@@ -25,8 +25,7 @@ if sys.version_info < (3, 11):
     from typing import _get_defaults  # type: ignore[attr-defined]
 else:
 
-    def _get_defaults(_: Any) -> Any:
-        ...
+    def _get_defaults(_: Any) -> Any: ...
 
 
 __all__ = (
@@ -58,8 +57,7 @@ def _unwrap_implicit_optional_hints(defaults: dict[str, Any], hints: dict[str, A
 
     .. code-block:: python
 
-        def foo(a: Optional[Union[str, int]] = None):
-            ...
+        def foo(a: Optional[Union[str, int]] = None): ...
 
     ...will become `Union[str, int, NoneType]`.
 
@@ -67,8 +65,7 @@ def _unwrap_implicit_optional_hints(defaults: dict[str, Any], hints: dict[str, A
 
     .. code-block:: python
 
-        def foo(a: Annotated[Optional[Union[str, int]], ...] = None):
-            ...
+        def foo(a: Annotated[Optional[Union[str, int]], ...] = None): ...
 
     ... becomes `Union[Annotated[Union[str, int, NoneType], ...], NoneType]`
 

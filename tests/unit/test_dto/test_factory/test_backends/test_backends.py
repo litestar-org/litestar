@@ -70,8 +70,7 @@ def fx_backend_factory(use_experimental_dto_backend: bool) -> type[DataclassDTO]
 @pytest.fixture(name="asgi_connection")
 def fx_asgi_connection() -> Request[Any, Any, Any]:
     @get("/", name="handler_id", media_type=MediaType.JSON)
-    def _handler() -> None:
-        ...
+    def _handler() -> None: ...
 
     return RequestFactory().get(path="/", route_handler=_handler)
 
@@ -96,8 +95,7 @@ def test_backend_parse_raw_json(
 
 def test_backend_parse_raw_msgpack(dto_factory: type[DataclassDTO], backend_cls: type[DTOBackend]) -> None:
     @get("/", name="handler_id", media_type=MediaType.MESSAGEPACK)
-    def _handler() -> None:
-        ...
+    def _handler() -> None: ...
 
     asgi_connection = RequestFactory().get(
         path="/", route_handler=_handler, headers={"Content-Type": MediaType.MESSAGEPACK}
@@ -124,8 +122,7 @@ def test_backend_parse_unsupported_media_type(
     dto_factory: type[DataclassDTO], asgi_connection: Request[Any, Any, Any], backend_cls: type[DTOBackend]
 ) -> None:
     @get("/", name="handler_id", media_type="text/css")
-    def _handler() -> None:
-        ...
+    def _handler() -> None: ...
 
     asgi_connection = RequestFactory().get(path="/", route_handler=_handler, headers={"Content-Type": "text/css"})
 
