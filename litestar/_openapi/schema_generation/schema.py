@@ -614,6 +614,8 @@ class SchemaCreator:
             examples: A mapping of example names to ``Example`` instances, not required.
             extra: Extra kwargs to add/overwrite in the generated schema.
 
+                .. versionadded:: 2.8.0
+
         Returns:
             A schema instance.
         """
