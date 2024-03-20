@@ -44,7 +44,7 @@ from litestar._openapi.schema_generation.utils import (
     _should_create_enum_schema,
     _should_create_literal_schema,
     _type_or_first_not_none_inner_type,
-    get_json_schema_examples,
+    get_json_schema_formatted_examples,
 )
 from litestar.datastructures import UploadFile
 from litestar.exceptions import ImproperlyConfiguredException
@@ -558,7 +558,7 @@ class SchemaCreator:
                     not isinstance(value, Hashable) or not self.is_undefined(value)
                 ):
                     if schema_key == "examples":
-                        value = get_json_schema_examples(cast("list[Example]", value))
+                        value = get_json_schema_formatted_examples(cast("list[Example]", value))
 
                     # we only want to transfer values from the `KwargDefinition` to `Schema` if the schema object
                     # doesn't already have a value for that property. For example, if a field is a constrained date,
@@ -572,7 +572,7 @@ class SchemaCreator:
         if not schema.examples and self.generate_examples:
             from litestar._openapi.schema_generation.examples import create_examples_for_field
 
-            schema.examples = get_json_schema_examples(create_examples_for_field(field))
+            schema.examples = get_json_schema_formatted_examples(create_examples_for_field(field))
 
         if schema.title and schema.type == OpenAPIType.OBJECT:
             key = _get_normalized_schema_key(field.annotation)
