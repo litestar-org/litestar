@@ -22,6 +22,7 @@ from msgspec import UnsetType
 from typing_extensions import NotRequired, Required, Self, get_args, get_origin, get_type_hints, is_typeddict
 
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.openapi.spec import Example
 from litestar.params import BodyKwarg, DependencyKwarg, KwargDefinition, ParameterKwarg
 from litestar.types import Empty
 from litestar.types.builtin_types import NoneType, UnionTypes
@@ -94,9 +95,9 @@ def _parse_metadata(value: Any, is_sequence_container: bool, extra: dict[str, An
     }
     example_list: list[Any] | None
     if example := extra.pop("example", None):
-        example_list = [example]
+        example_list = [Example(value=example)]
     elif examples := getattr(value, "examples", None):
-        example_list = examples
+        example_list = [Example(value=example) for example in cast("list[str]", examples)]
     else:
         example_list = None
 
