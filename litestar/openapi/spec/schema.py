@@ -639,11 +639,17 @@ class Schema(BaseSchemaObject):
     """
 
     extra: Mapping[str, Any] | None = None
-    """Container for extensions to the generated JSON schema. This can be used to store local extensions/customizations,
-    e.g. `json_schema_extra` from Pydantic modes and fields.
+    """Container for extras to the generated JSON schema. This can be used to carry local extension or overrides,
+    e.g. ``json_schema_extra`` from Pydantic models and fields, to the generated JSON schema.
 
     The values are applied to the generated JSON schema after dumping it into mapping type. Values are merged over in a
     non-recursive manner.
+
+    .. note::
+        This field is **not** part of JSON schema specification but is used as an internal transport mechanism,
+        for carrying extensions/overrides to the final output.
+
+    .. versionadded:: 2.8.0
     """
 
     def __hash__(self) -> int:
