@@ -116,7 +116,7 @@ Options
 +-------------------------------------------+----------------------------------------------+----------------------------------------------------------------------------------+
 | ``-p``\ , ``--port``                      | ``LITESTAR_PORT``                            | Bind the server to this port [default: 8000]                                     |
 +-------------------------------------------+----------------------------------------------+----------------------------------------------------------------------------------+
-| ``--wc``\ , ``--web-concurrency``         | ``LITESTAR_WEB_CONCURRENCY``                 | .. deprecated:: 2.8                                                              |
+| ``--wc``\ , ``--web-concurrency``         | ``LITESTAR_WEB_CONCURRENCY``                 | .. versionchanged:: 2.8                                                          |
 |                                           |                                              |    Use ``LITESTAR_WEB_CONCURRENCY`` instead ``WEB_CONCURRENCY``                  |
 |                                           |                                              |                                                                                  |
 |                                           |                                              | The number of concurrent web workers to start [default: 1]                       |
