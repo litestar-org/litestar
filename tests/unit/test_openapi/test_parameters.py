@@ -71,8 +71,8 @@ def test_create_parameters(person_controller: Type[Controller]) -> None:
     assert page_size.schema.type == OpenAPIType.INTEGER
     assert page_size.required
     assert page_size.description == "Page Size Description"
-    assert page_size.schema.examples
-    assert next(iter(page_size.schema.examples.values())).value == 1
+    assert page_size.examples
+    assert page_size.schema.examples == [1]
 
     assert name.param_in == ParamType.QUERY
     assert name.name == "name"
@@ -107,19 +107,19 @@ def test_create_parameters(person_controller: Type[Controller]) -> None:
             Schema(
                 type=OpenAPIType.STRING,
                 enum=["M", "F", "O", "A"],
-                examples={"gender-example-1": Example(description="Example  value", value="M")},
+                examples=["M"],
             ),
             Schema(
                 type=OpenAPIType.ARRAY,
                 items=Schema(
                     type=OpenAPIType.STRING,
                     enum=["M", "F", "O", "A"],
-                    examples={"gender-example-1": Example(description="Example  value", value="F")},
+                    examples=["F"],
                 ),
-                examples={"list-example-1": Example(description="Example  value", value=["A"])},
+                examples=[["A"]],
             ),
         ],
-        examples={"gender-example-1": Example(value="M"), "gender-example-2": Example(value=["M", "O"])},
+        examples=["M", ["M", "O"]],
     )
     assert not gender.required
 
