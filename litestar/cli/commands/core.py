@@ -25,7 +25,6 @@ from litestar.cli._utils import (
     validate_ssl_file_paths,
 )
 from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
-from litestar.utils.deprecation import warn_deprecation
 from litestar.utils.helpers import unwrap_partial
 
 __all__ = ("info_command", "routes_command", "run_command")
@@ -222,15 +221,6 @@ def run_command(
     functions with the name ``create_app`` are considered, or functions that are annotated as returning a ``Litestar``
     instance.
     """
-
-    if os.environ.get("WEB_CONCURRENCY"):
-        warn_deprecation(
-            deprecated_name="WEB_CONCURRENCY",
-            version="2.8.0",
-            kind="environment",
-            removal_in="3.0",
-            info="Use `LITESTAR_WEB_CONCURRENCY` instead.",
-        )
 
     if debug:
         os.environ["LITESTAR_DEBUG"] = "1"
