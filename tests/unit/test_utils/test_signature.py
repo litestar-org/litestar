@@ -210,7 +210,7 @@ def test_expand_type_var_in_type_hints(
     ),
 )
 def test_using_generics_in_fn_annotations(namespace: dict[str, Any], expected: dict[str, Any]) -> None:
-    @post(signature_namespace=namespace)  # type: ignore[dict-item]
+    @post(signature_namespace=namespace)
     def create_item(data: T) -> T:
         return data
 
@@ -228,12 +228,12 @@ class GenericController(Controller, Generic[T]):
 
     def __init__(self, owner: Router) -> None:
         super().__init__(owner)
-        self.signature_namespace[T] = self.model_class  # type: ignore[misc] # mypy will nag here
+        self.signature_namespace[T] = self.model_class
 
 
 class BaseController(GenericController[T]):
     @post()
-    async def create(self, data: T) -> T:  # type: ignore[name-defined] # mypy takes issue with this
+    async def create(self, data: T) -> T:
         return data
 
 
@@ -246,10 +246,10 @@ class BaseController(GenericController[T]):
     ),
 )
 def test_using_generics_in_controller_annotations(annotation_type: type, expected: dict[str, Any]) -> None:
-    class ConcreteController(BaseController[annotation_type]):  # type: ignore[valid-type]
+    class ConcreteController(BaseController[annotation_type]):
         path = "/"
 
-    controller_object = ConcreteController(owner=None)  # type: ignore[arg-type] # For testing purpose
+    controller_object = ConcreteController(owner=None)
 
     signature = controller_object.get_route_handlers()[0].parsed_fn_signature
     actual = {"data": signature.parameters["data"].annotation, "return": signature.return_type.annotation}
