@@ -204,7 +204,7 @@ def test_msgspec_schema_generation(create_examples: bool, openapi_controller: ty
             "id"
         ] == {
             "description": "A unique identifier",
-            "examples": {"id-example-1": {"value": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"}},
+            "examples": ["e4eaaaf2-d142-11e1-b3e4-080027620cdd"],
             "maxLength": 16,
             "minLength": 12,
             "type": "string",

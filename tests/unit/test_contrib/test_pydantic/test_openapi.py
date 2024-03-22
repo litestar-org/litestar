@@ -17,7 +17,7 @@ from litestar._openapi.schema_generation.constrained_fields import (
 from litestar._openapi.schema_generation.schema import SchemaCreator
 from litestar.contrib.pydantic import PydanticPlugin, PydanticSchemaPlugin
 from litestar.openapi import OpenAPIConfig
-from litestar.openapi.spec import Example, Reference, Schema
+from litestar.openapi.spec import Reference, Schema
 from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
 from litestar.params import KwargDefinition
 from litestar.status_codes import HTTP_200_OK
@@ -393,7 +393,7 @@ def test_schema_generation_v1(create_examples: bool) -> None:
         assert response.status_code == HTTP_200_OK
         assert response.json()["components"]["schemas"]["test_schema_generation_v1.Lookup"]["properties"]["id"] == {
             "description": "A unique identifier",
-            "examples": {"id-example-1": {"value": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"}},
+            "examples": ["e4eaaaf2-d142-11e1-b3e4-080027620cdd"],
             "maxLength": 16,
             "minLength": 12,
             "type": "string",
@@ -430,7 +430,7 @@ def test_schema_generation_v2(create_examples: bool) -> None:
         assert response.status_code == HTTP_200_OK
         assert response.json()["components"]["schemas"]["test_schema_generation_v2.Lookup"]["properties"]["id"] == {
             "description": "A unique identifier",
-            "examples": {"id-example-1": {"value": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"}},
+            "examples": ["e4eaaaf2-d142-11e1-b3e4-080027620cdd"],
             "maxLength": 16,
             "minLength": 12,
             "type": "string",
@@ -530,7 +530,7 @@ def test_create_schema_for_field_v1() -> None:
     assert isinstance(value, Schema)
     assert value.description == "description"
     assert value.title == "title"
-    assert value.examples == {"value-example-1": Example(value="example")}
+    assert value.examples == ["example"]
 
 
 def test_create_schema_for_field_v2() -> None:
@@ -550,7 +550,7 @@ def test_create_schema_for_field_v2() -> None:
     assert isinstance(value, Schema)
     assert value.description == "description"
     assert value.title == "title"
-    assert value.examples == {"value-example-1": Example(value="example")}
+    assert value.examples == ["example"]
 
 
 @pytest.mark.parametrize("with_future_annotations", [True, False])
