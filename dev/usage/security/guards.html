@@ -1616,6 +1616,11 @@ route handlers need to be restricted? An entire controller? All the paths under 
 <p>As you can see in the above examples - <code class="docutils literal notranslate"><span class="pre">guards</span></code> is a list. This means you can add <strong>multiple</strong> guards at every layer.
 Unlike <code class="docutils literal notranslate"><span class="pre">dependencies</span></code> , guards do not override each other but are rather <em>cumulative</em>. This means that you can define
 guards on different levels of your app, and they will combine.</p>
+<div class="admonition caution">
+<p class="admonition-title">Caution</p>
+<p>If guards are placed at the controller or the app level, they <strong>will</strong> be executed on all <code class="docutils literal notranslate"><span class="pre">OPTIONS</span></code> requests as well.
+For more details, including a workaround, refer <a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2314">litestar-org/litestar#2314</a>.</p>
+</div>
 </section>
 <section id="the-route-handler-opt-key">
 <h2>The route handler “opt” key<a class="headerlink" href="#the-route-handler-opt-key" title="Permalink to this heading">#</a></h2>
