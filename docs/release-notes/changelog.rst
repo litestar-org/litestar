@@ -3,6 +3,102 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.7.1
+    :date: 2024-03-22
+
+    .. change:: add default encoders for `Enums` and `EnumMeta`
+        :type: bugfix
+        :pr: 3193
+
+        This addresses an issue when serializing `Enums` that was reported in discord.
+
+    .. change:: replace TestClient.__enter__ return type with Self
+        :type: bugfix
+        :pr: 3194
+
+        ``TestClient.__enter__`` and ``AsyncTestClient.__enter__`` return ``self``.
+        If you inherit ``TestClient``, its ``__enter__`` method should return derived class's instance
+        unless override the method. So I think :class:`~typing_extensions.Self` could be more flexible return type.
+
+    .. change:: use the full path for fetching openapi.json
+        :type: bugfix
+        :pr: 3196
+        :issue: 3047
+
+        This specifies the ``spec-url`` and ``apiDescriptionUrl`` of Rapidoc, and Stoplight Elements as absolute
+        paths relative to the root of the site.
+
+        This ensures that both of the send the request for the JSON of the OpenAPI schema to the right endpoint.
+
+    .. change:: JSON schema `examples` were OpenAPI formatted
+        :type: bugfix
+        :pr: 3224
+        :issue: 2849
+
+        The generated ``examples`` in *JSON schema* objects were formatted as:
+
+        .. code-block:: json
+
+            "examples": {
+              "some-id": {
+                "description": "Lorem ipsum",
+                "value": "the real beef"
+              }
+           }
+
+        However, above is OpenAPI example format, and must not be used in JSON schema
+        objects. Schema objects follow different formatting:
+
+        .. code-block:: json
+
+            "examples": [
+              "the real beef"
+           ]
+
+        * Explained in `APIs You Won't Hate blog post <https://medium.com/apis-you-wont-hate/openapi-v3-1-and-json-schema-2019-09-6862cf3db959>`_.
+        * `Schema objects spec <https://spec.openapis.org/oas/v3.1.0#schema-object>`_
+        * `OpenAPI example format spec <https://spec.openapis.org/oas/v3.1.0#example-object>`_.
+
+        This is referenced at least from parameters, media types and components.
+
+        The technical change here is to define ``Schema.examples`` as ``list[Any]`` instead
+        of ``list[Example]``. Examples can and must still be defined as ``list[Example]``
+        for OpenAPI objects (e.g. ``Parameter``, ``Body``) but for JSON schema ``examples``
+        the code now internally generates/converts ``list[Any]`` format instead.
+
+        Extra confusion here comes from the OpenAPI 3.0 vs OpenAPI 3.1 difference.
+        OpenAPI 3.0 only allowed ``example`` (singular) field in schema objects.
+        OpenAPI 3.1 supports the full JSON schema 2020-12 spec and so ``examples`` array
+        in schema objects.
+
+        Both ``example`` and ``examples`` seem to be supported, though the former is marked
+        as deprecated in the latest specs.
+
+        This can be tested over at https://editor-next.swagger.io by loading up the
+        OpenAPI 3.1 Pet store example. Then add ``examples`` in ``components.schemas.Pet``
+        using the both ways and see the Swagger UI only render the example once it's
+        properly formatted (it ignores is otherwise).
+
+    .. change:: queue_listener handler for Python >= 3.12
+        :type: bugfix
+        :pr: 3185
+        :issue: 2954
+
+        - Fix the ``queue_listener`` handler for Python 3.12
+
+        Python 3.12 introduced a new way to configure ``QueueHandler`` and ``QueueListener`` via
+        :meth:`~logging.config.dictConfig()`. As described in the
+        `logging documentation <https://docs.python.org/3/library/logging.config.html#configuring-queuehandler-and-queuelistener>`_.
+
+        The listener still needs to be started & stopped, as previously.
+        To do so, we've introduced ``LoggingQueueListener``.
+
+        And as stated in the doc:
+        * Any custom queue handler and listener classes will need to be defined with the same initialization signatures
+        as `QueueHandler <https://docs.python.org/3/library/logging.handlers.html#logging.handlers.QueueHandler>`_ and
+        `QueueListener <https://docs.python.org/3/library/logging.handlers.html#logging.handlers.QueueListener>`_.
+
+
 .. changelog:: 2.7.0
     :date: 2024-03-10
 
@@ -19,8 +115,10 @@
         :pr: 3176
 
         Fix an issue with SSE where JavaScript clients fail to receive an event without data.
-        The `spec <https://html.spec.whatwg.org/multipage/server-sent-events.html#parsing-an-event-stream>`_ is not clear in whether or not an event without data is ok.
-        Considering the EventSource "client" is not ok with it, and that it's so easy DX-wise to make the mistake not explicitly sending it, this change fixes it by defaulting to the empty-string
+        The `spec <https://html.spec.whatwg.org/multipage/server-sent-events.html#parsing-an-event-stream>`_ is
+        not clear in whether or not an event without data is ok.
+        Considering the EventSource "client" is not ok with it, and that it's so easy DX-wise to make the mistake not
+        explicitly sending it, this change fixes it by defaulting to the empty-string
 
     .. change:: Support ``ResponseSpec(..., examples=[...])``
         :type: feature
@@ -54,7 +152,7 @@
         :pr: 3096
         :issue: 3088
 
-        Automatically encode responses with media type of the form "application/<something>+json" as json.
+        Automatically encode responses with media type of the form ``application/<something>+json`` as json.
 
     .. change:: Allow reusable ``Router`` instances
         :type: feature
@@ -64,7 +162,7 @@
         It was not possible to re-attach a router instance once it was attached. This
         makes that possible.
 
-        The router instance now gets deecopied when it's registered to another router.
+        The router instance now gets deepcopied when it's registered to another router.
 
         The application startup performance gets a hit here, but the same approach is
         already used for controllers and handlers, so this only harmonizes the
