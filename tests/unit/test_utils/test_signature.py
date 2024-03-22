@@ -228,7 +228,7 @@ class GenericController(Controller, Generic[T]):
 
     def __init__(self, owner: Router) -> None:
         super().__init__(owner)
-        self.signature_namespace[T] = self.model_class  # type: ignore
+        self.signature_namespace[T] = self.model_class  # type: ignore[misc]
 
 
 class BaseController(GenericController[T]):
@@ -246,10 +246,10 @@ class BaseController(GenericController[T]):
     ),
 )
 def test_using_generics_in_controller_annotations(annotation_type: type, expected: dict[str, Any]) -> None:
-    class ConcreteController(BaseController[annotation_type]):
+    class ConcreteController(BaseController[annotation_type]):  # type: ignore[valid-type]
         path = "/"
 
-    controller_object = ConcreteController(owner=None)  # type: ignore
+    controller_object = ConcreteController(owner=None)  # type: ignore[arg-type]
 
     signature = controller_object.get_route_handlers()[0].parsed_fn_signature
     actual = {"data": signature.parameters["data"].annotation, "return": signature.return_type.annotation}
