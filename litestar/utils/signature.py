@@ -14,7 +14,7 @@ from litestar import connection, datastructures, types
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
-from litestar.utils.typing import unwrap_annotation
+from litestar.utils.typing import _substitute_typevars, unwrap_annotation
 
 if TYPE_CHECKING:
     from typing import Sequence
@@ -131,6 +131,24 @@ def _unwrap_implicit_optional_hints(defaults: dict[str, Any], hints: dict[str, A
     return hints
 
 
+def expand_type_var_in_type_hint(type_hint: dict[str, Any], namespace: dict[str, Any] | None) -> dict[str, Any]:
+    """Expand TypeVar for any parameters in type_hint
+
+    Args:
+        type_hint: mapping of parameter to type obtained from calling `get_type_hints` or `get_fn_type_hints`
+        namespace: mapping of TypeVar to concrete type
+
+    Returns:
+        type_hint with any TypeVar parameter expanded
+    """
+    if namespace:
+        expanded_type_hint = {}
+        for name, hint in type_hint.items():
+            expanded_type_hint[name] = _substitute_typevars(hint, namespace)
+        return expanded_type_hint
+    return type_hint
+
+
 def get_fn_type_hints(fn: Any, namespace: dict[str, Any] | None = None) -> dict[str, Any]:
     """Resolve type hints for ``fn``.
 
@@ -212,8 +230,9 @@ class ParsedSignature:
         """
         signature = Signature.from_callable(fn)
         fn_type_hints = get_fn_type_hints(fn, namespace=signature_namespace)
+        expanded_type_hints = expand_type_var_in_type_hint(fn_type_hints, signature_namespace)
 
-        return cls.from_signature(signature, fn_type_hints)
+        return cls.from_signature(signature, expanded_type_hints)
 
     @classmethod
     def from_signature(cls, signature: Signature, fn_type_hints: dict[str, type]) -> Self:
