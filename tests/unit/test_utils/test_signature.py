@@ -28,7 +28,6 @@ from litestar.typing import FieldDefinition
 from litestar.utils.signature import (
     ParsedSignature,
     add_types_to_signature_namespace,
-    expand_type_var_in_type_hint,
     get_fn_type_hints,
 )
 
@@ -178,27 +177,6 @@ def test_add_types_to_signature_namespace_with_existing_types_raises() -> None:
     """Test add_types_to_signature_namespace with existing types raises."""
     with pytest.raises(ImproperlyConfiguredException):
         add_types_to_signature_namespace([int], {"int": int})
-
-
-@pytest.mark.parametrize(
-    ("type_hint", "namespace", "expected"),
-    (
-        ({"arg1": T, "return": int}, {}, {"arg1": T, "return": int}),
-        ({"arg1": T, "return": int}, None, {"arg1": T, "return": int}),
-        ({"arg1": T, "return": int}, {U: ConcreteT}, {"arg1": T, "return": int}),
-        ({"arg1": T, "return": int}, {T: ConcreteT}, {"arg1": ConcreteT, "return": int}),
-        ({"arg1": T, "return": int}, {T: int}, {"arg1": int, "return": int}),
-        ({"arg1": int, "return": int}, {}, {"arg1": int, "return": int}),
-        ({"arg1": int, "return": int}, None, {"arg1": int, "return": int}),
-        ({"arg1": int, "return": int}, {T: int}, {"arg1": int, "return": int}),
-        ({"arg1": T, "return": T}, {T: ConcreteT}, {"arg1": ConcreteT, "return": ConcreteT}),
-        ({"arg1": T, "return": T}, {T: int}, {"arg1": int, "return": int}),
-    ),
-)
-def test_expand_type_var_in_type_hints(
-    type_hint: dict[str, Any], namespace: dict[str, Any] | None, expected: dict[str, Any]
-) -> None:
-    assert expand_type_var_in_type_hint(type_hint, namespace) == expected
 
 
 @pytest.mark.parametrize(

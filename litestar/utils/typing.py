@@ -37,7 +37,14 @@ from typing import (
     cast,
 )
 
-from typing_extensions import Annotated, NotRequired, Required, get_args, get_origin, get_type_hints
+from typing_extensions import (
+    Annotated,
+    NotRequired,
+    Required,
+    get_args,
+    get_origin,
+    get_type_hints,
+)
 
 from litestar.types.builtin_types import NoneType, UnionTypes
 
@@ -260,6 +267,21 @@ def get_type_hints_with_generics_resolved(
         typevar_map = dict(zip(origin.__parameters__, get_args(annotation)))
 
     return {n: _substitute_typevars(type_, typevar_map) for n, type_ in type_hints.items()}
+
+
+def expand_type_var_in_type_hint(type_hint: dict[str, Any], namespace: dict[str, Any] | None) -> dict[str, Any]:
+    """Expand TypeVar for any parameters in type_hint
+
+    Args:
+        type_hint: mapping of parameter to type obtained from calling `get_type_hints` or `get_fn_type_hints`
+        namespace: mapping of TypeVar to concrete type
+
+    Returns:
+        type_hint with any TypeVar parameter expanded
+    """
+    if namespace:
+        return {name: _substitute_typevars(hint, namespace) for name, hint in type_hint.items()}
+    return type_hint
 
 
 def _substitute_typevars(obj: Any, typevar_map: Mapping[Any, Any]) -> Any:
