@@ -2,9 +2,12 @@ import logging
 import sys
 import time
 from logging.handlers import QueueHandler
+from queue import Queue
+from types import ModuleType
 from typing import TYPE_CHECKING, Any, Dict, Generator, Optional
 from unittest.mock import Mock, patch
 
+import picologging
 import pytest
 from _pytest.logging import LogCaptureHandler, _LiveLoggingNullHandler
 
@@ -12,10 +15,11 @@ from litestar import Request, get
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.logging.config import LoggingConfig, _get_default_handlers, default_handlers, default_picologging_handlers
 from litestar.logging.picologging import QueueListenerHandler as PicologgingQueueListenerHandler
+from litestar.logging.standard import LoggingQueueListener
 from litestar.logging.standard import QueueListenerHandler as StandardQueueListenerHandler
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
-from tests.helpers import cleanup_logging_impl
+from tests.helpers import cleanup_logging_impl, getHandlerByName
 
 if TYPE_CHECKING:
     from _pytest.capture import CaptureFixture
@@ -28,7 +32,7 @@ def cleanup_logging() -> Generator:
 
 
 @pytest.mark.parametrize(
-    "dict_config_class, handlers, expected_called",
+    "dict_config_callable, handlers, expected_called",
     [
         ["logging.config.dictConfig", default_handlers, True],
         ["logging.config.dictConfig", default_picologging_handlers, False],
@@ -37,9 +41,9 @@ def cleanup_logging() -> Generator:
     ],
 )
 def test_correct_dict_config_called(
-    dict_config_class: str, handlers: Dict[str, Dict[str, Any]], expected_called: bool
+    dict_config_callable: str, handlers: Dict[str, Dict[str, Any]], expected_called: bool
 ) -> None:
-    with patch(dict_config_class) as dict_config_mock:
+    with patch(dict_config_callable) as dict_config_mock:
         log_config = LoggingConfig(handlers=handlers)
         log_config.configure()
         if expected_called:
@@ -48,16 +52,18 @@ def test_correct_dict_config_called(
             assert not dict_config_mock.called
 
 
-@pytest.mark.parametrize("picologging_exists", [True, False])
-def test_correct_default_handlers_set(picologging_exists: bool) -> None:
+@pytest.mark.parametrize(
+    "picologging_exists, expected_default_handlers",
+    [
+        [True, default_picologging_handlers],
+        [False, default_handlers],
+    ],
+)
+def test_correct_default_handlers_set(picologging_exists: bool, expected_default_handlers: Any) -> None:
     with patch("litestar.logging.config.find_spec") as find_spec_mock:
         find_spec_mock.return_value = picologging_exists
         log_config = LoggingConfig()
-
-        if picologging_exists:
-            assert log_config.handlers == default_picologging_handlers
-        else:
-            assert log_config.handlers == default_handlers
+        assert log_config.handlers == expected_default_handlers
 
 
 @pytest.mark.parametrize(
@@ -67,7 +73,7 @@ def test_correct_default_handlers_set(picologging_exists: bool) -> None:
         ["picologging.config.dictConfig", default_picologging_handlers],
     ],
 )
-def test_dictconfig_startup(dict_config_class: str, handlers: Any) -> None:
+def test_dictconfig_on_startup(dict_config_class: str, handlers: Any) -> None:
     with patch(dict_config_class) as dict_config_mock:
         test_logger = LoggingConfig(
             handlers=handlers,
@@ -76,7 +82,24 @@ def test_dictconfig_startup(dict_config_class: str, handlers: Any) -> None:
             assert dict_config_mock.called
 
 
-def test_standard_queue_listener_logger(capsys: "CaptureFixture[str]") -> None:
+@pytest.mark.parametrize(
+    "logging_module, expected_handler_class, expected_listener_class",
+    [
+        [
+            logging,
+            QueueHandler if sys.version_info >= (3, 12, 0) else StandardQueueListenerHandler,
+            LoggingQueueListener,
+        ],
+        [
+            picologging,
+            PicologgingQueueListenerHandler,
+            picologging.handlers.QueueListener,
+        ],
+    ],
+)
+def test_default_queue_listener_handler(
+    logging_module: ModuleType, expected_handler_class: Any, expected_listener_class: Any, capsys: "CaptureFixture[str]"
+) -> None:
     def wait_log_queue(queue: Any, sleep_time: float = 0.1, max_retries: int = 5) -> None:
         retry = 0
         while queue.qsize() > 0 and retry < max_retries:
@@ -91,7 +114,8 @@ def test_standard_queue_listener_logger(capsys: "CaptureFixture[str]") -> None:
         assert log_output == expected
 
     with patch("litestar.logging.config.find_spec") as find_spec_mock:
-        find_spec_mock.return_value = False
+        find_spec_mock.return_value = None if logging_module is logging else True
+
         get_logger = LoggingConfig(
             formatters={"standard": {"format": "%(levelname)s :: %(name)s :: %(message)s"}},
             loggers={
@@ -104,10 +128,14 @@ def test_standard_queue_listener_logger(capsys: "CaptureFixture[str]") -> None:
         ).configure()
 
     logger = get_logger("test_logger")
-    assert isinstance(logger, logging.Logger)  # type: ignore[unreachable]
+    assert type(logger) is logging_module.Logger
 
-    handler = logger.handlers[0]  # type: ignore[unreachable]
-    assert isinstance(handler, QueueHandler if sys.version_info >= (3, 12, 0) else StandardQueueListenerHandler)
+    handler = logger.handlers[0]
+    assert type(handler) is expected_handler_class
+    assert type(handler.queue) is Queue
+
+    assert type(handler.listener) is expected_listener_class
+    assert type(handler.listener.handlers[0]) is logging_module.StreamHandler
 
     logger.info("Testing now!")
     assert_log(handler.queue, expected="INFO :: test_logger :: Testing now!", count=1)
@@ -133,70 +161,27 @@ def test_get_logger_without_logging_config() -> None:
             client.app.get_logger()
 
 
-def test_get_default_logger() -> None:
-    with create_test_client(logging_config=LoggingConfig(handlers=default_handlers)) as client:
-        expected_handler_class = QueueHandler if sys.version_info >= (3, 12, 0) else StandardQueueListenerHandler
-        assert isinstance(client.app.logger.handlers[0], expected_handler_class)
-        new_logger = client.app.get_logger()
-        assert isinstance(new_logger.handlers[0], expected_handler_class)
-
-
-def test_get_picologging_logger() -> None:
-    with create_test_client(logging_config=LoggingConfig(handlers=default_picologging_handlers)) as client:
-        assert isinstance(client.app.logger.handlers[0], PicologgingQueueListenerHandler)
-        new_logger = client.app.get_logger()
-        assert isinstance(new_logger.handlers[0], PicologgingQueueListenerHandler)
-
-
 @pytest.mark.parametrize(
-    "handlers, listener",
+    "logging_module, handlers, expected_handler_class",
     [
-        [default_handlers, QueueHandler if sys.version_info >= (3, 12, 0) else StandardQueueListenerHandler],
-        [default_picologging_handlers, PicologgingQueueListenerHandler],
+        [logging, default_handlers, QueueHandler if sys.version_info >= (3, 12, 0) else StandardQueueListenerHandler],
+        [picologging, default_picologging_handlers, PicologgingQueueListenerHandler],
     ],
 )
-def test_connection_logger(handlers: Any, listener: Any) -> None:
-    @get("/")
-    def handler(request: Request) -> Dict[str, bool]:
-        return {"isinstance": isinstance(request.logger.handlers[0], listener)}  # type: ignore[attr-defined]
+def test_default_loggers(logging_module: ModuleType, handlers: Any, expected_handler_class: Any) -> None:
+    with create_test_client(logging_config=LoggingConfig(handlers=handlers)) as client:
+        root_logger = client.app.get_logger()
+        assert isinstance(root_logger, logging_module.Logger)
+        assert root_logger.name == "root"
+        assert type(root_logger.handlers[0]) is expected_handler_class
 
-    with create_test_client(route_handlers=[handler], logging_config=LoggingConfig(handlers=handlers)) as client:
-        response = client.get("/")
-        assert response.status_code == HTTP_200_OK
-        assert response.json()["isinstance"]
+        litestar_logger = client.app.logger
+        assert type(litestar_logger) is logging_module.Logger
+        assert litestar_logger.name == "litestar"
+        assert type(litestar_logger.handlers[0]) is expected_handler_class
 
-
-def test_validation() -> None:
-    logging_config = LoggingConfig(handlers={}, loggers={})
-    assert logging_config.handlers["queue_listener"] == _get_default_handlers()["queue_listener"]
-    assert logging_config.loggers["litestar"]
-
-
-@pytest.mark.parametrize(
-    "handlers, listener",
-    [
-        [default_handlers, QueueHandler if sys.version_info >= (3, 12, 0) else StandardQueueListenerHandler],
-        [default_picologging_handlers, PicologgingQueueListenerHandler],
-    ],
-)
-def test_root_logger(handlers: Any, listener: Any) -> None:
-    logging_config = LoggingConfig(handlers=handlers)
-    get_logger = logging_config.configure()
-    root_logger = get_logger()
-    assert isinstance(root_logger.handlers[0], listener)  # type: ignore[attr-defined]
-
-
-@pytest.mark.parametrize("handlers", [default_handlers, default_picologging_handlers])
-def test_root_logger_no_config(handlers: Any) -> None:
-    logging_config = LoggingConfig(handlers=handlers, configure_root_logger=False)
-    get_logger = logging_config.configure()
-    root_logger = get_logger()
-    if isinstance(root_logger, logging.Logger):  # type: ignore[unreachable]
-        # pytest automatically configures some handlers
-        for handler in root_logger.handlers:  # type: ignore[unreachable]
-            assert isinstance(handler, (_LiveLoggingNullHandler, LogCaptureHandler))
-    else:
-        assert len(root_logger.handlers) == 0  # type: ignore[attr-defined]
+        # same handler instance
+        assert root_logger.handlers[0] is litestar_logger.handlers[0]
 
 
 @pytest.mark.parametrize(
@@ -206,19 +191,168 @@ def test_root_logger_no_config(handlers: Any) -> None:
         [default_picologging_handlers, PicologgingQueueListenerHandler],
     ],
 )
-def test_customizing_handler(handlers: Any, expected_handler_class: Any, monkeypatch: pytest.MonkeyPatch) -> None:
-    log_format = "%(levelname)s :: %(name)s :: %(message)s"
-    formatters = {"standard": {"format": log_format}}
-    logging_config = LoggingConfig(formatters=formatters, handlers=handlers)
+def test_connection_logger(handlers: Any, expected_handler_class: Any) -> None:
+    @get("/")
+    def handler(request: Request) -> Dict[str, bool]:
+        return {"isinstance": isinstance(request.logger.handlers[0], expected_handler_class)}  # type: ignore[attr-defined]
+
+    with create_test_client(route_handlers=[handler], logging_config=LoggingConfig(handlers=handlers)) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+        assert response.json()["isinstance"]
+
+
+def test_validation() -> None:
+    logging_config = LoggingConfig(
+        formatters={},
+        handlers={},
+        loggers={},
+    )
+    # FIXME: broken - assert len(logging_config.formatters) == 1
+    # FIXME: broken - assert "standard" in logging_config.formatters
+    assert len(logging_config.handlers) == 1
+    assert logging_config.handlers["queue_listener"] == _get_default_handlers()["queue_listener"]
+    assert len(logging_config.loggers) == 1
+    assert "litestar" in logging_config.loggers
+    assert logging_config.loggers["litestar"]["handlers"] == ["queue_listener"]
+
+
+@pytest.mark.parametrize(
+    "logging_module, handlers, expected_handler_class",
+    [
+        [logging, default_handlers, QueueHandler if sys.version_info >= (3, 12, 0) else StandardQueueListenerHandler],
+        [picologging, default_picologging_handlers, PicologgingQueueListenerHandler],
+    ],
+)
+def test_root_logger(logging_module: ModuleType, handlers: Any, expected_handler_class: Any) -> None:
+    logging_config = LoggingConfig(handlers=handlers)
     get_logger = logging_config.configure()
     root_logger = get_logger()
-    root_logger_handler = root_logger.handlers[0]  # type: ignore[attr-defined]
-    assert isinstance(root_logger_handler, expected_handler_class)
-    if type(root_logger_handler) is QueueHandler:
-        formatter = root_logger_handler.listener.handlers[0].formatter  # type: ignore[attr-defined]
+    assert root_logger.name == "root"
+    assert isinstance(root_logger, logging_module.Logger)
+    assert root_logger.handlers[0].name == "queue_listener"
+    assert isinstance(root_logger.handlers[0], expected_handler_class)
+
+
+@pytest.mark.parametrize(
+    "logging_module, handlers",
+    [
+        [logging, default_handlers],
+        [picologging, default_picologging_handlers],
+    ],
+)
+def test_root_logger_no_config(logging_module: ModuleType, handlers: Any) -> None:
+    logging_config = LoggingConfig(handlers=handlers, configure_root_logger=False)
+    get_logger = logging_config.configure()
+    root_logger = get_logger()
+
+    assert isinstance(root_logger, logging_module.Logger)
+
+    handlers = root_logger.handlers
+    if logging_module == logging:
+        # pytest automatically configures some handlers
+        for handler in handlers:
+            assert isinstance(handler, (_LiveLoggingNullHandler, LogCaptureHandler))
     else:
-        formatter = root_logger_handler.formatter
-    assert formatter._fmt == log_format
+        assert len(handlers) == 0
+
+
+@pytest.mark.parametrize(
+    "logging_module, configure_root_logger, expected_root_logger_handler_class",
+    [
+        [logging, True, QueueHandler if sys.version_info >= (3, 12, 0) else StandardQueueListenerHandler],
+        [logging, False, None],
+        [picologging, True, PicologgingQueueListenerHandler],
+        [picologging, False, None],
+    ],
+)
+def test_customizing_handler(
+    logging_module: ModuleType,
+    configure_root_logger: bool,
+    expected_root_logger_handler_class: Any,
+    capsys: "CaptureFixture[str]",
+) -> None:
+    log_format = "%(levelname)s :: %(name)s :: %(message)s"
+
+    with patch("litestar.logging.config.find_spec") as find_spec_mock:
+        find_spec_mock.return_value = True if logging_module == picologging else None
+
+        logging_config = LoggingConfig(
+            formatters={
+                "standard": {"format": log_format},
+            },
+            handlers={
+                "console_stdout": {
+                    "class": f"{logging_module.__name__}.StreamHandler",
+                    "stream": "ext://sys.stdout",
+                    "level": "DEBUG",
+                    "formatter": "standard",
+                },
+            },
+            loggers={
+                "test_logger": {
+                    "level": "DEBUG",
+                    "handlers": ["console_stdout"],
+                    "propagate": False,
+                },
+                "litestar": {
+                    "level": "DEBUG",
+                    "handlers": ["console_stdout"],
+                    "propagate": False,
+                },
+            },
+            configure_root_logger=configure_root_logger,
+        )
+
+        # picologging seems to be broken, cannot make it log on stdout?
+        # https://github.com/microsoft/picologging/issues/205
+        if logging_module == picologging:
+            del logging_config.handlers["console_stdout"]["stream"]
+
+        get_logger = logging_config.configure()
+
+    root_logger = get_logger()
+
+    if configure_root_logger is True:
+        assert isinstance(root_logger, logging_module.Logger)
+        assert root_logger.level == logging_module.INFO
+
+        root_logger_handler = root_logger.handlers[0]  # type: ignore[attr-defined]
+        assert root_logger_handler.name == "queue_listener"
+        assert type(root_logger_handler) is expected_root_logger_handler_class
+
+        if type(root_logger_handler) is QueueHandler:
+            assert getHandlerByName("console") is not None
+            formatter = root_logger_handler.listener.handlers[0].formatter  # type: ignore[attr-defined]
+        else:
+            assert getHandlerByName("console") is None
+            formatter = root_logger_handler.formatter
+        assert formatter._fmt == log_format
+    else:
+        # queue_listener handler shouldn't be configured (we only checks the `logging` module)
+        # FIXME broken - assert getHandlerByName("queue_listener") is None
+
+        # Root logger shouldn't be configured but pytest adds some handlers (for the standard `logging` module)
+        for handler in root_logger.handlers:  # type: ignore[attr-defined]
+            assert isinstance(handler, (_LiveLoggingNullHandler, LogCaptureHandler))
+
+    def assert_logger(logger: Any) -> None:
+        assert type(logger) is logging_module.Logger
+        assert logger.level == logging_module.DEBUG
+        assert len(logger.handlers) == 1
+        assert type(logger.handlers[0]) is logging_module.StreamHandler
+        assert logger.handlers[0].name == "console_stdout"
+        assert logger.handlers[0].formatter._fmt == log_format
+
+        logger.info("Hello from '%s'", logging_module.__name__)
+        if logging_module == picologging:
+            log_output = capsys.readouterr().err.strip()
+        else:
+            log_output = capsys.readouterr().out.strip()
+        assert log_output == f"INFO :: {logger.name} :: Hello from '{logging_module.__name__}'"
+
+    assert_logger(get_logger("litestar"))
+    assert_logger(get_logger("test_logger"))
 
 
 @pytest.mark.parametrize(
