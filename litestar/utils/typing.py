@@ -37,14 +37,7 @@ from typing import (
     cast,
 )
 
-from typing_extensions import (
-    Annotated,
-    NotRequired,
-    Required,
-    get_args,
-    get_origin,
-    get_type_hints,
-)
+from typing_extensions import Annotated, NotRequired, Required, get_args, get_origin, get_type_hints
 
 from litestar.types.builtin_types import NoneType, UnionTypes
 

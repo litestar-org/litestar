@@ -8,14 +8,7 @@ from types import ModuleType
 from typing import Any, Callable, Generic, List, Optional, TypeVar, Union
 
 import pytest
-from typing_extensions import (
-    Annotated,
-    NotRequired,
-    Required,
-    TypedDict,
-    get_args,
-    get_type_hints,
-)
+from typing_extensions import Annotated, NotRequired, Required, TypedDict, get_args, get_type_hints
 
 from litestar import Controller, Router, post
 from litestar.exceptions import ImproperlyConfiguredException
@@ -25,11 +18,7 @@ from litestar.types.asgi_types import Receive, Scope, Send
 from litestar.types.builtin_types import NoneType
 from litestar.types.empty import Empty
 from litestar.typing import FieldDefinition
-from litestar.utils.signature import (
-    ParsedSignature,
-    add_types_to_signature_namespace,
-    get_fn_type_hints,
-)
+from litestar.utils.signature import ParsedSignature, add_types_to_signature_namespace, get_fn_type_hints
 
 T = TypeVar("T")
 U = TypeVar("U")
