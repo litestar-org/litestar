@@ -26,7 +26,7 @@ This also means that passing ``/`` will disable authentication for all routes.
     ...
 
 Including routes
---------------------
+----------------
 
 Since the exclusion rules are evaluated as regex, it is possible to pass a rule that inverts exclusion - meaning, no path but the one specified in the pattern will be protected by authentication. In the example below, only endpoints under the ``/secured`` route will require authentication - all other routes do not.
 
