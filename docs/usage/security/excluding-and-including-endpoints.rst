@@ -3,7 +3,7 @@ Excluding and including endpoints
 
 Please make sure you read the :doc:`security backends documentation </usage/security/security-backends>` first for learning how to set up a security backend. This section focuses on configuring the ``exclude`` rule for those backends.
 
-There are multiple ways for including or excluding endpoints in the authentication flow. The default rules are configured in the `Auth` object used (subclass of :class:`AbstractSecurityConfig <.security.base.AbstractSecurityConfig>`). The examples below use :class:`SessionAuth <.security.session_auth.auth.SessionAuth>` but it is the same for :class:`JWTAuth <.security.jwt.auth.JWTAuth>` and :class:`JWTCookieAuth <.security.jwt.auth.JWTCookieAuth>`.
+There are multiple ways for including or excluding endpoints in the authentication flow. The default rules are configured in the ``Auth`` object used (subclass of :class:`~.security.base.AbstractSecurityConfig`). The examples below use :class:`~.security.session_auth.auth.SessionAuth` but it is the same for :class:`~.security.jwt.auth.JWTAuth` and :class:`~.security.jwt.auth.JWTCookieAuth`.
 
 Excluding routes
 --------------------
