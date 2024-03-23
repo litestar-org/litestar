@@ -5,7 +5,7 @@ from logging.handlers import QueueHandler
 from queue import Queue
 from types import ModuleType
 from typing import TYPE_CHECKING, Any, Dict, Generator, Optional
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
 import picologging
 import pytest
@@ -67,19 +67,24 @@ def test_correct_default_handlers_set(picologging_exists: bool, expected_default
 
 
 @pytest.mark.parametrize(
-    "dict_config_class, handlers",
+    "dict_config_callable, dict_config_not_called, handlers",
     [
-        ["logging.config.dictConfig", default_handlers],
-        ["picologging.config.dictConfig", default_picologging_handlers],
+        ["logging.config.dictConfig", "picologging.config.dictConfig", default_handlers],
+        ["picologging.config.dictConfig", "logging.config.dictConfig", default_picologging_handlers],
     ],
 )
-def test_dictconfig_on_startup(dict_config_class: str, handlers: Any) -> None:
-    with patch(dict_config_class) as dict_config_mock:
-        test_logger = LoggingConfig(
-            handlers=handlers,
-        )
-        with create_test_client([], on_startup=[test_logger.configure]):
-            assert dict_config_mock.called
+def test_dictconfig_on_startup(dict_config_callable: str, dict_config_not_called: str, handlers: Any) -> None:
+    with patch(dict_config_callable) as dict_config_mock:
+        with patch(dict_config_not_called) as dict_config_not_called_mock:
+            test_logger = LoggingConfig(
+                handlers=handlers,
+                loggers={"app": {"level": "INFO", "handlers": ["console"]}},
+            )
+
+            with create_test_client([], on_startup=[test_logger.configure], logging_config=None):
+                assert dict_config_mock.called
+                assert dict_config_mock.call_count == 1
+                assert dict_config_not_called_mock.call_count == 0
 
 
 @pytest.mark.parametrize(
@@ -143,13 +148,6 @@ def test_default_queue_listener_handler(
     var = "test_var"
     logger.info("%s", var)
     assert_log(handler.queue, expected="INFO :: test_logger :: test_var", count=1)
-
-
-@patch("picologging.config.dictConfig")
-def test_picologging_dictconfig_when_disabled(dict_config_mock: Mock) -> None:
-    test_logger = LoggingConfig(loggers={"app": {"level": "INFO", "handlers": ["console"]}}, handlers=default_handlers)
-    with create_test_client([], on_startup=[test_logger.configure], logging_config=None):
-        assert not dict_config_mock.called
 
 
 def test_get_logger_without_logging_config() -> None:
