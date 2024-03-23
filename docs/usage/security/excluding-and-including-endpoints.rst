@@ -8,7 +8,7 @@ There are multiple ways for including or excluding endpoints in the authenticati
 Excluding routes
 --------------------
 
-The ``exclude`` argument takes a string or list of strings that are interpreted as regex patterns. For example, the configuration below would apply authentication to all endpoints except those where the route starts with ``/login``, ``/signup``, or ``/schema``. Thus, one does not have to exclude ``/schema/swagger`` as well - it is included in the ``/schema`` pattern.
+The ``exclude`` argument takes a :class:`string <str>` or :class:`list` of :class:`strings <str>` that are interpreted as regex patterns. For example, the configuration below would apply authentication to all endpoints except those where the route starts with ``/login``, ``/signup``, or ``/schema``. Thus, one does not have to exclude ``/schema/swagger`` as well - it is included in the ``/schema`` pattern.
 
 This also means that passing ``/`` will disable authentication for all routes.
 
