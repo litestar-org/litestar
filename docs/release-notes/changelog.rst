@@ -30,7 +30,7 @@
 
         This ensures that both of the send the request for the JSON of the OpenAPI schema to the right endpoint.
 
-    .. change:: JSON schema `examples` were OpenAPI formatted
+    .. change:: JSON schema ``examples`` were OpenAPI formatted
         :type: bugfix
         :pr: 3224
         :issue: 2849
