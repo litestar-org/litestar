@@ -10,7 +10,7 @@
         :type: bugfix
         :pr: 3193
 
-        This addresses an issue when serializing `Enums` that was reported in discord.
+        This addresses an issue when serializing ``Enums`` that was reported in discord.
 
     .. change:: replace TestClient.__enter__ return type with Self
         :type: bugfix
