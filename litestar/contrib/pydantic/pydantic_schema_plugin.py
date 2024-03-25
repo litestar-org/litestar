@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, Any, Optional
 
 from typing_extensions import Annotated
 
-from litestar._openapi.schema_generation.utils import get_formatted_examples
 from litestar.contrib.pydantic.utils import (
     create_field_definitions_for_computed_fields,
     is_pydantic_2_model,
@@ -15,7 +14,7 @@ from litestar.contrib.pydantic.utils import (
     pydantic_unwrap_and_get_origin,
 )
 from litestar.exceptions import MissingDependencyException
-from litestar.openapi.spec import Example, OpenAPIFormat, OpenAPIType, Schema
+from litestar.openapi.spec import OpenAPIFormat, OpenAPIType, Schema
 from litestar.plugins import OpenAPISchemaPlugin
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
@@ -261,14 +260,17 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
             model_config = model.model_config
             model_field_info = model.model_fields
             title = model_config.get("title")
-            example = model_config.get("example")
+            json_schema_extra = model_config.get("json_schema_extra")
             is_v2_model = True
         else:
             model_config = annotation.__config__
             model_field_info = model.__fields__
             title = getattr(model_config, "title", None)
-            example = getattr(model_config, "example", None)
+            json_schema_extra = getattr(model_config, "json_schema_extra", None)
             is_v2_model = False
+
+        if json_schema_extra and callable(json_schema_extra):  # pragma: no cover
+            raise ValueError("`json_schema_extra` callables are not supported")
 
         model_fields: dict[str, pydantic_v1.fields.FieldInfo | pydantic_v2.fields.FieldInfo] = {  # pyright: ignore
             k: getattr(f, "field_info", f) for k, f in model_field_info.items()
@@ -314,11 +316,5 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
             required=sorted(f.name for f in property_fields.values() if f.is_required),
             property_fields=property_fields,
             title=title,
-            examples=(
-                None
-                if example is None
-                else get_formatted_examples(
-                    field_definition, [Example(description=f"Example {field_definition.name} value", value=example)]
-                )
-            ),
+            extra=json_schema_extra,
         )

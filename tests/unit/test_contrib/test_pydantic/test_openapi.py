@@ -8,7 +8,7 @@ import pytest
 from pydantic import v1 as pydantic_v1
 from typing_extensions import Annotated
 
-from litestar import Litestar, post
+from litestar import Litestar, get, post
 from litestar._openapi.schema_generation.constrained_fields import (
     create_date_constrained_field_schema,
     create_numerical_constrained_field_schema,
@@ -508,6 +508,27 @@ def test_schema_by_alias_plugin_override(base_model: AnyBaseModelType, pydantic_
     with TestClient(app) as client:
         response = client.post("/", json={request_key: "foo"})
         assert response.json() == {response_key: "foo"}
+
+
+def test_schema_json_schema_extra() -> None:
+    class MyBody(pydantic_v2.BaseModel):
+        model_config = pydantic_v2.ConfigDict(json_schema_extra={"examples": [{"foo": "hello"}]})
+
+        foo: str
+
+    @get()
+    async def route() -> MyBody:
+        return MyBody(foo="lalala")
+
+    with create_test_client(
+        [route],
+        signature_namespace={"MyBody": MyBody},
+    ) as client:
+        response = client.get("/schema/openapi.json")
+        assert response.status_code == HTTP_200_OK
+        assert response.json()["components"]["schemas"]["test_schema_json_schema_extra.MyBody"]["examples"] == [
+            {"foo": "hello"}
+        ]
 
 
 def test_create_schema_for_field_v1() -> None:
