@@ -18,7 +18,7 @@
 
         ``TestClient.__enter__`` and ``AsyncTestClient.__enter__`` return ``self``.
         If you inherit ``TestClient``, its ``__enter__`` method should return derived class's instance
-        unless override the method. So I think :class:`~typing_extensions.Self` could be more flexible return type.
+        unless override the method. :class:`~typing_extensions.Self`is a more flexible return type.
 
     .. change:: use the full path for fetching openapi.json
         :type: bugfix
