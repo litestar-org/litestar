@@ -76,7 +76,6 @@ The following snippet demonstrates how to change the cookie name to "some-cookie
 
 
 A CSRF protected route can be accessed by any client that can make a request with either the header or form-data key.
-Both of which can be configured in :class:`CSRFConfig <.config.csrf.CSRFConfig>` as show above.
 
 
 .. note::
