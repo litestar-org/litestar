@@ -7,7 +7,7 @@ from litestar.plugins import sqlalchemy
 
 
 def test_re_exports() -> None:
-    assert sqlalchemy.filters is advanced_alchemy.filters
+    assert sqlalchemy.filters is advanced_alchemy.filters  # pyright: ignore[reportGeneralTypeIssues]
     assert sqlalchemy.types is sa_types
 
     assert sqlalchemy.AuditColumns is sa_base.AuditColumns
