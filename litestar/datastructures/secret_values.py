@@ -1,15 +1,26 @@
 from __future__ import annotations
 
-from typing import Generic, TypeVar
+from typing import Generic, TypeVar, Union
 
-_SecretT = TypeVar("_SecretT", bound="str | bytes")
+__all__ = (
+    "SecretBytes",
+    "SecretString",
+    "SecretT",
+    "SecretValue",
+)
+
+# NOTE: Union instead of ` | ` is used for compatibility with Sphinx autodoc.
+#  - Sphinx autodoc doesn't handle string annotations for "bound" parameter in TypeVar.
+#  - We cannot use `|` without string annotations due to supporting < python 3.10.
+SecretT = TypeVar("SecretT", bound=Union[str, bytes])
+"""Type that represents a secret value of type ``str`` or ``bytes``."""
 
 
-class SecretValue(Generic[_SecretT]):
+class SecretValue(Generic[SecretT]):
     """Represents a secret value that can be of type `str` or `bytes`."""
 
-    def __init__(self, secret_value: _SecretT) -> None:
-        """Initializes a SecretValue object with a secret value of type `str` or `bytes`.
+    def __init__(self, secret_value: SecretT) -> None:
+        """Initializes a :class:`SecretValue` object with a secret value of type ``str`` or ``bytes``.
 
         Args:
             secret_value (str | bytes): The secret value to be encapsulated.
@@ -17,7 +28,7 @@ class SecretValue(Generic[_SecretT]):
 
         self._secret_value = secret_value
 
-    def get_secret(self) -> _SecretT:
+    def get_secret(self) -> SecretT:
         """Returns the actual secret value.
 
         Returns:
@@ -26,7 +37,7 @@ class SecretValue(Generic[_SecretT]):
 
         return self._secret_value
 
-    def _get_obscured_representation(self) -> _SecretT:
+    def _get_obscured_representation(self) -> SecretT:
         """Return the hidden representation of the secret value.
 
         Raises:
