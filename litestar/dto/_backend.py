@@ -750,14 +750,17 @@ def _create_struct_field_meta_for_field_definition(field_definition: TransferDTO
         return None
 
     return msgspec.Meta(
-        gt=kwarg_definition.gt,
+        description=kwarg_definition.description,
+        examples=[e.value for e in kwarg_definition.examples or []],
         ge=kwarg_definition.ge,
-        lt=kwarg_definition.lt,
+        gt=kwarg_definition.gt,
         le=kwarg_definition.le,
-        multiple_of=kwarg_definition.multiple_of,
-        min_length=kwarg_definition.min_length if not field_definition.is_partial else None,
+        lt=kwarg_definition.lt,
         max_length=kwarg_definition.max_length if not field_definition.is_partial else None,
+        min_length=kwarg_definition.min_length if not field_definition.is_partial else None,
+        multiple_of=kwarg_definition.multiple_of,
         pattern=kwarg_definition.pattern,
+        title=kwarg_definition.title,
     )
 
 
