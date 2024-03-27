@@ -81,7 +81,6 @@ Since we would probably need to use the client in multiple places, it's better t
 
             from typing import TYPE_CHECKING, Iterator
 
-
             import pytest
 
             from litestar.testing import TestClient
