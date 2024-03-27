@@ -28,7 +28,7 @@ API reference
     openapi/index
     pagination
     params
-    plugins/index
+    plugins
     repository/index
     response/index
     router
