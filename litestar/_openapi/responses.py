@@ -298,9 +298,7 @@ def create_error_responses(exceptions: list[type[HTTPException]]) -> Iterator[tu
                         ),
                     },
                     description=pascal_case_to_text(get_name(exc)),
-                    examples={
-                        exc.__name__: Example(value={"status_code": status_code, "detail": example_detail, "extra": {}})
-                    },
+                    examples=[{"status_code": status_code, "detail": example_detail, "extra": {}}],
                 )
             )
         if len(exceptions_schemas) > 1:  # noqa: SIM108

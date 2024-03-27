@@ -7,18 +7,20 @@ from typing import TYPE_CHECKING, Callable, List, Optional
 from unittest.mock import MagicMock
 
 import pytest
-from msgspec import Struct, to_builtins
+from msgspec import Meta, Struct, to_builtins
 
 from litestar import Litestar, Request, get, post
 from litestar._openapi.schema_generation import SchemaCreator
 from litestar.dto import DataclassDTO, DTOConfig, DTOField
-from litestar.dto._backend import DTOBackend
+from litestar.dto._backend import DTOBackend, _create_struct_field_meta_for_field_definition
 from litestar.dto._types import CollectionType, SimpleType, TransferDTOFieldDefinition
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.enums import MediaType
 from litestar.exceptions import SerializationException
+from litestar.openapi.spec.example import Example
 from litestar.openapi.spec.reference import Reference
 from litestar.openapi.spec.schema import Schema
+from litestar.params import KwargDefinition
 from litestar.serialization import encode_json
 from litestar.testing import RequestFactory
 from litestar.typing import FieldDefinition
@@ -448,3 +450,29 @@ dto_type = DataclassDTO[Model]
     assert b_d_nested_info is not None
     assert not next(f for f in b_d_nested_info.field_definitions if f.name == "e").is_excluded
     assert b_d_nested_info.field_definitions[1].name == "f"
+
+
+@pytest.mark.parametrize(
+    ("constraint_kwargs",),
+    (
+        ({},),
+        ({"gt": 0, "lt": 2},),
+        ({"ge": 0, "le": 2},),
+        ({"min_length": 1, "max_length": 2},),
+        ({"pattern": "test"},),
+    ),
+)
+def test_create_struct_field_meta_for_field_definition(constraint_kwargs: Any) -> None:
+    mock_field = MagicMock(spec=TransferDTOFieldDefinition, is_partial=False)
+    mock_field.kwarg_definition = KwargDefinition(
+        description="test",
+        examples=[Example(value=1)],
+        title="test",
+        **constraint_kwargs,
+    )
+    assert _create_struct_field_meta_for_field_definition(mock_field) == Meta(
+        description="test",
+        examples=[1],
+        title="test",
+        **constraint_kwargs,
+    )
