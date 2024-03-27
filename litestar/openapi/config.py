@@ -133,7 +133,7 @@ class OpenAPIConfig:
     """
 
     def __post_init__(self) -> None:
-        self.root_schema_site = self.root_schema_site or _DEFAULT_SCHEMA_SITE
+        self.root_schema_site = _DEFAULT_SCHEMA_SITE
 
         self.enabled_endpoints = (
             set(_enabled_plugin_map.keys()) if self.enabled_endpoints is None else self.enabled_endpoints
@@ -142,7 +142,7 @@ class OpenAPIConfig:
         if self.path:
             self.path = normalize_path(self.path)
 
-        if self.path and self.openapi_controller is not None:
+        if self.path is not None:
             self.openapi_controller = type("OpenAPIController", (self.openapi_controller,), {"path": self.path})
 
         self.default_plugin: OpenAPIRenderPlugin | None = None
