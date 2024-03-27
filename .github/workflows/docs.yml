@@ -14,6 +14,19 @@ jobs:
     permissions:
       contents: write
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - branch: refs/heads/main
+            version: main
+            condition: github.event_name == 'push'
+          - branch: refs/heads/develop
+            version: develop
+            condition: github.event_name == 'push'
+          - branch: refs/heads/v3.0
+            version: 3-dev
+            condition: github.event_name == 'push'
     steps:
       - uses: actions/checkout@v4
 
@@ -40,17 +53,9 @@ jobs:
         run: pdm run python tools/build_docs.py docs-build
         if: github.event_name == 'release'
 
-      - name: Build docs (main branch)
-        run: pdm run python tools/build_docs.py docs-build --version main
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-
-      - name: Build docs (develop branch)
-        run: pdm run python tools/build_docs.py docs-build --version develop
-        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
-
-      - name: Build docs (v3.0 branch)
-        run: pdm run python tools/build_docs.py docs-build --version 3-dev
-        if: github.event_name == 'push' && github.ref == 'refs/heads/v3.0'
+      - name: Build development docs
+        if: ${{ matrix.condition && github.ref == matrix.branch }}
+        run: pdm run python tools/build_docs.py docs-build --version ${{ matrix.version }}
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
