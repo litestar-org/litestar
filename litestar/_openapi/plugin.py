@@ -9,6 +9,9 @@ from litestar.plugins import InitPluginProtocol
 from litestar.plugins.base import ReceiveRoutePlugin
 from litestar.routes import HTTPRoute
 
+__all__ = ("OpenAPIPlugin",)
+
+
 if TYPE_CHECKING:
     from litestar.app import Litestar
     from litestar.config.app import AppConfig

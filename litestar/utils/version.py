@@ -59,4 +59,7 @@ def parse_version(raw_version: str) -> Version:
 
 def get_version() -> Version:
     """Get the version of the installed litestar package"""
-    return parse_version(importlib_metadata.version("litestar"))
+    try:
+        return parse_version(importlib_metadata.version("litestar"))
+    except importlib_metadata.PackageNotFoundError:
+        return Version(0, 0, 0, "final", 0)

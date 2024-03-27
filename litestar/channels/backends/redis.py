@@ -13,6 +13,13 @@ from typing import TYPE_CHECKING, Any, AsyncGenerator, Iterable, cast
 
 from litestar.channels.backends.base import ChannelsBackend
 
+__all__ = (
+    "RedisChannelsBackend",
+    "RedisChannelsPubSubBackend",
+    "RedisChannelsStreamBackend",
+)
+
+
 if TYPE_CHECKING:
     from redis.asyncio import Redis
     from redis.asyncio.client import PubSub

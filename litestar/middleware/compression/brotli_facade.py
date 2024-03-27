@@ -6,6 +6,9 @@ from litestar.enums import CompressionEncoding
 from litestar.exceptions import MissingDependencyException
 from litestar.middleware.compression.facade import CompressionFacade
 
+__all__ = ("BrotliCompression",)
+
+
 try:
     from brotli import MODE_FONT, MODE_GENERIC, MODE_TEXT, Compressor
 except ImportError as e:

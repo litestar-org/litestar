@@ -48,8 +48,6 @@ except ImportError:
 class LoggingMiddleware(AbstractMiddleware):
     """Logging middleware."""
 
-    __slots__ = ("config", "logger", "request_extractor", "response_extractor", "is_struct_logger")
-
     logger: Logger
 
     def __init__(self, app: ASGIApp, config: LoggingMiddlewareConfig) -> None:

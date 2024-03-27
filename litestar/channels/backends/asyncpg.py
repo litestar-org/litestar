@@ -10,6 +10,8 @@ import asyncpg
 from litestar.channels import ChannelsBackend
 from litestar.exceptions import ImproperlyConfiguredException
 
+__all__ = ("AsyncPgChannelsBackend",)
+
 
 class AsyncPgChannelsBackend(ChannelsBackend):
     _listener_conn: asyncpg.Connection

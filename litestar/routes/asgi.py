@@ -6,6 +6,9 @@ from litestar.connection import ASGIConnection
 from litestar.enums import ScopeType
 from litestar.routes.base import BaseRoute
 
+__all__ = ("ASGIRoute",)
+
+
 if TYPE_CHECKING:
     from litestar.handlers.asgi_handlers import ASGIRouteHandler
     from litestar.types import Receive, Scope, Send

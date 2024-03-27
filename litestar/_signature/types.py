@@ -4,6 +4,8 @@ from typing import Any
 
 from msgspec import ValidationError
 
+__all__ = ("ExtendedMsgSpecValidationError",)
+
 
 class ExtendedMsgSpecValidationError(ValidationError):
     def __init__(self, errors: list[dict[str, Any]]) -> None:

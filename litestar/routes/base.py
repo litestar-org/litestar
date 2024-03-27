@@ -15,6 +15,9 @@ from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types.internal_types import PathParameterDefinition
 from litestar.utils import join_paths, normalize_path
 
+__all__ = ("BaseRoute",)
+
+
 if TYPE_CHECKING:
     from litestar.enums import ScopeType
     from litestar.handlers.base import BaseRouteHandler

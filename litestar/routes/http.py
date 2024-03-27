@@ -17,6 +17,9 @@ from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
 from litestar.types.empty import Empty
 from litestar.utils.scope.state import ScopeState
 
+__all__ = ("HTTPRoute",)
+
+
 if TYPE_CHECKING:
     from litestar._kwargs import KwargsModel
     from litestar._kwargs.cleanup import DependencyCleanupGroup

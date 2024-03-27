@@ -6,6 +6,9 @@ from litestar.openapi.spec import OpenAPIType, Schema
 from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
 from litestar.plugins import OpenAPISchemaPlugin
 
+__all__ = ("PaginationSchemaPlugin",)
+
+
 if TYPE_CHECKING:
     from litestar._openapi.schema_generation import SchemaCreator
     from litestar.typing import FieldDefinition

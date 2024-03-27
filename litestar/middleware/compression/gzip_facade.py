@@ -6,6 +6,9 @@ from typing import TYPE_CHECKING, Literal
 from litestar.enums import CompressionEncoding
 from litestar.middleware.compression.facade import CompressionFacade
 
+__all__ = ("GzipCompression",)
+
+
 if TYPE_CHECKING:
     from io import BytesIO
 

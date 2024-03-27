@@ -3,6 +3,8 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import AsyncGenerator, Iterable
 
+__all__ = ("ChannelsBackend",)
+
 
 class ChannelsBackend(ABC):
     @abstractmethod

@@ -14,6 +14,14 @@ from litestar.plugins import InitPluginProtocol
 from litestar.typing import _KWARG_META_EXTRACTORS
 from litestar.utils import is_class_and_subclass
 
+__all__ = (
+    "ConstrainedFieldMetaExtractor",
+    "PydanticInitPlugin",
+    "is_pydantic_v1_model_class",
+    "is_pydantic_v2_model_class",
+)
+
+
 try:
     # check if we have pydantic v2 installed, and try to import both versions
     import pydantic as pydantic_v2

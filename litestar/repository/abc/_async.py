@@ -5,6 +5,9 @@ from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 from litestar.repository.exceptions import NotFoundError
 
+__all__ = ("AbstractAsyncRepository",)
+
+
 if TYPE_CHECKING:
     from litestar.repository.filters import FilterTypes
 

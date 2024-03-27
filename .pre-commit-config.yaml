@@ -39,13 +39,55 @@ repos:
     rev: v0.3.1
     hooks:
       - id: ensure-dunder-all
-        exclude: "test*|examples*|tools"
+        # Need to be careful to not exclude too many files
+        # since "litestar" containts the word "test"
+        exclude: "test_|tests|examples|tools"
         args: ["--use-tuple"]
   - repo: https://github.com/ariebovenberg/slotscheck
     rev: v0.19.0
     hooks:
       - id: slotscheck
-        exclude: "test_*|docs|.github"
+        # Need to be careful to not exclude too many files
+        # since "litestar" containts the word "test"
+        exclude: "test_|tests|docs|.github|^tools"
+        additional_dependencies:
+          - anyio>=3
+          - httpx>=0.22
+          - exceptiongroup
+          - importlib-metadata
+          - importlib-resources>=5.12.0
+          - msgspec>=0.18.2
+          - multidict>=6.0.2
+          - polyfactory>=2.6.3
+          - pyyaml
+          - typing-extensions
+          - click
+          - rich>=13.0.0
+          - rich-click
+          - annotated-types
+          - attrs
+          - brotli
+          - jsbeautifier
+          - uvicorn[standard]
+          - uvloop>=0.18.0; sys_platform != 'win32'
+          - cryptography
+          - jinja2>=3.1.2
+          - python-jose
+          - mako>=1.2.4
+          - minijinja>=1.0.0
+          - opentelemetry-instrumentation-asgi
+          - piccolo
+          - picologging
+          - prometheus-client
+          - pydantic
+          - email-validator
+          - pydantic-extra-types
+          - redis[hiredis]>=4.4.4
+          - advanced-alchemy>=0.2.2,<1.0.0
+          - structlog
+          - asyncpg
+          - psycopg
+          - docutils
   - repo: https://github.com/sphinx-contrib/sphinx-lint
     rev: "v0.9.1"
     hooks:

@@ -7,6 +7,8 @@ from typing import Any
 from litestar.contrib.pydantic.utils import is_pydantic_model_class
 from litestar.plugins import DIPlugin
 
+__all__ = ("PydanticDIPlugin",)
+
 
 class PydanticDIPlugin(DIPlugin):
     def has_typed_init(self, type_: Any) -> bool:

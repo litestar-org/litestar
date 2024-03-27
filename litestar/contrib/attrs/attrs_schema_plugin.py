@@ -7,6 +7,9 @@ from litestar.plugins import OpenAPISchemaPluginProtocol
 from litestar.typing import FieldDefinition
 from litestar.utils import is_attrs_class, is_optional_union
 
+__all__ = ("AttrsSchemaPlugin",)
+
+
 try:
     import attr
     import attrs

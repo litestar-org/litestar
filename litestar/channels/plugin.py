@@ -16,6 +16,12 @@ from litestar.serialization import default_serializer
 
 from .subscriber import BacklogStrategy, EventCallback, Subscriber
 
+__all__ = (
+    "ChannelsException",
+    "ChannelsPlugin",
+)
+
+
 if TYPE_CHECKING:
     from types import TracebackType
 

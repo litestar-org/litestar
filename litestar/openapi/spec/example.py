@@ -5,6 +5,8 @@ from typing import Any
 
 from litestar.openapi.spec.base import BaseSchemaObject
 
+__all__ = ("Example",)
+
 
 @dataclass
 class Example(BaseSchemaObject):

@@ -12,6 +12,9 @@ from litestar.testing.life_span_handler import LifeSpanHandler
 from litestar.testing.transport import ConnectionUpgradeExceptionError, TestClientTransport
 from litestar.types import AnyIOBackend, ASGIApp
 
+__all__ = ("TestClient",)
+
+
 if TYPE_CHECKING:
     from httpx._client import UseClientDefault
     from httpx._types import (

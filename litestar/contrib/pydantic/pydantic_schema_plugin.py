@@ -20,6 +20,9 @@ from litestar.types import Empty
 from litestar.typing import FieldDefinition
 from litestar.utils import is_class_and_subclass, is_generic
 
+__all__ = ("PydanticSchemaPlugin",)
+
+
 try:
     # check if we have pydantic v2 installed, and try to import both versions
     import pydantic as pydantic_v2

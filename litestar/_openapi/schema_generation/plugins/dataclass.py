@@ -7,6 +7,9 @@ from litestar.plugins import OpenAPISchemaPlugin
 from litestar.typing import FieldDefinition
 from litestar.utils.predicates import is_optional_union
 
+__all__ = ("DataclassSchemaPlugin",)
+
+
 if TYPE_CHECKING:
     from litestar._openapi.schema_generation import SchemaCreator
     from litestar.openapi.spec import Schema

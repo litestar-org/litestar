@@ -10,6 +10,9 @@ from litestar.types.empty import Empty
 from litestar.typing import FieldDefinition
 from litestar.utils.predicates import is_optional_union
 
+__all__ = ("StructSchemaPlugin",)
+
+
 if TYPE_CHECKING:
     from msgspec.structs import FieldInfo
 

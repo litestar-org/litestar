@@ -4,6 +4,9 @@ from typing import TYPE_CHECKING, TypeVar
 
 from litestar.types.empty import Empty
 
+__all__ = ("value_or_default",)
+
+
 if TYPE_CHECKING:
     from litestar.types.empty import EmptyType
 
