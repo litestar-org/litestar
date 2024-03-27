@@ -16,9 +16,9 @@
         :type: bugfix
         :pr: 3194
 
-        ``TestClient.__enter__`` and ``AsyncTestClient.__enter__`` return ``self``.
+        ``TestClient.__enter__`` and ``AsyncTestClient.__enter__`` return ``Self``.
         If you inherit ``TestClient``, its ``__enter__`` method should return derived class's instance
-        unless override the method. :class:`~typing_extensions.Self`is a more flexible return type.
+        unless override the method. :class:`~typing_extensions.Self` is a more flexible return type.
 
     .. change:: use the full path for fetching openapi.json
         :type: bugfix
@@ -103,7 +103,7 @@
         :pr: 3237
         :issue: 3232
 
-        :class:`~litestar.typing.FieldDefinition`s pack any OpenAPI metadata onto a ``KwargDefinition`` instance when
+        :class:`~litestar.typing.FieldDefinition` s pack any OpenAPI metadata onto a ``KwargDefinition`` instance when
         types are parsed from domain models.
 
         When we produce a DTO type, we transfer this meta from the `KwargDefinition` to a `msgspec.Meta` instance,
