@@ -18,7 +18,7 @@
 
         ``TestClient.__enter__`` and ``AsyncTestClient.__enter__`` return ``Self``.
         If you inherit ``TestClient``, its ``__enter__`` method should return derived class's instance
-        unless override the method. :class:`~typing_extensions.Self` is a more flexible return type.
+        unless override the method. ``Self`` is a more flexible return type.
 
     .. change:: use the full path for fetching openapi.json
         :type: bugfix
@@ -87,7 +87,7 @@
         - Fix the ``queue_listener`` handler for Python 3.12
 
         Python 3.12 introduced a new way to configure ``QueueHandler`` and ``QueueListener`` via
-        :meth:`~logging.config.dictConfig()`. As described in the
+        ``logging.config.dictConfig()``. As described in the
         `logging documentation <https://docs.python.org/3/library/logging.config.html#configuring-queuehandler-and-queuelistener>`_.
 
         The listener still needs to be started & stopped, as previously.
