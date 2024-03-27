@@ -2,17 +2,10 @@ from __future__ import annotations
 
 from copy import deepcopy
 from dataclasses import dataclass, field, fields
-from typing import TYPE_CHECKING, Final, Sequence
+from typing import TYPE_CHECKING, Sequence
 
 from litestar._openapi.utils import default_operation_id_creator
-from litestar.openapi.plugins import (
-    JsonRenderPlugin,
-    RapidocRenderPlugin,
-    RedocRenderPlugin,
-    StoplightRenderPlugin,
-    SwaggerRenderPlugin,
-    YamlRenderPlugin,
-)
+from litestar.openapi.plugins import ScalarRenderPlugin
 from litestar.openapi.spec import (
     Components,
     Contact,
@@ -34,19 +27,6 @@ if TYPE_CHECKING:
     from litestar.types.callable_types import OperationIDCreator
 
 __all__ = ("OpenAPIConfig",)
-
-_enabled_plugin_map = {
-    "elements": StoplightRenderPlugin,
-    "openapi.json": JsonRenderPlugin,
-    "openapi.yaml": YamlRenderPlugin,
-    "openapi.yml": YamlRenderPlugin,
-    "rapidoc": RapidocRenderPlugin,
-    "redoc": RedocRenderPlugin,
-    "swagger": SwaggerRenderPlugin,
-    "oauth2-redirect.html": None,
-}
-
-_DEFAULT_SCHEMA_SITE: Final = "redoc"
 
 
 @dataclass
@@ -108,14 +88,14 @@ class OpenAPIConfig:
     """
     operation_id_creator: OperationIDCreator = default_operation_id_creator
     """A callable that generates unique operation ids"""
-    path: str | None = field(default=None)
+    path: str = "/schema"
     """Base path for the OpenAPI documentation endpoints.
 
     If no path is provided the default is ``/schema``.
 
     Ignored if :attr:`openapi_router` is provided.
     """
-    render_plugins: Sequence[OpenAPIRenderPlugin] = field(default=())
+    render_plugins: Sequence[OpenAPIRenderPlugin] = field(default=(ScalarRenderPlugin(),))
     """Plugins for rendering OpenAPI documentation UIs."""
     openapi_router: Router | None = None
     """An optional router for serving OpenAPI documentation and schema files.
@@ -133,53 +113,18 @@ class OpenAPIConfig:
     """
 
     def __post_init__(self) -> None:
-        self.root_schema_site = _DEFAULT_SCHEMA_SITE
-
-        self.enabled_endpoints = (
-            set(_enabled_plugin_map.keys()) if self.enabled_endpoints is None else self.enabled_endpoints
-        )
-
-        if self.path:
-            self.path = normalize_path(self.path)
-
-        if self.path is not None:
-            self.openapi_controller = type("OpenAPIController", (self.openapi_controller,), {"path": self.path})
+        self.path = normalize_path(self.path)
 
         self.default_plugin: OpenAPIRenderPlugin | None = None
-        if self.openapi_controller is None:
-            if not self.render_plugins:
-                self._plugin_backward_compatibility()
-            else:
-                # user is implicitly opted into the future plugin-based OpenAPI implementation
-                # behavior by explicitly providing a list of render plugins
-                for plugin in self.render_plugins:
-                    if plugin.has_path("/"):
-                        self.default_plugin = plugin
-                        break
-                else:
-                    self.default_plugin = self.render_plugins[0]
+        for plugin in self.render_plugins:
+            if plugin.has_path("/"):
+                self.default_plugin = plugin
+                break
+        else:
+            self.default_plugin = self.render_plugins[0]
 
-    def _plugin_backward_compatibility(self) -> None:
-        """Backward compatibility for the plugin-based OpenAPI implementation.
-
-        This preserves backward compatibility with the Controller-based OpenAPI implementation.
-
-        We add a plugin for each enabled endpoint and set the default plugin to the plugin
-        that has a path ending in the value of ``root_schema_site``.
-        """
-
-        def is_default_plugin(plugin_: OpenAPIRenderPlugin) -> bool:
-            """Return True if the plugin is the default plugin."""
-            root_schema_site = self.root_schema_site or _DEFAULT_SCHEMA_SITE
-            return any(path.endswith(root_schema_site) for path in plugin_.paths)
-
-        self.render_plugins = rps = []
-        for key in self.enabled_endpoints or ():
-            if plugin_type := _enabled_plugin_map[key]:
-                plugin = plugin_type()
-                rps.append(plugin)
-                if is_default_plugin(plugin):
-                    self.default_plugin = plugin
+    def get_path(self) -> str:
+        return self.openapi_router.path if self.openapi_router else self.path
 
     def to_openapi_schema(self) -> OpenAPI:
         """Return an ``OpenAPI`` instance from the values stored in ``self``.
