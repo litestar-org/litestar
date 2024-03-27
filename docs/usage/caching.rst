@@ -13,8 +13,7 @@ expected. Litestar comes with a simple mechanism for caching:
 
 
    @get("/cached-path", cache=True)
-   def my_cached_handler() -> str:
-       ...
+   def my_cached_handler() -> str: ...
 
 By setting ``cache=True`` in the route handler, caching for the route handler will be enabled for the
 :attr:`ResponseCacheConfig.default_expiration <.config.response_cache.ResponseCacheConfig.default_expiration>`.
@@ -32,8 +31,7 @@ Alternatively you can specify the number of seconds to cache the responses from 
 
 
    @get("/cached-path", cache=120)  # seconds
-   def my_cached_handler() -> str:
-       ...
+   def my_cached_handler() -> str: ...
 
 
 If you want the response to be cached indefinitely, you can pass the :class:`.config.response_cache.CACHE_FOREVER`
@@ -46,8 +44,7 @@ sentinel instead:
 
 
    @get("/cached-path", cache=CACHE_FOREVER)  # seconds
-   def my_cached_handler() -> str:
-       ...
+   def my_cached_handler() -> str: ...
 
 
 Configuration
@@ -102,5 +99,4 @@ Litestar uses the request's path + sorted query parameters as the cache key. Thi
 
 
     @get("/cached-path", cache=True, cache_key_builder=key_builder)
-    def cached_handler() -> str:
-        ...
+    def cached_handler() -> str: ...

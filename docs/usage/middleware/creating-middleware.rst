@@ -40,11 +40,9 @@ follows:
 
 
    class MiddlewareProtocol(Protocol):
-       def __init__(self, app: ASGIApp, **kwargs: Any) -> None:
-           ...
+       def __init__(self, app: ASGIApp, **kwargs: Any) -> None: ...
 
-       async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-           ...
+       async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None: ...
 
 The ``__init__`` method receives and sets "app". *It's important to understand* that app is not an instance of Litestar in
 this case, but rather the next middleware in the stack, which is also an ASGI app.

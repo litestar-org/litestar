@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib
 import sys
 
 import pytest
@@ -30,13 +31,11 @@ pytestmark = pytest.mark.xdist_group("sqlalchemy_examples")
     ]
 )
 async def app(monkeypatch: MonkeyPatch, request: FixtureRequest) -> Litestar:
-    from docs.examples.contrib.sqlalchemy.plugins.tutorial.full_app_no_plugins import Base
-
-    app_module = request.param
+    app_module = importlib.reload(request.param)
 
     engine = create_async_engine("sqlite+aiosqlite://", connect_args={"check_same_thread": False})
     async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+        await conn.run_sync(app_module.Base.metadata.create_all)
 
     try:
         monkeypatch.setattr(app_module, "create_async_engine", lambda *a, **kw: engine)

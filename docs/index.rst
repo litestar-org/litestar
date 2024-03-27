@@ -3,7 +3,7 @@ Litestar library documentation
 
 Litestar is a powerful, flexible, highly performant, and opinionated ASGI framework.
 
-The Litestar framework supports :doc:`/usage/plugins`, ships
+The Litestar framework supports :doc:`/usage/plugins/index`, ships
 with :doc:`dependency injection </usage/dependency-injection>`, :doc:`security primitives </usage/security/index>`,
 :doc:`OpenAPI schema generation </usage/openapi>`, `MessagePack <https://msgpack.org/>`_,
 :doc:`middlewares </usage/middleware/index>`, a great :doc:`CLI </usage/cli>` experience, and much more.
@@ -157,7 +157,7 @@ A huge thank you to our current sponsors:
       </div>
       <div>
         <a href="https://www.stok.kr/" title="Stok - Stack Up Your Assets!">
-            <img src="https://avatars.githubusercontent.com/u/144093421?s=400&v=4" width="150" alt="Stok">
+            <img src="https://avatars.githubusercontent.com/u/144093421?s=400&v=4" alt="Stok" style="border-radius: 10px; width: auto; max-height: 150px;" />
         </a>
         <p style="text-align: center;">Stok</p>
       </div>
@@ -230,28 +230,24 @@ You can also use dataclasses (standard library and Pydantic),
         path = "/users"
 
         @post()
-        async def create_user(self, data: User) -> User:
-            ...
+        async def create_user(self, data: User) -> User: ...
 
         @get()
-        async def list_users(self) -> List[User]:
-            ...
+        async def list_users(self) -> List[User]: ...
 
         @patch(path="/{user_id:uuid}", dto=PartialUserDTO)
-        async def partial_update_user(self, user_id: UUID4, data: DTOData[User]) -> User:
-            ...
+        async def partial_update_user(
+            self, user_id: UUID4, data: DTOData[User]
+        ) -> User: ...
 
         @put(path="/{user_id:uuid}")
-        async def update_user(self, user_id: UUID4, data: User) -> User:
-            ...
+        async def update_user(self, user_id: UUID4, data: User) -> User: ...
 
         @get(path="/{user_id:uuid}")
-        async def get_user(self, user_id: UUID4) -> User:
-            ...
+        async def get_user(self, user_id: UUID4) -> User: ...
 
         @delete(path="/{user_id:uuid}")
-        async def delete_user(self, user_id: UUID4) -> None:
-            ...
+        async def delete_user(self, user_id: UUID4) -> None: ...
 
 
 When instantiating your app, import your *controller* into your application's

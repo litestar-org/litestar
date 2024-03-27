@@ -117,7 +117,7 @@ TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
     Sequence: Schema(type=OpenAPIType.ARRAY),
     Set: Schema(type=OpenAPIType.ARRAY),
     Tuple: Schema(type=OpenAPIType.ARRAY),
-    UUID: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.UUID, description="Any UUID string"),
+    UUID: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.UUID),
     bool: Schema(type=OpenAPIType.BOOLEAN),
     bytearray: Schema(type=OpenAPIType.STRING),
     bytes: Schema(type=OpenAPIType.STRING),
@@ -189,7 +189,7 @@ def create_enum_schema(annotation: EnumMeta, include_null: bool = False) -> Sche
     Returns:
         A schema instance.
     """
-    enum_values: list[str | int | None] = [v.value for v in annotation]  # type: ignore
+    enum_values: list[str | int | None] = [v.value for v in annotation]  # type: ignore[var-annotated]
     if include_null and None not in enum_values:
         enum_values.append(None)
     return Schema(type=_types_in_list(enum_values), enum=enum_values)

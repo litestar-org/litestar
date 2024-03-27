@@ -9,7 +9,7 @@ import pytest
 import yaml
 from typing_extensions import Annotated
 
-from litestar import Controller, Litestar, get, post
+from litestar import Controller, Litestar, delete, get, patch, post
 from litestar._openapi.plugin import OpenAPIPlugin
 from litestar.app import DEFAULT_OPENAPI_CONFIG
 from litestar.enums import MediaType, OpenAPIMediaType, ParamType
@@ -371,3 +371,75 @@ def test_multiple_handlers_for_same_route() -> None:
     path_item = openapi.paths["/"]
     assert path_item.get is not None
     assert path_item.post is not None
+
+
+@pytest.mark.parametrize(("random_seed_one", "random_seed_two", "should_be_equal"), [(10, 10, True), (10, 20, False)])
+def test_seeding(random_seed_one: int, random_seed_two: int, should_be_equal: bool) -> None:
+    @post("/", sync_to_thread=False)
+    def post_handler(q: str) -> None:
+        ...
+
+    @get("/", sync_to_thread=False)
+    def get_handler(q: str) -> None:
+        ...
+
+    app = Litestar(
+        [get_handler, post_handler], openapi_config=OpenAPIConfig("Litestar", "v0.0.1", True, random_seed_one)
+    )
+    openapi_plugin = app.plugins.get(OpenAPIPlugin)
+    openapi_one = openapi_plugin.provide_openapi()
+
+    app = Litestar(
+        [get_handler, post_handler], openapi_config=OpenAPIConfig("Litestar", "v0.0.1", True, random_seed_two)
+    )
+    openapi_plugin = app.plugins.get(OpenAPIPlugin)
+    openapi_two = openapi_plugin.provide_openapi()
+
+    if should_be_equal:
+        assert openapi_one == openapi_two
+    else:
+        assert openapi_one != openapi_two
+
+
+def test_components_schemas_in_alphabetical_order() -> None:
+    # https://github.com/litestar-org/litestar/issues/3059
+
+    @dataclass
+    class A:
+        ...
+
+    @dataclass
+    class B:
+        ...
+
+    @dataclass
+    class C:
+        ...
+
+    class TestController(Controller):
+        @post("/", sync_to_thread=False)
+        def post_handler(self, data: B) -> None:
+            ...
+
+        @get("/", sync_to_thread=False)
+        def get_handler(self) -> A:  # type: ignore[empty-body]
+            ...
+
+        @patch("/", sync_to_thread=False)
+        def patch_handler(self, data: C) -> A:  # type: ignore[empty-body]
+            ...
+
+        @delete("/", sync_to_thread=False)
+        def delete_handler(self, data: B) -> None:
+            ...
+
+    app = Litestar([TestController], signature_types=[A, B, C])
+    openapi_plugin = app.plugins.get(OpenAPIPlugin)
+    openapi = openapi_plugin.provide_openapi()
+
+    expected_keys = [
+        "test_components_schemas_in_alphabetical_order.A",
+        "test_components_schemas_in_alphabetical_order.B",
+        "test_components_schemas_in_alphabetical_order.C",
+    ]
+    assert list(openapi.components.schemas.keys()) == expected_keys

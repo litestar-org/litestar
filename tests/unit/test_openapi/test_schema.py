@@ -1,6 +1,6 @@
 import sys
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, datetime
 from enum import Enum, auto
 from typing import (  # type: ignore[attr-defined]
     TYPE_CHECKING,
@@ -288,11 +288,11 @@ def test_create_schema_from_msgspec_annotated_type() -> None:
 
     schema = get_schema_for_field_definition(FieldDefinition.from_kwarg(name="Lookup", annotation=Lookup))
 
-    assert schema.properties["id"].type == OpenAPIType.STRING  # type: ignore
-    assert schema.properties["id"].examples == {"id-example-1": Example(value="example")}  # type: ignore
-    assert schema.properties["id"].description == "description"  # type: ignore
-    assert schema.properties["id"].title == "title"  # type: ignore
-    assert schema.properties["id"].max_length == 16  # type: ignore
+    assert schema.properties["id"].type == OpenAPIType.STRING  # type: ignore[index, union-attr]
+    assert schema.properties["id"].examples == {"id-example-1": Example(value="example")}  # type: ignore[index, union-attr]
+    assert schema.properties["id"].description == "description"  # type: ignore[index]
+    assert schema.properties["id"].title == "title"  # type: ignore[index, union-attr]
+    assert schema.properties["id"].max_length == 16  # type: ignore[index, union-attr]
     assert schema.required == ["id"]
 
 
@@ -305,23 +305,27 @@ def test_annotated_types() -> None:
         constrained_int: Annotated[int, annotated_types.Gt(1), annotated_types.Lt(10)]
         constrained_float: Annotated[float, annotated_types.Ge(1), annotated_types.Le(10)]
         constrained_date: Annotated[date, annotated_types.Interval(gt=historical_date, lt=today)]
-        constrainted_lower_case: Annotated[str, annotated_types.LowerCase]
-        constrainted_upper_case: Annotated[str, annotated_types.UpperCase]
-        constrainted_is_ascii: Annotated[str, annotated_types.IsAscii]
-        constrainted_is_digit: Annotated[str, annotated_types.IsDigits]
+        constrained_lower_case: Annotated[str, annotated_types.LowerCase]
+        constrained_upper_case: Annotated[str, annotated_types.UpperCase]
+        constrained_is_ascii: Annotated[str, annotated_types.IsAscii]
+        constrained_is_digit: Annotated[str, annotated_types.IsDigits]
 
     schema = get_schema_for_field_definition(FieldDefinition.from_kwarg(name="MyDataclass", annotation=MyDataclass))
 
-    assert schema.properties["constrained_int"].exclusive_minimum == 1  # type: ignore
-    assert schema.properties["constrained_int"].exclusive_maximum == 10  # type: ignore
-    assert schema.properties["constrained_float"].minimum == 1  # type: ignore
-    assert schema.properties["constrained_float"].maximum == 10  # type: ignore
-    assert date.fromtimestamp(schema.properties["constrained_date"].exclusive_minimum) == historical_date  # type: ignore
-    assert date.fromtimestamp(schema.properties["constrained_date"].exclusive_maximum) == today  # type: ignore
-    assert schema.properties["constrainted_lower_case"].description == "must be in lower case"  # type: ignore
-    assert schema.properties["constrainted_upper_case"].description == "must be in upper case"  # type: ignore
-    assert schema.properties["constrainted_is_ascii"].pattern == "[[:ascii:]]"  # type: ignore
-    assert schema.properties["constrainted_is_digit"].pattern == "[[:digit:]]"  # type: ignore
+    assert schema.properties["constrained_int"].exclusive_minimum == 1  # type: ignore[index, union-attr]
+    assert schema.properties["constrained_int"].exclusive_maximum == 10  # type: ignore[index, union-attr]
+    assert schema.properties["constrained_float"].minimum == 1  # type: ignore[index, union-attr]
+    assert schema.properties["constrained_float"].maximum == 10  # type: ignore[index, union-attr]
+    assert datetime.utcfromtimestamp(schema.properties["constrained_date"].exclusive_minimum) == datetime.fromordinal(  # type: ignore[arg-type, index, union-attr]
+        historical_date.toordinal()
+    )
+    assert datetime.utcfromtimestamp(schema.properties["constrained_date"].exclusive_maximum) == datetime.fromordinal(  # type: ignore[arg-type, index, union-attr]
+        today.toordinal()
+    )
+    assert schema.properties["constrained_lower_case"].description == "must be in lower case"  # type: ignore[index]
+    assert schema.properties["constrained_upper_case"].description == "must be in upper case"  # type: ignore[index]
+    assert schema.properties["constrained_is_ascii"].pattern == "[[:ascii:]]"  # type: ignore[index, union-attr]
+    assert schema.properties["constrained_is_digit"].pattern == "[[:digit:]]"  # type: ignore[index, union-attr]
 
 
 def test_literal_enums() -> None:
@@ -504,6 +508,7 @@ def test_type_union(base_type: type) -> None:
         @dataclass
         class ModelB:  # pyright: ignore
             pass
+
     else:
 
         class ModelA(base_type):  # type: ignore[no-redef, misc]
@@ -533,6 +538,7 @@ def test_type_union_with_none(base_type: type) -> None:
         @dataclass
         class ModelB:  # pyright: ignore
             pass
+
     else:
 
         class ModelA(base_type):  # type: ignore[no-redef, misc]

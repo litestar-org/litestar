@@ -22,8 +22,7 @@ controller methods. The handler can then be registered on an application or rout
 
 
             @app.get("/")
-            async def index() -> dict[str, str]:
-                ...
+            async def index() -> dict[str, str]: ...
 
     .. tab-item:: Starlette
         :sync: starlette
@@ -35,8 +34,7 @@ controller methods. The handler can then be registered on an application or rout
             from starlette.routing import Route
 
 
-            async def index(request):
-                ...
+            async def index(request): ...
 
 
             routes = [Route("/", endpoint=index)]
@@ -52,8 +50,7 @@ controller methods. The handler can then be registered on an application or rout
 
 
            @get("/")
-           async def index() -> dict[str, str]:
-               ...
+           async def index() -> dict[str, str]: ...
 
 
            app = Litestar([index])
@@ -107,20 +104,16 @@ and to easily access dependencies from higher levels.
            from fastapi import FastAPI, Depends, APIRouter
 
 
-           async def route_dependency() -> bool:
-               ...
+           async def route_dependency() -> bool: ...
 
 
-           async def nested_dependency() -> str:
-               ...
+           async def nested_dependency() -> str: ...
 
 
-           async def router_dependency() -> int:
-               ...
+           async def router_dependency() -> int: ...
 
 
-           async def app_dependency(data: str = Depends(nested_dependency)) -> int:
-               ...
+           async def app_dependency(data: str = Depends(nested_dependency)) -> int: ...
 
 
            router = APIRouter(dependencies=[Depends(router_dependency)])
@@ -134,8 +127,7 @@ and to easily access dependencies from higher levels.
                val_router: int = Depends(router_dependency),
                val_nested: str = Depends(nested_dependency),
                val_app: int = Depends(app_dependency),
-           ) -> None:
-               ...
+           ) -> None: ...
 
 
 
@@ -147,27 +139,22 @@ and to easily access dependencies from higher levels.
            from litestar import Litestar, Provide, get, Router
 
 
-           async def route_dependency() -> bool:
-               ...
+           async def route_dependency() -> bool: ...
 
 
-           async def nested_dependency() -> str:
-               ...
+           async def nested_dependency() -> str: ...
 
 
-           async def router_dependency() -> int:
-               ...
+           async def router_dependency() -> int: ...
 
 
-           async def app_dependency(nested: str) -> int:
-               ...
+           async def app_dependency(nested: str) -> int: ...
 
 
            @get("/", dependencies={"val_route": Provide(route_dependency)})
            async def handler(
                val_route: bool, val_router: int, val_nested: str, val_app: int
-           ) -> None:
-               ...
+           ) -> None: ...
 
 
            router = Router(dependencies={"val_router": Provide(router_dependency)})
@@ -202,16 +189,14 @@ preferred way of handling this is extending :doc:`/usage/security/abstract-authe
             from fastapi import FastAPI, Depends, Request
 
 
-            async def authenticate(request: Request) -> None:
-                ...
+            async def authenticate(request: Request) -> None: ...
 
 
             app = FastAPI()
 
 
             @app.get("/", dependencies=[Depends(authenticate)])
-            async def index() -> dict[str, str]:
-                ...
+            async def index() -> dict[str, str]: ...
 
 
     .. tab-item:: Litestar
@@ -224,13 +209,11 @@ preferred way of handling this is extending :doc:`/usage/security/abstract-authe
 
             async def authenticate(
                 connection: ASGIConnection, route_handler: BaseRouteHandler
-            ) -> None:
-                ...
+            ) -> None: ...
 
 
             @get("/", guards=[authenticate])
-            async def index() -> dict[str, str]:
-                ...
+            async def index() -> dict[str, str]: ...
 
 
 ..  seealso::

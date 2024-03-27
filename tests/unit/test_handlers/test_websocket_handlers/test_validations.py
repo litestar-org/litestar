@@ -12,7 +12,7 @@ def test_raises_when_socket_arg_is_missing() -> None:
         pass
 
     with pytest.raises(ImproperlyConfiguredException):
-        websocket(path="/")(fn_without_socket_arg).on_registration(Litestar())  # type: ignore
+        websocket(path="/")(fn_without_socket_arg).on_registration(Litestar())  # type: ignore[arg-type]
 
 
 def test_raises_for_return_annotation() -> None:
@@ -33,7 +33,7 @@ def test_raises_when_no_function() -> None:
 def test_raises_when_sync_handler_user() -> None:
     with pytest.raises(ImproperlyConfiguredException):
 
-        @websocket(path="/")  # type: ignore
+        @websocket(path="/")  # type: ignore[arg-type]
         def sync_websocket_handler(socket: WebSocket) -> None:
             ...
 

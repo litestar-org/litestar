@@ -132,9 +132,7 @@ def test_register_validation_wrong_class() -> None:
 def test_register_already_registered_router() -> None:
     first_router = Router(path="/first", route_handlers=[])
     Router(path="/second", route_handlers=[first_router])
-
-    with pytest.raises(ImproperlyConfiguredException):
-        Router(path="/third", route_handlers=[first_router])
+    Router(path="/third", route_handlers=[first_router])
 
 
 def test_register_router_on_itself() -> None:

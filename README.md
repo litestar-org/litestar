@@ -162,38 +162,30 @@ class UserController(Controller):
     path = "/users"
 
     @post()
-    async def create_user(self, data: User) -> User:
-        ...
+    async def create_user(self, data: User) -> User: ...
 
     @get()
-    async def list_users(self) -> List[User]:
-        ...
+    async def list_users(self) -> List[User]: ...
 
     @get(path="/{date:int}")
-    async def list_new_users(self, date: datetime) -> List[User]:
-        ...
+    async def list_new_users(self, date: datetime) -> List[User]: ...
 
     @patch(path="/{user_id:uuid}", dto=PartialUserDTO)
     async def partial_update_user(
         self, user_id: UUID4, data: DTOData[PartialUserDTO]
-    ) -> User:
-        ...
+    ) -> User: ...
 
     @put(path="/{user_id:uuid}")
-    async def update_user(self, user_id: UUID4, data: User) -> User:
-        ...
+    async def update_user(self, user_id: UUID4, data: User) -> User: ...
 
     @get(path="/{user_name:str}")
-    async def get_user_by_name(self, user_name: str) -> Optional[User]:
-        ...
+    async def get_user_by_name(self, user_name: str) -> Optional[User]: ...
 
     @get(path="/{user_id:uuid}")
-    async def get_user(self, user_id: UUID4) -> User:
-        ...
+    async def get_user(self, user_id: UUID4) -> User: ...
 
     @delete(path="/{user_id:uuid}")
-    async def delete_user(self, user_id: UUID4) -> None:
-        ...
+    async def delete_user(self, user_id: UUID4) -> None: ...
 ```
 
 </details>
@@ -247,8 +239,7 @@ from litestar import Litestar, get
 from litestar.di import Provide
 
 
-async def my_dependency() -> str:
-    ...
+async def my_dependency() -> str: ...
 
 
 @get("/")
@@ -295,8 +286,7 @@ async def is_authorized(connection: ASGIConnection, handler: BaseRouteHandler) -
 
 
 @get("/", guards=[is_authorized])
-async def index() -> None:
-    ...
+async def index() -> None: ...
 
 
 app = Litestar([index])
@@ -456,7 +446,7 @@ see [the contribution guide](CONTRIBUTING.rst).
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/tompin82"><img src="https://avatars.githubusercontent.com/u/47041409?v=4?s=100" width="100px;" alt="Tomas Jonsson"/><br /><sub><b>Tomas Jonsson</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=tompin82" title="Tests">⚠️</a> <a href="https://github.com/litestar-org/litestar/commits?author=tompin82" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://www.linkedin.com/in/khiem-doan/"><img src="https://avatars.githubusercontent.com/u/15646249?v=4?s=100" width="100px;" alt="Khiem Doan"/><br /><sub><b>Khiem Doan</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=khiemdoan" title="Documentation">📖</a></td>
-      <td align="center" valign="top" width="14.28%"><a href="https://github.com/kedod"><img src="https://avatars.githubusercontent.com/u/35638715?v=4?s=100" width="100px;" alt="kedod"/><br /><sub><b>kedod</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=kedod" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/kedod"><img src="https://avatars.githubusercontent.com/u/35638715?v=4?s=100" width="100px;" alt="kedod"/><br /><sub><b>kedod</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=kedod" title="Documentation">📖</a> <a href="https://github.com/litestar-org/litestar/commits?author=kedod" title="Code">💻</a> <a href="https://github.com/litestar-org/litestar/commits?author=kedod" title="Tests">⚠️</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/sonpro1296"><img src="https://avatars.githubusercontent.com/u/17319142?v=4?s=100" width="100px;" alt="sonpro1296"/><br /><sub><b>sonpro1296</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=sonpro1296" title="Code">💻</a> <a href="https://github.com/litestar-org/litestar/commits?author=sonpro1296" title="Tests">⚠️</a> <a href="#infra-sonpro1296" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="https://github.com/litestar-org/litestar/commits?author=sonpro1296" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://patrickarmengol.com"><img src="https://avatars.githubusercontent.com/u/42473149?v=4?s=100" width="100px;" alt="Patrick Armengol"/><br /><sub><b>Patrick Armengol</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=patrickarmengol" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://sanderwegter.nl"><img src="https://avatars.githubusercontent.com/u/7465799?v=4?s=100" width="100px;" alt="Sander"/><br /><sub><b>Sander</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=SanderWegter" title="Documentation">📖</a></td>
@@ -549,6 +539,16 @@ see [the contribution guide](CONTRIBUTING.rst).
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/rosstitmarsh"><img src="https://avatars.githubusercontent.com/u/23349806?v=4?s=100" width="100px;" alt="Ross Titmarsh"/><br /><sub><b>Ross Titmarsh</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=rosstitmarsh" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/korneevm"><img src="https://avatars.githubusercontent.com/u/743250?v=4?s=100" width="100px;" alt="Mike Korneev"/><br /><sub><b>Mike Korneev</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=korneevm" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/patrickneise"><img src="https://avatars.githubusercontent.com/u/6312074?v=4?s=100" width="100px;" alt="Patrick Neise"/><br /><sub><b>Patrick Neise</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=patrickneise" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/JeanArhancet"><img src="https://avatars.githubusercontent.com/u/10811879?v=4?s=100" width="100px;" alt="Jean Arhancet"/><br /><sub><b>Jean Arhancet</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/issues?q=author%3AJeanArhancet" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://dnquark.com"><img src="https://avatars.githubusercontent.com/u/338250?v=4?s=100" width="100px;" alt="Leo Alekseyev"/><br /><sub><b>Leo Alekseyev</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=betaprior" title="Code">💻</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/aranvir"><img src="https://avatars.githubusercontent.com/u/75439739?v=4?s=100" width="100px;" alt="aranvir"/><br /><sub><b>aranvir</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=aranvir" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/bunny-therapist"><img src="https://avatars.githubusercontent.com/u/87039365?v=4?s=100" width="100px;" alt="bunny-therapist"/><br /><sub><b>bunny-therapist</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=bunny-therapist" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://www.benluo.cc"><img src="https://avatars.githubusercontent.com/u/70398?v=4?s=100" width="100px;" alt="Ben Luo"/><br /><sub><b>Ben Luo</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=benluo" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/hugovk"><img src="https://avatars.githubusercontent.com/u/1324225?v=4?s=100" width="100px;" alt="Hugo van Kemenade"/><br /><sub><b>Hugo van Kemenade</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=hugovk" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://error418.github.io"><img src="https://avatars.githubusercontent.com/u/7716544?v=4?s=100" width="100px;" alt="Michael Gerbig"/><br /><sub><b>Michael Gerbig</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=error418" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/crisog"><img src="https://avatars.githubusercontent.com/u/40803711?v=4?s=100" width="100px;" alt="CrisOG"/><br /><sub><b>CrisOG</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/issues?q=author%3Acrisog" title="Bug reports">🐛</a> <a href="https://github.com/litestar-org/litestar/commits?author=crisog" title="Code">💻</a> <a href="https://github.com/litestar-org/litestar/commits?author=crisog" title="Tests">⚠️</a></td>
     </tr>
   </tbody>
 </table>

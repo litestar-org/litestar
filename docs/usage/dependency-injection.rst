@@ -10,20 +10,16 @@ the application:
    from litestar.di import Provide
 
 
-   async def bool_fn() -> bool:
-       ...
+   async def bool_fn() -> bool: ...
 
 
-   async def dict_fn() -> dict:
-       ...
+   async def dict_fn() -> dict: ...
 
 
-   async def list_fn() -> list:
-       ...
+   async def list_fn() -> list: ...
 
 
-   async def int_fn() -> int:
-       ...
+   async def int_fn() -> int: ...
 
 
    class MyController(Controller):
@@ -39,8 +35,7 @@ the application:
            router_dependency: dict,
            controller_dependency: list,
            local_dependency: int,
-       ) -> None:
-           ...
+       ) -> None: ...
 
        # on the router
 
@@ -193,8 +188,7 @@ can :ref:`inject into route handlers <usage/routing/handlers:"reserved" keyword 
        name: str
 
 
-   async def retrieve_db_user(user_id: UUID4) -> User:
-       ...
+   async def retrieve_db_user(user_id: UUID4) -> User: ...
 
 
    class UserController(Controller):
@@ -202,8 +196,7 @@ can :ref:`inject into route handlers <usage/routing/handlers:"reserved" keyword 
        dependencies = {"user": Provide(retrieve_db_user)}
 
        @patch(path="/{user_id:uuid}")
-       async def get_user(self, user: User) -> User:
-           ...
+       async def get_user(self, user: User) -> User: ...
 
 In the above example we have a ``User`` model that we are persisting into a db. The model is fetched using the helper
 method ``retrieve_db_user`` which receives a ``user_id`` kwarg and retrieves the corresponding ``User`` instance.
@@ -225,12 +218,10 @@ very simple:
    from litestar.di import Provide
 
 
-   def bool_fn() -> bool:
-       ...
+   def bool_fn() -> bool: ...
 
 
-   def dict_fn() -> dict:
-       ...
+   def dict_fn() -> dict: ...
 
 
    class MyController(Controller):
@@ -243,8 +234,7 @@ very simple:
        def my_route_handler(
            self,
            some_dependency: bool,
-       ) -> None:
-           ...
+       ) -> None: ...
 
 The lower scoped route handler function declares a dependency with the same key as the one declared on the higher scoped
 controller. The lower scoped dependency therefore overrides the higher scoped one.
@@ -275,8 +265,7 @@ it in ``Provide``:
            )
        },
    )
-   def my_handler(my_dep: int) -> None:
-       ...
+   def my_handler(my_dep: int) -> None: ...
 
 
 .. attention::

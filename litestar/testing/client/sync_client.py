@@ -76,7 +76,6 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
 
         Client.__init__(
             self,
-            app=self.app,
             base_url=base_url,
             headers={"user-agent": "testclient"},
             follow_redirects=True,
@@ -512,7 +511,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
                 self,
                 "GET",
                 url,
-                headers={**dict(headers or {}), **default_headers},  # type: ignore
+                headers={**dict(headers or {}), **default_headers},  # type: ignore[misc]
                 params=params,
                 cookies=cookies,
                 auth=auth,

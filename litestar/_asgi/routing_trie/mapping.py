@@ -212,7 +212,7 @@ def build_route_middleware_stack(
             handler, kwargs = cast("tuple[Any, dict[str, Any]]", middleware)
             asgi_handler = handler(app=asgi_handler, **kwargs)
         else:
-            asgi_handler = middleware(app=asgi_handler)  # type: ignore
+            asgi_handler = middleware(app=asgi_handler)  # type: ignore[call-arg]
 
     # we wrap the entire stack again in ExceptionHandlerMiddleware
     return wrap_in_exception_handler(

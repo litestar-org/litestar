@@ -67,8 +67,7 @@ Routes can be marked as being exempt from the protection offered by this middlew
 
 
     @post("/post", exclude_from_csrf=True)
-    def handler() -> None:
-        ...
+    def handler() -> None: ...
 
 
 If you need to exempt many routes at once you might want to consider using the

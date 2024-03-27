@@ -71,7 +71,7 @@ async def test_custom_request_class() -> None:
     class MyWebSocket(WebSocket[Any, Any, Any]):
         def __init__(self, *args: Any, **kwargs: Any) -> None:
             super().__init__(*args, **kwargs)
-            self.scope["called"] = True  # type: ignore
+            self.scope["called"] = True  # type: ignore[typeddict-unknown-key]
 
     @websocket("/", signature_types=[MyWebSocket])
     async def handler(socket: MyWebSocket) -> None:

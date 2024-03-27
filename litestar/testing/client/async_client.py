@@ -73,7 +73,6 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
         )
         AsyncClient.__init__(
             self,
-            app=app,
             base_url=base_url,
             headers={"user-agent": "testclient"},
             follow_redirects=True,

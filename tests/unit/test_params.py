@@ -266,7 +266,7 @@ def optional_default_client_fixture() -> Generator[TestClient, None, None]:
 
     @get("/optional-annotated-default")
     def handle_default_annotated(
-        param: Annotated[Optional[str], Parameter(query="key")] = None
+        param: Annotated[Optional[str], Parameter(query="key")] = None,
     ) -> Dict[str, Optional[str]]:
         return {"key": param}
 

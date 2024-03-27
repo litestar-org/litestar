@@ -161,7 +161,9 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
         return MiniJinjaTemplate(self.engine, template_name)
 
     def register_template_callable(
-        self, key: str, template_callable: TemplateCallableType[StateProtocol, P, T]
+        self,
+        key: str,
+        template_callable: TemplateCallableType[StateProtocol, P, T],
     ) -> None:
         """Register a callable on the template engine.
 
@@ -172,6 +174,12 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
         Returns:
             None
         """
+
+        def is_decorated(func: Callable) -> bool:
+            return hasattr(func, "__wrapped__") or func.__name__ not in globals()
+
+        if not is_decorated(template_callable):
+            template_callable = _transform_state(template_callable)  # type: ignore[arg-type] # pragma: no cover
         self.engine.add_global(key, pass_state(template_callable))
 
     def render_string(self, template_string: str, context: Mapping[str, Any]) -> str:

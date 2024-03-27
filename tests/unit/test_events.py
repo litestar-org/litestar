@@ -95,7 +95,7 @@ def test_multiple_event_ids(mock: MagicMock, anyio_backend: AnyIOBackend) -> Non
 
 async def test_raises_when_decorator_called_without_callable() -> None:
     with pytest.raises(ImproperlyConfiguredException):
-        listener("test_even")(True)  # type: ignore
+        listener("test_even")(True)  # type: ignore[arg-type]
 
 
 async def test_raises_when_not_initialized() -> None:

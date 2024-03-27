@@ -9,6 +9,8 @@ from msgspec.msgpack import decode as msgpack_decode
 from msgspec.msgpack import encode as msgpack_encode
 
 if TYPE_CHECKING:
+    from types import TracebackType
+
     from typing_extensions import Self
 
 
@@ -75,6 +77,17 @@ class Store(ABC):
         expiry time was set, return ``None``.
         """
         raise NotImplementedError
+
+    async def __aenter__(self) -> None:  # noqa: B027
+        pass
+
+    async def __aexit__(  # noqa: B027
+        self,
+        exc_type: type[BaseException] | None,
+        exc_val: BaseException | None,
+        exc_tb: TracebackType | None,
+    ) -> None:
+        pass
 
 
 class NamespacedStore(Store):

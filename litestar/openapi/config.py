@@ -43,6 +43,8 @@ class OpenAPIConfig:
 
     create_examples: bool = field(default=False)
     """Generate examples using the polyfactory library."""
+    random_seed: int = 10
+    """The random seed used when creating the examples to ensure deterministic generation of examples."""
     openapi_controller: type[OpenAPIController] = field(default_factory=lambda: OpenAPIController)
     """Controller for generating OpenAPI routes.
 
