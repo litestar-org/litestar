@@ -1669,6 +1669,25 @@
         "code",
         "test"
       ]
+    },
+    {
+      "login": "haryle",
+      "name": "harryle",
+      "avatar_url": "https://avatars.githubusercontent.com/u/64817481?v=4",
+      "profile": "https://github.com/haryle",
+      "contributions": [
+        "code",
+        "test"
+      ]
+    },
+    {
+      "login": "ubernostrum",
+      "name": "James Bennett",
+      "avatar_url": "https://avatars.githubusercontent.com/u/12384?v=4",
+      "profile": "http://www.b-list.org/",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
