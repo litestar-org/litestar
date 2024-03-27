@@ -98,6 +98,25 @@
         as `QueueHandler <https://docs.python.org/3/library/logging.handlers.html#logging.handlers.QueueHandler>`_ and
         `QueueListener <https://docs.python.org/3/library/logging.handlers.html#logging.handlers.QueueListener>`_.
 
+    .. change:: extend openapi meta collected from domain models
+        :type: bugfix
+        :pr: 3237
+        :issue: 3232
+
+        :class:`~litestar.typing.FieldDefinition`s pack any OpenAPI metadata onto a ``KwargDefinition`` instance when
+        types are parsed from domain models.
+
+        When we produce a DTO type, we transfer this meta from the `KwargDefinition` to a `msgspec.Meta` instance,
+        however so far this has only included constraints, not attributes such as descriptions, examples and title.
+
+        This change ensures that we transfer the openapi meta for the complete intersection of fields that exist on b
+        oth `KwargDefinition` and `Meta`.
+
+    .. change:: kwarg ambiguity exc msg for path params
+        :type: bugfix
+        :pr: 3261
+
+        Fixes the way we construct the exception message when there is a kwarg ambiguity detected for path parameters.
 
 .. changelog:: 2.7.0
     :date: 2024-03-10
