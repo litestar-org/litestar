@@ -16,6 +16,10 @@ import click
 import httpx
 import msgspec
 
+_polar = "[Polar.sh](https://polar.sh/litestar-org)"
+_open_collective = "[OpenCollective](https://opencollective.com/litestar)"
+_github_sponsors = "[GitHub Sponsors](https://github.com/sponsors/litestar-org/)"
+
 
 class PullRequest(msgspec.Struct):
     title: str
@@ -250,7 +254,7 @@ class ChangelogEntryWriter:
 
     @contextlib.contextmanager
     def directive(self, name: str, arg: str | None = None, **options: str) -> Generator[None, None, None]:
-        self.add_line(f".. {name}:: {arg if arg else ''}")
+        self.add_line(f".. {name}:: {arg or ''}")
         self._level += 1
         for key, value in options.items():
             if value:
@@ -268,12 +272,23 @@ def build_gh_release_notes(release_info: ReleaseInfo) -> str:
     # 3. It works with our release branch process. GitHub doesn't pick up (all) commits
     #    made there depending on how things were merged
     doc = GHReleaseWriter()
+
+    doc.add_line("## Sponsors 🌟")
+    doc.add_line(
+        "⚠️ Maintainers: Please adjust business/individual sponsors section here as defined by our tier rewards"
+    )
+    doc.add_line(f"- A huge 'Thank you!' to all sponsors across {_polar}, {_open_collective} and {_github_sponsors}!")
+
     doc.add_line("## What's changed")
+    if release_info.first_time_prs:
+        doc.add_line("\n## New contributors 🎉")
+        for pr in release_info.first_time_prs:
+            doc.add_line(f"* @{pr.user.login} made their first contribution in {pr.url}")
     if fixes := release_info.pull_requests.get("fix"):
-        doc.add_line("\n### Bugfixes")
+        doc.add_line("\n### Bugfixes 🐛")
         doc.add_pr_descriptions(fixes)
     if features := release_info.pull_requests.get("feat"):
-        doc.add_line("\nNew features")
+        doc.add_line("\nNew features 🚀")
         doc.add_pr_descriptions(features)
 
     ignore_sections = {"fix", "feat", "ci", "chore"}
@@ -282,11 +297,6 @@ def build_gh_release_notes(release_info: ReleaseInfo) -> str:
         doc.add_line("\n<!-- Review these: Not all of them should go into the release notes -->")
         doc.add_line("### Other changes")
         doc.add_pr_descriptions(other)
-
-    if release_info.first_time_prs:
-        doc.add_line("\n## New contributors")
-        for pr in release_info.first_time_prs:
-            doc.add_line(f"* @{pr.user.login} made their first contribution in {pr.url}")
 
     doc.add_line("\n**Full Changelog**")
     doc.add_line(release_info.compare_url)
