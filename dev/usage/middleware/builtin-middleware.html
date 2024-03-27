@@ -1543,33 +1543,85 @@ amount=1000usd&amp;to=attacker@evil.com
 <ol class="arabic simple">
 <li><p>On the first “safe” request (e.g GET) - set a cookie with a special token created by the server</p></li>
 <li><dl class="simple">
-<dt>On each subsequent “unsafe” request (e.g POST) - make sure the request contains either a</dt><dd><p>form field or an additional header that has this token</p>
+<dt>On each subsequent “unsafe” request (e.g POST) - make sure the request contains either a</dt><dd><p>form field or an additional header that has this token (more on this below)</p>
 </dd>
 </dl>
 </li>
 </ol>
 <p>To enable CSRF protection in a Litestar application simply pass an instance of
 <a class="reference internal" href="../../reference/config.html#litestar.config.csrf.CSRFConfig" title="litestar.config.csrf.CSRFConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CSRFConfig</span></code></a> to the Litestar constructor:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
 <span class="kn">from</span> <span class="nn">litestar.config.csrf</span> <span class="kn">import</span> <span class="n">CSRFConfig</span>
+
+
+<span class="nd">@get</span><span class="p">()</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">get_resource</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="c1"># GET is one of the safe methods</span>
+    <span class="k">return</span> <span class="s2">&quot;some_resource&quot;</span>
+
+<span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;{id:int}&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">create_resource</span><span class="p">(</span><span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="c1"># POST is one of the unsafe methods</span>
+    <span class="k">return</span> <span class="kc">True</span>
 
 <span class="n">csrf_config</span> <span class="o">=</span> <span class="n">CSRFConfig</span><span class="p">(</span><span class="n">secret</span><span class="o">=</span><span class="s2">&quot;my-secret&quot;</span><span class="p">)</span>
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="o">...</span><span class="p">],</span> <span class="n">csrf_config</span><span class="o">=</span><span class="n">csrf_config</span><span class="p">)</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">get_resource</span><span class="p">,</span> <span class="n">create_resource</span><span class="p">],</span> <span class="n">csrf_config</span><span class="o">=</span><span class="n">csrf_config</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The following snippet demonstrates how to change the cookie name to “some-cookie-name” and header name to “some-header-name”.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">csrf_config</span> <span class="o">=</span> <span class="n">CSRFConfig</span><span class="p">(</span><span class="n">secret</span><span class="o">=</span><span class="s2">&quot;my-secret&quot;</span><span class="p">,</span> <span class="n">cookie_name</span><span class="o">=</span><span class="s1">&#39;some-cookie-name&#39;</span><span class="p">,</span> <span class="n">header_name</span><span class="o">=</span><span class="s1">&#39;some-header-name&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A CSRF protected route can be accessed by any client that can make a request with either the header or form-data key.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The form-data key can not be currently configured. It should only be passed via the key “_csrf_token”</p>
+</div>
+<p>In Python, any client such as <a class="reference external" href="https://github.com/psf/requests">requests</a> or <a class="reference external" href="https://github.com/encode/httpx">httpx</a> can be used.
+The usage of clients or sessions is recommended due to the cookie persistence it offers across requests.
+The following is an example using <code class="docutils literal notranslate"><span class="pre">httpx.Client</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">httpx</span>
+
+
+<span class="k">with</span> <span class="n">httpx</span><span class="o">.</span><span class="n">Client</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+    <span class="n">get_response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;http://localhost:8000/&quot;</span><span class="p">)</span>
+
+    <span class="c1"># &quot;csrftoken&quot; is the default cookie name</span>
+    <span class="n">csrf</span> <span class="o">=</span> <span class="n">get_response</span><span class="o">.</span><span class="n">cookies</span><span class="p">[</span><span class="s2">&quot;csrftoken&quot;</span><span class="p">]</span>
+
+    <span class="c1"># &quot;x-csrftoken&quot; is the default header name</span>
+    <span class="n">post_response_using_header</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;http://localhost:8000/&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x-csrftoken&quot;</span><span class="p">:</span> <span class="n">csrf</span><span class="p">})</span>
+    <span class="k">assert</span> <span class="n">post_response_using_header</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
+
+    <span class="c1"># &quot;_csrf_token&quot; is the default *non* configurable form-data key</span>
+    <span class="n">post_response_using_form_data</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;http://localhost:8000/1&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;_csrf_token&quot;</span><span class="p">:</span> <span class="n">csrf</span><span class="p">})</span>
+    <span class="k">assert</span> <span class="n">post_response_using_form_data</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
+
+    <span class="c1"># despite the header being passed, this request will fail as it does not have a cookie in its session</span>
+    <span class="c1"># note the usage of ``httpx.post`` instead of ``client.post``</span>
+    <span class="n">post_response_with_no_persisted_cookie</span> <span class="o">=</span> <span class="n">httpx</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;http://localhost:8000/1&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x-csrftoken&quot;</span><span class="p">:</span> <span class="n">csrf</span><span class="p">})</span>
+    <span class="k">assert</span> <span class="n">post_response_with_no_persisted_cookie</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">403</span>
+    <span class="k">assert</span> <span class="s2">&quot;CSRF token verification failed&quot;</span> <span class="ow">in</span> <span class="n">post_response_with_no_persisted_cookie</span><span class="o">.</span><span class="n">text</span>
 </pre></div>
 </div>
 <p>Routes can be marked as being exempt from the protection offered by this middleware via
 <a class="reference internal" href="../routing/handlers.html#handler-opts"><span class="std std-ref">handler opts</span></a></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">post</span>
-
-
-<span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/post&quot;</span><span class="p">,</span> <span class="n">exclude_from_csrf</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/post&quot;</span><span class="p">,</span> <span class="n">exclude_from_csrf</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
 <p>If you need to exempt many routes at once you might want to consider using the
 <a class="reference internal" href="../../reference/config.html#litestar.config.csrf.CSRFConfig.exclude" title="litestar.config.csrf.CSRFConfig.exclude"><code class="xref py py-attr docutils literal notranslate"><span class="pre">exclude</span></code></a> kwarg which accepts list of path
 patterns to skip in the middleware.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://developer.mozilla.org/en-US/docs/Glossary/Safe/HTTP">Safe and Unsafe (HTTP Methods)</a></p></li>
+<li><p><a class="reference external" href="https://www.python-httpx.org/advanced/clients">HTTPX Clients</a></p></li>
+<li><p><a class="reference external" href="https://requests.readthedocs.io/en/latest/user/advanced">Requests Session</a></p></li>
+</ul>
+</div>
 </section>
 <section id="allowed-hosts">
 <h2>Allowed Hosts<a class="headerlink" href="#allowed-hosts" title="Permalink to this heading">#</a></h2>
