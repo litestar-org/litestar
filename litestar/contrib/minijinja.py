@@ -15,7 +15,6 @@ from litestar.template.base import (
     url_for,
     url_for_static_asset,
 )
-from litestar.utils.deprecation import warn_deprecation
 
 try:
     from minijinja import Environment  # type:ignore[import-untyped]
@@ -209,16 +208,3 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
 def _minijinja_from_state(func: Callable, state: StateProtocol, *args: Any, **kwargs: Any) -> str:  # pragma: no cover
     template_context = {"request": state.lookup("request"), "csrf_input": state.lookup("csrf_input")}
     return cast(str, func(template_context, *args, **kwargs))
-
-
-def __getattr__(name: str) -> Any:
-    if name == "minijinja_from_state":
-        warn_deprecation(
-            "2.3.0",
-            "minijinja_from_state",
-            "import",
-            removal_in="3.0.0",
-            alternative="Use a callable that receives the minijinja State object as first argument.",
-        )
-        return _minijinja_from_state
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

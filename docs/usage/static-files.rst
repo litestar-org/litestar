@@ -94,23 +94,3 @@ with support for popular cloud providers available via 3rd party implementations
 
 .. literalinclude:: /examples/static_files/file_system.py
     :language: python
-
-
-Upgrading from legacy StaticFilesConfig
----------------------------------------
-
-.. important:: Info
-    :class:`StaticFilesConfig` is deprecated and will be removed in Litestar 3.0
-
-
-Existing code can be upgraded to :func:`create_static_files_router` by replacing
-:class:`StaticFilesConfig` instances with this function call and passing the result to
-``route_handlers`` instead of ``static_files_config``:
-
-
-.. literalinclude:: /examples/static_files/upgrade_from_static_1.py
-    :language: python
-
-
-.. literalinclude:: /examples/static_files/upgrade_from_static_2.py
-    :language: python

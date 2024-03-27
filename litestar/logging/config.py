@@ -4,16 +4,13 @@ import sys
 from abc import ABC, abstractmethod
 from dataclasses import asdict, dataclass, field
 from importlib.util import find_spec
-from logging import INFO
 from typing import TYPE_CHECKING, Any, Callable, Literal, cast
 
 from litestar.exceptions import ImproperlyConfiguredException, MissingDependencyException
 from litestar.serialization import encode_json
 from litestar.serialization.msgspec_hooks import _msgspec_json_encoder
-from litestar.utils.deprecation import deprecated
 
 __all__ = ("BaseLoggingConfig", "LoggingConfig", "StructLoggingConfig")
-
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -26,14 +23,12 @@ if TYPE_CHECKING:
     from litestar.types import Logger, Scope
     from litestar.types.callable_types import ExceptionLoggingHandler, GetLogger
 
-
 try:
     from structlog.types import BindableLogger, Processor, WrappedLogger
 except ImportError:
     BindableLogger = Any  # type: ignore[assignment, misc]
     Processor = Any  # type: ignore[misc]
     WrappedLogger = Any  # type: ignore[misc]
-
 
 default_handlers: dict[str, dict[str, Any]] = {
     "console": {
@@ -50,7 +45,6 @@ default_handlers: dict[str, dict[str, Any]] = {
 
 if sys.version_info >= (3, 12, 0):
     default_handlers["queue_listener"]["handlers"] = ["console"]
-
 
 default_picologging_handlers: dict[str, dict[str, Any]] = {
     "console": {
@@ -481,13 +475,3 @@ class StructLoggingConfig(BaseLoggingConfig):
         except ImportError:
             """"""
             return
-
-
-@deprecated(version="2.6.0", removal_in="3.0.0", alternative="`StructLoggingConfig.set_level`")
-def default_wrapper_class(log_level: int = INFO) -> type[BindableLogger] | None:  # pragma: no cover  # pyright: ignore
-    try:  # pragma: no cover
-        import structlog
-
-        return structlog.make_filtering_bound_logger(log_level)
-    except ImportError:
-        return None
