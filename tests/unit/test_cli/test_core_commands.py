@@ -435,7 +435,7 @@ def test_run_command_arguments_precedence(
         ),
         (
             ("--wc", 2),
-            ("WEB_CONCURRENCY", 4),
+            ("LITESTAR_WEB_CONCURRENCY", 4),
             "--workers=2",
         ),
         (
