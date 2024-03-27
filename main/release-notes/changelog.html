@@ -1502,6 +1502,104 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.7.1">
+<h2>2.7.1<a class="headerlink" href="#2.7.1" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2024-03-22<section id="2.7.1-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.7.1-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>add default encoders for <cite>Enums</cite> and <cite>EnumMeta</cite><a class="headerlink reference internal" href="#2.7.1-add default encoders for" id="2.7.1-add default encoders for">#</a></dt><dd><div class="changelog-change docutils container">
+<p>This addresses an issue when serializing <code class="docutils literal notranslate"><span class="pre">Enums</span></code> that was reported in discord.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3193">litestar-org/litestar#3193</a></span></p>
+</div>
+</dd>
+<dt>replace TestClient.__enter__ return type with Self<a class="headerlink reference internal" href="#2.7.1-replace testclient.__enter__ return type with self" id="2.7.1-replace testclient.__enter__ return type with self">#</a></dt><dd><div class="changelog-change docutils container">
+<p><code class="docutils literal notranslate"><span class="pre">TestClient.__enter__</span></code> and <code class="docutils literal notranslate"><span class="pre">AsyncTestClient.__enter__</span></code> return <code class="docutils literal notranslate"><span class="pre">Self</span></code>.
+If you inherit <code class="docutils literal notranslate"><span class="pre">TestClient</span></code>, its <code class="docutils literal notranslate"><span class="pre">__enter__</span></code> method should return derived class’s instance
+unless override the method. <code class="docutils literal notranslate"><span class="pre">Self</span></code> is a more flexible return type.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3194">litestar-org/litestar#3194</a></span></p>
+</div>
+</dd>
+<dt>use the full path for fetching openapi.json<a class="headerlink reference internal" href="#2.7.1-use the full path for fetching openapi.json" id="2.7.1-use the full path for fetching openapi.json">#</a></dt><dd><div class="changelog-change docutils container">
+<p>This specifies the <code class="docutils literal notranslate"><span class="pre">spec-url</span></code> and <code class="docutils literal notranslate"><span class="pre">apiDescriptionUrl</span></code> of Rapidoc, and Stoplight Elements as absolute
+paths relative to the root of the site.</p>
+<p>This ensures that both of the send the request for the JSON of the OpenAPI schema to the right endpoint.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3047">litestar-org/litestar#3047</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3196">litestar-org/litestar#3196</a></span></p>
+</div>
+</dd>
+<dt>JSON schema <code class="docutils literal notranslate"><span class="pre">examples</span></code> were OpenAPI formatted<a class="headerlink reference internal" href="#2.7.1-json schema" id="2.7.1-json schema">#</a></dt><dd><div class="changelog-change docutils container">
+<p>The generated <code class="docutils literal notranslate"><span class="pre">examples</span></code> in <em>JSON schema</em> objects were formatted as:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="w"> </span><span class="nt">&quot;examples&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;some-id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">     </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Lorem ipsum&quot;</span><span class="p">,</span>
+<span class="w">     </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;the real beef&quot;</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>However, above is OpenAPI example format, and must not be used in JSON schema
+objects. Schema objects follow different formatting:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="w"> </span><span class="nt">&quot;examples&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">   </span><span class="s2">&quot;the real beef&quot;</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Explained in <a class="reference external" href="https://medium.com/apis-you-wont-hate/openapi-v3-1-and-json-schema-2019-09-6862cf3db959">APIs You Won’t Hate blog post</a>.</p></li>
+<li><p><a class="reference external" href="https://spec.openapis.org/oas/v3.1.0#schema-object">Schema objects spec</a></p></li>
+<li><p><a class="reference external" href="https://spec.openapis.org/oas/v3.1.0#example-object">OpenAPI example format spec</a>.</p></li>
+</ul>
+<p>This is referenced at least from parameters, media types and components.</p>
+<p>The technical change here is to define <code class="docutils literal notranslate"><span class="pre">Schema.examples</span></code> as <code class="docutils literal notranslate"><span class="pre">list[Any]</span></code> instead
+of <code class="docutils literal notranslate"><span class="pre">list[Example]</span></code>. Examples can and must still be defined as <code class="docutils literal notranslate"><span class="pre">list[Example]</span></code>
+for OpenAPI objects (e.g. <code class="docutils literal notranslate"><span class="pre">Parameter</span></code>, <code class="docutils literal notranslate"><span class="pre">Body</span></code>) but for JSON schema <code class="docutils literal notranslate"><span class="pre">examples</span></code>
+the code now internally generates/converts <code class="docutils literal notranslate"><span class="pre">list[Any]</span></code> format instead.</p>
+<p>Extra confusion here comes from the OpenAPI 3.0 vs OpenAPI 3.1 difference.
+OpenAPI 3.0 only allowed <code class="docutils literal notranslate"><span class="pre">example</span></code> (singular) field in schema objects.
+OpenAPI 3.1 supports the full JSON schema 2020-12 spec and so <code class="docutils literal notranslate"><span class="pre">examples</span></code> array
+in schema objects.</p>
+<p>Both <code class="docutils literal notranslate"><span class="pre">example</span></code> and <code class="docutils literal notranslate"><span class="pre">examples</span></code> seem to be supported, though the former is marked
+as deprecated in the latest specs.</p>
+<p>This can be tested over at <a class="reference external" href="https://editor-next.swagger.io">https://editor-next.swagger.io</a> by loading up the
+OpenAPI 3.1 Pet store example. Then add <code class="docutils literal notranslate"><span class="pre">examples</span></code> in <code class="docutils literal notranslate"><span class="pre">components.schemas.Pet</span></code>
+using the both ways and see the Swagger UI only render the example once it’s
+properly formatted (it ignores is otherwise).</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2849">litestar-org/litestar#2849</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3224">litestar-org/litestar#3224</a></span></p>
+</div>
+</dd>
+<dt>queue_listener handler for Python &gt;= 3.12<a class="headerlink reference internal" href="#2.7.1-queue_listener handler for python &gt;= 3.12" id="2.7.1-queue_listener handler for python &gt;= 3.12">#</a></dt><dd><div class="changelog-change docutils container">
+<ul class="simple">
+<li><p>Fix the <code class="docutils literal notranslate"><span class="pre">queue_listener</span></code> handler for Python 3.12</p></li>
+</ul>
+<p>Python 3.12 introduced a new way to configure <code class="docutils literal notranslate"><span class="pre">QueueHandler</span></code> and <code class="docutils literal notranslate"><span class="pre">QueueListener</span></code> via
+<code class="docutils literal notranslate"><span class="pre">logging.config.dictConfig()</span></code>. As described in the
+<a class="reference external" href="https://docs.python.org/3/library/logging.config.html#configuring-queuehandler-and-queuelistener">logging documentation</a>.</p>
+<p>The listener still needs to be started &amp; stopped, as previously.
+To do so, we’ve introduced <code class="docutils literal notranslate"><span class="pre">LoggingQueueListener</span></code>.</p>
+<p>And as stated in the doc:
+* Any custom queue handler and listener classes will need to be defined with the same initialization signatures
+as <a class="reference external" href="https://docs.python.org/3/library/logging.handlers.html#logging.handlers.QueueHandler">QueueHandler</a> and
+<a class="reference external" href="https://docs.python.org/3/library/logging.handlers.html#logging.handlers.QueueListener">QueueListener</a>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2954">litestar-org/litestar#2954</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3185">litestar-org/litestar#3185</a></span></p>
+</div>
+</dd>
+<dt>extend openapi meta collected from domain models<a class="headerlink reference internal" href="#2.7.1-extend openapi meta collected from domain models" id="2.7.1-extend openapi meta collected from domain models">#</a></dt><dd><div class="changelog-change docutils container">
+<p><a class="reference internal" href="../reference/typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldDefinition</span></code></a> s pack any OpenAPI metadata onto a <code class="docutils literal notranslate"><span class="pre">KwargDefinition</span></code> instance when
+types are parsed from domain models.</p>
+<p>When we produce a DTO type, we transfer this meta from the <cite>KwargDefinition</cite> to a <cite>msgspec.Meta</cite> instance,
+however so far this has only included constraints, not attributes such as descriptions, examples and title.</p>
+<p>This change ensures that we transfer the openapi meta for the complete intersection of fields that exist on b
+oth <cite>KwargDefinition</cite> and <cite>Meta</cite>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3232">litestar-org/litestar#3232</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3237">litestar-org/litestar#3237</a></span></p>
+</div>
+</dd>
+<dt>kwarg ambiguity exc msg for path params<a class="headerlink reference internal" href="#2.7.1-kwarg ambiguity exc msg for path params" id="2.7.1-kwarg ambiguity exc msg for path params">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fixes the way we construct the exception message when there is a kwarg ambiguity detected for path parameters.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3261">litestar-org/litestar#3261</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.7.0">
 <h2>2.7.0<a class="headerlink" href="#2.7.0" title="Permalink to this heading">#</a></h2>
 <strong>Released: </strong>2024-03-10<section id="2.7.0-feature">
@@ -1531,14 +1629,14 @@ Examples that go within the schema definition cannot be set by this.</p>
 </div>
 </dd>
 <dt>support “+json”-suffixed response media types<a class="headerlink reference internal" href="#2.7.0-support &quot;+json&quot;-suffixed response media types" id="2.7.0-support &quot;+json&quot;-suffixed response media types">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Automatically encode responses with media type of the form “application/&lt;something&gt;+json” as json.</p>
+<p>Automatically encode responses with media type of the form <code class="docutils literal notranslate"><span class="pre">application/&lt;something&gt;+json</span></code> as json.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3088">litestar-org/litestar#3088</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3096">litestar-org/litestar#3096</a></span></p>
 </div>
 </dd>
 <dt>Allow reusable <code class="docutils literal notranslate"><span class="pre">Router</span></code> instances<a class="headerlink reference internal" href="#2.7.0-allow reusable" id="2.7.0-allow reusable">#</a></dt><dd><div class="changelog-change docutils container">
 <p>It was not possible to re-attach a router instance once it was attached. This
 makes that possible.</p>
-<p>The router instance now gets deecopied when it’s registered to another router.</p>
+<p>The router instance now gets deepcopied when it’s registered to another router.</p>
 <p>The application startup performance gets a hit here, but the same approach is
 already used for controllers and handlers, so this only harmonizes the
 implementation.</p>
@@ -1603,8 +1701,10 @@ Addresses issues outlined on <a class="github reference external" href="https://
 </dd>
 <dt>sending empty data in sse in js client<a class="headerlink reference internal" href="#2.7.0-sending empty data in sse in js client" id="2.7.0-sending empty data in sse in js client">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fix an issue with SSE where JavaScript clients fail to receive an event without data.
-The <a class="reference external" href="https://html.spec.whatwg.org/multipage/server-sent-events.html#parsing-an-event-stream">spec</a> is not clear in whether or not an event without data is ok.
-Considering the EventSource “client” is not ok with it, and that it’s so easy DX-wise to make the mistake not explicitly sending it, this change fixes it by defaulting to the empty-string</p>
+The <a class="reference external" href="https://html.spec.whatwg.org/multipage/server-sent-events.html#parsing-an-event-stream">spec</a> is
+not clear in whether or not an event without data is ok.
+Considering the EventSource “client” is not ok with it, and that it’s so easy DX-wise to make the mistake not
+explicitly sending it, this change fixes it by defaulting to the empty-string</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3176">litestar-org/litestar#3176</a></span></p>
 </div>
 </dd>
@@ -5431,6 +5531,10 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.7.1">2.7.1</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.7.1-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.7.0">2.7.0</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.7.0-feature">Features</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.7.0-bugfix">Bugfixes</a></li>
