@@ -465,7 +465,7 @@ class KwargsModel:
         if intersection:
             raise ImproperlyConfiguredException(
                 f"Kwarg resolution ambiguity detected for the following keys: {', '.join(intersection)}. "
-                f"Make sure to use distinct keys for your dependencies, path parameters and aliased parameters."
+                f"Make sure to use distinct keys for your dependencies, path parameters, and aliased parameters."
             )
 
         if used_reserved_kwargs := {
