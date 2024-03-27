@@ -1661,8 +1661,13 @@ PYTHONPATH. Defaults to the current working directory.</p></td>
 <td><p>Bind the server to this port [default: 8000]</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">--wc</span></code>, <code class="docutils literal notranslate"><span class="pre">--web-concurrency</span></code></p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">WEB_CONCURRENCY</span></code></p></td>
-<td><p>The number of concurrent web workers to start [default: 1]</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">LITESTAR_WEB_CONCURRENCY</span></code>
+<code class="docutils literal notranslate"><span class="pre">WEB_CONCURRENCY</span></code></p></td>
+<td><div class="versionchanged">
+<p><span class="versionmodified changed">Changed in version 2.8: </span><code class="docutils literal notranslate"><span class="pre">LITESTAR_WEB_CONCURRENCY</span></code> is supported and takes precedence over <code class="docutils literal notranslate"><span class="pre">WEB_CONCURRENCY</span></code></p>
+</div>
+<p>The number of concurrent web workers to start [default: 1]</p>
+</td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">-H</span></code>, <code class="docutils literal notranslate"><span class="pre">--host</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">LITESTAR_HOST</span></code></p></td>
