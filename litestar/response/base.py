@@ -11,7 +11,6 @@ from litestar.exceptions import ImproperlyConfiguredException
 from litestar.serialization import default_serializer, encode_json, encode_msgpack, get_serializer
 from litestar.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED
 from litestar.types.empty import Empty
-from litestar.utils.deprecation import deprecated, warn_deprecation
 from litestar.utils.helpers import get_enum_string_value
 
 if TYPE_CHECKING:
@@ -88,11 +87,6 @@ class ASGIResponse:
         status_code = status_code or HTTP_200_OK
         self.headers = MutableScopeHeaders()
 
-        if encoded_headers is not None:
-            warn_deprecation("3.0", kind="parameter", deprecated_name="encoded_headers", alternative="headers")
-            for header_name, header_value in encoded_headers:
-                self.headers.add(header_name.decode("latin-1"), header_value.decode("latin-1"))
-
         if headers is not None:
             for k, v in headers.items() if isinstance(headers, dict) else headers:
                 self.headers.add(k, v)  # pyright: ignore
@@ -130,11 +124,6 @@ class ASGIResponse:
         self.encoding = encoding
         self.is_head_response = is_head_response
         self.status_code = status_code
-
-    @property
-    @deprecated("3.0", kind="property", alternative="encode_headers()")
-    def encoded_headers(self) -> list[tuple[bytes, bytes]]:
-        return self.encode_headers()
 
     def encode_headers(self) -> list[tuple[bytes, bytes]]:
         return [*self.headers.headers, *self._encoded_cookies]
@@ -426,16 +415,6 @@ class Response(Generic[T]):
         Returns:
             An ASGIResponse instance.
         """
-
-        if app is not None:
-            warn_deprecation(
-                version="2.1",
-                deprecated_name="app",
-                kind="parameter",
-                removal_in="3.0.0",
-                alternative="request.app",
-            )
-
         headers = {**headers, **self.headers} if headers is not None else self.headers
         cookies = self.cookies if cookies is None else itertools.chain(self.cookies, cookies)
 

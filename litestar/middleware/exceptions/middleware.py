@@ -14,10 +14,8 @@ from litestar.middleware.cors import CORSMiddleware
 from litestar.middleware.exceptions._debug_response import _get_type_encoders_for_request, create_debug_response
 from litestar.serialization import encode_json
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
-from litestar.utils.deprecation import warn_deprecation
 
 __all__ = ("ExceptionHandlerMiddleware", "ExceptionResponseContent", "create_exception_response")
-
 
 if TYPE_CHECKING:
     from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -175,29 +173,16 @@ class ExceptionHandlerMiddleware:
     This used in multiple layers of Litestar.
     """
 
-    def __init__(self, app: ASGIApp, debug: bool | None, exception_handlers: ExceptionHandlersMap) -> None:
+    def __init__(self, app: ASGIApp, exception_handlers: ExceptionHandlersMap) -> None:
         """Initialize ``ExceptionHandlerMiddleware``.
 
         Args:
             app: The ``next`` ASGI app to call.
-            debug: Whether ``debug`` mode is enabled. Deprecated. Debug mode will be inferred from the request scope
             exception_handlers: A dictionary mapping status codes and/or exception types to handler functions.
-
-        .. deprecated:: 2.0.0
-            The ``debug`` parameter is deprecated. It will be inferred from the request scope
         """
         self.app = app
         self.exception_handlers = exception_handlers
-        self.debug = debug
-        if debug is not None:
-            warn_deprecation(
-                "2.0.0",
-                deprecated_name="debug",
-                kind="parameter",
-                info="Debug mode will be inferred from the request scope",
-            )
-
-        self._get_debug = self._get_debug_scope if debug is None else lambda *a: debug
+        self._get_debug = self._get_debug_scope
 
     @staticmethod
     def _get_debug_scope(scope: Scope) -> bool:

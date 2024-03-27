@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, Any, Callable, Mapping, Protocol, TypedDict, T
 
 from typing_extensions import Concatenate, ParamSpec, TypeAlias
 
-from litestar.utils.deprecation import warn_deprecation
 from litestar.utils.empty import value_or_default
 from litestar.utils.scope.state import ScopeState
 
@@ -172,16 +171,3 @@ class _TemplateContext(TypedDict):
 
     request: Request[Any, Any, Any]
     csrf_input: str
-
-
-def __getattr__(name: str) -> Any:
-    if name == "TemplateContext":
-        warn_deprecation(
-            "2.3.0",
-            "TemplateContext",
-            "import",
-            removal_in="3.0.0",
-            alternative="Mapping",
-        )
-        return _TemplateContext
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

@@ -13,7 +13,6 @@ from litestar.exceptions import ImproperlyConfiguredException
 from litestar.file_system import BaseLocalFileSystem, FileSystemAdapter
 from litestar.response.base import Response
 from litestar.response.streaming import ASGIStreamingResponse
-from litestar.utils.deprecation import warn_deprecation
 from litestar.utils.helpers import get_enum_string_value
 
 if TYPE_CHECKING:
@@ -348,15 +347,6 @@ class File(Response):
         Returns:
             A low-level ASGI file response.
         """
-        if app is not None:
-            warn_deprecation(
-                version="2.1",
-                deprecated_name="app",
-                kind="parameter",
-                removal_in="3.0.0",
-                alternative="request.app",
-            )
-
         headers = {**headers, **self.headers} if headers is not None else self.headers
         cookies = self.cookies if cookies is None else itertools.chain(self.cookies, cookies)
 

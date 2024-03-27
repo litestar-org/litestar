@@ -35,21 +35,17 @@ from litestar.logging.config import LoggingConfig, get_logger_placeholder
 from litestar.middleware.cors import CORSMiddleware
 from litestar.openapi.config import OpenAPIConfig
 from litestar.plugins import (
-    CLIPluginProtocol,
     InitPluginProtocol,
-    OpenAPISchemaPluginProtocol,
     PluginProtocol,
     PluginRegistry,
-    SerializationPluginProtocol,
 )
 from litestar.plugins.base import CLIPlugin
 from litestar.router import Router
 from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
-from litestar.static_files.base import StaticFiles
 from litestar.stores.registry import StoreRegistry
 from litestar.types import Empty, TypeDecodersSequence
 from litestar.types.internal_types import PathParameterDefinition, TemplateConfigType
-from litestar.utils import deprecated, ensure_async_callable, join_paths, unique
+from litestar.utils import ensure_async_callable, join_paths, unique
 from litestar.utils.dataclass import extract_dataclass_items
 from litestar.utils.predicates import is_async_callable
 from litestar.utils.warnings import warn_pdb_on_exception
@@ -73,7 +69,6 @@ if TYPE_CHECKING:
         AfterExceptionHookHandler,
         AfterRequestHookHandler,
         AfterResponseHookHandler,
-        AnyCallable,
         ASGIApp,
         BeforeMessageSendHookHandler,
         BeforeRequestHookHandler,
@@ -100,7 +95,6 @@ if TYPE_CHECKING:
         TypeEncodersMap,
     )
     from litestar.types.callable_types import LifespanHook
-
 
 __all__ = ("HandlerIndex", "Litestar", "DEFAULT_OPENAPI_CONFIG")
 
@@ -489,26 +483,6 @@ class Litestar(Router):
 
         self.asgi_handler = self._create_asgi_handler()
 
-    @property
-    @deprecated(version="2.6.0", kind="property", info="Use create_static_files router instead")
-    def static_files_config(self) -> list[StaticFilesConfig]:
-        return self._static_files_config
-
-    @property
-    @deprecated(version="2.0", alternative="Litestar.plugins.cli", kind="property")
-    def cli_plugins(self) -> list[CLIPluginProtocol]:
-        return list(self.plugins.cli)
-
-    @property
-    @deprecated(version="2.0", alternative="Litestar.plugins.openapi", kind="property")
-    def openapi_schema_plugins(self) -> list[OpenAPISchemaPluginProtocol]:
-        return list(self.plugins.openapi)
-
-    @property
-    @deprecated(version="2.0", alternative="Litestar.plugins.serialization", kind="property")
-    def serialization_plugins(self) -> list[SerializationPluginProtocol]:
-        return list(self.plugins.serialization)
-
     @staticmethod
     def _get_default_plugins(plugins: list[PluginProtocol]) -> list[PluginProtocol]:
         from litestar.plugins.core import MsgspecDIPlugin
@@ -779,49 +753,6 @@ class Litestar(Router):
                 output.append(component)
 
         return join_paths(output)
-
-    @deprecated(
-        "2.6.0", info="Use create_static_files router instead of StaticFilesConfig, which works with route_reverse"
-    )
-    def url_for_static_asset(self, name: str, file_path: str) -> str:
-        """Receives a static files handler name, an asset file path and returns resolved url path to the asset.
-
-        Examples:
-            .. code-block:: python
-
-                from litestar import Litestar
-                from litestar.static_files.config import StaticFilesConfig
-
-                app = Litestar(
-                    static_files_config=[
-                        StaticFilesConfig(directories=["css"], path="/static/css", name="css")
-                    ]
-                )
-
-                path = app.url_for_static_asset("css", "main.css")
-
-                # /static/css/main.css
-
-        Args:
-            name: A static handler unique name.
-            file_path: a string containing path to an asset.
-
-        Raises:
-            NoRouteMatchFoundException: If static files handler with ``name`` does not exist.
-
-        Returns:
-            A url path to the asset.
-        """
-
-        handler_index = self.get_handler_index_by_name(name)
-        if handler_index is None:
-            raise NoRouteMatchFoundException(f"Static handler {name} can not be found")
-
-        handler_fn = cast("AnyCallable", handler_index["handler"].fn)
-        if not isinstance(handler_fn, StaticFiles):
-            raise NoRouteMatchFoundException(f"Handler with name {name} is not a static files handler")
-
-        return join_paths([handler_index["paths"][0], file_path])  # type: ignore[unreachable]
 
     @property
     def route_handler_method_view(self) -> dict[str, list[str]]:

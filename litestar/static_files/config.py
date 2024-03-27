@@ -1,23 +1,21 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from pathlib import PurePath  # noqa: TCH003
 from typing import TYPE_CHECKING, Any, Sequence
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.file_system import BaseLocalFileSystem
-from litestar.handlers import asgi, get, head
+from litestar.handlers import get, head
 from litestar.response.file import ASGIFileResponse  # noqa: TCH001
 from litestar.router import Router
 from litestar.static_files.base import StaticFiles
 from litestar.types import Empty
-from litestar.utils import normalize_path, warn_deprecation
+from litestar.utils import normalize_path
 
-__all__ = ("StaticFilesConfig",)
+__all__ = ("create_static_files_router",)
 
 if TYPE_CHECKING:
     from litestar.datastructures import CacheControlHeader
-    from litestar.handlers.asgi_handlers import ASGIRouteHandler
     from litestar.openapi.spec import SecurityRequirement
     from litestar.types import (
         AfterRequestHookHandler,
@@ -29,81 +27,6 @@ if TYPE_CHECKING:
         Middleware,
         PathType,
     )
-
-
-@dataclass
-class StaticFilesConfig:
-    """Configuration for static file service.
-
-    To enable static files, pass an instance of this class to the :class:`Litestar <litestar.app.Litestar>` constructor using
-    the 'static_files_config' key.
-    """
-
-    path: str
-    """Path to serve static files from.
-
-    Note that the path cannot contain path parameters.
-    """
-    directories: list[PathType]
-    """A list of directories to serve files from."""
-    html_mode: bool = False
-    """Flag dictating whether serving html.
-
-    If true, the default file will be 'index.html'.
-    """
-    name: str | None = None
-    """An optional string identifying the static files handler."""
-    file_system: Any = BaseLocalFileSystem()  # noqa: RUF009
-    """The file_system spec to use for serving files.
-
-    Notes:
-        - A file_system is a class that adheres to the
-            :class:`FileSystemProtocol <litestar.types.FileSystemProtocol>`.
-        - You can use any of the file systems exported from the
-            [fsspec](https://filesystem-spec.readthedocs.io/en/latest/) library for this purpose.
-    """
-    opt: dict[str, Any] | None = None
-    """A string key dictionary of arbitrary values that will be added to the static files handler."""
-    guards: list[Guard] | None = None
-    """A list of :class:`Guard <litestar.types.Guard>` callables."""
-    exception_handlers: ExceptionHandlersMap | None = None
-    """A dictionary that maps handler functions to status codes and/or exception types."""
-    send_as_attachment: bool = False
-    """Whether to send the file as an attachment."""
-
-    def __post_init__(self) -> None:
-        _validate_config(path=self.path, directories=self.directories, file_system=self.file_system)
-        self.path = normalize_path(self.path)
-        warn_deprecation(
-            "2.6.0",
-            kind="class",
-            deprecated_name="StaticFilesConfig",
-            removal_in="3.0",
-            alternative="create_static_files_router",
-            info='Replace static_files_config=[StaticFilesConfig(path="/static", directories=["assets"])] with '
-            'route_handlers=[..., create_static_files_router(path="/static", directories=["assets"])]',
-        )
-
-    def to_static_files_app(self) -> ASGIRouteHandler:
-        """Return an ASGI app serving static files based on the config.
-
-        Returns:
-            :class:`StaticFiles <litestar.static_files.StaticFiles>`
-        """
-        static_files = StaticFiles(
-            is_html_mode=self.html_mode,
-            directories=self.directories,
-            file_system=self.file_system,
-            send_as_attachment=self.send_as_attachment,
-        )
-        return asgi(
-            path=self.path,
-            name=self.name,
-            is_static=True,
-            opt=self.opt,
-            guards=self.guards,
-            exception_handlers=self.exception_handlers,
-        )(static_files)
 
 
 def create_static_files_router(

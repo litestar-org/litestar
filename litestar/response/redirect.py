@@ -9,7 +9,6 @@ from litestar.exceptions import ImproperlyConfiguredException
 from litestar.response.base import ASGIResponse, Response
 from litestar.status_codes import HTTP_302_FOUND
 from litestar.utils import url_quote
-from litestar.utils.deprecation import warn_deprecation
 from litestar.utils.helpers import get_enum_string_value
 
 if TYPE_CHECKING:
@@ -23,7 +22,6 @@ __all__ = (
     "ASGIRedirectResponse",
     "Redirect",
 )
-
 
 RedirectStatusType = Literal[301, 302, 303, 307, 308]
 """Acceptable status codes for redirect responses."""
@@ -144,15 +142,6 @@ class Redirect(Response[Any]):
         headers = {**headers, **self.headers} if headers is not None else self.headers
         cookies = self.cookies if cookies is None else itertools.chain(self.cookies, cookies)
         media_type = get_enum_string_value(self.media_type or media_type or MediaType.TEXT)
-
-        if app is not None:
-            warn_deprecation(
-                version="2.1",
-                deprecated_name="app",
-                kind="parameter",
-                removal_in="3.0.0",
-                alternative="request.app",
-            )
 
         return ASGIRedirectResponse(
             path=self.url,

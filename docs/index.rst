@@ -53,13 +53,6 @@ Installation
     :doc:`SQLAlchemy </usage/databases/sqlalchemy/index>`
         :code:`pip install litestar[sqlalchemy]`
 
-    :doc:`CLI </usage/cli>`
-        .. deprecated:: 2.1.1
-           The ``litestar`` base installation now includes the CLI dependencies and this group is no longer required
-           to use the CLI.
-           If you need the optional CLI dependencies, install the ``standard`` group instead.
-           **Will be removed in 3.0**
-
         :code:`pip install litestar[cli]`
 
     :doc:`Jinja Templating </usage/templating>`
