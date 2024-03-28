@@ -553,6 +553,26 @@ def test_create_schema_for_field_v2() -> None:
     assert value.examples == ["example"]
 
 
+def test_create_schema_for_field_v2__examples() -> None:
+    class Model(pydantic_v2.BaseModel):
+        value: str = pydantic_v2.Field(
+            title="title", description="description", max_length=16, json_schema_extra={"examples": ["example"]}
+        )
+
+    schema = get_schema_for_field_definition(
+        FieldDefinition.from_kwarg(name="Model", annotation=Model), plugins=[PydanticSchemaPlugin()]
+    )
+
+    assert schema.properties
+
+    value = schema.properties["value"]
+
+    assert isinstance(value, Schema)
+    assert value.description == "description"
+    assert value.title == "title"
+    assert value.examples == ["example"]
+
+
 @pytest.mark.parametrize("with_future_annotations", [True, False])
 def test_create_schema_for_pydantic_model_with_annotated_model_attribute(
     with_future_annotations: bool, create_module: "Callable[[str], ModuleType]", pydantic_version: PydanticVersion

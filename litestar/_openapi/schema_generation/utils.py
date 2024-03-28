@@ -3,12 +3,12 @@ from __future__ import annotations
 from enum import Enum
 from typing import TYPE_CHECKING, Any, Mapping, _GenericAlias  # type: ignore[attr-defined]
 
+from litestar.openapi.spec import Example
 from litestar.utils.helpers import get_name
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
 
-    from litestar.openapi.spec import Example
     from litestar.typing import FieldDefinition
 
 __all__ = (
@@ -109,6 +109,6 @@ def get_formatted_examples(field_definition: FieldDefinition, examples: Sequence
     return {f"{name}-example-{i}": example for i, example in enumerate(examples, 1)}
 
 
-def get_json_schema_formatted_examples(examples: Sequence[Example]) -> list[Any]:
+def get_json_schema_formatted_examples(examples: Sequence[Any]) -> list[Any]:
     """Format the examples into the JSON schema format."""
-    return [example.value for example in examples]
+    return [example.value if isinstance(example, Example) else example for example in examples]

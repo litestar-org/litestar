@@ -67,7 +67,7 @@ from litestar.utils.typing import (
 
 if TYPE_CHECKING:
     from litestar._openapi.datastructures import OpenAPIContext
-    from litestar.openapi.spec import Example, Reference
+    from litestar.openapi.spec import Reference
     from litestar.plugins import OpenAPISchemaPluginProtocol
 
 KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP: dict[str, str] = {
@@ -558,7 +558,7 @@ class SchemaCreator:
                     not isinstance(value, Hashable) or not self.is_undefined(value)
                 ):
                     if schema_key == "examples":
-                        value = get_json_schema_formatted_examples(cast("list[Example]", value))
+                        value = get_json_schema_formatted_examples(cast("list[Any]", value))
 
                     # we only want to transfer values from the `KwargDefinition` to `Schema` if the schema object
                     # doesn't already have a value for that property. For example, if a field is a constrained date,
