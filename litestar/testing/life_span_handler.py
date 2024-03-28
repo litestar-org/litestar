@@ -8,6 +8,9 @@ from anyio.streams.stapled import StapledObjectStream
 
 from litestar.testing.client.base import BaseTestClient
 
+__all__ = ("LifeSpanHandler",)
+
+
 if TYPE_CHECKING:
     from litestar.types import (
         LifeSpanReceiveMessage,  # noqa: F401

@@ -5,6 +5,12 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 
 from litestar.typing import FieldDefinition
 
+__all__ = (
+    "DTOData",
+    "DTOFieldDefinition",
+)
+
+
 if TYPE_CHECKING:
     from typing import Any, Callable
 

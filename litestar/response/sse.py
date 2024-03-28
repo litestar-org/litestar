@@ -10,6 +10,12 @@ from litestar.exceptions import ImproperlyConfiguredException
 from litestar.response.streaming import Stream
 from litestar.utils import AsyncIteratorWrapper
 
+__all__ = (
+    "ServerSentEvent",
+    "ServerSentEventMessage",
+)
+
+
 if TYPE_CHECKING:
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
     from litestar.types import ResponseCookies, ResponseHeaders, SSEData, StreamType

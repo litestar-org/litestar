@@ -11,6 +11,13 @@ from httpx import ByteStream, Response
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing.websocket_test_session import WebSocketTestSession
 
+__all__ = (
+    "ConnectionUpgradeExceptionError",
+    "SendReceiveContext",
+    "TestClientTransport",
+)
+
+
 if TYPE_CHECKING:
     from httpx import Request
 

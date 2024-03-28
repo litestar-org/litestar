@@ -7,6 +7,8 @@ import psycopg
 
 from .base import ChannelsBackend
 
+__all__ = ("PsycoPgChannelsBackend",)
+
 
 def _safe_quote(ident: str) -> str:
     return '"{}"'.format(ident.replace('"', '""'))  # sourcery skip

@@ -6,6 +6,13 @@ from typing import TYPE_CHECKING, Iterator, Sequence
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec import Reference, Schema
 
+__all__ = (
+    "OpenAPIContext",
+    "RegisteredSchema",
+    "SchemaRegistry",
+)
+
+
 if TYPE_CHECKING:
     from litestar.openapi import OpenAPIConfig
     from litestar.plugins import OpenAPISchemaPluginProtocol

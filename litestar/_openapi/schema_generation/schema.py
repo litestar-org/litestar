@@ -65,6 +65,14 @@ from litestar.utils.typing import (
     make_non_optional_union,
 )
 
+__all__ = (
+    "SchemaCreator",
+    "create_enum_schema",
+    "create_literal_schema",
+    "create_schema_for_annotation",
+)
+
+
 if TYPE_CHECKING:
     from litestar._openapi.datastructures import OpenAPIContext
     from litestar.openapi.spec import Example, Reference

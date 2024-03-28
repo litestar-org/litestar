@@ -6,6 +6,14 @@ from typing import TYPE_CHECKING, Any, Final
 from litestar.types import Empty, EmptyType
 from litestar.utils.empty import value_or_default
 
+__all__ = (
+    "ScopeState",
+    "delete_litestar_scope_state",
+    "get_litestar_scope_state",
+    "set_litestar_scope_state",
+)
+
+
 if TYPE_CHECKING:
     from typing_extensions import Self
 

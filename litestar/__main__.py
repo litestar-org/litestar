@@ -1,5 +1,7 @@
 from litestar.cli.main import litestar_group
 
+__all__ = ("run_cli",)
+
 
 def run_cli() -> None:
     """Application Entrypoint."""

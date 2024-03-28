@@ -10,6 +10,9 @@ from litestar.middleware.compression.gzip_facade import GzipCompression
 from litestar.utils.empty import value_or_default
 from litestar.utils.scope.state import ScopeState
 
+__all__ = ("CompressionMiddleware",)
+
+
 if TYPE_CHECKING:
     from litestar.config.compression import CompressionConfig
     from litestar.middleware.compression.facade import CompressionFacade

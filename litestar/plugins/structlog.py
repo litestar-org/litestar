@@ -8,6 +8,12 @@ from litestar.logging.config import StructLoggingConfig
 from litestar.middleware.logging import LoggingMiddlewareConfig
 from litestar.plugins import InitPluginProtocol
 
+__all__ = (
+    "StructlogConfig",
+    "StructlogPlugin",
+)
+
+
 if TYPE_CHECKING:
     from litestar.config.app import AppConfig
 

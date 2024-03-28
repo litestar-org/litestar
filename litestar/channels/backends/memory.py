@@ -6,6 +6,8 @@ from typing import Any, AsyncGenerator, Iterable
 
 from litestar.channels.backends.base import ChannelsBackend
 
+__all__ = ("MemoryChannelsBackend",)
+
 
 class MemoryChannelsBackend(ChannelsBackend):
     """An in-memory channels backend"""

@@ -4,6 +4,13 @@ import warnings
 from litestar.exceptions import LitestarWarning
 from litestar.types import AnyCallable, AnyGenerator
 
+__all__ = (
+    "warn_implicit_sync_to_thread",
+    "warn_pdb_on_exception",
+    "warn_sync_to_thread_with_async_callable",
+    "warn_sync_to_thread_with_generator",
+)
+
 
 def warn_implicit_sync_to_thread(source: AnyCallable, stacklevel: int = 2) -> None:
     if os.getenv("LITESTAR_WARN_IMPLICIT_SYNC_TO_THREAD") == "0":

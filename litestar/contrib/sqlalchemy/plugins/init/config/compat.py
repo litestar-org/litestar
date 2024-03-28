@@ -4,6 +4,9 @@ from typing import TYPE_CHECKING, Generic, Protocol, TypeVar
 
 from litestar.utils.deprecation import deprecated
 
+__all__ = ("HasGetEngine",)
+
+
 if TYPE_CHECKING:
     from sqlalchemy import Engine
     from sqlalchemy.ext.asyncio import AsyncEngine

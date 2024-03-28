@@ -2,6 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar, Protocol
 
+__all__ = ("CompressionFacade",)
+
+
 if TYPE_CHECKING:
     from io import BytesIO
 
@@ -11,6 +14,8 @@ if TYPE_CHECKING:
 
 class CompressionFacade(Protocol):
     """A unified facade offering a uniform interface for different compression libraries."""
+
+    __slots__ = ()
 
     encoding: ClassVar[str]
     """The encoding of the compression."""

@@ -6,6 +6,9 @@ from litestar.enums import ScopeType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.routes.base import BaseRoute
 
+__all__ = ("WebSocketRoute",)
+
+
 if TYPE_CHECKING:
     from litestar._kwargs import KwargsModel
     from litestar._kwargs.cleanup import DependencyCleanupGroup

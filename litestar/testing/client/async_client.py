@@ -11,6 +11,9 @@ from litestar.testing.life_span_handler import LifeSpanHandler
 from litestar.testing.transport import TestClientTransport
 from litestar.types import AnyIOBackend, ASGIApp
 
+__all__ = ("AsyncTestClient",)
+
+
 if TYPE_CHECKING:
     from httpx._client import UseClientDefault
     from httpx._types import (

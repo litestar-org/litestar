@@ -8,6 +8,9 @@ from litestar.handlers import BaseRouteHandler
 from litestar.types.builtin_types import NoneType
 from litestar.utils.predicates import is_async_callable
 
+__all__ = ("WebsocketRouteHandler",)
+
+
 if TYPE_CHECKING:
     from litestar.types import Dependencies, ExceptionHandler, Guard, Middleware
 
@@ -17,6 +20,8 @@ class WebsocketRouteHandler(BaseRouteHandler):
 
     Use this decorator to decorate websocket handler functions.
     """
+
+    __slots__ = ("websocket_class",)
 
     def __init__(
         self,

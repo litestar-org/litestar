@@ -9,6 +9,12 @@ from litestar.testing.client import AsyncTestClient, TestClient
 from litestar.types import Empty
 from litestar.utils.predicates import is_class_and_subclass
 
+__all__ = (
+    "create_async_test_client",
+    "create_test_client",
+)
+
+
 if TYPE_CHECKING:
     from contextlib import AbstractAsyncContextManager
 

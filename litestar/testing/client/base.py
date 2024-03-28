@@ -18,6 +18,13 @@ from litestar.exceptions import (
 from litestar.types import AnyIOBackend, ASGIApp, HTTPResponseStartEvent
 from litestar.utils.scope.state import ScopeState
 
+__all__ = (
+    "BaseTestClient",
+    "fake_asgi_connection",
+    "fake_http_send_message",
+)
+
+
 if TYPE_CHECKING:
     from httpx._types import CookieTypes
 

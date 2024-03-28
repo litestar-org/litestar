@@ -5,6 +5,9 @@ from typing import TYPE_CHECKING
 from litestar.plugins import OpenAPISchemaPlugin
 from litestar.typing import FieldDefinition
 
+__all__ = ("TypedDictSchemaPlugin",)
+
+
 if TYPE_CHECKING:
     from litestar._openapi.schema_generation import SchemaCreator
     from litestar.openapi.spec import Schema
