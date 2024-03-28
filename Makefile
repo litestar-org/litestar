@@ -102,8 +102,14 @@ pre-commit: 										## Runs pre-commit hooks; includes ruff formatting and lin
 	@$(PDM) run pre-commit run --all-files
 	@echo "=> Pre-commit complete"
 
+.PHONY: slots-check
+slots-check: 										## Check for slots usage in classes
+	@echo "=> Checking for slots usage in classes"
+	@$(PDM) run slotscheck litestar
+	@echo "=> Slots check complete"
+
 .PHONY: lint
-lint: pre-commit type-check 						## Run all linting
+lint: pre-commit type-check slots-check				## Run all linting
 
 .PHONY: coverage
 coverage:  											## Run the tests and generate coverage report
