@@ -20,6 +20,8 @@ __all__ = ("Store", "NamespacedStore", "StorageObject")
 class Store(ABC):
     """Thread and process safe asynchronous key/value store."""
 
+    __slots__ = ()
+
     @abstractmethod
     async def set(self, key: str, value: str | bytes, expires_in: int | timedelta | None = None) -> None:
         """Set a value.
@@ -96,6 +98,8 @@ class NamespacedStore(Store):
     Bulk actions on a parent namespace should affect all child namespaces, whereas other operations on all namespaces
     should be isolated.
     """
+
+    __slots__ = ("namespace",)
 
     @abstractmethod
     def with_namespace(self, namespace: str) -> Self:
