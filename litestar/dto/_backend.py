@@ -406,6 +406,8 @@ class DTOBackend:
             if nested_depth == self.dto_factory.config.max_nested_depth:
                 raise RecursionError
 
+            unique_name = f"{unique_name}{field_definition.raw.__name__}"
+
             nested_field_definitions = self.parse_model(
                 model_type=field_definition.annotation,
                 exclude=exclude,
