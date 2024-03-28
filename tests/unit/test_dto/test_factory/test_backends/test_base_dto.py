@@ -135,6 +135,7 @@ def fx_backend(
         model_type=data_model_type,
         wrapper_attribute_name=None,
         handler_id="test",
+        wrapped_annotation=None,
     )
 
 

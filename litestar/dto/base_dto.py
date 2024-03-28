@@ -166,11 +166,13 @@ class AbstractDTO(Generic[T]):
         if key not in backend_context:
             model_type_field_definition = cls.resolve_model_type(field_definition=field_definition)
             wrapper_attribute_name: str | None = None
+            wrapped_annotation: type[Any] | None = None
 
             if not model_type_field_definition.is_subclass_of(cls.model_type):
                 if resolved_generic_result := cls.resolve_generic_wrapper_type(
                     field_definition=model_type_field_definition
                 ):
+                    wrapped_annotation = model_type_field_definition.annotation
                     model_type_field_definition, field_definition, wrapper_attribute_name = resolved_generic_result
                 else:
                     raise InvalidAnnotationException(
@@ -189,6 +191,7 @@ class AbstractDTO(Generic[T]):
                 wrapper_attribute_name=wrapper_attribute_name,
                 is_data_field=field_definition.name == "data",
                 handler_id=handler_id,
+                wrapped_annotation=wrapped_annotation,
             )
 
     @classmethod

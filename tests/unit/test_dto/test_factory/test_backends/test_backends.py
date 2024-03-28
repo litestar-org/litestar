@@ -89,6 +89,7 @@ def test_backend_parse_raw_json(
                 wrapper_attribute_name=None,
                 is_data_field=True,
                 handler_id="test",
+                wrapped_annotation=None,
             ).parse_raw(b'{"a":1,"nested":{"a":1,"b":"two"},"nested_list":[{"a":1,"b":"two"}]}', asgi_connection)
         )
         == DESTRUCTURED
@@ -111,6 +112,7 @@ def test_backend_parse_raw_msgpack(dto_factory: type[DataclassDTO], backend_cls:
                 wrapper_attribute_name=None,
                 is_data_field=True,
                 handler_id="test",
+                wrapped_annotation=None,
             ).parse_raw(
                 b"\x83\xa1a\x01\xa6nested\x82\xa1a\x01\xa1b\xa3two\xabnested_list\x91\x82\xa1a\x01\xa1b\xa3two",
                 asgi_connection,
@@ -136,6 +138,7 @@ def test_backend_parse_unsupported_media_type(
             wrapper_attribute_name=None,
             is_data_field=True,
             handler_id="test",
+            wrapped_annotation=None,
         ).parse_raw(b"", asgi_connection)
 
 
@@ -147,6 +150,7 @@ def test_backend_iterable_annotation(dto_factory: type[DataclassDTO], backend_cl
         model_type=DC,
         wrapper_attribute_name=None,
         is_data_field=True,
+        wrapped_annotation=None,
     )
     field_definition = FieldDefinition.from_annotation(backend.annotation)
     assert field_definition.origin is list
@@ -161,6 +165,7 @@ def test_backend_scalar_annotation(dto_factory: type[DataclassDTO], backend_cls:
         model_type=DC,
         wrapper_attribute_name=None,
         is_data_field=True,
+        wrapped_annotation=None,
     )
     assert FieldDefinition.from_annotation(backend.annotation).is_subclass_of(Struct)
 
@@ -175,6 +180,7 @@ def test_backend_populate_data_from_builtins(
         model_type=DC,
         wrapper_attribute_name=None,
         is_data_field=True,
+        wrapped_annotation=None,
     )
     data = backend.populate_data_from_builtins(builtins=DESTRUCTURED, asgi_connection=asgi_connection)
     assert data == STRUCTURED
@@ -224,6 +230,7 @@ def test_backend_model_name_uniqueness(dto_factory: type[DataclassDTO], backend_
         model_type=DC,
         wrapper_attribute_name=None,
         is_data_field=True,
+        wrapped_annotation=None,
     )
     backend._seen_model_names.clear()
     unique_names: set = set()
@@ -259,6 +266,7 @@ def test_backend_populate_data_from_raw(
         model_type=DC,
         wrapper_attribute_name=None,
         is_data_field=True,
+        wrapped_annotation=None,
     )
     data = backend.populate_data_from_raw(RAW, asgi_connection)
     assert data == STRUCTURED
@@ -274,6 +282,7 @@ def test_backend_populate_collection_data_from_raw(
         model_type=DC,
         wrapper_attribute_name=None,
         is_data_field=True,
+        wrapped_annotation=None,
     )
     data = backend.populate_data_from_raw(COLLECTION_RAW, asgi_connection)
     assert data == [STRUCTURED]
@@ -289,6 +298,7 @@ def test_backend_encode_data(
         model_type=DC,
         wrapper_attribute_name=None,
         is_data_field=True,
+        wrapped_annotation=None,
     )
     data = backend.encode_data(STRUCTURED)
     assert encode_json(data) == RAW
@@ -304,6 +314,7 @@ def test_backend_encode_collection_data(
         model_type=DC,
         wrapper_attribute_name=None,
         is_data_field=True,
+        wrapped_annotation=None,
     )
     data = backend.encode_data([STRUCTURED])
     assert encode_json(data) == COLLECTION_RAW
@@ -332,6 +343,7 @@ def test_transfer_only_touches_included_attributes(backend_cls: type[DTOBackend]
         model_type=Foo,
         wrapper_attribute_name=None,
         is_data_field=False,
+        wrapped_annotation=None,
     )
 
     Foo.bar = property(fget=lambda s: mock(return_value=""), fset=lambda s, v: None)  # type: ignore[assignment]
@@ -377,6 +389,7 @@ dto_type = DataclassDTO[Model]
         model_type=module.Model,
         wrapper_attribute_name=None,
         is_data_field=True,
+        wrapped_annotation=None,
     )
     parsed = backend.parsed_field_definitions
     assert next(f for f in parsed if f.name == "a").is_excluded
@@ -433,6 +446,7 @@ dto_type = DataclassDTO[Model]
         model_type=module.Model,
         wrapper_attribute_name=None,
         is_data_field=True,
+        wrapped_annotation=None,
     )
     parsed = backend.parsed_field_definitions
     assert not next(f for f in parsed if f.name == "a").is_excluded
