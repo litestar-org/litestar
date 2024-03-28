@@ -9,5 +9,6 @@ plugins
     :maxdepth: 1
     :hidden:
 
+    flash_messages
     structlog
     sqlalchemy

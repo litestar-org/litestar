@@ -5,7 +5,6 @@ from functools import partial
 from typing import TYPE_CHECKING, Any, Callable, Mapping, Sequence, cast
 
 from litestar._signature import SignatureModel
-from litestar.config.app import ExperimentalFeatures
 from litestar.di import Provide
 from litestar.dto import DTOData
 from litestar.exceptions import ImproperlyConfiguredException
@@ -32,7 +31,6 @@ if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
     from litestar.controller import Controller
     from litestar.dto import AbstractDTO
-    from litestar.dto._backend import DTOBackend
     from litestar.params import ParameterKwarg
     from litestar.router import Router
     from litestar.types import AnyCallable, AsyncAnyCallable, ExceptionHandler
@@ -442,13 +440,6 @@ class BaseRouteHandler:
             self._resolved_signature_namespace = ns
         return cast("dict[str, Any]", self._resolved_signature_namespace)
 
-    def _get_dto_backend_cls(self) -> type[DTOBackend] | None:
-        if ExperimentalFeatures.DTO_CODEGEN in self.app.experimental_features:
-            from litestar.dto._codegen_backend import DTOCodegenBackend
-
-            return DTOCodegenBackend
-        return None
-
     def resolve_data_dto(self) -> type[AbstractDTO] | None:
         """Resolve the data_dto by starting from the route handler and moving up.
         If a handler is found it is returned, otherwise None is set.
@@ -478,7 +469,6 @@ class BaseRouteHandler:
                 data_dto.create_for_field_definition(
                     field_definition=self.parsed_data_field,
                     handler_id=self.handler_id,
-                    backend_cls=self._get_dto_backend_cls(),
                 )
 
             self._resolved_data_dto = data_dto
@@ -512,7 +502,6 @@ class BaseRouteHandler:
                 return_dto.create_for_field_definition(
                     field_definition=self.parsed_return_field,
                     handler_id=self.handler_id,
-                    backend_cls=self._get_dto_backend_cls(),
                 )
                 self._resolved_return_dto = return_dto
             else:

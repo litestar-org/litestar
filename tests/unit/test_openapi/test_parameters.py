@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, List, Optional, Type, cast
+from typing import TYPE_CHECKING, Any, List, Optional, Type, cast
 from uuid import UUID
 
 import pytest
@@ -322,6 +322,46 @@ def test_parameter_examples() -> None:
         assert response.json()["paths"]["/"]["get"]["parameters"][0]["examples"] == {
             "text-example-1": {"summary": "example summary", "value": "example value"}
         }
+
+
+def test_parameter_schema_extra() -> None:
+    @get()
+    async def handler(
+        query1: Annotated[
+            str,
+            Parameter(
+                schema_extra={
+                    "schema_not": Schema(
+                        any_of=[
+                            Schema(type=OpenAPIType.STRING, pattern=r"^somePrefix:.*$"),
+                            Schema(type=OpenAPIType.STRING, enum=["denied", "values"]),
+                        ]
+                    ),
+                }
+            ),
+        ],
+    ) -> Any:
+        return query1
+
+    @get()
+    async def error_handler(query1: Annotated[str, Parameter(schema_extra={"invalid": "dummy"})]) -> Any:
+        return query1
+
+    # Success
+    app = Litestar([handler])
+    schema = app.openapi_schema.to_schema()
+    assert schema["paths"]["/"]["get"]["parameters"][0]["schema"]["not"] == {
+        "anyOf": [
+            {"type": "string", "pattern": r"^somePrefix:.*$"},
+            {"type": "string", "enum": ["denied", "values"]},
+        ]
+    }
+
+    # Attempt to pass invalid key
+    app = Litestar([error_handler])
+    with pytest.raises(ValueError) as e:
+        app.openapi_schema
+    assert str(e.value).startswith("`schema_extra` declares key")
 
 
 def test_uuid_path_description_generation() -> None:

@@ -24,6 +24,7 @@ from litestar.middleware.session import SessionMiddleware
 from litestar.middleware.session.base import BaseSessionBackend
 from litestar.middleware.session.client_side import ClientSideSessionBackend, CookieBackendConfig
 from litestar.middleware.session.server_side import ServerSideSessionBackend, ServerSideSessionConfig
+from litestar.openapi.config import OpenAPIConfig
 from litestar.stores.base import Store
 from litestar.stores.file import FileStore
 from litestar.stores.memory import MemoryStore
@@ -315,3 +316,8 @@ async def redis_client(docker_ip: str, redis_service: None) -> AsyncGenerator[As
         await client.aclose()  # type: ignore[attr-defined]
     except RuntimeError:
         pass
+
+
+@pytest.fixture(autouse=True)
+def _patch_openapi_config(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr("litestar.app.DEFAULT_OPENAPI_CONFIG", OpenAPIConfig(title="Litestar API", version="1.0.0"))

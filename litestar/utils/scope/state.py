@@ -33,6 +33,7 @@ class ScopeState:
         "csrf_token",
         "dependency_cache",
         "do_cache",
+        "flash_messages",
         "form",
         "headers",
         "is_cached",
@@ -56,6 +57,7 @@ class ScopeState:
         self.dependency_cache = Empty
         self.do_cache = Empty
         self.form = Empty
+        self.flash_messages = []
         self.headers = Empty
         self.is_cached = Empty
         self.json = Empty
@@ -76,6 +78,7 @@ class ScopeState:
     dependency_cache: dict[str, Any] | EmptyType
     do_cache: bool | EmptyType
     form: dict[str, str | list[str]] | EmptyType
+    flash_messages: list[dict[str, str]]
     headers: Headers | EmptyType
     is_cached: bool | EmptyType
     json: Any | EmptyType
