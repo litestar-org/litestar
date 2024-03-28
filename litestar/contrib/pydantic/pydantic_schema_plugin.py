@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, Any, Optional
 
 from typing_extensions import Annotated
 
-from litestar._openapi.schema_generation.utils import get_formatted_examples
 from litestar.contrib.pydantic.utils import (
     create_field_definitions_for_computed_fields,
     is_pydantic_2_model,
@@ -15,7 +14,7 @@ from litestar.contrib.pydantic.utils import (
     pydantic_unwrap_and_get_origin,
 )
 from litestar.exceptions import MissingDependencyException
-from litestar.openapi.spec import Example, OpenAPIFormat, OpenAPIType, Schema
+from litestar.openapi.spec import OpenAPIFormat, OpenAPIType, Schema
 from litestar.plugins import OpenAPISchemaPlugin
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
@@ -314,11 +313,5 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
             required=sorted(f.name for f in property_fields.values() if f.is_required),
             property_fields=property_fields,
             title=title,
-            examples=(
-                None
-                if example is None
-                else get_formatted_examples(
-                    field_definition, [Example(description=f"Example {field_definition.name} value", value=example)]
-                )
-            ),
+            examples=None if example is None else [example],
         )

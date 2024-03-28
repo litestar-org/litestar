@@ -164,7 +164,7 @@ def info_command(app: Litestar) -> None:
     type=click.IntRange(min=1, max=multiprocessing.cpu_count() + 1),
     show_default=True,
     default=1,
-    envvar="WEB_CONCURRENCY",
+    envvar=["LITESTAR_WEB_CONCURRENCY", "WEB_CONCURRENCY"],
 )
 @option("-H", "--host", help="Server under this host", default="127.0.0.1", show_default=True, envvar="LITESTAR_HOST")
 @option(

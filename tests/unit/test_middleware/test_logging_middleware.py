@@ -1,5 +1,5 @@
 from logging import INFO
-from typing import TYPE_CHECKING, Any, Dict
+from typing import TYPE_CHECKING, Any, Dict, Generator
 
 import pytest
 from structlog.testing import capture_logs
@@ -18,6 +18,7 @@ from litestar.middleware.logging import LoggingMiddlewareConfig
 from litestar.params import Body
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED
 from litestar.testing import create_test_client
+from tests.helpers import cleanup_logging_impl
 
 if TYPE_CHECKING:
     from _pytest.logging import LogCaptureFixture
@@ -28,6 +29,12 @@ if TYPE_CHECKING:
 
 
 pytestmark = pytest.mark.usefixtures("reset_httpx_logging")
+
+
+@pytest.fixture(autouse=True)
+def cleanup_logging() -> Generator:
+    with cleanup_logging_impl():
+        yield
 
 
 @pytest.fixture

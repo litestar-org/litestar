@@ -14,7 +14,7 @@ from litestar import connection, datastructures, types
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
-from litestar.utils.typing import unwrap_annotation
+from litestar.utils.typing import expand_type_var_in_type_hint, unwrap_annotation
 
 if TYPE_CHECKING:
     from typing import Sequence
@@ -212,8 +212,9 @@ class ParsedSignature:
         """
         signature = Signature.from_callable(fn)
         fn_type_hints = get_fn_type_hints(fn, namespace=signature_namespace)
+        expanded_type_hints = expand_type_var_in_type_hint(fn_type_hints, signature_namespace)
 
-        return cls.from_signature(signature, fn_type_hints)
+        return cls.from_signature(signature, expanded_type_hints)
 
     @classmethod
     def from_signature(cls, signature: Signature, fn_type_hints: dict[str, type]) -> Self:

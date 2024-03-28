@@ -139,7 +139,7 @@ def test_run_command(
     if web_concurrency is None:
         web_concurrency = 1
     elif set_in_env:
-        monkeypatch.setenv("WEB_CONCURRENCY", str(web_concurrency))
+        monkeypatch.setenv("LITESTAR_WEB_CONCURRENCY", str(web_concurrency))
     else:
         args.extend(["--web-concurrency", str(web_concurrency)])
 
@@ -326,7 +326,7 @@ def test_run_command_with_app_factory(
         ),
         (
             ("--wc", 2),
-            ("WEB_CONCURRENCY", 4),
+            ("LITESTAR_WEB_CONCURRENCY", 4),
             "--workers=2",
         ),
         (
