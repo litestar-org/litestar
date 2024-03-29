@@ -459,5 +459,5 @@ def test_warn_ambiguous_default_values() -> None:
 
 
 def test_warn_defaults_inside_parameter_definition() -> None:
-    with pytest.warns(LitestarWarning, match="Deprecated default value specification"):
+    with pytest.warns(DeprecationWarning, match="Deprecated default value specification"):
         FieldDefinition.from_annotation(Annotated[int, Parameter(default=1)], default=1)
