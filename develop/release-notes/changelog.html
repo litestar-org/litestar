@@ -1530,11 +1530,6 @@ document.write(`
 <strong>Released: </strong>2024-03-22<section id="2.7.1-bugfix">
 <h3>Bugfixes<a class="headerlink" href="#2.7.1-bugfix" title="Permalink to this heading">#</a></h3>
 <dl>
-<dt>add default encoders for <cite>Enums</cite> and <cite>EnumMeta</cite><a class="headerlink reference internal" href="#2.7.1-add default encoders for" id="2.7.1-add default encoders for">#</a></dt><dd><div class="changelog-change docutils container">
-<p>This addresses an issue when serializing <code class="docutils literal notranslate"><span class="pre">Enums</span></code> that was reported in discord.</p>
-<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3193">litestar-org/litestar#3193</a></span></p>
-</div>
-</dd>
 <dt>replace TestClient.__enter__ return type with Self<a class="headerlink reference internal" href="#2.7.1-replace testclient.__enter__ return type with self" id="2.7.1-replace testclient.__enter__ return type with self">#</a></dt><dd><div class="changelog-change docutils container">
 <p><code class="docutils literal notranslate"><span class="pre">TestClient.__enter__</span></code> and <code class="docutils literal notranslate"><span class="pre">AsyncTestClient.__enter__</span></code> return <code class="docutils literal notranslate"><span class="pre">Self</span></code>.
 If you inherit <code class="docutils literal notranslate"><span class="pre">TestClient</span></code>, its <code class="docutils literal notranslate"><span class="pre">__enter__</span></code> method should return derived class’s instance

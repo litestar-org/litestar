@@ -164,11 +164,10 @@ A huge thank you to our current sponsors:
     </div>
 
 We invite organizations and individuals to join our sponsorship program.
-By becoming a sponsor on platforms like `GitHub <sponsor-github_>`_
+By becoming a sponsor on `Polar <sponsor-polar_>`_ (preferred), or other platforms like `GitHub <sponsor-github_>`_
 and `Open Collective <sponsor-oc_>`_, you can play a pivotal role in our project's growth.
 
-Additionally, we engage in pledge-based sponsorship opportunities through `Polar <sponsor-polar_>`_.
-
+Also, exclusively with `Polar <sponsor-polar_>`_, you can engage in pledge-based sponsorships.
 
 .. _sponsor-github: https://github.com/sponsors/litestar-org
 .. _sponsor-oc: https://opencollective.com/litestar
