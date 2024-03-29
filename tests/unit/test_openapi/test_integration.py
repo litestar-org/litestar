@@ -195,13 +195,14 @@ def test_dataclass_field_default() -> None:
 
     @get("/")
     async def handler() -> SomeModel:
-        pass
+        return SomeModel()
 
     app = Litestar(route_handlers=[handler], signature_types=[SomeModel])
     schema = app.openapi_schema.components.schemas["test_dataclass_field_default.SomeModel"]
-    assert schema.properties["field_a"].default == "default_a"
-    assert schema.properties["field_b"].default == "default_b"
-    assert schema.properties["field_c"].default is None
+    assert schema
+    assert schema.properties["field_a"].default == "default_a"  # type: ignore[union-attr, index]
+    assert schema.properties["field_b"].default == "default_b"  # type: ignore[union-attr, index]
+    assert schema.properties["field_c"].default is None  # type: ignore[union-attr, index]
 
 
 def test_struct_field_default() -> None:
@@ -213,13 +214,14 @@ def test_struct_field_default() -> None:
 
     @get("/")
     async def handler() -> SomeModel:
-        pass
+        return SomeModel()
 
     app = Litestar(route_handlers=[handler], signature_types=[SomeModel])
     schema = app.openapi_schema.components.schemas["test_struct_field_default.SomeModel"]
-    assert schema.properties["field_a"].default == "default_a"
-    assert schema.properties["field_b"].default == "default_b"
-    assert schema.properties["field_c"].default is None
+    assert schema
+    assert schema.properties["field_a"].default == "default_a"  # type: ignore[union-attr, index]
+    assert schema.properties["field_b"].default == "default_b"  # type: ignore[union-attr, index]
+    assert schema.properties["field_c"].default is None  # type: ignore[union-attr, index]
 
 
 def test_schema_for_optional_path_parameter() -> None:
