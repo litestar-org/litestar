@@ -21,7 +21,12 @@ if TYPE_CHECKING:
 class RedisStore(NamespacedStore):
     """Redis based, thread and process safe asynchronous key/value store."""
 
-    __slots__ = ("_redis",)
+    __slots__ = (
+        "_delete_all_script",
+        "_get_and_renew_script",
+        "_redis",
+        "handle_client_shutdown",
+    )
 
     def __init__(
         self, redis: Redis, namespace: str | None | EmptyType = Empty, handle_client_shutdown: bool = False

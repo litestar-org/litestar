@@ -96,7 +96,7 @@ def _parse_metadata(value: Any, is_sequence_container: bool, extra: dict[str, An
     example_list: list[Any] | None
     if example := extra.pop("example", None):
         example_list = [Example(value=example)]
-    elif examples := getattr(value, "examples", None):
+    elif examples := (extra.pop("examples", None) or getattr(value, "examples", None)):
         example_list = [Example(value=example) for example in cast("list[str]", examples)]
     else:
         example_list = None

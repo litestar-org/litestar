@@ -14,8 +14,6 @@ if find_spec("rich_click") is not None:  # pragma: no cover
     click.rich_click.USE_MARKDOWN = False
     click.rich_click.SHOW_ARGUMENTS = True
     click.rich_click.GROUP_ARGUMENTS_OPTIONS = True
-    click.rich_click.SHOW_ARGUMENTS = True
-    click.rich_click.GROUP_ARGUMENTS_OPTIONS = True
     click.rich_click.STYLE_ERRORS_SUGGESTION = "magenta italic"
     click.rich_click.ERRORS_SUGGESTION = ""
     click.rich_click.ERRORS_EPILOGUE = ""

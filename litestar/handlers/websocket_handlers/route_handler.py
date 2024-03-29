@@ -18,6 +18,8 @@ class WebsocketRouteHandler(BaseRouteHandler):
     Use this decorator to decorate websocket handler functions.
     """
 
+    __slots__ = ("websocket_class",)
+
     def __init__(
         self,
         path: str | list[str] | None = None,

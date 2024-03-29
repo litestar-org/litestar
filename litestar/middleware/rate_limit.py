@@ -41,8 +41,6 @@ class CacheObject:
 class RateLimitMiddleware(AbstractMiddleware):
     """Rate-limiting middleware."""
 
-    __slots__ = ("app", "check_throttle_handler", "max_requests", "unit", "request_quota", "config")
-
     def __init__(self, app: ASGIApp, config: RateLimitConfig) -> None:
         """Initialize ``RateLimitMiddleware``.
 

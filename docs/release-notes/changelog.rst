@@ -6,12 +6,6 @@
 .. changelog:: 2.7.1
     :date: 2024-03-22
 
-    .. change:: add default encoders for `Enums` and `EnumMeta`
-        :type: bugfix
-        :pr: 3193
-
-        This addresses an issue when serializing ``Enums`` that was reported in discord.
-
     .. change:: replace TestClient.__enter__ return type with Self
         :type: bugfix
         :pr: 3194

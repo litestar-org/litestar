@@ -129,10 +129,10 @@ A **huge** thanks to our sponsors:
 
 <a href="https://docs.litestar.dev/dev/#sponsors" class="external-link" target="_blank">Check out our sponsors in the docs</a>
 
-If you would like to support the work that we do please consider [becoming a sponsor][sponsor-github]
-on [GitHub][sponsor-github] or [Open Collective][sponsor-oc].
+If you would like to support the work that we do please consider [becoming a sponsor][sponsor-polar]
+via [Polar.sh][sponsor-polar] (preferred), [GitHub][sponsor-github] or [Open Collective][sponsor-oc].
 
-We also participate in pledge-based sponsorship with [Polar][sponsor-polar].
+Also, exclusively with [Polar][sponsor-polar], you can engage in pledge-based sponsorships.
 
 [sponsor-github]: https://github.com/sponsors/litestar-org
 [sponsor-oc]: https://opencollective.com/litestar
@@ -554,6 +554,7 @@ see [the contribution guide](CONTRIBUTING.rst).
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="http://www.b-list.org/"><img src="https://avatars.githubusercontent.com/u/12384?v=4?s=100" width="100px;" alt="James Bennett"/><br /><sub><b>James Bennett</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/issues?q=author%3Aubernostrum" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/sherbang"><img src="https://avatars.githubusercontent.com/u/275015?v=4?s=100" width="100px;" alt="sherbang"/><br /><sub><b>sherbang</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=sherbang" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>
