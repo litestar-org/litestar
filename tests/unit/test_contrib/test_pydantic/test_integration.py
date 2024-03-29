@@ -111,6 +111,35 @@ def test_default_error_handling_v1() -> None:
         assert len(extra) == 4
 
 
+def test_serialize_raw_errors_v2() -> None:
+    # https://github.com/litestar-org/litestar/issues/2365
+    class User(pydantic_v2.BaseModel):
+        user_id: int
+
+        @pydantic_v2.field_validator("user_id")
+        @classmethod
+        def validate_user_id(cls, user_id: int) -> None:
+            raise ValueError("user id must be greater than 0")
+
+    @post("/", dto=PydanticDTO[User])
+    async def create_user(data: User) -> User:
+        return data
+
+    with create_test_client(create_user) as client:
+        response = client.post("/", json={"user_id": -1})
+        extra = response.json().get("extra")
+        assert extra == [
+            {
+                "type": "value_error",
+                "loc": ["user_id"],
+                "msg": "Value error, user id must be greater than 0",
+                "input": -1,
+                "ctx": {"error": "ValueError"},
+                "url": "https://errors.pydantic.dev/2.6/v/value_error",
+            }
+        ]
+
+
 def test_signature_model_invalid_input(
     base_model: Type[Union[pydantic_v2.BaseModel, pydantic_v1.BaseModel]], pydantic_version: PydanticVersion
 ) -> None:

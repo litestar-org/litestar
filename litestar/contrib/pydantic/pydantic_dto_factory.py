@@ -47,6 +47,14 @@ T = TypeVar("T", bound="ModelType | Collection[ModelType]")
 __all__ = ("PydanticDTO",)
 
 
+def convert_validation_error(validation_error: ValidationErrorV1 | ValidationErrorV2) -> list[dict[str, Any]]:
+    error_list = validation_error.errors()
+    for error in error_list:
+        if isinstance(exception := error.get("ctx", {}).get("error"), Exception):
+            error["ctx"]["error"] = type(exception).__name__
+    return error_list  # type: ignore[return-value]
+
+
 class PydanticDTO(AbstractDTO[T], Generic[T]):
     """Support for domain modelling with Pydantic."""
 
@@ -55,14 +63,14 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
         try:
             return super().decode_builtins(value)
         except (ValidationErrorV2, ValidationErrorV1) as ex:
-            raise ValidationException(extra=ex.errors()) from ex
+            raise ValidationException(extra=convert_validation_error(ex)) from ex
 
     @override
     def decode_bytes(self, value: bytes) -> Any:
         try:
             return super().decode_bytes(value)
         except (ValidationErrorV2, ValidationErrorV1) as ex:
-            raise ValidationException(extra=ex.errors()) from ex
+            raise ValidationException(extra=convert_validation_error(ex)) from ex
 
     @classmethod
     def generate_field_definitions(
