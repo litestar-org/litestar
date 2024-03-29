@@ -37,7 +37,7 @@ from litestar.openapi.spec import ExternalDocumentation, OpenAPIType, Reference
 from litestar.openapi.spec.example import Example
 from litestar.openapi.spec.schema import Schema
 from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
-from litestar.params import Parameter, ParameterKwarg
+from litestar.params import KwargDefinition, Parameter, ParameterKwarg
 from litestar.testing import create_test_client
 from litestar.types.builtin_types import NoneType
 from litestar.typing import FieldDefinition
@@ -555,3 +555,18 @@ def test_type_union_with_none(base_type: type) -> None:
         Reference(ref="#/components/schemas/tests_unit_test_openapi_test_schema_test_type_union_with_none.ModelA"),
         Reference("#/components/schemas/tests_unit_test_openapi_test_schema_test_type_union_with_none.ModelB"),
     ]
+
+
+def test_default_only_on_field_definition() -> None:
+    field_definition = FieldDefinition.from_annotation(int, default=10)
+    assert field_definition.kwarg_definition is None
+
+    schema = get_schema_for_field_definition(field_definition)
+    assert schema.default == 10
+
+
+def test_default_not_provided_for_kwarg_but_for_field() -> None:
+    field_definition = FieldDefinition.from_annotation(int, default=10, kwarg_definition=KwargDefinition())
+    schema = get_schema_for_field_definition(field_definition)
+
+    assert schema.default == 10

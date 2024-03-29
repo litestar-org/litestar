@@ -569,6 +569,9 @@ class SchemaCreator:
                     if getattr(schema, schema_key, None) is None:
                         setattr(schema, schema_key, value)
 
+        if schema.default is None and field.default is not Empty:
+            schema.default = field.default
+
         if not schema.examples and self.generate_examples:
             from litestar._openapi.schema_generation.examples import create_examples_for_field
 
