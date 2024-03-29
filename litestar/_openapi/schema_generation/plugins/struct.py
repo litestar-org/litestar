@@ -42,7 +42,7 @@ class StructSchemaPlugin(OpenAPISchemaPlugin):
                 field.encode_name: FieldDefinition.from_kwarg(
                     type_hints[field.name],
                     field.encode_name,
-                    default=field.default if field.default is not msgspec.NODEFAULT else Empty,
+                    default=field.default if field.default not in {msgspec.NODEFAULT, msgspec.UNSET} else Empty,
                 )
                 for field in struct_fields
             },
