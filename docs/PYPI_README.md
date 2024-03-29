@@ -125,10 +125,10 @@ A **huge** thanks to our sponsors:
 
 <a href="https://docs.litestar.dev/dev/#sponsors" class="external-link" target="_blank">Check out our sponsors in the docs</a>
 
-If you would like to support the work that we do please consider [becoming a sponsor][sponsor-github]
-on [GitHub][sponsor-github] or [Open Collective][sponsor-oc].
+If you would like to support the work that we do please consider [becoming a sponsor][sponsor-polar]
+via [Polar.sh][sponsor-polar] (preferred), [GitHub][sponsor-github] or [Open Collective][sponsor-oc].
 
-We also participate in pledge-based sponsorship with [Polar][sponsor-polar].
+Also, exclusively with [Polar][sponsor-polar], you can engage in pledge-based sponsorships.
 
 [sponsor-github]: https://github.com/sponsors/litestar-org
 [sponsor-oc]: https://opencollective.com/litestar

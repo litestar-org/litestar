@@ -62,11 +62,10 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         "connection_accept_handler": "Callback to accept a WebSocket connection. By default, calls WebSocket.accept",
         "on_accept": "Callback invoked after a WebSocket connection has been accepted",
         "on_disconnect": "Callback invoked after a WebSocket connection has been closed",
-        "weboscket_class": "WebSocket class",
         "_connection_lifespan": None,
-        "_handle_receive": None,
-        "_handle_send": None,
+        "_receive_handler": None,
         "_receive_mode": None,
+        "_send_handler": None,
         "_send_mode": None,
     }
 

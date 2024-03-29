@@ -23,7 +23,7 @@ repos:
       - id: unasyncd
         additional_dependencies: ["ruff"]
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.3.2"
+    rev: "v0.3.4"
     hooks:
       - id: ruff
         args: ["--fix"]
@@ -41,11 +41,6 @@ repos:
       - id: ensure-dunder-all
         exclude: "test*|examples*|tools"
         args: ["--use-tuple"]
-  - repo: https://github.com/ariebovenberg/slotscheck
-    rev: v0.17.3
-    hooks:
-      - id: slotscheck
-        exclude: "test_*|docs|.github"
   - repo: https://github.com/sphinx-contrib/sphinx-lint
     rev: "v0.9.1"
     hooks:

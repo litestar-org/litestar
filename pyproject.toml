@@ -57,7 +57,7 @@ maintainers = [
 name = "litestar"
 readme = "README.md"
 requires-python = ">=3.8,<4.0"
-version = "2.7.0"
+version = "2.7.1"
 
 [project.urls]
 Blog = "https://blog.litestar.dev"
@@ -285,6 +285,12 @@ reportUnnecessaryTypeIgnoreComments = true
 
 [tool.slotscheck]
 strict-imports = false
+exclude-classes = """
+(
+  # github.com/python/cpython/pull/106771
+  (^litestar.events.emitter:BaseEventEmitterBackend)
+)
+"""
 
 [tool.ruff]
 lint.select = [
