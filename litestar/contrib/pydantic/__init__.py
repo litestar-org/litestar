@@ -66,11 +66,11 @@ class PydanticPlugin(InitPluginProtocol):
         """Initialize ``PydanticPlugin``.
 
         Args:
-            exclude: OpenAPI and ``type_encoders`` will exclude specified fields
-            exclude_defaults: OpenAPI and ``type_encoders`` will exclude default fields
-            exclude_none: OpenAPI and ``type_encoders`` will exclude ``None`` fields
-            exclude_unset: OpenAPI and ``type_encoders`` will exclude not set fields
-            include: OpenAPI and ``type_encoders`` will include only specified fields
+            exclude: ``type_encoders`` will exclude specified fields
+            exclude_defaults: ``type_encoders`` will exclude default fields
+            exclude_none: ``type_encoders`` will exclude ``None`` fields
+            exclude_unset: ``type_encoders`` will exclude not set fields
+            include: ``type_encoders`` will include only specified fields
             prefer_alias: OpenAPI and ``type_encoders`` will export by alias
         """
         self.exclude = exclude
