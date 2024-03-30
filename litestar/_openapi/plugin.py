@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from litestar.app import Litestar
     from litestar.config.app import AppConfig
     from litestar.openapi.config import OpenAPIConfig
-    from litestar.openapi.spec import OpenAPI
+    from litestar.openapi.spec import OpenAPI, PathItem
     from litestar.routes import BaseRoute
 
 
@@ -41,13 +41,15 @@ class OpenAPIPlugin(InitPluginProtocol, ReceiveRoutePlugin):
 
         openapi = openapi_config.to_openapi_schema()
         context = OpenAPIContext(openapi_config=openapi_config, plugins=self.app.plugins.openapi)
+        path_items: dict[str, PathItem] = {}
         for route in self.included_routes.values():
             path = route.path_format or "/"
             path_item = create_path_item_for_route(context, route)
-            if existing_path_item := openapi.paths.get(path):
+            if existing_path_item := path_items.get(path):
                 path_item = merge_path_item_operations(existing_path_item, path_item, for_path=path)
-            openapi.paths[path] = path_item
+            path_items[path] = path_item
 
+        openapi.paths = path_items
         openapi.components.schemas = context.schema_registry.generate_components_schemas()
         return openapi
 

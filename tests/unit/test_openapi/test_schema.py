@@ -582,6 +582,7 @@ def test_routes_with_different_path_param_types_get_merged() -> None:
         pass
 
     app = Litestar([get_handler, post_handler])
+    assert app.openapi_schema.paths
     paths = app.openapi_schema.paths["/{param}"]
     assert paths.get is not None
     assert paths.post is not None
