@@ -554,6 +554,7 @@ see [the contribution guide](CONTRIBUTING.rst).
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="http://www.b-list.org/"><img src="https://avatars.githubusercontent.com/u/12384?v=4?s=100" width="100px;" alt="James Bennett"/><br /><sub><b>James Bennett</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/issues?q=author%3Aubernostrum" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/sherbang"><img src="https://avatars.githubusercontent.com/u/275015?v=4?s=100" width="100px;" alt="sherbang"/><br /><sub><b>sherbang</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=sherbang" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/carlsmedstad"><img src="https://avatars.githubusercontent.com/u/6952324?v=4?s=100" width="100px;" alt="Carl Smedstad"/><br /><sub><b>Carl Smedstad</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=carlsmedstad" title="Tests">⚠️</a></td>
     </tr>
   </tbody>
 </table>
