@@ -1717,8 +1717,8 @@ can also be injected into other dependency functions.</p>
 <section id="renaming-the-dependencies">
 <h3>Renaming the dependencies<a class="headerlink" href="#renaming-the-dependencies" title="Permalink to this heading">#</a></h3>
 <p>You can change the name that the engine and session are bound to by setting the
-<a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/plugins/init/config/asyncio.html#advanced_alchemy.extensions.litestar.plugins.init.config.asyncio.SQLAlchemyAsyncConfig.engine_dependency_key" title="(in advanced_alchemy v0.8.1)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">engine_dependency_key</span></code></a>
-and <a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/plugins/init/config/asyncio.html#advanced_alchemy.extensions.litestar.plugins.init.config.asyncio.SQLAlchemyAsyncConfig.session_dependency_key" title="(in advanced_alchemy v0.8.1)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">session_dependency_key</span></code></a>
+<a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/plugins/init/config/asyncio.html#advanced_alchemy.extensions.litestar.plugins.init.config.asyncio.SQLAlchemyAsyncConfig.engine_dependency_key" title="(in advanced_alchemy v0.8.2)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">engine_dependency_key</span></code></a>
+and <a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/plugins/init/config/asyncio.html#advanced_alchemy.extensions.litestar.plugins.init.config.asyncio.SQLAlchemyAsyncConfig.session_dependency_key" title="(in advanced_alchemy v0.8.2)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">session_dependency_key</span></code></a>
 attributes on the plugin configuration.</p>
 </section>
 <section id="configuring-the-before-send-handler">
@@ -1726,7 +1726,7 @@ attributes on the plugin configuration.</p>
 <p>The plugin configures a <code class="docutils literal notranslate"><span class="pre">before_send</span></code> handler that is called before sending a response. The default handler closes the
 session and removes it from the connection scope.</p>
 <p>You can change the handler by setting the
-<a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/plugins/init/config/asyncio.html#advanced_alchemy.extensions.litestar.plugins.init.config.asyncio.SQLAlchemyAsyncConfig.before_send_handler" title="(in advanced_alchemy v0.8.1)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">before_send_handler</span></code></a>
+<a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/plugins/init/config/asyncio.html#advanced_alchemy.extensions.litestar.plugins.init.config.asyncio.SQLAlchemyAsyncConfig.before_send_handler" title="(in advanced_alchemy v0.8.2)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">before_send_handler</span></code></a>
 attribute on the configuration object. For example, an alternate handler is available that will also commit the session
 on success and rollback upon failure.</p>
 <div class="sd-tab-set docutils">
