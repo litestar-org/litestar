@@ -231,7 +231,15 @@ def test_merge_path_item_operations_operation_set_on_both_raises(method: HttpMet
 
 @pytest.mark.parametrize(
     "attr",
-    [f.name for f in dataclasses.fields(PathItem) if f.name.upper() not in [*HttpMethod, "TRACE"]],
+    [
+        f.name
+        for f in dataclasses.fields(PathItem)
+        if f.name.upper()
+        not in [
+            *HttpMethod,
+            "TRACE",  # remove once https://github.com/litestar-org/litestar/pull/3294 is merged
+        ]
+    ],
 )
 def test_merge_path_item_operation_differing_values_raises(attr: str) -> None:
     with pytest.raises(ImproperlyConfiguredException, match="Conflicting OpenAPI path configuration for '/'"):
