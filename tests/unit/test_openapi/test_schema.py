@@ -35,6 +35,7 @@ from litestar.di import Provide
 from litestar.enums import ParamType
 from litestar.openapi.spec import ExternalDocumentation, OpenAPIType, Reference
 from litestar.openapi.spec.example import Example
+from litestar.openapi.spec.parameter import Parameter as OpenAPIParameter
 from litestar.openapi.spec.schema import Schema
 from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
 from litestar.params import KwargDefinition, Parameter, ParameterKwarg
@@ -573,6 +574,7 @@ def test_default_not_provided_for_kwarg_but_for_field() -> None:
 
 
 def test_routes_with_different_path_param_types_get_merged() -> None:
+    # https://github.com/litestar-org/litestar/issues/2700
     @get("/{param:int}")
     async def get_handler(param: int) -> None:
         pass
@@ -586,3 +588,20 @@ def test_routes_with_different_path_param_types_get_merged() -> None:
     paths = app.openapi_schema.paths["/{param}"]
     assert paths.get is not None
     assert paths.post is not None
+
+
+def test_unconsumed_path_parameters_are_documented() -> None:
+    # https://github.com/litestar-org/litestar/issues/3290
+    @get("/{param:str}")
+    async def handler() -> None:
+        pass
+
+    app = Litestar([handler])
+    params = app.openapi_schema.paths["/{param}"].get.parameters  # type: ignore[index, union-attr]
+    assert params
+    assert len(params) == 1
+    param = params[0]
+    assert isinstance(param, OpenAPIParameter)
+    assert param.name == "param"
+    assert param.required is True
+    assert param.param_in is ParamType.PATH
