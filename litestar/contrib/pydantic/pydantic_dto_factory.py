@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 from typing import TYPE_CHECKING, Collection, Generic, TypeVar
+from warnings import warn
 
 from typing_extensions import TypeAlias, override
 
@@ -82,7 +83,20 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
         for field_name, field_info in model_fields.items():
             field_definition = model_field_definitions[field_name]
             dto_field = extract_dto_field(field_definition, field_definition.extra)
-            field_definition.extra.pop(DTO_FIELD_META_KEY, None)
+
+            try:
+                extra = field_info.extra  # type: ignore[union-attr]
+            except AttributeError:
+                extra = field_info.json_schema_extra  # type: ignore[union-attr]
+
+            if extra is not None and extra.pop(DTO_FIELD_META_KEY, None):
+                warn(
+                    message="Declaring 'DTOField' via Pydantic's 'Field.extra' is deprecated. "
+                    "Use 'Annotated', e.g., 'Annotated[str, DTOField(mark='read-only')]' instead. "
+                    "Support for 'DTOField' in 'Field.extra' will be removed in v3.",
+                    category=DeprecationWarning,
+                    stacklevel=2,
+                )
 
             if not is_pydantic_undefined(field_info.default):
                 default = field_info.default
