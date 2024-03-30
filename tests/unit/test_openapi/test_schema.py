@@ -33,7 +33,6 @@ from litestar._openapi.schema_generation.utils import _get_normalized_schema_key
 from litestar.app import DEFAULT_OPENAPI_CONFIG, Litestar
 from litestar.di import Provide
 from litestar.enums import ParamType
-from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec import ExternalDocumentation, OpenAPIType, Reference
 from litestar.openapi.spec.example import Example
 from litestar.openapi.spec.schema import Schema

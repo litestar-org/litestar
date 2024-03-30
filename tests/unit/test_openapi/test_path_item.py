@@ -8,7 +8,7 @@ from unittest.mock import MagicMock
 import pytest
 from typing_extensions import TypeAlias
 
-from litestar import Controller, Litestar, Request, Router, delete, get, HttpMethod
+from litestar import Controller, HttpMethod, Litestar, Request, Router, delete, get
 from litestar._openapi.datastructures import OpenAPIContext
 from litestar._openapi.path_item import PathItemFactory, merge_path_item_operations
 from litestar._openapi.utils import default_operation_id_creator
