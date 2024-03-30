@@ -2,7 +2,7 @@ from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
-from pytest_lazyfixture import lazy_fixture
+from pytest_lazy_fixtures import lf
 
 from litestar import Litestar, Request, get
 from litestar.events.emitter import SimpleEventEmitter
@@ -36,7 +36,7 @@ def async_listener(mock: MagicMock) -> EventListener:
     return listener_fn
 
 
-@pytest.mark.parametrize("event_listener", [lazy_fixture("sync_listener"), lazy_fixture("async_listener")])
+@pytest.mark.parametrize("event_listener", [lf("sync_listener"), lf("async_listener")])
 def test_event_listener(mock: MagicMock, event_listener: EventListener, anyio_backend: AnyIOBackend) -> None:
     @get("/")
     def route_handler(request: Request[Any, Any, Any]) -> None:
