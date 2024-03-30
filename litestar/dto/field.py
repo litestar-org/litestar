@@ -6,6 +6,8 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING
 
+from litestar.exceptions import ImproperlyConfiguredException
+
 if TYPE_CHECKING:
     from typing import Any, Literal, Mapping
 
@@ -75,7 +77,7 @@ def extract_dto_field(field_definition: FieldDefinition, field_info_mapping: Map
     """
     if inst := field_info_mapping.get(DTO_FIELD_META_KEY):
         if not isinstance(inst, DTOField):
-            raise TypeError(f"DTO field info must be an instance of DTOField, got '{inst}'")
+            raise ImproperlyConfiguredException(f"DTO field info must be an instance of DTOField, got '{inst}'")
         return inst
 
     return next((f for f in field_definition.metadata if isinstance(f, DTOField)), DTOField())
