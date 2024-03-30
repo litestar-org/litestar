@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import dataclasses
 from dataclasses import dataclass
 from types import ModuleType
 from typing import Callable, Generic, Optional, TypeVar, cast
@@ -209,6 +210,45 @@ def test_msgspec_schema_generation(create_examples: bool, openapi_controller: ty
             "minLength": 12,
             "type": "string",
         }
+
+
+def test_dataclass_field_default() -> None:
+    # https://github.com/litestar-org/litestar/issues/3201
+    @dataclass
+    class SomeModel:
+        field_a: str = "default_a"
+        field_b: str = dataclasses.field(default="default_b")
+        field_c: str = dataclasses.field(default_factory=lambda: "default_c")
+
+    @get("/")
+    async def handler() -> SomeModel:
+        return SomeModel()
+
+    app = Litestar(route_handlers=[handler], signature_types=[SomeModel])
+    schema = app.openapi_schema.components.schemas["test_dataclass_field_default.SomeModel"]
+    assert schema
+    assert schema.properties["field_a"].default == "default_a"  # type: ignore[union-attr, index]
+    assert schema.properties["field_b"].default == "default_b"  # type: ignore[union-attr, index]
+    assert schema.properties["field_c"].default is None  # type: ignore[union-attr, index]
+
+
+def test_struct_field_default() -> None:
+    # https://github.com/litestar-org/litestar/issues/3201
+    class SomeModel(msgspec.Struct, kw_only=True):
+        field_a: str = "default_a"
+        field_b: str = msgspec.field(default="default_b")
+        field_c: str = msgspec.field(default_factory=lambda: "default_c")
+
+    @get("/")
+    async def handler() -> SomeModel:
+        return SomeModel()
+
+    app = Litestar(route_handlers=[handler], signature_types=[SomeModel])
+    schema = app.openapi_schema.components.schemas["test_struct_field_default.SomeModel"]
+    assert schema
+    assert schema.properties["field_a"].default == "default_a"  # type: ignore[union-attr, index]
+    assert schema.properties["field_b"].default == "default_b"  # type: ignore[union-attr, index]
+    assert schema.properties["field_c"].default is None  # type: ignore[union-attr, index]
 
 
 def test_schema_for_optional_path_parameter(openapi_controller: type[OpenAPIController] | None) -> None:
