@@ -35,7 +35,6 @@ except ImportError:
 
 if TYPE_CHECKING:
     from litestar._openapi.schema_generation.schema import SchemaCreator
-    from litestar.types.serialization import PydanticFieldsList
 
 PYDANTIC_TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
     pydantic_v1.ByteSize: Schema(type=OpenAPIType.INTEGER),
@@ -204,29 +203,9 @@ if pydantic_v2 is not None:  # pragma: no cover
 
 
 class PydanticSchemaPlugin(OpenAPISchemaPlugin):
-    __slots__ = (
-        "exclude",
-        "exclude_defaults",
-        "exclude_none",
-        "exclude_unset",
-        "include",
-        "prefer_alias",
-    )
+    __slots__ = ("prefer_alias",)
 
-    def __init__(
-        self,
-        exclude: PydanticFieldsList = None,
-        exclude_defaults: bool = False,
-        exclude_none: bool = False,
-        exclude_unset: bool = False,
-        include: PydanticFieldsList = None,
-        prefer_alias: bool = False,
-    ) -> None:
-        self.exclude = exclude
-        self.exclude_defaults = exclude_defaults
-        self.exclude_none = exclude_none
-        self.exclude_unset = exclude_unset
-        self.include = include
+    def __init__(self, prefer_alias: bool = False) -> None:
         self.prefer_alias = prefer_alias
 
     @staticmethod
@@ -254,27 +233,21 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
         if schema_creator.prefer_alias != self.prefer_alias:
             schema_creator.prefer_alias = True
         if is_pydantic_model_class(field_definition.annotation):
-            return self.for_pydantic_model(
-                field_definition=field_definition,
-                schema_creator=schema_creator,
-            )
+            return self.for_pydantic_model(field_definition=field_definition, schema_creator=schema_creator)
         return PYDANTIC_TYPE_MAP[field_definition.annotation]  # pragma: no cover
 
-    def for_pydantic_model(
-        self,
-        field_definition: FieldDefinition,
-        schema_creator: SchemaCreator,
-    ) -> Schema:  # pyright: ignore
+    @classmethod
+    def for_pydantic_model(cls, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:  # pyright: ignore
         """Create a schema object for a given pydantic model class.
 
         Args:
             field_definition: FieldDefinition instance.
             schema_creator: An instance of the schema creator class
-            generate_examples: Whether to generate examples if none are given
 
         Returns:
             A schema instance.
         """
+
         annotation = field_definition.annotation
         if is_generic(annotation):
             is_generic_model = True
@@ -329,6 +302,7 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
             )
             for k, field_info in model_fields.items()
         }
+
         computed_field_definitions = create_field_definitions_for_computed_fields(
             annotation, schema_creator.prefer_alias
         )
@@ -336,46 +310,8 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
 
         return schema_creator.create_component_schema(
             field_definition,
-            required=self.get_required_fields(
-                property_fields,
-                exclude=self.exclude,
-                include=self.include,
-                exclude_none=self.exclude_none,
-                exclude_defaults=self.exclude_defaults,
-                exclude_unset=self.exclude_unset,
-            ),
+            required=sorted(f.name for f in property_fields.values() if f.is_required),
             property_fields=property_fields,
             title=title,
             examples=None if example is None else [example],
         )
-
-    @classmethod
-    def get_required_fields(
-        cls,
-        property_fields: dict[str, FieldDefinition],
-        exclude: PydanticFieldsList = None,
-        exclude_defaults: bool = False,
-        exclude_none: bool = False,
-        exclude_unset: bool = False,
-        include: PydanticFieldsList = None,
-    ) -> list[str]:
-        required = []
-        exclude = exclude or set()
-        include = include or []
-
-        for prop in property_fields.values():
-            name = prop.name
-
-            if any(
-                [
-                    name in exclude,
-                    exclude_none and (prop.is_optional or prop.is_none_type),
-                    (exclude_defaults or exclude_unset) and prop.has_default,
-                ]
-            ):
-                continue
-
-            if name in include or (not include and prop.is_required):
-                required.append(name)
-
-        return sorted(required)

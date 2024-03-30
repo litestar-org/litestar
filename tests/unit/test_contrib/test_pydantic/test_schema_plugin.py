@@ -74,7 +74,7 @@ def test_v2_constrained_secrets() -> None:
         string: pydantic_v2.SecretStr = pydantic_v2.Field(min_length=1)
         bytes_: pydantic_v2.SecretBytes = pydantic_v2.Field(min_length=1)
 
-    schema = PydanticSchemaPlugin().for_pydantic_model(
+    schema = PydanticSchemaPlugin.for_pydantic_model(
         FieldDefinition.from_annotation(Model), schema_creator=SchemaCreator(plugins=[PydanticSchemaPlugin()])
     )
     assert schema.properties
@@ -123,69 +123,7 @@ class V2GenericModelWithPrivateFields(pydantic_v2.BaseModel, Generic[T]):
 )
 def test_exclude_private_fields(model_class: Type[Union[pydantic_v1.BaseModel, pydantic_v2.BaseModel]]) -> None:
     # https://github.com/litestar-org/litestar/issues/3150
-    schema = PydanticSchemaPlugin().for_pydantic_model(
+    schema = PydanticSchemaPlugin.for_pydantic_model(
         FieldDefinition.from_annotation(model_class), schema_creator=SchemaCreator(plugins=[PydanticSchemaPlugin()])
     )
     assert not schema.properties
-
-
-@pytest.mark.parametrize(
-    "plugin_params, required_fields",
-    (
-        (
-            {"exclude": {"default_field"}},
-            ["none_field"],
-        ),
-        (
-            {"exclude_defaults": True},
-            ["none_field"],
-        ),
-        (
-            {"exclude_none": True},
-            [],
-        ),
-        (
-            {"exclude_unset": True},
-            ["none_field"],
-        ),
-        (
-            {"include": {"default_field"}},
-            ["default_field"],
-        ),
-        (
-            {"include": {"default_field"}, "exclude": {"default_field"}},
-            [],
-        ),
-    ),
-    ids=(
-        "Exclude specific field",
-        "Exclude defaults field",
-        "Exclude None fields",
-        "Exclude unset fields",
-        "Include excluded field",
-        "Exclude over include",
-    ),
-)
-def test_required_schema_fields(plugin_params: dict, required_fields: dict) -> None:
-    class ModelV1(pydantic_v1.BaseModel):  # pyright: ignore
-        default_field: str = "default"
-        default_none_field: None = None
-        none_field: None
-
-    class ModelV2(pydantic_v2.BaseModel):
-        default_field: str = "default"
-        default_none_field: None = None
-        none_field: None
-
-    schema_v1 = PydanticSchemaPlugin(**plugin_params).for_pydantic_model(
-        FieldDefinition.from_annotation(ModelV1),
-        schema_creator=SchemaCreator(plugins=[PydanticSchemaPlugin(**plugin_params)]),
-    )
-
-    schema_v2 = PydanticSchemaPlugin(**plugin_params).for_pydantic_model(
-        FieldDefinition.from_annotation(ModelV2),
-        schema_creator=SchemaCreator(plugins=[PydanticSchemaPlugin(**plugin_params)]),
-    )
-
-    assert schema_v1.required == required_fields  # type:ignore[comparison-overlap]
-    assert schema_v2.required == required_fields  # type:ignore[comparison-overlap]

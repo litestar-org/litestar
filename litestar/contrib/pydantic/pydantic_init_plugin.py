@@ -32,7 +32,7 @@ if TYPE_CHECKING:
     from pydantic.typing import AbstractSetIntStr, MappingIntStrAny
 
     from litestar.config.app import AppConfig
-    from litestar.types.serialization import PydanticFieldsList, PydanticV2FieldsListType
+    from litestar.types.serialization import PydanticV1FieldsListType, PydanticV2FieldsListType
 
 
 T = TypeVar("T")
@@ -133,11 +133,11 @@ class PydanticInitPlugin(InitPluginProtocol):
 
     def __init__(
         self,
-        exclude: PydanticFieldsList = None,
+        exclude: PydanticV1FieldsListType | PydanticV2FieldsListType = None,
         exclude_defaults: bool = False,
         exclude_none: bool = False,
         exclude_unset: bool = False,
-        include: PydanticFieldsList = None,
+        include: PydanticV1FieldsListType | PydanticV2FieldsListType = None,
         prefer_alias: bool = False,
     ) -> None:
         self.exclude = exclude
@@ -150,11 +150,11 @@ class PydanticInitPlugin(InitPluginProtocol):
     @classmethod
     def encoders(
         cls,
-        exclude: PydanticFieldsList = None,
+        exclude: PydanticV1FieldsListType | PydanticV2FieldsListType = None,
         exclude_defaults: bool = False,
         exclude_none: bool = False,
         exclude_unset: bool = False,
-        include: PydanticFieldsList = None,
+        include: PydanticV1FieldsListType | PydanticV2FieldsListType = None,
         prefer_alias: bool = False,
     ) -> dict[Any, Callable[[Any], Any]]:
         encoders = {
