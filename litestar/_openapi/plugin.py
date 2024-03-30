@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from litestar._openapi.datastructures import OpenAPIContext
-from litestar._openapi.path_item import create_path_item_for_route
+from litestar._openapi.path_item import create_path_item_for_route, merge_path_item_operations
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.plugins import InitPluginProtocol
 from litestar.plugins.base import ReceiveRoutePlugin
@@ -41,10 +41,13 @@ class OpenAPIPlugin(InitPluginProtocol, ReceiveRoutePlugin):
 
         openapi = openapi_config.to_openapi_schema()
         context = OpenAPIContext(openapi_config=openapi_config, plugins=self.app.plugins.openapi)
-        openapi.paths = {
-            route.path_format or "/": create_path_item_for_route(context, route)
-            for route in self.included_routes.values()
-        }
+        for route in self.included_routes.values():
+            path = route.path_format or "/"
+            path_item = create_path_item_for_route(context, route)
+            if existing_path_item := openapi.paths.get(path):
+                path_item = merge_path_item_operations(existing_path_item, path_item, for_path=path)
+            openapi.paths[path] = path_item
+
         openapi.components.schemas = context.schema_registry.generate_components_schemas()
         return openapi
 

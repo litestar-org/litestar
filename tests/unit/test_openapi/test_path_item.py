@@ -1,19 +1,21 @@
 from __future__ import annotations
 
+import dataclasses
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Callable, cast
+from unittest.mock import MagicMock
 
 import pytest
 from typing_extensions import TypeAlias
 
-from litestar import Controller, Litestar, Request, Router, delete, get
+from litestar import Controller, Litestar, Request, Router, delete, get, HttpMethod
 from litestar._openapi.datastructures import OpenAPIContext
-from litestar._openapi.path_item import PathItemFactory
+from litestar._openapi.path_item import PathItemFactory, merge_path_item_operations
 from litestar._openapi.utils import default_operation_id_creator
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers.http_handlers import HTTPRouteHandler
 from litestar.openapi.config import OpenAPIConfig
-from litestar.openapi.spec import Operation
+from litestar.openapi.spec import Operation, PathItem
 from litestar.utils import find_index
 
 if TYPE_CHECKING:
@@ -215,3 +217,22 @@ def test_handler_excluded_from_schema(create_factory: CreateFactoryFixture) -> N
     schema = factory.create_path_item()
     assert schema.get
     assert schema.delete is None
+
+
+@pytest.mark.parametrize("method", HttpMethod)
+def test_merge_path_item_operations_operation_set_on_both_raises(method: HttpMethod) -> None:
+    with pytest.raises(ValueError, match="Cannot merge operation"):
+        merge_path_item_operations(
+            PathItem(**{method.value.lower(): MagicMock()}),
+            PathItem(**{method.value.lower(): MagicMock()}),
+            for_path="/",
+        )
+
+
+@pytest.mark.parametrize(
+    "attr",
+    [f.name for f in dataclasses.fields(PathItem) if f.name.upper() not in HttpMethod],
+)
+def test_merge_path_item_operation_differing_values_raises(attr: str) -> None:
+    with pytest.raises(ImproperlyConfiguredException, match="Conflicting OpenAPI path configuration for '/'"):
+        merge_path_item_operations(PathItem(), PathItem(**{attr: MagicMock()}), for_path="/")
