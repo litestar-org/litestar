@@ -48,7 +48,7 @@ class ProblemDetailsException(HTTPException):
         status_code: int | None = None,
         headers: dict[str, str] | None = None,
         extra: dict[str, Any] | list[Any] | None = None,
-        type_: str = "about: blank",
+        type_: str = "about:blank",
         title: str | None = None,
         instance: str | None = None,
     ) -> None:
