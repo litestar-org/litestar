@@ -3,27 +3,66 @@ SQLAlchemy Models & Repository
 
 Litestar comes with a built-in repository class
 (:class:`SQLAlchemyAsyncRepository <advanced_alchemy.repository.SQLAlchemyAsyncRepository>`)
-for `SQLAlchemy <https://docs.sqlalchemy.org/>`_ to make CRUD operations easier.
+for `SQLAlchemy <https://docs.sqlalchemy.org/>`_ to make CRUD operations easier.  These abstractions are stored in the companion `Advanced Alchemy <https://docs.advanced-alchemy.jolt.rs/latest/>`_.
 
-Features
---------
+What is Advanced Alchemy?
+-------------------------
+A carefully crafted, thoroughly tested, optimized companion library for
+SQLAlchemy, offering features such as:
 
-* Pre-configured ``DeclarativeBase`` for :doc:`SQLAlchemy <sqlalchemy:index>` 2.0 that includes a
-  UUID or Big Integer based primary-key,
-  a  `sentinel column <https://docs.sqlalchemy.org/en/20/core/connections.html#configuring-sentinel-columns>`_, and
-  an optional version with audit columns.
-* Generic synchronous and asynchronous repositories for select, insert, update, and delete operations on SQLAlchemy models
-* Implements optimized methods for bulk inserts, updates, and deletes and uses `lambda_stmt <https://docs.sqlalchemy.org/en/20/core/sqlelement.html#sqlalchemy.sql.expression.lambda_stmt>`_ when possible.
-* Integrated counts, pagination, sorting, filtering with ``LIKE``, ``IN``, and dates before and/or after.
-* Tested support for multiple database backends including:
+-  Sync and async repositories, featuring common CRUD and highly
+   optimized bulk operations
 
-  - SQLite via `aiosqlite <https://aiosqlite.omnilib.dev/en/stable/>`_ or `sqlite <https://docs.python.org/3/library/sqlite3.html>`_
-  - Postgres via `asyncpg <https://magicstack.github.io/asyncpg/current/>`_ or `psycopg3 (async or sync) <https://www.psycopg.org/psycopg3/>`_
-  - MySQL via `asyncmy <https://github.com/long2ice/asyncmy>`_
-  - Oracle via `oracledb <https://oracle.github.io/python-oracledb/>`_
-  - Google Spanner via `spanner-sqlalchemy <https://github.com/googleapis/python-spanner-sqlalchemy/>`_
-  - DuckDB via `duckdb_engine <https://github.com/Mause/duckdb_engine>`_
-  - Microsoft SQL Server via `pyodbc <https://github.com/mkleehammer/pyodbc>`_
+-  Integration with major web frameworks including Litestar, Starlette,
+   FastAPI, Sanic.
+
+-  Custom-built alembic configuration and CLI with optional framework
+   integration
+
+-  Utility base classes with audit columns, primary keys and utility
+   functions
+
+-  Optimized JSON types including a custom JSON type for Oracle.
+
+-  Integrated support for UUID6 and UUID7 using
+   `uuid-utils` <https://github.com/aminalaee/uuid-utils>`__ (install
+   with the ``uuid`` extra)
+
+-  Pre-configured base classes with audit columns UUID or Big Integer
+   primary keys and a `sentinel
+   column <https://docs.sqlalchemy.org/en/20/core/connections.html#configuring-sentinel-columns>`__.
+
+-  Synchronous and asynchronous repositories featuring:
+
+   -  Common CRUD operations for SQLAlchemy models
+   -  Bulk inserts, updates, upserts, and deletes with dialect-specific
+      enhancements
+   -  `lambda_stmt <https://docs.sqlalchemy.org/en/20/core/sqlelement.html#sqlalchemy.sql.expression.lambda_stmt>`__
+      when possible for improved query building performance
+   -  Integrated counts, pagination, sorting, filtering with ``LIKE``,
+      ``IN``, and dates before and/or after.
+
+-  Tested support for multiple database backends including:
+
+   -  SQLite via
+      `aiosqlite <https://aiosqlite.omnilib.dev/en/stable/>`__ or
+      `sqlite <https://docs.python.org/3/library/sqlite3.html>`__
+   -  Postgres via
+      `asyncpg <https://magicstack.github.io/asyncpg/current/>`__ or
+      `psycopg3 (async or sync) <https://www.psycopg.org/psycopg3/>`__
+   -  MySQL via `asyncmy <https://github.com/long2ice/asyncmy>`__
+   -  Oracle via `oracledb (async or
+      sync) <https://oracle.github.io/python-oracledb/>`__ (tested on
+      18c and 23c)
+   -  Google Spanner via
+      `spanner-sqlalchemy <https://github.com/googleapis/python-spanner-sqlalchemy/>`__
+   -  DuckDB via
+      `duckdb_engine <https://github.com/Mause/duckdb_engine>`__
+   -  Microsoft SQL Server via
+      `pyodbc <https://github.com/mkleehammer/pyodbc>`__ or
+      `aioodbc <https://github.com/aio-libs/aioodbc>`__
+   -  CockroachDB via `sqlalchemy-cockroachdb (async or
+      sync) <https://github.com/cockroachdb/sqlalchemy-cockroachdb>`__
 
 Basic Use
 ---------
