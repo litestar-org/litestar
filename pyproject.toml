@@ -74,23 +74,25 @@ Twitter = "https://twitter.com/LitestarAPI"
 annotated-types = ["annotated-types"]
 attrs = ["attrs"]
 brotli = ["brotli"]
-cli = ["jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0; sys_platform != 'win32'"]
+schema_export = ["jsbeautifier"]
 cryptography = ["cryptography"]
 full = [
-  "litestar[annotated-types,attrs,brotli,cli,cryptography,jinja,jwt,mako,minijinja,opentelemetry,piccolo,picologging,prometheus,pydantic,redis,sqlalchemy,standard,structlog]",
+  "litestar[brotli,cryptography,jwt,opentelemetry,pydantic,redis,sqlalchemy,standard,structlog]",
 ]
 jinja = ["jinja2>=3.1.2"]
 jwt = ["python-jose", "cryptography"]
 mako = ["mako>=1.2.4"]
 minijinja = ["minijinja>=1.0.0"]
 opentelemetry = ["opentelemetry-instrumentation-asgi"]
-piccolo = ["piccolo"]
+piccolo = ["litestar-piccolo"]
 picologging = ["picologging"]
 prometheus = ["prometheus-client"]
 pydantic = ["pydantic", "email-validator", "pydantic-extra-types"]
 redis = ["redis[hiredis]>=4.4.4"]
-sqlalchemy = ["advanced-alchemy>=0.2.2,<1.0.0"]
-standard = ["jinja2", "jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0; sys_platform != 'win32'", "fast-query-parsers>=1.0.2"]
+sqlalchemy = ["advanced-alchemy>=0.8.2"]
+uvicorn = [  "uvicorn[standard]", "uvloop>=0.18.0; sys_platform != 'win32'", "fast-query-parsers>=1.0.2"]
+granian = [  "litestar-granian", "uvloop>=0.18.0; sys_platform != 'win32'", "fast-query-parsers>=1.0.2"]
+standard = ["litestar[schema_export,annotated-types,uvicorn,jinja]"]
 structlog = ["structlog"]
 
 [project.scripts]
@@ -109,7 +111,7 @@ include = [
 ]
 
 [tool.pdm]
-ignore_package_warnings = ["sphinx", "slotscheck"]
+ignore_package_warnings = ["alabaster","sphinxcontrib-*","sphinx-*","sphinx","pre-commit", "pydata-sphinx-*", "slotscheck"]
 
 [tool.pdm.dev-dependencies]
 dev = [

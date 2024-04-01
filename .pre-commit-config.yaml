@@ -1,8 +1,6 @@
-default_language_version:
-  python: "3.8"
 repos:
   - repo: https://github.com/compilerla/conventional-pre-commit
-    rev: v3.1.0
+    rev: v3.2.0
     hooks:
       - id: conventional-pre-commit
         stages: [commit-msg]
@@ -23,7 +21,7 @@ repos:
       - id: unasyncd
         additional_dependencies: ["ruff"]
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.2.1"
+    rev: "v0.3.4"
     hooks:
       - id: ruff
         args: ["--fix"]
@@ -36,13 +34,13 @@ repos:
         additional_dependencies:
           - tomli
   - repo: https://github.com/python-formate/flake8-dunder-all
-    rev: v0.3.1
+    rev: v0.4.0
     hooks:
       - id: ensure-dunder-all
         exclude: "test*|examples*|tools"
         args: ["--use-tuple"]
   - repo: https://github.com/ariebovenberg/slotscheck
-    rev: v0.17.3
+    rev: v0.19.0
     hooks:
       - id: slotscheck
         exclude: "test_*|docs|.github"
