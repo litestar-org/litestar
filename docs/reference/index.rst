@@ -29,7 +29,6 @@ API reference
     pagination
     params
     plugins/index
-    repository/index
     response/index
     router
     routes
