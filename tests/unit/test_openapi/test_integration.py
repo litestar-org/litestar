@@ -11,7 +11,6 @@ from typing_extensions import Annotated
 
 from litestar import Controller, Litestar, delete, get, patch, post
 from litestar._openapi.plugin import OpenAPIPlugin
-from litestar.app import DEFAULT_OPENAPI_CONFIG
 from litestar.enums import MediaType, OpenAPIMediaType, ParamType
 from litestar.openapi import OpenAPIConfig, OpenAPIController
 from litestar.openapi.spec import Parameter as OpenAPIParameter
@@ -23,12 +22,22 @@ from litestar.testing import create_test_client
 CREATE_EXAMPLES_VALUES = (True, False)
 
 
-@pytest.mark.parametrize("create_examples", CREATE_EXAMPLES_VALUES)
+@pytest.fixture(params=[True, False])
+def create_examples(request: pytest.FixtureRequest) -> bool:
+    return request.param  # type: ignore[no-any-return]
+
+
 @pytest.mark.parametrize("schema_path", ["/schema/openapi.yaml", "/schema/openapi.yml"])
 def test_openapi(
-    person_controller: type[Controller], pet_controller: type[Controller], create_examples: bool, schema_path: str
+    person_controller: type[Controller],
+    pet_controller: type[Controller],
+    create_examples: bool,
+    schema_path: str,
+    openapi_controller: type[OpenAPIController] | None,
 ) -> None:
-    openapi_config = OpenAPIConfig("Example API", "1.0.0", create_examples=create_examples)
+    openapi_config = OpenAPIConfig(
+        "Example API", "1.0.0", create_examples=create_examples, openapi_controller=openapi_controller
+    )
     with create_test_client([person_controller, pet_controller], openapi_config=openapi_config) as client:
         assert client.app.openapi_schema
         openapi_schema = client.app.openapi_schema
@@ -42,11 +51,15 @@ def test_openapi(
         assert response.content.decode("utf-8") == yaml.dump(schema_json)
 
 
-@pytest.mark.parametrize("create_examples", CREATE_EXAMPLES_VALUES)
 def test_openapi_json(
-    person_controller: type[Controller], pet_controller: type[Controller], create_examples: bool
+    person_controller: type[Controller],
+    pet_controller: type[Controller],
+    create_examples: bool,
+    openapi_controller: type[OpenAPIController] | None,
 ) -> None:
-    openapi_config = OpenAPIConfig("Example API", "1.0.0", create_examples=create_examples)
+    openapi_config = OpenAPIConfig(
+        "Example API", "1.0.0", create_examples=create_examples, openapi_controller=openapi_controller
+    )
     with create_test_client([person_controller, pet_controller], openapi_config=openapi_config) as client:
         assert client.app.openapi_schema
         openapi_schema = client.app.openapi_schema
@@ -63,10 +76,15 @@ def test_openapi_json(
     "endpoint, schema_path", [("openapi.yaml", "/schema/openapi.yaml"), ("openapi.yml", "/schema/openapi.yml")]
 )
 def test_openapi_yaml_not_allowed(
-    endpoint: str, schema_path: str, person_controller: type[Controller], pet_controller: type[Controller]
+    endpoint: str,
+    schema_path: str,
+    person_controller: type[Controller],
+    pet_controller: type[Controller],
+    openapi_controller: type[OpenAPIController] | None,
 ) -> None:
-    openapi_config = DEFAULT_OPENAPI_CONFIG
-    openapi_config.enabled_endpoints.discard(endpoint)
+    openapi_config = OpenAPIConfig(
+        "Example API", "1.0.0", enabled_endpoints=set(), openapi_controller=openapi_controller
+    )
 
     with create_test_client([person_controller, pet_controller], openapi_config=openapi_config) as client:
         assert client.app.openapi_schema
@@ -77,8 +95,13 @@ def test_openapi_yaml_not_allowed(
 
 
 def test_openapi_json_not_allowed(person_controller: type[Controller], pet_controller: type[Controller]) -> None:
-    openapi_config = DEFAULT_OPENAPI_CONFIG
-    openapi_config.enabled_endpoints.discard("openapi.json")
+    # only tested with the OpenAPIController, b/c new router based approach always serves `openapi.json`.
+    openapi_config = OpenAPIConfig(
+        "Example API",
+        "1.0.0",
+        enabled_endpoints=set(),
+        openapi_controller=OpenAPIController,
+    )
 
     with create_test_client([person_controller, pet_controller], openapi_config=openapi_config) as client:
         assert client.app.openapi_schema
@@ -88,8 +111,10 @@ def test_openapi_json_not_allowed(person_controller: type[Controller], pet_contr
         assert response.status_code == HTTP_404_NOT_FOUND
 
 
-def test_openapi_custom_path() -> None:
-    openapi_config = OpenAPIConfig(title="my title", version="1.0.0", path="/custom_schema_path")
+def test_openapi_custom_path(openapi_controller: type[OpenAPIController] | None) -> None:
+    openapi_config = OpenAPIConfig(
+        title="my title", version="1.0.0", path="/custom_schema_path", openapi_controller=openapi_controller
+    )
     with create_test_client([], openapi_config=openapi_config) as client:
         response = client.get("/schema")
         assert response.status_code == HTTP_404_NOT_FOUND
@@ -101,8 +126,10 @@ def test_openapi_custom_path() -> None:
         assert response.status_code == HTTP_200_OK
 
 
-def test_openapi_normalizes_custom_path() -> None:
-    openapi_config = OpenAPIConfig(title="my title", version="1.0.0", path="custom_schema_path")
+def test_openapi_normalizes_custom_path(openapi_controller: type[OpenAPIController] | None) -> None:
+    openapi_config = OpenAPIConfig(
+        title="my title", version="1.0.0", path="custom_schema_path", openapi_controller=openapi_controller
+    )
     with create_test_client([], openapi_config=openapi_config) as client:
         response = client.get("/custom_schema_path/openapi.json")
         assert response.status_code == HTTP_200_OK
@@ -145,8 +172,7 @@ def test_openapi_custom_path_overrides_custom_controller_path() -> None:
         assert response.status_code == HTTP_200_OK
 
 
-@pytest.mark.parametrize("create_examples", CREATE_EXAMPLES_VALUES)
-def test_msgspec_schema_generation(create_examples: bool) -> None:
+def test_msgspec_schema_generation(create_examples: bool, openapi_controller: type[OpenAPIController] | None) -> None:
     class Lookup(msgspec.Struct):
         id: Annotated[
             str,
@@ -168,6 +194,7 @@ def test_msgspec_schema_generation(create_examples: bool) -> None:
             title="Example API",
             version="1.0.0",
             create_examples=create_examples,
+            openapi_controller=openapi_controller,
         ),
         signature_types=[Lookup],
     ) as client:
@@ -177,14 +204,14 @@ def test_msgspec_schema_generation(create_examples: bool) -> None:
             "id"
         ] == {
             "description": "A unique identifier",
-            "examples": {"id-example-1": {"value": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"}},
+            "examples": ["e4eaaaf2-d142-11e1-b3e4-080027620cdd"],
             "maxLength": 16,
             "minLength": 12,
             "type": "string",
         }
 
 
-def test_schema_for_optional_path_parameter() -> None:
+def test_schema_for_optional_path_parameter(openapi_controller: type[OpenAPIController] | None) -> None:
     @get(path=["/", "/{test_message:str}"], media_type=MediaType.TEXT, sync_to_thread=False)
     def handler(test_message: Optional[str]) -> str:  # noqa: UP007
         return test_message or "no message"
@@ -195,6 +222,7 @@ def test_schema_for_optional_path_parameter() -> None:
             title="Example API",
             version="1.0.0",
             create_examples=True,
+            openapi_controller=openapi_controller,
         ),
     ) as client:
         response = client.get("/schema/openapi.json")
@@ -214,7 +242,7 @@ class Foo(Generic[T]):
     foo: T
 
 
-def test_with_generic_class() -> None:
+def test_with_generic_class(openapi_controller: type[OpenAPIController] | None) -> None:
     @get("/foo-str", sync_to_thread=False)
     def handler_foo_str() -> Foo[str]:
         return Foo("")
@@ -228,6 +256,7 @@ def test_with_generic_class() -> None:
         openapi_config=OpenAPIConfig(
             title="Example API",
             version="1.0.0",
+            openapi_controller=openapi_controller,
         ),
     ) as client:
         response = client.get("/schema/openapi.json")
@@ -356,12 +385,10 @@ class Model:
 
 def test_multiple_handlers_for_same_route() -> None:
     @post("/", sync_to_thread=False)
-    def post_handler() -> None:
-        ...
+    def post_handler() -> None: ...
 
     @get("/", sync_to_thread=False)
-    def get_handler() -> None:
-        ...
+    def get_handler() -> None: ...
 
     app = Litestar([get_handler, post_handler])
     openapi_plugin = app.plugins.get(OpenAPIPlugin)
@@ -376,12 +403,10 @@ def test_multiple_handlers_for_same_route() -> None:
 @pytest.mark.parametrize(("random_seed_one", "random_seed_two", "should_be_equal"), [(10, 10, True), (10, 20, False)])
 def test_seeding(random_seed_one: int, random_seed_two: int, should_be_equal: bool) -> None:
     @post("/", sync_to_thread=False)
-    def post_handler(q: str) -> None:
-        ...
+    def post_handler(q: str) -> None: ...
 
     @get("/", sync_to_thread=False)
-    def get_handler(q: str) -> None:
-        ...
+    def get_handler(q: str) -> None: ...
 
     app = Litestar(
         [get_handler, post_handler], openapi_config=OpenAPIConfig("Litestar", "v0.0.1", True, random_seed_one)
@@ -405,21 +430,17 @@ def test_components_schemas_in_alphabetical_order() -> None:
     # https://github.com/litestar-org/litestar/issues/3059
 
     @dataclass
-    class A:
-        ...
+    class A: ...
 
     @dataclass
-    class B:
-        ...
+    class B: ...
 
     @dataclass
-    class C:
-        ...
+    class C: ...
 
     class TestController(Controller):
         @post("/", sync_to_thread=False)
-        def post_handler(self, data: B) -> None:
-            ...
+        def post_handler(self, data: B) -> None: ...
 
         @get("/", sync_to_thread=False)
         def get_handler(self) -> A:  # type: ignore[empty-body]
@@ -430,8 +451,7 @@ def test_components_schemas_in_alphabetical_order() -> None:
             ...
 
         @delete("/", sync_to_thread=False)
-        def delete_handler(self, data: B) -> None:
-            ...
+        def delete_handler(self, data: B) -> None: ...
 
     app = Litestar([TestController], signature_types=[A, B, C])
     openapi_plugin = app.plugins.get(OpenAPIPlugin)

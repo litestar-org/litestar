@@ -3,6 +3,7 @@
 https://github.com/encode/starlette/blob/master/tests/test_requests.py. And are meant to ensure our compatibility with
 their API.
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Callable, Dict, Generator

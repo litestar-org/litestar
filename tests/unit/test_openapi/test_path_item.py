@@ -155,12 +155,10 @@ def test_create_path_item_use_handler_docstring_true(route: HTTPRoute, create_fa
 
 def test_operation_id_validation() -> None:
     @get(path="/1", operation_id="handler")
-    def handler_1() -> None:
-        ...
+    def handler_1() -> None: ...
 
     @get(path="/2", operation_id="handler")
-    def handler_2() -> None:
-        ...
+    def handler_2() -> None: ...
 
     app = Litestar(route_handlers=[handler_1, handler_2])
 
@@ -182,12 +180,10 @@ def test_operation_override() -> None:
             ]
 
     @get(path="/1")
-    def handler_1() -> None:
-        ...
+    def handler_1() -> None: ...
 
     @get(path="/2", operation_class=CustomOperation)
-    def handler_2() -> None:
-        ...
+    def handler_2() -> None: ...
 
     app = Litestar(route_handlers=[handler_1, handler_2])
 
@@ -207,12 +203,10 @@ def test_operation_override() -> None:
 
 def test_handler_excluded_from_schema(create_factory: CreateFactoryFixture) -> None:
     @get("/", sync_to_thread=False)
-    def handler_1() -> None:
-        ...
+    def handler_1() -> None: ...
 
     @delete("/", include_in_schema=False, sync_to_thread=False)
-    def handler_2() -> None:
-        ...
+    def handler_2() -> None: ...
 
     app = Litestar(route_handlers=[handler_1, handler_2])
     index = find_index(app.routes, lambda x: x.path_format == "/")

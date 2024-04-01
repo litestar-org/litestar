@@ -144,11 +144,9 @@ def test_register_router_on_itself() -> None:
 
 def test_route_handler_method_view(controller: Type[Controller]) -> None:
     @get(path="/root")
-    def handler() -> None:
-        ...
+    def handler() -> None: ...
 
-    def _handler() -> None:
-        ...
+    def _handler() -> None: ...
 
     put_handler = put("/modify")(_handler)
     post_handler = post("/send")(_handler)
@@ -186,8 +184,7 @@ def test_missing_path_param_type(controller: Type[Controller]) -> None:
     missing_path_type = "/missing_path_type/{path_type}"
 
     @get(path=missing_path_type)
-    def handler() -> None:
-        ...
+    def handler() -> None: ...
 
     with pytest.raises(ImproperlyConfiguredException) as exc:
         Router(path="/", route_handlers=[handler])

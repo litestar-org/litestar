@@ -3,6 +3,7 @@ from __future__ import annotations
 import inspect
 import logging
 import os
+import warnings
 from contextlib import (
     AbstractAsyncContextManager,
     AsyncExitStack,
@@ -20,12 +21,13 @@ from litestar._asgi.utils import get_route_handlers, wrap_in_exception_handler
 from litestar._openapi.plugin import OpenAPIPlugin
 from litestar._openapi.schema_generation import openapi_schema_plugins
 from litestar.config.allowed_hosts import AllowedHostsConfig
-from litestar.config.app import AppConfig
+from litestar.config.app import AppConfig, ExperimentalFeatures
 from litestar.config.response_cache import ResponseCacheConfig
 from litestar.connection import Request, WebSocket
 from litestar.datastructures.state import State
 from litestar.events.emitter import BaseEventEmitterBackend, SimpleEventEmitter
 from litestar.exceptions import (
+    LitestarWarning,
     MissingDependencyException,
     NoRouteMatchFoundException,
 )
@@ -55,7 +57,6 @@ from litestar.utils.warnings import warn_pdb_on_exception
 if TYPE_CHECKING:
     from typing_extensions import Self
 
-    from litestar.config.app import ExperimentalFeatures
     from litestar.config.compression import CompressionConfig
     from litestar.config.cors import CORSConfig
     from litestar.config.csrf import CSRFConfig
@@ -396,6 +397,16 @@ class Litestar(Router):
             self._lifespan_managers.append(store)
         self._server_lifespan_managers = [p.server_lifespan for p in config.plugins or [] if isinstance(p, CLIPlugin)]
         self.experimental_features = frozenset(config.experimental_features or [])
+        if ExperimentalFeatures.DTO_CODEGEN in self.experimental_features:
+            warnings.warn(
+                "Use of redundant experimental feature flag DTO_CODEGEN. "
+                "DTO codegen backend is enabled by default since Litestar 2.8. The "
+                "DTO_CODEGEN feature flag can be safely removed from the configuration "
+                "and will be removed in version 3.0.",
+                category=LitestarWarning,
+                stacklevel=2,
+            )
+
         self.get_logger: GetLogger = get_logger_placeholder
         self.logger: Logger | None = None
         self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = []
@@ -864,7 +875,7 @@ class Litestar(Router):
         Returns:
             None
         """
-        self.plugins.get(OpenAPIPlugin)._build_openapi_schema()
+        self.plugins.get(OpenAPIPlugin)._build_openapi()
 
     def emit(self, event_id: str, *args: Any, **kwargs: Any) -> None:
         """Emit an event to all attached listeners.

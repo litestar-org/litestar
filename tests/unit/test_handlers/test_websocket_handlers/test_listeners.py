@@ -233,8 +233,7 @@ def test_listener_callback_no_data_arg_raises() -> None:
     with pytest.raises(ImproperlyConfiguredException):
 
         @websocket_listener("/")
-        def handler() -> None:
-            ...
+        def handler() -> None: ...
 
         handler.on_registration(Litestar())
 
@@ -243,16 +242,14 @@ def test_listener_callback_request_and_body_arg_raises() -> None:
     with pytest.raises(ImproperlyConfiguredException):
 
         @websocket_listener("/")
-        def handler_request(data: str, request: Request) -> None:
-            ...
+        def handler_request(data: str, request: Request) -> None: ...
 
         handler_request.on_registration(Litestar())
 
     with pytest.raises(ImproperlyConfiguredException):
 
         @websocket_listener("/")
-        def handler_body(data: str, body: bytes) -> None:
-            ...
+        def handler_body(data: str, body: bytes) -> None: ...
 
         handler_body.on_registration(Litestar())
 

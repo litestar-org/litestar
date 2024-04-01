@@ -4,7 +4,19 @@ from collections import abc, deque
 from copy import deepcopy
 from dataclasses import dataclass, is_dataclass, replace
 from inspect import Parameter, Signature
-from typing import Any, AnyStr, Callable, Collection, ForwardRef, Literal, Mapping, Protocol, Sequence, TypeVar, cast
+from typing import (
+    Any,
+    AnyStr,
+    Callable,
+    Collection,
+    ForwardRef,
+    Literal,
+    Mapping,
+    Protocol,
+    Sequence,
+    TypeVar,
+    cast,
+)
 
 from msgspec import UnsetType
 from typing_extensions import NotRequired, Required, Self, get_args, get_origin, get_type_hints, is_typeddict
@@ -38,12 +50,10 @@ T = TypeVar("T", bound=KwargDefinition)
 
 class _KwargMetaExtractor(Protocol):
     @staticmethod
-    def matches(annotation: Any, name: str | None, default: Any) -> bool:
-        ...
+    def matches(annotation: Any, name: str | None, default: Any) -> bool: ...
 
     @staticmethod
-    def extract(annotation: Any, default: Any) -> Any:
-        ...
+    def extract(annotation: Any, default: Any) -> Any: ...
 
 
 _KWARG_META_EXTRACTORS: set[_KwargMetaExtractor] = set()
@@ -83,6 +93,7 @@ def _parse_metadata(value: Any, is_sequence_container: bool, extra: dict[str, An
         **cast("dict[str, Any]", extra or getattr(value, "extra", None) or {}),
         **(getattr(value, "json_schema_extra", None) or {}),
     }
+    example_list: list[Any] | None
     if example := extra.pop("example", None):
         example_list = [Example(value=example)]
     elif examples := getattr(value, "examples", None):

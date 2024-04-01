@@ -7,18 +7,20 @@ from typing import TYPE_CHECKING, Callable, List, Optional
 from unittest.mock import MagicMock
 
 import pytest
-from msgspec import Struct, to_builtins
+from msgspec import Meta, Struct, to_builtins
 
 from litestar import Litestar, Request, get, post
 from litestar._openapi.schema_generation import SchemaCreator
 from litestar.dto import DataclassDTO, DTOConfig, DTOField
-from litestar.dto._backend import DTOBackend
+from litestar.dto._backend import DTOBackend, _create_struct_field_meta_for_field_definition
 from litestar.dto._types import CollectionType, SimpleType, TransferDTOFieldDefinition
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.enums import MediaType
 from litestar.exceptions import SerializationException
+from litestar.openapi.spec.example import Example
 from litestar.openapi.spec.reference import Reference
 from litestar.openapi.spec.schema import Schema
+from litestar.params import KwargDefinition
 from litestar.serialization import encode_json
 from litestar.testing import RequestFactory
 from litestar.typing import FieldDefinition
@@ -70,8 +72,7 @@ def fx_backend_factory(use_experimental_dto_backend: bool) -> type[DataclassDTO]
 @pytest.fixture(name="asgi_connection")
 def fx_asgi_connection() -> Request[Any, Any, Any]:
     @get("/", name="handler_id", media_type=MediaType.JSON)
-    def _handler() -> None:
-        ...
+    def _handler() -> None: ...
 
     return RequestFactory().get(path="/", route_handler=_handler)
 
@@ -96,8 +97,7 @@ def test_backend_parse_raw_json(
 
 def test_backend_parse_raw_msgpack(dto_factory: type[DataclassDTO], backend_cls: type[DTOBackend]) -> None:
     @get("/", name="handler_id", media_type=MediaType.MESSAGEPACK)
-    def _handler() -> None:
-        ...
+    def _handler() -> None: ...
 
     asgi_connection = RequestFactory().get(
         path="/", route_handler=_handler, headers={"Content-Type": MediaType.MESSAGEPACK}
@@ -124,8 +124,7 @@ def test_backend_parse_unsupported_media_type(
     dto_factory: type[DataclassDTO], asgi_connection: Request[Any, Any, Any], backend_cls: type[DTOBackend]
 ) -> None:
     @get("/", name="handler_id", media_type="text/css")
-    def _handler() -> None:
-        ...
+    def _handler() -> None: ...
 
     asgi_connection = RequestFactory().get(path="/", route_handler=_handler, headers={"Content-Type": "text/css"})
 
@@ -451,3 +450,29 @@ dto_type = DataclassDTO[Model]
     assert b_d_nested_info is not None
     assert not next(f for f in b_d_nested_info.field_definitions if f.name == "e").is_excluded
     assert b_d_nested_info.field_definitions[1].name == "f"
+
+
+@pytest.mark.parametrize(
+    ("constraint_kwargs",),
+    (
+        ({},),
+        ({"gt": 0, "lt": 2},),
+        ({"ge": 0, "le": 2},),
+        ({"min_length": 1, "max_length": 2},),
+        ({"pattern": "test"},),
+    ),
+)
+def test_create_struct_field_meta_for_field_definition(constraint_kwargs: Any) -> None:
+    mock_field = MagicMock(spec=TransferDTOFieldDefinition, is_partial=False)
+    mock_field.kwarg_definition = KwargDefinition(
+        description="test",
+        examples=[Example(value=1)],
+        title="test",
+        **constraint_kwargs,
+    )
+    assert _create_struct_field_meta_for_field_definition(mock_field) == Meta(
+        description="test",
+        examples=[1],
+        title="test",
+        **constraint_kwargs,
+    )

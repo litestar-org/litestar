@@ -271,9 +271,9 @@ class Router:
                     for method in route_handler.http_methods:
                         route_map[route.path][method] = route_handler
             else:
-                route_map[route.path][
-                    "websocket" if isinstance(route, WebSocketRoute) else "asgi"
-                ] = route.route_handler
+                route_map[route.path]["websocket" if isinstance(route, WebSocketRoute) else "asgi"] = (
+                    route.route_handler
+                )
 
         return route_map
 
@@ -304,9 +304,9 @@ class Router:
                     for http_method in route_handler.http_methods:
                         handlers_map[path][http_method] = route_handler
                 else:
-                    handlers_map[path][
-                        "websocket" if isinstance(route_handler, WebsocketRouteHandler) else "asgi"
-                    ] = cast("WebsocketRouteHandler | ASGIRouteHandler", route_handler)
+                    handlers_map[path]["websocket" if isinstance(route_handler, WebsocketRouteHandler) else "asgi"] = (
+                        cast("WebsocketRouteHandler | ASGIRouteHandler", route_handler)
+                    )
 
         return handlers_map
 

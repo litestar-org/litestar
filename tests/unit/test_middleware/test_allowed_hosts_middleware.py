@@ -21,8 +21,7 @@ class DummyApp(MiddlewareProtocol):  # pyright: ignore
 
 def test_allowed_hosts_middleware() -> None:
     @get(path="/")
-    def handler() -> None:
-        ...
+    def handler() -> None: ...
 
     client = create_test_client(route_handlers=[handler], allowed_hosts=["*.example.com", "moishe.zuchmir.com"])
     unpacked_middleware = []
