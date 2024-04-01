@@ -455,7 +455,7 @@ def test_run_command_quiet_console(
     assert "Using Litestar app from env:" in normal_output
     assert "Starting server process" in result.stdout
     del result
-    console = Console(file=io.StringIO(), force_interactive=True) 
+    console = Console(file=io.StringIO(), force_interactive=True)
     monkeypatch.setattr(_utils, "console", console)
     monkeypatch.setenv("LITESTAR_QUIET_CONSOLE", "1")
     assert os.getenv("LITESTAR_QUIET_CONSOLE") == "1"
@@ -463,7 +463,7 @@ def test_run_command_quiet_console(
     assert result.exit_code == 0
     quiet_output = console.file.getvalue()  # type: ignore[attr-defined]
     assert "Starting server process" not in result.stdout
-    assert "Using Litestar app from env:" not in quiet_output 
+    assert "Using Litestar app from env:" not in quiet_output
     console.clear()
 
 
@@ -478,7 +478,7 @@ def test_run_command_custom_app_name(
     mocker.patch.object(core, "isatty", return_value=True)
     mocker.patch.object(_utils, "isatty", return_value=True)
 
-    console = Console(file=io.StringIO(), force_interactive=True) 
+    console = Console(file=io.StringIO(), force_interactive=True)
     monkeypatch.setattr(_utils, "console", console)
 
     path = create_app_file("_create_app_with_path.py", content=CREATE_APP_FILE_CONTENT)
@@ -488,7 +488,7 @@ def test_run_command_custom_app_name(
     assert result.exit_code == 0
     _output = console.file.getvalue()  # type: ignore[attr-defined]
     assert "Using Litestar app from env:" in _output
-    console = Console(file=io.StringIO(), force_interactive=True) 
+    console = Console(file=io.StringIO(), force_interactive=True)
     monkeypatch.setattr(_utils, "console", console)
     monkeypatch.setenv("LITESTAR_APP_NAME", "My Stuff")
     assert os.getenv("LITESTAR_APP_NAME") == "My Stuff"
