@@ -31,7 +31,7 @@ to OpenAPI spec generation.
 Declaring paths
 ---------------
 
-All route handler :term:`decorator` accept an optional path :term:`argument`.
+All route handler :term:`decorators <decorator>` accept an optional path :term:`argument`.
 This :term:`argument` can be declared as a :term:`kwarg <argument>` using the
 :paramref:`~.handlers.base.BaseRouteHandler.path` parameter:
 
