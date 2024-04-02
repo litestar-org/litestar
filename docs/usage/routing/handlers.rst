@@ -96,7 +96,7 @@ The following sources can be accessed using annotated function :term:`kwargs <ar
 - :doc:`injected dependencies </usage/dependency-injection>`
 
 Additionally, you can specify the following special :term:`kwargs <argument>`,
-what is called "reserved keywords", internally:
+(known as "reserved keywords"):
 
 * ``cookies``: injects the request :class:`cookies <.datastructures.cookie.Cookie>` as a parsed
   :class:`dictionary <dict>`.
