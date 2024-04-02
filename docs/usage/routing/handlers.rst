@@ -92,7 +92,7 @@ Route handler functions or methods access various data by declaring these as ann
 The following sources can be accessed using annotated function :term:`kwargs <argument>`:
 
 - :ref:`path, query, header, and cookie parameters <usage/routing/parameters:the parameter function>`
-- :doc:`/usage/requests`
+- :doc:`requests </usage/requests>`
 - :doc:`injected dependencies </usage/dependency-injection>`
 
 Additionally, you can specify the following special :term:`kwargs <argument>`,
