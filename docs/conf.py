@@ -245,7 +245,7 @@ linkcheck_ignore = [
 ]
 
 auto_pytabs_min_version = (3, 8)
-auto_pytabs_max_version = (3, 11)
+auto_pytabs_max_version = (3, 12)
 auto_pytabs_compat_mode = True
 
 autosectionlabel_prefix_document = True
@@ -303,7 +303,9 @@ html_theme_options = {
             },
         },
         "Release notes": {
+            "What's new in 3.0": "release-notes/whats-new-3",
             "What's new in 2.0": "release-notes/whats-new-2",
+            "3.x Changelog": "https://docs.litestar.dev/3-dev/release-notes/changelog.html",
             "2.x Changelog": "https://docs.litestar.dev/2/release-notes/changelog.html",
             "1.x Changelog": "https://docs.litestar.dev/1/release-notes/changelog.html",
         },
