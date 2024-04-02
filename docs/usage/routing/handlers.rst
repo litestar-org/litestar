@@ -165,7 +165,7 @@ These route handlers all inherit from the :class:`~.handlers.HTTPRouteHandler` c
     @route(path="/some-path", http_method=[HttpMethod.GET, HttpMethod.POST])
     async def my_endpoint() -> None: ...
 
-As mentioned above, :func:`@route() <.handlers.route>` does is merely an alias for ``HTTPRouteHandler``,
+As mentioned above, :func:`@route() <.handlers.route>` is merely an alias for ``HTTPRouteHandler``,
 thus the below code is equivalent to the one above:
 
 .. code-block:: python
