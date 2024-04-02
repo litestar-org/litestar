@@ -101,8 +101,8 @@ In the above we dynamically created the ``sub_path_handler`` and registered it i
 :class:`Routers <.router.Router>`
 ---------------------------------
 
-:class:`Routers <.router.Router>` are instances of :class:`litestar.router.Router <.router.Router>`,
-which is the base class for the :class:`Litestar app <.app.Litestar>` itself.
+:class:`Routers <.router.Router>` are instances of the :class:`~.router.Router`,
+class which is the base class for the :class:`Litestar app <.app.Litestar>` itself.
 
 A :class:`~.router.Router` can register :class:`Controllers <.controller.Controller>`,
 :class:`route handler <.handlers.BaseRouteHandler>` functions, and other routers, similarly to the Litestar constructor:
