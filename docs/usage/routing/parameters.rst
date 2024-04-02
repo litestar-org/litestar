@@ -72,7 +72,7 @@ you can do so using the `the parameter function`_:
     :caption: Adding extra validation and documentation to a path parameter
 
 In the above example, :func:`~.params.Parameter` is used to restrict the value of :paramref:`~.params.Parameter.version`
-to a range between 1 and 10, and then set the :paramref:`~.params.Parameter.title``,
+to a range between 1 and 10, and then set the :paramref:`~.params.Parameter.title`,
 :paramref:`~.params.Parameter.description`, :paramref:`~.params.Parameter.examples`, and
 :paramref:`externalDocs <.params.Parameter.external_docs>` sections of the OpenAPI schema.
 
