@@ -145,8 +145,7 @@ There are several reasons for why this limitation is enforced:
 
 #. To ensure best practices
 #. To ensure consistent OpenAPI schema generation
-#. To allow Litestar to compute during the application bootstrap all the :term:`kwargs <argument>` required by a
-   function
+#. To allow Litestar to compute the :term:`arguments <argument>` required by a function during application bootstrap
 
 HTTP route handlers
 -------------------
