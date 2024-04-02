@@ -23,14 +23,14 @@ import pytest
 from msgspec import Struct
 from typing_extensions import Annotated, TypeAlias
 
-from litestar import Controller, MediaType, get
+from litestar import Controller, MediaType, get, post
 from litestar._openapi.schema_generation.plugins import openapi_schema_plugins
 from litestar._openapi.schema_generation.schema import (
     KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP,
     SchemaCreator,
 )
 from litestar._openapi.schema_generation.utils import _get_normalized_schema_key, _type_or_first_not_none_inner_type
-from litestar.app import DEFAULT_OPENAPI_CONFIG
+from litestar.app import DEFAULT_OPENAPI_CONFIG, Litestar
 from litestar.di import Provide
 from litestar.enums import ParamType
 from litestar.openapi.spec import ExternalDocumentation, OpenAPIType, Reference
@@ -570,3 +570,19 @@ def test_default_not_provided_for_kwarg_but_for_field() -> None:
     schema = get_schema_for_field_definition(field_definition)
 
     assert schema.default == 10
+
+
+def test_routes_with_different_path_param_types_get_merged() -> None:
+    @get("/{param:int}")
+    async def get_handler(param: int) -> None:
+        pass
+
+    @post("/{param:str}")
+    async def post_handler(param: str) -> None:
+        pass
+
+    app = Litestar([get_handler, post_handler])
+    assert app.openapi_schema.paths
+    paths = app.openapi_schema.paths["/{param}"]
+    assert paths.get is not None
+    assert paths.post is not None

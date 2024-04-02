@@ -3,8 +3,6 @@ from __future__ import annotations
 from functools import cached_property
 from typing import TYPE_CHECKING, Any, Callable, Literal
 
-from yaml import dump as dump_yaml
-
 from litestar.constants import OPENAPI_JSON_HANDLER_NAME, OPENAPI_NOT_INITIALIZED
 from litestar.controller import Controller
 from litestar.enums import MediaType, OpenAPIMediaType
@@ -166,6 +164,8 @@ class OpenAPIController(Controller):
         Returns:
             A Response instance with the YAML object rendered into a string.
         """
+        from yaml import dump as dump_yaml
+
         if self.should_serve_endpoint(request):
             if not self._dumped_json_schema:
                 schema_json = decode_json(self._get_schema_as_json(request))

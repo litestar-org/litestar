@@ -5,7 +5,7 @@
 groups = ["default", "standard", "jwt", "pydantic", "cli", "picologging", "dev-contrib", "piccolo", "prometheus", "dev", "mako", "test", "brotli", "cryptography", "linting", "attrs", "opentelemetry", "docs", "redis", "sqlalchemy", "full", "annotated-types", "jinja", "structlog", "minijinja"]
 strategy = ["cross_platform"]
 lock_version = "4.4.1"
-content_hash = "sha256:b8bd4e90f7c2d49ae6f87b84fb7cc6dc32654ef014fe8393d158b51f73f520d7"
+content_hash = "sha256:02bff62494e760a50a2236bd0c520d6cd1dba6ff8b35570835f5761f1c9b6db0"
 
 [[package]]
 name = "accessible-pygments"
@@ -993,7 +993,7 @@ files = [
 name = "domdf-python-tools"
 version = "3.8.0.post2"
 requires_python = ">=3.6"
-summary = "Helpful functions for Python 🐍 🛠️"
+summary = "Helpful functions for Python 🐍 🛠️"
 dependencies = [
     "importlib-metadata>=3.6.0; python_version < \"3.9\"",
     "natsort>=7.0.1",
@@ -2867,15 +2867,16 @@ files = [
 ]
 
 [[package]]
-name = "pytest-lazy-fixture"
-version = "0.6.3"
-summary = "It helps to use fixtures in pytest.mark.parametrize"
+name = "pytest-lazy-fixtures"
+version = "1.0.7"
+requires_python = ">=3.8,<4.0"
+summary = "Allows you to use fixtures in @pytest.mark.parametrize."
 dependencies = [
-    "pytest>=3.2.5",
+    "pytest>=7",
 ]
 files = [
-    {file = "pytest-lazy-fixture-0.6.3.tar.gz", hash = "sha256:0e7d0c7f74ba33e6e80905e9bfd81f9d15ef9a790de97993e34213deb5ad10ac"},
-    {file = "pytest_lazy_fixture-0.6.3-py3-none-any.whl", hash = "sha256:e0b379f38299ff27a653f03eaa69b08a6fd4484e46fd1c9907d984b9f9daeda6"},
+    {file = "pytest_lazy_fixtures-1.0.7-py3-none-any.whl", hash = "sha256:71428385b166cdb0fa3f2a3c72b5a5f95fa58f977816877b9b9c1e857143e194"},
+    {file = "pytest_lazy_fixtures-1.0.7.tar.gz", hash = "sha256:87ef7424dc0229ff9cb72d482f49b7806535c3500641f612c13ddf243c9adacb"},
 ]
 
 [[package]]
@@ -3998,16 +3999,6 @@ dependencies = [
 files = [
     {file = "types-pyOpenSSL-24.0.0.20240130.tar.gz", hash = "sha256:c812e5c1c35249f75ef5935708b2a997d62abf9745be222e5f94b9595472ab25"},
     {file = "types_pyOpenSSL-24.0.0.20240130-py3-none-any.whl", hash = "sha256:24a255458b5b8a7fca8139cf56f2a8ad5a4f1a5f711b73a5bb9cb50dc688fab5"},
-]
-
-[[package]]
-name = "types-pytest-lazy-fixture"
-version = "0.6.3.20240310"
-requires_python = ">=3.8"
-summary = "Typing stubs for pytest-lazy-fixture"
-files = [
-    {file = "types-pytest-lazy-fixture-0.6.3.20240310.tar.gz", hash = "sha256:990bb96f556369ce8e37562171e75ad52956444b5a71c85b3e7f51db4cafcc7b"},
-    {file = "types_pytest_lazy_fixture-0.6.3.20240310-py3-none-any.whl", hash = "sha256:50618fba86e576e72cb3c200d940ad6d2a899c3493239806b907a964fbb527c6"},
 ]
 
 [[package]]

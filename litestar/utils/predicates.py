@@ -34,7 +34,6 @@ from typing_extensions import (
 )
 
 from litestar.constants import UNDEFINED_SENTINELS
-from litestar.types import Empty
 from litestar.types.builtin_types import NoneType, UnionTypes
 from litestar.utils.deprecation import warn_deprecation
 from litestar.utils.helpers import unwrap_partial
@@ -44,16 +43,11 @@ if TYPE_CHECKING:
     from litestar.types.callable_types import AnyGenerator
     from litestar.types.protocols import DataclassProtocol
 
-try:
-    import attrs
-except ImportError:
-    attrs = Empty  # type: ignore[assignment]
 
 __all__ = (
     "is_annotated_type",
     "is_any",
     "is_async_callable",
-    "is_attrs_class",
     "is_class_and_subclass",
     "is_class_var",
     "is_dataclass_class",
@@ -260,18 +254,6 @@ def is_optional_union(annotation: Any) -> TypeGuard[Any | None]:
     return origin is Optional or (
         get_origin_or_inner_type(annotation) in UnionTypes and NoneType in get_args(annotation)
     )
-
-
-def is_attrs_class(annotation: Any) -> TypeGuard[type[attrs.AttrsInstance]]:  # pyright: ignore
-    """Given a type annotation determine if the annotation is a class that includes an attrs attribute.
-
-    Args:
-        annotation: A type.
-
-    Returns:
-        A typeguard determining whether the type is an attrs class.
-    """
-    return attrs.has(annotation) if attrs is not Empty else False  # type: ignore[comparison-overlap]
 
 
 def is_class_var(annotation: Any) -> bool:
