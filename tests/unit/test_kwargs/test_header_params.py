@@ -14,11 +14,16 @@ from litestar.testing import create_test_client
         (str, {"special-header": "123"}, Parameter(header="special-header", min_length=1, max_length=3), False),
         (str, {"special-header": "123"}, Parameter(header="special-header", min_length=1, max_length=2), True),
         (str, {}, Parameter(header="special-header", min_length=1, max_length=2), True),
-        (Optional[str], {}, Parameter(header="special-header", min_length=1, max_length=2, required=False), False),
+        (
+            Optional[str],
+            {},
+            Parameter(header="special-header", min_length=1, max_length=2, required=False, default=None),
+            False,
+        ),
         (int, {"special-header": "123"}, Parameter(header="special-header", ge=100, le=201), False),
         (int, {"special-header": "123"}, Parameter(header="special-header", ge=100, le=120), True),
         (int, {}, Parameter(header="special-header", ge=100, le=120), True),
-        (Optional[int], {}, Parameter(header="special-header", ge=100, le=120, required=False), False),
+        (Optional[int], {}, Parameter(header="special-header", ge=100, le=120, required=False, default=None), False),
     ],
 )
 def test_header_params(
