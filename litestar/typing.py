@@ -521,14 +521,6 @@ class FieldDefinition:
                 metadata = tuple(v for v in metadata if not isinstance(v, (KwargDefinition, DependencyKwarg)))
             elif (extra := kwargs.get("extra", {})) and "kwarg_definition" in extra:
                 kwargs["kwarg_definition"] = extra.pop("kwarg_definition")
-            else:
-                kwargs["kwarg_definition"], kwargs["extra"] = cls._extract_metadata(
-                    annotation=annotation,
-                    name=kwargs.get("name", ""),
-                    default=kwargs.get("default", Empty),
-                    metadata=metadata,
-                    extra=kwargs.get("extra"),
-                )
 
         kwargs.setdefault("annotation", unwrapped)
         kwargs.setdefault("args", args)

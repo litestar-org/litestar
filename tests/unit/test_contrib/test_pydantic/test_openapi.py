@@ -319,7 +319,7 @@ def test_create_date_constrained_field_schema_pydantic_v2(annotation: Any) -> No
     ],
 )
 def test_create_constrained_field_schema(annotation: Any) -> None:
-    schema = SchemaCreator().for_constrained_field(FieldDefinition.from_annotation(annotation))
+    schema = SchemaCreator(plugins=[PydanticSchemaPlugin()]).for_field_definition(FieldDefinition.from_annotation(annotation))
     assert schema
 
 
@@ -515,7 +515,7 @@ def test_create_schema_for_field_v1() -> None:
         value: str = pydantic_v1.Field(
             title="title",
             description="description",
-            example="example",
+            examples=["example"],
             max_length=16,  # pyright: ignore
         )
 
@@ -536,7 +536,7 @@ def test_create_schema_for_field_v1() -> None:
 def test_create_schema_for_field_v2() -> None:
     class Model(pydantic_v2.BaseModel):
         value: str = pydantic_v2.Field(
-            title="title", description="description", max_length=16, json_schema_extra={"example": "example"}
+            title="title", description="description", max_length=16, json_schema_extra={"examples": ["example"]}
         )
 
     schema = get_schema_for_field_definition(

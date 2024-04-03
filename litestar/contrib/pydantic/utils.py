@@ -3,8 +3,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from annotated_types import BaseMetadata
 from typing_extensions import Annotated, get_type_hints
 
+from litestar.openapi.spec.example import Example
 from litestar.params import KwargDefinition
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
@@ -212,3 +214,58 @@ def create_field_definitions_for_computed_fields(
         )
         for k, dec in pydantic_decorators.computed_fields.items()
     }
+
+
+def kwarg_definition_for_field_info_v1(field_info: pydantic_v1.fields.FieldInfo) -> KwargDefinition | None:
+    extra = field_info.extra
+    kws = {
+        k: val
+        for k in (
+            "example",
+            "examples",
+            "title",
+            "description",
+            "const",
+            "gt",
+            "ge",
+            "lt",
+            "le",
+            "multiple_of",
+            "min_items",
+            "max_items",
+            "min_length",
+            "max_length",
+            "pattern",
+        )
+        if (val := getattr(field_info, k, extra.get(k)))
+    }
+
+    if "example" in kws:
+        examples = kws.setdefault("examples", [])
+        examples.append(kws.pop("example"))
+
+    if "examples" in kws:
+        kws["examples"] = [Example(value=val) for val in kws["examples"]]
+
+    return KwargDefinition(**kws) if kws else None
+
+
+def kwarg_definition_for_field_info_v2(field_info: pydantic_v2.fields.FieldInfo) -> KwargDefinition | None:
+    meta_kws: dict[Any, Any] = {
+        k: val for k in ("title", "description", "examples") if (val := getattr(field_info, k, None))
+    }
+
+    for meta_item in (item for item in field_info.metadata if isinstance(item, BaseMetadata)):
+        meta_kws.update(vars(meta_item))
+
+    if field_info.json_schema_extra is not None:
+        meta_kws.update(field_info.json_schema_extra)
+
+    if "example" in meta_kws:
+        examples = meta_kws.setdefault("examples", [])
+        examples.append(meta_kws.pop("example"))
+
+    if "examples" in meta_kws:
+        meta_kws["examples"] = [Example(value=val) for val in meta_kws["examples"]]
+
+    return KwargDefinition(**meta_kws) if meta_kws else None

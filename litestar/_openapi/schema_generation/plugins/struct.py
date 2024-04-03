@@ -8,6 +8,7 @@ from msgspec.structs import fields
 from litestar.plugins import OpenAPISchemaPlugin
 from litestar.types.empty import Empty
 from litestar.typing import FieldDefinition
+from litestar.utils.msgspec import create_kwarg_definition_for_meta, get_meta_from_field_definition
 from litestar.utils.predicates import is_optional_union
 
 if TYPE_CHECKING:
@@ -38,7 +39,20 @@ class StructSchemaPlugin(OpenAPISchemaPlugin):
                 ]
             ),
             property_fields={
-                field.encode_name: FieldDefinition.from_kwarg(type_hints[field.name], field.encode_name)
+                field.encode_name: FieldDefinition.from_kwarg(
+                    type_hints[field.name],
+                    field.encode_name,
+                    default=field.default if field.default not in {msgspec.NODEFAULT, msgspec.UNSET} else Empty,
+                    kwarg_definition=(
+                        create_kwarg_definition_for_meta(meta)
+                        if (
+                            meta := get_meta_from_field_definition(
+                                FieldDefinition.from_annotation(type_hints[field.name])
+                            )
+                        )
+                        else None
+                    ),
+                )
                 for field in struct_fields
             },
         )

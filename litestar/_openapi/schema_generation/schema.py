@@ -500,8 +500,10 @@ class SchemaCreator:
         return schema
 
     def for_constrained_field(self, field: FieldDefinition) -> Schema:
-        """Create Schema for Pydantic Constrained fields (created using constr(), conint() and so forth, or by subclassing
-        Constrained*)
+        """Create Schema for constrained fields.
+
+        A constrained field is a field that has OpenAPI constraints defined on it, such as `min_length`, `max_length`,
+        etc.
 
         Args:
             field: A signature field instance.
@@ -510,11 +512,11 @@ class SchemaCreator:
             A schema instance.
         """
         kwarg_definition = cast(Union[ParameterKwarg, BodyKwarg], field.kwarg_definition)
-        if any(is_class_and_subclass(field.annotation, t) for t in (int, float, Decimal)):
+        if field.is_subclass_of((int, float, Decimal)):
             return create_numerical_constrained_field_schema(field.annotation, kwarg_definition)
-        if any(is_class_and_subclass(field.annotation, t) for t in (str, bytes)):  # type: ignore[arg-type]
+        if field.is_subclass_of((str, bytes)):
             return create_string_constrained_field_schema(field.annotation, kwarg_definition)
-        if any(is_class_and_subclass(field.annotation, t) for t in (date, datetime)):
+        if field.is_subclass_of((date, datetime)):
             return create_date_constrained_field_schema(field.annotation, kwarg_definition)
         return self.for_collection_constrained_field(field)
 

@@ -1,11 +1,15 @@
 from __future__ import annotations
 
 from dataclasses import replace
-from typing import TYPE_CHECKING, Collection, Generic, TypeVar
+from typing import TYPE_CHECKING, Generic, TypeVar
 
 from typing_extensions import TypeAlias, override
 
-from litestar.contrib.pydantic.utils import is_pydantic_undefined
+from litestar.contrib.pydantic.utils import (
+    is_pydantic_undefined,
+    kwarg_definition_for_field_info_v1,
+    kwarg_definition_for_field_info_v2,
+)
 from litestar.dto.base_dto import AbstractDTO
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.dto.field import DTO_FIELD_META_KEY, DTOField
@@ -13,7 +17,7 @@ from litestar.exceptions import MissingDependencyException, ValidationException
 from litestar.types.empty import Empty
 
 if TYPE_CHECKING:
-    from typing import Any, Generator
+    from typing import Any, Collection, Generator
 
     from litestar.typing import FieldDefinition
 
@@ -81,7 +85,19 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
 
         for field_name, field_info in model_fields.items():
             field_definition = model_field_definitions[field_name]
-            dto_field = (field_definition.extra or {}).pop(DTO_FIELD_META_KEY, DTOField())
+
+            try:
+                extra = field_info.extra
+            except AttributeError:
+                extra = field_info.json_schema_extra
+            extra = extra or {}
+
+            dto_field = extra.pop(DTO_FIELD_META_KEY, DTOField())
+
+            if isinstance(field_info, pydantic_v1.fields.FieldInfo):
+                kwarg_definition = kwarg_definition_for_field_info_v1(field_info)
+            else:
+                kwarg_definition = kwarg_definition_for_field_info_v2(field_info)
 
             if not is_pydantic_undefined(field_info.default):
                 default = field_info.default
@@ -101,6 +117,7 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
                 ),
                 default=default,
                 name=field_name,
+                kwarg_definition=kwarg_definition,
             )
 
     @classmethod

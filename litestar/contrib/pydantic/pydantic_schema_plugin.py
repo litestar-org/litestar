@@ -10,6 +10,8 @@ from litestar.contrib.pydantic.utils import (
     is_pydantic_constrained_field,
     is_pydantic_model_class,
     is_pydantic_undefined,
+    kwarg_definition_for_field_info_v1,
+    kwarg_definition_for_field_info_v2,
     pydantic_get_type_hints_with_generics_resolved,
     pydantic_unwrap_and_get_origin,
 )
@@ -208,6 +210,9 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
     def __init__(self, prefer_alias: bool = False) -> None:
         self.prefer_alias = prefer_alias
 
+    def is_plugin_supported_field(self, field_definition: FieldDefinition) -> bool:
+        return self.is_plugin_supported_type(field_definition.annotation) or self.is_constrained_field(field_definition)
+
     @staticmethod
     def is_plugin_supported_type(value: Any) -> bool:
         return isinstance(value, _supported_types) or is_class_and_subclass(value, _supported_types)  # type: ignore[arg-type]
@@ -232,8 +237,13 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
         """
         if schema_creator.prefer_alias != self.prefer_alias:
             schema_creator.prefer_alias = True
+
+        if self.is_constrained_field(field_definition):
+            return schema_creator.for_constrained_field(field_definition)
+
         if is_pydantic_model_class(field_definition.annotation):
             return self.for_pydantic_model(field_definition=field_definition, schema_creator=schema_creator)
+
         return PYDANTIC_TYPE_MAP[field_definition.annotation]  # pragma: no cover
 
     @classmethod
@@ -294,11 +304,18 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
 
         property_fields = {
             field_info.alias if field_info.alias and schema_creator.prefer_alias else k: FieldDefinition.from_kwarg(
-                annotation=Annotated[model_annotations[k], field_info, field_info.metadata]  # type: ignore[union-attr]
-                if is_v2_model
-                else Annotated[model_annotations[k], field_info],  # pyright: ignore
+                annotation=(
+                    Annotated[model_annotations[k], field_info, field_info.metadata]  # type: ignore[union-attr]
+                    if is_v2_model
+                    else Annotated[model_annotations[k], field_info]  # pyright: ignore
+                ),
                 name=field_info.alias if field_info.alias and schema_creator.prefer_alias else k,
                 default=Empty if schema_creator.is_undefined(field_info.default) else field_info.default,
+                kwarg_definition=(
+                    kwarg_definition_for_field_info_v2(field_info)
+                    if is_v2_model
+                    else kwarg_definition_for_field_info_v1(field_info)
+                ),
             )
             for k, field_info in model_fields.items()
         }
