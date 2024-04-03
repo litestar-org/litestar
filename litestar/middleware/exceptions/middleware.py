@@ -253,6 +253,7 @@ class ExceptionHandlerMiddleware:
         """
 
         headers = Headers.from_scope(scope=scope)
+        # TODO: make cors middleware outermost middleware
         if litestar_app.cors_config and (origin := headers.get("origin")):
             cors_middleware = CORSMiddleware(app=self.app, config=litestar_app.cors_config)
             send = cors_middleware.send_wrapper(send=send, origin=origin, has_cookie="cookie" in headers)
