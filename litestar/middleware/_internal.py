@@ -2,13 +2,18 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from litestar.constants import DEFAULT_ALLOWED_CORS_HEADERS
 from litestar.datastructures import Headers, MutableScopeHeaders
-from litestar.enums import ScopeType
+from litestar.enums import HttpMethod, MediaType, ScopeType
 from litestar.middleware.base import AbstractMiddleware
+from litestar.response import Response
+from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_400_BAD_REQUEST
 
 if TYPE_CHECKING:
     from litestar.config.cors import CORSConfig
     from litestar.types import ASGIApp, Message, Receive, Scope, Send
+
+__all__ = ("CORSMiddleware",)
 
 
 class CORSMiddleware(AbstractMiddleware):
@@ -36,7 +41,15 @@ class CORSMiddleware(AbstractMiddleware):
             None
         """
         headers = Headers.from_scope(scope=scope)
-        if origin := headers.get("origin"):
+        origin = headers.get("origin")
+
+        if scope["type"] == ScopeType.HTTP and scope["method"] == HttpMethod.OPTIONS and origin:
+            request = scope["app"].request_class(scope=scope, receive=receive, send=send)
+            asgi_response = self._create_preflight_response(origin=origin, request_headers=headers).to_asgi_response(
+                app=None, request=request
+            )
+            await asgi_response(scope, receive, send)
+        elif origin:
             await self.app(scope, receive, self.send_wrapper(send=send, origin=origin, has_cookie="cookie" in headers))
         else:
             await self.app(scope, receive, send)
@@ -65,15 +78,55 @@ class CORSMiddleware(AbstractMiddleware):
                     headers["Access-Control-Allow-Origin"] = origin
                     headers["Vary"] = "Origin"
 
-                # We don't want to overwrite this for preflight requests.
-                allow_headers = headers.get("Access-Control-Allow-Headers")
-                if not allow_headers and self.config.allow_headers:
-                    headers["Access-Control-Allow-Headers"] = ", ".join(sorted(set(self.config.allow_headers)))
+                headers["Access-Control-Allow-Headers"] = ", ".join(sorted(set(self.config.allow_headers)))
 
-                allow_methods = headers.get("Access-Control-Allow-Methods")
-                if not allow_methods and self.config.allow_methods:
-                    headers["Access-Control-Allow-Methods"] = ", ".join(sorted(set(self.config.allow_methods)))
+                headers["Access-Control-Allow-Methods"] = ", ".join(sorted(set(self.config.allow_methods)))
 
             await send(message)
 
         return wrapped_send
+
+    def _create_preflight_response(self, origin: str, request_headers: Headers) -> Response[str | None]:
+        pre_flight_method = request_headers.get("Access-Control-Request-Method")
+        failures = []
+
+        if not self.config.is_allow_all_methods and (
+            pre_flight_method and pre_flight_method not in self.config.allow_methods
+        ):
+            failures.append("method")
+
+        response_headers = self.config.preflight_headers.copy()
+
+        if not self.config.is_origin_allowed(origin):
+            failures.append("Origin")
+        elif response_headers.get("Access-Control-Allow-Origin") != "*":
+            response_headers["Access-Control-Allow-Origin"] = origin
+
+        pre_flight_requested_headers = [
+            header.strip()
+            for header in request_headers.get("Access-Control-Request-Headers", "").split(",")
+            if header.strip()
+        ]
+
+        if pre_flight_requested_headers:
+            if self.config.is_allow_all_headers:
+                response_headers["Access-Control-Allow-Headers"] = ", ".join(
+                    sorted(set(pre_flight_requested_headers) | DEFAULT_ALLOWED_CORS_HEADERS)  # pyright: ignore
+                )
+            elif any(header.lower() not in self.config.allow_headers for header in pre_flight_requested_headers):
+                failures.append("headers")
+
+        return (
+            Response(
+                content=f"Disallowed CORS {', '.join(failures)}",
+                status_code=HTTP_400_BAD_REQUEST,
+                media_type=MediaType.TEXT,
+            )
+            if failures
+            else Response(
+                content=None,
+                status_code=HTTP_204_NO_CONTENT,
+                media_type=MediaType.TEXT,
+                headers=response_headers,
+            )
+        )
