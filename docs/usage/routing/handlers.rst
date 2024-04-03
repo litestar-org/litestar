@@ -136,8 +136,10 @@ For example:
 Type annotations
 ----------------
 
-Litestar enforces strict type annotations. Functions decorated by a route handler **must** have all their
-:term:`arguments <argument>` and return value type annotated.
+Litestar enforces strict :term:`type annotations <annotation>`.
+Functions decorated by a route handler **must** have all their :term:`arguments <argument>` and return
+value type annotated.
+
 If a type annotation is missing, an :exc:`~.exceptions.ImproperlyConfiguredException` will be raised during the
 application boot-up process.
 
