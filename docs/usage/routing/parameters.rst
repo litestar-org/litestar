@@ -28,17 +28,13 @@ Currently, the following types are supported:
 * ``date``: Accepts date strings and time stamps.
 * ``datetime``: Accepts date-time strings and time stamps.
 * ``decimal``: Accepts decimal values and floats.
-* ``float``: Accepts ints and floats.
-* ``int``: Accepts ints and floats.
-* ``path``: Accepts valid POSIX paths.
-* ``str``: Accepts all string values.
-* ``time``: Accepts time strings with optional timezone compatible with pydantic formats.
-* ``timedelta``: Accepts duration strings compatible with the pydantic formats.
-* ``uuid``: Accepts all uuid values.
 * :class:`float`: Accepts ints and floats.
 * :class:`int`: Accepts ints and floats.
 * :class:`path`: Accepts valid POSIX paths.
 * :class:`str`: Accepts all string values.
+* ``time``: Accepts time strings with optional timezone compatible with pydantic formats.
+* ``timedelta``: Accepts duration strings compatible with the pydantic formats.
+* ``uuid``: Accepts all uuid values.
 
 The types declared in the path :term:`parameter` and the function do not need to match 1:1 - as long as
 parameter inside the function declaration is typed with a "higher" type to which the lower type can be coerced,
