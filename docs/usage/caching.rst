@@ -48,7 +48,7 @@ sentinel instead:
     from litestar.config.response_cache import CACHE_FOREVER
 
 
-    @get("/cached-path", cache=CACHE_FOREVER)  # seconds
+    @get("/cached-path", cache=CACHE_FOREVER)
     def my_cached_handler() -> str: ...
 
 Configuration
