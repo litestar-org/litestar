@@ -225,7 +225,7 @@ Layered architecture
 
 Litestar has a layered architecture compromising of 4 layers:
 
-#. The application object :class:`The application object <litestar.app.Litestar>`
+#. :class:`The application object <litestar.app.Litestar>`
 #. :class:`Routers <.router.Router>`
 #. :class:`Controllers <.controller.Controller>`
 #. :class:`Handlers <.handlers.BaseRouteHandler>`
