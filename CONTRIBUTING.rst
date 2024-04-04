@@ -35,25 +35,49 @@ the environment will bootstrap itself automatically. The steps below are for loc
    and install the required development dependencies or run the PDM installation command manually:
 
    .. code-block:: shell
-      :caption: Installing the documentation dependencies
+        :caption: Installing the documentation dependencies
 
-      pdm install
+        pdm install
 
 #. If you're working on the documentation and need to build it locally, install the extra dependencies with
    ``make docs-install`` or:
 
    .. code-block:: shell
-      :caption: Installing the documentation dependencies
+        :caption: Installing the documentation dependencies
 
-      pdm install -G:docs
+        pdm install -G:docs
 
-#. Install `pre-commit <https://pre-commit.com/>`_
+#. Install `pre-commit <https://pre-commit.com/>`_:
+
+   .. tab-set::
+
+        .. tab-item:: pip
+
+            .. code-block:: bash
+                :caption: Using pip
+
+                python3 -m pip install pre-commit
+
+        .. tab-item:: pipx
+
+            .. code-block:: bash
+                :caption: Using `pipx <https://pypa.github.io/pipx/>`_
+
+                pipx install pre-commit
+
+        .. tab-item:: Homebrew
+
+            .. code-block:: bash
+                :caption: Using `Homebrew <https://brew.sh/>`_
+
+                brew install pre-commit
+
 #. Install our pre-commit hooks. by running ``make install`` or:
 
    .. code-block:: shell
-      :caption: Installing pre-commit hooks
+        :caption: Installing pre-commit hooks
 
-      pre-commit install --install-hooks
+        pre-commit install --install-hooks
 
 .. tip:: Many modern IDEs like PyCharm or VS Code will enable the PDM-managed virtualenv that is created in step 2
    for you automatically.
