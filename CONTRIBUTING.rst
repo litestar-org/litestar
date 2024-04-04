@@ -93,7 +93,7 @@ the environment will bootstrap itself automatically. The steps below are for loc
 
                 python3 -m pip install pre-commit
 
-        .. tab-item:: pipx`
+        .. tab-item:: pipx
             :sync: pipx
 
             .. code-block:: bash
