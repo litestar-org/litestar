@@ -46,6 +46,11 @@ repos:
     rev: "v0.9.1"
     hooks:
       - id: sphinx-lint
+  - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
+    rev: v2.13.0
+    hooks:
+      - id: pretty-format-toml
+        args: [--autofix]
   - repo: local
     hooks:
       - id: pypi-readme
