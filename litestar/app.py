@@ -198,6 +198,7 @@ class Litestar(Router):
         openapi_config: OpenAPIConfig | None = DEFAULT_OPENAPI_CONFIG,
         opt: Mapping[str, Any] | None = None,
         parameters: ParametersMap | None = None,
+        path: str | None = None,
         plugins: Sequence[PluginProtocol] | None = None,
         request_class: type[Request] | None = None,
         response_cache_config: ResponseCacheConfig | None = None,
@@ -277,6 +278,8 @@ class Litestar(Router):
                 :class:`ASGI Scope <.types.Scope>`.
             parameters: A mapping of :class:`Parameter <.params.Parameter>` definitions available to all application
                 paths.
+            path: A path fragment that is prefixed to all route handlers, controllers and routers associated
+                with the application instance.
             pdb_on_exception: Drop into the PDB when an exception occurs.
             plugins: Sequence of plugins.
             request_class: An optional subclass of :class:`Request <.connection.Request>` to use for http connections.
@@ -350,6 +353,7 @@ class Litestar(Router):
             on_startup=list(on_startup or []),
             openapi_config=openapi_config,
             opt=dict(opt or {}),
+            path=path or "",
             parameters=parameters or {},
             pdb_on_exception=pdb_on_exception,
             plugins=self._get_default_plugins(list(plugins or [])),
@@ -455,7 +459,7 @@ class Litestar(Router):
             middleware=config.middleware,
             opt=config.opt,
             parameters=config.parameters,
-            path="",
+            path=config.path,
             request_class=self.request_class,
             response_class=config.response_class,
             response_cookies=config.response_cookies,
