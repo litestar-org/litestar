@@ -223,7 +223,7 @@ develop third-party application configuration systems.
 Layered architecture
 --------------------
 
-Litestar has a layered architecture compromising of (generally speaking) 4 layers:
+Litestar has a layered architecture compromising of 4 layers:
 
 #. The application object :class:`The application object <litestar.app.Litestar>`
 #. :class:`Routers <.router.Router>`
