@@ -31,12 +31,29 @@ If you are utilizing `GitHub Codespaces <https://codespaces.new/litestar-org/lit
 the environment will bootstrap itself automatically. The steps below are for local development.
 
 #. Install `PDM <https://pdm.fming.dev/latest/>`_
-#. Run ``pdm install`` or ``make install`` to create a
-   `virtual environment <https://docs.python.org/3/tutorial/venv.html>`_ and install the required development dependencies
-#. If you're working on the documentation and need to build it locally, install the extra dependencies
-   with ``pdm install -G:docs`` or ``make docs-install``
+#. Run ``make install`` to create a `virtual environment <https://docs.python.org/3/tutorial/venv.html>`_
+   and install the required development dependencies or run the PDM installation command manually:
+
+   .. code-block:: shell
+      :caption: Installing the documentation dependencies
+
+      pdm install
+
+#. If you're working on the documentation and need to build it locally, install the extra dependencies with
+   ``make docs-install`` or:
+
+   .. code-block:: shell
+      :caption: Installing the documentation dependencies
+
+      pdm install -G:docs
+
 #. Install `pre-commit <https://pre-commit.com/>`_
-#. Run ``pre-commit install --install-hooks`` or ``make install`` to install pre-commit hooks
+#. Install our pre-commit hooks. by running ``make install`` or:
+
+   .. code-block:: shell
+      :caption: Installing pre-commit hooks
+
+      pre-commit install --install-hooks
 
 .. tip:: Many modern IDEs like PyCharm or VS Code will enable the PDM-managed virtualenv that is created in step 2
    for you automatically.
