@@ -93,7 +93,7 @@ On the other hand, the shutdown hooks are invoked in their specified order.
 Using Application State
 -----------------------
 
-As seen in the examples for the `on_startup / on_shutdown <Startup and Shutdown>`, :term:`callables <python:callable>`
+As seen in the examples for the `on_startup / on_shutdown <#startup-and-shutdown>`_, :term:`callables <python:callable>`
 passed to these hooks can receive an optional :term:`kwarg <argument>` called ``app``, through which the application's
 state object and other properties can be accessed. The advantage of using application :paramref:`~.app.Litestar.state`,
 is that it can be accessed during multiple stages of the connection, and it can be injected into dependencies and
