@@ -1,6 +1,13 @@
 Contribution Guide
 ==================
 
+.. _pipx: https://pypa.github.io/pipx/
+.. |pipx| replace:: `pipx <https://pypa.github.io/pipx/>`__
+
+.. _homebrew: https://brew.sh/
+.. |homebrew| replace:: `Homebrew <https://brew.sh/>`__
+
+
 Getting Started
 ---------------
 
@@ -46,7 +53,7 @@ the environment will bootstrap itself automatically. The steps below are for loc
             :sync: pipx
 
             .. code-block:: bash
-                :caption: Using `pipx <https://pypa.github.io/pipx/>`_
+                :caption: Using |pipx|
 
                 pipx install pdm
 
@@ -54,7 +61,7 @@ the environment will bootstrap itself automatically. The steps below are for loc
             :sync: homebrew
 
             .. code-block:: bash
-                :caption: Using `Homebrew <https://brew.sh/>`_
+                :caption: Using |homebrew|
 
                 brew install pdm
 
@@ -86,11 +93,11 @@ the environment will bootstrap itself automatically. The steps below are for loc
 
                 python3 -m pip install pre-commit
 
-        .. tab-item:: pipx
+        .. tab-item:: pipx`
             :sync: pipx
 
             .. code-block:: bash
-                :caption: Using `pipx <https://pypa.github.io/pipx/>`_
+                :caption: Using |pipx|
 
                 pipx install pre-commit
 
@@ -98,7 +105,7 @@ the environment will bootstrap itself automatically. The steps below are for loc
             :sync: homebrew
 
             .. code-block:: bash
-                :caption: Using `Homebrew <https://brew.sh/>`_
+                :caption: Using |homebrew|
 
                 brew install pre-commit
 
