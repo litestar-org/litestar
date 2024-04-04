@@ -301,7 +301,7 @@ Creating a New Release
 
         git commit -am "Prepare release vX.Y.Z"
 
-    Replace ``vX.Y.Z`` with the actual version number.
+   Replace ``vX.Y.Z`` with the actual version number.
 
 #. Create a new branch for the release:
 
