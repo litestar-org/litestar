@@ -30,7 +30,31 @@ Setting up the environment
 If you are utilizing `GitHub Codespaces <https://codespaces.new/litestar-org/litestar?quickstart=1>`_,
 the environment will bootstrap itself automatically. The steps below are for local development.
 
-#. Install `PDM <https://pdm.fming.dev/latest/>`_
+#. Install `PDM <https://pdm.fming.dev/latest/>`_:
+
+   .. tab-set::
+
+        .. tab-item:: Makefile
+
+            .. code-block:: bash
+                :caption: Using our Make target to install PDM
+
+                make install-pdm
+
+        .. tab-item:: pipx
+
+            .. code-block:: bash
+                :caption: Using `pipx <https://pypa.github.io/pipx/>`_
+
+                pipx install pdm
+
+        .. tab-item:: Homebrew
+
+            .. code-block:: bash
+                :caption: Using `Homebrew <https://brew.sh/>`_
+
+                brew install pdm
+
 #. Run ``make install`` to create a `virtual environment <https://docs.python.org/3/tutorial/venv.html>`_
    and install the required development dependencies or run the PDM installation command manually:
 
