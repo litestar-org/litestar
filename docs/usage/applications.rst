@@ -123,7 +123,7 @@ of the application, as seen below:
 Initializing Application State
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To seed application state, you can pass a :class:`.datastructures.state.State` object to the
+To seed application state, you can pass a :class:`~.datastructures.state.State` object to the
 :paramref:`~.app.Litestar.state` parameter of the Litestar constructor:
 
 .. literalinclude:: /examples/application_state/passing_initial_state.py
