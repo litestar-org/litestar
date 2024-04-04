@@ -155,7 +155,7 @@ by specifying ``state`` as a kwarg to the handler or dependency function. For ex
 
 When using this pattern you can specify the class to use for the state object. This type is not merely for type
 checkers, rather Litestar will instantiate a new ``state`` instance based on the type you set there.
-This allows users to use custom classes for :class:`~.datastructures.state.State`, e.g.:
+This allows users to use custom classes for :class:`~.datastructures.state.State`.
 
 While this is very powerful, it might encourage users to follow anti-patterns: it is important to emphasize that using
 state can lead to code that is hard to reason about and bugs that are difficult to understand, due to changes in
