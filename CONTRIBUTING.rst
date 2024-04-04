@@ -299,7 +299,7 @@ Creating a New Release
    .. code-block:: shell
         :caption: Committing the changes to the main branch
 
-        git commit -am "Prepare release vX.Y.Z"
+        git commit -am "chore(release): prepare release vX.Y.Z"
 
    Replace ``vX.Y.Z`` with the actual version number.
 
