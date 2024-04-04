@@ -35,6 +35,7 @@ the environment will bootstrap itself automatically. The steps below are for loc
    .. tab-set::
 
         .. tab-item:: Makefile
+            :sync: makefile
 
             .. code-block:: bash
                 :caption: Using our Make target to install PDM
@@ -42,6 +43,7 @@ the environment will bootstrap itself automatically. The steps below are for loc
                 make install-pdm
 
         .. tab-item:: pipx
+            :sync: pipx
 
             .. code-block:: bash
                 :caption: Using `pipx <https://pypa.github.io/pipx/>`_
@@ -49,6 +51,7 @@ the environment will bootstrap itself automatically. The steps below are for loc
                 pipx install pdm
 
         .. tab-item:: Homebrew
+            :sync: homebrew
 
             .. code-block:: bash
                 :caption: Using `Homebrew <https://brew.sh/>`_
@@ -76,6 +79,7 @@ the environment will bootstrap itself automatically. The steps below are for loc
    .. tab-set::
 
         .. tab-item:: pip
+            :sync: pip
 
             .. code-block:: bash
                 :caption: Using pip
@@ -83,6 +87,7 @@ the environment will bootstrap itself automatically. The steps below are for loc
                 python3 -m pip install pre-commit
 
         .. tab-item:: pipx
+            :sync: pipx
 
             .. code-block:: bash
                 :caption: Using `pipx <https://pypa.github.io/pipx/>`_
@@ -90,6 +95,7 @@ the environment will bootstrap itself automatically. The steps below are for loc
                 pipx install pre-commit
 
         .. tab-item:: Homebrew
+            :sync: homebrew
 
             .. code-block:: bash
                 :caption: Using `Homebrew <https://brew.sh/>`_
