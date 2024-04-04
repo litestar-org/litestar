@@ -214,7 +214,7 @@ develop third-party application configuration systems.
     called within :paramref:`~litestar.app.Litestar.__init__`, outside of an async context.
 
 .. literalinclude:: /examples/application_hooks/on_app_init.py
-    :caption: After Exception Hook
+    :caption: Example usage of the ``on_app_init`` hook to modify the application configuration.
 
 .. _layered-architecture:
 
