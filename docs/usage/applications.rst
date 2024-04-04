@@ -228,8 +228,8 @@ Litestar has a layered architecture compromising of (generally speaking) 4 layer
 
 #. The application object :class:`The application object <litestar.app.Litestar>`
 #. :class:`Routers <.router.Router>`
-#. `Controllers <.controller.Controller>`
-#. `Handlers <.handlers.BaseRouteHandler>`
+#. :class:`Controllers <.controller.Controller>`
+#. :class:`Handlers <.handlers.BaseRouteHandler>`
 
 There are many :term:`parameters <parameter>` that can be defined on every layer, in which case the :term:`parameter`
 defined on the layer **closest to the handler** takes precedence. This allows for maximum
