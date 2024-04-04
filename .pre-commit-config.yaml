@@ -1,60 +1,62 @@
 default_language_version:
-  python: "3.8"
+  python: '3.8'
 repos:
-  - repo: https://github.com/compilerla/conventional-pre-commit
-    rev: v3.2.0
-    hooks:
-      - id: conventional-pre-commit
-        stages: [commit-msg]
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
-    hooks:
-      - id: check-ast
-      - id: check-case-conflict
-      - id: check-toml
-      - id: debug-statements
-        exclude: "litestar/middleware/exceptions/middleware.py"
-      - id: end-of-file-fixer
-      - id: mixed-line-ending
-      - id: trailing-whitespace
-        exclude: "tests/unit/test_openapi/test_typescript_converter/test_converter.py"
-  - repo: https://github.com/provinzkraut/unasyncd
-    rev: "v0.7.1"
-    hooks:
-      - id: unasyncd
-        additional_dependencies: ["ruff"]
-  - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.3.5"
-    hooks:
-      - id: ruff
-        args: ["--fix"]
-      - id: ruff-format
-  - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.6
-    hooks:
-      - id: codespell
-        exclude: "tests/openapi/typescript_converter/test_converter|README.md"
-        additional_dependencies:
-          - tomli
-  - repo: https://github.com/python-formate/flake8-dunder-all
-    rev: v0.4.1
-    hooks:
-      - id: ensure-dunder-all
-        exclude: "test*|examples*|tools"
-        args: ["--use-tuple"]
-  - repo: https://github.com/sphinx-contrib/sphinx-lint
-    rev: "v0.9.1"
-    hooks:
-      - id: sphinx-lint
-  - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
-    rev: v2.13.0
-    hooks:
-      - id: pretty-format-toml
-        args: [--autofix]
-  - repo: local
-    hooks:
-      - id: pypi-readme
-        name: pypi-readme
-        language: python
-        entry: python tools/pypi_readme.py
-        types: [markdown]
+- repo: https://github.com/compilerla/conventional-pre-commit
+  rev: v3.2.0
+  hooks:
+  - id: conventional-pre-commit
+    stages: [commit-msg]
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.5.0
+  hooks:
+  - id: check-ast
+  - id: check-case-conflict
+  - id: check-toml
+  - id: debug-statements
+    exclude: litestar/middleware/exceptions/middleware.py
+  - id: end-of-file-fixer
+  - id: mixed-line-ending
+  - id: trailing-whitespace
+    exclude: tests/unit/test_openapi/test_typescript_converter/test_converter.py
+- repo: https://github.com/provinzkraut/unasyncd
+  rev: v0.7.1
+  hooks:
+  - id: unasyncd
+    additional_dependencies: [ruff]
+- repo: https://github.com/charliermarsh/ruff-pre-commit
+  rev: v0.3.5
+  hooks:
+  - id: ruff
+    args: [--fix]
+  - id: ruff-format
+- repo: https://github.com/codespell-project/codespell
+  rev: v2.2.6
+  hooks:
+  - id: codespell
+    exclude: tests/openapi/typescript_converter/test_converter|README.md
+    additional_dependencies:
+    - tomli
+- repo: https://github.com/python-formate/flake8-dunder-all
+  rev: v0.4.1
+  hooks:
+  - id: ensure-dunder-all
+    exclude: test*|examples*|tools
+    args: [--use-tuple]
+- repo: https://github.com/sphinx-contrib/sphinx-lint
+  rev: v0.9.1
+  hooks:
+  - id: sphinx-lint
+- repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
+  rev: v2.13.0
+  hooks:
+  - id: pretty-format-toml
+    args: [--autofix]
+  - id: pretty-format-yaml
+    args: [--autofix]
+- repo: local
+  hooks:
+  - id: pypi-readme
+    name: pypi-readme
+    language: python
+    entry: python tools/pypi_readme.py
+    types: [markdown]
