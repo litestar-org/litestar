@@ -141,8 +141,7 @@ Injecting Application State into Route Handlers and Dependencies
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 As seen in the above example, Litestar offers an easy way to inject state into route handlers and dependencies - simply
-by specifying ``state`` as a kwarg to the handler function. In other words, you can simply do this in handler function
-or dependency to access the application state:
+by specifying ``state`` as a kwarg to the handler or dependency function. For example:
 
 .. code-block:: python
     :caption: Accessing application :class:`~.datastructures.state.State` in a handler function
