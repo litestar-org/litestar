@@ -3,6 +3,212 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.8.0
+    :date: 2024-04-05
+
+    .. change:: Unique schema names for nested models (#3134)
+        :type: bugfix
+        :pr: 3136
+        :issue: 3134
+
+        Fixes an issue where nested models beyond the ``max_nested_depth`` would not have
+        unique schema names in the OpenAPI documentation. The fix appends the nested
+        model's name to the ``unique_name`` to differentiate it from the parent model.
+
+    .. change:: Add ``path`` parameter to Litestar application class
+        :type: feature
+        :pr: 3314
+
+        Exposes :paramref:`~.app.Litestar.parameter` at :class:`~.app.Litestar` application class level
+
+    .. change:: Remove duplicate ``rich-click`` config options
+        :type: bugfix
+        :pr: 3274
+
+        Removes duplicate config options from click cli
+
+    .. change:: Fix Pydantic ``json_schema_extra`` examples.
+        :type: bugfix
+        :pr: 3281
+        :issue: 3277
+
+        Fixes a regression introduced in ``2.7.0`` where an example for a field provided in Pydantic's
+        ``Field.json_schema_extra`` would cause an error.
+
+    .. change:: Set default on schema from :class:`~.typing.FieldDefinition`
+        :type: bugfix
+        :pr: 3280
+        :issue: 3278
+
+        Consider the following:
+
+        .. code-block:: python
+
+            def get_foo(foo_id: int = 10) -> None:
+                ...
+
+        In such cases, no :class:`~.params.KwargDefinition` is created since there is no metadata provided via
+        ``Annotated``. The default is still parsed, and set on the generated ``FieldDefinition``,
+        however the ``SchemaCreator`` currently only considers defaults that are set on ``KwargDefinition``.
+
+        So in such cases, we should fallback to the default set on the ``FieldDefinition`` if there is a valid
+        default value.
+
+    .. change:: Custom types cause serialisation error in exception response with non-JSON media-type
+        :type: bugfix
+        :pr: 3284
+        :issue: 3192
+
+        Fixes a bug when using a non-JSON media type (e.g., ``text/plain``),
+        :class:`~.exceptions.http_exceptions.ValidationException`'s would not get serialized properly because they
+        would ignore custom ``type_encoders``.
+
+    .. change:: Ensure default values are always represented in schema for dataclasses and :class:`msgspec.Struct`\ s
+        :type: bugfix
+        :pr: 3285
+        :issue: 3201
+
+        Fixes a bug that would prevent default values for dataclasses and ``msgspec.Struct`` s to be included in the
+        OpenAPI schema.
+
+    .. change:: Pydantic v2 error handling/serialization when for non-Pydantic exceptions
+        :type: bugfix
+        :pr: 3286
+        :issue: 2365
+
+        Fixes a bug that would cause a :exc:`TypeError` when non-Pydantic errors are raised during Pydantic's
+        validation process while using DTOs.
+
+    .. change:: Fix OpenAPI schema generation for paths with path parameters of different types on the same path
+        :type: bugfix
+        :pr: 3293
+        :issue: 2700
+
+        Fixes a bug that would cause no OpenAPI schema to be generated for paths with path
+        parameters that only differ on the path parameter type, such as ``/{param:int}``
+        and ``/{param:str}``. This was caused by an internal representation issue in
+        Litestar's routing system.
+
+    .. change:: Document unconsumed path parameters
+        :type: bugfix
+        :pr: 3295
+        :issue: 3290
+
+        Fixes a bug where path parameters not consumed by route handlers would not be included in the OpenAPI schema.
+
+        This could/would not include the ``{param}`` in the schema, yet it is still required to be passed
+        when calling the path.
+
+    .. change:: Allow for console output to be silenced
+        :type: feature
+        :pr: 3180
+
+        Introduces optional environment variables that allow customizing the "Application" name displayed
+        in the console output and suppressing the initial ``from_env`` or the ``Rich`` info table at startup.
+
+        Provides flexibility in tailoring the console output to better integrate Litestar into larger applications
+        or CLIs.
+
+    .. change:: Add flash plugin
+        :type: feature
+        :pr: 3145
+        :issue: 1455
+
+        Adds a flash plugin akin to Django or Flask that uses the request state
+
+    .. change:: Use memoized :paramref:`~.handlers.HTTPRouteHandler.request_class` and :paramref:`~.handlers.HTTPRouteHandler.response_class` values
+        :type: feature
+        :pr: 3205
+
+        Uses memoized ``request_class`` and ``response_class`` values
+
+    .. change:: Enable codegen backend by default
+        :type: feature
+        :pr: 3215
+
+        Enables the codegen backend for DTOs introduced in https://github.com/litestar-org/litestar/pull/2388 by default.
+
+    .. change:: Added precedence of CLI parameters over envs
+        :type: feature
+        :pr: 3190
+        :issue: 3188
+
+        Adds precedence of CLI parameters over environment variables.
+        Before this change, environment variables would take precedence over CLI parameters.
+
+        Since CLI parameters are more explicit and are set by the user,
+        they should take precedence over environment variables.
+
+    .. change:: Only print when terminal is ``TTY`` enabled
+        :type: feature
+        :pr: 3219
+
+        Sets ``LITESTAR_QUIET_CONSOLE`` and ``LITESTAR_APP_NAME`` in the autodiscovery function.
+        Also prevents the tabular console output from printing when the terminal is not ``TTY``
+
+    .. change:: Support ``schema_extra`` in :class:`~.openapi.spec.parameter.Parameter` and `Body`
+        :type: feature
+        :pr: 3204
+
+        Introduces a way to modify the generated OpenAPI spec by adding a ``schema_extra`` parameter to the
+        Parameter and Body classes. The ``schema_extra`` parameter accepts a ``dict[str, Any]`` where the keys correspond
+        to the keyword parameter names in Schema, and the values are used to override items in the
+        generated Schema object.
+
+        Provides a convenient way to customize the OpenAPI documentation for inbound parameters.
+
+    .. change:: Add :class:`typing.TypeVar` expansion
+        :type: feature
+        :pr: 3242
+
+        Adds a method for TypeVar expansion on registration
+        This allows the use of generic route handler and generic controller without relying on forward references.
+
+    .. change:: Add ``LITESTAR_`` prefix before ``WEB_CONCURRENCY`` env option
+        :type: feature
+        :pr: 3227
+
+        Adds ``LITESTAR_`` prefix before the ``WEB_CONCURRENCY`` environment option
+
+    .. change:: Warn about ambiguous default values in parameter specifications
+        :type: feature
+        :pr: 3283
+
+        As discussed in https://github.com/litestar-org/litestar/pull/3280#issuecomment-2026878325,
+        we want to warn about, and eventually disallow specifying parameter defaults in two places.
+
+        To achieve this, 2 warnings are added:
+
+        - A deprecation warning if a default is specified when using
+          ``Annotated``: ``param: Annotated[int, Parameter(..., default=1)]`` instead of
+          ``param: Annotated[int, Parameter(...)] = 1``
+        - An additional warning in the above case if two default values are specified which do not match in value:
+          ``param: Annotated[int, Parameter(..., default=1)] = 2``
+
+        In a future version, the first one should result in an exception at startup, preventing both of these scenarios.
+
+    .. change:: Support declaring :class:`~.dto.field.DTOField` via ``Annotated``
+        :type: feature
+        :pr: 3289
+        :issue: 2351
+
+        Deprecates passing :class:`~.dto.field.DTOField` via ``[pydantic]`` extra.
+
+    .. change:: Add "TRACE" to HttpMethod enum
+        :type: feature
+        :pr: 3294
+
+        Adds the ``TRACE`` HTTP method to :class:`~.enums.HttpMethod` enum
+
+    .. change:: Pydantic DTO non-instantiable types
+        :type: feature
+        :pr: 3296
+
+        Simplifies the type that is applied to DTO transfer models for certain Pydantic field types.
+        It addresses ``JsonValue``, ``EmailStr``, ``IPvAnyAddress``/``IPvAnyNetwork``/``IPvAnyInterface`` types by
+        using appropriate :term:`type annotations <annotation>` on the transfer models to ensure compatibility with
+        :doc:`msgspec:index` serialization and deserialization.
+
 .. changelog:: 2.7.1
     :date: 2024-03-22
 
@@ -973,12 +1179,12 @@
         event listeners are now not propagated anymore but handled by the backend and
         logged instead.
 
-    .. change:: Fix OpenAPI schema for pydantic computed fields
+    .. change:: Fix OpenAPI schema for Pydantic computed fields
         :type: bugfix
         :pr: 2797
         :issue: 2792
 
-        Add support for including computed fields in schemas generated from pydantic
+        Add support for including computed fields in schemas generated from Pydantic
         models.
 
 .. changelog:: 2.4.1
@@ -2511,7 +2717,7 @@
         :pr: 1865
         :issue: 1860
 
-        A regression has been fixed in the pydantic signature model logic, which was
+        A regression has been fixed in the Pydantic signature model logic, which was
         caused by the renaming of ``regex`` to ``pattern``, which would lead to the
         :attr:`~litestar.params.KwargDefinition.pattern` not being validated.
 
@@ -3446,12 +3652,12 @@
             If you rely on SQLAlchemy 1, you can stick to Starlite *1.51* for now. In the future, a SQLAlchemy 1 plugin
             may be released as a standalone package.
 
-    .. change:: Fix inconsistent parsing of unix timestamp between pydantic and cattrs
+    .. change:: Fix inconsistent parsing of unix timestamp between Pydantic and cattrs
         :type: bugfix
         :pr: 1492
         :issue: 1491
 
-        Timestamps parsed as :class:`date <datetime.date>` with pydantic return a UTC date, while cattrs implementation
+        Timestamps parsed as :class:`date <datetime.date>` with Pydantic return a UTC date, while cattrs implementation
         return a date with the local timezone.
 
         This was corrected by forcing dates to UTC when being parsed by attrs.
@@ -4277,4 +4483,4 @@
         :issue: 1149
 
         A middleware's ``exclude`` parameter would sometimes not be honoured if the path was used to serve static files
-        using ``StaticFilesConfig``.
+        using ``StaticFilesConfig``
