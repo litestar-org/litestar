@@ -151,6 +151,12 @@ class AppConfig:
     """
     parameters: ParametersMap = field(default_factory=dict)
     """A mapping of :class:`Parameter <.params.Parameter>` definitions available to all application paths."""
+    path: str = field(default="")
+    """A base path that prefixed to all route handlers, controllers and routers associated with the
+    application instance.
+
+    .. versionadded:: 2.8.0
+    """
     pdb_on_exception: bool = field(default=False)
     """Drop into the PDB on an exception"""
     plugins: list[PluginProtocol] = field(default_factory=list)
