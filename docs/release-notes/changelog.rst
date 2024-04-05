@@ -61,7 +61,7 @@
         :pr: 3286
         :issue: 2365
 
-        Fix a bug that would cause a :class:`TypeError` when non-Pydantic errors are raised during Pydantic's
+        Fix a bug that would cause a :exc:`TypeError` when non-Pydantic errors are raised during Pydantic's
         validation process while using DTOs.
 
     .. change:: Fix OpenAPI schema generation for paths with path parameters of different types on the same path
