@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1185,7 +1186,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1227,13 +1228,34 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../usage/middleware/creating-middleware.html">Creating Middleware</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../usage/openapi.html">OpenAPI</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../usage/plugins.html">Plugins</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../usage/openapi/index.html">OpenAPI</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../usage/openapi/schema_generation.html">Configuring schema generation</a></li>
+
+
+
+
+<li class="toctree-l3"><a class="reference internal" href="../usage/openapi/ui_plugins.html">OpenAPI UI Plugins</a></li>
+
+
+
+
+
+
+
+
+
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../usage/plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../usage/plugins/flash_messages.html">Flash Messages</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/responses.html">Responses</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../usage/security/index.html">Security</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../usage/security/index.html">Security</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../usage/security/abstract-authentication-middleware.html">AbstractAuthenticationMiddleware</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/security/security-backends.html">Security Backends</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/security/guards.html">Guards</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/security/excluding-and-including-endpoints.html">Excluding and including endpoints</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/security/jwt.html">JWT Security Backends</a></li>
 </ul>
 </li>
@@ -1244,13 +1266,13 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../usage/websockets.html">WebSockets</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/index.html">API reference</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../reference/index.html">API reference</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../reference/app.html">app</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/background_tasks.html">background_tasks</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/channels/index.html">channels</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/channels/index.html">channels</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/channels/plugin.html">plugin</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/channels/subscriber.html">subscriber</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/channels/backends/index.html">backends</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/channels/backends/index.html">backends</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../reference/channels/backends/base.html">base</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/channels/backends/memory.html">memory</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/channels/backends/redis.html">redis</a></li>
@@ -1263,7 +1285,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/cli.html">cli</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/config.html">config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/connection.html">connection</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/contrib/index.html">contrib</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/contrib/index.html">contrib</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/htmx.html">HTMX</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/jinja.html">jinja</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/jwt.html">jwt</a></li>
@@ -1271,7 +1293,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/opentelemetry.html">opentelemetry</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/piccolo.html">piccolo_orm</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/contrib/pydantic.html">pydantic</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/contrib/sqlalchemy/index.html">sqlalchemy</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/contrib/sqlalchemy/index.html">sqlalchemy</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/plugins.html">plugins</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/repository.html">repository</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/types.html">types</a></li>
@@ -1286,7 +1308,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/data_extractors.html">data_extractors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/datastructures.html">datastructures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/di.html">di</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/dto/config.html">config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/dto/data_structures.html">data_structures</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/dto/field.html">field</a></li>
@@ -1300,13 +1322,13 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/events.html">events</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/exceptions.html">exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/handlers.html">handlers</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/logging/config.html">config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/logging/picologging.html">picologging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/logging/standard.html">standard</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/authentication.html">authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/compression.html">compression</a></li>
@@ -1314,7 +1336,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/csrf.html">csrf</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/logging.html">logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/rate_limit.html">rate_limit</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-19"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/base.html">base</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/client_side.html">client_side</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/server_side.html">server_side</a></li>
@@ -1322,15 +1344,21 @@ document.write(`
 </li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-20"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/openapi/openapi.html">openapi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/openapi/plugins.html">plugins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/openapi/spec.html">spec</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/pagination.html">pagination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/params.html">params</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/plugins.html">plugins</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/repository/index.html">repository</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-19"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/structlog.html">structlog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
+</ul>
+</li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/repository/index.html">repository</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/repository/abc.html">abc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/repository/filters.html">filters</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/repository/exceptions.html">exceptions</a></li>
@@ -1338,7 +1366,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../reference/repository/handlers.html">handlers</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/response/index.html">response</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-20"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/response/index.html">response</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-23"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/response/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/response/file.html">file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/response/redirect.html">redirect</a></li>
@@ -1349,7 +1377,7 @@ document.write(`
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/router.html">router</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/routes.html">routes</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/security/jwt.html">jwt</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/security/session_auth.html">session_auth</a></li>
 </ul>
@@ -1357,7 +1385,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/serialization.html">serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/static_files.html">static_files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/status_codes.html">status_code</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/file.html">file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/memory.html">memory</a></li>
@@ -1375,14 +1403,14 @@ document.write(`
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Guides</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-23"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-26"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../migration/flask.html">From Flask</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-27"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../topics/sync-vs-async.html">Sync vs. Async</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../topics/deployment/index.html">Deployment</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../topics/deployment/index.html">Deployment</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../topics/deployment/nginx-unit.html">NGINX Unit</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../topics/deployment/manually-with-asgi-server.html">Manually with ASGI server</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../topics/deployment/docker.html">Docker</a></li>
@@ -1391,15 +1419,15 @@ document.write(`
 </li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-26"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorials/todo-app/index.html">Developing a basic TODO application</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-27"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorials/todo-app/index.html">Developing a basic TODO application</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-30"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/todo-app/0-application-basics.html">Application basics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/todo-app/1-accessing-the-list.html">Accessing the list</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/todo-app/2-interacting-with-the-list.html">Making the list interactive</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/todo-app/3-assembling-the-app.html">Recap and assembling the final application</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorials/sqlalchemy/index.html">Improving the TODO app with SQLAlchemy</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorials/sqlalchemy/index.html">Improving the TODO app with SQLAlchemy</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-31"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/sqlalchemy/0-introduction.html">Introduction</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/sqlalchemy/1-provide-session-with-di.html">Providing the session with DI</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/sqlalchemy/2-serialization-plugin.html">Using the serialization plugin</a></li>
@@ -1407,7 +1435,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/sqlalchemy/4-final-touches-and-recap.html">Final touches and recap</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorials/dto-tutorial/index.html">Data Transfer Object Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorials/dto-tutorial/index.html">Data Transfer Object Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-32"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/dto-tutorial/01-simple-dto-exclude.html">Our first DTO</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/dto-tutorial/02-nested-exclude.html">Excluding from nested models</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/dto-tutorial/03-nested-collection-exclude.html">Excluding from collections of nested models</a></li>
@@ -1420,7 +1448,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/dto-tutorial/10-layered-dto-declarations.html">Declaring DTOs on app layers</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorials/repository-tutorial/index.html">SQLAlchemy Repository Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-30"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorials/repository-tutorial/index.html">SQLAlchemy Repository Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-33"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/01-modeling-and-features.html">Introduction to Database Modeling and Repository Features</a></li>
 
 
@@ -1498,6 +1526,273 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.8.0">
+<h2>2.8.0<a class="headerlink" href="#2.8.0" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2024-04-05<section id="2.8.0-feature">
+<h3>Features<a class="headerlink" href="#2.8.0-feature" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Add <code class="docutils literal notranslate"><span class="pre">path</span></code> parameter to Litestar application class<a class="headerlink reference internal" href="#2.8.0-add" id="2.8.0-add">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Exposes <a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.parameter" title="litestar.app.Litestar"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">parameter</span></code></a> at <a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a> application class level</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3314">litestar-org/litestar#3314</a></span></p>
+</div>
+</dd>
+<dt>Allow for console output to be silenced<a class="headerlink reference internal" href="#2.8.0-allow for console output to be silenced" id="2.8.0-allow for console output to be silenced">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Introduces optional environment variables that allow customizing the “Application” name displayed
+in the console output and suppressing the initial <code class="docutils literal notranslate"><span class="pre">from_env</span></code> or the <code class="docutils literal notranslate"><span class="pre">Rich</span></code> info table at startup.</p>
+<p>Provides flexibility in tailoring the console output to better integrate Litestar into larger applications
+or CLIs.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3180">litestar-org/litestar#3180</a></span></p>
+</div>
+</dd>
+<dt>Add flash plugin<a class="headerlink reference internal" href="#2.8.0-add flash plugin" id="2.8.0-add flash plugin">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Adds a flash plugin akin to Django or Flask that uses the request state</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/1455">litestar-org/litestar#1455</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3145">litestar-org/litestar#3145</a></span></p>
+</div>
+</dd>
+<dt>Use memoized <a class="reference internal" href="../reference/handlers.html#litestar.handlers.HTTPRouteHandler.params.request_class" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">request_class</span></code></a> and <a class="reference internal" href="../reference/handlers.html#litestar.handlers.HTTPRouteHandler.params.response_class" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">response_class</span></code></a> values<a class="headerlink reference internal" href="#2.8.0-use memoized" id="2.8.0-use memoized">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Uses memoized <code class="docutils literal notranslate"><span class="pre">request_class</span></code> and <code class="docutils literal notranslate"><span class="pre">response_class</span></code> values</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3205">litestar-org/litestar#3205</a></span></p>
+</div>
+</dd>
+<dt>Enable codegen backend by default<a class="headerlink reference internal" href="#2.8.0-enable codegen backend by default" id="2.8.0-enable codegen backend by default">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Enables the codegen backend for DTOs introduced in <a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2388">litestar-org/litestar#2388</a> by default.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3215">litestar-org/litestar#3215</a></span></p>
+</div>
+</dd>
+<dt>Added precedence of CLI parameters over envs<a class="headerlink reference internal" href="#2.8.0-added precedence of cli parameters over envs" id="2.8.0-added precedence of cli parameters over envs">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Adds precedence of CLI parameters over environment variables.
+Before this change, environment variables would take precedence over CLI parameters.</p>
+<p>Since CLI parameters are more explicit and are set by the user,
+they should take precedence over environment variables.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3188">litestar-org/litestar#3188</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3190">litestar-org/litestar#3190</a></span></p>
+</div>
+</dd>
+<dt>Only print when terminal is <code class="docutils literal notranslate"><span class="pre">TTY</span></code> enabled<a class="headerlink reference internal" href="#2.8.0-only print when terminal is" id="2.8.0-only print when terminal is">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Sets <code class="docutils literal notranslate"><span class="pre">LITESTAR_QUIET_CONSOLE</span></code> and <code class="docutils literal notranslate"><span class="pre">LITESTAR_APP_NAME</span></code> in the autodiscovery function.
+Also prevents the tabular console output from printing when the terminal is not <code class="docutils literal notranslate"><span class="pre">TTY</span></code></p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3219">litestar-org/litestar#3219</a></span></p>
+</div>
+</dd>
+<dt>Support <code class="docutils literal notranslate"><span class="pre">schema_extra</span></code> in <a class="reference internal" href="../reference/openapi/spec.html#litestar.openapi.spec.Parameter" title="litestar.openapi.spec.parameter.Parameter"><code class="xref py py-class docutils literal notranslate"><span class="pre">Parameter</span></code></a> and <cite>Body</cite><a class="headerlink reference internal" href="#2.8.0-support" id="2.8.0-support">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Introduces a way to modify the generated OpenAPI spec by adding a <code class="docutils literal notranslate"><span class="pre">schema_extra</span></code> parameter to the
+Parameter and Body classes. The <code class="docutils literal notranslate"><span class="pre">schema_extra</span></code> parameter accepts a <code class="docutils literal notranslate"><span class="pre">dict[str,</span> <span class="pre">Any]</span></code> where the keys correspond
+to the keyword parameter names in Schema, and the values are used to override items in the
+generated Schema object.</p>
+<p>Provides a convenient way to customize the OpenAPI documentation for inbound parameters.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3204">litestar-org/litestar#3204</a></span></p>
+</div>
+</dd>
+<dt>Add <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeVar" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">typing.TypeVar</span></code></a> expansion<a class="headerlink reference internal" href="#2.8.0-add" id="2.8.0-add">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Adds a method for TypeVar expansion on registration
+This allows the use of generic route handler and generic controller without relying on forward references.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3242">litestar-org/litestar#3242</a></span></p>
+</div>
+</dd>
+<dt>Add <code class="docutils literal notranslate"><span class="pre">LITESTAR_</span></code> prefix before <code class="docutils literal notranslate"><span class="pre">WEB_CONCURRENCY</span></code> env option<a class="headerlink reference internal" href="#2.8.0-add" id="2.8.0-add">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Adds <code class="docutils literal notranslate"><span class="pre">LITESTAR_</span></code> prefix before the <code class="docutils literal notranslate"><span class="pre">WEB_CONCURRENCY</span></code> environment option</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3227">litestar-org/litestar#3227</a></span></p>
+</div>
+</dd>
+<dt>Warn about ambiguous default values in parameter specifications<a class="headerlink reference internal" href="#2.8.0-warn about ambiguous default values in parameter specifications" id="2.8.0-warn about ambiguous default values in parameter specifications">#</a></dt><dd><div class="changelog-change docutils container">
+<p>As discussed in <a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3280#issuecomment-2026878325">litestar-org/litestar#3280</a>,
+we want to warn about, and eventually disallow specifying parameter defaults in two places.</p>
+<p>To achieve this, 2 warnings are added:</p>
+<ul class="simple">
+<li><p>A deprecation warning if a default is specified when using
+<code class="docutils literal notranslate"><span class="pre">Annotated</span></code>: <code class="docutils literal notranslate"><span class="pre">param:</span> <span class="pre">Annotated[int,</span> <span class="pre">Parameter(...,</span> <span class="pre">default=1)]</span></code> instead of
+<code class="docutils literal notranslate"><span class="pre">param:</span> <span class="pre">Annotated[int,</span> <span class="pre">Parameter(...)]</span> <span class="pre">=</span> <span class="pre">1</span></code></p></li>
+<li><p>An additional warning in the above case if two default values are specified which do not match in value:
+<code class="docutils literal notranslate"><span class="pre">param:</span> <span class="pre">Annotated[int,</span> <span class="pre">Parameter(...,</span> <span class="pre">default=1)]</span> <span class="pre">=</span> <span class="pre">2</span></code></p></li>
+</ul>
+<p>In a future version, the first one should result in an exception at startup, preventing both of these scenarios.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3283">litestar-org/litestar#3283</a></span></p>
+</div>
+</dd>
+<dt>Support declaring <a class="reference internal" href="../reference/dto/field.html#litestar.dto.field.DTOField" title="litestar.dto.field.DTOField"><code class="xref py py-class docutils literal notranslate"><span class="pre">DTOField</span></code></a> via <code class="docutils literal notranslate"><span class="pre">Annotated</span></code><a class="headerlink reference internal" href="#2.8.0-support declaring" id="2.8.0-support declaring">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Deprecates passing <a class="reference internal" href="../reference/dto/field.html#litestar.dto.field.DTOField" title="litestar.dto.field.DTOField"><code class="xref py py-class docutils literal notranslate"><span class="pre">DTOField</span></code></a> via <code class="docutils literal notranslate"><span class="pre">[pydantic]</span></code> extra.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2351">litestar-org/litestar#2351</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3289">litestar-org/litestar#3289</a></span></p>
+</div>
+</dd>
+<dt>Add “TRACE” to HttpMethod enum<a class="headerlink reference internal" href="#2.8.0-add &quot;trace&quot; to httpmethod enum" id="2.8.0-add &quot;trace&quot; to httpmethod enum">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Adds the <code class="docutils literal notranslate"><span class="pre">TRACE</span></code> HTTP method to <a class="reference internal" href="../reference/enums.html#litestar.enums.HttpMethod" title="litestar.enums.HttpMethod"><code class="xref py py-class docutils literal notranslate"><span class="pre">HttpMethod</span></code></a> enum</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3294">litestar-org/litestar#3294</a></span></p>
+</div>
+</dd>
+<dt>Pydantic DTO non-instantiable types<a class="headerlink reference internal" href="#2.8.0-pydantic dto non-instantiable types" id="2.8.0-pydantic dto non-instantiable types">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Simplifies the type that is applied to DTO transfer models for certain Pydantic field types.
+It addresses <code class="docutils literal notranslate"><span class="pre">JsonValue</span></code>, <code class="docutils literal notranslate"><span class="pre">EmailStr</span></code>, <code class="docutils literal notranslate"><span class="pre">IPvAnyAddress</span></code>/<code class="docutils literal notranslate"><span class="pre">IPvAnyNetwork</span></code>/<code class="docutils literal notranslate"><span class="pre">IPvAnyInterface</span></code> types by
+using appropriate <a class="reference external" href="https://docs.python.org/3/glossary.html#term-annotation" title="(in Python v3.12)"><span class="xref std std-term">type annotations</span></a> on the transfer models to ensure compatibility with
+<a class="reference external" href="https://jcristharif.com/msgspec/index.html" title="(in msgspec)"><span>msgspec</span></a> serialization and deserialization.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3296">litestar-org/litestar#3296</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+<section id="2.8.0-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.8.0-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Unique schema names for nested models (#3134)<a class="headerlink reference internal" href="#2.8.0-unique schema names for nested models (#3134)" id="2.8.0-unique schema names for nested models (#3134)">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fixes an issue where nested models beyond the <code class="docutils literal notranslate"><span class="pre">max_nested_depth</span></code> would not have
+unique schema names in the OpenAPI documentation. The fix appends the nested
+model’s name to the <code class="docutils literal notranslate"><span class="pre">unique_name</span></code> to differentiate it from the parent model.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3134">litestar-org/litestar#3134</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3136">litestar-org/litestar#3136</a></span></p>
+</div>
+</dd>
+<dt>Remove duplicate <code class="docutils literal notranslate"><span class="pre">rich-click</span></code> config options<a class="headerlink reference internal" href="#2.8.0-remove duplicate" id="2.8.0-remove duplicate">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Removes duplicate config options from click cli</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3274">litestar-org/litestar#3274</a></span></p>
+</div>
+</dd>
+<dt>Fix Pydantic <code class="docutils literal notranslate"><span class="pre">json_schema_extra</span></code> examples.<a class="headerlink reference internal" href="#2.8.0-fix pydantic" id="2.8.0-fix pydantic">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fixes a regression introduced in <code class="docutils literal notranslate"><span class="pre">2.7.0</span></code> where an example for a field provided in Pydantic’s
+<code class="docutils literal notranslate"><span class="pre">Field.json_schema_extra</span></code> would cause an error.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3277">litestar-org/litestar#3277</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3281">litestar-org/litestar#3281</a></span></p>
+</div>
+</dd>
+<dt>Set default on schema from <a class="reference internal" href="../reference/typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldDefinition</span></code></a><a class="headerlink reference internal" href="#2.8.0-set default on schema from" id="2.8.0-set default on schema from">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Consider the following:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_foo</span><span class="p">(</span><span class="n">foo_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>In such cases, no <a class="reference internal" href="../reference/params.html#litestar.params.KwargDefinition" title="litestar.params.KwargDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">KwargDefinition</span></code></a> is created since there is no metadata provided via
+<code class="docutils literal notranslate"><span class="pre">Annotated</span></code>. The default is still parsed, and set on the generated <code class="docutils literal notranslate"><span class="pre">FieldDefinition</span></code>,
+however the <code class="docutils literal notranslate"><span class="pre">SchemaCreator</span></code> currently only considers defaults that are set on <code class="docutils literal notranslate"><span class="pre">KwargDefinition</span></code>.</p>
+<p>So in such cases, we should fallback to the default set on the <code class="docutils literal notranslate"><span class="pre">FieldDefinition</span></code> if there is a valid
+default value.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3278">litestar-org/litestar#3278</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3280">litestar-org/litestar#3280</a></span></p>
+</div>
+</dd>
+<dt>Custom types cause serialisation error in exception response with non-JSON media-type<a class="headerlink reference internal" href="#2.8.0-custom types cause serialisation error in exception response with non-json media-type" id="2.8.0-custom types cause serialisation error in exception response with non-json media-type">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fixes a bug when using a non-JSON media type (e.g., <code class="docutils literal notranslate"><span class="pre">text/plain</span></code>),
+<a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.ValidationException" title="litestar.exceptions.http_exceptions.ValidationException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValidationException</span></code></a>’s would not get serialized properly because they
+would ignore custom <code class="docutils literal notranslate"><span class="pre">type_encoders</span></code>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3192">litestar-org/litestar#3192</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3284">litestar-org/litestar#3284</a></span></p>
+</div>
+</dd>
+<dt>Ensure default values are always represented in schema for dataclasses and <a class="reference external" href="https://jcristharif.com/msgspec/api.html#msgspec.Struct" title="(in msgspec)"><code class="xref py py-class docutils literal notranslate"><span class="pre">msgspec.Struct</span></code></a>s<a class="headerlink reference internal" href="#2.8.0-ensure default values are always represented in schema for dataclasses and" id="2.8.0-ensure default values are always represented in schema for dataclasses and">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fixes a bug that would prevent default values for dataclasses and <code class="docutils literal notranslate"><span class="pre">msgspec.Struct</span></code> s to be included in the
+OpenAPI schema.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3201">litestar-org/litestar#3201</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3285">litestar-org/litestar#3285</a></span></p>
+</div>
+</dd>
+<dt>Pydantic v2 error handling/serialization when for non-Pydantic exceptions<a class="headerlink reference internal" href="#2.8.0-pydantic v2 error handling/serialization when for non-pydantic exceptions" id="2.8.0-pydantic v2 error handling/serialization when for non-pydantic exceptions">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fixes a bug that would cause a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a> when non-Pydantic errors are raised during Pydantic’s
+validation process while using DTOs.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2365">litestar-org/litestar#2365</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3286">litestar-org/litestar#3286</a></span></p>
+</div>
+</dd>
+<dt>Fix OpenAPI schema generation for paths with path parameters of different types on the same path<a class="headerlink reference internal" href="#2.8.0-fix openapi schema generation for paths with path parameters of different types on the same path" id="2.8.0-fix openapi schema generation for paths with path parameters of different types on the same path">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fixes a bug that would cause no OpenAPI schema to be generated for paths with path
+parameters that only differ on the path parameter type, such as <code class="docutils literal notranslate"><span class="pre">/{param:int}</span></code>
+and <code class="docutils literal notranslate"><span class="pre">/{param:str}</span></code>. This was caused by an internal representation issue in
+Litestar’s routing system.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2700">litestar-org/litestar#2700</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3293">litestar-org/litestar#3293</a></span></p>
+</div>
+</dd>
+<dt>Document unconsumed path parameters<a class="headerlink reference internal" href="#2.8.0-document unconsumed path parameters" id="2.8.0-document unconsumed path parameters">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fixes a bug where path parameters not consumed by route handlers would not be included in the OpenAPI schema.</p>
+<p>This could/would not include the <code class="docutils literal notranslate"><span class="pre">{param}</span></code> in the schema, yet it is still required to be passed
+when calling the path.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3290">litestar-org/litestar#3290</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3295">litestar-org/litestar#3295</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
+<section id="2.7.1">
+<h2>2.7.1<a class="headerlink" href="#2.7.1" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2024-03-22<section id="2.7.1-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.7.1-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>replace TestClient.__enter__ return type with Self<a class="headerlink reference internal" href="#2.7.1-replace testclient.__enter__ return type with self" id="2.7.1-replace testclient.__enter__ return type with self">#</a></dt><dd><div class="changelog-change docutils container">
+<p><code class="docutils literal notranslate"><span class="pre">TestClient.__enter__</span></code> and <code class="docutils literal notranslate"><span class="pre">AsyncTestClient.__enter__</span></code> return <code class="docutils literal notranslate"><span class="pre">Self</span></code>.
+If you inherit <code class="docutils literal notranslate"><span class="pre">TestClient</span></code>, its <code class="docutils literal notranslate"><span class="pre">__enter__</span></code> method should return derived class’s instance
+unless override the method. <code class="docutils literal notranslate"><span class="pre">Self</span></code> is a more flexible return type.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3194">litestar-org/litestar#3194</a></span></p>
+</div>
+</dd>
+<dt>use the full path for fetching openapi.json<a class="headerlink reference internal" href="#2.7.1-use the full path for fetching openapi.json" id="2.7.1-use the full path for fetching openapi.json">#</a></dt><dd><div class="changelog-change docutils container">
+<p>This specifies the <code class="docutils literal notranslate"><span class="pre">spec-url</span></code> and <code class="docutils literal notranslate"><span class="pre">apiDescriptionUrl</span></code> of Rapidoc, and Stoplight Elements as absolute
+paths relative to the root of the site.</p>
+<p>This ensures that both of the send the request for the JSON of the OpenAPI schema to the right endpoint.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3047">litestar-org/litestar#3047</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3196">litestar-org/litestar#3196</a></span></p>
+</div>
+</dd>
+<dt>JSON schema <code class="docutils literal notranslate"><span class="pre">examples</span></code> were OpenAPI formatted<a class="headerlink reference internal" href="#2.7.1-json schema" id="2.7.1-json schema">#</a></dt><dd><div class="changelog-change docutils container">
+<p>The generated <code class="docutils literal notranslate"><span class="pre">examples</span></code> in <em>JSON schema</em> objects were formatted as:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="w"> </span><span class="nt">&quot;examples&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">   </span><span class="nt">&quot;some-id&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">     </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Lorem ipsum&quot;</span><span class="p">,</span>
+<span class="w">     </span><span class="nt">&quot;value&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;the real beef&quot;</span>
+<span class="w">   </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>However, above is OpenAPI example format, and must not be used in JSON schema
+objects. Schema objects follow different formatting:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="w"> </span><span class="nt">&quot;examples&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">   </span><span class="s2">&quot;the real beef&quot;</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Explained in <a class="reference external" href="https://medium.com/apis-you-wont-hate/openapi-v3-1-and-json-schema-2019-09-6862cf3db959">APIs You Won’t Hate blog post</a>.</p></li>
+<li><p><a class="reference external" href="https://spec.openapis.org/oas/v3.1.0#schema-object">Schema objects spec</a></p></li>
+<li><p><a class="reference external" href="https://spec.openapis.org/oas/v3.1.0#example-object">OpenAPI example format spec</a>.</p></li>
+</ul>
+<p>This is referenced at least from parameters, media types and components.</p>
+<p>The technical change here is to define <code class="docutils literal notranslate"><span class="pre">Schema.examples</span></code> as <code class="docutils literal notranslate"><span class="pre">list[Any]</span></code> instead
+of <code class="docutils literal notranslate"><span class="pre">list[Example]</span></code>. Examples can and must still be defined as <code class="docutils literal notranslate"><span class="pre">list[Example]</span></code>
+for OpenAPI objects (e.g. <code class="docutils literal notranslate"><span class="pre">Parameter</span></code>, <code class="docutils literal notranslate"><span class="pre">Body</span></code>) but for JSON schema <code class="docutils literal notranslate"><span class="pre">examples</span></code>
+the code now internally generates/converts <code class="docutils literal notranslate"><span class="pre">list[Any]</span></code> format instead.</p>
+<p>Extra confusion here comes from the OpenAPI 3.0 vs OpenAPI 3.1 difference.
+OpenAPI 3.0 only allowed <code class="docutils literal notranslate"><span class="pre">example</span></code> (singular) field in schema objects.
+OpenAPI 3.1 supports the full JSON schema 2020-12 spec and so <code class="docutils literal notranslate"><span class="pre">examples</span></code> array
+in schema objects.</p>
+<p>Both <code class="docutils literal notranslate"><span class="pre">example</span></code> and <code class="docutils literal notranslate"><span class="pre">examples</span></code> seem to be supported, though the former is marked
+as deprecated in the latest specs.</p>
+<p>This can be tested over at <a class="reference external" href="https://editor-next.swagger.io">https://editor-next.swagger.io</a> by loading up the
+OpenAPI 3.1 Pet store example. Then add <code class="docutils literal notranslate"><span class="pre">examples</span></code> in <code class="docutils literal notranslate"><span class="pre">components.schemas.Pet</span></code>
+using the both ways and see the Swagger UI only render the example once it’s
+properly formatted (it ignores is otherwise).</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2849">litestar-org/litestar#2849</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3224">litestar-org/litestar#3224</a></span></p>
+</div>
+</dd>
+<dt>queue_listener handler for Python &gt;= 3.12<a class="headerlink reference internal" href="#2.7.1-queue_listener handler for python &gt;= 3.12" id="2.7.1-queue_listener handler for python &gt;= 3.12">#</a></dt><dd><div class="changelog-change docutils container">
+<ul class="simple">
+<li><p>Fix the <code class="docutils literal notranslate"><span class="pre">queue_listener</span></code> handler for Python 3.12</p></li>
+</ul>
+<p>Python 3.12 introduced a new way to configure <code class="docutils literal notranslate"><span class="pre">QueueHandler</span></code> and <code class="docutils literal notranslate"><span class="pre">QueueListener</span></code> via
+<code class="docutils literal notranslate"><span class="pre">logging.config.dictConfig()</span></code>. As described in the
+<a class="reference external" href="https://docs.python.org/3/library/logging.config.html#configuring-queuehandler-and-queuelistener">logging documentation</a>.</p>
+<p>The listener still needs to be started &amp; stopped, as previously.
+To do so, we’ve introduced <code class="docutils literal notranslate"><span class="pre">LoggingQueueListener</span></code>.</p>
+<p>And as stated in the doc:
+* Any custom queue handler and listener classes will need to be defined with the same initialization signatures
+as <a class="reference external" href="https://docs.python.org/3/library/logging.handlers.html#logging.handlers.QueueHandler">QueueHandler</a> and
+<a class="reference external" href="https://docs.python.org/3/library/logging.handlers.html#logging.handlers.QueueListener">QueueListener</a>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2954">litestar-org/litestar#2954</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3185">litestar-org/litestar#3185</a></span></p>
+</div>
+</dd>
+<dt>extend openapi meta collected from domain models<a class="headerlink reference internal" href="#2.7.1-extend openapi meta collected from domain models" id="2.7.1-extend openapi meta collected from domain models">#</a></dt><dd><div class="changelog-change docutils container">
+<p><a class="reference internal" href="../reference/typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldDefinition</span></code></a> s pack any OpenAPI metadata onto a <code class="docutils literal notranslate"><span class="pre">KwargDefinition</span></code> instance when
+types are parsed from domain models.</p>
+<p>When we produce a DTO type, we transfer this meta from the <cite>KwargDefinition</cite> to a <cite>msgspec.Meta</cite> instance,
+however so far this has only included constraints, not attributes such as descriptions, examples and title.</p>
+<p>This change ensures that we transfer the openapi meta for the complete intersection of fields that exist on b
+oth <cite>KwargDefinition</cite> and <cite>Meta</cite>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3232">litestar-org/litestar#3232</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3237">litestar-org/litestar#3237</a></span></p>
+</div>
+</dd>
+<dt>kwarg ambiguity exc msg for path params<a class="headerlink reference internal" href="#2.7.1-kwarg ambiguity exc msg for path params" id="2.7.1-kwarg ambiguity exc msg for path params">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fixes the way we construct the exception message when there is a kwarg ambiguity detected for path parameters.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3261">litestar-org/litestar#3261</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.7.0">
 <h2>2.7.0<a class="headerlink" href="#2.7.0" title="Permalink to this heading">#</a></h2>
 <strong>Released: </strong>2024-03-10<section id="2.7.0-feature">
@@ -1527,14 +1822,14 @@ Examples that go within the schema definition cannot be set by this.</p>
 </div>
 </dd>
 <dt>support “+json”-suffixed response media types<a class="headerlink reference internal" href="#2.7.0-support &quot;+json&quot;-suffixed response media types" id="2.7.0-support &quot;+json&quot;-suffixed response media types">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Automatically encode responses with media type of the form “application/&lt;something&gt;+json” as json.</p>
+<p>Automatically encode responses with media type of the form <code class="docutils literal notranslate"><span class="pre">application/&lt;something&gt;+json</span></code> as json.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3088">litestar-org/litestar#3088</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3096">litestar-org/litestar#3096</a></span></p>
 </div>
 </dd>
 <dt>Allow reusable <code class="docutils literal notranslate"><span class="pre">Router</span></code> instances<a class="headerlink reference internal" href="#2.7.0-allow reusable" id="2.7.0-allow reusable">#</a></dt><dd><div class="changelog-change docutils container">
 <p>It was not possible to re-attach a router instance once it was attached. This
 makes that possible.</p>
-<p>The router instance now gets deecopied when it’s registered to another router.</p>
+<p>The router instance now gets deepcopied when it’s registered to another router.</p>
 <p>The application startup performance gets a hit here, but the same approach is
 already used for controllers and handlers, so this only harmonizes the
 implementation.</p>
@@ -1599,8 +1894,10 @@ Addresses issues outlined on <a class="github reference external" href="https://
 </dd>
 <dt>sending empty data in sse in js client<a class="headerlink reference internal" href="#2.7.0-sending empty data in sse in js client" id="2.7.0-sending empty data in sse in js client">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fix an issue with SSE where JavaScript clients fail to receive an event without data.
-The <a class="reference external" href="https://html.spec.whatwg.org/multipage/server-sent-events.html#parsing-an-event-stream">spec</a> is not clear in whether or not an event without data is ok.
-Considering the EventSource “client” is not ok with it, and that it’s so easy DX-wise to make the mistake not explicitly sending it, this change fixes it by defaulting to the empty-string</p>
+The <a class="reference external" href="https://html.spec.whatwg.org/multipage/server-sent-events.html#parsing-an-event-stream">spec</a> is
+not clear in whether or not an event without data is ok.
+Considering the EventSource “client” is not ok with it, and that it’s so easy DX-wise to make the mistake not
+explicitly sending it, this change fixes it by defaulting to the empty-string</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3176">litestar-org/litestar#3176</a></span></p>
 </div>
 </dd>
@@ -1822,7 +2119,7 @@ qualified name.</p>
 </dd>
 <dt>Support externally typed classes as dependency providers<a class="headerlink reference internal" href="#2.6.0-support externally typed classes as dependency providers" id="2.6.0-support externally typed classes as dependency providers">#</a></dt><dd><div class="changelog-change docutils container">
 <ul class="simple">
-<li><p>Implement a new <a class="reference internal" href="../reference/plugins.html#litestar.plugins.DIPlugin" title="litestar.plugins.DIPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">DIPlugin</span></code></a> class that allows the
+<li><p>Implement a new <a class="reference internal" href="../reference/plugins/index.html#litestar.plugins.DIPlugin" title="litestar.plugins.DIPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">DIPlugin</span></code></a> class that allows the
 generation of signatures for arbitrary types where their signature cannot be
 extracted from the type’s <code class="docutils literal notranslate"><span class="pre">__init__</span></code> method</p></li>
 <li><p>Implement <code class="docutils literal notranslate"><span class="pre">DIPlugin</span></code>s for Pydantic and Msgspec to allow using their
@@ -2123,7 +2420,7 @@ stream and psycopg backends were not affected.</p>
 <p>Performance of threaded synchronous code was improved by using the async
 library’s native threading helpers instead of anyio. On asyncio,
 <a class="reference external" href="https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.loop.run_in_executor" title="(in Python v3.12)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">asyncio.loop.run_in_executor()</span></code></a> is now used and on trio
-<a class="reference external" href="https://trio.readthedocs.io/en/stable/reference-core.html#trio.to_thread.run_sync" title="(in Trio v0.24.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.to_thread.run_sync()</span></code></a>.</p>
+<a class="reference external" href="https://trio.readthedocs.io/en/stable/reference-core.html#trio.to_thread.run_sync" title="(in Trio v0.25.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.to_thread.run_sync()</span></code></a>.</p>
 <p>Beneficiaries of these performance improvements are:</p>
 <ul class="simple">
 <li><p>Synchronous route handlers making use of <code class="docutils literal notranslate"><span class="pre">sync_to_thread=True</span></code></p></li>
@@ -2293,8 +2590,8 @@ logged instead.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2810,">litestar-org/litestar#2810,</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2814">litestar-org/litestar#2814</a></span></p>
 </div>
 </dd>
-<dt>Fix OpenAPI schema for pydantic computed fields<a class="headerlink reference internal" href="#2.4.2-fix openapi schema for pydantic computed fields" id="2.4.2-fix openapi schema for pydantic computed fields">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Add support for including computed fields in schemas generated from pydantic
+<dt>Fix OpenAPI schema for Pydantic computed fields<a class="headerlink reference internal" href="#2.4.2-fix openapi schema for pydantic computed fields" id="2.4.2-fix openapi schema for pydantic computed fields">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Add support for including computed fields in schemas generated from Pydantic
 models.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2792">litestar-org/litestar#2792</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2797">litestar-org/litestar#2797</a></span></p>
 </div>
@@ -2962,8 +3259,8 @@ This was fixed by leaving the default value as <a class="reference external" hre
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2138">litestar-org/litestar#2138</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2189">litestar-org/litestar#2189</a></span></p>
 </div>
 </dd>
-<dt>Add <a class="reference internal" href="../reference/controller.html#litestar.controller.Controller.include_in_schema" title="litestar.controller.Controller.include_in_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">include_in_schema()</span></code></a> option for all layers<a class="headerlink reference internal" href="#2.1.0-add" id="2.1.0-add">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Adds the <a class="reference internal" href="../reference/controller.html#litestar.controller.Controller.include_in_schema" title="litestar.controller.Controller.include_in_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">include_in_schema()</span></code></a> option to all layers, allowing to include/exclude
+<dt>Add <a class="reference internal" href="../reference/handlers.html#litestar.handlers.HTTPRouteHandler.params.include_in_schema" title="litestar.handlers.HTTPRouteHandler.params.include_in_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">include_in_schema()</span></code></a> option for all layers<a class="headerlink reference internal" href="#2.1.0-add" id="2.1.0-add">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Adds the <a class="reference internal" href="../reference/handlers.html#litestar.handlers.HTTPRouteHandler.params.include_in_schema" title="litestar.handlers.HTTPRouteHandler.params.include_in_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">include_in_schema()</span></code></a> option to all layers, allowing to include/exclude
 specific routes from the generated OpenAPI schema.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2267">litestar-org/litestar#2267</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2295">litestar-org/litestar#2295</a></span></p>
 </div>
@@ -2996,11 +3293,11 @@ dedicated class method.</p>
 </div>
 </dd>
 <dt>SQLAlchemy: Exclude implicit fields for SQLAlchemy DTO<a class="headerlink reference internal" href="#2.1.0-sqlalchemy: exclude implicit fields for sqlalchemy dto" id="2.1.0-sqlalchemy: exclude implicit fields for sqlalchemy dto">#</a></dt><dd><div class="changelog-change docutils container">
-<p><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.7.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be
+<p><a class="reference internal" href="../reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO" title="advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be
 configured using a separate config object. This can be set using both
 class inheritance and <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Annotated">Annotated</a>:</p>
 <div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.7.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be configured using a separate config object using <code class="docutils literal notranslate"><span class="pre">config</span></code> object.</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text"><a class="reference internal" href="../reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO" title="advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be configured using a separate config object using <code class="docutils literal notranslate"><span class="pre">config</span></code> object.</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyModelDTO</span><span class="p">(</span><span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">MyModel</span><span class="p">]):</span>
     <span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemyDTOConfig</span><span class="p">()</span>
 </pre></div>
@@ -3008,7 +3305,7 @@ class inheritance and <a class="reference external" href="https://docs.python.or
 </div>
 <p>or</p>
 <div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.7.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be configured using a separate config object using <code class="docutils literal notranslate"><span class="pre">Annotated</span></code>.</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text"><a class="reference internal" href="../reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO" title="advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be configured using a separate config object using <code class="docutils literal notranslate"><span class="pre">Annotated</span></code>.</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span> <span class="n">MyModelDTO</span> <span class="o">=</span> <span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="n">MyModel</span><span class="p">,</span> <span class="n">SQLAlchemyDTOConfig</span><span class="p">()]]</span>
 </pre></div>
 </div>
@@ -3359,7 +3656,7 @@ OpenAPI operation ID.</p>
 </div>
 </dd>
 <dt>Support extending the CLI with plugins<a class="headerlink reference internal" href="#2.0.0rc1-support extending the cli with plugins" id="2.0.0rc1-support extending the cli with plugins">#</a></dt><dd><div class="changelog-change docutils container">
-<p>A new plugin protocol <a class="reference internal" href="../reference/plugins.html#litestar.plugins.CLIPluginProtocol" title="litestar.plugins.CLIPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">CLIPluginProtocol</span></code></a> has been
+<p>A new plugin protocol <a class="reference internal" href="../reference/plugins/index.html#litestar.plugins.CLIPluginProtocol" title="litestar.plugins.CLIPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">CLIPluginProtocol</span></code></a> has been
 added that can be used to extend the Litestar CLI.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
@@ -3442,7 +3739,7 @@ has been added.</p>
 <strong>Released: </strong>2023/07/20<section id="2.0.0beta3-feature">
 <h3>Features<a class="headerlink" href="#2.0.0beta3-feature" title="Permalink to this heading">#</a></h3>
 <dl>
-<dt><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.7.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a>: column/relationship type inference<a class="headerlink reference internal" href="#2.0.0beta3-sqlalchemydto (advanced alchemy)" id="2.0.0beta3-sqlalchemydto (advanced alchemy)">#</a></dt><dd><div class="changelog-change docutils container">
+<dt><a class="reference internal" href="../reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO" title="advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a>: column/relationship type inference<a class="headerlink reference internal" href="#2.0.0beta3-sqlalchemydto (advanced alchemy)" id="2.0.0beta3-sqlalchemydto (advanced alchemy)">#</a></dt><dd><div class="changelog-change docutils container">
 <p>If type annotations aren’t available for a given column/relationship, they may
 be inferred from the mapped object.</p>
 <p>For columns, the <a class="reference external" href="https://docs.sqlalchemy.org/en/20/core/reflection.html#sqlalchemy.engine.interfaces.ReflectedColumn.type" title="(in SQLAlchemy v2.0)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">type</span></code></a>‘s
@@ -3564,7 +3861,7 @@ of the update.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1894">litestar-org/litestar#1894</a></span></p>
 </div>
 </dd>
-<dt><a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.7.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a>: Fix handling of <code class="docutils literal notranslate"><span class="pre">Sequence</span></code> with defaults<a class="headerlink reference internal" href="#2.0.0beta3-sqlalchemydto (advanced alchemy)" id="2.0.0beta3-sqlalchemydto (advanced alchemy)">#</a></dt><dd><div class="changelog-change docutils container">
+<dt><a class="reference internal" href="../reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO" title="advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a>: Fix handling of <code class="docutils literal notranslate"><span class="pre">Sequence</span></code> with defaults<a class="headerlink reference internal" href="#2.0.0beta3-sqlalchemydto (advanced alchemy)" id="2.0.0beta3-sqlalchemydto (advanced alchemy)">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fixes handling of columns defined with
 <a class="reference external" href="https://docs.sqlalchemy.org/en/20/core/defaults.html#defining-sequences">Sequence</a>
 default values.</p>
@@ -3721,7 +4018,7 @@ message, pointing at the potential cause.</p>
 </div>
 </dd>
 <dt>Pydantic v1 regex validation<a class="headerlink reference internal" href="#2.0.0beta2-pydantic v1 regex validation" id="2.0.0beta2-pydantic v1 regex validation">#</a></dt><dd><div class="changelog-change docutils container">
-<p>A regression has been fixed in the pydantic signature model logic, which was
+<p>A regression has been fixed in the Pydantic signature model logic, which was
 caused by the renaming of <code class="docutils literal notranslate"><span class="pre">regex</span></code> to <code class="docutils literal notranslate"><span class="pre">pattern</span></code>, which would lead to the
 <a class="reference internal" href="../reference/params.html#litestar.params.KwargDefinition.pattern" title="litestar.params.KwargDefinition.pattern"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pattern</span></code></a> not being validated.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/1860">litestar-org/litestar#1860</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1865">litestar-org/litestar#1865</a></span></p>
@@ -3738,7 +4035,7 @@ caused by the renaming of <code class="docutils literal notranslate"><span class
 <dt>Expose <code class="docutils literal notranslate"><span class="pre">ParsedType</span></code> as public API<a class="headerlink reference internal" href="#2.0.0beta1-expose" id="2.0.0beta1-expose">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Expose the previously private <code class="xref py py-class docutils literal notranslate"><span class="pre">litestar.typing.ParsedType</span></code>. This is
 mainly indented for usage with
-<a class="reference internal" href="../reference/plugins.html#litestar.plugins.SerializationPluginProtocol.supports_type" title="litestar.plugins.SerializationPluginProtocol.supports_type"><code class="xref py py-meth docutils literal notranslate"><span class="pre">litestar.plugins.SerializationPluginProtocol.supports_type()</span></code></a></p>
+<a class="reference internal" href="../reference/plugins/index.html#litestar.plugins.SerializationPluginProtocol.supports_type" title="litestar.plugins.SerializationPluginProtocol.supports_type"><code class="xref py py-meth docutils literal notranslate"><span class="pre">litestar.plugins.SerializationPluginProtocol.supports_type()</span></code></a></p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1677">litestar-org/litestar#1677</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1567">litestar-org/litestar#1567</a></span></p>
 </div>
 </dd>
@@ -3853,8 +4150,8 @@ using a double-underscore syntax, for example
 </div>
 </dd>
 <dt>DTOs: Hybrid properties and association proxies in
-<a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.7.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a><a class="headerlink reference internal" href="#2.0.0beta1-dtos: hybrid properties and association proxies in" id="2.0.0beta1-dtos: hybrid properties and association proxies in">#</a></dt><dd><div class="changelog-change docutils container">
-<p>The <a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy v0.7.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a>
+<a class="reference internal" href="../reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO" title="advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a><a class="headerlink reference internal" href="#2.0.0beta1-dtos: hybrid properties and association proxies in" id="2.0.0beta1-dtos: hybrid properties and association proxies in">#</a></dt><dd><div class="changelog-change docutils container">
+<p>The <a class="reference internal" href="../reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO" title="advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a>
 now supports <a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/extensions/hybrid.html">hybrid attribute</a>
 and <a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/extensions/associationproxy.html">associationproxy</a>.</p>
 <p>The generated field will be marked read-only.</p>
@@ -4593,7 +4890,7 @@ been added, providing the same functionality as their route handler counterparts
 </div>
 </dd>
 <dt>DTO based serialization plugin<a class="headerlink reference internal" href="#2.0.0alpha5-dto based serialization plugin" id="2.0.0alpha5-dto based serialization plugin">#</a><span class="breaking-change">breaking</span></dt><dd><div class="changelog-change docutils container">
-<p><a class="reference internal" href="../reference/plugins.html#litestar.plugins.SerializationPluginProtocol" title="litestar.plugins.SerializationPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerializationPluginProtocol</span></code></a> has been re-implemented,
+<p><a class="reference internal" href="../reference/plugins/index.html#litestar.plugins.SerializationPluginProtocol" title="litestar.plugins.SerializationPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">SerializationPluginProtocol</span></code></a> has been re-implemented,
 leveraging the new <code class="xref py py-class docutils literal notranslate"><span class="pre">DTOInterface</span></code>.</p>
 <p>If a handler defines a plugin supported type as either the <code class="docutils literal notranslate"><span class="pre">data</span></code> kwarg type annotation, or as the return
 annotation for a handler function, and no DTO has otherwise been resolved to handle the type, the protocol
@@ -4613,8 +4910,8 @@ up to the 2.0 release.</p>
 <section id="2.0.0alpha5-bugfix">
 <h3>Bugfixes<a class="headerlink" href="#2.0.0alpha5-bugfix" title="Permalink to this heading">#</a></h3>
 <dl>
-<dt>Fix inconsistent parsing of unix timestamp between pydantic and cattrs<a class="headerlink reference internal" href="#2.0.0alpha5-fix inconsistent parsing of unix timestamp between pydantic and cattrs" id="2.0.0alpha5-fix inconsistent parsing of unix timestamp between pydantic and cattrs">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Timestamps parsed as <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.date" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">date</span></code></a> with pydantic return a UTC date, while cattrs implementation
+<dt>Fix inconsistent parsing of unix timestamp between Pydantic and cattrs<a class="headerlink reference internal" href="#2.0.0alpha5-fix inconsistent parsing of unix timestamp between pydantic and cattrs" id="2.0.0alpha5-fix inconsistent parsing of unix timestamp between pydantic and cattrs">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Timestamps parsed as <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.date" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">date</span></code></a> with Pydantic return a UTC date, while cattrs implementation
 return a date with the local timezone.</p>
 <p>This was corrected by forcing dates to UTC when being parsed by attrs.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/1491">litestar-org/litestar#1491</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1492">litestar-org/litestar#1492</a></span></p>
@@ -5136,7 +5433,7 @@ later on, accepting an additional <code class="docutils literal notranslate"><sp
 this release.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="../reference/config.html#litestar.config.app.AppConfig.before_send" title="litestar.config.app.AppConfig.before_send"><span class="xref std std-ref">before_send</span></a></p>
+<p><a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.before_send" title="litestar.app.Litestar.params.before_send"><span class="xref std std-ref">before_send</span></a></p>
 </div>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1354">litestar-org/litestar#1354</a></span></p>
 </div>
@@ -5290,7 +5587,7 @@ cookie.</p>
 </dd>
 <dt>Fix <a class="github reference external" href="https://github.com/litestar-org/litestar/issues/1149">litestar-org/litestar#1149</a>: Middleware not excluding static path<a class="headerlink reference internal" href="#2.0.0alpha1-fix" id="2.0.0alpha1-fix">#</a></dt><dd><div class="changelog-change docutils container">
 <p>A middleware’s <code class="docutils literal notranslate"><span class="pre">exclude</span></code> parameter would sometimes not be honoured if the path was used to serve static files
-using <code class="docutils literal notranslate"><span class="pre">StaticFilesConfig</span></code>.</p>
+using <code class="docutils literal notranslate"><span class="pre">StaticFilesConfig</span></code></p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/1149">litestar-org/litestar#1149</a></span></p>
 </div>
 </dd>
@@ -5427,6 +5724,15 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.8.0">2.8.0</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.8.0-feature">Features</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.8.0-bugfix">Bugfixes</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.7.1">2.7.1</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.7.1-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.7.0">2.7.0</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.7.0-feature">Features</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.7.0-bugfix">Bugfixes</a></li>
