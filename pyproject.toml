@@ -49,10 +49,13 @@ description = "Litestar - A production-ready, highly performant, extensible ASGI
 keywords = ["api", "rest", "asgi", "litestar", "starlite"]
 license = {text = "MIT"}
 maintainers = [
-  {name = "Cody Fincher", email = "cody.fincher@gmail.com"},
-  {name = "Jacob Coffee", email = "jacob@z7x.org"},
-  {name = "Janek Nouvertné", email = "provinzkraut@posteo.de"},
-  {name = "Peter Schutt", email = "peter.github@proton.me"},
+  {name = "Litestar Developers", email = "hello@litestar.dev"},
+  {name = "Cody Fincher", email = "cody@litestar.dev"},
+  {name = "Jacob Coffee", email = "jacob@litestar.dev"},
+  {name = "Janek Nouvertné", email = "provinzkraut@litestar.dev"},
+  {name = "Peter Schutt", email = "peter@litestar.dev"},
+  {name = "Visakh Unnikrishnan", email = "guacs@litestar.dev"},
+  {name = "Alc", email = "alc@litestar.dev"}
 ]
 name = "litestar"
 readme = "README.md"
