@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Generator, Type
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
-from pytest_lazyfixture import lazy_fixture
+from pytest_lazy_fixtures import lf
 from redis.asyncio import Redis as AsyncRedis
 from redis.client import Redis
 from time_machine import travel
@@ -109,8 +109,8 @@ def cookie_session_backend(cookie_session_backend_config: CookieBackendConfig) -
 
 @pytest.fixture(
     params=[
-        pytest.param(lazy_fixture("cookie_session_backend_config"), id="cookie"),
-        pytest.param(lazy_fixture("server_side_session_config"), id="server-side"),
+        pytest.param(lf("cookie_session_backend_config"), id="cookie"),
+        pytest.param(lf("server_side_session_config"), id="server-side"),
     ]
 )
 def session_backend_config(request: pytest.FixtureRequest) -> ServerSideSessionConfig | CookieBackendConfig:

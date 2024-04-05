@@ -1697,6 +1697,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "carlsmedstad",
+      "name": "Carl Smedstad",
+      "avatar_url": "https://avatars.githubusercontent.com/u/6952324?v=4",
+      "profile": "https://github.com/carlsmedstad",
+      "contributions": [
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,

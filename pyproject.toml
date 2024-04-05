@@ -89,7 +89,7 @@ picologging = ["picologging"]
 prometheus = ["prometheus-client"]
 pydantic = ["pydantic", "email-validator", "pydantic-extra-types"]
 redis = ["redis[hiredis]>=4.4.4"]
-sqlalchemy = ["advanced-alchemy>=0.2.2,<1.0.0"]
+sqlalchemy = ["advanced-alchemy>=0.2.2,<0.9.0"]
 standard = ["jinja2", "jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0; sys_platform != 'win32'", "fast-query-parsers>=1.0.2"]
 structlog = ["structlog"]
 
@@ -150,7 +150,6 @@ linting = [
   "pyright==1.1.344",
   "asyncpg-stubs",
   "types-beautifulsoup4",
-  "types-pytest-lazy-fixture",
   "types-python-jose",
   "types-pyyaml",
   "types-redis",
@@ -161,7 +160,7 @@ test = [
   "pytest<8.0.0",
   "pytest-asyncio",
   "pytest-cov",
-  "pytest-lazy-fixture",
+  "pytest-lazy-fixtures",
   "pytest-mock",
   "pytest-rerunfailures",
   "pytest-timeout",
@@ -410,6 +409,7 @@ known-first-party = ["litestar", "tests", "examples"]
 "tests/unit/test_contrib/test_sqlalchemy/**/*.*" = ["UP006"]
 "tools/**/*.*" = ["D", "ARG", "EM", "TRY", "G", "FBT"]
 "tools/prepare_release.py" = ["S603", "S607"]
+"tests/unit/test_openapi/test_typescript_converter/test_converter.py" = ["W293"]
 
 [tool.ruff.format]
 docstring-code-format = true

@@ -26,14 +26,6 @@ if TYPE_CHECKING:
     from litestar.types.callable_types import ExceptionLoggingHandler, GetLogger
 
 
-try:
-    from structlog.types import BindableLogger, Processor, WrappedLogger
-except ImportError:
-    BindableLogger = Any  # type: ignore[assignment, misc]
-    Processor = Any  # type: ignore[misc]
-    WrappedLogger = Any  # type: ignore[misc]
-
-
 default_handlers: dict[str, dict[str, Any]] = {
     "console": {
         "class": "logging.StreamHandler",

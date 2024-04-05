@@ -23,21 +23,22 @@ import pytest
 from msgspec import Struct
 from typing_extensions import Annotated, TypeAlias
 
-from litestar import Controller, MediaType, get
+from litestar import Controller, MediaType, get, post
 from litestar._openapi.schema_generation.plugins import openapi_schema_plugins
 from litestar._openapi.schema_generation.schema import (
     KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP,
     SchemaCreator,
 )
 from litestar._openapi.schema_generation.utils import _get_normalized_schema_key, _type_or_first_not_none_inner_type
-from litestar.app import DEFAULT_OPENAPI_CONFIG
+from litestar.app import DEFAULT_OPENAPI_CONFIG, Litestar
 from litestar.di import Provide
 from litestar.enums import ParamType
 from litestar.openapi.spec import ExternalDocumentation, OpenAPIType, Reference
 from litestar.openapi.spec.example import Example
+from litestar.openapi.spec.parameter import Parameter as OpenAPIParameter
 from litestar.openapi.spec.schema import Schema
 from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
-from litestar.params import Parameter, ParameterKwarg
+from litestar.params import KwargDefinition, Parameter, ParameterKwarg
 from litestar.testing import create_test_client
 from litestar.types.builtin_types import NoneType
 from litestar.typing import FieldDefinition
@@ -555,3 +556,52 @@ def test_type_union_with_none(base_type: type) -> None:
         Reference(ref="#/components/schemas/tests_unit_test_openapi_test_schema_test_type_union_with_none.ModelA"),
         Reference("#/components/schemas/tests_unit_test_openapi_test_schema_test_type_union_with_none.ModelB"),
     ]
+
+
+def test_default_only_on_field_definition() -> None:
+    field_definition = FieldDefinition.from_annotation(int, default=10)
+    assert field_definition.kwarg_definition is None
+
+    schema = get_schema_for_field_definition(field_definition)
+    assert schema.default == 10
+
+
+def test_default_not_provided_for_kwarg_but_for_field() -> None:
+    field_definition = FieldDefinition.from_annotation(int, default=10, kwarg_definition=KwargDefinition())
+    schema = get_schema_for_field_definition(field_definition)
+
+    assert schema.default == 10
+
+
+def test_routes_with_different_path_param_types_get_merged() -> None:
+    # https://github.com/litestar-org/litestar/issues/2700
+    @get("/{param:int}")
+    async def get_handler(param: int) -> None:
+        pass
+
+    @post("/{param:str}")
+    async def post_handler(param: str) -> None:
+        pass
+
+    app = Litestar([get_handler, post_handler])
+    assert app.openapi_schema.paths
+    paths = app.openapi_schema.paths["/{param}"]
+    assert paths.get is not None
+    assert paths.post is not None
+
+
+def test_unconsumed_path_parameters_are_documented() -> None:
+    # https://github.com/litestar-org/litestar/issues/3290
+    @get("/{param:str}")
+    async def handler() -> None:
+        pass
+
+    app = Litestar([handler])
+    params = app.openapi_schema.paths["/{param}"].get.parameters  # type: ignore[index, union-attr]
+    assert params
+    assert len(params) == 1
+    param = params[0]
+    assert isinstance(param, OpenAPIParameter)
+    assert param.name == "param"
+    assert param.required is True
+    assert param.param_in is ParamType.PATH

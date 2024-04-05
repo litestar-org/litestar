@@ -7,7 +7,7 @@ from pytest_mock import MockerFixture
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from structlog.testing import capture_logs
 
-from litestar import Litestar, Request, Response, get
+from litestar import Litestar, MediaType, Request, Response, get
 from litestar.exceptions import HTTPException, InternalServerException, ValidationException
 from litestar.logging.config import LoggingConfig, StructLoggingConfig
 from litestar.middleware.exceptions import ExceptionHandlerMiddleware
@@ -371,15 +371,17 @@ def test_get_symbol_name_where_type_doesnt_support_bool() -> None:
         assert get_symbol_name(frame) == "Test.method"
 
 
-def test_serialize_custom_types() -> None:
+@pytest.mark.parametrize("media_type", list(MediaType))
+def test_serialize_custom_types(media_type: MediaType) -> None:
     # ensure type encoders are passed down to the created response so custom types that
     # might end up as part of a ValidationException are handled properly
     # https://github.com/litestar-org/litestar/issues/2867
+    # https://github.com/litestar-org/litestar/issues/3192
     class Foo:
         def __init__(self, value: str) -> None:
             self.value = value
 
-    @get()
+    @get(media_type=media_type)
     def handler() -> None:
         raise ValidationException(extra={"foo": Foo("bar")})
 
