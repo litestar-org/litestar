@@ -17,7 +17,7 @@
         :pr: 3281
         :issue: 3277
 
-        Fixes a regression introduced in `2.7.0` where an example for a field provided in Pydantic's
+        Fixes a regression introduced in ``2.7.0`` where an example for a field provided in Pydantic's
         ``Field.json_schema_extra`` would cause an error.
 
     .. change:: Set default on schema from :class:`~.typing.FieldDefinition`
