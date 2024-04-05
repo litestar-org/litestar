@@ -280,7 +280,7 @@ class Litestar(Router):
                 paths.
             path: A path fragment that is prefixed to all route handlers, controllers and routers associated
                 with the application instance.
-                
+
                 .. versionadded:: 2.8.0
             pdb_on_exception: Drop into the PDB when an exception occurs.
             plugins: Sequence of plugins.
