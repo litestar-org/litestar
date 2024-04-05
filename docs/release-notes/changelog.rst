@@ -118,7 +118,11 @@
         :pr: 3190
         :issue: 3188
 
-        - Added precedence of CLI parameters over envs
+        Added precedence of CLI parameters over environment variables.
+        Before this change, environment variables would take precedence over CLI parameters.
+
+        Since CLI parameters are more explicit and are set by the user,
+        they should take precedence over environment variables.
 
     .. change:: Only print when terminal is ``TTY`` enabled
         :type: feature
