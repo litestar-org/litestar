@@ -6,6 +6,21 @@
 .. changelog:: 2.8.0
     :date: 2024-04-05
 
+    .. change:: Unique schema names for nested models (#3134)
+        :type: bugfix
+        :pr: 3136
+        :issue: 3134
+
+        Fixes an issue where nested models beyond the ``max_nested_depth`` would not have
+        unique schema names in the OpenAPI documentation. The fix appends the nested
+        model's name to the ``unique_name`` to differentiate it from the parent model.
+
+    .. change:: Add ``path`` parameter to Litestar application class
+        :type: feature
+        :pr: 3314
+
+        Exposes :paramref:`~.app.Litestar.parameter` at :class:`~.app.Litestar` application class level
+
     .. change:: Remove duplicate ``rich-click`` config options
         :type: bugfix
         :pr: 3274
