@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1187,7 +1188,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1786,7 +1787,7 @@ document.write(`
 a subtype of <code class="docutils literal notranslate"><span class="pre">cl</span></code>, otherwise, <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>cl</strong> – The type to check, or tuple of types. Passed as 2nd argument to <code class="docutils literal notranslate"><span class="pre">issubclass()</span></code>.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.typing.FieldDefinition.is_subclass_of.params.cl"></span><strong>cl</strong><a class="paramlink headerlink reference internal" href="#litestar.typing.FieldDefinition.is_subclass_of.params.cl">¶</a> – The type to check, or tuple of types. Passed as 2nd argument to <code class="docutils literal notranslate"><span class="pre">issubclass()</span></code>.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Whether the annotation is a subtype of the given type(s).</p>
@@ -1800,7 +1801,7 @@ a subtype of <code class="docutils literal notranslate"><span class="pre">cl</sp
 <dd><p>Whether any generic args are a subclass of the given type.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>cl</strong> – The type to check, or tuple of types. Passed as 2nd argument to <code class="docutils literal notranslate"><span class="pre">issubclass()</span></code>.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.typing.FieldDefinition.has_inner_subclass_of.params.cl"></span><strong>cl</strong><a class="paramlink headerlink reference internal" href="#litestar.typing.FieldDefinition.has_inner_subclass_of.params.cl">¶</a> – The type to check, or tuple of types. Passed as 2nd argument to <code class="docutils literal notranslate"><span class="pre">issubclass()</span></code>.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Whether any of the type’s generic args are a subclass of the given type.</p>
@@ -1815,8 +1816,8 @@ a subtype of <code class="docutils literal notranslate"><span class="pre">cl</sp
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>include_extras</strong> – Flag to indicate whether to include <code class="docutils literal notranslate"><span class="pre">Annotated[T,</span> <span class="pre">...]</span></code> or not.</p></li>
-<li><p><strong>resolve_generics</strong> – Flag to indicate whether to resolve the generic types in the type hints or not.</p></li>
+<li><p><span class="target" id="litestar.typing.FieldDefinition.get_type_hints.params.include_extras"></span><strong>include_extras</strong><a class="paramlink headerlink reference internal" href="#litestar.typing.FieldDefinition.get_type_hints.params.include_extras">¶</a> – Flag to indicate whether to include <code class="docutils literal notranslate"><span class="pre">Annotated[T,</span> <span class="pre">...]</span></code> or not.</p></li>
+<li><p><span class="target" id="litestar.typing.FieldDefinition.get_type_hints.params.resolve_generics"></span><strong>resolve_generics</strong><a class="paramlink headerlink reference internal" href="#litestar.typing.FieldDefinition.get_type_hints.params.resolve_generics">¶</a> – Flag to indicate whether to resolve the generic types in the type hints or not.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1832,10 +1833,10 @@ a subtype of <code class="docutils literal notranslate"><span class="pre">cl</sp
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>annotation</strong> – The type annotation. This should be extracted from the return of
+<li><p><span class="target" id="litestar.typing.FieldDefinition.from_annotation.params.annotation"></span><strong>annotation</strong><a class="paramlink headerlink reference internal" href="#litestar.typing.FieldDefinition.from_annotation.params.annotation">¶</a> – The type annotation. This should be extracted from the return of
 <code class="docutils literal notranslate"><span class="pre">get_type_hints(...,</span> <span class="pre">include_extras=True)</span></code> so that forward references are resolved and recursive
 <code class="docutils literal notranslate"><span class="pre">Annotated</span></code> types are flattened.</p></li>
-<li><p><strong>**kwargs</strong> – Additional keyword arguments to pass to the <code class="docutils literal notranslate"><span class="pre">FieldDefinition</span></code> constructor.</p></li>
+<li><p><span class="target" id="litestar.typing.FieldDefinition.from_annotation.params.**kwargs"></span><strong>**kwargs</strong><a class="paramlink headerlink reference internal" href="#litestar.typing.FieldDefinition.from_annotation.params.**kwargs">¶</a> – Additional keyword arguments to pass to the <code class="docutils literal notranslate"><span class="pre">FieldDefinition</span></code> constructor.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1851,12 +1852,12 @@ a subtype of <code class="docutils literal notranslate"><span class="pre">cl</sp
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>annotation</strong> – The type of the kwarg.</p></li>
-<li><p><strong>name</strong> – Field name.</p></li>
-<li><p><strong>default</strong> – A default value.</p></li>
-<li><p><strong>inner_types</strong> – A tuple of FieldDefinition instances representing the inner types, if any.</p></li>
-<li><p><strong>kwarg_definition</strong> – Kwarg Parameter.</p></li>
-<li><p><strong>extra</strong> – A mapping of extra values.</p></li>
+<li><p><span class="target" id="litestar.typing.FieldDefinition.from_kwarg.params.annotation"></span><strong>annotation</strong><a class="paramlink headerlink reference internal" href="#litestar.typing.FieldDefinition.from_kwarg.params.annotation">¶</a> – The type of the kwarg.</p></li>
+<li><p><span class="target" id="litestar.typing.FieldDefinition.from_kwarg.params.name"></span><strong>name</strong><a class="paramlink headerlink reference internal" href="#litestar.typing.FieldDefinition.from_kwarg.params.name">¶</a> – Field name.</p></li>
+<li><p><span class="target" id="litestar.typing.FieldDefinition.from_kwarg.params.default"></span><strong>default</strong><a class="paramlink headerlink reference internal" href="#litestar.typing.FieldDefinition.from_kwarg.params.default">¶</a> – A default value.</p></li>
+<li><p><span class="target" id="litestar.typing.FieldDefinition.from_kwarg.params.inner_types"></span><strong>inner_types</strong><a class="paramlink headerlink reference internal" href="#litestar.typing.FieldDefinition.from_kwarg.params.inner_types">¶</a> – A tuple of FieldDefinition instances representing the inner types, if any.</p></li>
+<li><p><span class="target" id="litestar.typing.FieldDefinition.from_kwarg.params.kwarg_definition"></span><strong>kwarg_definition</strong><a class="paramlink headerlink reference internal" href="#litestar.typing.FieldDefinition.from_kwarg.params.kwarg_definition">¶</a> – Kwarg Parameter.</p></li>
+<li><p><span class="target" id="litestar.typing.FieldDefinition.from_kwarg.params.extra"></span><strong>extra</strong><a class="paramlink headerlink reference internal" href="#litestar.typing.FieldDefinition.from_kwarg.params.extra">¶</a> – A mapping of extra values.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1872,8 +1873,8 @@ a subtype of <code class="docutils literal notranslate"><span class="pre">cl</sp
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>parameter</strong> – inspect.Parameter</p></li>
-<li><p><strong>fn_type_hints</strong> – mapping of names to types. Should be result of <code class="docutils literal notranslate"><span class="pre">get_type_hints()</span></code>, preferably via the
+<li><p><span class="target" id="litestar.typing.FieldDefinition.from_parameter.params.parameter"></span><strong>parameter</strong><a class="paramlink headerlink reference internal" href="#litestar.typing.FieldDefinition.from_parameter.params.parameter">¶</a> – inspect.Parameter</p></li>
+<li><p><span class="target" id="litestar.typing.FieldDefinition.from_parameter.params.fn_type_hints"></span><strong>fn_type_hints</strong><a class="paramlink headerlink reference internal" href="#litestar.typing.FieldDefinition.from_parameter.params.fn_type_hints">¶</a> – mapping of names to types. Should be result of <code class="docutils literal notranslate"><span class="pre">get_type_hints()</span></code>, preferably via the
 :attr:<code class="docutils literal notranslate"><span class="pre">get_fn_type_hints()</span> <span class="pre">&lt;.utils.signature_parsing.get_fn_type_hints&gt;</span></code> helper.</p></li>
 </ul>
 </dd>
@@ -1889,7 +1890,7 @@ a subtype of <code class="docutils literal notranslate"><span class="pre">cl</sp
 <dd><p>Recursively test the passed in predicate against the field and any of its inner fields.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>predicate</strong> – A callable that receives a field definition instance as an arg and returns a boolean.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.typing.FieldDefinition.match_predicate_recursively.params.predicate"></span><strong>predicate</strong><a class="paramlink headerlink reference internal" href="#litestar.typing.FieldDefinition.match_predicate_recursively.params.predicate">¶</a> – A callable that receives a field definition instance as an arg and returns a boolean.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A boolean.</p>

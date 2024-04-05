@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1187,7 +1188,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1545,8 +1546,8 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>app</strong> – The <code class="docutils literal notranslate"><span class="pre">next</span></code> ASGI app to call.</p></li>
-<li><p><strong>config</strong> – An instance of LoggingMiddlewareConfig.</p></li>
+<li><p><span class="target" id="litestar.middleware.logging.LoggingMiddleware.params.app"></span><strong>app</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.logging.LoggingMiddleware.params.app">¶</a> – The <code class="docutils literal notranslate"><span class="pre">next</span></code> ASGI app to call.</p></li>
+<li><p><span class="target" id="litestar.middleware.logging.LoggingMiddleware.params.config"></span><strong>config</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.logging.LoggingMiddleware.params.config">¶</a> – An instance of LoggingMiddlewareConfig.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1559,8 +1560,8 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>scope</strong> – The ASGI connection scope.</p></li>
-<li><p><strong>receive</strong> – ASGI receive callable</p></li>
+<li><p><span class="target" id="litestar.middleware.logging.LoggingMiddleware.log_request.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.logging.LoggingMiddleware.log_request.params.scope">¶</a> – The ASGI connection scope.</p></li>
+<li><p><span class="target" id="litestar.middleware.logging.LoggingMiddleware.log_request.params.receive"></span><strong>receive</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.logging.LoggingMiddleware.log_request.params.receive">¶</a> – ASGI receive callable</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1575,7 +1576,7 @@ document.write(`
 <dd><p>Extract the response data and log the message.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>scope</strong> – The ASGI connection scope.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.middleware.logging.LoggingMiddleware.log_response.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.logging.LoggingMiddleware.log_response.params.scope">¶</a> – The ASGI connection scope.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
@@ -1589,7 +1590,7 @@ document.write(`
 <dd><p>Log a message.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>values</strong> – Extract values to log.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.middleware.logging.LoggingMiddleware.log_message.params.values"></span><strong>values</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.logging.LoggingMiddleware.log_message.params.values">¶</a> – Extract values to log.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
@@ -1603,7 +1604,7 @@ document.write(`
 <dd><p>Create a dictionary of values for the message.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>request</strong> – A <a class="reference internal" href="../connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.middleware.logging.LoggingMiddleware.extract_request_data.params.request"></span><strong>request</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.logging.LoggingMiddleware.extract_request_data.params.request">¶</a> – A <a class="reference internal" href="../connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>An dict.</p>
@@ -1617,7 +1618,7 @@ document.write(`
 <dd><p>Extract data from the response.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>scope</strong> – The ASGI connection scope.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.middleware.logging.LoggingMiddleware.extract_response_data.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.logging.LoggingMiddleware.extract_response_data.params.scope">¶</a> – The ASGI connection scope.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>An dict.</p>
@@ -1632,8 +1633,8 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>scope</strong> – The ASGI connection scope.</p></li>
-<li><p><strong>send</strong> – The ASGI send function.</p></li>
+<li><p><span class="target" id="litestar.middleware.logging.LoggingMiddleware.create_send_wrapper.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.logging.LoggingMiddleware.create_send_wrapper.params.scope">¶</a> – The ASGI connection scope.</p></li>
+<li><p><span class="target" id="litestar.middleware.logging.LoggingMiddleware.create_send_wrapper.params.send"></span><strong>send</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.logging.LoggingMiddleware.create_send_wrapper.params.send">¶</a> – The ASGI send function.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1768,7 +1769,7 @@ message logged out.</p>
 <dd><p>Override default Pydantic type conversion for iterables.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>value</strong> – An iterable</p>
+<dd class="field-odd"><p><span class="target" id="litestar.middleware.logging.LoggingMiddlewareConfig.__post_init__.params.value"></span><strong>value</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.logging.LoggingMiddlewareConfig.__post_init__.params.value">¶</a> – An iterable</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The <cite>value</cite> argument cast as a tuple.</p>

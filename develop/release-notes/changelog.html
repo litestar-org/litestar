@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1185,7 +1186,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -3084,8 +3085,8 @@ This was fixed by leaving the default value as <a class="reference external" hre
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2138">litestar-org/litestar#2138</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2189">litestar-org/litestar#2189</a></span></p>
 </div>
 </dd>
-<dt>Add <a class="reference internal" href="../reference/controller.html#litestar.controller.Controller.include_in_schema" title="litestar.controller.Controller.include_in_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">include_in_schema()</span></code></a> option for all layers<a class="headerlink reference internal" href="#2.1.0-add" id="2.1.0-add">#</a></dt><dd><div class="changelog-change docutils container">
-<p>Adds the <a class="reference internal" href="../reference/controller.html#litestar.controller.Controller.include_in_schema" title="litestar.controller.Controller.include_in_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">include_in_schema()</span></code></a> option to all layers, allowing to include/exclude
+<dt>Add <a class="reference internal" href="../reference/handlers.html#litestar.handlers.HTTPRouteHandler.params.include_in_schema" title="litestar.handlers.HTTPRouteHandler.params.include_in_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">include_in_schema()</span></code></a> option for all layers<a class="headerlink reference internal" href="#2.1.0-add" id="2.1.0-add">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Adds the <a class="reference internal" href="../reference/handlers.html#litestar.handlers.HTTPRouteHandler.params.include_in_schema" title="litestar.handlers.HTTPRouteHandler.params.include_in_schema"><code class="xref py py-meth docutils literal notranslate"><span class="pre">include_in_schema()</span></code></a> option to all layers, allowing to include/exclude
 specific routes from the generated OpenAPI schema.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2267">litestar-org/litestar#2267</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/2295">litestar-org/litestar#2295</a></span></p>
 </div>
@@ -5258,7 +5259,7 @@ later on, accepting an additional <code class="docutils literal notranslate"><sp
 this release.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="../reference/config.html#litestar.config.app.AppConfig.before_send" title="litestar.config.app.AppConfig.before_send"><span class="xref std std-ref">before_send</span></a></p>
+<p><a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.before_send" title="litestar.app.Litestar.params.before_send"><span class="xref std std-ref">before_send</span></a></p>
 </div>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1354">litestar-org/litestar#1354</a></span></p>
 </div>

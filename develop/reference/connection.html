@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1187,7 +1188,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1568,9 +1569,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>scope</strong> – The ASGI connection scope.</p></li>
-<li><p><strong>receive</strong> – The ASGI receive function.</p></li>
-<li><p><strong>send</strong> – The ASGI send function.</p></li>
+<li><p><span class="target" id="litestar.connection.ASGIConnection.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.ASGIConnection.params.scope">¶</a> – The ASGI connection scope.</p></li>
+<li><p><span class="target" id="litestar.connection.ASGIConnection.params.receive"></span><strong>receive</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.ASGIConnection.params.receive">¶</a> – The ASGI receive function.</p></li>
+<li><p><span class="target" id="litestar.connection.ASGIConnection.params.send"></span><strong>send</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.ASGIConnection.params.send">¶</a> – The ASGI send function.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1769,7 +1770,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</p>
 to the response as a cookie header.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>value</strong> – Dictionary or pydantic model instance for the session data.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.connection.ASGIConnection.set_session.params.value"></span><strong>value</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.ASGIConnection.set_session.params.value">¶</a> – Dictionary or pydantic model instance for the session data.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
@@ -1797,8 +1798,8 @@ the session data to be cleared.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> – The <code class="docutils literal notranslate"><span class="pre">name</span></code> of the request route handler.</p></li>
-<li><p><strong>**path_parameters</strong> – Values for path parameters in the route</p></li>
+<li><p><span class="target" id="litestar.connection.ASGIConnection.url_for.params.name"></span><strong>name</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.ASGIConnection.url_for.params.name">¶</a> – The <code class="docutils literal notranslate"><span class="pre">name</span></code> of the request route handler.</p></li>
+<li><p><span class="target" id="litestar.connection.ASGIConnection.url_for.params.**path_parameters"></span><strong>**path_parameters</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.ASGIConnection.url_for.params.**path_parameters">¶</a> – Values for path parameters in the route</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
@@ -1818,8 +1819,8 @@ the session data to be cleared.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> – A static handler unique name.</p></li>
-<li><p><strong>file_path</strong> – a string containing path to an asset.</p></li>
+<li><p><span class="target" id="litestar.connection.ASGIConnection.url_for_static_asset.params.name"></span><strong>name</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.ASGIConnection.url_for_static_asset.params.name">¶</a> – A static handler unique name.</p></li>
+<li><p><span class="target" id="litestar.connection.ASGIConnection.url_for_static_asset.params.file_path"></span><strong>file_path</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.ASGIConnection.url_for_static_asset.params.file_path">¶</a> – a string containing path to an asset.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
@@ -1845,9 +1846,9 @@ the session data to be cleared.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>scope</strong> – The ASGI connection scope.</p></li>
-<li><p><strong>receive</strong> – The ASGI receive function.</p></li>
-<li><p><strong>send</strong> – The ASGI send function.</p></li>
+<li><p><span class="target" id="litestar.connection.Request.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.Request.params.scope">¶</a> – The ASGI connection scope.</p></li>
+<li><p><span class="target" id="litestar.connection.Request.params.receive"></span><strong>receive</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.Request.params.receive">¶</a> – The ASGI receive function.</p></li>
+<li><p><span class="target" id="litestar.connection.Request.params.send"></span><strong>send</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.Request.params.send">¶</a> – The ASGI send function.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1954,8 +1955,8 @@ request, otherwise, an empty instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> – Path to send the promise to.</p></li>
-<li><p><strong>raise_if_unavailable</strong> – Raise an exception if server push is not supported by
+<li><p><span class="target" id="litestar.connection.Request.send_push_promise.params.path"></span><strong>path</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.Request.send_push_promise.params.path">¶</a> – Path to send the promise to.</p></li>
+<li><p><span class="target" id="litestar.connection.Request.send_push_promise.params.raise_if_unavailable"></span><strong>raise_if_unavailable</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.Request.send_push_promise.params.raise_if_unavailable">¶</a> – Raise an exception if server push is not supported by
 the server</p></li>
 </ul>
 </dd>
@@ -1979,9 +1980,9 @@ the server</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>scope</strong> – The ASGI connection scope.</p></li>
-<li><p><strong>receive</strong> – The ASGI receive function.</p></li>
-<li><p><strong>send</strong> – The ASGI send function.</p></li>
+<li><p><span class="target" id="litestar.connection.WebSocket.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.params.scope">¶</a> – The ASGI connection scope.</p></li>
+<li><p><span class="target" id="litestar.connection.WebSocket.params.receive"></span><strong>receive</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.params.receive">¶</a> – The ASGI receive function.</p></li>
+<li><p><span class="target" id="litestar.connection.WebSocket.params.send"></span><strong>send</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.params.send">¶</a> – The ASGI send function.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1993,7 +1994,7 @@ the server</p></li>
 <dd><p>Wrap <code class="docutils literal notranslate"><span class="pre">receive</span></code> to set ‘self.connection_state’ and validate events.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>receive</strong> – The ASGI receive function.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.connection.WebSocket.receive_wrapper.params.receive"></span><strong>receive</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.receive_wrapper.params.receive">¶</a> – The ASGI receive function.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>An ASGI receive function.</p>
@@ -2007,7 +2008,7 @@ the server</p></li>
 <dd><p>Wrap <code class="docutils literal notranslate"><span class="pre">send</span></code> to ensure that state is not disconnected.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>send</strong> – The ASGI send function.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.connection.WebSocket.send_wrapper.params.send"></span><strong>send</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.send_wrapper.params.send">¶</a> – The ASGI send function.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>An ASGI send function.</p>
@@ -2022,8 +2023,8 @@ the server</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>subprotocols</strong> – Websocket sub-protocol to use.</p></li>
-<li><p><strong>headers</strong> – Headers to set on the data sent.</p></li>
+<li><p><span class="target" id="litestar.connection.WebSocket.accept.params.subprotocols"></span><strong>subprotocols</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.accept.params.subprotocols">¶</a> – Websocket sub-protocol to use.</p></li>
+<li><p><span class="target" id="litestar.connection.WebSocket.accept.params.headers"></span><strong>headers</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.accept.params.headers">¶</a> – Headers to set on the data sent.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2039,8 +2040,8 @@ the server</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>code</strong> – Status code.</p></li>
-<li><p><strong>reason</strong> – Reason for closing the connection</p></li>
+<li><p><span class="target" id="litestar.connection.WebSocket.close.params.code"></span><strong>code</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.close.params.code">¶</a> – Status code.</p></li>
+<li><p><span class="target" id="litestar.connection.WebSocket.close.params.reason"></span><strong>reason</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.close.params.reason">¶</a> – Reason for closing the connection</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2057,7 +2058,7 @@ the server</p></li>
 <dd><p>Receive an ‘websocket.receive’ event and returns the data stored on it.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>mode</strong> – The respective event key to use.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.connection.WebSocket.receive_data.params.mode"></span><strong>mode</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.receive_data.params.mode">¶</a> – The respective event key to use.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The event’s data.</p>
@@ -2073,7 +2074,7 @@ the server</p></li>
 <dd><p>Continuously receive data and yield it</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>mode</strong> – Socket mode to use. Either <code class="docutils literal notranslate"><span class="pre">text</span></code> or <code class="docutils literal notranslate"><span class="pre">binary</span></code></p>
+<dd class="field-odd"><p><span class="target" id="litestar.connection.WebSocket.iter_data.params.mode"></span><strong>mode</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.iter_data.params.mode">¶</a> – Socket mode to use. Either <code class="docutils literal notranslate"><span class="pre">text</span></code> or <code class="docutils literal notranslate"><span class="pre">binary</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -2106,7 +2107,7 @@ the server</p></li>
 <dd><p>Receive data and decode it as JSON.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>mode</strong> – Either <code class="docutils literal notranslate"><span class="pre">text</span></code> or <code class="docutils literal notranslate"><span class="pre">binary</span></code>.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.connection.WebSocket.receive_json.params.mode"></span><strong>mode</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.receive_json.params.mode">¶</a> – Either <code class="docutils literal notranslate"><span class="pre">text</span></code> or <code class="docutils literal notranslate"><span class="pre">binary</span></code>.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>An arbitrary value</p>
@@ -2133,7 +2134,7 @@ data in <code class="docutils literal notranslate"><span class="pre">binary</spa
 <dd><p>Continuously receive data and yield it, decoding it as JSON in the process.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>mode</strong> – Socket mode to use. Either <code class="docutils literal notranslate"><span class="pre">text</span></code> or <code class="docutils literal notranslate"><span class="pre">binary</span></code></p>
+<dd class="field-odd"><p><span class="target" id="litestar.connection.WebSocket.iter_json.params.mode"></span><strong>mode</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.iter_json.params.mode">¶</a> – Socket mode to use. Either <code class="docutils literal notranslate"><span class="pre">text</span></code> or <code class="docutils literal notranslate"><span class="pre">binary</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -2154,9 +2155,9 @@ data in <code class="docutils literal notranslate"><span class="pre">binary</spa
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> – Data to send.</p></li>
-<li><p><strong>mode</strong> – The respective event key to use.</p></li>
-<li><p><strong>encoding</strong> – Encoding to use when converting bytes / str.</p></li>
+<li><p><span class="target" id="litestar.connection.WebSocket.send_data.params.data"></span><strong>data</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.send_data.params.data">¶</a> – Data to send.</p></li>
+<li><p><span class="target" id="litestar.connection.WebSocket.send_data.params.mode"></span><strong>mode</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.send_data.params.mode">¶</a> – The respective event key to use.</p></li>
+<li><p><span class="target" id="litestar.connection.WebSocket.send_data.params.encoding"></span><strong>encoding</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.send_data.params.encoding">¶</a> – Encoding to use when converting bytes / str.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2174,8 +2175,8 @@ data in <code class="docutils literal notranslate"><span class="pre">binary</spa
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> – Data to send</p></li>
-<li><p><strong>encoding</strong> – Encoding to use for binary data.</p></li>
+<li><p><span class="target" id="litestar.connection.WebSocket.send_text.params.data"></span><strong>data</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.send_text.params.data">¶</a> – Data to send</p></li>
+<li><p><span class="target" id="litestar.connection.WebSocket.send_text.params.encoding"></span><strong>encoding</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.send_text.params.encoding">¶</a> – Encoding to use for binary data.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2193,8 +2194,8 @@ data in <code class="docutils literal notranslate"><span class="pre">binary</spa
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> – Data to send</p></li>
-<li><p><strong>encoding</strong> – Encoding to use for binary data.</p></li>
+<li><p><span class="target" id="litestar.connection.WebSocket.send_bytes.params.data"></span><strong>data</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.send_bytes.params.data">¶</a> – Data to send</p></li>
+<li><p><span class="target" id="litestar.connection.WebSocket.send_bytes.params.encoding"></span><strong>encoding</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.send_bytes.params.encoding">¶</a> – Encoding to use for binary data.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2210,10 +2211,10 @@ data in <code class="docutils literal notranslate"><span class="pre">binary</spa
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> – A value to serialize.</p></li>
-<li><p><strong>mode</strong> – Either <code class="docutils literal notranslate"><span class="pre">text</span></code> or <code class="docutils literal notranslate"><span class="pre">binary</span></code>.</p></li>
-<li><p><strong>encoding</strong> – Encoding to use for binary data.</p></li>
-<li><p><strong>serializer</strong> – A serializer function.</p></li>
+<li><p><span class="target" id="litestar.connection.WebSocket.send_json.params.data"></span><strong>data</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.send_json.params.data">¶</a> – A value to serialize.</p></li>
+<li><p><span class="target" id="litestar.connection.WebSocket.send_json.params.mode"></span><strong>mode</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.send_json.params.mode">¶</a> – Either <code class="docutils literal notranslate"><span class="pre">text</span></code> or <code class="docutils literal notranslate"><span class="pre">binary</span></code>.</p></li>
+<li><p><span class="target" id="litestar.connection.WebSocket.send_json.params.encoding"></span><strong>encoding</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.send_json.params.encoding">¶</a> – Encoding to use for binary data.</p></li>
+<li><p><span class="target" id="litestar.connection.WebSocket.send_json.params.serializer"></span><strong>serializer</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.send_json.params.serializer">¶</a> – A serializer function.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2231,9 +2232,9 @@ data in <code class="docutils literal notranslate"><span class="pre">binary</spa
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> – A value to serialize.</p></li>
-<li><p><strong>encoding</strong> – Encoding to use for binary data.</p></li>
-<li><p><strong>serializer</strong> – A serializer function.</p></li>
+<li><p><span class="target" id="litestar.connection.WebSocket.send_msgpack.params.data"></span><strong>data</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.send_msgpack.params.data">¶</a> – A value to serialize.</p></li>
+<li><p><span class="target" id="litestar.connection.WebSocket.send_msgpack.params.encoding"></span><strong>encoding</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.send_msgpack.params.encoding">¶</a> – Encoding to use for binary data.</p></li>
+<li><p><span class="target" id="litestar.connection.WebSocket.send_msgpack.params.serializer"></span><strong>serializer</strong><a class="paramlink headerlink reference internal" href="#litestar.connection.WebSocket.send_msgpack.params.serializer">¶</a> – A serializer function.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

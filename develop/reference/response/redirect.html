@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1187,7 +1188,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1545,16 +1546,16 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>background</strong> – A background task or a list of background tasks to be executed after the response is sent.</p></li>
-<li><p><strong>body</strong> – encoded content to send in the response body.</p></li>
-<li><p><strong>content_length</strong> – The response content length.</p></li>
-<li><p><strong>cookies</strong> – The response cookies.</p></li>
-<li><p><strong>encoded_headers</strong> – The response headers.</p></li>
-<li><p><strong>encoding</strong> – The response encoding.</p></li>
-<li><p><strong>headers</strong> – The response headers.</p></li>
-<li><p><strong>is_head_response</strong> – A boolean indicating if the response is a HEAD response.</p></li>
-<li><p><strong>media_type</strong> – The response media type.</p></li>
-<li><p><strong>status_code</strong> – The response status code.</p></li>
+<li><p><span class="target" id="litestar.response.redirect.ASGIRedirectResponse.params.background"></span><strong>background</strong><a class="paramlink headerlink reference internal" href="#litestar.response.redirect.ASGIRedirectResponse.params.background">¶</a> – A background task or a list of background tasks to be executed after the response is sent.</p></li>
+<li><p><span class="target" id="litestar.response.redirect.ASGIRedirectResponse.params.body"></span><strong>body</strong><a class="paramlink headerlink reference internal" href="#litestar.response.redirect.ASGIRedirectResponse.params.body">¶</a> – encoded content to send in the response body.</p></li>
+<li><p><span class="target" id="litestar.response.redirect.ASGIRedirectResponse.params.content_length"></span><strong>content_length</strong><a class="paramlink headerlink reference internal" href="#litestar.response.redirect.ASGIRedirectResponse.params.content_length">¶</a> – The response content length.</p></li>
+<li><p><span class="target" id="litestar.response.redirect.ASGIRedirectResponse.params.cookies"></span><strong>cookies</strong><a class="paramlink headerlink reference internal" href="#litestar.response.redirect.ASGIRedirectResponse.params.cookies">¶</a> – The response cookies.</p></li>
+<li><p><span class="target" id="litestar.response.redirect.ASGIRedirectResponse.params.encoded_headers"></span><strong>encoded_headers</strong><a class="paramlink headerlink reference internal" href="#litestar.response.redirect.ASGIRedirectResponse.params.encoded_headers">¶</a> – The response headers.</p></li>
+<li><p><span class="target" id="litestar.response.redirect.ASGIRedirectResponse.params.encoding"></span><strong>encoding</strong><a class="paramlink headerlink reference internal" href="#litestar.response.redirect.ASGIRedirectResponse.params.encoding">¶</a> – The response encoding.</p></li>
+<li><p><span class="target" id="litestar.response.redirect.ASGIRedirectResponse.params.headers"></span><strong>headers</strong><a class="paramlink headerlink reference internal" href="#litestar.response.redirect.ASGIRedirectResponse.params.headers">¶</a> – The response headers.</p></li>
+<li><p><span class="target" id="litestar.response.redirect.ASGIRedirectResponse.params.is_head_response"></span><strong>is_head_response</strong><a class="paramlink headerlink reference internal" href="#litestar.response.redirect.ASGIRedirectResponse.params.is_head_response">¶</a> – A boolean indicating if the response is a HEAD response.</p></li>
+<li><p><span class="target" id="litestar.response.redirect.ASGIRedirectResponse.params.media_type"></span><strong>media_type</strong><a class="paramlink headerlink reference internal" href="#litestar.response.redirect.ASGIRedirectResponse.params.media_type">¶</a> – The response media type.</p></li>
+<li><p><span class="target" id="litestar.response.redirect.ASGIRedirectResponse.params.status_code"></span><strong>status_code</strong><a class="paramlink headerlink reference internal" href="#litestar.response.redirect.ASGIRedirectResponse.params.status_code">¶</a> – The response status code.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1574,16 +1575,16 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> – A path to redirect to.</p></li>
-<li><p><strong>background</strong> – A background task or tasks to be run after the response is sent.</p></li>
-<li><p><strong>cookies</strong> – A list of <a class="reference internal" href="../datastructures.html#litestar.datastructures.Cookie" title="litestar.datastructures.Cookie"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cookie</span></code></a> instances to be set under the response
+<li><p><span class="target" id="litestar.response.redirect.Redirect.params.path"></span><strong>path</strong><a class="paramlink headerlink reference internal" href="#litestar.response.redirect.Redirect.params.path">¶</a> – A path to redirect to.</p></li>
+<li><p><span class="target" id="litestar.response.redirect.Redirect.params.background"></span><strong>background</strong><a class="paramlink headerlink reference internal" href="#litestar.response.redirect.Redirect.params.background">¶</a> – A background task or tasks to be run after the response is sent.</p></li>
+<li><p><span class="target" id="litestar.response.redirect.Redirect.params.cookies"></span><strong>cookies</strong><a class="paramlink headerlink reference internal" href="#litestar.response.redirect.Redirect.params.cookies">¶</a> – A list of <a class="reference internal" href="../datastructures.html#litestar.datastructures.Cookie" title="litestar.datastructures.Cookie"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cookie</span></code></a> instances to be set under the response
 <code class="docutils literal notranslate"><span class="pre">Set-Cookie</span></code> header.</p></li>
-<li><p><strong>encoding</strong> – The encoding to be used for the response headers.</p></li>
-<li><p><strong>headers</strong> – A string keyed dictionary of response headers. Header keys are insensitive.</p></li>
-<li><p><strong>media_type</strong> – A value for the response <code class="docutils literal notranslate"><span class="pre">Content-Type</span></code> header.</p></li>
-<li><p><strong>status_code</strong> – An HTTP status code. The status code should be one of 301, 302, 303, 307 or 308,
+<li><p><span class="target" id="litestar.response.redirect.Redirect.params.encoding"></span><strong>encoding</strong><a class="paramlink headerlink reference internal" href="#litestar.response.redirect.Redirect.params.encoding">¶</a> – The encoding to be used for the response headers.</p></li>
+<li><p><span class="target" id="litestar.response.redirect.Redirect.params.headers"></span><strong>headers</strong><a class="paramlink headerlink reference internal" href="#litestar.response.redirect.Redirect.params.headers">¶</a> – A string keyed dictionary of response headers. Header keys are insensitive.</p></li>
+<li><p><span class="target" id="litestar.response.redirect.Redirect.params.media_type"></span><strong>media_type</strong><a class="paramlink headerlink reference internal" href="#litestar.response.redirect.Redirect.params.media_type">¶</a> – A value for the response <code class="docutils literal notranslate"><span class="pre">Content-Type</span></code> header.</p></li>
+<li><p><span class="target" id="litestar.response.redirect.Redirect.params.status_code"></span><strong>status_code</strong><a class="paramlink headerlink reference internal" href="#litestar.response.redirect.Redirect.params.status_code">¶</a> – An HTTP status code. The status code should be one of 301, 302, 303, 307 or 308,
 otherwise an exception will be raised.</p></li>
-<li><p><strong>type_encoders</strong> – A mapping of types to callables that transform them into types supported for serialization.</p></li>
+<li><p><span class="target" id="litestar.response.redirect.Redirect.params.type_encoders"></span><strong>type_encoders</strong><a class="paramlink headerlink reference internal" href="#litestar.response.redirect.Redirect.params.type_encoders">¶</a> – A mapping of types to callables that transform them into types supported for serialization.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
@@ -1600,16 +1601,16 @@ otherwise an exception will be raised.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>app</strong> – The <a class="reference internal" href="../app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a> application instance.</p></li>
-<li><p><strong>background</strong> – Background task(s) to be executed after the response is sent.</p></li>
-<li><p><strong>cookies</strong> – A list of cookies to be set on the response.</p></li>
-<li><p><strong>encoded_headers</strong> – A list of already encoded headers.</p></li>
-<li><p><strong>headers</strong> – Additional headers to be merged with the response headers. Response headers take precedence.</p></li>
-<li><p><strong>is_head_response</strong> – Whether the response is a HEAD response.</p></li>
-<li><p><strong>media_type</strong> – Media type for the response. If <code class="docutils literal notranslate"><span class="pre">media_type</span></code> is already set on the response, this is ignored.</p></li>
-<li><p><strong>request</strong> – The <a class="reference internal" href="../connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance.</p></li>
-<li><p><strong>status_code</strong> – Status code for the response. If <code class="docutils literal notranslate"><span class="pre">status_code</span></code> is already set on the response, this is</p></li>
-<li><p><strong>type_encoders</strong> – A dictionary of type encoders to use for encoding the response content.</p></li>
+<li><p><span class="target" id="litestar.response.redirect.Redirect.to_asgi_response.params.app"></span><strong>app</strong><a class="paramlink headerlink reference internal" href="#litestar.response.redirect.Redirect.to_asgi_response.params.app">¶</a> – The <a class="reference internal" href="../app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a> application instance.</p></li>
+<li><p><span class="target" id="litestar.response.redirect.Redirect.to_asgi_response.params.background"></span><strong>background</strong><a class="paramlink headerlink reference internal" href="#litestar.response.redirect.Redirect.to_asgi_response.params.background">¶</a> – Background task(s) to be executed after the response is sent.</p></li>
+<li><p><span class="target" id="litestar.response.redirect.Redirect.to_asgi_response.params.cookies"></span><strong>cookies</strong><a class="paramlink headerlink reference internal" href="#litestar.response.redirect.Redirect.to_asgi_response.params.cookies">¶</a> – A list of cookies to be set on the response.</p></li>
+<li><p><span class="target" id="litestar.response.redirect.Redirect.to_asgi_response.params.encoded_headers"></span><strong>encoded_headers</strong><a class="paramlink headerlink reference internal" href="#litestar.response.redirect.Redirect.to_asgi_response.params.encoded_headers">¶</a> – A list of already encoded headers.</p></li>
+<li><p><span class="target" id="litestar.response.redirect.Redirect.to_asgi_response.params.headers"></span><strong>headers</strong><a class="paramlink headerlink reference internal" href="#litestar.response.redirect.Redirect.to_asgi_response.params.headers">¶</a> – Additional headers to be merged with the response headers. Response headers take precedence.</p></li>
+<li><p><span class="target" id="litestar.response.redirect.Redirect.to_asgi_response.params.is_head_response"></span><strong>is_head_response</strong><a class="paramlink headerlink reference internal" href="#litestar.response.redirect.Redirect.to_asgi_response.params.is_head_response">¶</a> – Whether the response is a HEAD response.</p></li>
+<li><p><span class="target" id="litestar.response.redirect.Redirect.to_asgi_response.params.media_type"></span><strong>media_type</strong><a class="paramlink headerlink reference internal" href="#litestar.response.redirect.Redirect.to_asgi_response.params.media_type">¶</a> – Media type for the response. If <code class="docutils literal notranslate"><span class="pre">media_type</span></code> is already set on the response, this is ignored.</p></li>
+<li><p><span class="target" id="litestar.response.redirect.Redirect.to_asgi_response.params.request"></span><strong>request</strong><a class="paramlink headerlink reference internal" href="#litestar.response.redirect.Redirect.to_asgi_response.params.request">¶</a> – The <a class="reference internal" href="../connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance.</p></li>
+<li><p><span class="target" id="litestar.response.redirect.Redirect.to_asgi_response.params.status_code"></span><strong>status_code</strong><a class="paramlink headerlink reference internal" href="#litestar.response.redirect.Redirect.to_asgi_response.params.status_code">¶</a> – Status code for the response. If <code class="docutils literal notranslate"><span class="pre">status_code</span></code> is already set on the response, this is</p></li>
+<li><p><span class="target" id="litestar.response.redirect.Redirect.to_asgi_response.params.type_encoders"></span><strong>type_encoders</strong><a class="paramlink headerlink reference internal" href="#litestar.response.redirect.Redirect.to_asgi_response.params.type_encoders">¶</a> – A dictionary of type encoders to use for encoding the response content.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

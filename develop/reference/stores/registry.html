@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1187,7 +1188,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1545,8 +1546,8 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>stores</strong> – A dictionary mapping store names to stores, used to initialize the registry</p></li>
-<li><p><strong>default_factory</strong> – A callable used by <a class="reference internal" href="#litestar.stores.registry.StoreRegistry.get" title="litestar.stores.registry.StoreRegistry.get"><code class="xref py py-meth docutils literal notranslate"><span class="pre">StoreRegistry.get()</span></code></a> to provide a store, if the requested name hasn’t
+<li><p><span class="target" id="litestar.stores.registry.StoreRegistry.params.stores"></span><strong>stores</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.registry.StoreRegistry.params.stores">¶</a> – A dictionary mapping store names to stores, used to initialize the registry</p></li>
+<li><p><span class="target" id="litestar.stores.registry.StoreRegistry.params.default_factory"></span><strong>default_factory</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.registry.StoreRegistry.params.default_factory">¶</a> – A callable used by <a class="reference internal" href="#litestar.stores.registry.StoreRegistry.get" title="litestar.stores.registry.StoreRegistry.get"><code class="xref py py-meth docutils literal notranslate"><span class="pre">StoreRegistry.get()</span></code></a> to provide a store, if the requested name hasn’t
 been registered yet. This callable receives the requested name and should return a
 <a class="reference internal" href="base.html#litestar.stores.base.Store" title="litestar.stores.base.Store"><code class="xref py py-class docutils literal notranslate"><span class="pre">Store</span></code></a> instance.</p></li>
 </ul>
@@ -1561,9 +1562,9 @@ been registered yet. This callable receives the requested name and should return
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> – Name to register the store under</p></li>
-<li><p><strong>store</strong> – The store to register</p></li>
-<li><p><strong>allow_override</strong> – Whether to allow overriding an existing store of the same name</p></li>
+<li><p><span class="target" id="litestar.stores.registry.StoreRegistry.register.params.name"></span><strong>name</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.registry.StoreRegistry.register.params.name">¶</a> – Name to register the store under</p></li>
+<li><p><span class="target" id="litestar.stores.registry.StoreRegistry.register.params.store"></span><strong>store</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.registry.StoreRegistry.register.params.store">¶</a> – The store to register</p></li>
+<li><p><span class="target" id="litestar.stores.registry.StoreRegistry.register.params.allow_override"></span><strong>allow_override</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.registry.StoreRegistry.register.params.allow_override">¶</a> – Whether to allow overriding an existing store of the same name</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
@@ -1579,7 +1580,7 @@ been registered yet. This callable receives the requested name and should return
 factory with <code class="docutils literal notranslate"><span class="pre">name</span></code> and register the returned store under <code class="docutils literal notranslate"><span class="pre">name</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>name</strong> – Name of the store</p>
+<dd class="field-odd"><p><span class="target" id="litestar.stores.registry.StoreRegistry.get.params.name"></span><strong>name</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.registry.StoreRegistry.get.params.name">¶</a> – Name of the store</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A <a class="reference internal" href="base.html#litestar.stores.base.Store" title="litestar.stores.base.Store"><code class="xref py py-class docutils literal notranslate"><span class="pre">Store</span></code></a></p>

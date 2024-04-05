@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../../../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1187,7 +1188,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1555,7 +1556,7 @@ implement to facilitate the storage of session data.</p>
 <dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">ServerSideSessionBackend</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>config</strong> – A subclass of <code class="docutils literal notranslate"><span class="pre">ServerSideSessionConfig</span></code></p>
+<dd class="field-odd"><p><span class="target" id="litestar.middleware.session.server_side.ServerSideSessionBackend.params.config"></span><strong>config</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.server_side.ServerSideSessionBackend.params.config">¶</a> – A subclass of <code class="docutils literal notranslate"><span class="pre">ServerSideSessionConfig</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1567,8 +1568,8 @@ implement to facilitate the storage of session data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>session_id</strong> – The session-ID</p></li>
-<li><p><strong>store</strong> – Store to retrieve the session data from</p></li>
+<li><p><span class="target" id="litestar.middleware.session.server_side.ServerSideSessionBackend.get.params.session_id"></span><strong>session_id</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.server_side.ServerSideSessionBackend.get.params.session_id">¶</a> – The session-ID</p></li>
+<li><p><span class="target" id="litestar.middleware.session.server_side.ServerSideSessionBackend.get.params.store"></span><strong>store</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.server_side.ServerSideSessionBackend.get.params.store">¶</a> – Store to retrieve the session data from</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1586,9 +1587,9 @@ it with <code class="docutils literal notranslate"><span class="pre">data</span>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>session_id</strong> – The session-ID</p></li>
-<li><p><strong>data</strong> – Serialized session data</p></li>
-<li><p><strong>store</strong> – Store to save the session data in</p></li>
+<li><p><span class="target" id="litestar.middleware.session.server_side.ServerSideSessionBackend.set.params.session_id"></span><strong>session_id</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.server_side.ServerSideSessionBackend.set.params.session_id">¶</a> – The session-ID</p></li>
+<li><p><span class="target" id="litestar.middleware.session.server_side.ServerSideSessionBackend.set.params.data"></span><strong>data</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.server_side.ServerSideSessionBackend.set.params.data">¶</a> – Serialized session data</p></li>
+<li><p><span class="target" id="litestar.middleware.session.server_side.ServerSideSessionBackend.set.params.store"></span><strong>store</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.server_side.ServerSideSessionBackend.set.params.store">¶</a> – Store to save the session data in</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1604,8 +1605,8 @@ it with <code class="docutils literal notranslate"><span class="pre">data</span>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>session_id</strong> – The session-ID</p></li>
-<li><p><strong>store</strong> – Store to delete the session data from</p></li>
+<li><p><span class="target" id="litestar.middleware.session.server_side.ServerSideSessionBackend.delete.params.session_id"></span><strong>session_id</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.server_side.ServerSideSessionBackend.delete.params.session_id">¶</a> – The session-ID</p></li>
+<li><p><span class="target" id="litestar.middleware.session.server_side.ServerSideSessionBackend.delete.params.store"></span><strong>store</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.server_side.ServerSideSessionBackend.delete.params.store">¶</a> – Store to delete the session data from</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1624,7 +1625,7 @@ been returned to the user.
 Otherwise, a new session must be created.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>connection</strong> – Originating ASGIConnection containing the scope</p>
+<dd class="field-odd"><p><span class="target" id="litestar.middleware.session.server_side.ServerSideSessionBackend.get_session_id.params.connection"></span><strong>connection</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.server_side.ServerSideSessionBackend.get_session_id.params.connection">¶</a> – Originating ASGIConnection containing the scope</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Session id str or None if the concept of a session id does not apply.</p>
@@ -1654,9 +1655,9 @@ exists, a new ID will be generated using <a class="reference internal" href="#li
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>scope_session</strong> – Current session to store</p></li>
-<li><p><strong>message</strong> – Outgoing send-message</p></li>
-<li><p><strong>connection</strong> – Originating ASGIConnection containing the scope</p></li>
+<li><p><span class="target" id="litestar.middleware.session.server_side.ServerSideSessionBackend.store_in_message.params.scope_session"></span><strong>scope_session</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.server_side.ServerSideSessionBackend.store_in_message.params.scope_session">¶</a> – Current session to store</p></li>
+<li><p><span class="target" id="litestar.middleware.session.server_side.ServerSideSessionBackend.store_in_message.params.message"></span><strong>message</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.server_side.ServerSideSessionBackend.store_in_message.params.message">¶</a> – Outgoing send-message</p></li>
+<li><p><span class="target" id="litestar.middleware.session.server_side.ServerSideSessionBackend.store_in_message.params.connection"></span><strong>connection</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.server_side.ServerSideSessionBackend.store_in_message.params.connection">¶</a> – Originating ASGIConnection containing the scope</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1677,7 +1678,7 @@ If no cookie was found or no data was loaded from the store, this will return an
 empty dictionary.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>connection</strong> – An ASGIConnection instance</p>
+<dd class="field-odd"><p><span class="target" id="litestar.middleware.session.server_side.ServerSideSessionBackend.load_from_connection.params.connection"></span><strong>connection</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.server_side.ServerSideSessionBackend.load_from_connection.params.connection">¶</a> – An ASGIConnection instance</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The current session data</p>

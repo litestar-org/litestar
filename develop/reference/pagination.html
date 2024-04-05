@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1187,7 +1188,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1542,7 +1543,7 @@ document.write(`
 <dd><p>Return the total number of records.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>page_size</strong> – Maximal number of records to return.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.pagination.AbstractAsyncClassicPaginator.get_total.params.page_size"></span><strong>page_size</strong><a class="paramlink headerlink reference internal" href="#litestar.pagination.AbstractAsyncClassicPaginator.get_total.params.page_size">¶</a> – Maximal number of records to return.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>An integer.</p>
@@ -1557,8 +1558,8 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>page_size</strong> – Maximal number of records to return.</p></li>
-<li><p><strong>current_page</strong> – The current page of results to return.</p></li>
+<li><p><span class="target" id="litestar.pagination.AbstractAsyncClassicPaginator.get_items.params.page_size"></span><strong>page_size</strong><a class="paramlink headerlink reference internal" href="#litestar.pagination.AbstractAsyncClassicPaginator.get_items.params.page_size">¶</a> – Maximal number of records to return.</p></li>
+<li><p><span class="target" id="litestar.pagination.AbstractAsyncClassicPaginator.get_items.params.current_page"></span><strong>current_page</strong><a class="paramlink headerlink reference internal" href="#litestar.pagination.AbstractAsyncClassicPaginator.get_items.params.current_page">¶</a> – The current page of results to return.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1574,8 +1575,8 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>page_size</strong> – Maximal number of records to return.</p></li>
-<li><p><strong>current_page</strong> – The current page of results to return.</p></li>
+<li><p><span class="target" id="litestar.pagination.AbstractAsyncClassicPaginator.__call__.params.page_size"></span><strong>page_size</strong><a class="paramlink headerlink reference internal" href="#litestar.pagination.AbstractAsyncClassicPaginator.__call__.params.page_size">¶</a> – Maximal number of records to return.</p></li>
+<li><p><span class="target" id="litestar.pagination.AbstractAsyncClassicPaginator.__call__.params.current_page"></span><strong>current_page</strong><a class="paramlink headerlink reference internal" href="#litestar.pagination.AbstractAsyncClassicPaginator.__call__.params.current_page">¶</a> – The current page of results to return.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1599,8 +1600,8 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>cursor</strong> – A unique identifier that acts as the ‘cursor’ after which results should be given.</p></li>
-<li><p><strong>results_per_page</strong> – A maximal number of results to return.</p></li>
+<li><p><span class="target" id="litestar.pagination.AbstractAsyncCursorPaginator.get_items.params.cursor"></span><strong>cursor</strong><a class="paramlink headerlink reference internal" href="#litestar.pagination.AbstractAsyncCursorPaginator.get_items.params.cursor">¶</a> – A unique identifier that acts as the ‘cursor’ after which results should be given.</p></li>
+<li><p><span class="target" id="litestar.pagination.AbstractAsyncCursorPaginator.get_items.params.results_per_page"></span><strong>results_per_page</strong><a class="paramlink headerlink reference internal" href="#litestar.pagination.AbstractAsyncCursorPaginator.get_items.params.results_per_page">¶</a> – A maximal number of results to return.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1617,8 +1618,8 @@ The new cursor can be used to ask for the ‘next_cursor’ batch of results.</p
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>cursor</strong> – A unique identifier that acts as the ‘cursor’ after which results should be given.</p></li>
-<li><p><strong>results_per_page</strong> – A maximal number of results to return.</p></li>
+<li><p><span class="target" id="litestar.pagination.AbstractAsyncCursorPaginator.__call__.params.cursor"></span><strong>cursor</strong><a class="paramlink headerlink reference internal" href="#litestar.pagination.AbstractAsyncCursorPaginator.__call__.params.cursor">¶</a> – A unique identifier that acts as the ‘cursor’ after which results should be given.</p></li>
+<li><p><span class="target" id="litestar.pagination.AbstractAsyncCursorPaginator.__call__.params.results_per_page"></span><strong>results_per_page</strong><a class="paramlink headerlink reference internal" href="#litestar.pagination.AbstractAsyncCursorPaginator.__call__.params.results_per_page">¶</a> – A maximal number of results to return.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1653,8 +1654,8 @@ The new cursor can be used to ask for the ‘next_cursor’ batch of results.</p
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>limit</strong> – Maximal number of records to return.</p></li>
-<li><p><strong>offset</strong> – Starting position within the result set (assume index 0 as starting position).</p></li>
+<li><p><span class="target" id="litestar.pagination.AbstractAsyncOffsetPaginator.get_items.params.limit"></span><strong>limit</strong><a class="paramlink headerlink reference internal" href="#litestar.pagination.AbstractAsyncOffsetPaginator.get_items.params.limit">¶</a> – Maximal number of records to return.</p></li>
+<li><p><span class="target" id="litestar.pagination.AbstractAsyncOffsetPaginator.get_items.params.offset"></span><strong>offset</strong><a class="paramlink headerlink reference internal" href="#litestar.pagination.AbstractAsyncOffsetPaginator.get_items.params.offset">¶</a> – Starting position within the result set (assume index 0 as starting position).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1670,8 +1671,8 @@ The new cursor can be used to ask for the ‘next_cursor’ batch of results.</p
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>limit</strong> – Maximal number of records to return.</p></li>
-<li><p><strong>offset</strong> – Starting position within the result set (assume index 0 as starting position).</p></li>
+<li><p><span class="target" id="litestar.pagination.AbstractAsyncOffsetPaginator.__call__.params.limit"></span><strong>limit</strong><a class="paramlink headerlink reference internal" href="#litestar.pagination.AbstractAsyncOffsetPaginator.__call__.params.limit">¶</a> – Maximal number of records to return.</p></li>
+<li><p><span class="target" id="litestar.pagination.AbstractAsyncOffsetPaginator.__call__.params.offset"></span><strong>offset</strong><a class="paramlink headerlink reference internal" href="#litestar.pagination.AbstractAsyncOffsetPaginator.__call__.params.offset">¶</a> – Starting position within the result set (assume index 0 as starting position).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1694,7 +1695,7 @@ The new cursor can be used to ask for the ‘next_cursor’ batch of results.</p
 <dd><p>Return the total number of records.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>page_size</strong> – Maximal number of records to return.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.pagination.AbstractSyncClassicPaginator.get_total.params.page_size"></span><strong>page_size</strong><a class="paramlink headerlink reference internal" href="#litestar.pagination.AbstractSyncClassicPaginator.get_total.params.page_size">¶</a> – Maximal number of records to return.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>An integer.</p>
@@ -1709,8 +1710,8 @@ The new cursor can be used to ask for the ‘next_cursor’ batch of results.</p
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>page_size</strong> – Maximal number of records to return.</p></li>
-<li><p><strong>current_page</strong> – The current page of results to return.</p></li>
+<li><p><span class="target" id="litestar.pagination.AbstractSyncClassicPaginator.get_items.params.page_size"></span><strong>page_size</strong><a class="paramlink headerlink reference internal" href="#litestar.pagination.AbstractSyncClassicPaginator.get_items.params.page_size">¶</a> – Maximal number of records to return.</p></li>
+<li><p><span class="target" id="litestar.pagination.AbstractSyncClassicPaginator.get_items.params.current_page"></span><strong>current_page</strong><a class="paramlink headerlink reference internal" href="#litestar.pagination.AbstractSyncClassicPaginator.get_items.params.current_page">¶</a> – The current page of results to return.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1726,8 +1727,8 @@ The new cursor can be used to ask for the ‘next_cursor’ batch of results.</p
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>page_size</strong> – Maximal number of records to return.</p></li>
-<li><p><strong>current_page</strong> – The current page of results to return.</p></li>
+<li><p><span class="target" id="litestar.pagination.AbstractSyncClassicPaginator.__call__.params.page_size"></span><strong>page_size</strong><a class="paramlink headerlink reference internal" href="#litestar.pagination.AbstractSyncClassicPaginator.__call__.params.page_size">¶</a> – Maximal number of records to return.</p></li>
+<li><p><span class="target" id="litestar.pagination.AbstractSyncClassicPaginator.__call__.params.current_page"></span><strong>current_page</strong><a class="paramlink headerlink reference internal" href="#litestar.pagination.AbstractSyncClassicPaginator.__call__.params.current_page">¶</a> – The current page of results to return.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1751,8 +1752,8 @@ The new cursor can be used to ask for the ‘next_cursor’ batch of results.</p
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>cursor</strong> – A unique identifier that acts as the ‘cursor’ after which results should be given.</p></li>
-<li><p><strong>results_per_page</strong> – A maximal number of results to return.</p></li>
+<li><p><span class="target" id="litestar.pagination.AbstractSyncCursorPaginator.get_items.params.cursor"></span><strong>cursor</strong><a class="paramlink headerlink reference internal" href="#litestar.pagination.AbstractSyncCursorPaginator.get_items.params.cursor">¶</a> – A unique identifier that acts as the ‘cursor’ after which results should be given.</p></li>
+<li><p><span class="target" id="litestar.pagination.AbstractSyncCursorPaginator.get_items.params.results_per_page"></span><strong>results_per_page</strong><a class="paramlink headerlink reference internal" href="#litestar.pagination.AbstractSyncCursorPaginator.get_items.params.results_per_page">¶</a> – A maximal number of results to return.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1769,8 +1770,8 @@ The new cursor can be used to ask for the ‘next_cursor’ batch of results.</p
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>cursor</strong> – A unique identifier that acts as the ‘cursor’ after which results should be given.</p></li>
-<li><p><strong>results_per_page</strong> – A maximal number of results to return.</p></li>
+<li><p><span class="target" id="litestar.pagination.AbstractSyncCursorPaginator.__call__.params.cursor"></span><strong>cursor</strong><a class="paramlink headerlink reference internal" href="#litestar.pagination.AbstractSyncCursorPaginator.__call__.params.cursor">¶</a> – A unique identifier that acts as the ‘cursor’ after which results should be given.</p></li>
+<li><p><span class="target" id="litestar.pagination.AbstractSyncCursorPaginator.__call__.params.results_per_page"></span><strong>results_per_page</strong><a class="paramlink headerlink reference internal" href="#litestar.pagination.AbstractSyncCursorPaginator.__call__.params.results_per_page">¶</a> – A maximal number of results to return.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1805,8 +1806,8 @@ The new cursor can be used to ask for the ‘next_cursor’ batch of results.</p
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>limit</strong> – Maximal number of records to return.</p></li>
-<li><p><strong>offset</strong> – Starting position within the result set (assume index 0 as starting position).</p></li>
+<li><p><span class="target" id="litestar.pagination.AbstractSyncOffsetPaginator.get_items.params.limit"></span><strong>limit</strong><a class="paramlink headerlink reference internal" href="#litestar.pagination.AbstractSyncOffsetPaginator.get_items.params.limit">¶</a> – Maximal number of records to return.</p></li>
+<li><p><span class="target" id="litestar.pagination.AbstractSyncOffsetPaginator.get_items.params.offset"></span><strong>offset</strong><a class="paramlink headerlink reference internal" href="#litestar.pagination.AbstractSyncOffsetPaginator.get_items.params.offset">¶</a> – Starting position within the result set (assume index 0 as starting position).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1822,8 +1823,8 @@ The new cursor can be used to ask for the ‘next_cursor’ batch of results.</p
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>limit</strong> – Maximal number of records to return.</p></li>
-<li><p><strong>offset</strong> – Starting position within the result set (assume index 0 as starting position).</p></li>
+<li><p><span class="target" id="litestar.pagination.AbstractSyncOffsetPaginator.__call__.params.limit"></span><strong>limit</strong><a class="paramlink headerlink reference internal" href="#litestar.pagination.AbstractSyncOffsetPaginator.__call__.params.limit">¶</a> – Maximal number of records to return.</p></li>
+<li><p><span class="target" id="litestar.pagination.AbstractSyncOffsetPaginator.__call__.params.offset"></span><strong>offset</strong><a class="paramlink headerlink reference internal" href="#litestar.pagination.AbstractSyncOffsetPaginator.__call__.params.offset">¶</a> – Starting position within the result set (assume index 0 as starting position).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

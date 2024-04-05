@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1187,7 +1188,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1544,7 +1545,7 @@ document.write(`
 <dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">FileStorage</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>path</strong> – Path to store data under</p>
+<dd class="field-odd"><p><span class="target" id="litestar.stores.file.FileStore.params.path"></span><strong>path</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.file.FileStore.params.path">¶</a> – Path to store data under</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1568,9 +1569,9 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> – Key to associate the value with</p></li>
-<li><p><strong>value</strong> – Value to store</p></li>
-<li><p><strong>expires_in</strong> – Time in seconds before the key is considered expired</p></li>
+<li><p><span class="target" id="litestar.stores.file.FileStore.set.params.key"></span><strong>key</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.file.FileStore.set.params.key">¶</a> – Key to associate the value with</p></li>
+<li><p><span class="target" id="litestar.stores.file.FileStore.set.params.value"></span><strong>value</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.file.FileStore.set.params.value">¶</a> – Value to store</p></li>
+<li><p><span class="target" id="litestar.stores.file.FileStore.set.params.expires_in"></span><strong>expires_in</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.file.FileStore.set.params.expires_in">¶</a> – Time in seconds before the key is considered expired</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1586,8 +1587,8 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> – Key associated with the value</p></li>
-<li><p><strong>renew_for</strong> – If given and the value had an initial expiry time set, renew the
+<li><p><span class="target" id="litestar.stores.file.FileStore.get.params.key"></span><strong>key</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.file.FileStore.get.params.key">¶</a> – Key associated with the value</p></li>
+<li><p><span class="target" id="litestar.stores.file.FileStore.get.params.renew_for"></span><strong>renew_for</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.file.FileStore.get.params.renew_for">¶</a> – If given and the value had an initial expiry time set, renew the
 expiry time for <code class="docutils literal notranslate"><span class="pre">renew_for</span></code> seconds. If the value has not been set
 with an expiry time this is a no-op</p></li>
 </ul>
@@ -1606,7 +1607,7 @@ with an expiry time this is a no-op</p></li>
 <p>If no such key exists, this is a no-op.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>key</strong> – Key of the value to delete</p>
+<dd class="field-odd"><p><span class="target" id="litestar.stores.file.FileStore.delete.params.key"></span><strong>key</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.file.FileStore.delete.params.key">¶</a> – Key of the value to delete</p>
 </dd>
 </dl>
 </dd></dl>

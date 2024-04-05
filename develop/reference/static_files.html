@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1187,7 +1188,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1542,13 +1543,13 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>is_html_mode</strong> – Flag dictating whether serving html. If true, the default file will be <code class="docutils literal notranslate"><span class="pre">index.html</span></code>.</p></li>
-<li><p><strong>directories</strong> – A list of directories to serve files from.</p></li>
-<li><p><strong>file_system</strong> – The file_system spec to use for serving files.</p></li>
-<li><p><strong>send_as_attachment</strong> – Whether to send the file with a <code class="docutils literal notranslate"><span class="pre">content-disposition</span></code> header of
+<li><p><span class="target" id="litestar.static_files.StaticFiles.params.is_html_mode"></span><strong>is_html_mode</strong><a class="paramlink headerlink reference internal" href="#litestar.static_files.StaticFiles.params.is_html_mode">¶</a> – Flag dictating whether serving html. If true, the default file will be <code class="docutils literal notranslate"><span class="pre">index.html</span></code>.</p></li>
+<li><p><span class="target" id="litestar.static_files.StaticFiles.params.directories"></span><strong>directories</strong><a class="paramlink headerlink reference internal" href="#litestar.static_files.StaticFiles.params.directories">¶</a> – A list of directories to serve files from.</p></li>
+<li><p><span class="target" id="litestar.static_files.StaticFiles.params.file_system"></span><strong>file_system</strong><a class="paramlink headerlink reference internal" href="#litestar.static_files.StaticFiles.params.file_system">¶</a> – The file_system spec to use for serving files.</p></li>
+<li><p><span class="target" id="litestar.static_files.StaticFiles.params.send_as_attachment"></span><strong>send_as_attachment</strong><a class="paramlink headerlink reference internal" href="#litestar.static_files.StaticFiles.params.send_as_attachment">¶</a> – Whether to send the file with a <code class="docutils literal notranslate"><span class="pre">content-disposition</span></code> header of
 <code class="docutils literal notranslate"><span class="pre">attachment</span></code> or <code class="docutils literal notranslate"><span class="pre">inline</span></code></p></li>
-<li><p><strong>resolve_symlinks</strong> – Resolve symlinks to the directories</p></li>
-<li><p><strong>headers</strong> – Headers that will be sent with every response.</p></li>
+<li><p><span class="target" id="litestar.static_files.StaticFiles.params.resolve_symlinks"></span><strong>resolve_symlinks</strong><a class="paramlink headerlink reference internal" href="#litestar.static_files.StaticFiles.params.resolve_symlinks">¶</a> – Resolve symlinks to the directories</p></li>
+<li><p><span class="target" id="litestar.static_files.StaticFiles.params.headers"></span><strong>headers</strong><a class="paramlink headerlink reference internal" href="#litestar.static_files.StaticFiles.params.headers">¶</a> – Headers that will be sent with every response.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1561,8 +1562,8 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>directories</strong> – A list of directory paths.</p></li>
-<li><p><strong>file_path</strong> – A file path to resolve</p></li>
+<li><p><span class="target" id="litestar.static_files.StaticFiles.get_fs_info.params.directories"></span><strong>directories</strong><a class="paramlink headerlink reference internal" href="#litestar.static_files.StaticFiles.get_fs_info.params.directories">¶</a> – A list of directory paths.</p></li>
+<li><p><span class="target" id="litestar.static_files.StaticFiles.get_fs_info.params.file_path"></span><strong>file_path</strong><a class="paramlink headerlink reference internal" href="#litestar.static_files.StaticFiles.get_fs_info.params.file_path">¶</a> – A file path to resolve</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1579,9 +1580,9 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>scope</strong> – ASGI scope</p></li>
-<li><p><strong>receive</strong> – ASGI <code class="docutils literal notranslate"><span class="pre">receive</span></code> callable</p></li>
-<li><p><strong>send</strong> – ASGI <code class="docutils literal notranslate"><span class="pre">send</span></code> callable</p></li>
+<li><p><span class="target" id="litestar.static_files.StaticFiles.__call__.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.static_files.StaticFiles.__call__.params.scope">¶</a> – ASGI scope</p></li>
+<li><p><span class="target" id="litestar.static_files.StaticFiles.__call__.params.receive"></span><strong>receive</strong><a class="paramlink headerlink reference internal" href="#litestar.static_files.StaticFiles.__call__.params.receive">¶</a> – ASGI <code class="docutils literal notranslate"><span class="pre">receive</span></code> callable</p></li>
+<li><p><span class="target" id="litestar.static_files.StaticFiles.__call__.params.send"></span><strong>send</strong><a class="paramlink headerlink reference internal" href="#litestar.static_files.StaticFiles.__call__.params.send">¶</a> – ASGI <code class="docutils literal notranslate"><span class="pre">send</span></code> callable</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1695,30 +1696,30 @@ the ‘static_files_config’ key.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> – Path to serve static files under</p></li>
-<li><p><strong>directories</strong> – Directories to serve static files from</p></li>
-<li><p><strong>file_system</strong> – A <em>file system</em> implementing
+<li><p><span class="target" id="litestar.static_files.create_static_files_router.params.path"></span><strong>path</strong><a class="paramlink headerlink reference internal" href="#litestar.static_files.create_static_files_router.params.path">¶</a> – Path to serve static files under</p></li>
+<li><p><span class="target" id="litestar.static_files.create_static_files_router.params.directories"></span><strong>directories</strong><a class="paramlink headerlink reference internal" href="#litestar.static_files.create_static_files_router.params.directories">¶</a> – Directories to serve static files from</p></li>
+<li><p><span class="target" id="litestar.static_files.create_static_files_router.params.file_system"></span><strong>file_system</strong><a class="paramlink headerlink reference internal" href="#litestar.static_files.create_static_files_router.params.file_system">¶</a> – A <em>file system</em> implementing
 <a class="reference internal" href="types.html#litestar.types.FileSystemProtocol" title="litestar.types.FileSystemProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileSystemProtocol</span></code></a>.
 <a class="reference external" href="https://filesystem-spec.readthedocs.io/en/latest/">fsspec</a> can be passed
 here as well</p></li>
-<li><p><strong>send_as_attachment</strong> – Whether to send the file as an attachment</p></li>
-<li><p><strong>html_mode</strong> – When in HTML:
+<li><p><span class="target" id="litestar.static_files.create_static_files_router.params.send_as_attachment"></span><strong>send_as_attachment</strong><a class="paramlink headerlink reference internal" href="#litestar.static_files.create_static_files_router.params.send_as_attachment">¶</a> – Whether to send the file as an attachment</p></li>
+<li><p><span class="target" id="litestar.static_files.create_static_files_router.params.html_mode"></span><strong>html_mode</strong><a class="paramlink headerlink reference internal" href="#litestar.static_files.create_static_files_router.params.html_mode">¶</a> – When in HTML:
 - Serve an <code class="docutils literal notranslate"><span class="pre">index.html</span></code> file from <code class="docutils literal notranslate"><span class="pre">/</span></code>
 - Serve <code class="docutils literal notranslate"><span class="pre">404.html</span></code> when a file could not be found</p></li>
-<li><p><strong>name</strong> – Name to pass to the generated handlers</p></li>
-<li><p><strong>after_request</strong> – <code class="docutils literal notranslate"><span class="pre">after_request</span></code> handlers passed to the router</p></li>
-<li><p><strong>after_response</strong> – <code class="docutils literal notranslate"><span class="pre">after_response</span></code> handlers passed to the router</p></li>
-<li><p><strong>before_request</strong> – <code class="docutils literal notranslate"><span class="pre">before_request</span></code> handlers passed to the router</p></li>
-<li><p><strong>cache_control</strong> – <code class="docutils literal notranslate"><span class="pre">cache_control</span></code> passed to the router</p></li>
-<li><p><strong>exception_handlers</strong> – Exception handlers passed to the router</p></li>
-<li><p><strong>guards</strong> – Guards  passed to the router</p></li>
-<li><p><strong>include_in_schema</strong> – Include the routes / router in the OpenAPI schema</p></li>
-<li><p><strong>middleware</strong> – Middlewares passed to the router</p></li>
-<li><p><strong>opt</strong> – Opts passed to the router</p></li>
-<li><p><strong>security</strong> – Security options passed to the router</p></li>
-<li><p><strong>tags</strong> – <code class="docutils literal notranslate"><span class="pre">tags</span></code> passed to the router</p></li>
-<li><p><strong>router_class</strong> – The class used to construct a router from</p></li>
-<li><p><strong>resolve_symlinks</strong> – Resolve symlinks of <code class="docutils literal notranslate"><span class="pre">directories</span></code></p></li>
+<li><p><span class="target" id="litestar.static_files.create_static_files_router.params.name"></span><strong>name</strong><a class="paramlink headerlink reference internal" href="#litestar.static_files.create_static_files_router.params.name">¶</a> – Name to pass to the generated handlers</p></li>
+<li><p><span class="target" id="litestar.static_files.create_static_files_router.params.after_request"></span><strong>after_request</strong><a class="paramlink headerlink reference internal" href="#litestar.static_files.create_static_files_router.params.after_request">¶</a> – <code class="docutils literal notranslate"><span class="pre">after_request</span></code> handlers passed to the router</p></li>
+<li><p><span class="target" id="litestar.static_files.create_static_files_router.params.after_response"></span><strong>after_response</strong><a class="paramlink headerlink reference internal" href="#litestar.static_files.create_static_files_router.params.after_response">¶</a> – <code class="docutils literal notranslate"><span class="pre">after_response</span></code> handlers passed to the router</p></li>
+<li><p><span class="target" id="litestar.static_files.create_static_files_router.params.before_request"></span><strong>before_request</strong><a class="paramlink headerlink reference internal" href="#litestar.static_files.create_static_files_router.params.before_request">¶</a> – <code class="docutils literal notranslate"><span class="pre">before_request</span></code> handlers passed to the router</p></li>
+<li><p><span class="target" id="litestar.static_files.create_static_files_router.params.cache_control"></span><strong>cache_control</strong><a class="paramlink headerlink reference internal" href="#litestar.static_files.create_static_files_router.params.cache_control">¶</a> – <code class="docutils literal notranslate"><span class="pre">cache_control</span></code> passed to the router</p></li>
+<li><p><span class="target" id="litestar.static_files.create_static_files_router.params.exception_handlers"></span><strong>exception_handlers</strong><a class="paramlink headerlink reference internal" href="#litestar.static_files.create_static_files_router.params.exception_handlers">¶</a> – Exception handlers passed to the router</p></li>
+<li><p><span class="target" id="litestar.static_files.create_static_files_router.params.guards"></span><strong>guards</strong><a class="paramlink headerlink reference internal" href="#litestar.static_files.create_static_files_router.params.guards">¶</a> – Guards  passed to the router</p></li>
+<li><p><span class="target" id="litestar.static_files.create_static_files_router.params.include_in_schema"></span><strong>include_in_schema</strong><a class="paramlink headerlink reference internal" href="#litestar.static_files.create_static_files_router.params.include_in_schema">¶</a> – Include the routes / router in the OpenAPI schema</p></li>
+<li><p><span class="target" id="litestar.static_files.create_static_files_router.params.middleware"></span><strong>middleware</strong><a class="paramlink headerlink reference internal" href="#litestar.static_files.create_static_files_router.params.middleware">¶</a> – Middlewares passed to the router</p></li>
+<li><p><span class="target" id="litestar.static_files.create_static_files_router.params.opt"></span><strong>opt</strong><a class="paramlink headerlink reference internal" href="#litestar.static_files.create_static_files_router.params.opt">¶</a> – Opts passed to the router</p></li>
+<li><p><span class="target" id="litestar.static_files.create_static_files_router.params.security"></span><strong>security</strong><a class="paramlink headerlink reference internal" href="#litestar.static_files.create_static_files_router.params.security">¶</a> – Security options passed to the router</p></li>
+<li><p><span class="target" id="litestar.static_files.create_static_files_router.params.tags"></span><strong>tags</strong><a class="paramlink headerlink reference internal" href="#litestar.static_files.create_static_files_router.params.tags">¶</a> – <code class="docutils literal notranslate"><span class="pre">tags</span></code> passed to the router</p></li>
+<li><p><span class="target" id="litestar.static_files.create_static_files_router.params.router_class"></span><strong>router_class</strong><a class="paramlink headerlink reference internal" href="#litestar.static_files.create_static_files_router.params.router_class">¶</a> – The class used to construct a router from</p></li>
+<li><p><span class="target" id="litestar.static_files.create_static_files_router.params.resolve_symlinks"></span><strong>resolve_symlinks</strong><a class="paramlink headerlink reference internal" href="#litestar.static_files.create_static_files_router.params.resolve_symlinks">¶</a> – Resolve symlinks of <code class="docutils literal notranslate"><span class="pre">directories</span></code></p></li>
 </ul>
 </dd>
 </dl>

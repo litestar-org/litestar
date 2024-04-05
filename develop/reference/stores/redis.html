@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1187,7 +1188,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1545,11 +1546,11 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>redis</strong> – An <code class="xref py py-class docutils literal notranslate"><span class="pre">redis.asyncio.Redis</span></code> instance</p></li>
-<li><p><strong>namespace</strong> – A key prefix to simulate a namespace in redis. If not given,
+<li><p><span class="target" id="litestar.stores.redis.RedisStore.params.redis"></span><strong>redis</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.redis.RedisStore.params.redis">¶</a> – An <code class="xref py py-class docutils literal notranslate"><span class="pre">redis.asyncio.Redis</span></code> instance</p></li>
+<li><p><span class="target" id="litestar.stores.redis.RedisStore.params.namespace"></span><strong>namespace</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.redis.RedisStore.params.namespace">¶</a> – A key prefix to simulate a namespace in redis. If not given,
 defaults to <code class="docutils literal notranslate"><span class="pre">LITESTAR</span></code>. Namespacing can be explicitly disabled by passing
 <code class="docutils literal notranslate"><span class="pre">None</span></code>. This will make <a class="reference internal" href="#litestar.stores.redis.RedisStore.delete_all" title="litestar.stores.redis.RedisStore.delete_all"><code class="xref py py-meth docutils literal notranslate"><span class="pre">delete_all()</span></code></a> unavailable.</p></li>
-<li><p><strong>handle_client_shutdown</strong> – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, handle the shutdown of the <cite>redis</cite> instance automatically during the store’s lifespan. Should be set to <cite>True</cite> unless the shutdown is handled externally</p></li>
+<li><p><span class="target" id="litestar.stores.redis.RedisStore.params.handle_client_shutdown"></span><strong>handle_client_shutdown</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.redis.RedisStore.params.handle_client_shutdown">¶</a> – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, handle the shutdown of the <cite>redis</cite> instance automatically during the store’s lifespan. Should be set to <cite>True</cite> unless the shutdown is handled externally</p></li>
 </ul>
 </dd>
 </dl>
@@ -1562,12 +1563,12 @@ defaults to <code class="docutils literal notranslate"><span class="pre">LITESTA
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>url</strong> – Redis URL to connect to</p></li>
-<li><p><strong>db</strong> – Redis database to use</p></li>
-<li><p><strong>port</strong> – Redis port to use</p></li>
-<li><p><strong>username</strong> – Redis username to use</p></li>
-<li><p><strong>password</strong> – Redis password to use</p></li>
-<li><p><strong>namespace</strong> – Virtual key namespace to use</p></li>
+<li><p><span class="target" id="litestar.stores.redis.RedisStore.with_client.params.url"></span><strong>url</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.redis.RedisStore.with_client.params.url">¶</a> – Redis URL to connect to</p></li>
+<li><p><span class="target" id="litestar.stores.redis.RedisStore.with_client.params.db"></span><strong>db</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.redis.RedisStore.with_client.params.db">¶</a> – Redis database to use</p></li>
+<li><p><span class="target" id="litestar.stores.redis.RedisStore.with_client.params.port"></span><strong>port</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.redis.RedisStore.with_client.params.port">¶</a> – Redis port to use</p></li>
+<li><p><span class="target" id="litestar.stores.redis.RedisStore.with_client.params.username"></span><strong>username</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.redis.RedisStore.with_client.params.username">¶</a> – Redis username to use</p></li>
+<li><p><span class="target" id="litestar.stores.redis.RedisStore.with_client.params.password"></span><strong>password</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.redis.RedisStore.with_client.params.password">¶</a> – Redis password to use</p></li>
+<li><p><span class="target" id="litestar.stores.redis.RedisStore.with_client.params.namespace"></span><strong>namespace</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.redis.RedisStore.with_client.params.namespace">¶</a> – Virtual key namespace to use</p></li>
 </ul>
 </dd>
 </dl>
@@ -1588,9 +1589,9 @@ can be considered the parent namespace.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> – Key to associate the value with</p></li>
-<li><p><strong>value</strong> – Value to store</p></li>
-<li><p><strong>expires_in</strong> – Time in seconds before the key is considered expired</p></li>
+<li><p><span class="target" id="litestar.stores.redis.RedisStore.set.params.key"></span><strong>key</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.redis.RedisStore.set.params.key">¶</a> – Key to associate the value with</p></li>
+<li><p><span class="target" id="litestar.stores.redis.RedisStore.set.params.value"></span><strong>value</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.redis.RedisStore.set.params.value">¶</a> – Value to store</p></li>
+<li><p><span class="target" id="litestar.stores.redis.RedisStore.set.params.expires_in"></span><strong>expires_in</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.redis.RedisStore.set.params.expires_in">¶</a> – Time in seconds before the key is considered expired</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1606,8 +1607,8 @@ can be considered the parent namespace.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> – Key associated with the value</p></li>
-<li><p><strong>renew_for</strong> – If given and the value had an initial expiry time set, renew the
+<li><p><span class="target" id="litestar.stores.redis.RedisStore.get.params.key"></span><strong>key</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.redis.RedisStore.get.params.key">¶</a> – Key associated with the value</p></li>
+<li><p><span class="target" id="litestar.stores.redis.RedisStore.get.params.renew_for"></span><strong>renew_for</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.redis.RedisStore.get.params.renew_for">¶</a> – If given and the value had an initial expiry time set, renew the
 expiry time for <code class="docutils literal notranslate"><span class="pre">renew_for</span></code> seconds. If the value has not been set
 with an expiry time this is a no-op. Atomicity of this step is guaranteed
 by using a lua script to execute fetch and renewal. If <code class="docutils literal notranslate"><span class="pre">renew_for</span></code> is
@@ -1628,7 +1629,7 @@ not given, the script will be bypassed so no overhead will occur</p></li>
 <p>If no such key exists, this is a no-op.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>key</strong> – Key of the value to delete</p>
+<dd class="field-odd"><p><span class="target" id="litestar.stores.redis.RedisStore.delete.params.key"></span><strong>key</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.redis.RedisStore.delete.params.key">¶</a> – Key of the value to delete</p>
 </dd>
 </dl>
 </dd></dl>

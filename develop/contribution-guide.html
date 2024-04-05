@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1186,7 +1187,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1526,38 +1527,141 @@ document.write(`
                   
   <section id="contribution-guide">
 <h1>Contribution Guide<a class="headerlink" href="#contribution-guide" title="Permalink to this heading">#</a></h1>
-<section id="setting-up-the-environment">
-<h2>Setting up the environment<a class="headerlink" href="#setting-up-the-environment" title="Permalink to this heading">#</a></h2>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>Supported Python versions.</p>
-<p>The lowest currently supported version is Python 3.8. You can use <a class="reference external" href="https://github.com/pyenv/pyenv">pyenv</a> to manage
-multiple Python versions on your system.</p>
-<p>We also use the lowest supported version in our type-checking CI,
+<section id="getting-started">
+<h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this heading">#</a></h2>
+<section id="supported-python-versions">
+<h3>Supported Python Versions<a class="headerlink" href="#supported-python-versions" title="Permalink to this heading">#</a></h3>
+<p>The lowest currently supported version is Python 3.8.
+At a minimum you will need Python 3.8 for code changes and 3.12 if you plan on doing documentation building / changes.</p>
+<p>You can use various tools to manage multiple Python versions on your system including:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/pyenv/pyenv">pyenv</a> and <a class="reference external" href="https://github.com/pyenv-win/pyenv-win">pyenv-win for Windows</a></p></li>
+<li><p><a class="reference external" href="https://mise.jdx.dev/">rtx / mise</a></p></li>
+<li><p><a class="reference external" href="https://asdf-vm.com/">asdf</a></p></li>
+<li><p><a class="reference external" href="https://www.build-python-from-source.com/">Building each version manually from source</a></p></li>
+<li><p>Utilizing <a class="reference external" href="https://codespaces.new/litestar-org/litestar?quickstart=1">GitHub Codespaces</a></p></li>
+</ul>
+<p>We use the lowest supported version in our type-checking CI,
 this ensures that the changes you made are backward compatible.</p>
-</div>
+</section>
+<section id="setting-up-the-environment">
+<h3>Setting up the environment<a class="headerlink" href="#setting-up-the-environment" title="Permalink to this heading">#</a></h3>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 <p>We maintain a Makefile with several commands to help with common tasks.
 You can run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">help</span></code> to see a list of available commands.</p>
 </div>
-<ol class="arabic simple">
-<li><p>Install <a class="reference external" href="https://pdm.fming.dev/latest/">PDM</a></p></li>
-<li><p>Run <code class="docutils literal notranslate"><span class="pre">pdm</span> <span class="pre">install</span></code> or <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">install</span></code> to create a
-<a class="reference external" href="https://docs.python.org/3/tutorial/venv.html">virtual environment</a> and install the required development dependencies</p></li>
-<li><p>If you’re working on the documentation and need to build it locally, install the extra dependencies
-with <code class="docutils literal notranslate"><span class="pre">pdm</span> <span class="pre">install</span> <span class="pre">-G:docs</span></code> or <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">docs-install</span></code></p></li>
-<li><p>Install <a class="reference external" href="https://pre-commit.com/">pre-commit</a></p></li>
-<li><p>Run <code class="docutils literal notranslate"><span class="pre">pre-commit</span> <span class="pre">install</span> <span class="pre">--install-hooks</span></code> or <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">install</span></code> to install pre-commit hooks</p></li>
+<p>If you are utilizing <a class="reference external" href="https://codespaces.new/litestar-org/litestar?quickstart=1">GitHub Codespaces</a>,
+the environment will bootstrap itself automatically. The steps below are for local development.</p>
+<ol class="arabic">
+<li><p>Install <a class="reference external" href="https://pdm.fming.dev/latest/">PDM</a>:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" data-sync-id="makefile" for="sd-tab-item-0">
+Makefile</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Using our Make target to install PDM</span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>install-pdm
+</pre></div>
+</div>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" data-sync-id="pipx" for="sd-tab-item-1">
+pipx</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://pypa.github.io/pipx/">pipx</a></span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pipx<span class="w"> </span>install<span class="w"> </span>pdm
+</pre></div>
+</div>
+</div>
+</div>
+<input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" data-sync-id="homebrew" for="sd-tab-item-2">
+Homebrew</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://brew.sh/">Homebrew</a></span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>pdm
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</li>
+<li><p>Run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">install</span></code> to create a <a class="reference external" href="https://docs.python.org/3/tutorial/venv.html">virtual environment</a>
+and install the required development dependencies or run the PDM installation command manually:</p>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">Installing the documentation dependencies</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pdm<span class="w"> </span>install
+</pre></div>
+</div>
+</div>
+</li>
+<li><p>If you’re working on the documentation and need to build it locally, install the extra dependencies with
+<code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">docs-install</span></code> or:</p>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">Installing the documentation dependencies</span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pdm<span class="w"> </span>install<span class="w"> </span>-G:docs
+</pre></div>
+</div>
+</div>
+</li>
+<li><p>Install <a class="reference external" href="https://pre-commit.com/">pre-commit</a>:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" data-sync-id="pip" for="sd-tab-item-3">
+pip</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">Using pip</span><a class="headerlink" href="#id10" title="Permalink to this code">#</a></div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>pre-commit
+</pre></div>
+</div>
+</div>
+</div>
+<input id="sd-tab-item-4" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" data-sync-id="pipx" for="sd-tab-item-4">
+pipx</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://pypa.github.io/pipx/">pipx</a></span><a class="headerlink" href="#id11" title="Permalink to this code">#</a></div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pipx<span class="w"> </span>install<span class="w"> </span>pre-commit
+</pre></div>
+</div>
+</div>
+</div>
+<input id="sd-tab-item-5" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" data-sync-id="homebrew" for="sd-tab-item-5">
+Homebrew</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://brew.sh/">Homebrew</a></span><a class="headerlink" href="#id12" title="Permalink to this code">#</a></div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>pre-commit
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</li>
+<li><p>Install our pre-commit hooks. by running <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">install</span></code> or:</p>
+<div class="literal-block-wrapper docutils container" id="id13">
+<div class="code-block-caption"><span class="caption-text">Installing pre-commit hooks</span><a class="headerlink" href="#id13" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pre-commit<span class="w"> </span>install<span class="w"> </span>--install-hooks
+</pre></div>
+</div>
+</div>
+</li>
 </ol>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>Many modern IDEs like PyCharm or VS Code will enable the PDM-managed virtualenv that is created in step 2 for you automatically.
-If your IDE / editor does not offer this functionality, then you will need to manually activate the virtualenv yourself. Otherwise you may encounter errors or unexpected behaviour when trying to run the commands referenced within this document.</p>
+<p>Many modern IDEs like PyCharm or VS Code will enable the PDM-managed virtualenv that is created in step 2
+for you automatically.
+If your IDE / editor does not offer this functionality, then you will need to manually activate the virtualenv
+yourself. Otherwise you may encounter errors or unexpected behaviour when trying to run the commands referenced
+within this document.</p>
 <p>To activate the virtualenv manually, please consult PDM’s documentation on
-<a class="reference external" href="https://pdm.fming.dev/latest/usage/venv/#working-with-virtual-environments">working with virtual environments</a>. A simpler alternative is using the PDM plugin <a class="reference external" href="https://github.com/abersheeran/pdm-shell">pdm-shell</a>.</p>
+<a class="reference external" href="https://pdm-project.org/latest/usage/venv/#working-with-virtual-environments">working with virtual environments</a>.
+A simpler alternative is using the PDM plugin <a class="reference external" href="https://github.com/abersheeran/pdm-shell">pdm-shell</a>.</p>
 <p>The rest of this document will assume this environment is active wherever commands are referenced.</p>
 </div>
+</section>
 </section>
 <section id="code-contributions">
 <h2>Code contributions<a class="headerlink" href="#code-contributions" title="Permalink to this heading">#</a></h2>
@@ -1570,37 +1674,39 @@ If your IDE / editor does not offer this functionality, then you will need to ma
 <li><p>Make your changes</p></li>
 <li><p>(Optional) Run <code class="docutils literal notranslate"><span class="pre">pre-commit</span> <span class="pre">run</span> <span class="pre">--all-files</span></code> to run linters and formatters. This step is optional and will be executed
 automatically by git before you make a commit, but you may want to run it manually in order to apply fixes</p></li>
-<li><p>Commit your changes to git. Note - we follow [conventional commits](<a class="reference external" href="https://www.conventionalcommits.org/en/v1.0.0/">https://www.conventionalcommits.org/en/v1.0.0/</a>),
+<li><p>Commit your changes to git. We follow <a class="reference external" href="https://www.conventionalcommits.org/">conventional commits</a>
 which are enforced using a <code class="docutils literal notranslate"><span class="pre">pre-commit</span></code> hook.</p></li>
 <li><p>Push the changes to your fork</p></li>
 <li><p>Open a <a class="reference external" href="https://docs.github.com/en/pull-requests">pull request</a>. Give the pull request a descriptive title
 indicating what it changes. The style of the PR title should also follow
-[conventional commits](<a class="reference external" href="https://www.conventionalcommits.org/en/v1.0.0/">https://www.conventionalcommits.org/en/v1.0.0/</a>), and this is enforced using a GitHub action.</p></li>
+<a class="reference external" href="https://www.conventionalcommits.org/">conventional commits</a>, and this is enforced using a GitHub action.</p></li>
 <li><p>Add yourself as a contributor using the <a class="reference external" href="https://allcontributors.org/docs/en/bot/usage">all-contributors bot</a></p></li>
 </ol>
 </section>
 </section>
 <section id="guidelines-for-writing-code">
 <h2>Guidelines for writing code<a class="headerlink" href="#guidelines-for-writing-code" title="Permalink to this heading">#</a></h2>
-<ul class="simple">
+<ul>
 <li><p>Code should be <a class="reference external" href="https://peps.python.org/pep-0020/">Pythonic and zen</a></p></li>
 <li><p>All code should be fully <a class="reference external" href="https://peps.python.org/pep-0484/">typed</a>. This is enforced via
 <a class="reference external" href="https://mypy.readthedocs.io/en/stable/">mypy</a> and <a class="reference external" href="https://github.com/microsoft/pyright/">Pyright</a></p>
 <ul>
 <li><p>When requiring complex types, use a <a class="reference external" href="https://docs.python.org/3/library/typing.html#type-aliases">type alias</a>.
-Check <code class="docutils literal notranslate"><span class="pre">litestar/types</span></code> if a type alias for your use case already exists</p></li>
-<li><p>If something cannot be typed correctly due to a limitation of the type checkers, you may use
-<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.cast">typing.cast</a> to rectify the situation. However, you
-should only use as a last resort if you’ve exhausted all other options of
-<a class="reference external" href="https://mypy.readthedocs.io/en/stable/type_narrowing.html">type narrowing</a>, such as
-<a class="reference external" href="https://docs.python.org/3/library/functions.html#isinstance">isinstance()</a> checks and
-<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeGuard">type guards</a></p></li>
-<li><p>You may use <code class="docutils literal notranslate"><span class="pre">type:</span> <span class="pre">ignore</span></code> if you ensured that a line is correct, but mypy / pyright has issues with it. Don’t use
-blank <code class="docutils literal notranslate"><span class="pre">type:</span> <span class="pre">ignore</span></code> though, and instead supply the specific error code, e.g. <code class="docutils literal notranslate"><span class="pre">type:</span> <span class="pre">ignore[attr-defined]</span></code></p></li>
+Check <a class="reference internal" href="reference/types.html"><span class="doc">types</span></a> if a type alias for your use case already exists</p></li>
+<li><p>If something cannot be typed correctly due to a limitation of the type checkers, you may use <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.cast" title="(in Python v3.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">typing.cast()</span></code></a>
+to rectify the situation. However, you should only use this as a last resort if you’ve exhausted all other options
+of <a class="reference external" href="https://mypy.readthedocs.io/en/stable/type_narrowing.html">type narrowing</a>, such as <a class="reference external" href="https://docs.python.org/3/library/functions.html#isinstance" title="(in Python v3.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">isinstance()</span></code></a> checks
+and <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypeGuard">type guards</a>.</p></li>
+<li><p>You may use a properly scoped <code class="docutils literal notranslate"><span class="pre">type:</span> <span class="pre">ignore</span></code> if you ensured that a line is correct, but mypy / pyright has
+issues with it.</p>
+<p>Properly scoped meaning do not use blank <code class="docutils literal notranslate"><span class="pre">type:</span> <span class="pre">ignore</span></code>, instead supply the specific error code, e.g.,
+<code class="docutils literal notranslate"><span class="pre">type:</span> <span class="pre">ignore[attr-defined]</span></code></p>
+</li>
 </ul>
 </li>
 <li><p>If you are adding or modifying existing code, ensure that it’s fully tested. 100% test coverage is mandatory, and will
-be checked on the PR using <a class="reference external" href="https://www.sonarsource.com/products/sonarcloud/">SonarCloud</a></p></li>
+be checked on the PR using <a class="reference external" href="https://www.sonarsource.com/products/sonarcloud/">SonarCloud</a> and
+<a class="reference external" href="https://codecov.io/">Codecov</a></p></li>
 <li><p>All functions, methods, classes, and attributes should be documented with a docstring. We use the
 <a class="reference external" href="https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html">Google docstring style</a>. If you come
 across a function or method that doesn’t conform to this standard, please update it as you go</p></li>
@@ -1611,7 +1717,7 @@ following the guidelines established in <a class="reference internal" href="#add
 <section id="writing-and-running-tests">
 <h3>Writing and running tests<a class="headerlink" href="#writing-and-running-tests" title="Permalink to this heading">#</a></h3>
 <p>Tests are contained within the <code class="docutils literal notranslate"><span class="pre">tests</span></code> directory, and follow the same directory structure as the <code class="docutils literal notranslate"><span class="pre">litestar</span></code> module.
-If you are adding a test case, it should be located within the correct submodule of <code class="docutils literal notranslate"><span class="pre">tests</span></code>. E.g. tests for
+If you are adding a test case, it should be located within the correct submodule of <code class="docutils literal notranslate"><span class="pre">tests</span></code>. E.g., tests for
 <code class="docutils literal notranslate"><span class="pre">litestar/utils/sync.py</span></code> reside in <code class="docutils literal notranslate"><span class="pre">tests/utils/test_sync.py</span></code>.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">Makefile</span></code> includes several commands for running tests:</p>
 <ul class="simple">
@@ -1624,7 +1730,7 @@ If you are adding a test case, it should be located within the correct submodule
 test runs. These are enabled by default when running <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">test</span></code>, <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">test-all</span></code>
 or <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">coverage</span></code>. Due to the nature of pytest-xdist, attaching a debugger isn’t as
 straightforward. For debugging, it’s recommended to run the tests individually with
-<code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">&lt;test</span> <span class="pre">name&gt;</span></code> or via an IDE, which will skip pytest-xdist.</p>
+<code class="docutils literal notranslate"><span class="pre">pytest</span> <span class="pre">&lt;test</span> <span class="pre">name&gt;</span></code> or via an IDE, which will skip <code class="docutils literal notranslate"><span class="pre">pytest-xdist</span></code>.</p>
 </section>
 <section id="running-type-checkers">
 <h3>Running type checkers<a class="headerlink" href="#running-type-checkers" title="Permalink to this heading">#</a></h3>
@@ -1641,21 +1747,34 @@ enforce type safety. You can run them with:</p>
 </section>
 <section id="project-documentation">
 <h2>Project documentation<a class="headerlink" href="#project-documentation" title="Permalink to this heading">#</a></h2>
-<p>The documentation is located in the <code class="docutils literal notranslate"><span class="pre">/docs</span></code> directory and is <a class="reference external" href="https://docutils.sourceforge.io/rst.html">reST</a> and
-<a class="reference external" href="https://www.sphinx-doc.org/en/master/">Sphinx</a>. If you’re unfamiliar with any of those,
+<p>The documentation is located in the <code class="docutils literal notranslate"><span class="pre">/docs</span></code> directory and is written  in
+<a class="reference external" href="https://docutils.sourceforge.io/rst.html">reStructuredText</a> with the <a class="reference external" href="https://www.sphinx-doc.org/en/master/">Sphinx</a>.
+library. If you’re unfamiliar with any of those,
 <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/restructuredtext/basics.html">reStructuredText primer</a> and
 <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/quickstart.html">Sphinx quickstart</a> are recommended reads.</p>
 <section id="docs-theme-and-appearance">
 <h3>Docs theme and appearance<a class="headerlink" href="#docs-theme-and-appearance" title="Permalink to this heading">#</a></h3>
 <p>We welcome contributions that enhance / improve the appearance and usability of the docs. We use the excellent
-<a class="reference external" href="https://pydata-sphinx-theme.readthedocs.io/">PyData Sphinx Theme</a> theme, which comes with a lot of options out of the box. If you wish to
-contribute to the docs style / setup, or static site generation, you should consult the theme docs as a first step.</p>
+<a class="reference external" href="https://pydata-sphinx-theme.readthedocs.io/">PyData Sphinx Theme</a> theme, which comes with a lot of options out of the box.
+If you wish to contribute to the docs style / setup, or static site generation, you should consult the theme docs
+as a first step.</p>
 </section>
 <section id="running-the-docs-locally">
 <h3>Running the docs locally<a class="headerlink" href="#running-the-docs-locally" title="Permalink to this heading">#</a></h3>
 <p>To run or build the docs locally, you need to first install the required dependencies:</p>
-<p><code class="docutils literal notranslate"><span class="pre">pdm</span> <span class="pre">install</span> <span class="pre">-G:docs</span></code></p>
-<p>Then you can serve the documentation with <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">docs-serve</span></code>, or build them with <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">docs</span></code></p>
+<div class="literal-block-wrapper docutils container" id="id14">
+<div class="code-block-caption"><span class="caption-text">Installing the documentation dependencies</span><a class="headerlink" href="#id14" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pdm<span class="w"> </span>install<span class="w"> </span>-G:docs
+</pre></div>
+</div>
+</div>
+<p>Then you can serve the documentation with our helpful Makefile targets:</p>
+<div class="literal-block-wrapper docutils container" id="id15">
+<div class="code-block-caption"><span class="caption-text">Serving the documentation locally</span><a class="headerlink" href="#id15" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>docs-serve
+</pre></div>
+</div>
+</div>
 </section>
 <section id="writing-and-editing-docs">
 <h3>Writing and editing docs<a class="headerlink" href="#writing-and-editing-docs" title="Permalink to this heading">#</a></h3>
@@ -1663,9 +1782,11 @@ contribute to the docs style / setup, or static site generation, you should cons
 restructure the docs, etc., but make sure to follow these guidelines:</p>
 <ul class="simple">
 <li><p>Write text in idiomatic English, using simple language</p></li>
+<li><p>Do not use contractions for ease of reading for non-native English speakers</p></li>
 <li><p>Opt for <a class="reference external" href="https://en.wikipedia.org/wiki/Serial_comma">Oxford commas</a> when listing a series of terms</p></li>
-<li><p>Keep examples simple and self contained</p></li>
-<li><p>Provide links where applicable</p></li>
+<li><p>Keep examples simple and self contained (see <a class="reference internal" href="#adding-examples">Adding examples</a>). This is to ensure they are tested
+alongside the rest of the test suite and properly type checked and linted.</p></li>
+<li><p>Provide links where applicable.</p></li>
 <li><p>Use <a class="reference external" href="https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html">intersphinx</a> wherever possible when
 referencing external libraries</p></li>
 <li><p>Provide diagrams using <a class="reference external" href="https://mermaid.js.org/">Mermaid</a> where applicable and possible</p></li>
@@ -1680,10 +1801,12 @@ to test them alongside the rest of the test suite, ensuring they do not become s
 <li><p>Create a suite for the module in <code class="docutils literal notranslate"><span class="pre">/docs/examples/tests</span></code> that tests the aspects of the example that it demonstrates</p></li>
 <li><p>Reference the example in the rst file with an external reference code block, e.g.</p></li>
 </ul>
+<div class="literal-block-wrapper docutils container" id="id16">
+<div class="code-block-caption"><span class="caption-text">An example of how to use literal includes of external files</span><a class="headerlink" href="#id16" title="Permalink to this code">#</a></div>
 <div class="highlight-rst notranslate"><div class="highlight"><pre><span></span><span class="p">..</span> <span class="ow">literalinclude</span><span class="p">::</span> /examples/test_thing.py
-  <span class="nc">:caption:</span> test_thing.py
-  <span class="nc">:language:</span> python
+   <span class="nc">:caption:</span> All includes should have a descriptive caption
 </pre></div>
+</div>
 </div>
 </section>
 <section id="automatically-execute-examples">
@@ -1702,6 +1825,8 @@ after the example code-block.</p>
 the <code class="docutils literal notranslate"><span class="pre">curl</span></code> command that’s being invoked. The URL is built automatically, so the
 specified path can just be a path relative to the app.</p>
 <p>In practice, this looks like the following:</p>
+<div class="literal-block-wrapper docutils container" id="id17">
+<div class="code-block-caption"><span class="caption-text">An example of how to use the automatic example runner</span><a class="headerlink" href="#id17" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
@@ -1718,41 +1843,23 @@ specified path can just be a path relative to the app.</p>
 <span class="c1"># run: /</span>
 </pre></div>
 </div>
+</div>
 <p>This is equivalent to:</p>
-<div class="sd-tab-set docutils">
-<input id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-0">
-Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
+<div class="literal-block-wrapper docutils container" id="id18">
+<div class="code-block-caption"><span class="caption-text">An example of how to use the automatic example runner</span><a class="headerlink" href="#id18" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span>   <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 
-<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+   <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler function that returns a greeting dictionary.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
+   <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+   <span class="k">def</span> <span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">       </span><span class="sd">&quot;&quot;&quot;Handler function that returns a greeting dictionary.&quot;&quot;&quot;</span>
+       <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
+   <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
 </pre></div>
-</div>
-</div>
-<input checked="checked" id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-1">
-Python 3.10+</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-
-
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler function that returns a greeting dictionary.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
-
-
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
-</pre></div>
-</div>
 </div>
 </div>
 <div class="admonition-run-it admonition">
@@ -1766,31 +1873,72 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 </section>
 </section>
 <section id="creating-a-new-release">
-<h2>Creating a new release<a class="headerlink" href="#creating-a-new-release" title="Permalink to this heading">#</a></h2>
+<h2>Creating a New Release<a class="headerlink" href="#creating-a-new-release" title="Permalink to this heading">#</a></h2>
 <ol class="arabic">
-<li><dl>
-<dt>Increment the version in <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code> according to the <a class="reference external" href="https://litestar.dev/about/litestar-releases#version-numbering">versioning scheme</a></dt><dd><div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The version should follow <a class="reference external" href="https://semver.org/">semantic versioning</a> and <a class="reference external" href="https://peps.python.org/pep-0440/">PEP 440</a>.</p>
+<li><p>Checkout the <code class="docutils literal notranslate"><span class="pre">main</span></code> branch:</p>
+<div class="literal-block-wrapper docutils container" id="id19">
+<div class="code-block-caption"><span class="caption-text">Checking out the main branch of the <code class="docutils literal notranslate"><span class="pre">litestar</span></code> repository</span><a class="headerlink" href="#id19" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>checkout<span class="w"> </span>main
+</pre></div>
 </div>
-</dd>
-</dl>
+</div>
 </li>
-</ol>
-<p>2. Commit and push.
-2. <a class="reference external" href="https://github.com/litestar-org/litestar/releases/new">Draft a new release</a> on GitHub</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>Use <code class="docutils literal notranslate"><span class="pre">vMAJOR.MINOR.PATCH</span></code> (e.g. <code class="docutils literal notranslate"><span class="pre">v1.2.3</span></code>) as both the tag and release title</p></li>
-<li><p>Fill in the release description. You can use the “Generate release notes” function to get a draft for this</p></li>
+<li><p>Run the release preparation script:</p>
+<div class="literal-block-wrapper docutils container" id="id20">
+<div class="code-block-caption"><span class="caption-text">Preparing  a new release</span><a class="headerlink" href="#id20" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>tools/prepare_release.py<span class="w"> </span>&lt;new<span class="w"> </span>version<span class="w"> </span>number&gt;<span class="w"> </span>--update-version<span class="w"> </span>--create-draft-release
+</pre></div>
+</div>
+</div>
+<p>Replace <code class="docutils literal notranslate"><span class="pre">&lt;new</span> <span class="pre">version</span> <span class="pre">number&gt;</span></code> with the desired version number following the
+<a class="reference external" href="https://litestar.dev/about/litestar-releases#version-numbering">versioning scheme</a>.</p>
+<p>This script will:</p>
+<ul class="simple">
+<li><p>Update the version in <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code></p></li>
+<li><p>Generate a changelog entry in <a class="reference internal" href="release-notes/changelog.html"><span class="doc">2.x Changelog</span></a></p></li>
+<li><p>Create a draft release on GitHub</p></li>
 </ul>
-</div></blockquote>
-<ol class="arabic simple" start="3">
-<li><p>Commit your changes and push to <code class="docutils literal notranslate"><span class="pre">main</span></code></p></li>
-<li><p>Publish the release</p></li>
-<li><p>Go to <a class="reference external" href="https://github.com/litestar-org/litestar/actions">Actions</a> and approve the release workflow</p></li>
-<li><p>Check that the workflow runs successfully</p></li>
+</li>
+<li><p>Review the generated changelog entry in <a class="reference internal" href="release-notes/changelog.html"><span class="doc">2.x Changelog</span></a> to ensure it looks correct.</p></li>
+<li><p>Commit the changes to <code class="docutils literal notranslate"><span class="pre">main</span></code>:</p>
+<div class="literal-block-wrapper docutils container" id="id21">
+<div class="code-block-caption"><span class="caption-text">Committing the changes to the main branch</span><a class="headerlink" href="#id21" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>commit<span class="w"> </span>-am<span class="w"> </span><span class="s2">&quot;chore(release): prepare release vX.Y.Z&quot;</span>
+</pre></div>
+</div>
+</div>
+<p>Replace <code class="docutils literal notranslate"><span class="pre">vX.Y.Z</span></code> with the actual version number.</p>
+</li>
+<li><p>Create a new branch for the release:</p>
+<div class="literal-block-wrapper docutils container" id="id22">
+<div class="code-block-caption"><span class="caption-text">Creating a new branch for the release</span><a class="headerlink" href="#id22" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>vX.Y.Z
+</pre></div>
+</div>
+</div>
+</li>
+<li><p>Push the changes to a <code class="docutils literal notranslate"><span class="pre">vX.Y.Z</span></code> branch:</p>
+<div class="literal-block-wrapper docutils container" id="id23">
+<div class="code-block-caption"><span class="caption-text">Pushing the changes to the <code class="docutils literal notranslate"><span class="pre">vX.Y.Z</span></code> branch</span><a class="headerlink" href="#id23" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>vX.Y.Z
+</pre></div>
+</div>
+</div>
+</li>
+<li><p>Open a pull request from the <code class="docutils literal notranslate"><span class="pre">vX.Y.Z</span></code> branch to <code class="docutils literal notranslate"><span class="pre">main</span></code>.</p></li>
+<li><p>Once the pull request is approved, go to the draft release on GitHub
+(the release preparation script will provide a link).</p></li>
+<li><p>Review the release notes in the draft release to ensure they look correct.</p></li>
+<li><p>If everything looks good, click “Publish release” to make the release official.</p></li>
+<li><p>Go to the <a class="reference external" href="https://github.com/litestar-org/litestar/actions/workflows/publish.yml">Release Action</a> and approve
+the release workflow if necessary.</p></li>
+<li><p>Check that the release workflow runs successfully.</p></li>
 </ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The version number should follow <a class="reference external" href="https://semver.org/">semantic versioning</a> and
+<a class="reference external" href="https://peps.python.org/pep-0440/">PEP 440</a>.</p>
+</div>
 </section>
 </section>
 
@@ -1829,7 +1977,11 @@ Python 3.10+</label><div class="sd-tab-content docutils">
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-the-environment">Setting up the environment</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#getting-started">Getting Started</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#supported-python-versions">Supported Python Versions</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-the-environment">Setting up the environment</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#code-contributions">Code contributions</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#workflow">Workflow</a></li>
 </ul>
@@ -1849,7 +2001,7 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 </li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-new-release">Creating a new release</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-new-release">Creating a New Release</a></li>
 </ul>
   </nav></div>
 

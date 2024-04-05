@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1187,7 +1188,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1543,10 +1544,10 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>handler_names</strong> – Names of the associated handler functions</p></li>
-<li><p><strong>path</strong> – Base path of the route</p></li>
-<li><p><strong>scope_type</strong> – Type of the ASGI scope</p></li>
-<li><p><strong>methods</strong> – Supported methods</p></li>
+<li><p><span class="target" id="litestar.routes.BaseRoute.params.handler_names"></span><strong>handler_names</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.BaseRoute.params.handler_names">¶</a> – Names of the associated handler functions</p></li>
+<li><p><span class="target" id="litestar.routes.BaseRoute.params.path"></span><strong>path</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.BaseRoute.params.path">¶</a> – Base path of the route</p></li>
+<li><p><span class="target" id="litestar.routes.BaseRoute.params.scope_type"></span><strong>scope_type</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.BaseRoute.params.scope_type">¶</a> – Type of the ASGI scope</p></li>
+<li><p><span class="target" id="litestar.routes.BaseRoute.params.methods"></span><strong>methods</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.BaseRoute.params.methods">¶</a> – Supported methods</p></li>
 </ul>
 </dd>
 </dl>
@@ -1559,9 +1560,9 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>scope</strong> – The ASGI connection scope.</p></li>
-<li><p><strong>receive</strong> – The ASGI receive function.</p></li>
-<li><p><strong>send</strong> – The ASGI send function.</p></li>
+<li><p><span class="target" id="litestar.routes.BaseRoute.handle.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.BaseRoute.handle.params.scope">¶</a> – The ASGI connection scope.</p></li>
+<li><p><span class="target" id="litestar.routes.BaseRoute.handle.params.receive"></span><strong>receive</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.BaseRoute.handle.params.receive">¶</a> – The ASGI receive function.</p></li>
+<li><p><span class="target" id="litestar.routes.BaseRoute.handle.params.send"></span><strong>send</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.BaseRoute.handle.params.send">¶</a> – The ASGI send function.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1590,8 +1591,8 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> – The path for the route.</p></li>
-<li><p><strong>route_handler</strong> – An instance of <a class="reference internal" href="handlers.html#litestar.handlers.ASGIRouteHandler" title="litestar.handlers.ASGIRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIRouteHandler</span></code></a>.</p></li>
+<li><p><span class="target" id="litestar.routes.ASGIRoute.params.path"></span><strong>path</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.ASGIRoute.params.path">¶</a> – The path for the route.</p></li>
+<li><p><span class="target" id="litestar.routes.ASGIRoute.params.route_handler"></span><strong>route_handler</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.ASGIRoute.params.route_handler">¶</a> – An instance of <a class="reference internal" href="handlers.html#litestar.handlers.ASGIRouteHandler" title="litestar.handlers.ASGIRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIRouteHandler</span></code></a>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1604,9 +1605,9 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>scope</strong> – The ASGI connection scope.</p></li>
-<li><p><strong>receive</strong> – The ASGI receive function.</p></li>
-<li><p><strong>send</strong> – The ASGI send function.</p></li>
+<li><p><span class="target" id="litestar.routes.ASGIRoute.handle.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.ASGIRoute.handle.params.scope">¶</a> – The ASGI connection scope.</p></li>
+<li><p><span class="target" id="litestar.routes.ASGIRoute.handle.params.receive"></span><strong>receive</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.ASGIRoute.handle.params.receive">¶</a> – The ASGI receive function.</p></li>
+<li><p><span class="target" id="litestar.routes.ASGIRoute.handle.params.send"></span><strong>send</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.ASGIRoute.handle.params.send">¶</a> – The ASGI send function.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1629,8 +1630,8 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> – The path for the route.</p></li>
-<li><p><strong>route_handler</strong> – An instance of <a class="reference internal" href="handlers.html#litestar.handlers.WebsocketRouteHandler" title="litestar.handlers.WebsocketRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebsocketRouteHandler</span></code></a>.</p></li>
+<li><p><span class="target" id="litestar.routes.WebSocketRoute.params.path"></span><strong>path</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.WebSocketRoute.params.path">¶</a> – The path for the route.</p></li>
+<li><p><span class="target" id="litestar.routes.WebSocketRoute.params.route_handler"></span><strong>route_handler</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.WebSocketRoute.params.route_handler">¶</a> – An instance of <a class="reference internal" href="handlers.html#litestar.handlers.WebsocketRouteHandler" title="litestar.handlers.WebsocketRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebsocketRouteHandler</span></code></a>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1643,9 +1644,9 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>scope</strong> – The ASGI connection scope.</p></li>
-<li><p><strong>receive</strong> – The ASGI receive function.</p></li>
-<li><p><strong>send</strong> – The ASGI send function.</p></li>
+<li><p><span class="target" id="litestar.routes.WebSocketRoute.handle.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.WebSocketRoute.handle.params.scope">¶</a> – The ASGI connection scope.</p></li>
+<li><p><span class="target" id="litestar.routes.WebSocketRoute.handle.params.receive"></span><strong>receive</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.WebSocketRoute.handle.params.receive">¶</a> – The ASGI receive function.</p></li>
+<li><p><span class="target" id="litestar.routes.WebSocketRoute.handle.params.send"></span><strong>send</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.WebSocketRoute.handle.params.send">¶</a> – The ASGI send function.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1668,8 +1669,8 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> – The path for the route.</p></li>
-<li><p><strong>route_handlers</strong> – A list of <a class="reference internal" href="handlers.html#litestar.handlers.HTTPRouteHandler" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPRouteHandler</span></code></a>.</p></li>
+<li><p><span class="target" id="litestar.routes.HTTPRoute.params.path"></span><strong>path</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.HTTPRoute.params.path">¶</a> – The path for the route.</p></li>
+<li><p><span class="target" id="litestar.routes.HTTPRoute.params.route_handlers"></span><strong>route_handlers</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.HTTPRoute.params.route_handlers">¶</a> – A list of <a class="reference internal" href="handlers.html#litestar.handlers.HTTPRouteHandler" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPRouteHandler</span></code></a>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1683,9 +1684,9 @@ handles the call.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>scope</strong> – The ASGI connection scope.</p></li>
-<li><p><strong>receive</strong> – The ASGI receive function.</p></li>
-<li><p><strong>send</strong> – The ASGI send function.</p></li>
+<li><p><span class="target" id="litestar.routes.HTTPRoute.handle.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.HTTPRoute.handle.params.scope">¶</a> – The ASGI connection scope.</p></li>
+<li><p><span class="target" id="litestar.routes.HTTPRoute.handle.params.receive"></span><strong>receive</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.HTTPRoute.handle.params.receive">¶</a> – The ASGI receive function.</p></li>
+<li><p><span class="target" id="litestar.routes.HTTPRoute.handle.params.send"></span><strong>send</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.HTTPRoute.handle.params.send">¶</a> – The ASGI send function.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1706,7 +1707,7 @@ http- methods and route handlers.</p>
 <span class="sig-name descname"><span class="pre">create_options_handler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="handlers.html#litestar.handlers.HTTPRouteHandler" title="litestar.handlers.http_handlers.base.HTTPRouteHandler"><span class="pre">HTTPRouteHandler</span></a></span></span><a class="headerlink" href="#litestar.routes.HTTPRoute.create_options_handler" title="Permalink to this definition">#</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>path</strong> – The route path</p>
+<dd class="field-odd"><p><span class="target" id="litestar.routes.HTTPRoute.create_options_handler.params.path"></span><strong>path</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.HTTPRoute.create_options_handler.params.path">¶</a> – The route path</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>An HTTP route handler for OPTIONS requests.</p>

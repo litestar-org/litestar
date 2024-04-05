@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1187,7 +1188,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1541,7 +1542,7 @@ document.write(`
 <dd><p>Given a value of indeterminate type, determine if this value is supported by the plugin.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>field_definition</strong> – A parsed type.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.plugins.SerializationPluginProtocol.supports_type.params.field_definition"></span><strong>field_definition</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.SerializationPluginProtocol.supports_type.params.field_definition">¶</a> – A parsed type.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Whether the type is supported by the plugin.</p>
@@ -1555,7 +1556,7 @@ document.write(`
 <dd><p>Given a parsed type, create a DTO class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>field_definition</strong> – A parsed type.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.plugins.SerializationPluginProtocol.create_dto_for_type.params.field_definition"></span><strong>field_definition</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.SerializationPluginProtocol.create_dto_for_type.params.field_definition">¶</a> – A parsed type.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A DTO class.</p>
@@ -1605,7 +1606,7 @@ method.</p>
 <p>This can be used to extend or override existing commands.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>cli</strong> – The root <a class="reference external" href="https://click.palletsprojects.com/en/8.1.x/api/#click.Group" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Group</span></code></a> of the Litestar CLI</p>
+<dd class="field-odd"><p><span class="target" id="litestar.plugins.CLIPlugin.on_cli_init.params.cli"></span><strong>cli</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.CLIPlugin.on_cli_init.params.cli">¶</a> – The root <a class="reference external" href="https://click.palletsprojects.com/en/8.1.x/api/#click.Group" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Group</span></code></a> of the Litestar CLI</p>
 </dd>
 </dl>
 <div class="admonition-examples admonition">
@@ -1668,7 +1669,7 @@ method.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>app_config</strong> – The <a class="reference internal" href="../config.html#litestar.config.app.AppConfig" title="litestar.config.app.AppConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></a> instance.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.plugins.InitPluginProtocol.on_app_init.params.app_config"></span><strong>app_config</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.InitPluginProtocol.on_app_init.params.app_config">¶</a> – The <a class="reference internal" href="../config.html#litestar.config.app.AppConfig" title="litestar.config.app.AppConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></a> instance.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The app config object.</p>
@@ -1694,7 +1695,7 @@ method.</p>
 <dd><p>Given a value of indeterminate type, determine if this value is supported by the plugin.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>value</strong> – An arbitrary value.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.plugins.OpenAPISchemaPluginProtocol.is_plugin_supported_type.params.value"></span><strong>value</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.OpenAPISchemaPluginProtocol.is_plugin_supported_type.params.value">¶</a> – An arbitrary value.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A typeguard dictating whether the value is supported by the plugin.</p>
@@ -1709,8 +1710,8 @@ method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>field_definition</strong> – An <a class="reference internal" href="../openapi/spec.html#litestar.openapi.spec.Schema" title="litestar.openapi.spec.schema.Schema"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAPI</span></code></a> instance.</p></li>
-<li><p><strong>schema_creator</strong> – An instance of the openapi SchemaCreator.</p></li>
+<li><p><span class="target" id="litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema.params.field_definition"></span><strong>field_definition</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema.params.field_definition">¶</a> – An <a class="reference internal" href="../openapi/spec.html#litestar.openapi.spec.Schema" title="litestar.openapi.spec.schema.Schema"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAPI</span></code></a> instance.</p></li>
+<li><p><span class="target" id="litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema.params.schema_creator"></span><strong>schema_creator</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema.params.schema_creator">¶</a> – An instance of the openapi SchemaCreator.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1739,7 +1740,7 @@ method.</p>
 backwards compatibility. User’s should prefer to override that method instead.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>value</strong> – An arbitrary value.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.plugins.OpenAPISchemaPlugin.is_plugin_supported_type.params.value"></span><strong>value</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.OpenAPISchemaPlugin.is_plugin_supported_type.params.value">¶</a> – An arbitrary value.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A bool indicating whether the value is supported by the plugin.</p>
@@ -1754,7 +1755,7 @@ backwards compatibility. User’s should prefer to override that method instead.
 determine if this value is supported by the plugin</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>field_definition</strong> – A parsed type.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.plugins.OpenAPISchemaPlugin.is_plugin_supported_field.params.field_definition"></span><strong>field_definition</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.OpenAPISchemaPlugin.is_plugin_supported_field.params.field_definition">¶</a> – A parsed type.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Whether the type is supported by the plugin.</p>
@@ -1789,7 +1790,7 @@ determine if this value is supported by the plugin</p>
 <p>This can be used to extend or override existing commands.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>cli</strong> – The root <a class="reference external" href="https://click.palletsprojects.com/en/8.1.x/api/#click.Group" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Group</span></code></a> of the Litestar CLI</p>
+<dd class="field-odd"><p><span class="target" id="litestar.plugins.CLIPluginProtocol.on_cli_init.params.cli"></span><strong>cli</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.CLIPluginProtocol.on_cli_init.params.cli">¶</a> – The root <a class="reference external" href="https://click.palletsprojects.com/en/8.1.x/api/#click.Group" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Group</span></code></a> of the Litestar CLI</p>
 </dd>
 </dl>
 <div class="admonition-examples admonition">

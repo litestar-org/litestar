@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1187,7 +1188,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1543,21 +1544,21 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>extract_body</strong> – Whether to extract body, (for requests only).</p></li>
-<li><p><strong>extract_client</strong> – Whether to extract the client (host, port) mapping.</p></li>
-<li><p><strong>extract_content_type</strong> – Whether to extract the content type and any options.</p></li>
-<li><p><strong>extract_cookies</strong> – Whether to extract cookies.</p></li>
-<li><p><strong>extract_headers</strong> – Whether to extract headers.</p></li>
-<li><p><strong>extract_method</strong> – Whether to extract the HTTP method, (for requests only).</p></li>
-<li><p><strong>extract_path</strong> – Whether to extract the path.</p></li>
-<li><p><strong>extract_path_params</strong> – Whether to extract path parameters.</p></li>
-<li><p><strong>extract_query</strong> – Whether to extract query parameters.</p></li>
-<li><p><strong>extract_scheme</strong> – Whether to extract the http scheme.</p></li>
-<li><p><strong>obfuscate_headers</strong> – headers keys to obfuscate. Obfuscated values are replaced with ‘<strong>*</strong>’.</p></li>
-<li><p><strong>obfuscate_cookies</strong> – cookie keys to obfuscate. Obfuscated values are replaced with ‘<strong>*</strong>’.</p></li>
-<li><p><strong>parse_body</strong> – Whether to parse the body value or return the raw byte string, (for requests only).</p></li>
-<li><p><strong>parse_query</strong> – Whether to parse query parameters or return the raw byte string.</p></li>
-<li><p><strong>skip_parse_malformed_body</strong> – Whether to skip parsing the body if it is malformed</p></li>
+<li><p><span class="target" id="litestar.data_extractors.ConnectionDataExtractor.params.extract_body"></span><strong>extract_body</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ConnectionDataExtractor.params.extract_body">¶</a> – Whether to extract body, (for requests only).</p></li>
+<li><p><span class="target" id="litestar.data_extractors.ConnectionDataExtractor.params.extract_client"></span><strong>extract_client</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ConnectionDataExtractor.params.extract_client">¶</a> – Whether to extract the client (host, port) mapping.</p></li>
+<li><p><span class="target" id="litestar.data_extractors.ConnectionDataExtractor.params.extract_content_type"></span><strong>extract_content_type</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ConnectionDataExtractor.params.extract_content_type">¶</a> – Whether to extract the content type and any options.</p></li>
+<li><p><span class="target" id="litestar.data_extractors.ConnectionDataExtractor.params.extract_cookies"></span><strong>extract_cookies</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ConnectionDataExtractor.params.extract_cookies">¶</a> – Whether to extract cookies.</p></li>
+<li><p><span class="target" id="litestar.data_extractors.ConnectionDataExtractor.params.extract_headers"></span><strong>extract_headers</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ConnectionDataExtractor.params.extract_headers">¶</a> – Whether to extract headers.</p></li>
+<li><p><span class="target" id="litestar.data_extractors.ConnectionDataExtractor.params.extract_method"></span><strong>extract_method</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ConnectionDataExtractor.params.extract_method">¶</a> – Whether to extract the HTTP method, (for requests only).</p></li>
+<li><p><span class="target" id="litestar.data_extractors.ConnectionDataExtractor.params.extract_path"></span><strong>extract_path</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ConnectionDataExtractor.params.extract_path">¶</a> – Whether to extract the path.</p></li>
+<li><p><span class="target" id="litestar.data_extractors.ConnectionDataExtractor.params.extract_path_params"></span><strong>extract_path_params</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ConnectionDataExtractor.params.extract_path_params">¶</a> – Whether to extract path parameters.</p></li>
+<li><p><span class="target" id="litestar.data_extractors.ConnectionDataExtractor.params.extract_query"></span><strong>extract_query</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ConnectionDataExtractor.params.extract_query">¶</a> – Whether to extract query parameters.</p></li>
+<li><p><span class="target" id="litestar.data_extractors.ConnectionDataExtractor.params.extract_scheme"></span><strong>extract_scheme</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ConnectionDataExtractor.params.extract_scheme">¶</a> – Whether to extract the http scheme.</p></li>
+<li><p><span class="target" id="litestar.data_extractors.ConnectionDataExtractor.params.obfuscate_headers"></span><strong>obfuscate_headers</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ConnectionDataExtractor.params.obfuscate_headers">¶</a> – headers keys to obfuscate. Obfuscated values are replaced with ‘<strong>*</strong>’.</p></li>
+<li><p><span class="target" id="litestar.data_extractors.ConnectionDataExtractor.params.obfuscate_cookies"></span><strong>obfuscate_cookies</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ConnectionDataExtractor.params.obfuscate_cookies">¶</a> – cookie keys to obfuscate. Obfuscated values are replaced with ‘<strong>*</strong>’.</p></li>
+<li><p><span class="target" id="litestar.data_extractors.ConnectionDataExtractor.params.parse_body"></span><strong>parse_body</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ConnectionDataExtractor.params.parse_body">¶</a> – Whether to parse the body value or return the raw byte string, (for requests only).</p></li>
+<li><p><span class="target" id="litestar.data_extractors.ConnectionDataExtractor.params.parse_query"></span><strong>parse_query</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ConnectionDataExtractor.params.parse_query">¶</a> – Whether to parse query parameters or return the raw byte string.</p></li>
+<li><p><span class="target" id="litestar.data_extractors.ConnectionDataExtractor.params.skip_parse_malformed_body"></span><strong>skip_parse_malformed_body</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ConnectionDataExtractor.params.skip_parse_malformed_body">¶</a> – Whether to skip parsing the body if it is malformed</p></li>
 </ul>
 </dd>
 </dl>
@@ -1575,7 +1576,7 @@ document.write(`
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>connection</strong> – An ASGI connection or its subclasses.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.data_extractors.ConnectionDataExtractor.__call__.params.connection"></span><strong>connection</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ConnectionDataExtractor.__call__.params.connection">¶</a> – An ASGI connection or its subclasses.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A string keyed dictionary of extracted values.</p>
@@ -1589,7 +1590,7 @@ document.write(`
 <dd><p>Extract the scheme from an <code class="docutils literal notranslate"><span class="pre">ASGIConnection</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>connection</strong> – An <a class="reference internal" href="connection.html#litestar.connection.ASGIConnection" title="litestar.connection.ASGIConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIConnection</span></code></a> instance.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.data_extractors.ConnectionDataExtractor.extract_scheme.params.connection"></span><strong>connection</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ConnectionDataExtractor.extract_scheme.params.connection">¶</a> – An <a class="reference internal" href="connection.html#litestar.connection.ASGIConnection" title="litestar.connection.ASGIConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIConnection</span></code></a> instance.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The connection’s scope[“scheme”] value</p>
@@ -1603,7 +1604,7 @@ document.write(`
 <dd><p>Extract the client from an <code class="docutils literal notranslate"><span class="pre">ASGIConnection</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>connection</strong> – An <a class="reference internal" href="connection.html#litestar.connection.ASGIConnection" title="litestar.connection.ASGIConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIConnection</span></code></a> instance.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.data_extractors.ConnectionDataExtractor.extract_client.params.connection"></span><strong>connection</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ConnectionDataExtractor.extract_client.params.connection">¶</a> – An <a class="reference internal" href="connection.html#litestar.connection.ASGIConnection" title="litestar.connection.ASGIConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIConnection</span></code></a> instance.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The connection’s scope[“client”] value or a default value.</p>
@@ -1617,7 +1618,7 @@ document.write(`
 <dd><p>Extract the path from an <code class="docutils literal notranslate"><span class="pre">ASGIConnection</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>connection</strong> – An <a class="reference internal" href="connection.html#litestar.connection.ASGIConnection" title="litestar.connection.ASGIConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIConnection</span></code></a> instance.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.data_extractors.ConnectionDataExtractor.extract_path.params.connection"></span><strong>connection</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ConnectionDataExtractor.extract_path.params.connection">¶</a> – An <a class="reference internal" href="connection.html#litestar.connection.ASGIConnection" title="litestar.connection.ASGIConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIConnection</span></code></a> instance.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The connection’s scope[“path”] value</p>
@@ -1631,7 +1632,7 @@ document.write(`
 <dd><p>Extract headers from an <code class="docutils literal notranslate"><span class="pre">ASGIConnection</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>connection</strong> – An <a class="reference internal" href="connection.html#litestar.connection.ASGIConnection" title="litestar.connection.ASGIConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIConnection</span></code></a> instance.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.data_extractors.ConnectionDataExtractor.extract_headers.params.connection"></span><strong>connection</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ConnectionDataExtractor.extract_headers.params.connection">¶</a> – An <a class="reference internal" href="connection.html#litestar.connection.ASGIConnection" title="litestar.connection.ASGIConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIConnection</span></code></a> instance.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A dictionary with the connection’s headers.</p>
@@ -1645,7 +1646,7 @@ document.write(`
 <dd><p>Extract cookies from an <code class="docutils literal notranslate"><span class="pre">ASGIConnection</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>connection</strong> – An <a class="reference internal" href="connection.html#litestar.connection.ASGIConnection" title="litestar.connection.ASGIConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIConnection</span></code></a> instance.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.data_extractors.ConnectionDataExtractor.extract_cookies.params.connection"></span><strong>connection</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ConnectionDataExtractor.extract_cookies.params.connection">¶</a> – An <a class="reference internal" href="connection.html#litestar.connection.ASGIConnection" title="litestar.connection.ASGIConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIConnection</span></code></a> instance.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A dictionary with the connection’s cookies.</p>
@@ -1659,7 +1660,7 @@ document.write(`
 <dd><p>Extract query from an <code class="docutils literal notranslate"><span class="pre">ASGIConnection</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>connection</strong> – An <a class="reference internal" href="connection.html#litestar.connection.ASGIConnection" title="litestar.connection.ASGIConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIConnection</span></code></a> instance.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.data_extractors.ConnectionDataExtractor.extract_query.params.connection"></span><strong>connection</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ConnectionDataExtractor.extract_query.params.connection">¶</a> – An <a class="reference internal" href="connection.html#litestar.connection.ASGIConnection" title="litestar.connection.ASGIConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIConnection</span></code></a> instance.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Either a dictionary with the connection’s parsed query string or the raw query byte-string.</p>
@@ -1673,7 +1674,7 @@ document.write(`
 <dd><p>Extract the path parameters from an <code class="docutils literal notranslate"><span class="pre">ASGIConnection</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>connection</strong> – An <a class="reference internal" href="connection.html#litestar.connection.ASGIConnection" title="litestar.connection.ASGIConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIConnection</span></code></a> instance.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.data_extractors.ConnectionDataExtractor.extract_path_params.params.connection"></span><strong>connection</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ConnectionDataExtractor.extract_path_params.params.connection">¶</a> – An <a class="reference internal" href="connection.html#litestar.connection.ASGIConnection" title="litestar.connection.ASGIConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIConnection</span></code></a> instance.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A dictionary with the connection’s path parameters.</p>
@@ -1687,7 +1688,7 @@ document.write(`
 <dd><p>Extract the method from an <code class="docutils literal notranslate"><span class="pre">ASGIConnection</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>request</strong> – A <a class="reference internal" href="connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.data_extractors.ConnectionDataExtractor.extract_method.params.request"></span><strong>request</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ConnectionDataExtractor.extract_method.params.request">¶</a> – A <a class="reference internal" href="connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The request’s scope[“method”] value.</p>
@@ -1701,7 +1702,7 @@ document.write(`
 <dd><p>Extract the content-type from an <code class="docutils literal notranslate"><span class="pre">ASGIConnection</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>request</strong> – A <a class="reference internal" href="connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.data_extractors.ConnectionDataExtractor.extract_content_type.params.request"></span><strong>request</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ConnectionDataExtractor.extract_content_type.params.request">¶</a> – A <a class="reference internal" href="connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A tuple containing the request’s parsed ‘Content-Type’ header.</p>
@@ -1715,7 +1716,7 @@ document.write(`
 <dd><p>Extract the body from an <code class="docutils literal notranslate"><span class="pre">ASGIConnection</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>request</strong> – A <a class="reference internal" href="connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.data_extractors.ConnectionDataExtractor.extract_body.params.request"></span><strong>request</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ConnectionDataExtractor.extract_body.params.request">¶</a> – A <a class="reference internal" href="connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Either the parsed request body or the raw byte-string.</p>
@@ -1751,12 +1752,12 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>extract_body</strong> – Whether to extract the body.</p></li>
-<li><p><strong>extract_cookies</strong> – Whether to extract the cookies.</p></li>
-<li><p><strong>extract_headers</strong> – Whether to extract the headers.</p></li>
-<li><p><strong>extract_status_code</strong> – Whether to extract the status code.</p></li>
-<li><p><strong>obfuscate_cookies</strong> – cookie keys to obfuscate. Obfuscated values are replaced with ‘<strong>*</strong>’.</p></li>
-<li><p><strong>obfuscate_headers</strong> – headers keys to obfuscate. Obfuscated values are replaced with ‘<strong>*</strong>’.</p></li>
+<li><p><span class="target" id="litestar.data_extractors.ResponseDataExtractor.params.extract_body"></span><strong>extract_body</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ResponseDataExtractor.params.extract_body">¶</a> – Whether to extract the body.</p></li>
+<li><p><span class="target" id="litestar.data_extractors.ResponseDataExtractor.params.extract_cookies"></span><strong>extract_cookies</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ResponseDataExtractor.params.extract_cookies">¶</a> – Whether to extract the cookies.</p></li>
+<li><p><span class="target" id="litestar.data_extractors.ResponseDataExtractor.params.extract_headers"></span><strong>extract_headers</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ResponseDataExtractor.params.extract_headers">¶</a> – Whether to extract the headers.</p></li>
+<li><p><span class="target" id="litestar.data_extractors.ResponseDataExtractor.params.extract_status_code"></span><strong>extract_status_code</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ResponseDataExtractor.params.extract_status_code">¶</a> – Whether to extract the status code.</p></li>
+<li><p><span class="target" id="litestar.data_extractors.ResponseDataExtractor.params.obfuscate_cookies"></span><strong>obfuscate_cookies</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ResponseDataExtractor.params.obfuscate_cookies">¶</a> – cookie keys to obfuscate. Obfuscated values are replaced with ‘<strong>*</strong>’.</p></li>
+<li><p><span class="target" id="litestar.data_extractors.ResponseDataExtractor.params.obfuscate_headers"></span><strong>obfuscate_headers</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ResponseDataExtractor.params.obfuscate_headers">¶</a> – headers keys to obfuscate. Obfuscated values are replaced with ‘<strong>*</strong>’.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1768,7 +1769,7 @@ document.write(`
 <dd><p>Extract data from the response, returning a dictionary of values.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>messages</strong> – A tuple containing
+<dd class="field-odd"><p><span class="target" id="litestar.data_extractors.ResponseDataExtractor.__call__.params.messages"></span><strong>messages</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ResponseDataExtractor.__call__.params.messages">¶</a> – A tuple containing
 <a class="reference internal" href="types.html#litestar.types.HTTPResponseStartEvent" title="litestar.types.asgi_types.HTTPResponseStartEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPResponseStartEvent</span></code></a>
 and <a class="reference internal" href="types.html#litestar.types.HTTPResponseBodyEvent" title="litestar.types.asgi_types.HTTPResponseBodyEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPResponseBodyEvent</span></code></a>.</p>
 </dd>
@@ -1784,7 +1785,7 @@ and <a class="reference internal" href="types.html#litestar.types.HTTPResponseBo
 <dd><p>Extract the response body from a <code class="docutils literal notranslate"><span class="pre">Message</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>messages</strong> – A tuple containing
+<dd class="field-odd"><p><span class="target" id="litestar.data_extractors.ResponseDataExtractor.extract_response_body.params.messages"></span><strong>messages</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ResponseDataExtractor.extract_response_body.params.messages">¶</a> – A tuple containing
 <a class="reference internal" href="types.html#litestar.types.HTTPResponseStartEvent" title="litestar.types.asgi_types.HTTPResponseStartEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPResponseStartEvent</span></code></a>
 and <a class="reference internal" href="types.html#litestar.types.HTTPResponseBodyEvent" title="litestar.types.asgi_types.HTTPResponseBodyEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPResponseBodyEvent</span></code></a>.</p>
 </dd>
@@ -1800,7 +1801,7 @@ and <a class="reference internal" href="types.html#litestar.types.HTTPResponseBo
 <dd><p>Extract a status code from a <code class="docutils literal notranslate"><span class="pre">Message</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>messages</strong> – A tuple containing
+<dd class="field-odd"><p><span class="target" id="litestar.data_extractors.ResponseDataExtractor.extract_status_code.params.messages"></span><strong>messages</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ResponseDataExtractor.extract_status_code.params.messages">¶</a> – A tuple containing
 <a class="reference internal" href="types.html#litestar.types.HTTPResponseStartEvent" title="litestar.types.asgi_types.HTTPResponseStartEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPResponseStartEvent</span></code></a>
 and <a class="reference internal" href="types.html#litestar.types.HTTPResponseBodyEvent" title="litestar.types.asgi_types.HTTPResponseBodyEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPResponseBodyEvent</span></code></a>.</p>
 </dd>
@@ -1816,7 +1817,7 @@ and <a class="reference internal" href="types.html#litestar.types.HTTPResponseBo
 <dd><p>Extract headers from a <code class="docutils literal notranslate"><span class="pre">Message</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>messages</strong> – A tuple containing
+<dd class="field-odd"><p><span class="target" id="litestar.data_extractors.ResponseDataExtractor.extract_headers.params.messages"></span><strong>messages</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ResponseDataExtractor.extract_headers.params.messages">¶</a> – A tuple containing
 <a class="reference internal" href="types.html#litestar.types.HTTPResponseStartEvent" title="litestar.types.asgi_types.HTTPResponseStartEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPResponseStartEvent</span></code></a>
 and <a class="reference internal" href="types.html#litestar.types.HTTPResponseBodyEvent" title="litestar.types.asgi_types.HTTPResponseBodyEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPResponseBodyEvent</span></code></a>.</p>
 </dd>
@@ -1832,7 +1833,7 @@ and <a class="reference internal" href="types.html#litestar.types.HTTPResponseBo
 <dd><p>Extract cookies from a <code class="docutils literal notranslate"><span class="pre">Message</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>messages</strong> – A tuple containing
+<dd class="field-odd"><p><span class="target" id="litestar.data_extractors.ResponseDataExtractor.extract_cookies.params.messages"></span><strong>messages</strong><a class="paramlink headerlink reference internal" href="#litestar.data_extractors.ResponseDataExtractor.extract_cookies.params.messages">¶</a> – A tuple containing
 <a class="reference internal" href="types.html#litestar.types.HTTPResponseStartEvent" title="litestar.types.asgi_types.HTTPResponseStartEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPResponseStartEvent</span></code></a>
 and <a class="reference internal" href="types.html#litestar.types.HTTPResponseBodyEvent" title="litestar.types.asgi_types.HTTPResponseBodyEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPResponseBodyEvent</span></code></a>.</p>
 </dd>

@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1187,7 +1188,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1537,9 +1538,9 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>target_type</strong> – Encountered type</p></li>
-<li><p><strong>value</strong> – Value to coerce</p></li>
-<li><p><strong>type_decoders</strong> – Optional sequence of type decoders</p></li>
+<li><p><span class="target" id="litestar.serialization.default_deserializer.params.target_type"></span><strong>target_type</strong><a class="paramlink headerlink reference internal" href="#litestar.serialization.default_deserializer.params.target_type">¶</a> – Encountered type</p></li>
+<li><p><span class="target" id="litestar.serialization.default_deserializer.params.value"></span><strong>value</strong><a class="paramlink headerlink reference internal" href="#litestar.serialization.default_deserializer.params.value">¶</a> – Value to coerce</p></li>
+<li><p><span class="target" id="litestar.serialization.default_deserializer.params.type_decoders"></span><strong>type_decoders</strong><a class="paramlink headerlink reference internal" href="#litestar.serialization.default_deserializer.params.type_decoders">¶</a> – Optional sequence of type decoders</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1555,9 +1556,9 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>value</strong> – Value to decode</p></li>
-<li><p><strong>target_type</strong> – An optional type to decode the data into</p></li>
-<li><p><strong>type_decoders</strong> – Optional sequence of type decoders</p></li>
+<li><p><span class="target" id="litestar.serialization.decode_json.params.value"></span><strong>value</strong><a class="paramlink headerlink reference internal" href="#litestar.serialization.decode_json.params.value">¶</a> – Value to decode</p></li>
+<li><p><span class="target" id="litestar.serialization.decode_json.params.target_type"></span><strong>target_type</strong><a class="paramlink headerlink reference internal" href="#litestar.serialization.decode_json.params.target_type">¶</a> – An optional type to decode the data into</p></li>
+<li><p><span class="target" id="litestar.serialization.decode_json.params.type_decoders"></span><strong>type_decoders</strong><a class="paramlink headerlink reference internal" href="#litestar.serialization.decode_json.params.type_decoders">¶</a> – Optional sequence of type decoders</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1576,9 +1577,9 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>value</strong> – Value to decode</p></li>
-<li><p><strong>target_type</strong> – An optional type to decode the data into</p></li>
-<li><p><strong>type_decoders</strong> – Optional sequence of type decoders</p></li>
+<li><p><span class="target" id="litestar.serialization.decode_msgpack.params.value"></span><strong>value</strong><a class="paramlink headerlink reference internal" href="#litestar.serialization.decode_msgpack.params.value">¶</a> – Value to decode</p></li>
+<li><p><span class="target" id="litestar.serialization.decode_msgpack.params.target_type"></span><strong>target_type</strong><a class="paramlink headerlink reference internal" href="#litestar.serialization.decode_msgpack.params.target_type">¶</a> – An optional type to decode the data into</p></li>
+<li><p><span class="target" id="litestar.serialization.decode_msgpack.params.type_decoders"></span><strong>type_decoders</strong><a class="paramlink headerlink reference internal" href="#litestar.serialization.decode_msgpack.params.type_decoders">¶</a> – Optional sequence of type decoders</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1597,8 +1598,8 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>value</strong> – A value to serialized</p></li>
-<li><p><strong>type_encoders</strong> – Mapping of types to callables to transforming types</p></li>
+<li><p><span class="target" id="litestar.serialization.default_serializer.params.value"></span><strong>value</strong><a class="paramlink headerlink reference internal" href="#litestar.serialization.default_serializer.params.value">¶</a> – A value to serialized</p></li>
+<li><p><span class="target" id="litestar.serialization.default_serializer.params.type_encoders"></span><strong>type_encoders</strong><a class="paramlink headerlink reference internal" href="#litestar.serialization.default_serializer.params.type_encoders">¶</a> – Mapping of types to callables to transforming types</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1617,8 +1618,8 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>value</strong> – Value to encode</p></li>
-<li><p><strong>serializer</strong> – Optional callable to support non-natively supported types.</p></li>
+<li><p><span class="target" id="litestar.serialization.encode_json.params.value"></span><strong>value</strong><a class="paramlink headerlink reference internal" href="#litestar.serialization.encode_json.params.value">¶</a> – Value to encode</p></li>
+<li><p><span class="target" id="litestar.serialization.encode_json.params.serializer"></span><strong>serializer</strong><a class="paramlink headerlink reference internal" href="#litestar.serialization.encode_json.params.serializer">¶</a> – Optional callable to support non-natively supported types.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1637,8 +1638,8 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>value</strong> – Value to encode</p></li>
-<li><p><strong>serializer</strong> – Optional callable to support non-natively supported types</p></li>
+<li><p><span class="target" id="litestar.serialization.encode_msgpack.params.value"></span><strong>value</strong><a class="paramlink headerlink reference internal" href="#litestar.serialization.encode_msgpack.params.value">¶</a> – Value to encode</p></li>
+<li><p><span class="target" id="litestar.serialization.encode_msgpack.params.serializer"></span><strong>serializer</strong><a class="paramlink headerlink reference internal" href="#litestar.serialization.encode_msgpack.params.serializer">¶</a> – Optional callable to support non-natively supported types</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

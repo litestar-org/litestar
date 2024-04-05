@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1187,7 +1188,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1545,10 +1546,10 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> – Path to serve the OpenAPI UI at.</p></li>
-<li><p><strong>media_type</strong> – Media type for the handler.</p></li>
-<li><p><strong>favicon</strong> – Html &lt;link&gt; tag for the favicon.</p></li>
-<li><p><strong>style</strong> – Base styling of the html body.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.OpenAPIRenderPlugin.params.path"></span><strong>path</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.OpenAPIRenderPlugin.params.path">¶</a> – Path to serve the OpenAPI UI at.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.OpenAPIRenderPlugin.params.media_type"></span><strong>media_type</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.OpenAPIRenderPlugin.params.media_type">¶</a> – Media type for the handler.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.OpenAPIRenderPlugin.params.favicon"></span><strong>favicon</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.OpenAPIRenderPlugin.params.favicon">¶</a> – Html &lt;link&gt; tag for the favicon.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.OpenAPIRenderPlugin.params.style"></span><strong>style</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.OpenAPIRenderPlugin.params.style">¶</a> – Base styling of the html body.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1561,8 +1562,8 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>request</strong> – The request that triggered the render.</p></li>
-<li><p><strong>openapi_schema</strong> – The OpenAPI schema as a dictionary.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.OpenAPIRenderPlugin.render_json.params.request"></span><strong>request</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.OpenAPIRenderPlugin.render_json.params.request">¶</a> – The request that triggered the render.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.OpenAPIRenderPlugin.render_json.params.openapi_schema"></span><strong>openapi_schema</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.OpenAPIRenderPlugin.render_json.params.openapi_schema">¶</a> – The OpenAPI schema as a dictionary.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1578,8 +1579,8 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>request</strong> – The request that triggered the render.</p></li>
-<li><p><strong>openapi_schema</strong> – The OpenAPI schema as a dictionary.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.OpenAPIRenderPlugin.render.params.request"></span><strong>request</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.OpenAPIRenderPlugin.render.params.request">¶</a> – The request that triggered the render.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.OpenAPIRenderPlugin.render.params.openapi_schema"></span><strong>openapi_schema</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.OpenAPIRenderPlugin.render.params.openapi_schema">¶</a> – The OpenAPI schema as a dictionary.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1607,7 +1608,7 @@ document.write(`
 additional routes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>router</strong> – The router that serves the OpenAPI UI.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.openapi.plugins.OpenAPIRenderPlugin.receive_router.params.router"></span><strong>router</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.OpenAPIRenderPlugin.receive_router.params.router">¶</a> – The router that serves the OpenAPI UI.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1618,7 +1619,7 @@ additional routes.</p>
 <dd><p>Check if the plugin has a path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>path</strong> – The path to check.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.openapi.plugins.OpenAPIRenderPlugin.has_path.params.path"></span><strong>path</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.OpenAPIRenderPlugin.has_path.params.path">¶</a> – The path to check.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>True if the plugin has the path, False otherwise.</p>
@@ -1640,11 +1641,11 @@ additional routes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>version</strong> – Rapidoc version to download from the CDN. If js_url is provided, this is ignored.</p></li>
-<li><p><strong>js_url</strong> – Download url for the RapiDoc JS bundle. If not provided, the version will be used to construct the
+<li><p><span class="target" id="litestar.openapi.plugins.RapidocRenderPlugin.params.version"></span><strong>version</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.RapidocRenderPlugin.params.version">¶</a> – Rapidoc version to download from the CDN. If js_url is provided, this is ignored.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.RapidocRenderPlugin.params.js_url"></span><strong>js_url</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.RapidocRenderPlugin.params.js_url">¶</a> – Download url for the RapiDoc JS bundle. If not provided, the version will be used to construct the
 url.</p></li>
-<li><p><strong>path</strong> – Path to serve the OpenAPI UI at.</p></li>
-<li><p><strong>**kwargs</strong> – Additional arguments to pass to the base class.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.RapidocRenderPlugin.params.path"></span><strong>path</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.RapidocRenderPlugin.params.path">¶</a> – Path to serve the OpenAPI UI at.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.RapidocRenderPlugin.params.**kwargs"></span><strong>**kwargs</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.RapidocRenderPlugin.params.**kwargs">¶</a> – Additional arguments to pass to the base class.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1661,8 +1662,8 @@ url.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>request</strong> – The request.</p></li>
-<li><p><strong>openapi_schema</strong> – The OpenAPI schema as a dictionary.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.RapidocRenderPlugin.render.params.request"></span><strong>request</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.RapidocRenderPlugin.render.params.request">¶</a> – The request.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.RapidocRenderPlugin.render.params.openapi_schema"></span><strong>openapi_schema</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.RapidocRenderPlugin.render.params.openapi_schema">¶</a> – The OpenAPI schema as a dictionary.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1685,11 +1686,11 @@ url.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>version</strong> – Redoc version to download from the CDN. If js_url is provided, this is ignored.</p></li>
-<li><p><strong>js_url</strong> – Download url for the Redoc JS bundle. If not provided, the version will be used to construct the url.</p></li>
-<li><p><strong>google_fonts</strong> – Download google fonts via CDN. Should be set to False when not using a CDN.</p></li>
-<li><p><strong>path</strong> – Path to serve the OpenAPI UI at.</p></li>
-<li><p><strong>**kwargs</strong> – Additional arguments to pass to the base class.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.RedocRenderPlugin.params.version"></span><strong>version</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.RedocRenderPlugin.params.version">¶</a> – Redoc version to download from the CDN. If js_url is provided, this is ignored.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.RedocRenderPlugin.params.js_url"></span><strong>js_url</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.RedocRenderPlugin.params.js_url">¶</a> – Download url for the Redoc JS bundle. If not provided, the version will be used to construct the url.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.RedocRenderPlugin.params.google_fonts"></span><strong>google_fonts</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.RedocRenderPlugin.params.google_fonts">¶</a> – Download google fonts via CDN. Should be set to False when not using a CDN.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.RedocRenderPlugin.params.path"></span><strong>path</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.RedocRenderPlugin.params.path">¶</a> – Path to serve the OpenAPI UI at.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.RedocRenderPlugin.params.**kwargs"></span><strong>**kwargs</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.RedocRenderPlugin.params.**kwargs">¶</a> – Additional arguments to pass to the base class.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1706,8 +1707,8 @@ url.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>request</strong> – The request.</p></li>
-<li><p><strong>openapi_schema</strong> – The OpenAPI schema as a dictionary.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.RedocRenderPlugin.render.params.request"></span><strong>request</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.RedocRenderPlugin.render.params.request">¶</a> – The request.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.RedocRenderPlugin.render.params.openapi_schema"></span><strong>openapi_schema</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.RedocRenderPlugin.render.params.openapi_schema">¶</a> – The OpenAPI schema as a dictionary.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1733,14 +1734,14 @@ url.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>version</strong> – Scalar version to download from the CDN.
+<li><p><span class="target" id="litestar.openapi.plugins.ScalarRenderPlugin.params.version"></span><strong>version</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.ScalarRenderPlugin.params.version">¶</a> – Scalar version to download from the CDN.
 If js_url is provided, this is ignored.</p></li>
-<li><p><strong>js_url</strong> – Download url for the Scalar JS bundle.
+<li><p><span class="target" id="litestar.openapi.plugins.ScalarRenderPlugin.params.js_url"></span><strong>js_url</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.ScalarRenderPlugin.params.js_url">¶</a> – Download url for the Scalar JS bundle.
 If not provided, the version will be used to construct the url.</p></li>
-<li><p><strong>css_url</strong> – Download url for the Scalar CSS bundle.
+<li><p><span class="target" id="litestar.openapi.plugins.ScalarRenderPlugin.params.css_url"></span><strong>css_url</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.ScalarRenderPlugin.params.css_url">¶</a> – Download url for the Scalar CSS bundle.
 If not provided, the Litestar-provided CSS will be used.</p></li>
-<li><p><strong>path</strong> – Path to serve the OpenAPI UI at.</p></li>
-<li><p><strong>**kwargs</strong> – Additional arguments to pass to the base class.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.ScalarRenderPlugin.params.path"></span><strong>path</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.ScalarRenderPlugin.params.path">¶</a> – Path to serve the OpenAPI UI at.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.ScalarRenderPlugin.params.**kwargs"></span><strong>**kwargs</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.ScalarRenderPlugin.params.**kwargs">¶</a> – Additional arguments to pass to the base class.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1757,8 +1758,8 @@ If not provided, the Litestar-provided CSS will be used.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>request</strong> – The request.</p></li>
-<li><p><strong>openapi_schema</strong> – The OpenAPI schema as a dictionary.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.ScalarRenderPlugin.render.params.request"></span><strong>request</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.ScalarRenderPlugin.render.params.request">¶</a> – The request.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.ScalarRenderPlugin.render.params.openapi_schema"></span><strong>openapi_schema</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.ScalarRenderPlugin.render.params.openapi_schema">¶</a> – The OpenAPI schema as a dictionary.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1781,13 +1782,13 @@ If not provided, the Litestar-provided CSS will be used.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>version</strong> – StopLight Elements version to download from the CDN. If js_url is provided, this is ignored.</p></li>
-<li><p><strong>js_url</strong> – Download url for the StopLight Elements JS bundle. If not provided, the version will be used to
+<li><p><span class="target" id="litestar.openapi.plugins.StoplightRenderPlugin.params.version"></span><strong>version</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.StoplightRenderPlugin.params.version">¶</a> – StopLight Elements version to download from the CDN. If js_url is provided, this is ignored.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.StoplightRenderPlugin.params.js_url"></span><strong>js_url</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.StoplightRenderPlugin.params.js_url">¶</a> – Download url for the StopLight Elements JS bundle. If not provided, the version will be used to
 construct the url.</p></li>
-<li><p><strong>css_url</strong> – Download url for the StopLight Elements CSS bundle. If not provided, the version will be used to
+<li><p><span class="target" id="litestar.openapi.plugins.StoplightRenderPlugin.params.css_url"></span><strong>css_url</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.StoplightRenderPlugin.params.css_url">¶</a> – Download url for the StopLight Elements CSS bundle. If not provided, the version will be used to
 construct the url.</p></li>
-<li><p><strong>path</strong> – Path to serve the OpenAPI UI at.</p></li>
-<li><p><strong>**kwargs</strong> – Additional arguments to pass to the base class.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.StoplightRenderPlugin.params.path"></span><strong>path</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.StoplightRenderPlugin.params.path">¶</a> – Path to serve the OpenAPI UI at.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.StoplightRenderPlugin.params.**kwargs"></span><strong>**kwargs</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.StoplightRenderPlugin.params.**kwargs">¶</a> – Additional arguments to pass to the base class.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1804,8 +1805,8 @@ construct the url.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>request</strong> – The request.</p></li>
-<li><p><strong>openapi_schema</strong> – The OpenAPI schema as a dictionary.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.StoplightRenderPlugin.render.params.request"></span><strong>request</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.StoplightRenderPlugin.render.params.request">¶</a> – The request.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.StoplightRenderPlugin.render.params.openapi_schema"></span><strong>openapi_schema</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.StoplightRenderPlugin.render.params.openapi_schema">¶</a> – The OpenAPI schema as a dictionary.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1828,18 +1829,18 @@ construct the url.</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>version</strong> – SwaggerUI version to download from the CDN. If js_url is provided, this is ignored.</p></li>
-<li><p><strong>js_url</strong> – Download url for the Swagger UI JS bundle. If not provided, the version will be used to construct
+<li><p><span class="target" id="litestar.openapi.plugins.SwaggerRenderPlugin.params.version"></span><strong>version</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.SwaggerRenderPlugin.params.version">¶</a> – SwaggerUI version to download from the CDN. If js_url is provided, this is ignored.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.SwaggerRenderPlugin.params.js_url"></span><strong>js_url</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.SwaggerRenderPlugin.params.js_url">¶</a> – Download url for the Swagger UI JS bundle. If not provided, the version will be used to construct
 the url.</p></li>
-<li><p><strong>css_url</strong> – Download url for the Swagger UI CSS bundle. If not provided, the version will be used to construct
+<li><p><span class="target" id="litestar.openapi.plugins.SwaggerRenderPlugin.params.css_url"></span><strong>css_url</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.SwaggerRenderPlugin.params.css_url">¶</a> – Download url for the Swagger UI CSS bundle. If not provided, the version will be used to construct
 the url.</p></li>
-<li><p><strong>standalone_preset_js_url</strong> – Download url for the Swagger Standalone Preset JS bundle. If not provided, the
+<li><p><span class="target" id="litestar.openapi.plugins.SwaggerRenderPlugin.params.standalone_preset_js_url"></span><strong>standalone_preset_js_url</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.SwaggerRenderPlugin.params.standalone_preset_js_url">¶</a> – Download url for the Swagger Standalone Preset JS bundle. If not provided, the
 version will be used to construct the url.</p></li>
-<li><p><strong>init_oauth</strong> – JSON to initialize Swagger UI OAuth2 by calling the <code class="docutils literal notranslate"><span class="pre">initOAuth</span></code> method.
+<li><p><span class="target" id="litestar.openapi.plugins.SwaggerRenderPlugin.params.init_oauth"></span><strong>init_oauth</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.SwaggerRenderPlugin.params.init_oauth">¶</a> – JSON to initialize Swagger UI OAuth2 by calling the <code class="docutils literal notranslate"><span class="pre">initOAuth</span></code> method.
 Refer to the following URL for details:
 <a class="reference external" href="https://swagger.io/docs/open-source-tools/swagger-ui/usage/oauth2/">Swagger-UI</a>.</p></li>
-<li><p><strong>path</strong> – Path to serve the OpenAPI UI at.</p></li>
-<li><p><strong>**kwargs</strong> – Additional arguments to pass to the base class.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.SwaggerRenderPlugin.params.path"></span><strong>path</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.SwaggerRenderPlugin.params.path">¶</a> – Path to serve the OpenAPI UI at.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.SwaggerRenderPlugin.params.**kwargs"></span><strong>**kwargs</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.SwaggerRenderPlugin.params.**kwargs">¶</a> – Additional arguments to pass to the base class.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1858,8 +1859,8 @@ Refer to the following URL for details:
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>request</strong> – The request.</p></li>
-<li><p><strong>openapi_schema</strong> – The OpenAPI schema as a dictionary.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.SwaggerRenderPlugin.render.params.request"></span><strong>request</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.SwaggerRenderPlugin.render.params.request">¶</a> – The request.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.SwaggerRenderPlugin.render.params.openapi_schema"></span><strong>openapi_schema</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.SwaggerRenderPlugin.render.params.openapi_schema">¶</a> – The OpenAPI schema as a dictionary.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1875,7 +1876,7 @@ Refer to the following URL for details:
 <p>Adds a route to serve the OAuth2 redirect page.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>router</strong> – The router that serves the OpenAPI UI.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.openapi.plugins.SwaggerRenderPlugin.receive_router.params.router"></span><strong>router</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.SwaggerRenderPlugin.receive_router.params.router">¶</a> – The router that serves the OpenAPI UI.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1909,9 +1910,9 @@ Refer to the following URL for details:
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>path</strong> – Path to serve the OpenAPI UI at.</p></li>
-<li><p><strong>media_type</strong> – Media type for the handler.</p></li>
-<li><p><strong>**kwargs</strong> – Additional arguments to pass to the base class.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.YamlRenderPlugin.params.path"></span><strong>path</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.YamlRenderPlugin.params.path">¶</a> – Path to serve the OpenAPI UI at.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.YamlRenderPlugin.params.media_type"></span><strong>media_type</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.YamlRenderPlugin.params.media_type">¶</a> – Media type for the handler.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.YamlRenderPlugin.params.**kwargs"></span><strong>**kwargs</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.YamlRenderPlugin.params.**kwargs">¶</a> – Additional arguments to pass to the base class.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1924,8 +1925,8 @@ Refer to the following URL for details:
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>request</strong> – The request.</p></li>
-<li><p><strong>openapi_schema</strong> – The OpenAPI schema as a dictionary.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.YamlRenderPlugin.render.params.request"></span><strong>request</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.YamlRenderPlugin.render.params.request">¶</a> – The request.</p></li>
+<li><p><span class="target" id="litestar.openapi.plugins.YamlRenderPlugin.render.params.openapi_schema"></span><strong>openapi_schema</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.plugins.YamlRenderPlugin.render.params.openapi_schema">¶</a> – The OpenAPI schema as a dictionary.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1187,7 +1188,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1541,7 +1542,7 @@ document.write(`
 <dd><p>Create a decorator for event handlers.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>*event_ids</strong> – The id of the event to listen to or a list of
+<dd class="field-odd"><p><span class="target" id="litestar.events.EventListener.params.*event_ids"></span><strong>*event_ids</strong><a class="paramlink headerlink reference internal" href="#litestar.events.EventListener.params.*event_ids">¶</a> – The id of the event to listen to or a list of
 event ids to listen to.</p>
 </dd>
 </dl>
@@ -1553,7 +1554,7 @@ event ids to listen to.</p>
 <dd><p>Decorate a callable by wrapping it inside an instance of EventListener.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>fn</strong> – Callable to decorate.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.events.EventListener.__call__.params.fn"></span><strong>fn</strong><a class="paramlink headerlink reference internal" href="#litestar.events.EventListener.__call__.params.fn">¶</a> – Callable to decorate.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>An instance of EventListener</p>
@@ -1571,7 +1572,7 @@ be closed.</p>
 <p>See <a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2809">litestar-org/litestar#2809</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>fn</strong> – The listener function to wrap.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.events.EventListener.wrap_in_error_handler.params.fn"></span><strong>fn</strong><a class="paramlink headerlink reference internal" href="#litestar.events.EventListener.wrap_in_error_handler.params.fn">¶</a> – The listener function to wrap.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1589,7 +1590,7 @@ be closed.</p>
 <dd><p>Create an event emitter instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>listeners</strong> – A list of listeners.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.events.SimpleEventEmitter.params.listeners"></span><strong>listeners</strong><a class="paramlink headerlink reference internal" href="#litestar.events.SimpleEventEmitter.params.listeners">¶</a> – A list of listeners.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1601,9 +1602,9 @@ be closed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>event_id</strong> – The ID of the event to emit, e.g ‘my_event’.</p></li>
-<li><p><strong>*args</strong> – args to pass to the listener(s).</p></li>
-<li><p><strong>**kwargs</strong> – kwargs to pass to the listener(s)</p></li>
+<li><p><span class="target" id="litestar.events.SimpleEventEmitter.emit.params.event_id"></span><strong>event_id</strong><a class="paramlink headerlink reference internal" href="#litestar.events.SimpleEventEmitter.emit.params.event_id">¶</a> – The ID of the event to emit, e.g ‘my_event’.</p></li>
+<li><p><span class="target" id="litestar.events.SimpleEventEmitter.emit.params.*args"></span><strong>*args</strong><a class="paramlink headerlink reference internal" href="#litestar.events.SimpleEventEmitter.emit.params.*args">¶</a> – args to pass to the listener(s).</p></li>
+<li><p><span class="target" id="litestar.events.SimpleEventEmitter.emit.params.**kwargs"></span><strong>**kwargs</strong><a class="paramlink headerlink reference internal" href="#litestar.events.SimpleEventEmitter.emit.params.**kwargs">¶</a> – kwargs to pass to the listener(s)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1625,7 +1626,7 @@ be closed.</p>
 <dd><p>Create an event emitter instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>listeners</strong> – A list of listeners.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.events.BaseEventEmitterBackend.params.listeners"></span><strong>listeners</strong><a class="paramlink headerlink reference internal" href="#litestar.events.BaseEventEmitterBackend.params.listeners">¶</a> – A list of listeners.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1637,9 +1638,9 @@ be closed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>event_id</strong> – The ID of the event to emit, e.g ‘my_event’.</p></li>
-<li><p><strong>*args</strong> – args to pass to the listener(s).</p></li>
-<li><p><strong>**kwargs</strong> – kwargs to pass to the listener(s)</p></li>
+<li><p><span class="target" id="litestar.events.BaseEventEmitterBackend.emit.params.event_id"></span><strong>event_id</strong><a class="paramlink headerlink reference internal" href="#litestar.events.BaseEventEmitterBackend.emit.params.event_id">¶</a> – The ID of the event to emit, e.g ‘my_event’.</p></li>
+<li><p><span class="target" id="litestar.events.BaseEventEmitterBackend.emit.params.*args"></span><strong>*args</strong><a class="paramlink headerlink reference internal" href="#litestar.events.BaseEventEmitterBackend.emit.params.*args">¶</a> – args to pass to the listener(s).</p></li>
+<li><p><span class="target" id="litestar.events.BaseEventEmitterBackend.emit.params.**kwargs"></span><strong>**kwargs</strong><a class="paramlink headerlink reference internal" href="#litestar.events.BaseEventEmitterBackend.emit.params.**kwargs">¶</a> – kwargs to pass to the listener(s)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

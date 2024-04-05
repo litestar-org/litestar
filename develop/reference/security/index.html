@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1187,7 +1188,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1615,7 +1616,7 @@ Once provided, they can access via the <code class="docutils literal notranslate
 level.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>app_config</strong> – An instance of <a class="reference internal" href="../config.html#litestar.config.app.AppConfig" title="litestar.config.app.AppConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></a></p>
+<dd class="field-odd"><p><span class="target" id="litestar.security.AbstractSecurityConfig.on_app_init.params.app_config"></span><strong>app_config</strong><a class="paramlink headerlink reference internal" href="#litestar.security.AbstractSecurityConfig.on_app_init.params.app_config">¶</a> – An instance of <a class="reference internal" href="../config.html#litestar.config.app.AppConfig" title="litestar.config.app.AppConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></a></p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The <a class="reference internal" href="../config.html#litestar.config.app.AppConfig" title="litestar.config.app.AppConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></a>.</p>
@@ -1631,11 +1632,11 @@ level.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>content</strong> – A value for the response body that will be rendered into bytes string.</p></li>
-<li><p><strong>status_code</strong> – An HTTP status code.</p></li>
-<li><p><strong>media_type</strong> – A value for the response ‘Content-Type’ header.</p></li>
-<li><p><strong>headers</strong> – A string keyed dictionary of response headers. Header keys are insensitive.</p></li>
-<li><p><strong>cookies</strong> – A list of <a class="reference internal" href="../datastructures.html#litestar.datastructures.Cookie" title="litestar.datastructures.Cookie"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cookie</span></code></a> instances to be set under
+<li><p><span class="target" id="litestar.security.AbstractSecurityConfig.create_response.params.content"></span><strong>content</strong><a class="paramlink headerlink reference internal" href="#litestar.security.AbstractSecurityConfig.create_response.params.content">¶</a> – A value for the response body that will be rendered into bytes string.</p></li>
+<li><p><span class="target" id="litestar.security.AbstractSecurityConfig.create_response.params.status_code"></span><strong>status_code</strong><a class="paramlink headerlink reference internal" href="#litestar.security.AbstractSecurityConfig.create_response.params.status_code">¶</a> – An HTTP status code.</p></li>
+<li><p><span class="target" id="litestar.security.AbstractSecurityConfig.create_response.params.media_type"></span><strong>media_type</strong><a class="paramlink headerlink reference internal" href="#litestar.security.AbstractSecurityConfig.create_response.params.media_type">¶</a> – A value for the response ‘Content-Type’ header.</p></li>
+<li><p><span class="target" id="litestar.security.AbstractSecurityConfig.create_response.params.headers"></span><strong>headers</strong><a class="paramlink headerlink reference internal" href="#litestar.security.AbstractSecurityConfig.create_response.params.headers">¶</a> – A string keyed dictionary of response headers. Header keys are insensitive.</p></li>
+<li><p><span class="target" id="litestar.security.AbstractSecurityConfig.create_response.params.cookies"></span><strong>cookies</strong><a class="paramlink headerlink reference internal" href="#litestar.security.AbstractSecurityConfig.create_response.params.cookies">¶</a> – A list of <a class="reference internal" href="../datastructures.html#litestar.datastructures.Cookie" title="litestar.datastructures.Cookie"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cookie</span></code></a> instances to be set under
 the response ‘Set-Cookie’ header.</p></li>
 </ul>
 </dd>

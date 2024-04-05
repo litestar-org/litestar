@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1187,7 +1188,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1546,8 +1547,8 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>app</strong> – The <code class="docutils literal notranslate"><span class="pre">next</span></code> ASGI app to call.</p></li>
-<li><p><strong>config</strong> – An instance of CompressionConfig.</p></li>
+<li><p><span class="target" id="litestar.middleware.compression.CompressionMiddleware.params.app"></span><strong>app</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.compression.CompressionMiddleware.params.app">¶</a> – The <code class="docutils literal notranslate"><span class="pre">next</span></code> ASGI app to call.</p></li>
+<li><p><span class="target" id="litestar.middleware.compression.CompressionMiddleware.params.config"></span><strong>config</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.compression.CompressionMiddleware.params.config">¶</a> – An instance of CompressionConfig.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1560,9 +1561,9 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>send</strong> – The ASGI send function.</p></li>
-<li><p><strong>compression_encoding</strong> – The compression encoding used.</p></li>
-<li><p><strong>scope</strong> – The ASGI connection scope</p></li>
+<li><p><span class="target" id="litestar.middleware.compression.CompressionMiddleware.create_compression_send_wrapper.params.send"></span><strong>send</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.compression.CompressionMiddleware.create_compression_send_wrapper.params.send">¶</a> – The ASGI send function.</p></li>
+<li><p><span class="target" id="litestar.middleware.compression.CompressionMiddleware.create_compression_send_wrapper.params.compression_encoding"></span><strong>compression_encoding</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.compression.CompressionMiddleware.create_compression_send_wrapper.params.compression_encoding">¶</a> – The compression encoding used.</p></li>
+<li><p><span class="target" id="litestar.middleware.compression.CompressionMiddleware.create_compression_send_wrapper.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.compression.CompressionMiddleware.create_compression_send_wrapper.params.scope">¶</a> – The ASGI connection scope</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1591,9 +1592,9 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>buffer</strong> – A bytes IO buffer to write the compressed data into.</p></li>
-<li><p><strong>compression_encoding</strong> – The compression encoding used.</p></li>
-<li><p><strong>config</strong> – The app compression config.</p></li>
+<li><p><span class="target" id="litestar.middleware.compression.CompressionFacade.params.buffer"></span><strong>buffer</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.compression.CompressionFacade.params.buffer">¶</a> – A bytes IO buffer to write the compressed data into.</p></li>
+<li><p><span class="target" id="litestar.middleware.compression.CompressionFacade.params.compression_encoding"></span><strong>compression_encoding</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.compression.CompressionFacade.params.compression_encoding">¶</a> – The compression encoding used.</p></li>
+<li><p><span class="target" id="litestar.middleware.compression.CompressionFacade.params.config"></span><strong>config</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.compression.CompressionFacade.params.config">¶</a> – The app compression config.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1605,7 +1606,7 @@ document.write(`
 <dd><p>Write compressed bytes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>body</strong> – Message body to process</p>
+<dd class="field-odd"><p><span class="target" id="litestar.middleware.compression.CompressionFacade.write.params.body"></span><strong>body</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.compression.CompressionFacade.write.params.body">¶</a> – Message body to process</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>

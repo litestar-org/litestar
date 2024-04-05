@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1187,7 +1188,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1546,11 +1547,11 @@ and overriding <a class="reference internal" href="#litestar.middleware.authenti
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>app</strong> – An ASGIApp, this value is the next ASGI handler to call in the middleware stack.</p></li>
-<li><p><strong>exclude</strong> – A pattern or list of patterns to skip in the authentication middleware.</p></li>
-<li><p><strong>exclude_from_auth_key</strong> – An identifier to use on routes to disable authentication for a particular route.</p></li>
-<li><p><strong>exclude_http_methods</strong> – A sequence of http methods that do not require authentication.</p></li>
-<li><p><strong>scopes</strong> – ASGI scopes processed by the authentication middleware.</p></li>
+<li><p><span class="target" id="litestar.middleware.authentication.AbstractAuthenticationMiddleware.params.app"></span><strong>app</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.authentication.AbstractAuthenticationMiddleware.params.app">¶</a> – An ASGIApp, this value is the next ASGI handler to call in the middleware stack.</p></li>
+<li><p><span class="target" id="litestar.middleware.authentication.AbstractAuthenticationMiddleware.params.exclude"></span><strong>exclude</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.authentication.AbstractAuthenticationMiddleware.params.exclude">¶</a> – A pattern or list of patterns to skip in the authentication middleware.</p></li>
+<li><p><span class="target" id="litestar.middleware.authentication.AbstractAuthenticationMiddleware.params.exclude_from_auth_key"></span><strong>exclude_from_auth_key</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.authentication.AbstractAuthenticationMiddleware.params.exclude_from_auth_key">¶</a> – An identifier to use on routes to disable authentication for a particular route.</p></li>
+<li><p><span class="target" id="litestar.middleware.authentication.AbstractAuthenticationMiddleware.params.exclude_http_methods"></span><strong>exclude_http_methods</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.authentication.AbstractAuthenticationMiddleware.params.exclude_http_methods">¶</a> – A sequence of http methods that do not require authentication.</p></li>
+<li><p><span class="target" id="litestar.middleware.authentication.AbstractAuthenticationMiddleware.params.scopes"></span><strong>scopes</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.authentication.AbstractAuthenticationMiddleware.params.scopes">¶</a> – ASGI scopes processed by the authentication middleware.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1563,9 +1564,9 @@ and overriding <a class="reference internal" href="#litestar.middleware.authenti
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>scope</strong> – The ASGI connection scope.</p></li>
-<li><p><strong>receive</strong> – The ASGI receive function.</p></li>
-<li><p><strong>send</strong> – The ASGI send function.</p></li>
+<li><p><span class="target" id="litestar.middleware.authentication.AbstractAuthenticationMiddleware.__call__.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.authentication.AbstractAuthenticationMiddleware.__call__.params.scope">¶</a> – The ASGI connection scope.</p></li>
+<li><p><span class="target" id="litestar.middleware.authentication.AbstractAuthenticationMiddleware.__call__.params.receive"></span><strong>receive</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.authentication.AbstractAuthenticationMiddleware.__call__.params.receive">¶</a> – The ASGI receive function.</p></li>
+<li><p><span class="target" id="litestar.middleware.authentication.AbstractAuthenticationMiddleware.__call__.params.send"></span><strong>send</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.authentication.AbstractAuthenticationMiddleware.__call__.params.send">¶</a> – The ASGI send function.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1586,7 +1587,7 @@ and overriding <a class="reference internal" href="#litestar.middleware.authenti
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>connection</strong> – An <a class="reference internal" href="../connection.html#litestar.connection.ASGIConnection" title="litestar.connection.ASGIConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIConnection</span></code></a> instance.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.middleware.authentication.AbstractAuthenticationMiddleware.authenticate_request.params.connection"></span><strong>connection</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.authentication.AbstractAuthenticationMiddleware.authenticate_request.params.connection">¶</a> – An <a class="reference internal" href="../connection.html#litestar.connection.ASGIConnection" title="litestar.connection.ASGIConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIConnection</span></code></a> instance.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="../exceptions.html#litestar.exceptions.NotAuthorizedException" title="litestar.exceptions.NotAuthorizedException"><strong>NotAuthorizedException</strong></a><strong> | </strong><a class="reference internal" href="../exceptions.html#litestar.exceptions.PermissionDeniedException" title="litestar.exceptions.PermissionDeniedException"><strong>PermissionDeniedException</strong></a> – if authentication fails.</p>

@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1187,7 +1188,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1547,9 +1548,9 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>provided_types</strong> – A list of media types that can be provided as a response. These types
+<li><p><span class="target" id="litestar.datastructures.Accept.best_match.params.provided_types"></span><strong>provided_types</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.Accept.best_match.params.provided_types">¶</a> – A list of media types that can be provided as a response. These types
 can contain a wildcard <code class="docutils literal notranslate"><span class="pre">*</span></code> character in the main- or subtype part.</p></li>
-<li><p><strong>default</strong> – The media type that is returned if none of the provided types match.</p></li>
+<li><p><span class="target" id="litestar.datastructures.Accept.best_match.params.default"></span><strong>default</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.Accept.best_match.params.default">¶</a> – The media type that is returned if none of the provided types match.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1567,7 +1568,7 @@ provided type is returned as-is.</p>
 <p>If multiple media types can be provided, it is better to use <a class="reference internal" href="#litestar.datastructures.Accept.best_match" title="litestar.datastructures.Accept.best_match"><code class="xref py py-func docutils literal notranslate"><span class="pre">best_match()</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>media_type</strong> – The media type to check for.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.datastructures.Accept.accepts.params.media_type"></span><strong>media_type</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.Accept.accepts.params.media_type">¶</a> – The media type to check for.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>True if the request accepts <code class="docutils literal notranslate"><span class="pre">media_type</span></code>.</p>
@@ -1685,7 +1686,7 @@ provided type is returned as-is.</p>
 <dd><p>Create a <code class="docutils literal notranslate"><span class="pre">CacheControlHeader</span></code> instance from the header value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>header_value</strong> – the header value as string</p>
+<dd class="field-odd"><p><span class="target" id="litestar.datastructures.CacheControlHeader.from_header.params.header_value"></span><strong>header_value</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.CacheControlHeader.from_header.params.header_value">¶</a> – the header value as string</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>An instance of <code class="docutils literal notranslate"><span class="pre">CacheControlHeader</span></code></p>
@@ -1803,7 +1804,7 @@ provided type is returned as-is.</p>
 <dd><p>Return a string representation suitable to be sent as HTTP headers.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>**kwargs</strong> – Any kwargs to pass to the simple cookie output method.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.datastructures.Cookie.to_header.params.**kwargs"></span><strong>**kwargs</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.Cookie.to_header.params.**kwargs">¶</a> – Any kwargs to pass to the simple cookie output method.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1837,7 +1838,7 @@ provided type is returned as-is.</p>
 domain and key.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>other</strong> – An arbitrary value</p>
+<dd class="field-odd"><p><span class="target" id="litestar.datastructures.Cookie.__eq__.params.other"></span><strong>other</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.Cookie.__eq__.params.other">¶</a> – An arbitrary value</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A boolean</p>
@@ -1907,7 +1908,7 @@ domain and key.</p>
 <dd><p>Get the header as string.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>include_header_name</strong> – should include the header name in the return value. If set to false
+<dd class="field-odd"><p><span class="target" id="litestar.datastructures.Header.to_header.params.include_header_name"></span><strong>include_header_name</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.Header.to_header.params.include_header_name">¶</a> – should include the header name in the return value. If set to false
 the return value will only include the header value. if set to true the return value
 will be: <code class="docutils literal notranslate"><span class="pre">&lt;header</span> <span class="pre">name&gt;:</span> <span class="pre">&lt;header</span> <span class="pre">value&gt;</span></code>. Defaults to false.</p>
 </dd>
@@ -1932,7 +1933,7 @@ will be: <code class="docutils literal notranslate"><span class="pre">&lt;header
 <dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">Headers</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>headers</strong> – Initial value.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.datastructures.Headers.params.headers"></span><strong>headers</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.Headers.params.headers">¶</a> – Initial value.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1943,7 +1944,7 @@ will be: <code class="docutils literal notranslate"><span class="pre">&lt;header
 <dd><p>Create headers from a send-message.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>scope</strong> – The ASGI connection scope.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.datastructures.Headers.from_scope.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.Headers.from_scope.params.scope">¶</a> – The ASGI connection scope.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Headers</p>
@@ -1979,7 +1980,7 @@ will be: <code class="docutils literal notranslate"><span class="pre">&lt;header
 <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a> or an iterable of tuples.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>args</strong> – Mapping-like structure to create the <code class="docutils literal notranslate"><span class="pre">ImmutableMultiDict</span></code> from</p>
+<dd class="field-odd"><p><span class="target" id="litestar.datastructures.ImmutableMultiDict.params.args"></span><strong>args</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.ImmutableMultiDict.params.args">¶</a> – Mapping-like structure to create the <code class="docutils literal notranslate"><span class="pre">ImmutableMultiDict</span></code> from</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2016,9 +2017,9 @@ will be: <code class="docutils literal notranslate"><span class="pre">&lt;header
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>state</strong> – An object to initialize the state from. Can be a dict, an instance of <a class="reference internal" href="#litestar.datastructures.ImmutableState" title="litestar.datastructures.ImmutableState"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImmutableState</span></code></a>, or a tuple
+<li><p><span class="target" id="litestar.datastructures.ImmutableState.params.state"></span><strong>state</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.ImmutableState.params.state">¶</a> – An object to initialize the state from. Can be a dict, an instance of <a class="reference internal" href="#litestar.datastructures.ImmutableState" title="litestar.datastructures.ImmutableState"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImmutableState</span></code></a>, or a tuple
 of key value paris.</p></li>
-<li><p><strong>deep_copy</strong> – Whether to ‘deepcopy’ the passed in state.</p></li>
+<li><p><span class="target" id="litestar.datastructures.ImmutableState.params.deep_copy"></span><strong>deep_copy</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.ImmutableState.params.deep_copy">¶</a> – Whether to ‘deepcopy’ the passed in state.</p></li>
 </ul>
 </dd>
 </dl>
@@ -2065,7 +2066,7 @@ of key value paris.</p></li>
 <dd><p>Get the value for the corresponding key from the wrapped state object using subscription notation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>key</strong> – Key to access.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.datastructures.ImmutableState.__getitem__.params.key"></span><strong>key</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.ImmutableState.__getitem__.params.key">¶</a> – Key to access.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#KeyError" title="(in Python v3.12)"><strong>KeyError</strong></a> – </p>
@@ -2104,7 +2105,7 @@ of key value paris.</p></li>
 <dd><p>Get the value for the corresponding key from the wrapped state object using attribute notation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>key</strong> – Key to retrieve</p>
+<dd class="field-odd"><p><span class="target" id="litestar.datastructures.ImmutableState.__getattr__.params.key"></span><strong>key</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.ImmutableState.__getattr__.params.key">¶</a> – Key to retrieve</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#AttributeError" title="(in Python v3.12)"><strong>AttributeError</strong></a> – if the given attribute is not set.</p>
@@ -2157,7 +2158,7 @@ of key value paris.</p></li>
 state, as well as allows users to decide whether state is mutable or immutable.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>value</strong> – The value from which to initialize the state instance.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.datastructures.ImmutableState.validate.params.value"></span><strong>value</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.ImmutableState.validate.params.value">¶</a> – The value from which to initialize the state instance.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>An ImmutableState instance</p>
@@ -2179,7 +2180,7 @@ state, as well as allows users to decide whether state is mutable or immutable.<
 <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping</span></code></a> or an iterable of tuples.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>args</strong> – Mapping-like structure to create the <code class="docutils literal notranslate"><span class="pre">MultiDict</span></code> from</p>
+<dd class="field-odd"><p><span class="target" id="litestar.datastructures.MultiDict.params.args"></span><strong>args</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.MultiDict.params.args">¶</a> – Mapping-like structure to create the <code class="docutils literal notranslate"><span class="pre">MultiDict</span></code> from</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2245,7 +2246,7 @@ state, as well as allows users to decide whether state is mutable or immutable.<
 <dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">MutableScopeHeaders</span></code> from a <code class="docutils literal notranslate"><span class="pre">HeaderScope</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>scope</strong> – The ASGI connection scope.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.datastructures.MutableScopeHeaders.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.MutableScopeHeaders.params.scope">¶</a> – The ASGI connection scope.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2256,7 +2257,7 @@ state, as well as allows users to decide whether state is mutable or immutable.<
 <dd><p>Construct a header from a message object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>message</strong> – <a class="reference internal" href="types.html#litestar.types.Message" title="litestar.types.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.datastructures.MutableScopeHeaders.from_message.params.message"></span><strong>message</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.MutableScopeHeaders.from_message.params.message">¶</a> – <a class="reference internal" href="types.html#litestar.types.Message" title="litestar.types.Message"><code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code></a>.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>MutableScopeHeaders.</p>
@@ -2280,8 +2281,8 @@ state, as well as allows users to decide whether state is mutable or immutable.<
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> – Header key.</p></li>
-<li><p><strong>value</strong> – Header value.</p></li>
+<li><p><span class="target" id="litestar.datastructures.MutableScopeHeaders.add.params.key"></span><strong>key</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.MutableScopeHeaders.add.params.key">¶</a> – Header key.</p></li>
+<li><p><span class="target" id="litestar.datastructures.MutableScopeHeaders.add.params.value"></span><strong>value</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.MutableScopeHeaders.add.params.value">¶</a> – Header value.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2297,8 +2298,8 @@ state, as well as allows users to decide whether state is mutable or immutable.<
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> – Header key.</p></li>
-<li><p><strong>default</strong> – Default value to return if <code class="docutils literal notranslate"><span class="pre">name</span></code> is not found.</p></li>
+<li><p><span class="target" id="litestar.datastructures.MutableScopeHeaders.getall.params.key"></span><strong>key</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.MutableScopeHeaders.getall.params.key">¶</a> – Header key.</p></li>
+<li><p><span class="target" id="litestar.datastructures.MutableScopeHeaders.getall.params.default"></span><strong>default</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.MutableScopeHeaders.getall.params.default">¶</a> – Default value to return if <code class="docutils literal notranslate"><span class="pre">name</span></code> is not found.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2324,8 +2325,8 @@ state, as well as allows users to decide whether state is mutable or immutable.<
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> – Header key.</p></li>
-<li><p><strong>value</strong> – Header value to add,</p></li>
+<li><p><span class="target" id="litestar.datastructures.MutableScopeHeaders.extend_header_value.params.key"></span><strong>key</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.MutableScopeHeaders.extend_header_value.params.key">¶</a> – Header key.</p></li>
+<li><p><span class="target" id="litestar.datastructures.MutableScopeHeaders.extend_header_value.params.value"></span><strong>value</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.MutableScopeHeaders.extend_header_value.params.value">¶</a> – Header value to add,</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2516,8 +2517,8 @@ the example MUST follow the prescribed serialization strategy for the parameter.
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>state</strong> – An object to initialize the state from. Can be a dict, an instance of ‘ImmutableState’, or a tuple of key value paris.</p></li>
-<li><p><strong>deep_copy</strong> – Whether to ‘deepcopy’ the passed in state.</p></li>
+<li><p><span class="target" id="litestar.datastructures.State.params.state"></span><strong>state</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.State.params.state">¶</a> – An object to initialize the state from. Can be a dict, an instance of ‘ImmutableState’, or a tuple of key value paris.</p></li>
+<li><p><span class="target" id="litestar.datastructures.State.params.deep_copy"></span><strong>deep_copy</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.State.params.deep_copy">¶</a> – Whether to ‘deepcopy’ the passed in state.</p></li>
 </ul>
 </dd>
 </dl>
@@ -2570,7 +2571,7 @@ the example MUST follow the prescribed serialization strategy for the parameter.
 <dd><p>Delete the value from the key from the wrapped state object using subscription notation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>key</strong> – Key to delete</p>
+<dd class="field-odd"><p><span class="target" id="litestar.datastructures.State.__delitem__.params.key"></span><strong>key</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.State.__delitem__.params.key">¶</a> – Key to delete</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#KeyError" title="(in Python v3.12)"><strong>KeyError</strong></a> – if the given attribute is not set.</p>
@@ -2588,8 +2589,8 @@ the example MUST follow the prescribed serialization strategy for the parameter.
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> – Key to set.</p></li>
-<li><p><strong>value</strong> – Value to set.</p></li>
+<li><p><span class="target" id="litestar.datastructures.State.__setitem__.params.key"></span><strong>key</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.State.__setitem__.params.key">¶</a> – Key to set.</p></li>
+<li><p><span class="target" id="litestar.datastructures.State.__setitem__.params.value"></span><strong>value</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.State.__setitem__.params.value">¶</a> – Value to set.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2605,8 +2606,8 @@ the example MUST follow the prescribed serialization strategy for the parameter.
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> – Key to set.</p></li>
-<li><p><strong>value</strong> – Value to set.</p></li>
+<li><p><span class="target" id="litestar.datastructures.State.__setattr__.params.key"></span><strong>key</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.State.__setattr__.params.key">¶</a> – Key to set.</p></li>
+<li><p><span class="target" id="litestar.datastructures.State.__setattr__.params.value"></span><strong>value</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.State.__setattr__.params.value">¶</a> – Value to set.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2621,7 +2622,7 @@ the example MUST follow the prescribed serialization strategy for the parameter.
 <dd><p>Delete the value from the key from the wrapped state object using attribute notation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>key</strong> – Key to delete</p>
+<dd class="field-odd"><p><span class="target" id="litestar.datastructures.State.__delattr__.params.key"></span><strong>key</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.State.__delattr__.params.key">¶</a> – Key to delete</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#AttributeError" title="(in Python v3.12)"><strong>AttributeError</strong></a> – if the given attribute is not set.</p>
@@ -2668,11 +2669,11 @@ the example MUST follow the prescribed serialization strategy for the parameter.
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>content_type</strong> – Content type for the file.</p></li>
-<li><p><strong>filename</strong> – The filename.</p></li>
-<li><p><strong>file_data</strong> – File data.</p></li>
-<li><p><strong>headers</strong> – Any attached headers.</p></li>
-<li><p><strong>max_spool_size</strong> – The size above which the temporary file will be rolled to disk.</p></li>
+<li><p><span class="target" id="litestar.datastructures.UploadFile.params.content_type"></span><strong>content_type</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.UploadFile.params.content_type">¶</a> – Content type for the file.</p></li>
+<li><p><span class="target" id="litestar.datastructures.UploadFile.params.filename"></span><strong>filename</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.UploadFile.params.filename">¶</a> – The filename.</p></li>
+<li><p><span class="target" id="litestar.datastructures.UploadFile.params.file_data"></span><strong>file_data</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.UploadFile.params.file_data">¶</a> – File data.</p></li>
+<li><p><span class="target" id="litestar.datastructures.UploadFile.params.headers"></span><strong>headers</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.UploadFile.params.headers">¶</a> – Any attached headers.</p></li>
+<li><p><span class="target" id="litestar.datastructures.UploadFile.params.max_spool_size"></span><strong>max_spool_size</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.UploadFile.params.max_spool_size">¶</a> – The size above which the temporary file will be rolled to disk.</p></li>
 </ul>
 </dd>
 </dl>
@@ -2695,7 +2696,7 @@ the example MUST follow the prescribed serialization strategy for the parameter.
 <dd><p>Proxy for data writing.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>data</strong> – Byte string to write.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.datastructures.UploadFile.write.params.data"></span><strong>data</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.UploadFile.write.params.data">¶</a> – Byte string to write.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
@@ -2709,7 +2710,7 @@ the example MUST follow the prescribed serialization strategy for the parameter.
 <dd><p>Proxy for data reading.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>size</strong> – position from which to read.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.datastructures.UploadFile.read.params.size"></span><strong>size</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.UploadFile.read.params.size">¶</a> – position from which to read.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Byte string.</p>
@@ -2723,7 +2724,7 @@ the example MUST follow the prescribed serialization strategy for the parameter.
 <dd><p>Async proxy for file seek.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>offset</strong> – start position..</p>
+<dd class="field-odd"><p><span class="target" id="litestar.datastructures.UploadFile.seek.params.offset"></span><strong>offset</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.UploadFile.seek.params.offset">¶</a> – start position..</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>None.</p>
@@ -2809,7 +2810,7 @@ the example MUST follow the prescribed serialization strategy for the parameter.
 <dd><p>Create a new instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>url</strong> – url string or split result to represent.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.datastructures.URL.__new__.params.url"></span><strong>url</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.__new__.params.url">¶</a> – url string or split result to represent.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2821,11 +2822,11 @@ the example MUST follow the prescribed serialization strategy for the parameter.
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>scheme</strong> – URL scheme</p></li>
-<li><p><strong>netloc</strong> – Network location</p></li>
-<li><p><strong>path</strong> – Hierarchical path</p></li>
-<li><p><strong>query</strong> – Query component</p></li>
-<li><p><strong>fragment</strong> – Fragment identifier</p></li>
+<li><p><span class="target" id="litestar.datastructures.URL.from_components.params.scheme"></span><strong>scheme</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.from_components.params.scheme">¶</a> – URL scheme</p></li>
+<li><p><span class="target" id="litestar.datastructures.URL.from_components.params.netloc"></span><strong>netloc</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.from_components.params.netloc">¶</a> – Network location</p></li>
+<li><p><span class="target" id="litestar.datastructures.URL.from_components.params.path"></span><strong>path</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.from_components.params.path">¶</a> – Hierarchical path</p></li>
+<li><p><span class="target" id="litestar.datastructures.URL.from_components.params.query"></span><strong>query</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.from_components.params.query">¶</a> – Query component</p></li>
+<li><p><span class="target" id="litestar.datastructures.URL.from_components.params.fragment"></span><strong>fragment</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.from_components.params.fragment">¶</a> – Fragment identifier</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2840,7 +2841,7 @@ the example MUST follow the prescribed serialization strategy for the parameter.
 <dd><p>Construct a URL from a <a class="reference internal" href="types.html#litestar.types.Scope" title="litestar.types.Scope"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scope</span></code></a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>scope</strong> – A scope</p>
+<dd class="field-odd"><p><span class="target" id="litestar.datastructures.URL.from_scope.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.from_scope.params.scope">¶</a> – A scope</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A URL</p>
@@ -2855,11 +2856,11 @@ the example MUST follow the prescribed serialization strategy for the parameter.
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>scheme</strong> – URL scheme</p></li>
-<li><p><strong>netloc</strong> – Network location</p></li>
-<li><p><strong>path</strong> – Hierarchical path</p></li>
-<li><p><strong>query</strong> – Raw query string</p></li>
-<li><p><strong>fragment</strong> – Fragment identifier</p></li>
+<li><p><span class="target" id="litestar.datastructures.URL.with_replacements.params.scheme"></span><strong>scheme</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.with_replacements.params.scheme">¶</a> – URL scheme</p></li>
+<li><p><span class="target" id="litestar.datastructures.URL.with_replacements.params.netloc"></span><strong>netloc</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.with_replacements.params.netloc">¶</a> – Network location</p></li>
+<li><p><span class="target" id="litestar.datastructures.URL.with_replacements.params.path"></span><strong>path</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.with_replacements.params.path">¶</a> – Hierarchical path</p></li>
+<li><p><span class="target" id="litestar.datastructures.URL.with_replacements.params.query"></span><strong>query</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.with_replacements.params.query">¶</a> – Raw query string</p></li>
+<li><p><span class="target" id="litestar.datastructures.URL.with_replacements.params.fragment"></span><strong>fragment</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.with_replacements.params.fragment">¶</a> – Fragment identifier</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

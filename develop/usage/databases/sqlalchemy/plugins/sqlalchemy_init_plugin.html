@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../../../../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1187,7 +1188,7 @@ document.write(`
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="../../../index.html">Usage</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../../../applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1717,8 +1718,8 @@ can also be injected into other dependency functions.</p>
 <section id="renaming-the-dependencies">
 <h3>Renaming the dependencies<a class="headerlink" href="#renaming-the-dependencies" title="Permalink to this heading">#</a></h3>
 <p>You can change the name that the engine and session are bound to by setting the
-<a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/plugins/init/config/asyncio.html#advanced_alchemy.extensions.litestar.plugins.init.config.asyncio.SQLAlchemyAsyncConfig.engine_dependency_key" title="(in advanced_alchemy v0.8.2)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">engine_dependency_key</span></code></a>
-and <a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/plugins/init/config/asyncio.html#advanced_alchemy.extensions.litestar.plugins.init.config.asyncio.SQLAlchemyAsyncConfig.session_dependency_key" title="(in advanced_alchemy v0.8.2)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">session_dependency_key</span></code></a>
+<a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/plugins/init/config/asyncio.html#advanced_alchemy.extensions.litestar.plugins.init.config.asyncio.SQLAlchemyAsyncConfig.engine_dependency_key" title="(in advanced_alchemy v0.8.4)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">engine_dependency_key</span></code></a>
+and <a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/plugins/init/config/asyncio.html#advanced_alchemy.extensions.litestar.plugins.init.config.asyncio.SQLAlchemyAsyncConfig.session_dependency_key" title="(in advanced_alchemy v0.8.4)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">session_dependency_key</span></code></a>
 attributes on the plugin configuration.</p>
 </section>
 <section id="configuring-the-before-send-handler">
@@ -1726,7 +1727,7 @@ attributes on the plugin configuration.</p>
 <p>The plugin configures a <code class="docutils literal notranslate"><span class="pre">before_send</span></code> handler that is called before sending a response. The default handler closes the
 session and removes it from the connection scope.</p>
 <p>You can change the handler by setting the
-<a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/plugins/init/config/asyncio.html#advanced_alchemy.extensions.litestar.plugins.init.config.asyncio.SQLAlchemyAsyncConfig.before_send_handler" title="(in advanced_alchemy v0.8.2)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">before_send_handler</span></code></a>
+<a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/extensions/litestar/plugins/init/config/asyncio.html#advanced_alchemy.extensions.litestar.plugins.init.config.asyncio.SQLAlchemyAsyncConfig.before_send_handler" title="(in advanced_alchemy v0.8.4)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">before_send_handler</span></code></a>
 attribute on the configuration object. For example, an alternate handler is available that will also commit the session
 on success and rollback upon failure.</p>
 <div class="sd-tab-set docutils">

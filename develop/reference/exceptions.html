@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1187,7 +1188,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1564,11 +1565,11 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>*args</strong> – if <code class="docutils literal notranslate"><span class="pre">detail</span></code> kwarg not provided, first arg should be error detail.</p></li>
-<li><p><strong>detail</strong> – Exception details or message. Will default to args[0] if not provided.</p></li>
-<li><p><strong>status_code</strong> – Exception HTTP status code.</p></li>
-<li><p><strong>headers</strong> – Headers to set on the response.</p></li>
-<li><p><strong>extra</strong> – An extra mapping to attach to the exception.</p></li>
+<li><p><span class="target" id="litestar.exceptions.HTTPException.params.*args"></span><strong>*args</strong><a class="paramlink headerlink reference internal" href="#litestar.exceptions.HTTPException.params.*args">¶</a> – if <code class="docutils literal notranslate"><span class="pre">detail</span></code> kwarg not provided, first arg should be error detail.</p></li>
+<li><p><span class="target" id="litestar.exceptions.HTTPException.params.detail"></span><strong>detail</strong><a class="paramlink headerlink reference internal" href="#litestar.exceptions.HTTPException.params.detail">¶</a> – Exception details or message. Will default to args[0] if not provided.</p></li>
+<li><p><span class="target" id="litestar.exceptions.HTTPException.params.status_code"></span><strong>status_code</strong><a class="paramlink headerlink reference internal" href="#litestar.exceptions.HTTPException.params.status_code">¶</a> – Exception HTTP status code.</p></li>
+<li><p><span class="target" id="litestar.exceptions.HTTPException.params.headers"></span><strong>headers</strong><a class="paramlink headerlink reference internal" href="#litestar.exceptions.HTTPException.params.headers">¶</a> – Headers to set on the response.</p></li>
+<li><p><span class="target" id="litestar.exceptions.HTTPException.params.extra"></span><strong>extra</strong><a class="paramlink headerlink reference internal" href="#litestar.exceptions.HTTPException.params.extra">¶</a> – An extra mapping to attach to the exception.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1639,8 +1640,8 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>*args</strong> – args are converted to <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> before passing to <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p></li>
-<li><p><strong>detail</strong> – detail of the exception.</p></li>
+<li><p><span class="target" id="litestar.exceptions.LitestarException.params.*args"></span><strong>*args</strong><a class="paramlink headerlink reference internal" href="#litestar.exceptions.LitestarException.params.*args">¶</a> – args are converted to <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> before passing to <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p></li>
+<li><p><span class="target" id="litestar.exceptions.LitestarException.params.detail"></span><strong>detail</strong><a class="paramlink headerlink reference internal" href="#litestar.exceptions.LitestarException.params.detail">¶</a> – detail of the exception.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1681,8 +1682,8 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>*args</strong> – args are converted to <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> before passing to <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p></li>
-<li><p><strong>detail</strong> – detail of the exception.</p></li>
+<li><p><span class="target" id="litestar.exceptions.MissingDependencyException.params.*args"></span><strong>*args</strong><a class="paramlink headerlink reference internal" href="#litestar.exceptions.MissingDependencyException.params.*args">¶</a> – args are converted to <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> before passing to <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p></li>
+<li><p><span class="target" id="litestar.exceptions.MissingDependencyException.params.detail"></span><strong>detail</strong><a class="paramlink headerlink reference internal" href="#litestar.exceptions.MissingDependencyException.params.detail">¶</a> – detail of the exception.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1768,8 +1769,8 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>*args</strong> (<em>Any</em>) – Passed through to <code class="docutils literal notranslate"><span class="pre">super().__init__()</span></code> - should not include <code class="docutils literal notranslate"><span class="pre">detail</span></code>.</p></li>
-<li><p><strong>template_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Name of template that could not be found.</p></li>
+<li><p><span class="target" id="litestar.exceptions.TemplateNotFoundException.params.*args"></span><strong>*args</strong><a class="paramlink headerlink reference internal" href="#litestar.exceptions.TemplateNotFoundException.params.*args">¶</a> (<em>Any</em>) – Passed through to <code class="docutils literal notranslate"><span class="pre">super().__init__()</span></code> - should not include <code class="docutils literal notranslate"><span class="pre">detail</span></code>.</p></li>
+<li><p><span class="target" id="litestar.exceptions.TemplateNotFoundException.params.template_name"></span><strong>template_name</strong><a class="paramlink headerlink reference internal" href="#litestar.exceptions.TemplateNotFoundException.params.template_name">¶</a> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Name of template that could not be found.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1809,9 +1810,9 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>*args</strong> – Any exception args.</p></li>
-<li><p><strong>detail</strong> – Exception details.</p></li>
-<li><p><strong>code</strong> – Exception code. Should be a number in the &gt;= 1000.</p></li>
+<li><p><span class="target" id="litestar.exceptions.WebSocketDisconnect.params.*args"></span><strong>*args</strong><a class="paramlink headerlink reference internal" href="#litestar.exceptions.WebSocketDisconnect.params.*args">¶</a> – Any exception args.</p></li>
+<li><p><span class="target" id="litestar.exceptions.WebSocketDisconnect.params.detail"></span><strong>detail</strong><a class="paramlink headerlink reference internal" href="#litestar.exceptions.WebSocketDisconnect.params.detail">¶</a> – Exception details.</p></li>
+<li><p><span class="target" id="litestar.exceptions.WebSocketDisconnect.params.code"></span><strong>code</strong><a class="paramlink headerlink reference internal" href="#litestar.exceptions.WebSocketDisconnect.params.code">¶</a> – Exception code. Should be a number in the &gt;= 1000.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1831,9 +1832,9 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>*args</strong> – Any exception args.</p></li>
-<li><p><strong>detail</strong> – Exception details.</p></li>
-<li><p><strong>code</strong> – Exception code. Should be a number in the &gt;= 1000.</p></li>
+<li><p><span class="target" id="litestar.exceptions.WebSocketException.params.*args"></span><strong>*args</strong><a class="paramlink headerlink reference internal" href="#litestar.exceptions.WebSocketException.params.*args">¶</a> – Any exception args.</p></li>
+<li><p><span class="target" id="litestar.exceptions.WebSocketException.params.detail"></span><strong>detail</strong><a class="paramlink headerlink reference internal" href="#litestar.exceptions.WebSocketException.params.detail">¶</a> – Exception details.</p></li>
+<li><p><span class="target" id="litestar.exceptions.WebSocketException.params.code"></span><strong>code</strong><a class="paramlink headerlink reference internal" href="#litestar.exceptions.WebSocketException.params.code">¶</a> – Exception code. Should be a number in the &gt;= 1000.</p></li>
 </ul>
 </dd>
 </dl>

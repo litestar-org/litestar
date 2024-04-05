@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../../../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1187,7 +1188,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1657,7 +1658,7 @@ document.write(`
 <dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">BaseSessionBackend</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>config</strong> – A instance of a subclass of <code class="docutils literal notranslate"><span class="pre">BaseBackendConfig</span></code></p>
+<dd class="field-odd"><p><span class="target" id="litestar.middleware.session.base.BaseSessionBackend.params.config"></span><strong>config</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.base.BaseSessionBackend.params.config">¶</a> – A instance of a subclass of <code class="docutils literal notranslate"><span class="pre">BaseBackendConfig</span></code></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1669,8 +1670,8 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> – Session data of the current scope.</p></li>
-<li><p><strong>scope</strong> – A scope, if applicable, from which to extract a serializer.</p></li>
+<li><p><span class="target" id="litestar.middleware.session.base.BaseSessionBackend.serialize_data.params.data"></span><strong>data</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.base.BaseSessionBackend.serialize_data.params.data">¶</a> – Session data of the current scope.</p></li>
+<li><p><span class="target" id="litestar.middleware.session.base.BaseSessionBackend.serialize_data.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.base.BaseSessionBackend.serialize_data.params.scope">¶</a> – A scope, if applicable, from which to extract a serializer.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1697,7 +1698,7 @@ document.write(`
 <dd><p>Deserialize data into a dictionary for use in the application scope.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>data</strong> – Data to be deserialized</p>
+<dd class="field-odd"><p><span class="target" id="litestar.middleware.session.base.BaseSessionBackend.deserialize_data.params.data"></span><strong>data</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.base.BaseSessionBackend.deserialize_data.params.data">¶</a> – Data to be deserialized</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Deserialized data as a dictionary</p>
@@ -1711,7 +1712,7 @@ document.write(`
 <dd><p>Try to fetch session id from connection ScopeState. If one does not exist, generate one.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>connection</strong> – Originating ASGIConnection containing the scope</p>
+<dd class="field-odd"><p><span class="target" id="litestar.middleware.session.base.BaseSessionBackend.get_session_id.params.connection"></span><strong>connection</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.base.BaseSessionBackend.get_session_id.params.connection">¶</a> – Originating ASGIConnection containing the scope</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Session id str or None if the concept of a session id does not apply.</p>
@@ -1726,9 +1727,9 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>scope_session</strong> – Current session to store</p></li>
-<li><p><strong>message</strong> – Outgoing send-message</p></li>
-<li><p><strong>connection</strong> – Originating ASGIConnection containing the scope</p></li>
+<li><p><span class="target" id="litestar.middleware.session.base.BaseSessionBackend.store_in_message.params.scope_session"></span><strong>scope_session</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.base.BaseSessionBackend.store_in_message.params.scope_session">¶</a> – Current session to store</p></li>
+<li><p><span class="target" id="litestar.middleware.session.base.BaseSessionBackend.store_in_message.params.message"></span><strong>message</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.base.BaseSessionBackend.store_in_message.params.message">¶</a> – Outgoing send-message</p></li>
+<li><p><span class="target" id="litestar.middleware.session.base.BaseSessionBackend.store_in_message.params.connection"></span><strong>connection</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.base.BaseSessionBackend.store_in_message.params.connection">¶</a> – Originating ASGIConnection containing the scope</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1744,7 +1745,7 @@ document.write(`
 scope.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>connection</strong> – An ASGIConnection instance</p>
+<dd class="field-odd"><p><span class="target" id="litestar.middleware.session.base.BaseSessionBackend.load_from_connection.params.connection"></span><strong>connection</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.base.BaseSessionBackend.load_from_connection.params.connection">¶</a> – An ASGIConnection instance</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The session data</p>
@@ -1773,8 +1774,8 @@ method will be stored in the application scope by the middleware</p></li>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>app</strong> – An ASGI application</p></li>
-<li><p><strong>backend</strong> – A <a class="reference internal" href="#litestar.middleware.session.base.BaseSessionBackend" title="litestar.middleware.session.base.BaseSessionBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseSessionBackend</span></code></a> instance used to store and retrieve session data</p></li>
+<li><p><span class="target" id="litestar.middleware.session.base.SessionMiddleware.params.app"></span><strong>app</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.base.SessionMiddleware.params.app">¶</a> – An ASGI application</p></li>
+<li><p><span class="target" id="litestar.middleware.session.base.SessionMiddleware.params.backend"></span><strong>backend</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.base.SessionMiddleware.params.backend">¶</a> – A <a class="reference internal" href="#litestar.middleware.session.base.BaseSessionBackend" title="litestar.middleware.session.base.BaseSessionBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseSessionBackend</span></code></a> instance used to store and retrieve session data</p></li>
 </ul>
 </dd>
 </dl>
@@ -1786,7 +1787,7 @@ method will be stored in the application scope by the middleware</p></li>
 <dd><p>Create a wrapper for the ASGI send function, which handles setting the cookies on the outgoing response.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>connection</strong> – ASGIConnection</p>
+<dd class="field-odd"><p><span class="target" id="litestar.middleware.session.base.SessionMiddleware.create_send_wrapper.params.connection"></span><strong>connection</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.base.SessionMiddleware.create_send_wrapper.params.connection">¶</a> – ASGIConnection</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>

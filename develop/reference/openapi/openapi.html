@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1187,7 +1188,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1656,7 +1657,7 @@ data.</p>
 <dd><p>Return the OpenAPI pydantic model from the request instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>request</strong> – A <a class="reference internal" href="../connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a> instance.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.openapi.OpenAPIController.get_schema_from_request.params.request"></span><strong>request</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.OpenAPIController.get_schema_from_request.params.request">¶</a> – A <a class="reference internal" href="../connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a> instance.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>An <a class="reference internal" href="spec.html#litestar.openapi.spec.OpenAPI" title="litestar.openapi.spec.open_api.OpenAPI"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAPI</span></code></a> instance.</p>
@@ -1670,7 +1671,7 @@ data.</p>
 <dd><p>Verify that the requested path is within the enabled endpoints in the openapi_config.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>request</strong> – To be tested if endpoint enabled.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.openapi.OpenAPIController.should_serve_endpoint.params.request"></span><strong>request</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.OpenAPIController.should_serve_endpoint.params.request">¶</a> – To be tested if endpoint enabled.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A boolean.</p>
@@ -1857,7 +1858,7 @@ handlers under the controller.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>request</strong> – A <a class="reference internal" href="../connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.openapi.OpenAPIController.render_swagger_ui_oauth2_redirect.params.request"></span><strong>request</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.OpenAPIController.render_swagger_ui_oauth2_redirect.params.request">¶</a> – A <a class="reference internal" href="../connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A rendered html string.</p>
@@ -1877,7 +1878,7 @@ handlers under the controller.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>request</strong> – A <a class="reference internal" href="../connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.openapi.OpenAPIController.render_swagger_ui.params.request"></span><strong>request</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.OpenAPIController.render_swagger_ui.params.request">¶</a> – A <a class="reference internal" href="../connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A rendered html string.</p>
@@ -1897,7 +1898,7 @@ handlers under the controller.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>request</strong> – A <a class="reference internal" href="../connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.openapi.OpenAPIController.render_stoplight_elements.params.request"></span><strong>request</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.OpenAPIController.render_stoplight_elements.params.request">¶</a> – A <a class="reference internal" href="../connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A rendered html string.</p>
@@ -1917,7 +1918,7 @@ handlers under the controller.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>request</strong> – A <a class="reference internal" href="../connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.openapi.OpenAPIController.render_redoc.params.request"></span><strong>request</strong><a class="paramlink headerlink reference internal" href="#litestar.openapi.OpenAPIController.render_redoc.params.request">¶</a> – A <a class="reference internal" href="../connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A rendered html string.</p>

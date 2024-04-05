@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../../../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1187,7 +1188,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1553,7 +1554,7 @@ document.write(`
 <dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">ClientSideSessionBackend</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>config</strong> – SessionCookieConfig instance.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.middleware.session.client_side.ClientSideSessionBackend.params.config"></span><strong>config</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.params.config">¶</a> – SessionCookieConfig instance.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1566,8 +1567,8 @@ encode and split it into chunks of the desirable size.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> – Data to serialize, encrypt, encode and chunk.</p></li>
-<li><p><strong>scope</strong> – The ASGI connection scope.</p></li>
+<li><p><span class="target" id="litestar.middleware.session.client_side.ClientSideSessionBackend.dump_data.params.data"></span><strong>data</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.dump_data.params.data">¶</a> – Data to serialize, encrypt, encode and chunk.</p></li>
+<li><p><span class="target" id="litestar.middleware.session.client_side.ClientSideSessionBackend.dump_data.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.dump_data.params.scope">¶</a> – The ASGI connection scope.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1591,7 +1592,7 @@ string that is encrypted using AES-CGM.</p></li>
 <dd><p>Given a list of strings, decodes them into the session object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>data</strong> – A list of strings derived from the request’s session cookie(s).</p>
+<dd class="field-odd"><p><span class="target" id="litestar.middleware.session.client_side.ClientSideSessionBackend.load_data.params.data"></span><strong>data</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.load_data.params.data">¶</a> – A list of strings derived from the request’s session cookie(s).</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A deserialized session value.</p>
@@ -1605,7 +1606,7 @@ string that is encrypted using AES-CGM.</p></li>
 <dd><p>Return a list of cookie-keys from the connection if they match the session-cookie pattern.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>connection</strong> – An ASGIConnection instance</p>
+<dd class="field-odd"><p><span class="target" id="litestar.middleware.session.client_side.ClientSideSessionBackend.get_cookie_keys.params.connection"></span><strong>connection</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.get_cookie_keys.params.connection">¶</a> – An ASGIConnection instance</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A list of session-cookie keys</p>
@@ -1623,9 +1624,9 @@ are too large to fit a single cookie, it will be split across several cookies, f
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>scope_session</strong> – Current session to store</p></li>
-<li><p><strong>message</strong> – Outgoing send-message</p></li>
-<li><p><strong>connection</strong> – Originating ASGIConnection containing the scope</p></li>
+<li><p><span class="target" id="litestar.middleware.session.client_side.ClientSideSessionBackend.store_in_message.params.scope_session"></span><strong>scope_session</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.store_in_message.params.scope_session">¶</a> – Current session to store</p></li>
+<li><p><span class="target" id="litestar.middleware.session.client_side.ClientSideSessionBackend.store_in_message.params.message"></span><strong>message</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.store_in_message.params.message">¶</a> – Outgoing send-message</p></li>
+<li><p><span class="target" id="litestar.middleware.session.client_side.ClientSideSessionBackend.store_in_message.params.connection"></span><strong>connection</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.store_in_message.params.connection">¶</a> – Originating ASGIConnection containing the scope</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1640,7 +1641,7 @@ are too large to fit a single cookie, it will be split across several cookies, f
 <dd><p>Load session data from a connection’s session-cookies and return it as a dictionary.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>connection</strong> – Originating ASGIConnection</p>
+<dd class="field-odd"><p><span class="target" id="litestar.middleware.session.client_side.ClientSideSessionBackend.load_from_connection.params.connection"></span><strong>connection</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.load_from_connection.params.connection">¶</a> – Originating ASGIConnection</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The session data</p>
@@ -1654,7 +1655,7 @@ are too large to fit a single cookie, it will be split across several cookies, f
 <dd><p>Try to fetch session id from connection ScopeState. If one does not exist, generate one.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>connection</strong> – Originating ASGIConnection containing the scope</p>
+<dd class="field-odd"><p><span class="target" id="litestar.middleware.session.client_side.ClientSideSessionBackend.get_session_id.params.connection"></span><strong>connection</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.get_session_id.params.connection">¶</a> – Originating ASGIConnection containing the scope</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Session id str or None if the concept of a session id does not apply.</p>

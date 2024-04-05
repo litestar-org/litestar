@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1187,7 +1188,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1545,16 +1546,16 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>background</strong> – A background task or a list of background tasks to be executed after the response is sent.</p></li>
-<li><p><strong>body</strong> – encoded content to send in the response body.</p></li>
-<li><p><strong>content_length</strong> – The response content length.</p></li>
-<li><p><strong>cookies</strong> – The response cookies.</p></li>
-<li><p><strong>encoded_headers</strong> – The response headers.</p></li>
-<li><p><strong>encoding</strong> – The response encoding.</p></li>
-<li><p><strong>headers</strong> – The response headers.</p></li>
-<li><p><strong>is_head_response</strong> – A boolean indicating if the response is a HEAD response.</p></li>
-<li><p><strong>media_type</strong> – The response media type.</p></li>
-<li><p><strong>status_code</strong> – The response status code.</p></li>
+<li><p><span class="target" id="litestar.response.base.ASGIResponse.params.background"></span><strong>background</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.ASGIResponse.params.background">¶</a> – A background task or a list of background tasks to be executed after the response is sent.</p></li>
+<li><p><span class="target" id="litestar.response.base.ASGIResponse.params.body"></span><strong>body</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.ASGIResponse.params.body">¶</a> – encoded content to send in the response body.</p></li>
+<li><p><span class="target" id="litestar.response.base.ASGIResponse.params.content_length"></span><strong>content_length</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.ASGIResponse.params.content_length">¶</a> – The response content length.</p></li>
+<li><p><span class="target" id="litestar.response.base.ASGIResponse.params.cookies"></span><strong>cookies</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.ASGIResponse.params.cookies">¶</a> – The response cookies.</p></li>
+<li><p><span class="target" id="litestar.response.base.ASGIResponse.params.encoded_headers"></span><strong>encoded_headers</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.ASGIResponse.params.encoded_headers">¶</a> – The response headers.</p></li>
+<li><p><span class="target" id="litestar.response.base.ASGIResponse.params.encoding"></span><strong>encoding</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.ASGIResponse.params.encoding">¶</a> – The response encoding.</p></li>
+<li><p><span class="target" id="litestar.response.base.ASGIResponse.params.headers"></span><strong>headers</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.ASGIResponse.params.headers">¶</a> – The response headers.</p></li>
+<li><p><span class="target" id="litestar.response.base.ASGIResponse.params.is_head_response"></span><strong>is_head_response</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.ASGIResponse.params.is_head_response">¶</a> – A boolean indicating if the response is a HEAD response.</p></li>
+<li><p><span class="target" id="litestar.response.base.ASGIResponse.params.media_type"></span><strong>media_type</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.ASGIResponse.params.media_type">¶</a> – The response media type.</p></li>
+<li><p><span class="target" id="litestar.response.base.ASGIResponse.params.status_code"></span><strong>status_code</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.ASGIResponse.params.status_code">¶</a> – The response status code.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1577,7 +1578,7 @@ document.write(`
 <dd><p>Emit the start event of the response. This event includes the headers and status codes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>send</strong> – The ASGI send function.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.response.base.ASGIResponse.start_response.params.send"></span><strong>send</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.ASGIResponse.start_response.params.send">¶</a> – The ASGI send function.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
@@ -1592,8 +1593,8 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>send</strong> – The ASGI send function.</p></li>
-<li><p><strong>receive</strong> – The ASGI receive function.</p></li>
+<li><p><span class="target" id="litestar.response.base.ASGIResponse.send_body.params.send"></span><strong>send</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.ASGIResponse.send_body.params.send">¶</a> – The ASGI send function.</p></li>
+<li><p><span class="target" id="litestar.response.base.ASGIResponse.send_body.params.receive"></span><strong>receive</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.ASGIResponse.send_body.params.receive">¶</a> – The ASGI receive function.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1617,9 +1618,9 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>scope</strong> – The ASGI connection scope.</p></li>
-<li><p><strong>receive</strong> – The ASGI receive function.</p></li>
-<li><p><strong>send</strong> – The ASGI send function.</p></li>
+<li><p><span class="target" id="litestar.response.base.ASGIResponse.__call__.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.ASGIResponse.__call__.params.scope">¶</a> – The ASGI connection scope.</p></li>
+<li><p><span class="target" id="litestar.response.base.ASGIResponse.__call__.params.receive"></span><strong>receive</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.ASGIResponse.__call__.params.receive">¶</a> – The ASGI receive function.</p></li>
+<li><p><span class="target" id="litestar.response.base.ASGIResponse.__call__.params.send"></span><strong>send</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.ASGIResponse.__call__.params.send">¶</a> – The ASGI send function.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1642,17 +1643,17 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>content</strong> – A value for the response body that will be rendered into bytes string.</p></li>
-<li><p><strong>status_code</strong> – An HTTP status code.</p></li>
-<li><p><strong>media_type</strong> – A value for the response <code class="docutils literal notranslate"><span class="pre">Content-Type</span></code> header.</p></li>
-<li><p><strong>background</strong> – A <a class="reference internal" href="../background_tasks.html#litestar.background_tasks.BackgroundTask" title="litestar.background_tasks.BackgroundTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundTask</span></code></a> instance or
+<li><p><span class="target" id="litestar.response.base.Response.params.content"></span><strong>content</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.Response.params.content">¶</a> – A value for the response body that will be rendered into bytes string.</p></li>
+<li><p><span class="target" id="litestar.response.base.Response.params.status_code"></span><strong>status_code</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.Response.params.status_code">¶</a> – An HTTP status code.</p></li>
+<li><p><span class="target" id="litestar.response.base.Response.params.media_type"></span><strong>media_type</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.Response.params.media_type">¶</a> – A value for the response <code class="docutils literal notranslate"><span class="pre">Content-Type</span></code> header.</p></li>
+<li><p><span class="target" id="litestar.response.base.Response.params.background"></span><strong>background</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.Response.params.background">¶</a> – A <a class="reference internal" href="../background_tasks.html#litestar.background_tasks.BackgroundTask" title="litestar.background_tasks.BackgroundTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundTask</span></code></a> instance or
 <a class="reference internal" href="../background_tasks.html#litestar.background_tasks.BackgroundTasks" title="litestar.background_tasks.BackgroundTasks"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundTasks</span></code></a> to execute after the response is finished.
 Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>headers</strong> – A string keyed dictionary of response headers. Header keys are insensitive.</p></li>
-<li><p><strong>cookies</strong> – A list of <a class="reference internal" href="../datastructures.html#litestar.datastructures.Cookie" title="litestar.datastructures.Cookie"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cookie</span></code></a> instances to be set under the response
+<li><p><span class="target" id="litestar.response.base.Response.params.headers"></span><strong>headers</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.Response.params.headers">¶</a> – A string keyed dictionary of response headers. Header keys are insensitive.</p></li>
+<li><p><span class="target" id="litestar.response.base.Response.params.cookies"></span><strong>cookies</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.Response.params.cookies">¶</a> – A list of <a class="reference internal" href="../datastructures.html#litestar.datastructures.Cookie" title="litestar.datastructures.Cookie"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cookie</span></code></a> instances to be set under the response
 <code class="docutils literal notranslate"><span class="pre">Set-Cookie</span></code> header.</p></li>
-<li><p><strong>encoding</strong> – The encoding to be used for the response headers.</p></li>
-<li><p><strong>type_encoders</strong> – A mapping of types to callables that transform them into types supported for serialization.</p></li>
+<li><p><span class="target" id="litestar.response.base.Response.params.encoding"></span><strong>encoding</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.Response.params.encoding">¶</a> – The encoding to be used for the response headers.</p></li>
+<li><p><span class="target" id="litestar.response.base.Response.params.type_encoders"></span><strong>type_encoders</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.Response.params.type_encoders">¶</a> – A mapping of types to callables that transform them into types supported for serialization.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1668,15 +1669,15 @@ arguments will be ignored.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> – Key for the cookie or a <a class="reference internal" href="../datastructures.html#litestar.datastructures.Cookie" title="litestar.datastructures.Cookie"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cookie</span></code></a> instance.</p></li>
-<li><p><strong>value</strong> – Value for the cookie, if none given defaults to empty string.</p></li>
-<li><p><strong>max_age</strong> – Maximal age of the cookie before its invalidated.</p></li>
-<li><p><strong>expires</strong> – Seconds from now until the cookie expires.</p></li>
-<li><p><strong>path</strong> – Path fragment that must exist in the request url for the cookie to be valid. Defaults to <code class="docutils literal notranslate"><span class="pre">/</span></code>.</p></li>
-<li><p><strong>domain</strong> – Domain for which the cookie is valid.</p></li>
-<li><p><strong>secure</strong> – Https is required for the cookie.</p></li>
-<li><p><strong>httponly</strong> – Forbids javascript to access the cookie via <code class="docutils literal notranslate"><span class="pre">document.cookie</span></code>.</p></li>
-<li><p><strong>samesite</strong> – Controls whether a cookie is sent with cross-site requests. Defaults to <code class="docutils literal notranslate"><span class="pre">lax</span></code>.</p></li>
+<li><p><span class="target" id="litestar.response.base.Response.set_cookie.params.key"></span><strong>key</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.Response.set_cookie.params.key">¶</a> – Key for the cookie or a <a class="reference internal" href="../datastructures.html#litestar.datastructures.Cookie" title="litestar.datastructures.Cookie"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cookie</span></code></a> instance.</p></li>
+<li><p><span class="target" id="litestar.response.base.Response.set_cookie.params.value"></span><strong>value</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.Response.set_cookie.params.value">¶</a> – Value for the cookie, if none given defaults to empty string.</p></li>
+<li><p><span class="target" id="litestar.response.base.Response.set_cookie.params.max_age"></span><strong>max_age</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.Response.set_cookie.params.max_age">¶</a> – Maximal age of the cookie before its invalidated.</p></li>
+<li><p><span class="target" id="litestar.response.base.Response.set_cookie.params.expires"></span><strong>expires</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.Response.set_cookie.params.expires">¶</a> – Seconds from now until the cookie expires.</p></li>
+<li><p><span class="target" id="litestar.response.base.Response.set_cookie.params.path"></span><strong>path</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.Response.set_cookie.params.path">¶</a> – Path fragment that must exist in the request url for the cookie to be valid. Defaults to <code class="docutils literal notranslate"><span class="pre">/</span></code>.</p></li>
+<li><p><span class="target" id="litestar.response.base.Response.set_cookie.params.domain"></span><strong>domain</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.Response.set_cookie.params.domain">¶</a> – Domain for which the cookie is valid.</p></li>
+<li><p><span class="target" id="litestar.response.base.Response.set_cookie.params.secure"></span><strong>secure</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.Response.set_cookie.params.secure">¶</a> – Https is required for the cookie.</p></li>
+<li><p><span class="target" id="litestar.response.base.Response.set_cookie.params.httponly"></span><strong>httponly</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.Response.set_cookie.params.httponly">¶</a> – Forbids javascript to access the cookie via <code class="docutils literal notranslate"><span class="pre">document.cookie</span></code>.</p></li>
+<li><p><span class="target" id="litestar.response.base.Response.set_cookie.params.samesite"></span><strong>samesite</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.Response.set_cookie.params.samesite">¶</a> – Controls whether a cookie is sent with cross-site requests. Defaults to <code class="docutils literal notranslate"><span class="pre">lax</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1692,8 +1693,8 @@ arguments will be ignored.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> – Header key.</p></li>
-<li><p><strong>value</strong> – Header value.</p></li>
+<li><p><span class="target" id="litestar.response.base.Response.set_header.params.key"></span><strong>key</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.Response.set_header.params.key">¶</a> – Header key.</p></li>
+<li><p><span class="target" id="litestar.response.base.Response.set_header.params.value"></span><strong>value</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.Response.set_header.params.value">¶</a> – Header value.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1708,7 +1709,7 @@ arguments will be ignored.</p>
 <dd><p>Set an etag header.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>etag</strong> – An etag value.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.response.base.Response.set_etag.params.etag"></span><strong>etag</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.Response.set_etag.params.etag">¶</a> – An etag value.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
@@ -1723,9 +1724,9 @@ arguments will be ignored.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>key</strong> – Key of the cookie.</p></li>
-<li><p><strong>path</strong> – Path of the cookie.</p></li>
-<li><p><strong>domain</strong> – Domain of the cookie.</p></li>
+<li><p><span class="target" id="litestar.response.base.Response.delete_cookie.params.key"></span><strong>key</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.Response.delete_cookie.params.key">¶</a> – Key of the cookie.</p></li>
+<li><p><span class="target" id="litestar.response.base.Response.delete_cookie.params.path"></span><strong>path</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.Response.delete_cookie.params.path">¶</a> – Path of the cookie.</p></li>
+<li><p><span class="target" id="litestar.response.base.Response.delete_cookie.params.domain"></span><strong>domain</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.Response.delete_cookie.params.domain">¶</a> – Domain of the cookie.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1752,16 +1753,16 @@ arguments will be ignored.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>app</strong> – The <a class="reference internal" href="../app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a> application instance.</p></li>
-<li><p><strong>background</strong> – Background task(s) to be executed after the response is sent.</p></li>
-<li><p><strong>cookies</strong> – A list of cookies to be set on the response.</p></li>
-<li><p><strong>encoded_headers</strong> – A list of already encoded headers.</p></li>
-<li><p><strong>headers</strong> – Additional headers to be merged with the response headers. Response headers take precedence.</p></li>
-<li><p><strong>is_head_response</strong> – Whether the response is a HEAD response.</p></li>
-<li><p><strong>media_type</strong> – Media type for the response. If <code class="docutils literal notranslate"><span class="pre">media_type</span></code> is already set on the response, this is ignored.</p></li>
-<li><p><strong>request</strong> – The <a class="reference internal" href="../connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance.</p></li>
-<li><p><strong>status_code</strong> – Status code for the response. If <code class="docutils literal notranslate"><span class="pre">status_code</span></code> is already set on the response, this is</p></li>
-<li><p><strong>type_encoders</strong> – A dictionary of type encoders to use for encoding the response content.</p></li>
+<li><p><span class="target" id="litestar.response.base.Response.to_asgi_response.params.app"></span><strong>app</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.Response.to_asgi_response.params.app">¶</a> – The <a class="reference internal" href="../app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a> application instance.</p></li>
+<li><p><span class="target" id="litestar.response.base.Response.to_asgi_response.params.background"></span><strong>background</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.Response.to_asgi_response.params.background">¶</a> – Background task(s) to be executed after the response is sent.</p></li>
+<li><p><span class="target" id="litestar.response.base.Response.to_asgi_response.params.cookies"></span><strong>cookies</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.Response.to_asgi_response.params.cookies">¶</a> – A list of cookies to be set on the response.</p></li>
+<li><p><span class="target" id="litestar.response.base.Response.to_asgi_response.params.encoded_headers"></span><strong>encoded_headers</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.Response.to_asgi_response.params.encoded_headers">¶</a> – A list of already encoded headers.</p></li>
+<li><p><span class="target" id="litestar.response.base.Response.to_asgi_response.params.headers"></span><strong>headers</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.Response.to_asgi_response.params.headers">¶</a> – Additional headers to be merged with the response headers. Response headers take precedence.</p></li>
+<li><p><span class="target" id="litestar.response.base.Response.to_asgi_response.params.is_head_response"></span><strong>is_head_response</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.Response.to_asgi_response.params.is_head_response">¶</a> – Whether the response is a HEAD response.</p></li>
+<li><p><span class="target" id="litestar.response.base.Response.to_asgi_response.params.media_type"></span><strong>media_type</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.Response.to_asgi_response.params.media_type">¶</a> – Media type for the response. If <code class="docutils literal notranslate"><span class="pre">media_type</span></code> is already set on the response, this is ignored.</p></li>
+<li><p><span class="target" id="litestar.response.base.Response.to_asgi_response.params.request"></span><strong>request</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.Response.to_asgi_response.params.request">¶</a> – The <a class="reference internal" href="../connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance.</p></li>
+<li><p><span class="target" id="litestar.response.base.Response.to_asgi_response.params.status_code"></span><strong>status_code</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.Response.to_asgi_response.params.status_code">¶</a> – Status code for the response. If <code class="docutils literal notranslate"><span class="pre">status_code</span></code> is already set on the response, this is</p></li>
+<li><p><span class="target" id="litestar.response.base.Response.to_asgi_response.params.type_encoders"></span><strong>type_encoders</strong><a class="paramlink headerlink reference internal" href="#litestar.response.base.Response.to_asgi_response.params.type_encoders">¶</a> – A dictionary of type encoders to use for encoding the response content.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

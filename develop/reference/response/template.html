@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1187,7 +1188,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1545,19 +1546,19 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>template_name</strong> – Path-like name for the template to be rendered, e.g. <code class="docutils literal notranslate"><span class="pre">index.html</span></code>.</p></li>
-<li><p><strong>template_str</strong> – A string representing the template, e.g. <code class="docutils literal notranslate"><span class="pre">tmpl</span> <span class="pre">=</span> <span class="pre">&quot;Hello</span> <span class="pre">&lt;strong&gt;World&lt;/strong&gt;&quot;</span></code>.</p></li>
-<li><p><strong>background</strong> – A <a class="reference internal" href="../background_tasks.html#litestar.background_tasks.BackgroundTask" title="litestar.background_tasks.BackgroundTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundTask</span></code></a> instance or
+<li><p><span class="target" id="litestar.response.template.Template.params.template_name"></span><strong>template_name</strong><a class="paramlink headerlink reference internal" href="#litestar.response.template.Template.params.template_name">¶</a> – Path-like name for the template to be rendered, e.g. <code class="docutils literal notranslate"><span class="pre">index.html</span></code>.</p></li>
+<li><p><span class="target" id="litestar.response.template.Template.params.template_str"></span><strong>template_str</strong><a class="paramlink headerlink reference internal" href="#litestar.response.template.Template.params.template_str">¶</a> – A string representing the template, e.g. <code class="docutils literal notranslate"><span class="pre">tmpl</span> <span class="pre">=</span> <span class="pre">&quot;Hello</span> <span class="pre">&lt;strong&gt;World&lt;/strong&gt;&quot;</span></code>.</p></li>
+<li><p><span class="target" id="litestar.response.template.Template.params.background"></span><strong>background</strong><a class="paramlink headerlink reference internal" href="#litestar.response.template.Template.params.background">¶</a> – A <a class="reference internal" href="../background_tasks.html#litestar.background_tasks.BackgroundTask" title="litestar.background_tasks.BackgroundTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundTask</span></code></a> instance or
 <a class="reference internal" href="../background_tasks.html#litestar.background_tasks.BackgroundTasks" title="litestar.background_tasks.BackgroundTasks"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundTasks</span></code></a> to execute after the response is finished.
 Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>context</strong> – A dictionary of key/value pairs to be passed to the temple engine’s render method.</p></li>
-<li><p><strong>cookies</strong> – A list of <a class="reference internal" href="../datastructures.html#litestar.datastructures.Cookie" title="litestar.datastructures.Cookie"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cookie</span></code></a> instances to be set under the response
+<li><p><span class="target" id="litestar.response.template.Template.params.context"></span><strong>context</strong><a class="paramlink headerlink reference internal" href="#litestar.response.template.Template.params.context">¶</a> – A dictionary of key/value pairs to be passed to the temple engine’s render method.</p></li>
+<li><p><span class="target" id="litestar.response.template.Template.params.cookies"></span><strong>cookies</strong><a class="paramlink headerlink reference internal" href="#litestar.response.template.Template.params.cookies">¶</a> – A list of <a class="reference internal" href="../datastructures.html#litestar.datastructures.Cookie" title="litestar.datastructures.Cookie"><code class="xref py py-class docutils literal notranslate"><span class="pre">Cookie</span></code></a> instances to be set under the response
 <code class="docutils literal notranslate"><span class="pre">Set-Cookie</span></code> header.</p></li>
-<li><p><strong>encoding</strong> – Content encoding</p></li>
-<li><p><strong>headers</strong> – A string keyed dictionary of response headers. Header keys are insensitive.</p></li>
-<li><p><strong>media_type</strong> – A string or member of the <a class="reference internal" href="../enums.html#litestar.enums.MediaType" title="litestar.enums.MediaType"><code class="xref py py-class docutils literal notranslate"><span class="pre">MediaType</span></code></a> enum. If not set, try to infer
+<li><p><span class="target" id="litestar.response.template.Template.params.encoding"></span><strong>encoding</strong><a class="paramlink headerlink reference internal" href="#litestar.response.template.Template.params.encoding">¶</a> – Content encoding</p></li>
+<li><p><span class="target" id="litestar.response.template.Template.params.headers"></span><strong>headers</strong><a class="paramlink headerlink reference internal" href="#litestar.response.template.Template.params.headers">¶</a> – A string keyed dictionary of response headers. Header keys are insensitive.</p></li>
+<li><p><span class="target" id="litestar.response.template.Template.params.media_type"></span><strong>media_type</strong><a class="paramlink headerlink reference internal" href="#litestar.response.template.Template.params.media_type">¶</a> – A string or member of the <a class="reference internal" href="../enums.html#litestar.enums.MediaType" title="litestar.enums.MediaType"><code class="xref py py-class docutils literal notranslate"><span class="pre">MediaType</span></code></a> enum. If not set, try to infer
 the media type based on the template name. If this fails, fall back to <code class="docutils literal notranslate"><span class="pre">text/plain</span></code>.</p></li>
-<li><p><strong>status_code</strong> – A value for the response HTTP status code.</p></li>
+<li><p><span class="target" id="litestar.response.template.Template.params.status_code"></span><strong>status_code</strong><a class="paramlink headerlink reference internal" href="#litestar.response.template.Template.params.status_code">¶</a> – A value for the response HTTP status code.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1569,7 +1570,7 @@ the media type based on the template name. If this fails, fall back to <code cla
 <dd><p>Create a context object for the template.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>request</strong> – A <a class="reference internal" href="../connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.response.template.Template.create_template_context.params.request"></span><strong>request</strong><a class="paramlink headerlink reference internal" href="#litestar.response.template.Template.create_template_context.params.request">¶</a> – A <a class="reference internal" href="../connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A dictionary holding the template context</p>
@@ -1584,16 +1585,16 @@ the media type based on the template name. If this fails, fall back to <code cla
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>app</strong> – The <a class="reference internal" href="../app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a> application instance.</p></li>
-<li><p><strong>background</strong> – Background task(s) to be executed after the response is sent.</p></li>
-<li><p><strong>cookies</strong> – A list of cookies to be set on the response.</p></li>
-<li><p><strong>encoded_headers</strong> – A list of already encoded headers.</p></li>
-<li><p><strong>headers</strong> – Additional headers to be merged with the response headers. Response headers take precedence.</p></li>
-<li><p><strong>is_head_response</strong> – Whether the response is a HEAD response.</p></li>
-<li><p><strong>media_type</strong> – Media type for the response. If <code class="docutils literal notranslate"><span class="pre">media_type</span></code> is already set on the response, this is ignored.</p></li>
-<li><p><strong>request</strong> – The <a class="reference internal" href="../connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance.</p></li>
-<li><p><strong>status_code</strong> – Status code for the response. If <code class="docutils literal notranslate"><span class="pre">status_code</span></code> is already set on the response, this is</p></li>
-<li><p><strong>type_encoders</strong> – A dictionary of type encoders to use for encoding the response content.</p></li>
+<li><p><span class="target" id="litestar.response.template.Template.to_asgi_response.params.app"></span><strong>app</strong><a class="paramlink headerlink reference internal" href="#litestar.response.template.Template.to_asgi_response.params.app">¶</a> – The <a class="reference internal" href="../app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a> application instance.</p></li>
+<li><p><span class="target" id="litestar.response.template.Template.to_asgi_response.params.background"></span><strong>background</strong><a class="paramlink headerlink reference internal" href="#litestar.response.template.Template.to_asgi_response.params.background">¶</a> – Background task(s) to be executed after the response is sent.</p></li>
+<li><p><span class="target" id="litestar.response.template.Template.to_asgi_response.params.cookies"></span><strong>cookies</strong><a class="paramlink headerlink reference internal" href="#litestar.response.template.Template.to_asgi_response.params.cookies">¶</a> – A list of cookies to be set on the response.</p></li>
+<li><p><span class="target" id="litestar.response.template.Template.to_asgi_response.params.encoded_headers"></span><strong>encoded_headers</strong><a class="paramlink headerlink reference internal" href="#litestar.response.template.Template.to_asgi_response.params.encoded_headers">¶</a> – A list of already encoded headers.</p></li>
+<li><p><span class="target" id="litestar.response.template.Template.to_asgi_response.params.headers"></span><strong>headers</strong><a class="paramlink headerlink reference internal" href="#litestar.response.template.Template.to_asgi_response.params.headers">¶</a> – Additional headers to be merged with the response headers. Response headers take precedence.</p></li>
+<li><p><span class="target" id="litestar.response.template.Template.to_asgi_response.params.is_head_response"></span><strong>is_head_response</strong><a class="paramlink headerlink reference internal" href="#litestar.response.template.Template.to_asgi_response.params.is_head_response">¶</a> – Whether the response is a HEAD response.</p></li>
+<li><p><span class="target" id="litestar.response.template.Template.to_asgi_response.params.media_type"></span><strong>media_type</strong><a class="paramlink headerlink reference internal" href="#litestar.response.template.Template.to_asgi_response.params.media_type">¶</a> – Media type for the response. If <code class="docutils literal notranslate"><span class="pre">media_type</span></code> is already set on the response, this is ignored.</p></li>
+<li><p><span class="target" id="litestar.response.template.Template.to_asgi_response.params.request"></span><strong>request</strong><a class="paramlink headerlink reference internal" href="#litestar.response.template.Template.to_asgi_response.params.request">¶</a> – The <a class="reference internal" href="../connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance.</p></li>
+<li><p><span class="target" id="litestar.response.template.Template.to_asgi_response.params.status_code"></span><strong>status_code</strong><a class="paramlink headerlink reference internal" href="#litestar.response.template.Template.to_asgi_response.params.status_code">¶</a> – Status code for the response. If <code class="docutils literal notranslate"><span class="pre">status_code</span></code> is already set on the response, this is</p></li>
+<li><p><span class="target" id="litestar.response.template.Template.to_asgi_response.params.type_encoders"></span><strong>type_encoders</strong><a class="paramlink headerlink reference internal" href="#litestar.response.template.Template.to_asgi_response.params.type_encoders">¶</a> – A dictionary of type encoders to use for encoding the response content.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

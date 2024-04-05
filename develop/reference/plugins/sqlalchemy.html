@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1187,7 +1188,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1746,7 +1747,7 @@ for new <code class="xref py py-class docutils literal notranslate"><span class=
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.plugins.sqlalchemy.AlembicAsyncConfig">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.sqlalchemy.</span></span><span class="sig-name descname"><span class="pre">AlembicAsyncConfig</span></span><a class="headerlink" href="#litestar.plugins.sqlalchemy.AlembicAsyncConfig" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/config/common.html#advanced_alchemy.config.common.GenericAlembicConfig" title="(in advanced_alchemy v0.8.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlembicConfig</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/config/common.html#advanced_alchemy.config.common.GenericAlembicConfig" title="(in advanced_alchemy v0.8.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlembicConfig</span></code></a></p>
 <p>Configuration for an Async Alembic’s <a class="reference external" href="https://alembic.sqlalchemy.org/en/latest/api/config.html#alembic.config.Config" title="(in Alembic v1.13.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Config</span></code></a>.</p>
 <p>For details see: <a class="reference external" href="https://alembic.sqlalchemy.org/en/latest/api/config.html">https://alembic.sqlalchemy.org/en/latest/api/config.html</a></p>
 <dl class="py method">
@@ -1759,7 +1760,7 @@ for new <code class="xref py py-class docutils literal notranslate"><span class=
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.plugins.sqlalchemy.AlembicSyncConfig">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.sqlalchemy.</span></span><span class="sig-name descname"><span class="pre">AlembicSyncConfig</span></span><a class="headerlink" href="#litestar.plugins.sqlalchemy.AlembicSyncConfig" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/config/common.html#advanced_alchemy.config.common.GenericAlembicConfig" title="(in advanced_alchemy v0.8.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlembicConfig</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/config/common.html#advanced_alchemy.config.common.GenericAlembicConfig" title="(in advanced_alchemy v0.8.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericAlembicConfig</span></code></a></p>
 <p>Configuration for a Sync Alembic’s <a class="reference external" href="https://alembic.sqlalchemy.org/en/latest/api/config.html#alembic.config.Config" title="(in Alembic v1.13.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Config</span></code></a>.</p>
 <p>For details see: <a class="reference external" href="https://alembic.sqlalchemy.org/en/latest/api/config.html">https://alembic.sqlalchemy.org/en/latest/api/config.html</a></p>
 <dl class="py method">
@@ -1821,7 +1822,7 @@ for new <code class="xref py py-class docutils literal notranslate"><span class=
 <dd><p>Return <code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="docutils literal notranslate"><span class="pre">field_definition</span></code> represents a nested model field.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>field_definition</strong> – inspect type to determine if field represents a nested model.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.plugins.sqlalchemy.SQLAlchemyDTO.detect_nested_field.params.field_definition"></span><strong>field_definition</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.sqlalchemy.SQLAlchemyDTO.detect_nested_field.params.field_definition">¶</a> – inspect type to determine if field represents a nested model.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="docutils literal notranslate"><span class="pre">field_definition</span></code> represents a nested model field.</p>
@@ -1855,7 +1856,7 @@ with the exception for hybrid properties.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.sqlalchemy.</span></span><span class="sig-name descname"><span class="pre">SQLAlchemyAsyncConfig</span></span><a class="headerlink" href="#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/config/asyncio.html#advanced_alchemy.config.asyncio.SQLAlchemyAsyncConfig" title="(in advanced_alchemy v0.8.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyAsyncConfig</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/config/asyncio.html#advanced_alchemy.config.asyncio.SQLAlchemyAsyncConfig" title="(in advanced_alchemy v0.8.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyAsyncConfig</span></code></a></p>
 <p>Async SQLAlchemy Configuration.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.before_send_handler">
@@ -1920,7 +1921,7 @@ instance.</p>
 <dd><p>Create an engine instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>state</strong> – The <code class="docutils literal notranslate"><span class="pre">Litestar.state</span></code> instance.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.provide_engine.params.state"></span><strong>state</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.provide_engine.params.state">¶</a> – The <code class="docutils literal notranslate"><span class="pre">Litestar.state</span></code> instance.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>An engine instance.</p>
@@ -1935,8 +1936,8 @@ instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>state</strong> – The <code class="docutils literal notranslate"><span class="pre">Litestar.state</span></code> instance.</p></li>
-<li><p><strong>scope</strong> – The current connection’s scope.</p></li>
+<li><p><span class="target" id="litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.provide_session.params.state"></span><strong>state</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.provide_session.params.state">¶</a> – The <code class="docutils literal notranslate"><span class="pre">Litestar.state</span></code> instance.</p></li>
+<li><p><span class="target" id="litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.provide_session.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.provide_session.params.scope">¶</a> – The current connection’s scope.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1962,7 +1963,7 @@ instance.</p>
 <dd><p>Create all metadata</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>app</strong> (<a class="reference internal" href="../app.html#litestar.app.Litestar" title="litestar.app.Litestar"><em>Litestar</em></a>) – The <code class="docutils literal notranslate"><span class="pre">Litestar</span></code> instance</p>
+<dd class="field-odd"><p><span class="target" id="litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.create_all_metadata.params.app"></span><strong>app</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.create_all_metadata.params.app">¶</a> (<a class="reference internal" href="../app.html#litestar.app.Litestar" title="litestar.app.Litestar"><em>Litestar</em></a>) – The <code class="docutils literal notranslate"><span class="pre">Litestar</span></code> instance</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1986,7 +1987,7 @@ instance.</p>
 <dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">SQLAlchemyPlugin</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>config</strong> – configure DB connection and hook handlers and dependencies.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin.params.config"></span><strong>config</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin.params.config">¶</a> – configure DB connection and hook handlers and dependencies.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1998,7 +1999,7 @@ instance.</p>
 <p>This can be used to extend or override existing commands.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>cli</strong> – The root <a class="reference external" href="https://click.palletsprojects.com/en/8.1.x/api/#click.Group" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Group</span></code></a> of the Litestar CLI</p>
+<dd class="field-odd"><p><span class="target" id="litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin.on_cli_init.params.cli"></span><strong>cli</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin.on_cli_init.params.cli">¶</a> – The root <a class="reference external" href="https://click.palletsprojects.com/en/8.1.x/api/#click.Group" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Group</span></code></a> of the Litestar CLI</p>
 </dd>
 </dl>
 <div class="admonition-examples admonition">
@@ -2027,7 +2028,7 @@ instance.</p>
 <dd><p>Configure application for use with SQLAlchemy.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>app_config</strong> – The <a class="reference internal" href="../config.html#litestar.config.app.AppConfig" title="litestar.config.app.AppConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></a> instance.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin.on_app_init.params.app_config"></span><strong>app_config</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin.on_app_init.params.app_config">¶</a> – The <a class="reference internal" href="../config.html#litestar.config.app.AppConfig" title="litestar.config.app.AppConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></a> instance.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2045,7 +2046,7 @@ instance.</p>
 <dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">SQLAlchemyPlugin</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>config</strong> – configure DB connection and hook handlers and dependencies.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.plugins.sqlalchemy.SQLAlchemyPlugin.params.config"></span><strong>config</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.sqlalchemy.SQLAlchemyPlugin.params.config">¶</a> – configure DB connection and hook handlers and dependencies.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2056,7 +2057,7 @@ instance.</p>
 <dd><p>Configure application for use with SQLAlchemy.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>app_config</strong> – The <a class="reference internal" href="../config.html#litestar.config.app.AppConfig" title="litestar.config.app.AppConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></a> instance.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.plugins.sqlalchemy.SQLAlchemyPlugin.on_app_init.params.app_config"></span><strong>app_config</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.sqlalchemy.SQLAlchemyPlugin.on_app_init.params.app_config">¶</a> – The <a class="reference internal" href="../config.html#litestar.config.app.AppConfig" title="litestar.config.app.AppConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></a> instance.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2078,7 +2079,7 @@ instance.</p>
 <dd><p>Given a value of indeterminate type, determine if this value is supported by the plugin.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>field_definition</strong> – A parsed type.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.plugins.sqlalchemy.SQLAlchemySerializationPlugin.supports_type.params.field_definition"></span><strong>field_definition</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.sqlalchemy.SQLAlchemySerializationPlugin.supports_type.params.field_definition">¶</a> – A parsed type.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Whether the type is supported by the plugin.</p>
@@ -2092,7 +2093,7 @@ instance.</p>
 <dd><p>Given a parsed type, create a DTO class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>field_definition</strong> – A parsed type.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.plugins.sqlalchemy.SQLAlchemySerializationPlugin.create_dto_for_type.params.field_definition"></span><strong>field_definition</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.sqlalchemy.SQLAlchemySerializationPlugin.create_dto_for_type.params.field_definition">¶</a> – A parsed type.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A DTO class.</p>
@@ -2105,7 +2106,7 @@ instance.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.plugins.sqlalchemy.SQLAlchemySyncConfig">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.sqlalchemy.</span></span><span class="sig-name descname"><span class="pre">SQLAlchemySyncConfig</span></span><a class="headerlink" href="#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/config/sync.html#advanced_alchemy.config.sync.SQLAlchemySyncConfig" title="(in advanced_alchemy v0.8.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemySyncConfig</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.advanced-alchemy.jolt.rs/latest/reference/config/sync.html#advanced_alchemy.config.sync.SQLAlchemySyncConfig" title="(in advanced_alchemy v0.8.4)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemySyncConfig</span></code></a></p>
 <p>Sync SQLAlchemy Configuration.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.before_send_handler">
@@ -2170,7 +2171,7 @@ instance.</p>
 <dd><p>Create an engine instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>state</strong> – The <code class="docutils literal notranslate"><span class="pre">Litestar.state</span></code> instance.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.provide_engine.params.state"></span><strong>state</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.provide_engine.params.state">¶</a> – The <code class="docutils literal notranslate"><span class="pre">Litestar.state</span></code> instance.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>An engine instance.</p>
@@ -2185,8 +2186,8 @@ instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>state</strong> – The <code class="docutils literal notranslate"><span class="pre">Litestar.state</span></code> instance.</p></li>
-<li><p><strong>scope</strong> – The current connection’s scope.</p></li>
+<li><p><span class="target" id="litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.provide_session.params.state"></span><strong>state</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.provide_session.params.state">¶</a> – The <code class="docutils literal notranslate"><span class="pre">Litestar.state</span></code> instance.</p></li>
+<li><p><span class="target" id="litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.provide_session.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.provide_session.params.scope">¶</a> – The current connection’s scope.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2212,7 +2213,7 @@ instance.</p>
 <dd><p>Create all metadata</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>app</strong> (<a class="reference internal" href="../app.html#litestar.app.Litestar" title="litestar.app.Litestar"><em>Litestar</em></a>) – The <code class="docutils literal notranslate"><span class="pre">Litestar</span></code> instance</p>
+<dd class="field-odd"><p><span class="target" id="litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.create_all_metadata.params.app"></span><strong>app</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.create_all_metadata.params.app">¶</a> (<a class="reference internal" href="../app.html#litestar.app.Litestar" title="litestar.app.Litestar"><em>Litestar</em></a>) – The <code class="docutils literal notranslate"><span class="pre">Litestar</span></code> instance</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2229,7 +2230,7 @@ instance.</p>
 <dd><p>Set the app state with engine and session.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>app</strong> – The <code class="docutils literal notranslate"><span class="pre">Litestar</span></code> instance.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.update_app_state.params.app"></span><strong>app</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.update_app_state.params.app">¶</a> – The <code class="docutils literal notranslate"><span class="pre">Litestar</span></code> instance.</p>
 </dd>
 </dl>
 </dd></dl>

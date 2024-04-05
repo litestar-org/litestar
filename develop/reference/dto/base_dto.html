@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1187,7 +1188,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1556,7 +1557,7 @@ document.write(`
 <dd><p>Create an AbstractDTOFactory type.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>asgi_connection</strong> – A <a class="reference internal" href="../connection.html#litestar.connection.ASGIConnection" title="litestar.connection.base.ASGIConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIConnection</span></code></a> instance.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.dto.base_dto.AbstractDTO.params.asgi_connection"></span><strong>asgi_connection</strong><a class="paramlink headerlink reference internal" href="#litestar.dto.base_dto.AbstractDTO.params.asgi_connection">¶</a> – A <a class="reference internal" href="../connection.html#litestar.connection.ASGIConnection" title="litestar.connection.base.ASGIConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIConnection</span></code></a> instance.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1590,7 +1591,7 @@ document.write(`
 <dd><p>Return <code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="docutils literal notranslate"><span class="pre">field_definition</span></code> represents a nested model field.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>field_definition</strong> – inspect type to determine if field represents a nested model.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.dto.base_dto.AbstractDTO.detect_nested_field.params.field_definition"></span><strong>field_definition</strong><a class="paramlink headerlink reference internal" href="#litestar.dto.base_dto.AbstractDTO.detect_nested_field.params.field_definition">¶</a> – inspect type to determine if field represents a nested model.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if <code class="docutils literal notranslate"><span class="pre">field_definition</span></code> represents a nested model field.</p>
@@ -1604,7 +1605,7 @@ document.write(`
 <dd><p>Check support for the given type.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>field_definition</strong> – A <a class="reference internal" href="../typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldDefinition</span></code></a> instance.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.dto.base_dto.AbstractDTO.is_supported_model_type_field.params.field_definition"></span><strong>field_definition</strong><a class="paramlink headerlink reference internal" href="#litestar.dto.base_dto.AbstractDTO.is_supported_model_type_field.params.field_definition">¶</a> – A <a class="reference internal" href="../typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldDefinition</span></code></a> instance.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Whether the type of the field definition is supported by the DTO.</p>
@@ -1619,9 +1620,9 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>field_definition</strong> – A <a class="reference internal" href="../typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldDefinition</span></code></a> instance.</p></li>
-<li><p><strong>handler_id</strong> – ID of the route handler for which to create a DTO instance.</p></li>
-<li><p><strong>backend_cls</strong> – Alternative DTO backend class to use</p></li>
+<li><p><span class="target" id="litestar.dto.base_dto.AbstractDTO.create_for_field_definition.params.field_definition"></span><strong>field_definition</strong><a class="paramlink headerlink reference internal" href="#litestar.dto.base_dto.AbstractDTO.create_for_field_definition.params.field_definition">¶</a> – A <a class="reference internal" href="../typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldDefinition</span></code></a> instance.</p></li>
+<li><p><span class="target" id="litestar.dto.base_dto.AbstractDTO.create_for_field_definition.params.handler_id"></span><strong>handler_id</strong><a class="paramlink headerlink reference internal" href="#litestar.dto.base_dto.AbstractDTO.create_for_field_definition.params.handler_id">¶</a> – ID of the route handler for which to create a DTO instance.</p></li>
+<li><p><span class="target" id="litestar.dto.base_dto.AbstractDTO.create_for_field_definition.params.backend_cls"></span><strong>backend_cls</strong><a class="paramlink headerlink reference internal" href="#litestar.dto.base_dto.AbstractDTO.create_for_field_definition.params.backend_cls">¶</a> – Alternative DTO backend class to use</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1647,7 +1648,7 @@ document.write(`
 <dd><p>Handle where DTO supported data is wrapped in a generic container type.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>field_definition</strong> – A parsed type annotation that represents the annotation used to narrow the DTO type.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.dto.base_dto.AbstractDTO.resolve_generic_wrapper_type.params.field_definition"></span><strong>field_definition</strong><a class="paramlink headerlink reference internal" href="#litestar.dto.base_dto.AbstractDTO.resolve_generic_wrapper_type.params.field_definition">¶</a> – A parsed type annotation that represents the annotation used to narrow the DTO type.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The data model type.</p>
@@ -1662,8 +1663,8 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>model_type</strong> – Any type-annotated class.</p></li>
-<li><p><strong>namespace</strong> – Optional namespace to use for resolving type hints.</p></li>
+<li><p><span class="target" id="litestar.dto.base_dto.AbstractDTO.get_model_type_hints.params.model_type"></span><strong>model_type</strong><a class="paramlink headerlink reference internal" href="#litestar.dto.base_dto.AbstractDTO.get_model_type_hints.params.model_type">¶</a> – Any type-annotated class.</p></li>
+<li><p><span class="target" id="litestar.dto.base_dto.AbstractDTO.get_model_type_hints.params.namespace"></span><strong>namespace</strong><a class="paramlink headerlink reference internal" href="#litestar.dto.base_dto.AbstractDTO.get_model_type_hints.params.namespace">¶</a> – Optional namespace to use for resolving type hints.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1678,7 +1679,7 @@ document.write(`
 <dd><p>Extract data type and config instances from <code class="docutils literal notranslate"><span class="pre">Annotated</span></code> annotation.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>field_definition</strong> – A parsed type annotation that represents the annotation used to narrow the DTO type.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.dto.base_dto.AbstractDTO.get_dto_config_from_annotated_type.params.field_definition"></span><strong>field_definition</strong><a class="paramlink headerlink reference internal" href="#litestar.dto.base_dto.AbstractDTO.get_dto_config_from_annotated_type.params.field_definition">¶</a> – A parsed type annotation that represents the annotation used to narrow the DTO type.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The type and config object extracted from the annotation.</p>
@@ -1692,7 +1693,7 @@ document.write(`
 <dd><p>Resolve the data model type from a parsed type.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>field_definition</strong> – A parsed type annotation that represents the annotation used to narrow the DTO type.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.dto.base_dto.AbstractDTO.resolve_model_type.params.field_definition"></span><strong>field_definition</strong><a class="paramlink headerlink reference internal" href="#litestar.dto.base_dto.AbstractDTO.resolve_model_type.params.field_definition">¶</a> – A parsed type annotation that represents the annotation used to narrow the DTO type.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A <a class="reference internal" href="../typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldDefinition</span></code></a> that represents the data model type.</p>

@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1187,7 +1188,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1545,26 +1546,26 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>backend</strong> – Backend to store data in</p></li>
-<li><p><strong>channels</strong> – Channels to serve. If <code class="docutils literal notranslate"><span class="pre">arbitrary_channels_allowed</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code> (the default), trying to
+<li><p><span class="target" id="litestar.channels.plugin.ChannelsPlugin.params.backend"></span><strong>backend</strong><a class="paramlink headerlink reference internal" href="#litestar.channels.plugin.ChannelsPlugin.params.backend">¶</a> – Backend to store data in</p></li>
+<li><p><span class="target" id="litestar.channels.plugin.ChannelsPlugin.params.channels"></span><strong>channels</strong><a class="paramlink headerlink reference internal" href="#litestar.channels.plugin.ChannelsPlugin.params.channels">¶</a> – Channels to serve. If <code class="docutils literal notranslate"><span class="pre">arbitrary_channels_allowed</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code> (the default), trying to
 subscribe to a channel not in <code class="docutils literal notranslate"><span class="pre">channels</span></code> will raise an exception</p></li>
-<li><p><strong>arbitrary_channels_allowed</strong> – Allow the creation of channels on the fly</p></li>
-<li><p><strong>create_ws_route_handlers</strong> – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, websocket route handlers will be created for all channels defined in
+<li><p><span class="target" id="litestar.channels.plugin.ChannelsPlugin.params.arbitrary_channels_allowed"></span><strong>arbitrary_channels_allowed</strong><a class="paramlink headerlink reference internal" href="#litestar.channels.plugin.ChannelsPlugin.params.arbitrary_channels_allowed">¶</a> – Allow the creation of channels on the fly</p></li>
+<li><p><span class="target" id="litestar.channels.plugin.ChannelsPlugin.params.create_ws_route_handlers"></span><strong>create_ws_route_handlers</strong><a class="paramlink headerlink reference internal" href="#litestar.channels.plugin.ChannelsPlugin.params.create_ws_route_handlers">¶</a> – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, websocket route handlers will be created for all channels defined in
 <code class="docutils literal notranslate"><span class="pre">channels</span></code>. If <code class="docutils literal notranslate"><span class="pre">arbitrary_channels_allowed</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, a single handler will be created instead,
 handling all channels. The handlers created will accept WebSocket connections and start sending received
 events for their respective channels.</p></li>
-<li><p><strong>ws_handler_send_history</strong> – Amount of history entries to send from the generated websocket route handlers after
+<li><p><span class="target" id="litestar.channels.plugin.ChannelsPlugin.params.ws_handler_send_history"></span><strong>ws_handler_send_history</strong><a class="paramlink headerlink reference internal" href="#litestar.channels.plugin.ChannelsPlugin.params.ws_handler_send_history">¶</a> – Amount of history entries to send from the generated websocket route handlers after
 a client has connected. A value of <code class="docutils literal notranslate"><span class="pre">0</span></code> indicates to not send a history</p></li>
-<li><p><strong>ws_handler_base_path</strong> – Path prefix used for the generated route handlers</p></li>
-<li><p><strong>ws_send_mode</strong> – Send mode to use for sending data through a <a class="reference internal" href="../connection.html#litestar.connection.WebSocket" title="litestar.connection.WebSocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocket</span></code></a>.
+<li><p><span class="target" id="litestar.channels.plugin.ChannelsPlugin.params.ws_handler_base_path"></span><strong>ws_handler_base_path</strong><a class="paramlink headerlink reference internal" href="#litestar.channels.plugin.ChannelsPlugin.params.ws_handler_base_path">¶</a> – Path prefix used for the generated route handlers</p></li>
+<li><p><span class="target" id="litestar.channels.plugin.ChannelsPlugin.params.ws_send_mode"></span><strong>ws_send_mode</strong><a class="paramlink headerlink reference internal" href="#litestar.channels.plugin.ChannelsPlugin.params.ws_send_mode">¶</a> – Send mode to use for sending data through a <a class="reference internal" href="../connection.html#litestar.connection.WebSocket" title="litestar.connection.WebSocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocket</span></code></a>.
 This will be used when sending within generated route handlers or <a class="reference internal" href="subscriber.html#litestar.channels.subscriber.Subscriber.run_in_background" title="litestar.channels.subscriber.Subscriber.run_in_background"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Subscriber.run_in_background()</span></code></a></p></li>
-<li><p><strong>subscriber_max_backlog</strong> – Maximum amount of unsent messages to be held in memory for a given subscriber. If
+<li><p><span class="target" id="litestar.channels.plugin.ChannelsPlugin.params.subscriber_max_backlog"></span><strong>subscriber_max_backlog</strong><a class="paramlink headerlink reference internal" href="#litestar.channels.plugin.ChannelsPlugin.params.subscriber_max_backlog">¶</a> – Maximum amount of unsent messages to be held in memory for a given subscriber. If
 that limit is reached, new messages will be treated accordingly to <code class="docutils literal notranslate"><span class="pre">backlog_strategy</span></code></p></li>
-<li><p><strong>subscriber_backlog_strategy</strong> – Define the behaviour if <code class="docutils literal notranslate"><span class="pre">max_backlog</span></code> is reached for a subscriber. `
+<li><p><span class="target" id="litestar.channels.plugin.ChannelsPlugin.params.subscriber_backlog_strategy"></span><strong>subscriber_backlog_strategy</strong><a class="paramlink headerlink reference internal" href="#litestar.channels.plugin.ChannelsPlugin.params.subscriber_backlog_strategy">¶</a> – Define the behaviour if <code class="docutils literal notranslate"><span class="pre">max_backlog</span></code> is reached for a subscriber. `
 <cite>backoff`</cite> will result in new messages being dropped until older ones have been processed. <code class="docutils literal notranslate"><span class="pre">dropleft</span></code>
 will drop older messages in favour of new ones.</p></li>
-<li><p><strong>subscriber_class</strong> – A <a class="reference internal" href="subscriber.html#litestar.channels.subscriber.Subscriber" title="litestar.channels.subscriber.Subscriber"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subscriber</span></code></a> subclass to return from <a class="reference internal" href="#litestar.channels.plugin.ChannelsPlugin.subscribe" title="litestar.channels.plugin.ChannelsPlugin.subscribe"><code class="xref py py-meth docutils literal notranslate"><span class="pre">subscribe()</span></code></a></p></li>
-<li><p><strong>type_encoders</strong> – An additional mapping of type encoders used to encode data before sending</p></li>
+<li><p><span class="target" id="litestar.channels.plugin.ChannelsPlugin.params.subscriber_class"></span><strong>subscriber_class</strong><a class="paramlink headerlink reference internal" href="#litestar.channels.plugin.ChannelsPlugin.params.subscriber_class">¶</a> – A <a class="reference internal" href="subscriber.html#litestar.channels.subscriber.Subscriber" title="litestar.channels.subscriber.Subscriber"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subscriber</span></code></a> subclass to return from <a class="reference internal" href="#litestar.channels.plugin.ChannelsPlugin.subscribe" title="litestar.channels.plugin.ChannelsPlugin.subscribe"><code class="xref py py-meth docutils literal notranslate"><span class="pre">subscribe()</span></code></a></p></li>
+<li><p><span class="target" id="litestar.channels.plugin.ChannelsPlugin.params.type_encoders"></span><strong>type_encoders</strong><a class="paramlink headerlink reference internal" href="#litestar.channels.plugin.ChannelsPlugin.params.type_encoders">¶</a> – An additional mapping of type encoders used to encode data before sending</p></li>
 </ul>
 </dd>
 </dl>
@@ -1610,8 +1611,8 @@ using <a class="reference internal" href="subscriber.html#litestar.channels.subs
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>channels</strong> – Channel(s) to subscribe to</p></li>
-<li><p><strong>history</strong> – If a non-negative integer, add this amount of history entries from
+<li><p><span class="target" id="litestar.channels.plugin.ChannelsPlugin.subscribe.params.channels"></span><strong>channels</strong><a class="paramlink headerlink reference internal" href="#litestar.channels.plugin.ChannelsPlugin.subscribe.params.channels">¶</a> – Channel(s) to subscribe to</p></li>
+<li><p><span class="target" id="litestar.channels.plugin.ChannelsPlugin.subscribe.params.history"></span><strong>history</strong><a class="paramlink headerlink reference internal" href="#litestar.channels.plugin.ChannelsPlugin.subscribe.params.history">¶</a> – If a non-negative integer, add this amount of history entries from
 each channel to the subscriber’s event stream. Note that this will wait
 until all history entries are fetched and pushed to the subscriber’s
 stream. For more control use <a class="reference internal" href="#litestar.channels.plugin.ChannelsPlugin.put_subscriber_history" title="litestar.channels.plugin.ChannelsPlugin.put_subscriber_history"><code class="xref py py-meth docutils literal notranslate"><span class="pre">put_subscriber_history()</span></code></a>.</p></li>
@@ -1635,8 +1636,8 @@ be stopped.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>channels</strong> – Channels to unsubscribe from. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, unsubscribe from all channels</p></li>
-<li><p><strong>subscriber</strong> – <a class="reference internal" href="subscriber.html#litestar.channels.subscriber.Subscriber" title="litestar.channels.subscriber.Subscriber"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subscriber</span></code></a> to unsubscribe</p></li>
+<li><p><span class="target" id="litestar.channels.plugin.ChannelsPlugin.unsubscribe.params.channels"></span><strong>channels</strong><a class="paramlink headerlink reference internal" href="#litestar.channels.plugin.ChannelsPlugin.unsubscribe.params.channels">¶</a> – Channels to unsubscribe from. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, unsubscribe from all channels</p></li>
+<li><p><span class="target" id="litestar.channels.plugin.ChannelsPlugin.unsubscribe.params.subscriber"></span><strong>subscriber</strong><a class="paramlink headerlink reference internal" href="#litestar.channels.plugin.ChannelsPlugin.unsubscribe.params.subscriber">¶</a> – <a class="reference internal" href="subscriber.html#litestar.channels.subscriber.Subscriber" title="litestar.channels.subscriber.Subscriber"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subscriber</span></code></a> to unsubscribe</p></li>
 </ul>
 </dd>
 </dl>
@@ -1650,8 +1651,8 @@ Upon exiting the context, <a class="reference internal" href="#litestar.channels
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>channels</strong> – Channel(s) to subscribe to</p></li>
-<li><p><strong>history</strong> – If a non-negative integer, add this amount of history entries from
+<li><p><span class="target" id="litestar.channels.plugin.ChannelsPlugin.start_subscription.params.channels"></span><strong>channels</strong><a class="paramlink headerlink reference internal" href="#litestar.channels.plugin.ChannelsPlugin.start_subscription.params.channels">¶</a> – Channel(s) to subscribe to</p></li>
+<li><p><span class="target" id="litestar.channels.plugin.ChannelsPlugin.start_subscription.params.history"></span><strong>history</strong><a class="paramlink headerlink reference internal" href="#litestar.channels.plugin.ChannelsPlugin.start_subscription.params.history">¶</a> – If a non-negative integer, add this amount of history entries from
 each channel to the subscriber’s event stream. Note that this will wait
 until all history entries are fetched and pushed to the subscriber’s
 stream. For more control use <a class="reference internal" href="#litestar.channels.plugin.ChannelsPlugin.put_subscriber_history" title="litestar.channels.plugin.ChannelsPlugin.put_subscriber_history"><code class="xref py py-meth docutils literal notranslate"><span class="pre">put_subscriber_history()</span></code></a>.</p></li>

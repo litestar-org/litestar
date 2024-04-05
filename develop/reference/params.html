@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1187,7 +1188,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1537,40 +1538,40 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>const</strong> – A boolean flag dictating whether this parameter is a constant. If True, the value passed to the parameter
+<li><p><span class="target" id="litestar.params.Body.params.const"></span><strong>const</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Body.params.const">¶</a> – A boolean flag dictating whether this parameter is a constant. If True, the value passed to the parameter
 must equal its default value. This also causes the OpenAPI const field to be
 populated with the default value.</p></li>
-<li><p><strong>content_encoding</strong> – The content encoding of the value. Applicable on to string values.
+<li><p><span class="target" id="litestar.params.Body.params.content_encoding"></span><strong>content_encoding</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Body.params.content_encoding">¶</a> – The content encoding of the value. Applicable on to string values.
 See OpenAPI 3.1 for details.</p></li>
-<li><p><strong>default</strong> – A default value. If const is true, this value is required.</p></li>
-<li><p><strong>description</strong> – String value used in the description section of the OpenAPI schema for the given parameter.</p></li>
-<li><p><strong>examples</strong> – A list of Example models.</p></li>
-<li><p><strong>external_docs</strong> – A url pointing at external documentation for the given parameter.</p></li>
-<li><p><strong>ge</strong> – Constrict value to be greater or equal to a given float or int.
+<li><p><span class="target" id="litestar.params.Body.params.default"></span><strong>default</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Body.params.default">¶</a> – A default value. If const is true, this value is required.</p></li>
+<li><p><span class="target" id="litestar.params.Body.params.description"></span><strong>description</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Body.params.description">¶</a> – String value used in the description section of the OpenAPI schema for the given parameter.</p></li>
+<li><p><span class="target" id="litestar.params.Body.params.examples"></span><strong>examples</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Body.params.examples">¶</a> – A list of Example models.</p></li>
+<li><p><span class="target" id="litestar.params.Body.params.external_docs"></span><strong>external_docs</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Body.params.external_docs">¶</a> – A url pointing at external documentation for the given parameter.</p></li>
+<li><p><span class="target" id="litestar.params.Body.params.ge"></span><strong>ge</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Body.params.ge">¶</a> – Constrict value to be greater or equal to a given float or int.
 Equivalent to minimum in the OpenAPI specification.</p></li>
-<li><p><strong>gt</strong> – Constrict value to be greater than a given float or int.
+<li><p><span class="target" id="litestar.params.Body.params.gt"></span><strong>gt</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Body.params.gt">¶</a> – Constrict value to be greater than a given float or int.
 Equivalent to exclusiveMinimum in the OpenAPI specification.</p></li>
-<li><p><strong>le</strong> – Constrict value to be less or equal to a given float or int.
+<li><p><span class="target" id="litestar.params.Body.params.le"></span><strong>le</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Body.params.le">¶</a> – Constrict value to be less or equal to a given float or int.
 Equivalent to maximum in the OpenAPI specification.</p></li>
-<li><p><strong>lt</strong> – Constrict value to be less than a given float or int.
+<li><p><span class="target" id="litestar.params.Body.params.lt"></span><strong>lt</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Body.params.lt">¶</a> – Constrict value to be less than a given float or int.
 Equivalent to exclusiveMaximum in the OpenAPI specification.</p></li>
-<li><p><strong>max_items</strong> – Constrict a set or a list to have a maximum number of items.
+<li><p><span class="target" id="litestar.params.Body.params.max_items"></span><strong>max_items</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Body.params.max_items">¶</a> – Constrict a set or a list to have a maximum number of items.
 Equivalent to maxItems in the OpenAPI specification.</p></li>
-<li><p><strong>max_length</strong> – Constrict a string or bytes value to have a maximum length.
+<li><p><span class="target" id="litestar.params.Body.params.max_length"></span><strong>max_length</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Body.params.max_length">¶</a> – Constrict a string or bytes value to have a maximum length.
 Equivalent to maxLength in the OpenAPI specification.</p></li>
-<li><p><strong>media_type</strong> – Defaults to RequestEncodingType.JSON.</p></li>
-<li><p><strong>min_items</strong> – Constrict a set or a list to have a minimum number of items.
+<li><p><span class="target" id="litestar.params.Body.params.media_type"></span><strong>media_type</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Body.params.media_type">¶</a> – Defaults to RequestEncodingType.JSON.</p></li>
+<li><p><span class="target" id="litestar.params.Body.params.min_items"></span><strong>min_items</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Body.params.min_items">¶</a> – Constrict a set or a list to have a minimum number of items.
 Equivalent to minItems in the OpenAPI specification.</p></li>
-<li><p><strong>min_length</strong> – Constrict a string or bytes value to have a minimum length.
+<li><p><span class="target" id="litestar.params.Body.params.min_length"></span><strong>min_length</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Body.params.min_length">¶</a> – Constrict a string or bytes value to have a minimum length.
 Equivalent to minLength in the OpenAPI specification.</p></li>
-<li><p><strong>multipart_form_part_limit</strong> – The maximal number of allowed parts in a multipart/formdata request.
+<li><p><span class="target" id="litestar.params.Body.params.multipart_form_part_limit"></span><strong>multipart_form_part_limit</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Body.params.multipart_form_part_limit">¶</a> – The maximal number of allowed parts in a multipart/formdata request.
 This limit is intended to protect from DoS attacks.</p></li>
-<li><p><strong>multiple_of</strong> – Constrict value to a multiple of a given float or int.
+<li><p><span class="target" id="litestar.params.Body.params.multiple_of"></span><strong>multiple_of</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Body.params.multiple_of">¶</a> – Constrict value to a multiple of a given float or int.
 Equivalent to multipleOf in the OpenAPI specification.</p></li>
-<li><p><strong>pattern</strong> – A string representing a regex against which the given string will be matched.
+<li><p><span class="target" id="litestar.params.Body.params.pattern"></span><strong>pattern</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Body.params.pattern">¶</a> – A string representing a regex against which the given string will be matched.
 Equivalent to pattern in the OpenAPI specification.</p></li>
-<li><p><strong>title</strong> – String value used in the title section of the OpenAPI schema for the given parameter.</p></li>
-<li><p><strong>schema_extra</strong> – <p>Extensions to the generated schema. If set, will overwrite the matching fields in the generated
+<li><p><span class="target" id="litestar.params.Body.params.title"></span><strong>title</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Body.params.title">¶</a> – String value used in the title section of the OpenAPI schema for the given parameter.</p></li>
+<li><p><span class="target" id="litestar.params.Body.params.schema_extra"></span><strong>schema_extra</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Body.params.schema_extra">¶</a> – <p>Extensions to the generated schema. If set, will overwrite the matching fields in the generated
 schema.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 2.8.0.</span></p>
@@ -1623,8 +1624,8 @@ schema.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>default</strong> – A default value to use in case a dependency is not provided.</p></li>
-<li><p><strong>skip_validation</strong> – If <cite>True</cite> provided dependency values are not validated by signature model.</p></li>
+<li><p><span class="target" id="litestar.params.Dependency.params.default"></span><strong>default</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Dependency.params.default">¶</a> – A default value to use in case a dependency is not provided.</p></li>
+<li><p><span class="target" id="litestar.params.Dependency.params.skip_validation"></span><strong>skip_validation</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Dependency.params.skip_validation">¶</a> – If <cite>True</cite> provided dependency values are not validated by signature model.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1846,43 +1847,43 @@ be populated with the default value.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>annotation</strong> – <cite>Empty</cite> by default.</p></li>
-<li><p><strong>const</strong> – A boolean flag dictating whether this parameter is a constant. If True, the value passed to the parameter
+<li><p><span class="target" id="litestar.params.Parameter.params.annotation"></span><strong>annotation</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Parameter.params.annotation">¶</a> – <cite>Empty</cite> by default.</p></li>
+<li><p><span class="target" id="litestar.params.Parameter.params.const"></span><strong>const</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Parameter.params.const">¶</a> – A boolean flag dictating whether this parameter is a constant. If True, the value passed to the parameter
 must equal its default value. This also causes the OpenAPI const field
 to be populated with the default value.</p></li>
-<li><p><strong>content_encoding</strong> – The content encoding of the value.
+<li><p><span class="target" id="litestar.params.Parameter.params.content_encoding"></span><strong>content_encoding</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Parameter.params.content_encoding">¶</a> – The content encoding of the value.
 Applicable on to string values. See OpenAPI 3.1 for details.</p></li>
-<li><p><strong>cookie</strong> – The cookie parameter key - required for cookie parameters.</p></li>
-<li><p><strong>default</strong> – A default value. If const is true, this value is required.</p></li>
-<li><p><strong>description</strong> – String value used in the description section of the OpenAPI schema for the given parameter.</p></li>
-<li><p><strong>examples</strong> – A list of Example models.</p></li>
-<li><p><strong>external_docs</strong> – A url pointing at external documentation for the given parameter.</p></li>
-<li><p><strong>ge</strong> – Constrict value to be greater or equal to a given float or int.
+<li><p><span class="target" id="litestar.params.Parameter.params.cookie"></span><strong>cookie</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Parameter.params.cookie">¶</a> – The cookie parameter key - required for cookie parameters.</p></li>
+<li><p><span class="target" id="litestar.params.Parameter.params.default"></span><strong>default</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Parameter.params.default">¶</a> – A default value. If const is true, this value is required.</p></li>
+<li><p><span class="target" id="litestar.params.Parameter.params.description"></span><strong>description</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Parameter.params.description">¶</a> – String value used in the description section of the OpenAPI schema for the given parameter.</p></li>
+<li><p><span class="target" id="litestar.params.Parameter.params.examples"></span><strong>examples</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Parameter.params.examples">¶</a> – A list of Example models.</p></li>
+<li><p><span class="target" id="litestar.params.Parameter.params.external_docs"></span><strong>external_docs</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Parameter.params.external_docs">¶</a> – A url pointing at external documentation for the given parameter.</p></li>
+<li><p><span class="target" id="litestar.params.Parameter.params.ge"></span><strong>ge</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Parameter.params.ge">¶</a> – Constrict value to be greater or equal to a given float or int.
 Equivalent to minimum in the OpenAPI specification.</p></li>
-<li><p><strong>gt</strong> – Constrict value to be greater than a given float or int.
+<li><p><span class="target" id="litestar.params.Parameter.params.gt"></span><strong>gt</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Parameter.params.gt">¶</a> – Constrict value to be greater than a given float or int.
 Equivalent to exclusiveMinimum in the OpenAPI specification.</p></li>
-<li><p><strong>header</strong> – The header parameter key - required for header parameters.</p></li>
-<li><p><strong>le</strong> – Constrict value to be less or equal to a given float or int.
+<li><p><span class="target" id="litestar.params.Parameter.params.header"></span><strong>header</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Parameter.params.header">¶</a> – The header parameter key - required for header parameters.</p></li>
+<li><p><span class="target" id="litestar.params.Parameter.params.le"></span><strong>le</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Parameter.params.le">¶</a> – Constrict value to be less or equal to a given float or int.
 Equivalent to maximum in the OpenAPI specification.</p></li>
-<li><p><strong>lt</strong> – Constrict value to be less than a given float or int.
+<li><p><span class="target" id="litestar.params.Parameter.params.lt"></span><strong>lt</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Parameter.params.lt">¶</a> – Constrict value to be less than a given float or int.
 Equivalent to exclusiveMaximum in the OpenAPI specification.</p></li>
-<li><p><strong>max_items</strong> – Constrict a set or a list to have a maximum number of items.
+<li><p><span class="target" id="litestar.params.Parameter.params.max_items"></span><strong>max_items</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Parameter.params.max_items">¶</a> – Constrict a set or a list to have a maximum number of items.
 Equivalent to maxItems in the OpenAPI specification.</p></li>
-<li><p><strong>max_length</strong> – Constrict a string or bytes value to have a maximum length.
+<li><p><span class="target" id="litestar.params.Parameter.params.max_length"></span><strong>max_length</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Parameter.params.max_length">¶</a> – Constrict a string or bytes value to have a maximum length.
 Equivalent to maxLength in the OpenAPI specification.</p></li>
-<li><p><strong>min_items</strong> – Constrict a set or a list to have a minimum number of items. ֿ
+<li><p><span class="target" id="litestar.params.Parameter.params.min_items"></span><strong>min_items</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Parameter.params.min_items">¶</a> – Constrict a set or a list to have a minimum number of items. ֿ
 Equivalent to minItems in the OpenAPI specification.</p></li>
-<li><p><strong>min_length</strong> – Constrict a string or bytes value to have a minimum length.
+<li><p><span class="target" id="litestar.params.Parameter.params.min_length"></span><strong>min_length</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Parameter.params.min_length">¶</a> – Constrict a string or bytes value to have a minimum length.
 Equivalent to minLength in the OpenAPI specification.</p></li>
-<li><p><strong>multiple_of</strong> – Constrict value to a multiple of a given float or int.
+<li><p><span class="target" id="litestar.params.Parameter.params.multiple_of"></span><strong>multiple_of</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Parameter.params.multiple_of">¶</a> – Constrict value to a multiple of a given float or int.
 Equivalent to multipleOf in the OpenAPI specification.</p></li>
-<li><p><strong>pattern</strong> – A string representing a regex against which the given string will be matched.
+<li><p><span class="target" id="litestar.params.Parameter.params.pattern"></span><strong>pattern</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Parameter.params.pattern">¶</a> – A string representing a regex against which the given string will be matched.
 Equivalent to pattern in the OpenAPI specification.</p></li>
-<li><p><strong>query</strong> – The query parameter key for this parameter.</p></li>
-<li><p><strong>required</strong> – A boolean flag dictating whether this parameter is required.
+<li><p><span class="target" id="litestar.params.Parameter.params.query"></span><strong>query</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Parameter.params.query">¶</a> – The query parameter key for this parameter.</p></li>
+<li><p><span class="target" id="litestar.params.Parameter.params.required"></span><strong>required</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Parameter.params.required">¶</a> – A boolean flag dictating whether this parameter is required.
 If set to False, None values will be allowed. Defaults to True.</p></li>
-<li><p><strong>title</strong> – String value used in the title section of the OpenAPI schema for the given parameter.</p></li>
-<li><p><strong>schema_extra</strong> – <p>Extensions to the generated schema. If set, will overwrite the matching fields in the generated
+<li><p><span class="target" id="litestar.params.Parameter.params.title"></span><strong>title</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Parameter.params.title">¶</a> – String value used in the title section of the OpenAPI schema for the given parameter.</p></li>
+<li><p><span class="target" id="litestar.params.Parameter.params.schema_extra"></span><strong>schema_extra</strong><a class="paramlink headerlink reference internal" href="#litestar.params.Parameter.params.schema_extra">¶</a> – <p>Extensions to the generated schema. If set, will overwrite the matching fields in the generated
 schema.</p>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 2.8.0.</span></p>

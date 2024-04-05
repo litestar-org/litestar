@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../../../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1187,7 +1188,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1962,7 +1963,7 @@ class.</p>
 <dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">SQLAlchemyPlugin</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>config</strong> – configure DB connection and hook handlers and dependencies.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin.params.config"></span><strong>config</strong><a class="paramlink headerlink reference internal" href="#litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin.params.config">¶</a> – configure DB connection and hook handlers and dependencies.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1974,7 +1975,7 @@ class.</p>
 <p>This can be used to extend or override existing commands.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>cli</strong> – The root <a class="reference external" href="https://click.palletsprojects.com/en/8.1.x/api/#click.Group" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Group</span></code></a> of the Litestar CLI</p>
+<dd class="field-odd"><p><span class="target" id="litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin.on_cli_init.params.cli"></span><strong>cli</strong><a class="paramlink headerlink reference internal" href="#litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin.on_cli_init.params.cli">¶</a> – The root <a class="reference external" href="https://click.palletsprojects.com/en/8.1.x/api/#click.Group" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Group</span></code></a> of the Litestar CLI</p>
 </dd>
 </dl>
 <div class="admonition-examples admonition">
@@ -2003,7 +2004,7 @@ class.</p>
 <dd><p>Configure application for use with SQLAlchemy.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>app_config</strong> – The <a class="reference internal" href="../../config.html#litestar.config.app.AppConfig" title="litestar.config.app.AppConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></a> instance.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin.on_app_init.params.app_config"></span><strong>app_config</strong><a class="paramlink headerlink reference internal" href="#litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin.on_app_init.params.app_config">¶</a> – The <a class="reference internal" href="../../config.html#litestar.config.app.AppConfig" title="litestar.config.app.AppConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></a> instance.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2021,7 +2022,7 @@ class.</p>
 <dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">SQLAlchemyPlugin</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>config</strong> – configure DB connection and hook handlers and dependencies.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin.params.config"></span><strong>config</strong><a class="paramlink headerlink reference internal" href="#litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin.params.config">¶</a> – configure DB connection and hook handlers and dependencies.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2032,7 +2033,7 @@ class.</p>
 <dd><p>Configure application for use with SQLAlchemy.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>app_config</strong> – The <a class="reference internal" href="../../config.html#litestar.config.app.AppConfig" title="litestar.config.app.AppConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></a> instance.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin.on_app_init.params.app_config"></span><strong>app_config</strong><a class="paramlink headerlink reference internal" href="#litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin.on_app_init.params.app_config">¶</a> – The <a class="reference internal" href="../../config.html#litestar.config.app.AppConfig" title="litestar.config.app.AppConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></a> instance.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2054,7 +2055,7 @@ class.</p>
 <dd><p>Given a value of indeterminate type, determine if this value is supported by the plugin.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>field_definition</strong> – A parsed type.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin.supports_type.params.field_definition"></span><strong>field_definition</strong><a class="paramlink headerlink reference internal" href="#litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin.supports_type.params.field_definition">¶</a> – A parsed type.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Whether the type is supported by the plugin.</p>
@@ -2068,7 +2069,7 @@ class.</p>
 <dd><p>Given a parsed type, create a DTO class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>field_definition</strong> – A parsed type.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin.create_dto_for_type.params.field_definition"></span><strong>field_definition</strong><a class="paramlink headerlink reference internal" href="#litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin.create_dto_for_type.params.field_definition">¶</a> – A parsed type.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A DTO class.</p>

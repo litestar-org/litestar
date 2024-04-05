@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../../../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -1187,7 +1188,7 @@ document.write(`
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../../usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../usage/routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../usage/routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../usage/routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1549,9 +1550,9 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>redis</strong> – A <code class="xref py py-class docutils literal notranslate"><span class="pre">redis.asyncio.Redis</span></code> instance</p></li>
-<li><p><strong>key_prefix</strong> – Key prefix to use for storing data in redis</p></li>
-<li><p><strong>stream_sleep_no_subscriptions</strong> – Amount of time in milliseconds to pause the
+<li><p><span class="target" id="litestar.channels.backends.redis.RedisChannelsBackend.params.redis"></span><strong>redis</strong><a class="paramlink headerlink reference internal" href="#litestar.channels.backends.redis.RedisChannelsBackend.params.redis">¶</a> – A <code class="xref py py-class docutils literal notranslate"><span class="pre">redis.asyncio.Redis</span></code> instance</p></li>
+<li><p><span class="target" id="litestar.channels.backends.redis.RedisChannelsBackend.params.key_prefix"></span><strong>key_prefix</strong><a class="paramlink headerlink reference internal" href="#litestar.channels.backends.redis.RedisChannelsBackend.params.key_prefix">¶</a> – Key prefix to use for storing data in redis</p></li>
+<li><p><span class="target" id="litestar.channels.backends.redis.RedisChannelsBackend.params.stream_sleep_no_subscriptions"></span><strong>stream_sleep_no_subscriptions</strong><a class="paramlink headerlink reference internal" href="#litestar.channels.backends.redis.RedisChannelsBackend.params.stream_sleep_no_subscriptions">¶</a> – Amount of time in milliseconds to pause the
 <a class="reference internal" href="asyncpg.html#litestar.channels.backends.asyncpg.AsyncPgChannelsBackend.stream_events" title="litestar.channels.backends.asyncpg.AsyncPgChannelsBackend.stream_events"><code class="xref py py-meth docutils literal notranslate"><span class="pre">stream_events()</span></code></a> generator, should no subscribers exist</p></li>
 </ul>
 </dd>
@@ -1572,9 +1573,9 @@ document.write(`
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>redis</strong> – A <code class="xref py py-class docutils literal notranslate"><span class="pre">redis.asyncio.Redis</span></code> instance</p></li>
-<li><p><strong>key_prefix</strong> – Key prefix to use for storing data in redis</p></li>
-<li><p><strong>stream_sleep_no_subscriptions</strong> – Amount of time in milliseconds to pause the
+<li><p><span class="target" id="litestar.channels.backends.redis.RedisChannelsPubSubBackend.params.redis"></span><strong>redis</strong><a class="paramlink headerlink reference internal" href="#litestar.channels.backends.redis.RedisChannelsPubSubBackend.params.redis">¶</a> – A <code class="xref py py-class docutils literal notranslate"><span class="pre">redis.asyncio.Redis</span></code> instance</p></li>
+<li><p><span class="target" id="litestar.channels.backends.redis.RedisChannelsPubSubBackend.params.key_prefix"></span><strong>key_prefix</strong><a class="paramlink headerlink reference internal" href="#litestar.channels.backends.redis.RedisChannelsPubSubBackend.params.key_prefix">¶</a> – Key prefix to use for storing data in redis</p></li>
+<li><p><span class="target" id="litestar.channels.backends.redis.RedisChannelsPubSubBackend.params.stream_sleep_no_subscriptions"></span><strong>stream_sleep_no_subscriptions</strong><a class="paramlink headerlink reference internal" href="#litestar.channels.backends.redis.RedisChannelsPubSubBackend.params.stream_sleep_no_subscriptions">¶</a> – Amount of time in milliseconds to pause the
 <a class="reference internal" href="#litestar.channels.backends.redis.RedisChannelsPubSubBackend.stream_events" title="litestar.channels.backends.redis.RedisChannelsPubSubBackend.stream_events"><code class="xref py py-meth docutils literal notranslate"><span class="pre">stream_events()</span></code></a> generator, should no subscribers exist</p></li>
 </ul>
 </dd>
@@ -1642,14 +1643,14 @@ milliseconds.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>history</strong> – Amount of messages to keep. This will set a <code class="docutils literal notranslate"><span class="pre">MAXLEN</span></code> to the streams</p></li>
-<li><p><strong>redis</strong> – A <code class="xref py py-class docutils literal notranslate"><span class="pre">redis.asyncio.Redis</span></code> instance</p></li>
-<li><p><strong>key_prefix</strong> – Key prefix to use for streams</p></li>
-<li><p><strong>stream_sleep_no_subscriptions</strong> – Amount of time in milliseconds to pause the
+<li><p><span class="target" id="litestar.channels.backends.redis.RedisChannelsStreamBackend.params.history"></span><strong>history</strong><a class="paramlink headerlink reference internal" href="#litestar.channels.backends.redis.RedisChannelsStreamBackend.params.history">¶</a> – Amount of messages to keep. This will set a <code class="docutils literal notranslate"><span class="pre">MAXLEN</span></code> to the streams</p></li>
+<li><p><span class="target" id="litestar.channels.backends.redis.RedisChannelsStreamBackend.params.redis"></span><strong>redis</strong><a class="paramlink headerlink reference internal" href="#litestar.channels.backends.redis.RedisChannelsStreamBackend.params.redis">¶</a> – A <code class="xref py py-class docutils literal notranslate"><span class="pre">redis.asyncio.Redis</span></code> instance</p></li>
+<li><p><span class="target" id="litestar.channels.backends.redis.RedisChannelsStreamBackend.params.key_prefix"></span><strong>key_prefix</strong><a class="paramlink headerlink reference internal" href="#litestar.channels.backends.redis.RedisChannelsStreamBackend.params.key_prefix">¶</a> – Key prefix to use for streams</p></li>
+<li><p><span class="target" id="litestar.channels.backends.redis.RedisChannelsStreamBackend.params.stream_sleep_no_subscriptions"></span><strong>stream_sleep_no_subscriptions</strong><a class="paramlink headerlink reference internal" href="#litestar.channels.backends.redis.RedisChannelsStreamBackend.params.stream_sleep_no_subscriptions">¶</a> – Amount of time in milliseconds to pause the
 <a class="reference internal" href="#litestar.channels.backends.redis.RedisChannelsStreamBackend.stream_events" title="litestar.channels.backends.redis.RedisChannelsStreamBackend.stream_events"><code class="xref py py-meth docutils literal notranslate"><span class="pre">stream_events()</span></code></a> generator, should no subscribers exist</p></li>
-<li><p><strong>cap_streams_approximate</strong> – Set the streams <code class="docutils literal notranslate"><span class="pre">MAXLEN</span></code> using the <code class="docutils literal notranslate"><span class="pre">~</span></code> approximation
+<li><p><span class="target" id="litestar.channels.backends.redis.RedisChannelsStreamBackend.params.cap_streams_approximate"></span><strong>cap_streams_approximate</strong><a class="paramlink headerlink reference internal" href="#litestar.channels.backends.redis.RedisChannelsStreamBackend.params.cap_streams_approximate">¶</a> – Set the streams <code class="docutils literal notranslate"><span class="pre">MAXLEN</span></code> using the <code class="docutils literal notranslate"><span class="pre">~</span></code> approximation
 operator for improved performance</p></li>
-<li><p><strong>stream_ttl</strong> – TTL of a stream in milliseconds or as a timedelta. A streams TTL will be set on each publishing
+<li><p><span class="target" id="litestar.channels.backends.redis.RedisChannelsStreamBackend.params.stream_ttl"></span><strong>stream_ttl</strong><a class="paramlink headerlink reference internal" href="#litestar.channels.backends.redis.RedisChannelsStreamBackend.params.stream_ttl">¶</a> – TTL of a stream in milliseconds or as a timedelta. A streams TTL will be set on each publishing
 operation using <code class="docutils literal notranslate"><span class="pre">PEXPIRE</span></code></p></li>
 </ul>
 </dd>
