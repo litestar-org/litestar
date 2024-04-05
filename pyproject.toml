@@ -49,10 +49,13 @@ description = "Litestar - A production-ready, highly performant, extensible ASGI
 keywords = ["api", "rest", "asgi", "litestar", "starlite"]
 license = {text = "MIT"}
 maintainers = [
-  {name = "Cody Fincher", email = "cody.fincher@gmail.com"},
-  {name = "Jacob Coffee", email = "jacob@z7x.org"},
-  {name = "Janek Nouvertné", email = "provinzkraut@posteo.de"},
-  {name = "Peter Schutt", email = "peter.github@proton.me"},
+  {name = "Litestar Developers", email = "hello@litestar.dev"},
+  {name = "Cody Fincher", email = "cody@litestar.dev"},
+  {name = "Jacob Coffee", email = "jacob@litestar.dev"},
+  {name = "Janek Nouvertné", email = "provinzkraut@litestar.dev"},
+  {name = "Peter Schutt", email = "peter@litestar.dev"},
+  {name = "Visakh Unnikrishnan", email = "guacs@litestar.dev"},
+  {name = "Alc", email = "alc@litestar.dev"}
 ]
 name = "litestar"
 readme = "README.md"
@@ -131,15 +134,16 @@ dev = [
 ]
 dev-contrib = ["opentelemetry-sdk", "httpx-sse"]
 docs = [
-  "sphinx>=7.1.2",
-  "sphinx-autobuild>=2021.3.14",
-  "sphinx-copybutton>=0.5.2",
-  "sphinx-toolbox>=3.5.0",
-  "sphinx-design>=0.5.0",
-  "sphinx-click>=4.4.0",
-  "sphinxcontrib-mermaid>=0.9.2",
-  "auto-pytabs[sphinx]>=0.4.0",
-  "litestar-sphinx-theme @ git+https://github.com/litestar-org/litestar-sphinx-theme.git",
+    "sphinx>=7.1.2",
+    "sphinx-autobuild>=2021.3.14",
+    "sphinx-copybutton>=0.5.2",
+    "sphinx-toolbox>=3.5.0",
+    "sphinx-design>=0.5.0",
+    "sphinx-click>=4.4.0",
+    "sphinxcontrib-mermaid>=0.9.2",
+    "auto-pytabs[sphinx]>=0.4.0",
+    "litestar-sphinx-theme @ git+https://github.com/litestar-org/litestar-sphinx-theme.git",
+    "sphinx-paramlinks>=0.6.0",
 ]
 linting = [
   "ruff>=0.2.1",
