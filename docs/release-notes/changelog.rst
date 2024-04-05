@@ -48,7 +48,7 @@
         :class:`~.exceptions.http_exceptions.ValidationException`'s would not get serialized properly because they
         would ignore custom ``type_encoders``.
 
-    .. change:: Ensure default values are always represented in schema for dataclasses and :class:`msgspec.Struct`s
+    .. change:: Ensure default values are always represented in schema for dataclasses and :class:`msgspec.Struct`\ s
         :type: bugfix
         :pr: 3285
         :issue: 3201
