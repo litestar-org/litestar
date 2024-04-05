@@ -124,8 +124,8 @@
         :type: feature
         :pr: 3219
 
-        This PR sets the ``LITESTAR_QUIET_CONSOLE`` and ``LITESTAR_APP_NAME`` in the autodiscovery function.
-        It also prevents the tabular console output from printing when the terminal is not TTY
+        Sets ``LITESTAR_QUIET_CONSOLE`` and ``LITESTAR_APP_NAME`` in the autodiscovery function.
+        Also prevents the tabular console output from printing when the terminal is not ``TTY``
 
     .. change:: Support ``schema_extra`` in :class:`~.openapi.spec.parameter.Parameter` and `Body`
         :type: feature
