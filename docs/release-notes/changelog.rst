@@ -44,7 +44,7 @@
         :pr: 3284
         :issue: 3192
 
-        When using a non-JSON media type (e.g., ``text/plain``),
+        Fixes a bug when using a non-JSON media type (e.g., ``text/plain``),
         :class:`~.exceptions.http_exceptions.ValidationException`'s would not get serialized properly because they
         would ignore custom ``type_encoders``.
 
@@ -53,7 +53,7 @@
         :pr: 3285
         :issue: 3201
 
-        Fix a bug that would prevent default values for dataclasses and ``msgspec.Struct`` s to be included in the
+        Fixes a bug that would prevent default values for dataclasses and ``msgspec.Struct`` s to be included in the
         OpenAPI schema.
 
     .. change:: Pydantic v2 error handling/serialization when for non-Pydantic exceptions
@@ -61,7 +61,7 @@
         :pr: 3286
         :issue: 2365
 
-        Fix a bug that would cause a :exc:`TypeError` when non-Pydantic errors are raised during Pydantic's
+        Fixes a bug that would cause a :exc:`TypeError` when non-Pydantic errors are raised during Pydantic's
         validation process while using DTOs.
 
     .. change:: Fix OpenAPI schema generation for paths with path parameters of different types on the same path
@@ -69,7 +69,7 @@
         :pr: 3293
         :issue: 2700
 
-        Fix a bug that would cause no OpenAPI schema to be generated for paths with path
+        Fixes a bug that would cause no OpenAPI schema to be generated for paths with path
         parameters that only differ on the path parameter type, such as ``/{param:int}``
         and ``/{param:str}``. This was caused by an internal representation issue in
         Litestar's routing system.
@@ -79,19 +79,19 @@
         :pr: 3295
         :issue: 3290
 
-        Fix a bug where path parameters not consumed by route handlers would not be included in the OpenAPI schema.
+        Fixes a bug where path parameters not consumed by route handlers would not be included in the OpenAPI schema.
 
-        This could would not include the ``{param}`` in the schema, yet it is still required to be passed
+        This could/would not include the ``{param}`` in the schema, yet it is still required to be passed
         when calling the path.
 
     .. change:: Allow for console output to be silenced
         :type: feature
         :pr: 3180
 
-        This change introduces optional environment variables that allow customizing the "Application" name displayed
+        Introduces optional environment variables that allow customizing the "Application" name displayed
         in the console output and suppressing the initial ``from_env`` or the ``Rich`` info table at startup.
 
-        This provides flexibility in tailoring the console output to better integrate Litestar into larger applications
+        Provides flexibility in tailoring the console output to better integrate Litestar into larger applications
         or CLIs.
 
     .. change:: Add flash plugin
@@ -99,26 +99,26 @@
         :pr: 3145
         :issue: 1455
 
-        Added a flash plugin akin to Django or Flask that uses the request state
+        Adds a flash plugin akin to Django or Flask that uses the request state
 
     .. change:: Use memoized :paramref:`~.handlers.HTTPRouteHandler.request_class` and :paramref:`~.handlers.HTTPRouteHandler.response_class` values
         :type: feature
         :pr: 3205
 
-        Use memoized ``request_class`` and ``response_class`` values
+        Uses memoized ``request_class`` and ``response_class`` values
 
     .. change:: Enable codegen backend by default
         :type: feature
         :pr: 3215
 
-        Enable the codegen backend for DTOs introduced in https://github.com/litestar-org/litestar/pull/2388 by default.
+        Enables the codegen backend for DTOs introduced in https://github.com/litestar-org/litestar/pull/2388 by default.
 
     .. change:: Added precedence of CLI parameters over envs
         :type: feature
         :pr: 3190
         :issue: 3188
 
-        Added precedence of CLI parameters over environment variables.
+        Adds precedence of CLI parameters over environment variables.
         Before this change, environment variables would take precedence over CLI parameters.
 
         Since CLI parameters are more explicit and are set by the user,
@@ -135,25 +135,25 @@
         :type: feature
         :pr: 3204
 
-        This change introduces a way to modify the generated OpenAPI spec by adding a ``schema_extra`` parameter to the
+        Introduces a way to modify the generated OpenAPI spec by adding a ``schema_extra`` parameter to the
         Parameter and Body classes. The ``schema_extra`` parameter accepts a ``dict[str, Any]`` where the keys correspond
         to the keyword parameter names in Schema, and the values are used to override items in the
         generated Schema object.
 
-        This provides a convenient way to customize the OpenAPI documentation for inbound parameters.
+        Provides a convenient way to customize the OpenAPI documentation for inbound parameters.
 
     .. change:: Add :class:`typing.TypeVar` expansion
         :type: feature
         :pr: 3242
 
-        Add a method for TypeVar expansion on registration
+        Adds a method for TypeVar expansion on registration
         This allows the use of generic route handler and generic controller without relying on forward references.
 
     .. change:: Add ``LITESTAR_`` prefix before ``WEB_CONCURRENCY`` env option
         :type: feature
         :pr: 3227
 
-        - Add ``LITESTAR_`` prefix before ``WEB_CONCURRENCY`` env option
+        Adds ``LITESTAR_`` prefix before the ``WEB_CONCURRENCY`` environment option
 
     .. change:: Warn about ambiguous default values in parameter specifications
         :type: feature
@@ -183,13 +183,13 @@
         :type: feature
         :pr: 3294
 
-        Add the ``TRACE`` HTTP method to :class:`~.enums.HttpMethod` enum
+        Adds the ``TRACE`` HTTP method to :class:`~.enums.HttpMethod` enum
 
     .. change:: Pydantic DTO non-instantiable types
         :type: feature
         :pr: 3296
 
-        This change simplifies the type that is applied to DTO transfer models for certain Pydantic field types.
+        Simplifies the type that is applied to DTO transfer models for certain Pydantic field types.
         It addresses ``JsonValue``, ``EmailStr``, ``IPvAnyAddress``/``IPvAnyNetwork``/``IPvAnyInterface`` types by
         using appropriate :term:`type annotations <annotation>` on the transfer models to ensure compatibility with
         :doc:`msgspec:index` serialization and deserialization.
