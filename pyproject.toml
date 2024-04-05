@@ -49,10 +49,13 @@ description = "Litestar - A production-ready, highly performant, extensible ASGI
 keywords = ["api", "rest", "asgi", "litestar", "starlite"]
 license = {text = "MIT"}
 maintainers = [
-  {name = "Cody Fincher", email = "cody.fincher@gmail.com"},
-  {name = "Jacob Coffee", email = "jacob@z7x.org"},
-  {name = "Janek Nouvertné", email = "provinzkraut@posteo.de"},
-  {name = "Peter Schutt", email = "peter.github@proton.me"},
+  {name = "Litestar Developers", email = "hello@litestar.dev"},
+  {name = "Cody Fincher", email = "cody@litestar.dev"},
+  {name = "Jacob Coffee", email = "jacob@litestar.dev"},
+  {name = "Janek Nouvertné", email = "provinzkraut@litestar.dev"},
+  {name = "Peter Schutt", email = "peter@litestar.dev"},
+  {name = "Visakh Unnikrishnan", email = "guacs@litestar.dev"},
+  {name = "Alc", email = "alc@litestar.dev"}
 ]
 name = "litestar"
 readme = "README.md"
@@ -89,7 +92,7 @@ picologging = ["picologging"]
 prometheus = ["prometheus-client"]
 pydantic = ["pydantic", "email-validator", "pydantic-extra-types"]
 redis = ["redis[hiredis]>=4.4.4"]
-sqlalchemy = ["advanced-alchemy>=0.2.2,<1.0.0"]
+sqlalchemy = ["advanced-alchemy>=0.2.2,<0.9.0"]
 standard = ["jinja2", "jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0; sys_platform != 'win32'", "fast-query-parsers>=1.0.2"]
 structlog = ["structlog"]
 
@@ -410,6 +413,7 @@ known-first-party = ["litestar", "tests", "examples"]
 "tests/unit/test_contrib/test_sqlalchemy/**/*.*" = ["UP006"]
 "tools/**/*.*" = ["D", "ARG", "EM", "TRY", "G", "FBT"]
 "tools/prepare_release.py" = ["S603", "S607"]
+"tests/unit/test_openapi/test_typescript_converter/test_converter.py" = ["W293"]
 
 [tool.ruff.format]
 docstring-code-format = true
