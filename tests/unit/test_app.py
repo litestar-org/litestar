@@ -450,3 +450,12 @@ def test_lifespan_context_and_shutdown_hook_execution_order() -> None:
 def test_use_dto_codegen_feature_flag_warns() -> None:
     with pytest.warns(LitestarWarning, match="Use of redundant experimental feature flag DTO_CODEGEN"):
         Litestar(experimental_features=[ExperimentalFeatures.DTO_CODEGEN])
+
+
+def test_using_custom_path_parameter() -> None:
+    @get()
+    def my_route_handler() -> None: ...
+
+    with create_test_client(my_route_handler, path="/abc") as client:
+        response = client.get("/abc")
+        assert response.status_code == HTTP_200_OK
