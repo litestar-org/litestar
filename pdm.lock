@@ -5,19 +5,7 @@
 groups = ["default", "standard", "jwt", "pydantic", "cli", "picologging", "dev-contrib", "piccolo", "prometheus", "dev", "mako", "test", "brotli", "cryptography", "linting", "attrs", "opentelemetry", "docs", "redis", "sqlalchemy", "full", "annotated-types", "jinja", "structlog", "minijinja"]
 strategy = ["cross_platform"]
 lock_version = "4.4.1"
-content_hash = "sha256:b8bd4e90f7c2d49ae6f87b84fb7cc6dc32654ef014fe8393d158b51f73f520d7"
-
-[[package]]
-name = "accessible-pygments"
-version = "0.0.4"
-summary = "A collection of accessible pygments styles"
-dependencies = [
-    "pygments>=1.5",
-]
-files = [
-    {file = "accessible-pygments-0.0.4.tar.gz", hash = "sha256:e7b57a9b15958e9601c7e9eb07a440c813283545a20973f2574a5f453d0e953e"},
-    {file = "accessible_pygments-0.0.4-py2.py3-none-any.whl", hash = "sha256:416c6d8c1ea1c5ad8701903a20fcedf953c6e720d64f33dc47bfb2d3f2fa4e8d"},
-]
+content_hash = "sha256:676ad88974bdcd8993ce159f728101bf5a8d7de98c2ee46be9af4ed23286509d"
 
 [[package]]
 name = "advanced-alchemy"
@@ -397,6 +385,19 @@ files = [
     {file = "black-24.1.1-cp39-cp39-win_amd64.whl", hash = "sha256:ecba2a15dfb2d97105be74bbfe5128bc5e9fa8477d8c46766505c1dda5883aac"},
     {file = "black-24.1.1-py3-none-any.whl", hash = "sha256:5cdc2e2195212208fbcae579b931407c1fa9997584f0a415421748aeafff1168"},
     {file = "black-24.1.1.tar.gz", hash = "sha256:48b5760dcbfe5cf97fd4fba23946681f3a81514c6ab8a45b50da67ac8fbc6c7b"},
+]
+
+[[package]]
+name = "blacken-docs"
+version = "1.16.0"
+requires_python = ">=3.8"
+summary = "Run Black on Python code blocks in documentation files."
+dependencies = [
+    "black>=22.1.0",
+]
+files = [
+    {file = "blacken_docs-1.16.0-py3-none-any.whl", hash = "sha256:b0dcb84b28ebfb352a2539202d396f50e15a54211e204a8005798f1d1edb7df8"},
+    {file = "blacken_docs-1.16.0.tar.gz", hash = "sha256:b4bdc3f3d73898dfbf0166f292c6ccfe343e65fc22ddef5319c95d1a8dcc6c1c"},
 ]
 
 [[package]]
@@ -1671,14 +1672,17 @@ files = [
 
 [[package]]
 name = "litestar-sphinx-theme"
-version = "0.2.0"
+version = "0.3.0"
 requires_python = ">=3.8,<4.0"
-git = "https://github.com/litestar-org/litestar-sphinx-theme.git"
-revision = "c5ce66aadc8f910c24f54bf0d172798c237a67eb"
+path = "../litestar-sphinx-theme"
 summary = "A Sphinx theme for the Litestar organization"
 dependencies = [
-    "pydata-sphinx-theme<1.0.0,>=0.13.3",
+    "blacken-docs>=1.16.0",
+    "shibuya>=2024.4.4",
+    "sphinx-autobuild>=2021.3.14",
+    "sphinx-copybutton>=0.5.2",
     "sphinx-design<1.0.0,>=0.3.0",
+    "sphinx-toolbox>=3.5.0",
 ]
 
 [[package]]
@@ -2690,26 +2694,6 @@ files = [
 ]
 
 [[package]]
-name = "pydata-sphinx-theme"
-version = "0.14.4"
-requires_python = ">=3.8"
-summary = "Bootstrap-based Sphinx theme from the PyData community"
-dependencies = [
-    "Babel",
-    "accessible-pygments",
-    "beautifulsoup4",
-    "docutils!=0.17.0",
-    "packaging",
-    "pygments>=2.7",
-    "sphinx>=5.0",
-    "typing-extensions",
-]
-files = [
-    {file = "pydata_sphinx_theme-0.14.4-py3-none-any.whl", hash = "sha256:ac15201f4c2e2e7042b0cad8b30251433c1f92be762ddcefdb4ae68811d918d9"},
-    {file = "pydata_sphinx_theme-0.14.4.tar.gz", hash = "sha256:f5d7a2cb7a98e35b9b49d3b02cec373ad28958c2ed5c9b1ffe6aff6c56e9de5b"},
-]
-
-[[package]]
 name = "pygments"
 version = "2.17.2"
 requires_python = ">=3.7"
@@ -3260,6 +3244,19 @@ summary = "Easily download, build, install, upgrade, and uninstall Python packag
 files = [
     {file = "setuptools-69.0.3-py3-none-any.whl", hash = "sha256:385eb4edd9c9d5c17540511303e39a147ce2fc04bc55289c322b9e5904fe2c05"},
     {file = "setuptools-69.0.3.tar.gz", hash = "sha256:be1af57fc409f93647f2e8e4573a142ed38724b8cdd389706a867bb4efcf1e78"},
+]
+
+[[package]]
+name = "shibuya"
+version = "2024.4.4"
+requires_python = ">=3.7"
+summary = "A clean, responsive, and customizable Sphinx documentation theme with light/dark mode."
+dependencies = [
+    "Sphinx",
+]
+files = [
+    {file = "shibuya-2024.4.4-py3-none-any.whl", hash = "sha256:bf635e8a5eafccb0f1e8801f9a57f86187909d547c9db31b539d7f1bfe43e45b"},
+    {file = "shibuya-2024.4.4.tar.gz", hash = "sha256:768d0bbfe6eed2f10ef6685fcadbecd0d4f0635ff6e1e5624bcb84bb0d1a40f2"},
 ]
 
 [[package]]
