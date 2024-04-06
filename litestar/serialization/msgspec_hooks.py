@@ -19,6 +19,7 @@ from uuid import UUID
 
 import msgspec
 
+from litestar.datastructures.secret_values import SecretBytes, SecretString
 from litestar.exceptions import SerializationException
 from litestar.types import Empty, EmptyType, Serializer, TypeDecodersSequence
 
@@ -52,6 +53,8 @@ DEFAULT_TYPE_ENCODERS: TypeEncodersMap = {
     deque: list,
     Decimal: lambda val: int(val) if val.as_tuple().exponent >= 0 else float(val),
     Pattern: lambda val: val.pattern,
+    SecretBytes: lambda _: "******",
+    SecretString: lambda _: "******",
     # support subclasses of stdlib types, If no previous type matched, these will be
     # the last type in the mro, so we use this to (attempt to) convert a subclass into
     # its base class. # see https://github.com/jcrist/msgspec/issues/248
@@ -112,7 +115,7 @@ def default_deserializer(
             if predicate(target_type):
                 return decoder(target_type, value)
 
-    if issubclass(target_type, (Path, PurePath, ImmutableState, UUID)):
+    if issubclass(target_type, (Path, PurePath, ImmutableState, UUID, SecretString, SecretBytes)):
         return target_type(value)
 
     raise TypeError(f"Unsupported type: {type(value)!r}")
