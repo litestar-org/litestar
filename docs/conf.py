@@ -26,6 +26,7 @@ project = "Litestar"
 copyright = "2023, Litestar-Org"
 author = "Litestar-Org"
 release = os.getenv("_LITESTAR_DOCS_BUILD_VERSION", importlib.metadata.version("litestar").rsplit(".")[0])
+environment = os.getenv("_LITESTAR_DOCS_BUILD_ENVIRONMENT", "local")
 
 extensions = [
     "sphinx.ext.intersphinx",
@@ -257,31 +258,36 @@ suppress_warnings = [
 # -- Style configuration -----------------------------------------------------
 html_theme = "litestar_sphinx_theme"
 html_title = "Litestar Framework"
-html_favicon = "_static/logo-light.svg"
+html_favicon = "_static/favicon.svg"  # TODO: fix existence
+pygments_style = "lightbulb"
 
 html_static_path = ["_static"]
 templates_path = ["_templates"]
 html_js_files = ["versioning.js"]
 html_css_files = ["style.css"]
 
-html_show_sourcelink = True
-# html_copy_source = True
+html_show_sourcelink = True  # TODO: this doesn't work :(
+html_copy_source = True
 
 html_context = {
     "source_type": "github",
     "source_user": "litestar-org",
     "source_repo": "litestar",
     # "source_version": "main",  # TODO: We should set this with an envvar depending on which branch we are building?
+    "current_version": "latest",
+    "versions": [  # TODO(provinzkraut): this needs to use versions.json but im not 100% on how to do this yet
+        ("latest", "/latest"),
+        ("development", "/main"),
+        ("v3", "/3-dev"),
+        ("v2", "/2"),
+        ("v1", "/1"),
+    ],
 }
 
 html_theme_options = {
     "logo_target": "/",
-    "announcement": "The v3 documentation is currently under development.",
-    "github_url": "https://github.com/Litestar-Org/litestar",
-    "github_repo_name": "litestar",  # TODO(provinzkraut): stale, but needed for theme, but not shibuya(see above?)
-    "use_page_nav": False,  # TODO: stale from pydata
-    "navigation_with_keys": True,  # TODO: stale from pydata
-    "color_mode": "auto",
+    "github_repo_name": "litestar",
+    "navigation_with_keys": True,
     "nav_links": [  # TODO(provinzkraut): I need a guide on extra_navbar_items and its magic :P
         {"title": "Home", "url": "index"},
         {
@@ -290,7 +296,7 @@ html_theme_options = {
                 {
                     "title": "Contributing",
                     "summary": "Learn how to contribute to the Litestar project",
-                    "url": "https://docs.litestar.dev/latest/contribution-guide.html",
+                    "url": "contribution-guide",
                     "icon": "contributing",
                 },
                 {
@@ -370,6 +376,12 @@ html_theme_options = {
         {"title": "Sponsor", "url": "https://github.com/sponsors/Litestar-Org", "icon": "heart"},
     ],
 }
+
+if environment != "latest":  # TODO(provinzkraut): it'd be awesome to be able to use the builtin announcement banner
+    html_theme_options["announcement"] = (
+        f"You are viewing the <bold>{environment}</bold> version of the documentation. "
+        f"Click here to go to the latest version."
+    )
 
 
 def update_html_context(

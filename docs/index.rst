@@ -344,16 +344,3 @@ Example Applications
     contribution-guide
     Available Issues <https://github.com/search?q=user%3Alitestar-org+state%3Aopen+label%3A%22good+first+issue%22+++no%3Aassignee+&type=issues=>
     Code of Conduct <https://github.com/litestar-org/.github?tab=coc-ov-file#readme>
-
-.. toctree::
-    :titlesonly:
-    :caption: Explore
-    :maxdepth: 1
-
-    usage/index
-    reference/index
-    benchmarks
-    migration/index
-    topics/index
-    tutorials/index
-    contribution-guide
