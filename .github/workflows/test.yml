@@ -35,7 +35,7 @@ jobs:
         with:
           python-version: ${{ inputs.python-version }}
 
-      - uses: pdm-project/setup-pdm@v3
+      - uses: pdm-project/setup-pdm@v4
         name: Set up PDM
         with:
           python-version: ${{ inputs.python-version }}
@@ -56,7 +56,7 @@ jobs:
 
       - name: Test with coverage
         if: inputs.coverage
-        run: pdm run pytest docs/examples tests --cov -n auto
+        run: pdm run pytest docs/examples tests -n auto --cov
 
       - name: Rename coverage file
         if: inputs.coverage

@@ -20,7 +20,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      - uses: pdm-project/setup-pdm@v3
+      - uses: pdm-project/setup-pdm@v4
         name: Set up PDM
         with:
           python-version: "3.12"
@@ -52,7 +52,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      - uses: pdm-project/setup-pdm@v3
+      - uses: pdm-project/setup-pdm@v4
         name: Set up PDM
         with:
           python-version: "3.12"
@@ -86,7 +86,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      - uses: pdm-project/setup-pdm@v3
+      - uses: pdm-project/setup-pdm@v4
         name: Set up PDM
         with:
           python-version: "3.12"
@@ -99,6 +99,7 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
 
   notify-issues:
+    needs: publish-release
     name: Notify issues
     uses: ./.github/workflows/notify-released-issues.yml
     with:

@@ -80,8 +80,7 @@ allows admin users to access certain route handlers and then add it to a route h
 
 
    @post(path="/user", guards=[admin_user_guard])
-   def create_user(data: User) -> User:
-       ...
+   def create_user(data: User) -> User: ...
 
 Thus, only an admin user would be able to send a post request to the ``create_user`` handler.
 
@@ -98,8 +97,7 @@ handlers:
    from litestar.handlers.base import BaseRouteHandler
 
 
-   def my_guard(connection: ASGIConnection, handler: BaseRouteHandler) -> None:
-       ...
+   def my_guard(connection: ASGIConnection, handler: BaseRouteHandler) -> None: ...
 
 
    # controller
@@ -122,6 +120,12 @@ route handlers need to be restricted? An entire controller? All the paths under 
 As you can see in the above examples - ``guards`` is a list. This means you can add **multiple** guards at every layer.
 Unlike ``dependencies`` , guards do not override each other but are rather *cumulative*. This means that you can define
 guards on different levels of your app, and they will combine.
+
+.. caution::
+
+    If guards are placed at the controller or the app level, they **will** be executed on all ``OPTIONS`` requests as well.
+    For more details, including a workaround, refer https://github.com/litestar-org/litestar/issues/2314.
+
 
 The route handler "opt" key
 ---------------------------
@@ -153,5 +157,4 @@ the following guard:
 
 
    @get(path="/secret", guards=[secret_token_guard], opt={"secret": environ.get("SECRET")})
-   def secret_endpoint() -> None:
-       ...
+   def secret_endpoint() -> None: ...

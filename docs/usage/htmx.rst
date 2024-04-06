@@ -77,7 +77,7 @@ an :class:`HTMXTemplate <litestar.contrib.htmx.response.HTMXTemplate>` response:
             re_target="#new-target",  # change target element
             trigger_event="showMessage",  # trigger event name
             params={"alert": "Confirm your Choice."},  # parameter to pass to the event
-            after="receive"  #  when to trigger event,
+            after="receive",  #  when to trigger event,
             # possible values 'receive', 'settle', and 'swap'
         )
 

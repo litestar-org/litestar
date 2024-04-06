@@ -5,10 +5,10 @@ from functools import partial
 from typing import TYPE_CHECKING, Any, Callable, Mapping, Sequence, cast
 
 from litestar._signature import SignatureModel
-from litestar.config.app import ExperimentalFeatures
 from litestar.di import Provide
 from litestar.dto import DTOData
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.plugins import DIPlugin, PluginRegistry
 from litestar.serialization import default_deserializer, default_serializer
 from litestar.types import (
     Dependencies,
@@ -31,7 +31,6 @@ if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
     from litestar.controller import Controller
     from litestar.dto import AbstractDTO
-    from litestar.dto._backend import DTOBackend
     from litestar.params import ParameterKwarg
     from litestar.router import Router
     from litestar.types import AnyCallable, AsyncAnyCallable, ExceptionHandler
@@ -89,8 +88,8 @@ class BaseRouteHandler:
         return_dto: type[AbstractDTO] | None | EmptyType = Empty,
         signature_namespace: Mapping[str, Any] | None = None,
         signature_types: Sequence[Any] | None = None,
-        type_encoders: TypeEncodersMap | None = None,
         type_decoders: TypeDecodersSequence | None = None,
+        type_encoders: TypeEncodersMap | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize ``HTTPRouteHandler``.
@@ -114,8 +113,8 @@ class BaseRouteHandler:
                 modelling.
             signature_types: A sequence of types for use in forward reference resolution during signature modeling.
                 These types will be added to the signature namespace using their ``__name__`` attribute.
-            type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization.
+            type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         self._parsed_fn_signature: ParsedSignature | EmptyType = Empty
@@ -148,7 +147,7 @@ class BaseRouteHandler:
         self.type_encoders = type_encoders
 
         self.paths = (
-            {normalize_path(p) for p in path} if path and isinstance(path, list) else {normalize_path(path or "/")}  # type: ignore
+            {normalize_path(p) for p in path} if path and isinstance(path, list) else {normalize_path(path or "/")}  # type: ignore[arg-type]
         )
 
     def __call__(self, fn: AsyncAnyCallable) -> Self:
@@ -339,36 +338,59 @@ class BaseRouteHandler:
 
         return self._resolved_guards
 
+    def _get_plugin_registry(self) -> PluginRegistry | None:
+        from litestar.app import Litestar
+
+        root_owner = self.ownership_layers[0]
+        if isinstance(root_owner, Litestar):
+            return root_owner.plugins
+        return None
+
     def resolve_dependencies(self) -> dict[str, Provide]:
         """Return all dependencies correlating to handler function's kwargs that exist in the handler's scope."""
+        plugin_registry = self._get_plugin_registry()
         if self._resolved_dependencies is Empty:
             self._resolved_dependencies = {}
-
             for layer in self.ownership_layers:
                 for key, provider in (layer.dependencies or {}).items():
-                    if not isinstance(provider, Provide):
-                        provider = Provide(provider)
-
-                    self._validate_dependency_is_unique(
-                        dependencies=self._resolved_dependencies, key=key, provider=provider
+                    self._resolved_dependencies[key] = self._resolve_dependency(
+                        key=key, provider=provider, plugin_registry=plugin_registry
                     )
 
-                    if not getattr(provider, "parsed_signature", None):
-                        provider.parsed_fn_signature = ParsedSignature.from_fn(
-                            unwrap_partial(provider.dependency), self.resolve_signature_namespace()
-                        )
-
-                    if not getattr(provider, "signature_model", None):
-                        provider.signature_model = SignatureModel.create(
-                            dependency_name_set=self.dependency_name_set,
-                            fn=provider.dependency,
-                            parsed_signature=provider.parsed_fn_signature,
-                            data_dto=self.resolve_data_dto(),
-                            type_decoders=self.resolve_type_decoders(),
-                        )
-
-                    self._resolved_dependencies[key] = provider
         return self._resolved_dependencies
+
+    def _resolve_dependency(
+        self, key: str, provider: Provide | AnyCallable, plugin_registry: PluginRegistry | None
+    ) -> Provide:
+        if not isinstance(provider, Provide):
+            provider = Provide(provider)
+
+        if self._resolved_dependencies is not Empty:  # pragma: no cover
+            self._validate_dependency_is_unique(dependencies=self._resolved_dependencies, key=key, provider=provider)
+
+        if not getattr(provider, "parsed_fn_signature", None):
+            dependency = unwrap_partial(provider.dependency)
+            plugin: DIPlugin | None = None
+            if plugin_registry:
+                plugin = next(
+                    (p for p in plugin_registry.di if isinstance(p, DIPlugin) and p.has_typed_init(dependency)),
+                    None,
+                )
+            if plugin:
+                signature, init_type_hints = plugin.get_typed_init(dependency)
+                provider.parsed_fn_signature = ParsedSignature.from_signature(signature, init_type_hints)
+            else:
+                provider.parsed_fn_signature = ParsedSignature.from_fn(dependency, self.resolve_signature_namespace())
+
+        if not getattr(provider, "signature_model", None):
+            provider.signature_model = SignatureModel.create(
+                dependency_name_set=self.dependency_name_set,
+                fn=provider.dependency,
+                parsed_signature=provider.parsed_fn_signature,
+                data_dto=self.resolve_data_dto(),
+                type_decoders=self.resolve_type_decoders(),
+            )
+        return provider
 
     def resolve_middleware(self) -> list[Middleware]:
         """Build the middleware stack for the RouteHandler and return it.
@@ -418,13 +440,6 @@ class BaseRouteHandler:
             self._resolved_signature_namespace = ns
         return cast("dict[str, Any]", self._resolved_signature_namespace)
 
-    def _get_dto_backend_cls(self) -> type[DTOBackend] | None:
-        if ExperimentalFeatures.DTO_CODEGEN in self.app.experimental_features:
-            from litestar.dto._codegen_backend import DTOCodegenBackend
-
-            return DTOCodegenBackend
-        return None
-
     def resolve_data_dto(self) -> type[AbstractDTO] | None:
         """Resolve the data_dto by starting from the route handler and moving up.
         If a handler is found it is returned, otherwise None is set.
@@ -454,7 +469,6 @@ class BaseRouteHandler:
                 data_dto.create_for_field_definition(
                     field_definition=self.parsed_data_field,
                     handler_id=self.handler_id,
-                    backend_cls=self._get_dto_backend_cls(),
                 )
 
             self._resolved_data_dto = data_dto
@@ -488,7 +502,6 @@ class BaseRouteHandler:
                 return_dto.create_for_field_definition(
                     field_definition=self.parsed_return_field,
                     handler_id=self.handler_id,
-                    backend_cls=self._get_dto_backend_cls(),
                 )
                 self._resolved_return_dto = return_dto
             else:
@@ -499,7 +512,7 @@ class BaseRouteHandler:
     async def authorize_connection(self, connection: ASGIConnection) -> None:
         """Ensure the connection is authorized by running all the route guards in scope."""
         for guard in self.resolve_guards():
-            await guard(connection, copy(self))  # type: ignore
+            await guard(connection, copy(self))  # type: ignore[misc]
 
     @staticmethod
     def _validate_dependency_is_unique(dependencies: dict[str, Provide], key: str, provider: Provide) -> None:

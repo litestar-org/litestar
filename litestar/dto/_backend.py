@@ -1,6 +1,7 @@
 """DTO backends do the heavy lifting of decoding and validating raw bytes into domain models, and
 back again, to bytes.
 """
+
 from __future__ import annotations
 
 from dataclasses import replace
@@ -17,7 +18,9 @@ from typing import (
     cast,
 )
 
+import msgspec
 from msgspec import UNSET, Struct, UnsetType, convert, defstruct, field
+from typing_extensions import Annotated
 
 from litestar.dto._types import (
     CollectionType,
@@ -33,6 +36,7 @@ from litestar.dto._types import (
 from litestar.dto.data_structures import DTOData, DTOFieldDefinition
 from litestar.dto.field import Mark
 from litestar.enums import RequestEncodingType
+from litestar.params import KwargDefinition
 from litestar.serialization import decode_json, decode_msgpack
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
@@ -55,8 +59,7 @@ class CompositeTypeHandler(Protocol):
         rename_fields: dict[str, str],
         unique_name: str,
         nested_depth: int,
-    ) -> CompositeType:
-        ...
+    ) -> CompositeType: ...
 
 
 class DTOBackend:
@@ -403,6 +406,8 @@ class DTOBackend:
             if nested_depth == self.dto_factory.config.max_nested_depth:
                 raise RecursionError
 
+            unique_name = f"{unique_name}{field_definition.raw.__name__}"
+
             nested_field_definitions = self.parse_model(
                 model_type=field_definition.annotation,
                 exclude=exclude,
@@ -740,6 +745,27 @@ def _create_msgspec_field(field_definition: TransferDTOFieldDefinition) -> Any:
     return field(**kwargs)
 
 
+def _create_struct_field_meta_for_field_definition(field_definition: TransferDTOFieldDefinition) -> msgspec.Meta | None:
+    if (kwarg_definition := field_definition.kwarg_definition) is None or not isinstance(
+        kwarg_definition, KwargDefinition
+    ):
+        return None
+
+    return msgspec.Meta(
+        description=kwarg_definition.description,
+        examples=[e.value for e in kwarg_definition.examples or []],
+        ge=kwarg_definition.ge,
+        gt=kwarg_definition.gt,
+        le=kwarg_definition.le,
+        lt=kwarg_definition.lt,
+        max_length=kwarg_definition.max_length if not field_definition.is_partial else None,
+        min_length=kwarg_definition.min_length if not field_definition.is_partial else None,
+        multiple_of=kwarg_definition.multiple_of,
+        pattern=kwarg_definition.pattern,
+        title=kwarg_definition.title,
+    )
+
+
 def _create_struct_for_field_definitions(
     model_name: str,
     field_definitions: tuple[TransferDTOFieldDefinition, ...],
@@ -754,6 +780,9 @@ def _create_struct_for_field_definitions(
         field_type = _create_transfer_model_type_annotation(field_definition.transfer_type)
         if field_definition.is_partial:
             field_type = Union[field_type, UnsetType]
+
+        if (field_meta := _create_struct_field_meta_for_field_definition(field_definition)) is not None:
+            field_type = Annotated[field_type, field_meta]
 
         struct_fields.append(
             (

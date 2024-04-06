@@ -1,5 +1,7 @@
 import sys
+from importlib import reload
 from pathlib import Path
+from types import ModuleType
 
 import pytest
 
@@ -10,7 +12,7 @@ try:
 except ImportError:
     pytest.skip("Piccolo not installed", allow_module_level=True)
 
-from docs.examples.contrib.piccolo.app import DB, Task, app
+from docs.examples.contrib.piccolo import app as _app_module
 from piccolo.testing.model_builder import ModelBuilder
 
 pytestmark = [
@@ -22,26 +24,31 @@ pytestmark = [
 ]
 
 
+@pytest.fixture()
+def app_module() -> ModuleType:
+    return reload(_app_module)
+
+
 @pytest.fixture(autouse=True)
-def create_test_data():
-    db_path = Path(DB.path)
+def create_test_data(app_module: ModuleType) -> None:
+    db_path = Path(app_module.DB.path)
     db_path.unlink(missing_ok=True)
-    Task.create_table(if_not_exists=True).run_sync()
-    ModelBuilder.build_sync(Task)
+    app_module.Task.create_table(if_not_exists=True).run_sync()
+    ModelBuilder.build_sync(app_module.Task)
     yield
-    Task.alter().drop_table().run_sync()
+    app_module.Task.alter().drop_table().run_sync()
     db_path.unlink()
 
 
-def test_get_tasks():
-    with TestClient(app=app) as client:
+def test_get_tasks(app_module):
+    with TestClient(app=app_module.app) as client:
         response = client.get("/tasks")
         assert response.status_code == 200
         assert len(response.json()) == 1
 
 
-def test_task_crud():
-    with TestClient(app=app) as client:
+def test_task_crud(app_module):
+    with TestClient(app=app_module.app) as client:
         payload = {
             "name": "Task 1",
             "completed": False,
@@ -58,7 +65,7 @@ def test_task_crud():
         assert response.status_code == 200
         assert len(response.json()) == 2
 
-        task = Task.select().first().run_sync()
+        task = app_module.Task.select().first().run_sync()
 
         payload = {
             "id": task["id"],

@@ -41,8 +41,6 @@ class CacheObject:
 class RateLimitMiddleware(AbstractMiddleware):
     """Rate-limiting middleware."""
 
-    __slots__ = ("app", "check_throttle_handler", "max_requests", "unit", "request_quota", "config")
-
     def __init__(self, app: ASGIApp, config: RateLimitConfig) -> None:
         """Initialize ``RateLimitMiddleware``.
 
@@ -242,7 +240,7 @@ class RateLimitConfig:
 
     def __post_init__(self) -> None:
         if self.check_throttle_handler:
-            self.check_throttle_handler = ensure_async_callable(self.check_throttle_handler)  # type: ignore
+            self.check_throttle_handler = ensure_async_callable(self.check_throttle_handler)  # type: ignore[arg-type]
 
     @property
     def middleware(self) -> DefineMiddleware:
@@ -257,9 +255,10 @@ class RateLimitConfig:
                 # limit to 10 requests per minute, excluding the schema path
                 throttle_config = RateLimitConfig(rate_limit=("minute", 10), exclude=["/schema"])
 
+
                 @get("/")
-                def my_handler(request: Request) -> None:
-                    ...
+                def my_handler(request: Request) -> None: ...
+
 
                 app = Litestar(route_handlers=[my_handler], middleware=[throttle_config.middleware])
 

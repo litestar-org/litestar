@@ -28,7 +28,7 @@ def test_schema_generation() -> None:
             "components": {
                 "schemas": {
                     "IdModel": {
-                        "properties": {"id": {"type": "string", "format": "uuid", "description": "Any UUID string"}},
+                        "properties": {"id": {"type": "string", "format": "uuid"}},
                         "type": "object",
                         "required": ["id"],
                         "title": "IdContainer",
@@ -36,3 +36,11 @@ def test_schema_generation() -> None:
                 }
             },
         }
+
+
+def test_customize_path() -> None:
+    from docs.examples.openapi.customize_path import app
+
+    with TestClient(app=app) as client:
+        resp = client.get("/docs/openapi.json")
+        assert resp.status_code == 200

@@ -1,19 +1,12 @@
-from typing import TYPE_CHECKING
-
+from click import argument, group
 from rich.prompt import Confirm
 
 from litestar import Litestar
-from litestar.cli._utils import RICH_CLICK_INSTALLED, LitestarCLIException, LitestarGroup, console
+from litestar.cli._utils import LitestarCLIException, LitestarGroup, console
 from litestar.middleware import DefineMiddleware
 from litestar.middleware.session import SessionMiddleware
 from litestar.middleware.session.server_side import ServerSideSessionBackend
 from litestar.utils import is_class_and_subclass
-
-if TYPE_CHECKING or not RICH_CLICK_INSTALLED:  # pragma: no cover
-    from click import argument, group
-else:
-    from rich_click import argument, group
-
 
 __all__ = ("clear_sessions_command", "delete_session_command", "get_session_backend", "sessions_group")
 
@@ -36,7 +29,7 @@ def sessions_group() -> None:
     """Manage server-side sessions."""
 
 
-@sessions_group.command("delete")  # type: ignore
+@sessions_group.command("delete")  # type: ignore[misc]
 @argument("session-id")
 def delete_session_command(session_id: str, app: Litestar) -> None:
     """Delete a specific session."""
@@ -50,7 +43,7 @@ def delete_session_command(session_id: str, app: Litestar) -> None:
         console.print(f"[green]Deleted session {session_id!r}")
 
 
-@sessions_group.command("clear")  # type: ignore
+@sessions_group.command("clear")  # type: ignore[misc]
 def clear_sessions_command(app: Litestar) -> None:
     """Delete all sessions."""
     import anyio

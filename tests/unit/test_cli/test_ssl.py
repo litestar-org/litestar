@@ -12,8 +12,7 @@ from litestar.cli.main import litestar_group as cli_command
 
 
 class GetClickExceptionFixture(Protocol):
-    def __call__(self, exception: SystemExit) -> ClickException:
-        ...
+    def __call__(self, exception: SystemExit) -> ClickException: ...
 
 
 @pytest.fixture
@@ -243,7 +242,7 @@ def test_without_cryptography_installed(
 
     assert isinstance(result.exception, SystemExit)
     exc = get_click_exception(result.exception)
-    assert "Cryptogpraphy must be installed when using --create-self-signed-cert" in exc.message
+    assert "Cryptography must be installed when using --create-self-signed-cert" in exc.message
 
 
 @pytest.mark.usefixtures("mock_uvicorn_run")

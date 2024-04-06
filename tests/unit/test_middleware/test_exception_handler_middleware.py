@@ -1,5 +1,5 @@
 from inspect import getinnerframes
-from typing import TYPE_CHECKING, Any, Callable, Optional
+from typing import TYPE_CHECKING, Any, Callable, Generator, Optional
 
 import pytest
 from _pytest.capture import CaptureFixture
@@ -7,16 +7,17 @@ from pytest_mock import MockerFixture
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from structlog.testing import capture_logs
 
-from litestar import Litestar, Request, Response, get
+from litestar import Litestar, MediaType, Request, Response, get
 from litestar.exceptions import HTTPException, InternalServerException, ValidationException
 from litestar.logging.config import LoggingConfig, StructLoggingConfig
 from litestar.middleware.exceptions import ExceptionHandlerMiddleware
 from litestar.middleware.exceptions._debug_response import get_symbol_name
-from litestar.middleware.exceptions.middleware import get_exception_handler
+from litestar.middleware.exceptions.middleware import _starlette_exception_handler, get_exception_handler
 from litestar.status_codes import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import TestClient, create_test_client
 from litestar.types import ExceptionHandlersMap
 from litestar.types.asgi_types import HTTPScope
+from tests.helpers import cleanup_logging_impl
 
 if TYPE_CHECKING:
     from _pytest.logging import LogCaptureFixture
@@ -27,6 +28,12 @@ if TYPE_CHECKING:
 
 async def dummy_app(scope: Any, receive: Any, send: Any) -> None:
     return None
+
+
+@pytest.fixture(autouse=True)
+def cleanup_logging() -> Generator:
+    with cleanup_logging_impl():
+        yield
 
 
 @pytest.fixture()
@@ -116,15 +123,15 @@ def test_default_handle_python_http_exception_handling(
 
 def test_exception_handler_middleware_exception_handlers_mapping() -> None:
     @get("/")
-    def handler() -> None:
-        ...
+    def handler() -> None: ...
 
     def exception_handler(request: Request, exc: Exception) -> Response:
         return Response(content={"an": "error"}, status_code=HTTP_500_INTERNAL_SERVER_ERROR)
 
     app = Litestar(route_handlers=[handler], exception_handlers={Exception: exception_handler}, openapi_config=None)
-    assert app.asgi_router.root_route_map_node.children["/"].asgi_handlers["GET"][0].exception_handlers == {  # type: ignore
-        Exception: exception_handler
+    assert app.asgi_router.root_route_map_node.children["/"].asgi_handlers["GET"][0].exception_handlers == {  # type: ignore[attr-defined]
+        Exception: exception_handler,
+        StarletteHTTPException: _starlette_exception_handler,
     }
 
 
@@ -233,7 +240,7 @@ def test_exception_handler_struct_logging(
             assert cap_logs[0].get("connection_type") == "http"
             assert cap_logs[0].get("path") == "/test"
             assert cap_logs[0].get("traceback")
-            assert cap_logs[0].get("event") == "uncaught exception"
+            assert cap_logs[0].get("event") == "Uncaught Exception"
             assert cap_logs[0].get("log_level") == "error"
         else:
             assert not cap_logs
@@ -364,15 +371,17 @@ def test_get_symbol_name_where_type_doesnt_support_bool() -> None:
         assert get_symbol_name(frame) == "Test.method"
 
 
-def test_serialize_custom_types() -> None:
+@pytest.mark.parametrize("media_type", list(MediaType))
+def test_serialize_custom_types(media_type: MediaType) -> None:
     # ensure type encoders are passed down to the created response so custom types that
     # might end up as part of a ValidationException are handled properly
     # https://github.com/litestar-org/litestar/issues/2867
+    # https://github.com/litestar-org/litestar/issues/3192
     class Foo:
         def __init__(self, value: str) -> None:
             self.value = value
 
-    @get()
+    @get(media_type=media_type)
     def handler() -> None:
         raise ValidationException(extra={"foo": Foo("bar")})
 
