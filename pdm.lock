@@ -5,23 +5,11 @@
 groups = ["default", "standard", "jwt", "pydantic", "cli", "picologging", "dev-contrib", "piccolo", "prometheus", "dev", "mako", "test", "brotli", "cryptography", "linting", "attrs", "opentelemetry", "docs", "redis", "sqlalchemy", "full", "annotated-types", "jinja", "structlog", "minijinja"]
 strategy = ["cross_platform"]
 lock_version = "4.4.1"
-content_hash = "sha256:ea01139dcceae1f9e8a8abf7fb2c7307a2d10a640eda7f35279f5158b2ddaa2b"
-
-[[package]]
-name = "accessible-pygments"
-version = "0.0.4"
-summary = "A collection of accessible pygments styles"
-dependencies = [
-    "pygments>=1.5",
-]
-files = [
-    {file = "accessible-pygments-0.0.4.tar.gz", hash = "sha256:e7b57a9b15958e9601c7e9eb07a440c813283545a20973f2574a5f453d0e953e"},
-    {file = "accessible_pygments-0.0.4-py2.py3-none-any.whl", hash = "sha256:416c6d8c1ea1c5ad8701903a20fcedf953c6e720d64f33dc47bfb2d3f2fa4e8d"},
-]
+content_hash = "sha256:676ad88974bdcd8993ce159f728101bf5a8d7de98c2ee46be9af4ed23286509d"
 
 [[package]]
 name = "advanced-alchemy"
-version = "0.8.4"
+version = "0.8.1"
 requires_python = ">=3.8"
 summary = "Ready-to-go SQLAlchemy concoctions."
 dependencies = [
@@ -31,8 +19,8 @@ dependencies = [
     "typing-extensions>=4.0.0",
 ]
 files = [
-    {file = "advanced_alchemy-0.8.4-py3-none-any.whl", hash = "sha256:0ad4e2e33cfa6f8641ea7e9df50c8dbb18890000080b74d85305ba8821c2ce50"},
-    {file = "advanced_alchemy-0.8.4.tar.gz", hash = "sha256:6436ebad0e0b92ef5093bf425961f5469020035c65953ff7f619aef24a08fc71"},
+    {file = "advanced_alchemy-0.8.1-py3-none-any.whl", hash = "sha256:85078584914c7e7562fb7f0c750e4c8be9a14f43d52ab422b3a621170f04635f"},
+    {file = "advanced_alchemy-0.8.1.tar.gz", hash = "sha256:13921d8c47d608f63ad7f16347bd49b9c23e444dd8da62b8841e08b2367d4227"},
 ]
 
 [[package]]
@@ -400,6 +388,19 @@ files = [
 ]
 
 [[package]]
+name = "blacken-docs"
+version = "1.16.0"
+requires_python = ">=3.8"
+summary = "Run Black on Python code blocks in documentation files."
+dependencies = [
+    "black>=22.1.0",
+]
+files = [
+    {file = "blacken_docs-1.16.0-py3-none-any.whl", hash = "sha256:b0dcb84b28ebfb352a2539202d396f50e15a54211e204a8005798f1d1edb7df8"},
+    {file = "blacken_docs-1.16.0.tar.gz", hash = "sha256:b4bdc3f3d73898dfbf0166f292c6ccfe343e65fc22ddef5319c95d1a8dcc6c1c"},
+]
+
+[[package]]
 name = "brotli"
 version = "1.1.0"
 summary = "Python bindings for the Brotli compression library"
@@ -679,7 +680,7 @@ files = [
 
 [[package]]
 name = "codecov-cli"
-version = "0.4.9"
+version = "0.4.8"
 requires_python = ">=3.8"
 summary = "Codecov Command Line Interface"
 dependencies = [
@@ -691,10 +692,10 @@ dependencies = [
     "tree-sitter==0.20.*",
 ]
 files = [
-    {file = "codecov-cli-0.4.9.tar.gz", hash = "sha256:89c4a6b39094dc4181c6797fa9f8cbc2b03cd76038b2f491c3ee030428ee1e0d"},
-    {file = "codecov_cli-0.4.9-cp311-cp311-macosx_12_6_x86_64.whl", hash = "sha256:7bfe0ab74fdcc2ace01f5ba2433e770eb8c9cd88ff7c6bbb5a9b4820e279f956"},
-    {file = "codecov_cli-0.4.9-cp311-cp311-manylinux2014_x86_64.whl", hash = "sha256:d18f313235a912398f6bde96c918bbe153ad892d8077e9386302d78ec189faaf"},
-    {file = "codecov_cli-0.4.9-cp311-cp311-win_amd64.whl", hash = "sha256:b831ec08da58b8164455bb0fb822c2a31ebd5c991700e6f8024cb296abf463c7"},
+    {file = "codecov-cli-0.4.8.tar.gz", hash = "sha256:427f7f64853b3805cea9f0a65ede711ed7bf9e1f675db4de83bd8dcfc66897ad"},
+    {file = "codecov_cli-0.4.8-cp311-cp311-macosx_12_6_x86_64.whl", hash = "sha256:ae76a9cf50714888ebd1192b2254f8ebb6a7de39e6adb9db2abdb10931f12a4c"},
+    {file = "codecov_cli-0.4.8-cp311-cp311-manylinux2014_x86_64.whl", hash = "sha256:7b2db0d86c0f83a9827e31d4858053aab390c8ca2b598a8e2f8bffee3e6b0598"},
+    {file = "codecov_cli-0.4.8-cp311-cp311-win_amd64.whl", hash = "sha256:8439fd14d8437a0d2f90eee1e7ab5984a828b4eef0418f99455753ec11880512"},
 ]
 
 [[package]]
@@ -1455,7 +1456,7 @@ files = [
 
 [[package]]
 name = "hypothesis"
-version = "6.100.0"
+version = "6.99.13"
 requires_python = ">=3.8"
 summary = "A library for property-based testing"
 dependencies = [
@@ -1464,8 +1465,8 @@ dependencies = [
     "sortedcontainers<3.0.0,>=2.1.0",
 ]
 files = [
-    {file = "hypothesis-6.100.0-py3-none-any.whl", hash = "sha256:ceaeb7c051085dbec37f2fc4dca524b6304472ff1887fed53b3d84705507c10e"},
-    {file = "hypothesis-6.100.0.tar.gz", hash = "sha256:1841f6b5083844cd4b66965e44a17c0dc8fe8e9c6370c1f7b8d50647fcb2efd3"},
+    {file = "hypothesis-6.99.13-py3-none-any.whl", hash = "sha256:b538df1d22365df84f94c38fb2d9c41a222373594c2a910cc8f4ddc68240a62f"},
+    {file = "hypothesis-6.99.13.tar.gz", hash = "sha256:e425e8a3f1912e44f62ff3e2768dca19c79f46d43ec70fa56e96e2d7194ccd2d"},
 ]
 
 [[package]]
@@ -1578,15 +1579,15 @@ files = [
 
 [[package]]
 name = "importlib-metadata"
-version = "7.0.0"
+version = "6.11.0"
 requires_python = ">=3.8"
 summary = "Read metadata from Python packages"
 dependencies = [
     "zipp>=0.5",
 ]
 files = [
-    {file = "importlib_metadata-7.0.0-py3-none-any.whl", hash = "sha256:d97503976bb81f40a193d41ee6570868479c69d5068651eb039c40d850c59d67"},
-    {file = "importlib_metadata-7.0.0.tar.gz", hash = "sha256:7fc841f8b8332803464e5dc1c63a2e59121f46ca186c0e2e182e80bf8c1319f7"},
+    {file = "importlib_metadata-6.11.0-py3-none-any.whl", hash = "sha256:f0afba6205ad8f8947c7d338b5342d5db2afbfd82f9cbef7879a9539cc12eb9b"},
+    {file = "importlib_metadata-6.11.0.tar.gz", hash = "sha256:1231cf92d825c9e03cfc4da076a16de6422c863558229ea0b22b675657463443"},
 ]
 
 [[package]]
@@ -1671,14 +1672,17 @@ files = [
 
 [[package]]
 name = "litestar-sphinx-theme"
-version = "0.2.0"
+version = "0.3.0"
 requires_python = ">=3.8,<4.0"
-git = "https://github.com/litestar-org/litestar-sphinx-theme.git"
-revision = "c5ce66aadc8f910c24f54bf0d172798c237a67eb"
+path = "../litestar-sphinx-theme"
 summary = "A Sphinx theme for the Litestar organization"
 dependencies = [
-    "pydata-sphinx-theme<1.0.0,>=0.13.3",
+    "blacken-docs>=1.16.0",
+    "shibuya>=2024.4.4",
+    "sphinx-autobuild>=2021.3.14",
+    "sphinx-copybutton>=0.5.2",
     "sphinx-design<1.0.0,>=0.3.0",
+    "sphinx-toolbox>=3.5.0",
 ]
 
 [[package]]
@@ -1791,18 +1795,18 @@ files = [
 
 [[package]]
 name = "minijinja"
-version = "1.0.16"
+version = "1.0.14"
 requires_python = ">=3.8"
 summary = "An experimental Python binding of the Rust MiniJinja template engine."
 files = [
-    {file = "minijinja-1.0.16-cp38-abi3-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:b7c1640d23ad719da999ab434fd58e895125e067d310d512c9a45ec7e7f301dc"},
-    {file = "minijinja-1.0.16-cp38-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:f83ca4a37d73b57b87cee4d50f7ce2ade2d6c04fbede49faabc37f7244161bd6"},
-    {file = "minijinja-1.0.16-cp38-abi3-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:87c61c94c014c3a6d2ef83ee2f67229ee23b13b3586c8d4d3a7d090ba19f1b6c"},
-    {file = "minijinja-1.0.16-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:beeb7fd7552e351b071b1d01fa80600a332b364c83f0f4a5c96b96d74d162434"},
-    {file = "minijinja-1.0.16-cp38-abi3-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:38cc378dd256bd3766f1c83754c9a4407356b6d992defc725eab8a7c203e07b9"},
-    {file = "minijinja-1.0.16-cp38-abi3-win32.whl", hash = "sha256:f7f0da6c0d2b78bce9aa0f2bbfebc0ece18cdf8dae9430b4001055b8eb77911c"},
-    {file = "minijinja-1.0.16-cp38-abi3-win_amd64.whl", hash = "sha256:0a41541c28fd7ce64b38ddc60974930f81c163440c348393bd5143debeb309b3"},
-    {file = "minijinja-1.0.16.tar.gz", hash = "sha256:57f6e98bc735794eb87648f251e68fbfd9cf50333f6a4053b398751483350826"},
+    {file = "minijinja-1.0.14-cp38-abi3-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:90a18cf6d0c046c33e5c331c2de36386a2b41f2a128cbc9c0a38924acf42edda"},
+    {file = "minijinja-1.0.14-cp38-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:1928e2c3716b6a5f3a93d5213a7454a356f11c84d71b8a7f082acaace366168a"},
+    {file = "minijinja-1.0.14-cp38-abi3-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:3483deab95c5a1b5a46b2244bef06a97a5293608885f7143631c31e7cb39d84b"},
+    {file = "minijinja-1.0.14-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:933e8ac097dc384d1bca60feff5e71a0c25744103f4a73e396f7b718a144dca8"},
+    {file = "minijinja-1.0.14-cp38-abi3-manylinux_2_5_i686.manylinux1_i686.whl", hash = "sha256:99a451ccde5ac3c1a829d150e2a864dbfe40e0f446a9db17fbfefa7fa79e7664"},
+    {file = "minijinja-1.0.14-cp38-abi3-win32.whl", hash = "sha256:429e4c4ef03b8ae7b46a61c1fdd446375050bffcac8ec198787a07d828d1ba1a"},
+    {file = "minijinja-1.0.14-cp38-abi3-win_amd64.whl", hash = "sha256:e2f2fa3311f0c3d1f0ce78d73998423e5723a309122ca149cc9f634e0c407728"},
+    {file = "minijinja-1.0.14.tar.gz", hash = "sha256:a7b8ba9bb3ce32b6d83d50730882c14ddf8643b245378367dac41d0a24104706"},
 ]
 
 [[package]]
@@ -2086,21 +2090,21 @@ files = [
 
 [[package]]
 name = "opentelemetry-api"
-version = "1.24.0"
+version = "1.23.0"
 requires_python = ">=3.8"
 summary = "OpenTelemetry Python API"
 dependencies = [
     "deprecated>=1.2.6",
-    "importlib-metadata<=7.0,>=6.0",
+    "importlib-metadata<7.0,>=6.0",
 ]
 files = [
-    {file = "opentelemetry_api-1.24.0-py3-none-any.whl", hash = "sha256:0f2c363d98d10d1ce93330015ca7fd3a65f60be64e05e30f557c61de52c80ca2"},
-    {file = "opentelemetry_api-1.24.0.tar.gz", hash = "sha256:42719f10ce7b5a9a73b10a4baf620574fb8ad495a9cbe5c18d76b75d8689c67e"},
+    {file = "opentelemetry_api-1.23.0-py3-none-any.whl", hash = "sha256:cc03ea4025353048aadb9c64919099663664672ea1c6be6ddd8fee8e4cd5e774"},
+    {file = "opentelemetry_api-1.23.0.tar.gz", hash = "sha256:14a766548c8dd2eb4dfc349739eb4c3893712a0daa996e5dbf945f9da665da9d"},
 ]
 
 [[package]]
 name = "opentelemetry-instrumentation"
-version = "0.45b0"
+version = "0.44b0"
 requires_python = ">=3.8"
 summary = "Instrumentation Tools & Auto Instrumentation for OpenTelemetry Python"
 dependencies = [
@@ -2109,60 +2113,60 @@ dependencies = [
     "wrapt<2.0.0,>=1.0.0",
 ]
 files = [
-    {file = "opentelemetry_instrumentation-0.45b0-py3-none-any.whl", hash = "sha256:06c02e2c952c1b076e8eaedf1b82f715e2937ba7eeacab55913dd434fbcec258"},
-    {file = "opentelemetry_instrumentation-0.45b0.tar.gz", hash = "sha256:6c47120a7970bbeb458e6a73686ee9ba84b106329a79e4a4a66761f933709c7e"},
+    {file = "opentelemetry_instrumentation-0.44b0-py3-none-any.whl", hash = "sha256:79560f386425176bcc60c59190064597096114c4a8e5154f1cb281bb4e47d2fc"},
+    {file = "opentelemetry_instrumentation-0.44b0.tar.gz", hash = "sha256:8213d02d8c0987b9b26386ae3e091e0477d6331673123df736479322e1a50b48"},
 ]
 
 [[package]]
 name = "opentelemetry-instrumentation-asgi"
-version = "0.45b0"
+version = "0.44b0"
 requires_python = ">=3.8"
 summary = "ASGI instrumentation for OpenTelemetry"
 dependencies = [
     "asgiref~=3.0",
     "opentelemetry-api~=1.12",
-    "opentelemetry-instrumentation==0.45b0",
-    "opentelemetry-semantic-conventions==0.45b0",
-    "opentelemetry-util-http==0.45b0",
+    "opentelemetry-instrumentation==0.44b0",
+    "opentelemetry-semantic-conventions==0.44b0",
+    "opentelemetry-util-http==0.44b0",
 ]
 files = [
-    {file = "opentelemetry_instrumentation_asgi-0.45b0-py3-none-any.whl", hash = "sha256:8be1157ed62f0db24e45fdf7933c530c4338bd025c5d4af7830e903c0756021b"},
-    {file = "opentelemetry_instrumentation_asgi-0.45b0.tar.gz", hash = "sha256:97f55620f163fd3d20323e9fd8dc3aacc826c03397213ff36b877e0f4b6b08a6"},
+    {file = "opentelemetry_instrumentation_asgi-0.44b0-py3-none-any.whl", hash = "sha256:0d95c84a8991008c8a8ac35e15d43cc7768a5bb46f95f129e802ad2990d7c366"},
+    {file = "opentelemetry_instrumentation_asgi-0.44b0.tar.gz", hash = "sha256:72d4d28ec7ccd551eac11edc5ae8cac3586c0a228467d6a95fad7b6d4edd597a"},
 ]
 
 [[package]]
 name = "opentelemetry-sdk"
-version = "1.24.0"
+version = "1.23.0"
 requires_python = ">=3.8"
 summary = "OpenTelemetry Python SDK"
 dependencies = [
-    "opentelemetry-api==1.24.0",
-    "opentelemetry-semantic-conventions==0.45b0",
+    "opentelemetry-api==1.23.0",
+    "opentelemetry-semantic-conventions==0.44b0",
     "typing-extensions>=3.7.4",
 ]
 files = [
-    {file = "opentelemetry_sdk-1.24.0-py3-none-any.whl", hash = "sha256:fa731e24efe832e98bcd90902085b359dcfef7d9c9c00eb5b9a18587dae3eb59"},
-    {file = "opentelemetry_sdk-1.24.0.tar.gz", hash = "sha256:75bc0563affffa827700e0f4f4a68e1e257db0df13372344aebc6f8a64cde2e5"},
+    {file = "opentelemetry_sdk-1.23.0-py3-none-any.whl", hash = "sha256:a93c96990ac0f07c6d679e2f1015864ff7a4f5587122dd5af968034436efb1fd"},
+    {file = "opentelemetry_sdk-1.23.0.tar.gz", hash = "sha256:9ddf60195837b59e72fd2033d6a47e2b59a0f74f0ec37d89387d89e3da8cab7f"},
 ]
 
 [[package]]
 name = "opentelemetry-semantic-conventions"
-version = "0.45b0"
+version = "0.44b0"
 requires_python = ">=3.8"
 summary = "OpenTelemetry Semantic Conventions"
 files = [
-    {file = "opentelemetry_semantic_conventions-0.45b0-py3-none-any.whl", hash = "sha256:a4a6fb9a7bacd9167c082aa4681009e9acdbfa28ffb2387af50c2fef3d30c864"},
-    {file = "opentelemetry_semantic_conventions-0.45b0.tar.gz", hash = "sha256:7c84215a44ac846bc4b8e32d5e78935c5c43482e491812a0bb8aaf87e4d92118"},
+    {file = "opentelemetry_semantic_conventions-0.44b0-py3-none-any.whl", hash = "sha256:7c434546c9cbd797ab980cc88bf9ff3f4a5a28f941117cad21694e43d5d92019"},
+    {file = "opentelemetry_semantic_conventions-0.44b0.tar.gz", hash = "sha256:2e997cb28cd4ca81a25a9a43365f593d0c2b76be0685015349a89abdf1aa4ffa"},
 ]
 
 [[package]]
 name = "opentelemetry-util-http"
-version = "0.45b0"
+version = "0.44b0"
 requires_python = ">=3.8"
 summary = "Web util for OpenTelemetry"
 files = [
-    {file = "opentelemetry_util_http-0.45b0-py3-none-any.whl", hash = "sha256:6628868b501b3004e1860f976f410eeb3d3499e009719d818000f24ce17b6e33"},
-    {file = "opentelemetry_util_http-0.45b0.tar.gz", hash = "sha256:4ce08b6a7d52dd7c96b7705b5b4f06fdb6aa3eac1233b3b0bfef8a0cab9a92cd"},
+    {file = "opentelemetry_util_http-0.44b0-py3-none-any.whl", hash = "sha256:ff018ab6a2fa349537ff21adcef99a294248b599be53843c44f367aef6bccea5"},
+    {file = "opentelemetry_util_http-0.44b0.tar.gz", hash = "sha256:75896dffcbbeb5df5429ad4526e22307fc041a27114e0c5bfd90bb219381e68f"},
 ]
 
 [[package]]
@@ -2690,26 +2694,6 @@ files = [
 ]
 
 [[package]]
-name = "pydata-sphinx-theme"
-version = "0.14.4"
-requires_python = ">=3.8"
-summary = "Bootstrap-based Sphinx theme from the PyData community"
-dependencies = [
-    "Babel",
-    "accessible-pygments",
-    "beautifulsoup4",
-    "docutils!=0.17.0",
-    "packaging",
-    "pygments>=2.7",
-    "sphinx>=5.0",
-    "typing-extensions",
-]
-files = [
-    {file = "pydata_sphinx_theme-0.14.4-py3-none-any.whl", hash = "sha256:ac15201f4c2e2e7042b0cad8b30251433c1f92be762ddcefdb4ae68811d918d9"},
-    {file = "pydata_sphinx_theme-0.14.4.tar.gz", hash = "sha256:f5d7a2cb7a98e35b9b49d3b02cec373ad28958c2ed5c9b1ffe6aff6c56e9de5b"},
-]
-
-[[package]]
 name = "pygments"
 version = "2.17.2"
 requires_python = ">=3.7"
@@ -2867,16 +2851,15 @@ files = [
 ]
 
 [[package]]
-name = "pytest-lazy-fixtures"
-version = "1.0.7"
-requires_python = ">=3.8,<4.0"
-summary = "Allows you to use fixtures in @pytest.mark.parametrize."
+name = "pytest-lazy-fixture"
+version = "0.6.3"
+summary = "It helps to use fixtures in pytest.mark.parametrize"
 dependencies = [
-    "pytest>=7",
+    "pytest>=3.2.5",
 ]
 files = [
-    {file = "pytest_lazy_fixtures-1.0.7-py3-none-any.whl", hash = "sha256:71428385b166cdb0fa3f2a3c72b5a5f95fa58f977816877b9b9c1e857143e194"},
-    {file = "pytest_lazy_fixtures-1.0.7.tar.gz", hash = "sha256:87ef7424dc0229ff9cb72d482f49b7806535c3500641f612c13ddf243c9adacb"},
+    {file = "pytest-lazy-fixture-0.6.3.tar.gz", hash = "sha256:0e7d0c7f74ba33e6e80905e9bfd81f9d15ef9a790de97993e34213deb5ad10ac"},
+    {file = "pytest_lazy_fixture-0.6.3-py3-none-any.whl", hash = "sha256:e0b379f38299ff27a653f03eaa69b08a6fd4484e46fd1c9907d984b9f9daeda6"},
 ]
 
 [[package]]
@@ -3214,27 +3197,27 @@ files = [
 
 [[package]]
 name = "ruff"
-version = "0.3.5"
+version = "0.3.4"
 requires_python = ">=3.7"
 summary = "An extremely fast Python linter and code formatter, written in Rust."
 files = [
-    {file = "ruff-0.3.5-py3-none-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:aef5bd3b89e657007e1be6b16553c8813b221ff6d92c7526b7e0227450981eac"},
-    {file = "ruff-0.3.5-py3-none-macosx_10_12_x86_64.whl", hash = "sha256:89b1e92b3bd9fca249153a97d23f29bed3992cff414b222fcd361d763fc53f12"},
-    {file = "ruff-0.3.5-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:5e55771559c89272c3ebab23326dc23e7f813e492052391fe7950c1a5a139d89"},
-    {file = "ruff-0.3.5-py3-none-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:dabc62195bf54b8a7876add6e789caae0268f34582333cda340497c886111c39"},
-    {file = "ruff-0.3.5-py3-none-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:3a05f3793ba25f194f395578579c546ca5d83e0195f992edc32e5907d142bfa3"},
-    {file = "ruff-0.3.5-py3-none-manylinux_2_17_ppc64.manylinux2014_ppc64.whl", hash = "sha256:dfd3504e881082959b4160ab02f7a205f0fadc0a9619cc481982b6837b2fd4c0"},
-    {file = "ruff-0.3.5-py3-none-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:87258e0d4b04046cf1d6cc1c56fadbf7a880cc3de1f7294938e923234cf9e498"},
-    {file = "ruff-0.3.5-py3-none-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:712e71283fc7d9f95047ed5f793bc019b0b0a29849b14664a60fd66c23b96da1"},
-    {file = "ruff-0.3.5-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a532a90b4a18d3f722c124c513ffb5e5eaff0cc4f6d3aa4bda38e691b8600c9f"},
-    {file = "ruff-0.3.5-py3-none-musllinux_1_2_aarch64.whl", hash = "sha256:122de171a147c76ada00f76df533b54676f6e321e61bd8656ae54be326c10296"},
-    {file = "ruff-0.3.5-py3-none-musllinux_1_2_armv7l.whl", hash = "sha256:d80a6b18a6c3b6ed25b71b05eba183f37d9bc8b16ace9e3d700997f00b74660b"},
-    {file = "ruff-0.3.5-py3-none-musllinux_1_2_i686.whl", hash = "sha256:a7b6e63194c68bca8e71f81de30cfa6f58ff70393cf45aab4c20f158227d5936"},
-    {file = "ruff-0.3.5-py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:a759d33a20c72f2dfa54dae6e85e1225b8e302e8ac655773aff22e542a300985"},
-    {file = "ruff-0.3.5-py3-none-win32.whl", hash = "sha256:9d8605aa990045517c911726d21293ef4baa64f87265896e491a05461cae078d"},
-    {file = "ruff-0.3.5-py3-none-win_amd64.whl", hash = "sha256:dc56bb16a63c1303bd47563c60482a1512721053d93231cf7e9e1c6954395a0e"},
-    {file = "ruff-0.3.5-py3-none-win_arm64.whl", hash = "sha256:faeeae9905446b975dcf6d4499dc93439b131f1443ee264055c5716dd947af55"},
-    {file = "ruff-0.3.5.tar.gz", hash = "sha256:a067daaeb1dc2baf9b82a32dae67d154d95212080c80435eb052d95da647763d"},
+    {file = "ruff-0.3.4-py3-none-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl", hash = "sha256:60c870a7d46efcbc8385d27ec07fe534ac32f3b251e4fc44b3cbfd9e09609ef4"},
+    {file = "ruff-0.3.4-py3-none-macosx_10_12_x86_64.whl", hash = "sha256:6fc14fa742e1d8f24910e1fff0bd5e26d395b0e0e04cc1b15c7c5e5fe5b4af91"},
+    {file = "ruff-0.3.4-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:d3ee7880f653cc03749a3bfea720cf2a192e4f884925b0cf7eecce82f0ce5854"},
+    {file = "ruff-0.3.4-py3-none-manylinux_2_17_armv7l.manylinux2014_armv7l.whl", hash = "sha256:cf133dd744f2470b347f602452a88e70dadfbe0fcfb5fd46e093d55da65f82f7"},
+    {file = "ruff-0.3.4-py3-none-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:3f3860057590e810c7ffea75669bdc6927bfd91e29b4baa9258fd48b540a4365"},
+    {file = "ruff-0.3.4-py3-none-manylinux_2_17_ppc64.manylinux2014_ppc64.whl", hash = "sha256:986f2377f7cf12efac1f515fc1a5b753c000ed1e0a6de96747cdf2da20a1b369"},
+    {file = "ruff-0.3.4-py3-none-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:c4fd98e85869603e65f554fdc5cddf0712e352fe6e61d29d5a6fe087ec82b76c"},
+    {file = "ruff-0.3.4-py3-none-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:64abeed785dad51801b423fa51840b1764b35d6c461ea8caef9cf9e5e5ab34d9"},
+    {file = "ruff-0.3.4-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:df52972138318bc7546d92348a1ee58449bc3f9eaf0db278906eb511889c4b50"},
+    {file = "ruff-0.3.4-py3-none-musllinux_1_2_aarch64.whl", hash = "sha256:98e98300056445ba2cc27d0b325fd044dc17fcc38e4e4d2c7711585bd0a958ed"},
+    {file = "ruff-0.3.4-py3-none-musllinux_1_2_armv7l.whl", hash = "sha256:519cf6a0ebed244dce1dc8aecd3dc99add7a2ee15bb68cf19588bb5bf58e0488"},
+    {file = "ruff-0.3.4-py3-none-musllinux_1_2_i686.whl", hash = "sha256:bb0acfb921030d00070539c038cd24bb1df73a2981e9f55942514af8b17be94e"},
+    {file = "ruff-0.3.4-py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:cf187a7e7098233d0d0c71175375c5162f880126c4c716fa28a8ac418dcf3378"},
+    {file = "ruff-0.3.4-py3-none-win32.whl", hash = "sha256:af27ac187c0a331e8ef91d84bf1c3c6a5dea97e912a7560ac0cef25c526a4102"},
+    {file = "ruff-0.3.4-py3-none-win_amd64.whl", hash = "sha256:de0d5069b165e5a32b3c6ffbb81c350b1e3d3483347196ffdf86dc0ef9e37dd6"},
+    {file = "ruff-0.3.4-py3-none-win_arm64.whl", hash = "sha256:6810563cc08ad0096b57c717bd78aeac888a1bfd38654d9113cb3dc4d3f74232"},
+    {file = "ruff-0.3.4.tar.gz", hash = "sha256:f0f4484c6541a99862b693e13a151435a279b271cff20e37101116a21e2a1ad1"},
 ]
 
 [[package]]
@@ -3261,6 +3244,19 @@ summary = "Easily download, build, install, upgrade, and uninstall Python packag
 files = [
     {file = "setuptools-69.0.3-py3-none-any.whl", hash = "sha256:385eb4edd9c9d5c17540511303e39a147ce2fc04bc55289c322b9e5904fe2c05"},
     {file = "setuptools-69.0.3.tar.gz", hash = "sha256:be1af57fc409f93647f2e8e4573a142ed38724b8cdd389706a867bb4efcf1e78"},
+]
+
+[[package]]
+name = "shibuya"
+version = "2024.4.4"
+requires_python = ">=3.7"
+summary = "A clean, responsive, and customizable Sphinx documentation theme with light/dark mode."
+dependencies = [
+    "Sphinx",
+]
+files = [
+    {file = "shibuya-2024.4.4-py3-none-any.whl", hash = "sha256:bf635e8a5eafccb0f1e8801f9a57f86187909d547c9db31b539d7f1bfe43e45b"},
+    {file = "shibuya-2024.4.4.tar.gz", hash = "sha256:768d0bbfe6eed2f10ef6685fcadbecd0d4f0635ff6e1e5624bcb84bb0d1a40f2"},
 ]
 
 [[package]]
@@ -3436,18 +3432,6 @@ dependencies = [
 files = [
     {file = "sphinx_jinja2_compat-0.2.0.post1-py3-none-any.whl", hash = "sha256:f9d329174bdde8db19dc12c62528367196eb2f6b46c91754eca604acd0c0f6ad"},
     {file = "sphinx_jinja2_compat-0.2.0.post1.tar.gz", hash = "sha256:974289a12a9f402108dead621e9c15f7004e945d5cfcaea8d6419e94d3fa95a3"},
-]
-
-[[package]]
-name = "sphinx-paramlinks"
-version = "0.6.0"
-summary = "Allows param links in Sphinx function/method descriptions to be linkable"
-dependencies = [
-    "Sphinx>=4.0.0",
-    "docutils",
-]
-files = [
-    {file = "sphinx-paramlinks-0.6.0.tar.gz", hash = "sha256:746a0816860aa3fff5d8d746efcbec4deead421f152687411db1d613d29f915e"},
 ]
 
 [[package]]
@@ -4014,6 +3998,16 @@ files = [
 ]
 
 [[package]]
+name = "types-pytest-lazy-fixture"
+version = "0.6.3.20240310"
+requires_python = ">=3.8"
+summary = "Typing stubs for pytest-lazy-fixture"
+files = [
+    {file = "types-pytest-lazy-fixture-0.6.3.20240310.tar.gz", hash = "sha256:990bb96f556369ce8e37562171e75ad52956444b5a71c85b3e7f51db4cafcc7b"},
+    {file = "types_pytest_lazy_fixture-0.6.3.20240310-py3-none-any.whl", hash = "sha256:50618fba86e576e72cb3c200d940ad6d2a899c3493239806b907a964fbb527c6"},
+]
+
+[[package]]
 name = "types-python-jose"
 version = "3.3.4.20240106"
 requires_python = ">=3.8"
@@ -4052,12 +4046,12 @@ files = [
 
 [[package]]
 name = "typing-extensions"
-version = "4.11.0"
+version = "4.10.0"
 requires_python = ">=3.8"
 summary = "Backported and Experimental Type Hints for Python 3.8+"
 files = [
-    {file = "typing_extensions-4.11.0-py3-none-any.whl", hash = "sha256:c1f94d72897edaf4ce775bb7558d5b79d8126906a14ea5ed1635921406c0387a"},
-    {file = "typing_extensions-4.11.0.tar.gz", hash = "sha256:83f085bd5ca59c80295fc2a82ab5dac679cbe02b9f33f7d83af68e241bea51b0"},
+    {file = "typing_extensions-4.10.0-py3-none-any.whl", hash = "sha256:69b1a937c3a517342112fb4c6df7e72fc39a38e7891a5730ed4985b5214b5475"},
+    {file = "typing_extensions-4.10.0.tar.gz", hash = "sha256:b0abd7c89e8fb96f98db18d86106ff1d90ab692004eb746cf6eda2682f91b3cb"},
 ]
 
 [[package]]

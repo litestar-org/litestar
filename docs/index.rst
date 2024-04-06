@@ -1,5 +1,8 @@
-Litestar library documentation
-==============================
+:layout: landing
+
+======================
+Litestar Documentation
+======================
 
 Litestar is a powerful, flexible, highly performant, and opinionated ASGI framework.
 
@@ -7,6 +10,15 @@ The Litestar framework supports :doc:`/usage/plugins/index`, ships
 with :doc:`dependency injection </usage/dependency-injection>`, :doc:`security primitives </usage/security/index>`,
 :doc:`OpenAPI schema generation </usage/openapi/index>`, `MessagePack <https://msgpack.org/>`_,
 :doc:`middlewares </usage/middleware/index>`, a great :doc:`CLI </usage/cli>` experience, and much more.
+
+
+.. container:: buttons
+
+    `Usage Docs <usage>`_
+    `API Docs Reference <reference>`_
+    `Tutorials <tutorials>`_
+    `Topical Guides <topics>`_
+    `Contribute <contribution-guide>`_
 
 Installation
 ------------
@@ -86,6 +98,7 @@ At a minimum, make sure you have installed ``litestar[standard]``, which include
 First, create a file named ``app.py`` with the following contents:
 
 .. code-block:: python
+   :caption: This is a caption
 
    from litestar import Litestar, get
 
@@ -286,55 +299,23 @@ Philosophy
 Feature comparison with similar frameworks
 ------------------------------------------
 
-+-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
-|                             | Litestar                           | FastAPI             | Starlette        | Sanic               | Quart               |
-+=============================+====================================+=====================+==================+=====================+=====================+
-| OpenAPI                     | :octicon:`check`                   | :octicon:`check`    | :octicon:`dash`  | :octicon:`dash`     | :octicon:`dash`     |
-+-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
-| Automatic API documentation | Swagger, ReDoc, Stoplight Elements | Swagger, ReDoc      | :octicon:`dash`  | :octicon:`dash`     | :octicon:`dash`     |
-+-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
-| Data validation             | :octicon:`check`                   | :octicon:`check`    | :octicon:`dash`  | :octicon:`dash`     | :octicon:`dash`     |
-+-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
-| Dependency Injection        | :octicon:`check`                   | :octicon:`check`    | :octicon:`dash`  | :octicon:`check`    | :octicon:`dash`     |
-+-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
-| Class based routing         | :octicon:`check`                   | (Through extension) | :octicon:`check` | :octicon:`check`    | :octicon:`check`    |
-+-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
-| ORM integration             | SQLAlchemy, Tortoise, Piccolo      | :octicon:`dash`     | :octicon:`dash`  | :octicon:`dash`     | (Through extension) |
-+-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
-| Templating                  | Jinja, Mako                        | Jinja               | Jinja            | Jinja               | Jinja               |
-+-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
-| MessagePack                 | :octicon:`check`                   | :octicon:`dash`     | :octicon:`dash`  | :octicon:`dash`     | :octicon:`dash`     |
-+-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
-| CORS                        | :octicon:`check`                   | :octicon:`check`    | :octicon:`check` | :octicon:`check`    | (Through extension) |
-+-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
-| CSRF                        | :octicon:`check`                   | :octicon:`dash`     | :octicon:`dash`  | :octicon:`dash`     | :octicon:`dash`     |
-+-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
-| Rate-limiting               | :octicon:`check`                   | :octicon:`dash`     | :octicon:`dash`  | (Through extension) | :octicon:`dash`     |
-+-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
-| JWT                         | :octicon:`check`                   | :octicon:`dash`     | :octicon:`dash`  | :octicon:`dash`     | :octicon:`dash`     |
-+-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
-| Sessions                    | :octicon:`check`                   | Client-side         | Client-side      | :octicon:`dash`     | Client-side         |
-+-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
-| Authentication              | JWT / Session based                | :octicon:`dash`     | :octicon:`dash`  | :octicon:`dash`     | :octicon:`dash`     |
-+-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
-| Caching                     | :octicon:`check`                   |  :octicon:`dash`    | :octicon:`dash`  | :octicon:`dash`     | :octicon:`dash`     |
-+-----------------------------+------------------------------------+---------------------+------------------+---------------------+---------------------+
-
+.. csv-table:: Litestar vs. other frameworks
+   :file: _static/tables/framework-comparison.csv
+   :widths: 5, 35, 15, 15, 15, 15
+   :header-rows: 1
 
 Example Applications
 --------------------
-
 
 * `litestar-pg-redis-docker <https://github.com/litestar-org/litestar-pg-redis-docker>`_ : In addition to Litestar, this
   demonstrates a pattern of application modularity, SQLAlchemy 2.0 ORM, Redis cache connectivity, and more. Like all
   Litestar projects, this application is open to contributions, big and small.
 * `litestar-fullstack <https://github.com/litestar-org/litestar-fullstack>`_ : A fully-capable, production-ready fullstack
-  Litestar web application configured with best practices. It includes SQLAlchemy 2.0, VueJS, `Vite <https://vitejs.dev/>`_,
+  Litestar web application configured with best practices. It includes SQLAlchemy 2.0, ReactJS, `Vite <https://vitejs.dev/>`_,
   `SAQ job queue <https://saq-py.readthedocs.io/en/latest/>`_, ``Jinja`` templates and more.
   `Read more <https://litestar-org.github.io/litestar-fullstack/latest/>`_.
 * `litestar-hello-world <https://github.com/litestar-org/litestar-hello-world>`_: A bare-minimum application setup.
   Great for testing and POC work.
-
 
 .. toctree::
     :titlesonly:
@@ -362,3 +343,16 @@ Example Applications
     contribution-guide
     Available Issues <https://github.com/search?q=user%3Alitestar-org+state%3Aopen+label%3A%22good+first+issue%22+++no%3Aassignee+&type=issues=>
     Code of Conduct <https://github.com/litestar-org/.github?tab=coc-ov-file#readme>
+
+.. toctree::
+    :titlesonly:
+    :caption: Explore
+    :maxdepth: 1
+
+    usage/index
+    reference/index
+    benchmarks
+    migration/index
+    topics/index
+    tutorials/index
+    contribution-guide
