@@ -118,7 +118,7 @@ def test_decode_secret_string_on_model_client_error(secret_type: type[SecretStri
     model = msgspec.defstruct(name="Model", fields=[("secret", secret_type)])
 
     @post(signature_namespace={"model": model})
-    async def post_secret(data: model) -> None:  # pyright: ignore[reportGeneralTypeIssues]
+    async def post_secret(data: model) -> None:  # type: ignore[valid-type]
         return None
 
     with create_test_client([post_secret]) as client:
