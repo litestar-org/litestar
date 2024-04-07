@@ -52,36 +52,6 @@ labels:
       files:
         any: ['test/test_apps/*', 'test/test_apps/**/*']
 
-  yaml
-
-version: v1
-
-labels:
-  - label: 'type/feat'
-    sync: true
-    matcher:
-      title: '^feat(\([^)]+\))?!?:'
-
-  - label: 'type/bug'
-    sync: true
-    matcher:
-      title: '^fix(\([^)]+\))?!?:'
-
-  - label: 'type/docs'
-    sync: true
-    matcher:
-      title: '^docs(\([^)]+\))?:'
-
-  - label: 'breaking'
-    sync: true
-    matcher:
-      title: '^(feat|fix)(\([^)]+\))?!:'
-
-  - label: 'area/version-3'
-    sync: true
-    matcher:
-      baseBranch: '^v3$'
-
   - label: 'area/docs'
     sync: true
     matcher:
