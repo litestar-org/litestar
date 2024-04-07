@@ -8,6 +8,7 @@ authors:
   - Cody Fincher
   - Visakh Unnikrishnan
   - Jacob Coffee
+  - Na'aman Hirschfeld
 repository-code: 'https://github.com/litestar-org/litestar'
 url: 'https://docs.litestar.dev/latest/'
 abstract: >-
