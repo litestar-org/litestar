@@ -46,7 +46,7 @@ class SecretValue(ABC, Generic[SecretT]):
             NotImplementedError: Always raised to enforce implementation in subclasses.
         """
 
-        raise NotImplementedError("Subclasses must implement _get_obscured_representation")
+        raise NotImplementedError("Subclasses must implement get_obscured")
 
     def __str__(self) -> str:
         """Returns a string representation of the hidden secret value.
