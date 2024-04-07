@@ -1254,6 +1254,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="usage/security/guards.html">Guards</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage/security/excluding-and-including-endpoints.html">Excluding and including endpoints</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage/security/jwt.html">JWT Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/security/secret-datastructures.html">Handling Secrets</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="usage/static-files.html">Static files</a></li>
@@ -1303,9 +1304,12 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="reference/controller.html">controller</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/concurrency.html">cli</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/data_extractors.html">data_extractors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/datastructures.html">datastructures</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="reference/datastructures/index.html">datastructures</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/datastructures/secret_values.html">secret_values</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="reference/di.html">di</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="reference/dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="reference/dto/config.html">config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/dto/data_structures.html">data_structures</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/dto/field.html">field</a></li>
@@ -1319,13 +1323,13 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="reference/events.html">events</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/exceptions.html">exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/handlers.html">handlers</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="reference/logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="reference/logging/config.html">config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/logging/picologging.html">picologging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/logging/standard.html">standard</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="reference/middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-19"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/middleware/authentication.html">authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/middleware/compression.html">compression</a></li>
@@ -1333,7 +1337,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="reference/middleware/csrf.html">csrf</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/middleware/logging.html">logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/middleware/rate_limit.html">rate_limit</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="reference/middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-19"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="reference/middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-20"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="reference/middleware/session/base.html">base</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reference/middleware/session/client_side.html">client_side</a></li>
 <li class="toctree-l4"><a class="reference internal" href="reference/middleware/session/server_side.html">server_side</a></li>
@@ -1341,7 +1345,7 @@ document.write(`
 </li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-20"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="reference/openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="reference/openapi/openapi.html">openapi</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/openapi/plugins.html">plugins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/openapi/spec.html">spec</a></li>
@@ -1349,13 +1353,13 @@ document.write(`
 </li>
 <li class="toctree-l2"><a class="reference internal" href="reference/pagination.html">pagination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/params.html">params</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="reference/plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="reference/plugins/flash_messages.html">flash</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/repository/index.html">repository</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="reference/repository/index.html">repository</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-23"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="reference/repository/abc.html">abc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/repository/filters.html">filters</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/repository/exceptions.html">exceptions</a></li>
@@ -1363,7 +1367,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="reference/repository/handlers.html">handlers</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/response/index.html">response</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-23"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="reference/response/index.html">response</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="reference/response/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/response/file.html">file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/response/redirect.html">redirect</a></li>
@@ -1374,7 +1378,7 @@ document.write(`
 </li>
 <li class="toctree-l2"><a class="reference internal" href="reference/router.html">router</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/routes.html">routes</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="reference/security/jwt.html">jwt</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/security/session_auth.html">session_auth</a></li>
 </ul>
@@ -1382,7 +1386,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="reference/serialization.html">serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/static_files.html">static_files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/status_codes.html">status_code</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="reference/stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-26"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="reference/stores/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/stores/file.html">file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/stores/memory.html">memory</a></li>
@@ -1400,14 +1404,14 @@ document.write(`
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Guides</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-26"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-27"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="migration/flask.html">From Flask</a></li>
 <li class="toctree-l2"><a class="reference internal" href="migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-27"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="topics/sync-vs-async.html">Sync vs. Async</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="topics/deployment/index.html">Deployment</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="topics/deployment/index.html">Deployment</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="topics/deployment/nginx-unit.html">NGINX Unit</a></li>
 <li class="toctree-l3"><a class="reference internal" href="topics/deployment/manually-with-asgi-server.html">Manually with ASGI server</a></li>
 <li class="toctree-l3"><a class="reference internal" href="topics/deployment/docker.html">Docker</a></li>
@@ -1416,15 +1420,15 @@ document.write(`
 </li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="tutorials/todo-app/index.html">Developing a basic TODO application</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-30"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-30"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="tutorials/todo-app/index.html">Developing a basic TODO application</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-31"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="tutorials/todo-app/0-application-basics.html">Application basics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tutorials/todo-app/1-accessing-the-list.html">Accessing the list</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tutorials/todo-app/2-interacting-with-the-list.html">Making the list interactive</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tutorials/todo-app/3-assembling-the-app.html">Recap and assembling the final application</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="tutorials/sqlalchemy/index.html">Improving the TODO app with SQLAlchemy</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-31"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="tutorials/sqlalchemy/index.html">Improving the TODO app with SQLAlchemy</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-32"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="tutorials/sqlalchemy/0-introduction.html">Introduction</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tutorials/sqlalchemy/1-provide-session-with-di.html">Providing the session with DI</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tutorials/sqlalchemy/2-serialization-plugin.html">Using the serialization plugin</a></li>
@@ -1432,7 +1436,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="tutorials/sqlalchemy/4-final-touches-and-recap.html">Final touches and recap</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="tutorials/dto-tutorial/index.html">Data Transfer Object Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-32"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="tutorials/dto-tutorial/index.html">Data Transfer Object Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-33"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="tutorials/dto-tutorial/01-simple-dto-exclude.html">Our first DTO</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tutorials/dto-tutorial/02-nested-exclude.html">Excluding from nested models</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tutorials/dto-tutorial/03-nested-collection-exclude.html">Excluding from collections of nested models</a></li>
@@ -1445,7 +1449,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="tutorials/dto-tutorial/10-layered-dto-declarations.html">Declaring DTOs on app layers</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="tutorials/repository-tutorial/index.html">SQLAlchemy Repository Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-33"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="tutorials/repository-tutorial/index.html">SQLAlchemy Repository Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-34"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="tutorials/repository-tutorial/01-modeling-and-features.html">Introduction to Database Modeling and Repository Features</a></li>
 
 
@@ -1536,7 +1540,7 @@ document.write(`
       <ul>
         <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.response.HTMXTemplate.params.**kwargs">(litestar.contrib.htmx.response.HTMXTemplate parameter)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.Cookie.to_header.params.**kwargs">(litestar.datastructures.Cookie.to_header parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.Cookie.to_header.params.**kwargs">(litestar.datastructures.Cookie.to_header parameter)</a>
 </li>
         <li><a href="reference/dto/data_structures.html#litestar.dto.data_structures.DTOData.create_instance.params.**kwargs">(litestar.dto.data_structures.DTOData.create_instance parameter)</a>
 </li>
@@ -1981,7 +1985,7 @@ document.write(`
       <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.request.HTMXDetails.__bool__">__bool__() (litestar.contrib.htmx.request.HTMXDetails method)</a>
 
       <ul>
-        <li><a href="reference/datastructures.html#litestar.datastructures.ImmutableState.__bool__">(litestar.datastructures.ImmutableState method)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.ImmutableState.__bool__">(litestar.datastructures.ImmutableState method)</a>
 </li>
       </ul></li>
       <li><a href="reference/app.html#litestar.app.Litestar.__call__">__call__() (litestar.app.Litestar method)</a>
@@ -2032,26 +2036,26 @@ document.write(`
         <li><a href="reference/static_files.html#litestar.static_files.StaticFiles.__call__">(litestar.static_files.StaticFiles method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.ImmutableState.__copy__">__copy__() (litestar.datastructures.ImmutableState method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.ImmutableState.__copy__">__copy__() (litestar.datastructures.ImmutableState method)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.State.__delattr__">__delattr__() (litestar.datastructures.State method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.State.__delattr__">__delattr__() (litestar.datastructures.State method)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.MutableScopeHeaders.__delitem__">__delitem__() (litestar.datastructures.MutableScopeHeaders method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.MutableScopeHeaders.__delitem__">__delitem__() (litestar.datastructures.MutableScopeHeaders method)</a>
 
       <ul>
-        <li><a href="reference/datastructures.html#litestar.datastructures.State.__delitem__">(litestar.datastructures.State method)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.State.__delitem__">(litestar.datastructures.State method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.Cookie.__eq__">__eq__() (litestar.datastructures.Cookie method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.Cookie.__eq__">__eq__() (litestar.datastructures.Cookie method)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.ImmutableState.__get_validators__">__get_validators__() (litestar.datastructures.ImmutableState class method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.ImmutableState.__get_validators__">__get_validators__() (litestar.datastructures.ImmutableState class method)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.ImmutableState.__getattr__">__getattr__() (litestar.datastructures.ImmutableState method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.ImmutableState.__getattr__">__getattr__() (litestar.datastructures.ImmutableState method)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.ImmutableState.__getitem__">__getitem__() (litestar.datastructures.ImmutableState method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.ImmutableState.__getitem__">__getitem__() (litestar.datastructures.ImmutableState method)</a>
 
       <ul>
-        <li><a href="reference/datastructures.html#litestar.datastructures.MutableScopeHeaders.__getitem__">(litestar.datastructures.MutableScopeHeaders method)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.MutableScopeHeaders.__getitem__">(litestar.datastructures.MutableScopeHeaders method)</a>
 </li>
       </ul></li>
       <li><a href="reference/params.html#litestar.params.BodyKwarg.__hash__">__hash__() (litestar.params.BodyKwarg method)</a>
@@ -2173,31 +2177,33 @@ document.write(`
 </li>
         <li><a href="reference/data_extractors.html#litestar.data_extractors.ResponseDataExtractor.__init__">(litestar.data_extractors.ResponseDataExtractor method)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.Accept.__init__">(litestar.datastructures.Accept method)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.Accept.__init__">(litestar.datastructures.Accept method)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.CacheControlHeader.__init__">(litestar.datastructures.CacheControlHeader method)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.CacheControlHeader.__init__">(litestar.datastructures.CacheControlHeader method)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.Cookie.__init__">(litestar.datastructures.Cookie method)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.Cookie.__init__">(litestar.datastructures.Cookie method)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.ETag.__init__">(litestar.datastructures.ETag method)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.ETag.__init__">(litestar.datastructures.ETag method)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.Header.__init__">(litestar.datastructures.Header method)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.Header.__init__">(litestar.datastructures.Header method)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.Headers.__init__">(litestar.datastructures.Headers method)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.Headers.__init__">(litestar.datastructures.Headers method)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.ImmutableMultiDict.__init__">(litestar.datastructures.ImmutableMultiDict method)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.ImmutableMultiDict.__init__">(litestar.datastructures.ImmutableMultiDict method)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.ImmutableState.__init__">(litestar.datastructures.ImmutableState method)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.ImmutableState.__init__">(litestar.datastructures.ImmutableState method)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.MultiDict.__init__">(litestar.datastructures.MultiDict method)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.MultiDict.__init__">(litestar.datastructures.MultiDict method)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.MutableScopeHeaders.__init__">(litestar.datastructures.MutableScopeHeaders method)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.MutableScopeHeaders.__init__">(litestar.datastructures.MutableScopeHeaders method)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.ResponseHeader.__init__">(litestar.datastructures.ResponseHeader method)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.ResponseHeader.__init__">(litestar.datastructures.ResponseHeader method)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.State.__init__">(litestar.datastructures.State method)</a>
+        <li><a href="reference/datastructures/secret_values.html#litestar.datastructures.secret_values.SecretValue.__init__">(litestar.datastructures.secret_values.SecretValue method)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.UploadFile.__init__">(litestar.datastructures.UploadFile method)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.State.__init__">(litestar.datastructures.State method)</a>
+</li>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.UploadFile.__init__">(litestar.datastructures.UploadFile method)</a>
 </li>
         <li><a href="reference/di.html#litestar.di.Provide.__init__">(litestar.di.Provide method)</a>
 </li>
@@ -2546,24 +2552,24 @@ document.write(`
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/datastructures.html#litestar.datastructures.ImmutableState.__iter__">__iter__() (litestar.datastructures.ImmutableState method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.ImmutableState.__iter__">__iter__() (litestar.datastructures.ImmutableState method)</a>
 
       <ul>
-        <li><a href="reference/datastructures.html#litestar.datastructures.MutableScopeHeaders.__iter__">(litestar.datastructures.MutableScopeHeaders method)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.MutableScopeHeaders.__iter__">(litestar.datastructures.MutableScopeHeaders method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.ImmutableState.__len__">__len__() (litestar.datastructures.ImmutableState method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.ImmutableState.__len__">__len__() (litestar.datastructures.ImmutableState method)</a>
 
       <ul>
-        <li><a href="reference/datastructures.html#litestar.datastructures.MutableScopeHeaders.__len__">(litestar.datastructures.MutableScopeHeaders method)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.MutableScopeHeaders.__len__">(litestar.datastructures.MutableScopeHeaders method)</a>
 </li>
       </ul></li>
       <li><a href="reference/config.html#litestar.config.app.ExperimentalFeatures.__new__">__new__() (litestar.config.app.ExperimentalFeatures method)</a>
 
       <ul>
-        <li><a href="reference/datastructures.html#litestar.datastructures.Address.__new__">(litestar.datastructures.Address static method)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.Address.__new__">(litestar.datastructures.Address static method)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.URL.__new__">(litestar.datastructures.URL static method)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.URL.__new__">(litestar.datastructures.URL static method)</a>
 </li>
         <li><a href="reference/dto/field.html#litestar.dto.field.Mark.__new__">(litestar.dto.field.Mark method)</a>
 </li>
@@ -2591,23 +2597,29 @@ document.write(`
       <ul>
         <li><a href="reference/config.html#litestar.config.app.AppConfig.__post_init__">(litestar.config.app.AppConfig method)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.ResponseHeader.__post_init__">(litestar.datastructures.ResponseHeader method)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.ResponseHeader.__post_init__">(litestar.datastructures.ResponseHeader method)</a>
 </li>
         <li><a href="reference/middleware/logging.html#litestar.middleware.logging.LoggingMiddlewareConfig.__post_init__">(litestar.middleware.logging.LoggingMiddlewareConfig method)</a>
 </li>
         <li><a href="reference/template.html#litestar.template.TemplateConfig.__post_init__">(litestar.template.TemplateConfig method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.State.__setattr__">__setattr__() (litestar.datastructures.State method)</a>
+      <li><a href="reference/datastructures/secret_values.html#litestar.datastructures.secret_values.SecretValue.__repr__">__repr__() (litestar.datastructures.secret_values.SecretValue method)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.MutableScopeHeaders.__setitem__">__setitem__() (litestar.datastructures.MutableScopeHeaders method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.State.__setattr__">__setattr__() (litestar.datastructures.State method)</a>
+</li>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.MutableScopeHeaders.__setitem__">__setitem__() (litestar.datastructures.MutableScopeHeaders method)</a>
 
       <ul>
-        <li><a href="reference/datastructures.html#litestar.datastructures.State.__setitem__">(litestar.datastructures.State method)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.State.__setitem__">(litestar.datastructures.State method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.__str__">__str__() (litestar.handlers.BaseRouteHandler method)</a>
+      <li><a href="reference/datastructures/secret_values.html#litestar.datastructures.secret_values.SecretValue.__str__">__str__() (litestar.datastructures.secret_values.SecretValue method)</a>
+
+      <ul>
+        <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.__str__">(litestar.handlers.BaseRouteHandler method)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -2642,19 +2654,19 @@ document.write(`
 </li>
       <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository">AbstractSyncRepository (class in litestar.repository.abc)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.Accept">Accept (class in litestar.datastructures)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.Accept">Accept (class in litestar.datastructures)</a>
 </li>
       <li><a href="reference/connection.html#litestar.connection.Request.accept">accept (litestar.connection.Request property)</a>
 </li>
       <li><a href="reference/connection.html#litestar.connection.WebSocket.accept">accept() (litestar.connection.WebSocket method)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.Accept.accepts">accepts() (litestar.datastructures.Accept method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.Accept.accepts">accepts() (litestar.datastructures.Accept method)</a>
 </li>
       <li><a href="reference/security/jwt.html#litestar.security.jwt.OAuth2Login.access_token">access_token (litestar.security.jwt.OAuth2Login attribute)</a>
 </li>
       <li><a href="reference/response/file.html#litestar.response.file.async_file_iterator.params.adapter">adapter (litestar.response.file.async_file_iterator parameter)</a>, <a href="reference/response/file.html#litestar.response.file.async_file_iterator.params.adapter">[1]</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.MutableScopeHeaders.add">add() (litestar.datastructures.MutableScopeHeaders method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.MutableScopeHeaders.add">add() (litestar.datastructures.MutableScopeHeaders method)</a>
 
       <ul>
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.add">(litestar.repository.abc.AbstractAsyncRepository method)</a>
@@ -2670,7 +2682,7 @@ document.write(`
       </ul></li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.additional_properties">additional_properties (litestar.openapi.spec.Schema attribute)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.Address">Address (class in litestar.datastructures)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.Address">Address (class in litestar.datastructures)</a>
 </li>
       <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.response.HTMXTemplate.params.after">after (litestar.contrib.htmx.response.HTMXTemplate parameter)</a>
 </li>
@@ -2782,7 +2794,7 @@ document.write(`
 </li>
       <li><a href="reference/config.html#litestar.config.cors.CORSConfig.allow_credentials">allow_credentials (litestar.config.cors.CORSConfig attribute)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.ResponseHeader.allow_empty_value">allow_empty_value (litestar.datastructures.ResponseHeader attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.ResponseHeader.allow_empty_value">allow_empty_value (litestar.datastructures.ResponseHeader attribute)</a>
 
       <ul>
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OpenAPIHeader.allow_empty_value">(litestar.openapi.spec.OpenAPIHeader attribute)</a>
@@ -2800,7 +2812,7 @@ document.write(`
 </li>
       <li><a href="reference/stores/registry.html#litestar.stores.registry.StoreRegistry.register.params.allow_override">allow_override (litestar.stores.registry.StoreRegistry.register parameter)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.ResponseHeader.allow_reserved">allow_reserved (litestar.datastructures.ResponseHeader attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.ResponseHeader.allow_reserved">allow_reserved (litestar.datastructures.ResponseHeader attribute)</a>
 
       <ul>
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Encoding.allow_reserved">(litestar.openapi.spec.Encoding attribute)</a>
@@ -2959,9 +2971,9 @@ document.write(`
       <ul>
         <li><a href="reference/contrib/mako.html#litestar.contrib.mako.MakoTemplate.render.params.args">(litestar.contrib.mako.MakoTemplate.render parameter)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.ImmutableMultiDict.params.args">(litestar.datastructures.ImmutableMultiDict parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.ImmutableMultiDict.params.args">(litestar.datastructures.ImmutableMultiDict parameter)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.MultiDict.params.args">(litestar.datastructures.MultiDict parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.MultiDict.params.args">(litestar.datastructures.MultiDict parameter)</a>
 </li>
         <li><a href="reference/typing.html#litestar.typing.FieldDefinition.args">(litestar.typing.FieldDefinition attribute)</a>
 </li>
@@ -3344,7 +3356,7 @@ document.write(`
 </li>
       <li><a href="reference/types.html#litestar.types.BeforeRequestHookHandler">BeforeRequestHookHandler (in module litestar.types)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.Accept.best_match">best_match() (litestar.datastructures.Accept method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.Accept.best_match">best_match() (litestar.datastructures.Accept method)</a>
 </li>
       <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.BigIntAuditBase">BigIntAuditBase (class in litestar.contrib.sqlalchemy.base)</a>
 
@@ -3502,7 +3514,7 @@ document.write(`
       </ul></li>
       <li><a href="reference/config.html#litestar.config.response_cache.ResponseCacheConfig.cache_response_filter">cache_response_filter() (litestar.config.response_cache.ResponseCacheConfig method)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.CacheControlHeader">CacheControlHeader (class in litestar.datastructures)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.CacheControlHeader">CacheControlHeader (class in litestar.datastructures)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.CacheKeyBuilder">CacheKeyBuilder (in module litestar.types)</a>
 </li>
@@ -3599,9 +3611,9 @@ document.write(`
       <li><a href="reference/connection.html#litestar.connection.WebSocket.close">close() (litestar.connection.WebSocket method)</a>
 
       <ul>
-        <li><a href="reference/datastructures.html#litestar.datastructures.FormMultiDict.close">(litestar.datastructures.FormMultiDict method)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.FormMultiDict.close">(litestar.datastructures.FormMultiDict method)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.UploadFile.close">(litestar.datastructures.UploadFile method)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.UploadFile.close">(litestar.datastructures.UploadFile method)</a>
 </li>
         <li><a href="reference/middleware/compression.html#litestar.middleware.compression.CompressionFacade.close">(litestar.middleware.compression.CompressionFacade method)</a>
 </li>
@@ -3917,7 +3929,7 @@ document.write(`
       <li><a href="reference/connection.html#litestar.connection.Request.content_type">content_type (litestar.connection.Request property)</a>
 
       <ul>
-        <li><a href="reference/datastructures.html#litestar.datastructures.UploadFile.params.content_type">(litestar.datastructures.UploadFile parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.UploadFile.params.content_type">(litestar.datastructures.UploadFile parameter)</a>
 </li>
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Encoding.content_type">(litestar.openapi.spec.Encoding attribute)</a>
 </li>
@@ -3940,7 +3952,7 @@ document.write(`
 </li>
       <li><a href="reference/controller.html#litestar.controller.Controller">Controller (class in litestar.controller)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.Cookie">Cookie (class in litestar.datastructures)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.Cookie">Cookie (class in litestar.datastructures)</a>
 </li>
       <li><a href="reference/params.html#litestar.params.Parameter.params.cookie">cookie (litestar.params.Parameter parameter)</a>
 
@@ -4076,12 +4088,12 @@ document.write(`
         <li><a href="reference/testing.html#litestar.testing.TestClient.websocket_connect.params.cookies">(litestar.testing.TestClient.websocket_connect parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.ImmutableMultiDict.copy">copy() (litestar.datastructures.ImmutableMultiDict method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.ImmutableMultiDict.copy">copy() (litestar.datastructures.ImmutableMultiDict method)</a>
 
       <ul>
-        <li><a href="reference/datastructures.html#litestar.datastructures.MultiDict.copy">(litestar.datastructures.MultiDict method)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.MultiDict.copy">(litestar.datastructures.MultiDict method)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.State.copy">(litestar.datastructures.State method)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.State.copy">(litestar.datastructures.State method)</a>
 </li>
       </ul></li>
       <li><a href="reference/app.html#litestar.app.Litestar.params.cors_config">cors_config (litestar.app.Litestar parameter)</a>
@@ -4269,7 +4281,7 @@ document.write(`
 </li>
         <li><a href="reference/connection.html#litestar.connection.WebSocket.send_text.params.data">(litestar.connection.WebSocket.send_text parameter)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.UploadFile.write.params.data">(litestar.datastructures.UploadFile.write parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.UploadFile.write.params.data">(litestar.datastructures.UploadFile.write parameter)</a>
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.to_response.params.data">(litestar.handlers.HTTPRouteHandler.to_response parameter)</a>
 </li>
@@ -4380,16 +4392,16 @@ document.write(`
 </li>
       <li><a href="reference/serialization.html#litestar.serialization.decode_msgpack">decode_msgpack() (in module litestar.serialization)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.ImmutableState.params.deep_copy">deep_copy (litestar.datastructures.ImmutableState parameter)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.ImmutableState.params.deep_copy">deep_copy (litestar.datastructures.ImmutableState parameter)</a>
 
       <ul>
-        <li><a href="reference/datastructures.html#litestar.datastructures.State.params.deep_copy">(litestar.datastructures.State parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.State.params.deep_copy">(litestar.datastructures.State parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.Accept.best_match.params.default">default (litestar.datastructures.Accept.best_match parameter)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.Accept.best_match.params.default">default (litestar.datastructures.Accept.best_match parameter)</a>
 
       <ul>
-        <li><a href="reference/datastructures.html#litestar.datastructures.MutableScopeHeaders.getall.params.default">(litestar.datastructures.MutableScopeHeaders.getall parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.MutableScopeHeaders.getall.params.default">(litestar.datastructures.MutableScopeHeaders.getall parameter)</a>
 </li>
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.default">(litestar.openapi.spec.Schema attribute)</a>
 </li>
@@ -4566,7 +4578,7 @@ document.write(`
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.dependent_schemas">dependent_schemas (litestar.openapi.spec.Schema attribute)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.ResponseHeader.deprecated">deprecated (litestar.datastructures.ResponseHeader attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.ResponseHeader.deprecated">deprecated (litestar.datastructures.ResponseHeader attribute)</a>
 
       <ul>
         <li><a href="reference/handlers.html#litestar.handlers.delete.params.deprecated">(litestar.handlers.delete parameter)</a>
@@ -4592,10 +4604,10 @@ document.write(`
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.deprecated">(litestar.openapi.spec.Schema attribute)</a>
 </li>
       </ul></li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.Cookie.description">description (litestar.datastructures.Cookie attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.Cookie.description">description (litestar.datastructures.Cookie attribute)</a>
 
       <ul>
-        <li><a href="reference/datastructures.html#litestar.datastructures.ResponseHeader.description">(litestar.datastructures.ResponseHeader attribute)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.ResponseHeader.description">(litestar.datastructures.ResponseHeader attribute)</a>
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.delete.params.description">(litestar.handlers.delete parameter)</a>
 </li>
@@ -4694,12 +4706,12 @@ document.write(`
         <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO.detect_nested_field">(litestar.plugins.sqlalchemy.SQLAlchemyDTO class method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.Cookie.dict">dict (litestar.datastructures.Cookie property)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.Cookie.dict">dict (litestar.datastructures.Cookie property)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.ImmutableState.dict">dict() (litestar.datastructures.ImmutableState method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.ImmutableState.dict">dict() (litestar.datastructures.ImmutableState method)</a>
 
       <ul>
-        <li><a href="reference/datastructures.html#litestar.datastructures.MultiMixin.dict">(litestar.datastructures.MultiMixin method)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.MultiMixin.dict">(litestar.datastructures.MultiMixin method)</a>
 </li>
       </ul></li>
       <li><a href="reference/plugins/index.html#litestar.plugins.DIPlugin">DIPlugin (class in litestar.plugins)</a>
@@ -4732,15 +4744,15 @@ document.write(`
 </li>
       <li><a href="reference/testing.html#litestar.testing.WebSocketTestSession.do_asgi_call">do_asgi_call() (litestar.testing.WebSocketTestSession method)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.Cookie.documentation_only">documentation_only (litestar.datastructures.Cookie attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.Cookie.documentation_only">documentation_only (litestar.datastructures.Cookie attribute)</a>
 
       <ul>
-        <li><a href="reference/datastructures.html#litestar.datastructures.Header.documentation_only">(litestar.datastructures.Header attribute)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.Header.documentation_only">(litestar.datastructures.Header attribute)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.ResponseHeader.documentation_only">(litestar.datastructures.ResponseHeader attribute)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.ResponseHeader.documentation_only">(litestar.datastructures.ResponseHeader attribute)</a>
 </li>
       </ul></li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.Cookie.domain">domain (litestar.datastructures.Cookie attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.Cookie.domain">domain (litestar.datastructures.Cookie attribute)</a>
 
       <ul>
         <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.BaseBackendConfig.domain">(litestar.middleware.session.base.BaseBackendConfig attribute)</a>
@@ -5004,7 +5016,7 @@ document.write(`
       </ul></li>
       <li><a href="reference/types.html#litestar.types.Logger.error">error() (litestar.types.Logger method)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.ETag">ETag (class in litestar.datastructures)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.ETag">ETag (class in litestar.datastructures)</a>
 </li>
       <li><a href="reference/app.html#litestar.app.Litestar.params.etag">etag (litestar.app.Litestar parameter)</a>
 
@@ -5100,7 +5112,7 @@ document.write(`
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Example">Example (class in litestar.openapi.spec)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.ResponseHeader.example">example (litestar.datastructures.ResponseHeader attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.ResponseHeader.example">example (litestar.datastructures.ResponseHeader attribute)</a>
 
       <ul>
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OpenAPIHeader.example">(litestar.openapi.spec.OpenAPIHeader attribute)</a>
@@ -5112,7 +5124,7 @@ document.write(`
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.example">(litestar.openapi.spec.Schema attribute)</a>
 </li>
       </ul></li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.ResponseHeader.examples">examples (litestar.datastructures.ResponseHeader attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.ResponseHeader.examples">examples (litestar.datastructures.ResponseHeader attribute)</a>
 
       <ul>
         <li><a href="reference/openapi/openapi.html#litestar.openapi.ResponseSpec.examples">(litestar.openapi.ResponseSpec attribute)</a>
@@ -5344,7 +5356,7 @@ document.write(`
 </li>
       <li><a href="reference/stores/base.html#litestar.stores.base.StorageObject.expired">expired (litestar.stores.base.StorageObject property)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.Cookie.expires">expires (litestar.datastructures.Cookie attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.Cookie.expires">expires (litestar.datastructures.Cookie attribute)</a>
 
       <ul>
         <li><a href="reference/response/base.html#litestar.response.base.Response.set_cookie.params.expires">(litestar.response.base.Response.set_cookie parameter)</a>
@@ -5376,7 +5388,7 @@ document.write(`
         <li><a href="reference/stores/redis.html#litestar.stores.redis.RedisStore.expires_in">(litestar.stores.redis.RedisStore method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.ResponseHeader.explode">explode (litestar.datastructures.ResponseHeader attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.ResponseHeader.explode">explode (litestar.datastructures.ResponseHeader attribute)</a>
 
       <ul>
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Encoding.explode">(litestar.openapi.spec.Encoding attribute)</a>
@@ -5388,7 +5400,7 @@ document.write(`
       </ul></li>
       <li><a href="reference/config.html#litestar.config.cors.CORSConfig.expose_headers">expose_headers (litestar.config.cors.CORSConfig attribute)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.MutableScopeHeaders.extend_header_value">extend_header_value() (litestar.datastructures.MutableScopeHeaders method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.MutableScopeHeaders.extend_header_value">extend_header_value() (litestar.datastructures.MutableScopeHeaders method)</a>
 </li>
       <li><a href="reference/testing.html#litestar.testing.AsyncTestClient.delete.params.extensions">extensions (litestar.testing.AsyncTestClient.delete parameter)</a>
 
@@ -5614,7 +5626,7 @@ document.write(`
       </ul></li>
       <li><a href="reference/types.html#litestar.types.FileSystemProtocol.open.params.file">file (litestar.types.FileSystemProtocol.open parameter)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.UploadFile.params.file_data">file_data (litestar.datastructures.UploadFile parameter)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.UploadFile.params.file_data">file_data (litestar.datastructures.UploadFile parameter)</a>
 </li>
       <li><a href="reference/response/index.html#litestar.response.File.params.file_info">file_info (litestar.response.File parameter)</a>
 
@@ -5652,7 +5664,7 @@ document.write(`
       </ul></li>
       <li><a href="reference/types.html#litestar.types.FileInfo">FileInfo (class in litestar.types)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.UploadFile.params.filename">filename (litestar.datastructures.UploadFile parameter)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.UploadFile.params.filename">filename (litestar.datastructures.UploadFile parameter)</a>
 
       <ul>
         <li><a href="reference/response/index.html#litestar.response.File.params.filename">(litestar.response.File parameter)</a>
@@ -5766,21 +5778,21 @@ document.write(`
       </ul></li>
       <li><a href="reference/security/jwt.html#litestar.security.jwt.BaseJWTAuth.format_auth_header">format_auth_header() (litestar.security.jwt.BaseJWTAuth method)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.FormMultiDict">FormMultiDict (class in litestar.datastructures)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.FormMultiDict">FormMultiDict (class in litestar.datastructures)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.URL.fragment">fragment (litestar.datastructures.URL attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.URL.fragment">fragment (litestar.datastructures.URL attribute)</a>
 
       <ul>
-        <li><a href="reference/datastructures.html#litestar.datastructures.URL.from_components.params.fragment">(litestar.datastructures.URL.from_components parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.URL.from_components.params.fragment">(litestar.datastructures.URL.from_components parameter)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.URL.with_replacements.params.fragment">(litestar.datastructures.URL.with_replacements parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.URL.with_replacements.params.fragment">(litestar.datastructures.URL.with_replacements parameter)</a>
 </li>
       </ul></li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.from_annotation">from_annotation() (litestar.typing.FieldDefinition class method)</a>
 </li>
       <li><a href="reference/stores/base.html#litestar.stores.base.StorageObject.from_bytes">from_bytes() (litestar.stores.base.StorageObject class method)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.URL.from_components">from_components() (litestar.datastructures.URL class method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.URL.from_components">from_components() (litestar.datastructures.URL class method)</a>
 </li>
       <li><a href="reference/app.html#litestar.app.Litestar.from_config">from_config() (litestar.app.Litestar class method)</a>
 </li>
@@ -5788,24 +5800,24 @@ document.write(`
 </li>
       <li><a href="reference/dto/data_structures.html#litestar.dto.data_structures.DTOFieldDefinition.from_field_definition">from_field_definition() (litestar.dto.data_structures.DTOFieldDefinition class method)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.CacheControlHeader.from_header">from_header() (litestar.datastructures.CacheControlHeader class method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.CacheControlHeader.from_header">from_header() (litestar.datastructures.CacheControlHeader class method)</a>
 
       <ul>
-        <li><a href="reference/datastructures.html#litestar.datastructures.ETag.from_header">(litestar.datastructures.ETag class method)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.ETag.from_header">(litestar.datastructures.ETag class method)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.Header.from_header">(litestar.datastructures.Header class method)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.Header.from_header">(litestar.datastructures.Header class method)</a>
 </li>
       </ul></li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.from_kwarg">from_kwarg() (litestar.typing.FieldDefinition class method)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.MutableScopeHeaders.from_message">from_message() (litestar.datastructures.MutableScopeHeaders class method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.MutableScopeHeaders.from_message">from_message() (litestar.datastructures.MutableScopeHeaders class method)</a>
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.from_parameter">from_parameter() (litestar.typing.FieldDefinition class method)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.Headers.from_scope">from_scope() (litestar.datastructures.Headers class method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.Headers.from_scope">from_scope() (litestar.datastructures.Headers class method)</a>
 
       <ul>
-        <li><a href="reference/datastructures.html#litestar.datastructures.URL.from_scope">(litestar.datastructures.URL class method)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.URL.from_scope">(litestar.datastructures.URL class method)</a>
 </li>
       </ul></li>
       <li><a href="reference/contrib/mako.html#litestar.contrib.mako.MakoTemplateEngine.from_template_lookup">from_template_lookup() (litestar.contrib.mako.MakoTemplateEngine class method)</a>
@@ -5928,6 +5940,18 @@ document.write(`
       </ul></li>
       <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.get_model_type_hints">get_model_type_hints() (litestar.dto.base_dto.AbstractDTO static method)</a>
 </li>
+      <li><a href="reference/datastructures/secret_values.html#litestar.datastructures.secret_values.SecretBytes.get_obscured">get_obscured() (litestar.datastructures.secret_values.SecretBytes method)</a>
+
+      <ul>
+        <li><a href="reference/datastructures/secret_values.html#litestar.datastructures.secret_values.SecretString.get_obscured">(litestar.datastructures.secret_values.SecretString method)</a>
+</li>
+        <li><a href="reference/datastructures/secret_values.html#litestar.datastructures.secret_values.SecretValue.get_obscured">(litestar.datastructures.secret_values.SecretValue method)</a>
+</li>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.SecretBytes.get_obscured">(litestar.datastructures.SecretBytes method)</a>
+</li>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.SecretString.get_obscured">(litestar.datastructures.SecretString method)</a>
+</li>
+      </ul></li>
       <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.get_one">get_one() (litestar.repository.abc.AbstractAsyncRepository method)</a>
 
       <ul>
@@ -5948,15 +5972,17 @@ document.write(`
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.get_or_create">(litestar.repository.abc.AbstractSyncRepository method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.get_response_handler">get_response_handler() (litestar.handlers.HTTPRouteHandler method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.get_response_handler">get_response_handler() (litestar.handlers.HTTPRouteHandler method)</a>
+</li>
       <li><a href="reference/router.html#litestar.router.Router.get_route_handler_map">get_route_handler_map() (litestar.router.Router class method)</a>
 </li>
       <li><a href="reference/controller.html#litestar.controller.Controller.get_route_handlers">get_route_handlers() (litestar.controller.Controller method)</a>
 </li>
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.get_schema_from_request">get_schema_from_request() (litestar.openapi.OpenAPIController static method)</a>
+</li>
+      <li><a href="reference/datastructures/secret_values.html#litestar.datastructures.secret_values.SecretValue.get_secret">get_secret() (litestar.datastructures.secret_values.SecretValue method)</a>
 </li>
       <li><a href="reference/serialization.html#litestar.serialization.get_serializer">get_serializer() (in module litestar.serialization)</a>
 </li>
@@ -6010,7 +6036,7 @@ document.write(`
         <li><a href="reference/plugins/index.html#litestar.plugins.DIPlugin.get_typed_init">(litestar.plugins.DIPlugin method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.MutableScopeHeaders.getall">getall() (litestar.datastructures.MutableScopeHeaders method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.MutableScopeHeaders.getall">getall() (litestar.datastructures.MutableScopeHeaders method)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.FileInfo.gid">gid (litestar.types.FileInfo attribute)</a>
 </li>
@@ -6156,7 +6182,7 @@ document.write(`
         <li><a href="reference/testing.html#litestar.testing.TestClient.head">(litestar.testing.TestClient method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.Header">Header (class in litestar.datastructures)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.Header">Header (class in litestar.datastructures)</a>
 </li>
       <li><a href="reference/params.html#litestar.params.Parameter.params.header">header (litestar.params.Parameter parameter)</a>
 
@@ -6166,18 +6192,18 @@ document.write(`
       </ul></li>
       <li><a href="reference/config.html#litestar.config.csrf.CSRFConfig.header_name">header_name (litestar.config.csrf.CSRFConfig attribute)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.CacheControlHeader.from_header.params.header_value">header_value (litestar.datastructures.CacheControlHeader.from_header parameter)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.CacheControlHeader.from_header.params.header_value">header_value (litestar.datastructures.CacheControlHeader.from_header parameter)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.Headers">Headers (class in litestar.datastructures)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.Headers">Headers (class in litestar.datastructures)</a>
 </li>
       <li><a href="reference/connection.html#litestar.connection.ASGIConnection.headers">headers (litestar.connection.ASGIConnection property)</a>
 
       <ul>
         <li><a href="reference/connection.html#litestar.connection.WebSocket.accept.params.headers">(litestar.connection.WebSocket.accept parameter)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.Headers.params.headers">(litestar.datastructures.Headers parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.Headers.params.headers">(litestar.datastructures.Headers parameter)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.UploadFile.params.headers">(litestar.datastructures.UploadFile parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.UploadFile.params.headers">(litestar.datastructures.UploadFile parameter)</a>
 </li>
         <li><a href="reference/exceptions.html#litestar.exceptions.HTTPException.headers">(litestar.exceptions.HTTPException attribute)</a>
 </li>
@@ -6304,9 +6330,9 @@ document.write(`
       </ul></li>
       <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.request.HTMXDetails.history_restore_request">history_restore_request (litestar.contrib.htmx.request.HTMXDetails property)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.Address.host">host (litestar.datastructures.Address attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.Address.host">host (litestar.datastructures.Address attribute)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.URL.hostname">hostname (litestar.datastructures.URL attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.URL.hostname">hostname (litestar.datastructures.URL attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -6482,7 +6508,7 @@ document.write(`
 </li>
       <li><a href="reference/enums.html#litestar.enums.HttpMethod">HttpMethod (class in litestar.enums)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.Cookie.httponly">httponly (litestar.datastructures.Cookie attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.Cookie.httponly">httponly (litestar.datastructures.Cookie attribute)</a>
 
       <ul>
         <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.BaseBackendConfig.httponly">(litestar.middleware.session.base.BaseBackendConfig attribute)</a>
@@ -6564,15 +6590,15 @@ document.write(`
         <li><a href="reference/security/jwt.html#litestar.security.jwt.OAuth2PasswordBearerAuth.login.params.identifier">(litestar.security.jwt.OAuth2PasswordBearerAuth.login parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.CacheControlHeader.immutable">immutable (litestar.datastructures.CacheControlHeader attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.CacheControlHeader.immutable">immutable (litestar.datastructures.CacheControlHeader attribute)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.MultiDict.immutable">immutable() (litestar.datastructures.MultiDict method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.MultiDict.immutable">immutable() (litestar.datastructures.MultiDict method)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.State.immutable_copy">immutable_copy() (litestar.datastructures.State method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.State.immutable_copy">immutable_copy() (litestar.datastructures.State method)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.ImmutableMultiDict">ImmutableMultiDict (class in litestar.datastructures)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.ImmutableMultiDict">ImmutableMultiDict (class in litestar.datastructures)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.ImmutableState">ImmutableState (class in litestar.datastructures)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.ImmutableState">ImmutableState (class in litestar.datastructures)</a>
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OAuthFlows.implicit">implicit (litestar.openapi.spec.OAuthFlows attribute)</a>
 </li>
@@ -6584,7 +6610,7 @@ document.write(`
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.get_type_hints.params.include_extras">include_extras (litestar.typing.FieldDefinition.get_type_hints parameter)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.Header.to_header.params.include_header_name">include_header_name (litestar.datastructures.Header.to_header parameter)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.Header.to_header.params.include_header_name">include_header_name (litestar.datastructures.Header.to_header parameter)</a>
 </li>
       <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTOConfig.include_implicit_fields">include_implicit_fields (litestar.plugins.sqlalchemy.SQLAlchemyDTOConfig attribute)</a>
 </li>
@@ -6931,25 +6957,25 @@ document.write(`
       <ul>
         <li><a href="reference/contrib/mako.html#litestar.contrib.mako.MakoTemplateEngine.register_template_callable.params.key">(litestar.contrib.mako.MakoTemplateEngine.register_template_callable parameter)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.Cookie.key">(litestar.datastructures.Cookie attribute)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.Cookie.key">(litestar.datastructures.Cookie attribute)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.ImmutableState.__getattr__.params.key">(litestar.datastructures.ImmutableState.__getattr__ parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.ImmutableState.__getattr__.params.key">(litestar.datastructures.ImmutableState.__getattr__ parameter)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.ImmutableState.__getitem__.params.key">(litestar.datastructures.ImmutableState.__getitem__ parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.ImmutableState.__getitem__.params.key">(litestar.datastructures.ImmutableState.__getitem__ parameter)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.MutableScopeHeaders.add.params.key">(litestar.datastructures.MutableScopeHeaders.add parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.MutableScopeHeaders.add.params.key">(litestar.datastructures.MutableScopeHeaders.add parameter)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.MutableScopeHeaders.extend_header_value.params.key">(litestar.datastructures.MutableScopeHeaders.extend_header_value parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.MutableScopeHeaders.extend_header_value.params.key">(litestar.datastructures.MutableScopeHeaders.extend_header_value parameter)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.MutableScopeHeaders.getall.params.key">(litestar.datastructures.MutableScopeHeaders.getall parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.MutableScopeHeaders.getall.params.key">(litestar.datastructures.MutableScopeHeaders.getall parameter)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.State.__delattr__.params.key">(litestar.datastructures.State.__delattr__ parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.State.__delattr__.params.key">(litestar.datastructures.State.__delattr__ parameter)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.State.__delitem__.params.key">(litestar.datastructures.State.__delitem__ parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.State.__delitem__.params.key">(litestar.datastructures.State.__delitem__ parameter)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.State.__setattr__.params.key">(litestar.datastructures.State.__setattr__ parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.State.__setattr__.params.key">(litestar.datastructures.State.__setattr__ parameter)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.State.__setitem__.params.key">(litestar.datastructures.State.__setitem__ parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.State.__setitem__.params.key">(litestar.datastructures.State.__setitem__ parameter)</a>
 </li>
         <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.retrieve_cached_history.params.key">(litestar.middleware.rate_limit.RateLimitMiddleware.retrieve_cached_history parameter)</a>
 </li>
@@ -7456,9 +7482,18 @@ document.write(`
     litestar.datastructures
 
       <ul>
-        <li><a href="reference/datastructures.html#module-litestar.datastructures">module</a>
+        <li><a href="reference/datastructures/index.html#module-litestar.datastructures">module</a>
 </li>
       </ul></li>
+      <li>
+    litestar.datastructures.secret_values
+
+      <ul>
+        <li><a href="reference/datastructures/secret_values.html#module-litestar.datastructures.secret_values">module</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     litestar.di
 
@@ -7466,8 +7501,6 @@ document.write(`
         <li><a href="reference/di.html#module-litestar.di">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     litestar.dto.base_dto
 
@@ -7982,9 +8015,9 @@ document.write(`
       <li><a href="reference/config.html#litestar.config.cors.CORSConfig.max_age">max_age (litestar.config.cors.CORSConfig attribute)</a>
 
       <ul>
-        <li><a href="reference/datastructures.html#litestar.datastructures.CacheControlHeader.max_age">(litestar.datastructures.CacheControlHeader attribute)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.CacheControlHeader.max_age">(litestar.datastructures.CacheControlHeader attribute)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.Cookie.max_age">(litestar.datastructures.Cookie attribute)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.Cookie.max_age">(litestar.datastructures.Cookie attribute)</a>
 </li>
         <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.BaseBackendConfig.max_age">(litestar.middleware.session.base.BaseBackendConfig attribute)</a>
 </li>
@@ -8027,11 +8060,11 @@ document.write(`
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.max_properties">max_properties (litestar.openapi.spec.Schema attribute)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.UploadFile.params.max_spool_size">max_spool_size (litestar.datastructures.UploadFile parameter)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.UploadFile.params.max_spool_size">max_spool_size (litestar.datastructures.UploadFile parameter)</a>
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.maximum">maximum (litestar.openapi.spec.Schema attribute)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.Accept.accepts.params.media_type">media_type (litestar.datastructures.Accept.accepts parameter)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.Accept.accepts.params.media_type">media_type (litestar.datastructures.Accept.accepts parameter)</a>
 
       <ul>
         <li><a href="reference/handlers.html#litestar.handlers.delete.params.media_type">(litestar.handlers.delete parameter)</a>
@@ -8117,7 +8150,7 @@ document.write(`
 </li>
       <li><a href="reference/types.html#litestar.types.Message">Message (in module litestar.types)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.MutableScopeHeaders.from_message.params.message">message (litestar.datastructures.MutableScopeHeaders.from_message parameter)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.MutableScopeHeaders.from_message.params.message">message (litestar.datastructures.MutableScopeHeaders.from_message parameter)</a>
 
       <ul>
         <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.BaseSessionBackend.store_in_message.params.message">(litestar.middleware.session.base.BaseSessionBackend.store_in_message parameter)</a>
@@ -8389,7 +8422,9 @@ document.write(`
 </li>
         <li><a href="reference/data_extractors.html#module-litestar.data_extractors">litestar.data_extractors</a>
 </li>
-        <li><a href="reference/datastructures.html#module-litestar.datastructures">litestar.datastructures</a>
+        <li><a href="reference/datastructures/index.html#module-litestar.datastructures">litestar.datastructures</a>
+</li>
+        <li><a href="reference/datastructures/secret_values.html#module-litestar.datastructures.secret_values">litestar.datastructures.secret_values</a>
 </li>
         <li><a href="reference/di.html#module-litestar.di">litestar.di</a>
 </li>
@@ -8520,11 +8555,11 @@ document.write(`
 </li>
       <li><a href="reference/types.html#litestar.types.FileInfo.mtime">mtime (litestar.types.FileInfo attribute)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.MultiMixin.multi_items">multi_items() (litestar.datastructures.MultiMixin method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.MultiMixin.multi_items">multi_items() (litestar.datastructures.MultiMixin method)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.MultiDict">MultiDict (class in litestar.datastructures)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.MultiDict">MultiDict (class in litestar.datastructures)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.MultiMixin">MultiMixin (class in litestar.datastructures)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.MultiMixin">MultiMixin (class in litestar.datastructures)</a>
 </li>
       <li><a href="reference/app.html#litestar.app.Litestar.params.multipart_form_part_limit">multipart_form_part_limit (litestar.app.Litestar parameter)</a>
 
@@ -8550,17 +8585,17 @@ document.write(`
         <li><a href="reference/params.html#litestar.params.Parameter.params.multiple_of">(litestar.params.Parameter parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.CacheControlHeader.must_revalidate">must_revalidate (litestar.datastructures.CacheControlHeader attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.CacheControlHeader.must_revalidate">must_revalidate (litestar.datastructures.CacheControlHeader attribute)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.CacheControlHeader.must_understand">must_understand (litestar.datastructures.CacheControlHeader attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.CacheControlHeader.must_understand">must_understand (litestar.datastructures.CacheControlHeader attribute)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.ImmutableMultiDict.mutable_copy">mutable_copy() (litestar.datastructures.ImmutableMultiDict method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.ImmutableMultiDict.mutable_copy">mutable_copy() (litestar.datastructures.ImmutableMultiDict method)</a>
 
       <ul>
-        <li><a href="reference/datastructures.html#litestar.datastructures.ImmutableState.mutable_copy">(litestar.datastructures.ImmutableState method)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.ImmutableState.mutable_copy">(litestar.datastructures.ImmutableState method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.MutableScopeHeaders">MutableScopeHeaders (class in litestar.datastructures)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.MutableScopeHeaders">MutableScopeHeaders (class in litestar.datastructures)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -8579,7 +8614,7 @@ document.write(`
 </li>
         <li><a href="reference/connection.html#litestar.connection.ASGIConnection.url_for_static_asset.params.name">(litestar.connection.ASGIConnection.url_for_static_asset parameter)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.ResponseHeader.name">(litestar.datastructures.ResponseHeader attribute)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.ResponseHeader.name">(litestar.datastructures.ResponseHeader attribute)</a>
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.ASGIRouteHandler.params.name">(litestar.handlers.ASGIRouteHandler parameter)</a>
 </li>
@@ -8648,23 +8683,23 @@ document.write(`
       </ul></li>
       <li><a href="reference/stores/base.html#litestar.stores.base.NamespacedStore">NamespacedStore (class in litestar.stores.base)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.URL.netloc">netloc (litestar.datastructures.URL attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.URL.netloc">netloc (litestar.datastructures.URL attribute)</a>
 
       <ul>
-        <li><a href="reference/datastructures.html#litestar.datastructures.URL.from_components.params.netloc">(litestar.datastructures.URL.from_components parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.URL.from_components.params.netloc">(litestar.datastructures.URL.from_components parameter)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.URL.with_replacements.params.netloc">(litestar.datastructures.URL.with_replacements parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.URL.with_replacements.params.netloc">(litestar.datastructures.URL.with_replacements parameter)</a>
 </li>
       </ul></li>
       <li><a href="reference/stores/base.html#litestar.stores.base.StorageObject.new">new() (litestar.stores.base.StorageObject class method)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.FileInfo.nlink">nlink (litestar.types.FileInfo attribute)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.CacheControlHeader.no_cache">no_cache (litestar.datastructures.CacheControlHeader attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.CacheControlHeader.no_cache">no_cache (litestar.datastructures.CacheControlHeader attribute)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.CacheControlHeader.no_store">no_store (litestar.datastructures.CacheControlHeader attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.CacheControlHeader.no_store">no_store (litestar.datastructures.CacheControlHeader attribute)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.CacheControlHeader.no_transform">no_transform (litestar.datastructures.CacheControlHeader attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.CacheControlHeader.no_transform">no_transform (litestar.datastructures.CacheControlHeader attribute)</a>
 </li>
       <li><a href="reference/exceptions.html#litestar.exceptions.NoRouteMatchFoundException">NoRouteMatchFoundException</a>
 </li>
@@ -8702,7 +8737,7 @@ document.write(`
         <li><a href="reference/data_extractors.html#litestar.data_extractors.ResponseDataExtractor.params.obfuscate_headers">(litestar.data_extractors.ResponseDataExtractor parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.UploadFile.seek.params.offset">offset (litestar.datastructures.UploadFile.seek parameter)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.UploadFile.seek.params.offset">offset (litestar.datastructures.UploadFile.seek parameter)</a>
 
       <ul>
         <li><a href="reference/pagination.html#litestar.pagination.AbstractAsyncOffsetPaginator.__call__.params.offset">(litestar.pagination.AbstractAsyncOffsetPaginator.__call__ parameter)</a>
@@ -9044,7 +9079,7 @@ document.write(`
         <li><a href="reference/typing.html#litestar.typing.FieldDefinition.origin">(litestar.typing.FieldDefinition attribute)</a>
 </li>
       </ul></li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.Cookie.__eq__.params.other">other (litestar.datastructures.Cookie.__eq__ parameter)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.Cookie.__eq__.params.other">other (litestar.datastructures.Cookie.__eq__ parameter)</a>
 </li>
       <li><a href="reference/controller.html#litestar.controller.Controller.owner">owner (litestar.controller.Controller attribute)</a>
 
@@ -9172,7 +9207,7 @@ document.write(`
 </li>
       <li><a href="reference/dto/config.html#litestar.dto.config.DTOConfig.partial">partial (litestar.dto.config.DTOConfig attribute)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.URL.password">password (litestar.datastructures.URL attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.URL.password">password (litestar.datastructures.URL attribute)</a>
 
       <ul>
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OAuthFlows.password">(litestar.openapi.spec.OAuthFlows attribute)</a>
@@ -9203,13 +9238,13 @@ document.write(`
 </li>
         <li><a href="reference/controller.html#litestar.controller.Controller.path">(litestar.controller.Controller attribute)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.Cookie.path">(litestar.datastructures.Cookie attribute)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.Cookie.path">(litestar.datastructures.Cookie attribute)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.URL.path">(litestar.datastructures.URL attribute)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.URL.path">(litestar.datastructures.URL attribute)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.URL.from_components.params.path">(litestar.datastructures.URL.from_components parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.URL.from_components.params.path">(litestar.datastructures.URL.from_components parameter)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.URL.with_replacements.params.path">(litestar.datastructures.URL.with_replacements parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.URL.with_replacements.params.path">(litestar.datastructures.URL.with_replacements parameter)</a>
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.ASGIRouteHandler.params.path">(litestar.handlers.ASGIRouteHandler parameter)</a>
 </li>
@@ -9404,10 +9439,10 @@ document.write(`
 </li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.poolclass">poolclass (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.Address.port">port (litestar.datastructures.Address attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.Address.port">port (litestar.datastructures.Address attribute)</a>
 
       <ul>
-        <li><a href="reference/datastructures.html#litestar.datastructures.URL.port">(litestar.datastructures.URL attribute)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.URL.port">(litestar.datastructures.URL attribute)</a>
 </li>
         <li><a href="reference/stores/redis.html#litestar.stores.redis.RedisStore.with_client.params.port">(litestar.stores.redis.RedisStore.with_client parameter)</a>
 </li>
@@ -9444,9 +9479,9 @@ document.write(`
 </li>
       <li><a href="reference/logging/config.html#litestar.logging.config.StructLoggingConfig.pretty_print_tty">pretty_print_tty (litestar.logging.config.StructLoggingConfig attribute)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.CacheControlHeader.prevent_storing">prevent_storing() (litestar.datastructures.CacheControlHeader class method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.CacheControlHeader.prevent_storing">prevent_storing() (litestar.datastructures.CacheControlHeader class method)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.CacheControlHeader.private">private (litestar.datastructures.CacheControlHeader attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.CacheControlHeader.private">private (litestar.datastructures.CacheControlHeader attribute)</a>
 </li>
       <li><a href="reference/dto/field.html#litestar.dto.field.Mark.PRIVATE">PRIVATE (litestar.dto.field.Mark attribute)</a>
 </li>
@@ -9476,13 +9511,13 @@ document.write(`
         <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.provide_session">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.Accept.best_match.params.provided_types">provided_types (litestar.datastructures.Accept.best_match parameter)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.Accept.best_match.params.provided_types">provided_types (litestar.datastructures.Accept.best_match parameter)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.CacheControlHeader.proxy_revalidate">proxy_revalidate (litestar.datastructures.CacheControlHeader attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.CacheControlHeader.proxy_revalidate">proxy_revalidate (litestar.datastructures.CacheControlHeader attribute)</a>
 </li>
       <li><a href="reference/channels/backends/psycopg.html#litestar.channels.backends.psycopg.PsycoPgChannelsBackend">PsycoPgChannelsBackend (class in litestar.channels.backends.psycopg)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.CacheControlHeader.public">public (litestar.datastructures.CacheControlHeader attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.CacheControlHeader.public">public (litestar.datastructures.CacheControlHeader attribute)</a>
 </li>
       <li><a href="reference/channels/backends/asyncpg.html#litestar.channels.backends.asyncpg.AsyncPgChannelsBackend.publish">publish() (litestar.channels.backends.asyncpg.AsyncPgChannelsBackend method)</a>
 
@@ -9538,12 +9573,12 @@ document.write(`
 <h2 id="Q">Q</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/datastructures.html#litestar.datastructures.URL.query">query (litestar.datastructures.URL attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.URL.query">query (litestar.datastructures.URL attribute)</a>
 
       <ul>
-        <li><a href="reference/datastructures.html#litestar.datastructures.URL.from_components.params.query">(litestar.datastructures.URL.from_components parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.URL.from_components.params.query">(litestar.datastructures.URL.from_components parameter)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.URL.with_replacements.params.query">(litestar.datastructures.URL.with_replacements parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.URL.with_replacements.params.query">(litestar.datastructures.URL.with_replacements parameter)</a>
 </li>
         <li><a href="reference/params.html#litestar.params.Parameter.params.query">(litestar.params.Parameter parameter)</a>
 </li>
@@ -9557,7 +9592,7 @@ document.write(`
       <li><a href="reference/connection.html#litestar.connection.ASGIConnection.query_params">query_params (litestar.connection.ASGIConnection property)</a>
 
       <ul>
-        <li><a href="reference/datastructures.html#litestar.datastructures.URL.query_params">(litestar.datastructures.URL property)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.URL.query_params">(litestar.datastructures.URL property)</a>
 </li>
         <li><a href="reference/testing.html#litestar.testing.RequestFactory.delete.params.query_params">(litestar.testing.RequestFactory.delete parameter)</a>
 </li>
@@ -9642,7 +9677,7 @@ document.write(`
 </li>
       <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.response.HTMXTemplate.params.re_target">re_target (litestar.contrib.htmx.response.HTMXTemplate parameter)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.UploadFile.read">read() (litestar.datastructures.UploadFile method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.UploadFile.read">read() (litestar.datastructures.UploadFile method)</a>
 </li>
       <li><a href="reference/dto/field.html#litestar.dto.field.Mark.READ_ONLY">READ_ONLY (litestar.dto.field.Mark attribute)</a>
 </li>
@@ -10030,7 +10065,7 @@ document.write(`
 </li>
       <li><a href="reference/testing.html#litestar.testing.RequestFactory">RequestFactory (class in litestar.testing)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.ResponseHeader.required">required (litestar.datastructures.ResponseHeader attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.ResponseHeader.required">required (litestar.datastructures.ResponseHeader attribute)</a>
 
       <ul>
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OpenAPIHeader.required">(litestar.openapi.spec.OpenAPIHeader attribute)</a>
@@ -10264,7 +10299,7 @@ document.write(`
 </li>
       <li><a href="reference/data_extractors.html#litestar.data_extractors.ResponseDataExtractor">ResponseDataExtractor (class in litestar.data_extractors)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.ResponseHeader">ResponseHeader (class in litestar.datastructures)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.ResponseHeader">ResponseHeader (class in litestar.datastructures)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.ResponseHeaders">ResponseHeaders (in module litestar.types)</a>
 </li>
@@ -10389,7 +10424,7 @@ document.write(`
         <li><a href="reference/openapi/spec.html#index-4">RFC 8259</a>, <a href="reference/openapi/spec.html#index-5">[1]</a>
 </li>
       </ul></li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.UploadFile.rolled_to_disk">rolled_to_disk (litestar.datastructures.UploadFile property)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.UploadFile.rolled_to_disk">rolled_to_disk (litestar.datastructures.UploadFile property)</a>
 </li>
       <li><a href="reference/logging/config.html#litestar.logging.config.LoggingConfig.root">root (litestar.logging.config.LoggingConfig attribute)</a>
 </li>
@@ -10481,13 +10516,13 @@ document.write(`
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/datastructures.html#litestar.datastructures.CacheControlHeader.s_maxage">s_maxage (litestar.datastructures.CacheControlHeader attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.CacheControlHeader.s_maxage">s_maxage (litestar.datastructures.CacheControlHeader attribute)</a>
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.safe_generic_origin">safe_generic_origin (litestar.typing.FieldDefinition attribute)</a>
 </li>
       <li><a href="reference/config.html#litestar.config.csrf.CSRFConfig.safe_methods">safe_methods (litestar.config.csrf.CSRFConfig attribute)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.Cookie.samesite">samesite (litestar.datastructures.Cookie attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.Cookie.samesite">samesite (litestar.datastructures.Cookie attribute)</a>
 
       <ul>
         <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.BaseBackendConfig.samesite">(litestar.middleware.session.base.BaseBackendConfig attribute)</a>
@@ -10541,12 +10576,12 @@ document.write(`
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Components.schemas">schemas (litestar.openapi.spec.Components attribute)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.URL.scheme">scheme (litestar.datastructures.URL attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.URL.scheme">scheme (litestar.datastructures.URL attribute)</a>
 
       <ul>
-        <li><a href="reference/datastructures.html#litestar.datastructures.URL.from_components.params.scheme">(litestar.datastructures.URL.from_components parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.URL.from_components.params.scheme">(litestar.datastructures.URL.from_components parameter)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.URL.with_replacements.params.scheme">(litestar.datastructures.URL.with_replacements parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.URL.with_replacements.params.scheme">(litestar.datastructures.URL.with_replacements parameter)</a>
 </li>
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.SecurityScheme.scheme">(litestar.openapi.spec.SecurityScheme attribute)</a>
 </li>
@@ -10568,11 +10603,11 @@ document.write(`
 </li>
         <li><a href="reference/connection.html#litestar.connection.WebSocket.params.scope">(litestar.connection.WebSocket parameter)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.Headers.from_scope.params.scope">(litestar.datastructures.Headers.from_scope parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.Headers.from_scope.params.scope">(litestar.datastructures.Headers.from_scope parameter)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.MutableScopeHeaders.params.scope">(litestar.datastructures.MutableScopeHeaders parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.MutableScopeHeaders.params.scope">(litestar.datastructures.MutableScopeHeaders parameter)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.URL.from_scope.params.scope">(litestar.datastructures.URL.from_scope parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.URL.from_scope.params.scope">(litestar.datastructures.URL.from_scope parameter)</a>
 </li>
         <li><a href="reference/middleware/index.html#litestar.middleware.AbstractAuthenticationMiddleware.__call__.params.scope">(litestar.middleware.AbstractAuthenticationMiddleware.__call__ parameter)</a>
 </li>
@@ -10673,7 +10708,25 @@ document.write(`
         <li><a href="reference/security/jwt.html#litestar.security.jwt.Token.encode.params.secret">(litestar.security.jwt.Token.encode parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.Cookie.secure">secure (litestar.datastructures.Cookie attribute)</a>
+      <li><a href="reference/datastructures/secret_values.html#litestar.datastructures.secret_values.SecretValue.params.secret_value">secret_value (litestar.datastructures.secret_values.SecretValue parameter)</a>
+</li>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.SecretBytes">SecretBytes (class in litestar.datastructures)</a>
+
+      <ul>
+        <li><a href="reference/datastructures/secret_values.html#litestar.datastructures.secret_values.SecretBytes">(class in litestar.datastructures.secret_values)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.SecretString">SecretString (class in litestar.datastructures)</a>
+
+      <ul>
+        <li><a href="reference/datastructures/secret_values.html#litestar.datastructures.secret_values.SecretString">(class in litestar.datastructures.secret_values)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/datastructures/secret_values.html#litestar.datastructures.secret_values.SecretT">SecretT (class in litestar.datastructures.secret_values)</a>
+</li>
+      <li><a href="reference/datastructures/secret_values.html#litestar.datastructures.secret_values.SecretValue">SecretValue (class in litestar.datastructures.secret_values)</a>
+</li>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.Cookie.secure">secure (litestar.datastructures.Cookie attribute)</a>
 
       <ul>
         <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.BaseBackendConfig.secure">(litestar.middleware.session.base.BaseBackendConfig attribute)</a>
@@ -10745,7 +10798,7 @@ document.write(`
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.SecurityScheme">SecurityScheme (class in litestar.openapi.spec)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.UploadFile.seek">seek() (litestar.datastructures.UploadFile method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.UploadFile.seek">seek() (litestar.datastructures.UploadFile method)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.Send">Send (in module litestar.types)</a>
 </li>
@@ -11032,6 +11085,8 @@ document.write(`
 </li>
       <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.set_cached_history">set_cached_history() (litestar.middleware.rate_limit.RateLimitMiddleware method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/response/base.html#litestar.response.base.Response.set_cookie">set_cookie() (litestar.response.base.Response method)</a>
 
       <ul>
@@ -11044,8 +11099,6 @@ document.write(`
         <li><a href="reference/response/index.html#litestar.response.Response.set_etag">(litestar.response.Response method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/response/base.html#litestar.response.base.Response.set_header">set_header() (litestar.response.base.Response method)</a>
 
       <ul>
@@ -11150,13 +11203,13 @@ document.write(`
         <li><a href="reference/testing.html#litestar.testing.create_test_client.params.signature_types">(litestar.testing.create_test_client parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.Cookie.simple_cookie">simple_cookie (litestar.datastructures.Cookie property)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.Cookie.simple_cookie">simple_cookie (litestar.datastructures.Cookie property)</a>
 </li>
       <li><a href="reference/config.html#litestar.config.cors.CORSConfig.simple_headers">simple_headers (litestar.config.cors.CORSConfig property)</a>
 </li>
       <li><a href="reference/events.html#litestar.events.SimpleEventEmitter">SimpleEventEmitter (class in litestar.events)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.UploadFile.read.params.size">size (litestar.datastructures.UploadFile.read parameter)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.UploadFile.read.params.size">size (litestar.datastructures.UploadFile.read parameter)</a>
 
       <ul>
         <li><a href="reference/types.html#litestar.types.FileInfo.size">(litestar.types.FileInfo attribute)</a>
@@ -11206,7 +11259,7 @@ document.write(`
         <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig">(class in litestar.plugins.sqlalchemy)</a>
 </li>
       </ul></li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.CacheControlHeader.stale_while_revalidate">stale_while_revalidate (litestar.datastructures.CacheControlHeader attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.CacheControlHeader.stale_while_revalidate">stale_while_revalidate (litestar.datastructures.CacheControlHeader attribute)</a>
 </li>
       <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.SwaggerRenderPlugin.params.standalone_preset_js_url">standalone_preset_js_url (litestar.openapi.plugins.SwaggerRenderPlugin parameter)</a>
 </li>
@@ -11228,7 +11281,7 @@ document.write(`
         <li><a href="reference/response/file.html#litestar.response.file.File.params.stat_result">(litestar.response.file.File parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.State">State (class in litestar.datastructures)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.State">State (class in litestar.datastructures)</a>
 </li>
       <li><a href="reference/app.html#litestar.app.Litestar.params.state">state (litestar.app.Litestar parameter)</a>
 
@@ -11237,9 +11290,9 @@ document.write(`
 </li>
         <li><a href="reference/connection.html#litestar.connection.ASGIConnection.state">(litestar.connection.ASGIConnection property)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.ImmutableState.params.state">(litestar.datastructures.ImmutableState parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.ImmutableState.params.state">(litestar.datastructures.ImmutableState parameter)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.State.params.state">(litestar.datastructures.State parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.State.params.state">(litestar.datastructures.State parameter)</a>
 </li>
         <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.provide_engine.params.state">(litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.provide_engine parameter)</a>
 </li>
@@ -11464,7 +11517,7 @@ document.write(`
 </li>
       <li><a href="reference/plugins/structlog.html#litestar.plugins.structlog.StructlogPlugin">StructlogPlugin (class in litestar.plugins.structlog)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.ResponseHeader.style">style (litestar.datastructures.ResponseHeader attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.ResponseHeader.style">style (litestar.datastructures.ResponseHeader attribute)</a>
 
       <ul>
         <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.style">(litestar.openapi.OpenAPIController attribute)</a>
@@ -11832,17 +11885,17 @@ document.write(`
         <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.CommonTableAttributes.to_dict">(litestar.plugins.sqlalchemy.CommonTableAttributes method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.Cookie.to_encoded_header">to_encoded_header() (litestar.datastructures.Cookie method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.Cookie.to_encoded_header">to_encoded_header() (litestar.datastructures.Cookie method)</a>
 </li>
       <li><a href="reference/template.html#litestar.template.TemplateConfig.to_engine">to_engine() (litestar.template.TemplateConfig method)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.Cookie.to_header">to_header() (litestar.datastructures.Cookie method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.Cookie.to_header">to_header() (litestar.datastructures.Cookie method)</a>
 
       <ul>
-        <li><a href="reference/datastructures.html#litestar.datastructures.Header.to_header">(litestar.datastructures.Header method)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.Header.to_header">(litestar.datastructures.Header method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.Headers.to_header_list">to_header_list() (litestar.datastructures.Headers method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.Headers.to_header_list">to_header_list() (litestar.datastructures.Headers method)</a>
 </li>
       <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticSchemaPlugin.to_openapi_schema">to_openapi_schema() (litestar.contrib.pydantic.PydanticSchemaPlugin method)</a>
 
@@ -12160,7 +12213,7 @@ document.write(`
         <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.AuditColumns.updated_at">(litestar.plugins.sqlalchemy.AuditColumns attribute)</a>
 </li>
       </ul></li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.UploadFile">UploadFile (class in litestar.datastructures)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.UploadFile">UploadFile (class in litestar.datastructures)</a>
 </li>
       <li><a href="reference/params.html#litestar.params.KwargDefinition.upper_case">upper_case (litestar.params.KwargDefinition attribute)</a>
 </li>
@@ -12176,12 +12229,12 @@ document.write(`
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.upsert_many">(litestar.repository.abc.AbstractSyncRepository method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.URL">URL (class in litestar.datastructures)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.URL">URL (class in litestar.datastructures)</a>
 </li>
       <li><a href="reference/connection.html#litestar.connection.ASGIConnection.url">url (litestar.connection.ASGIConnection property)</a>
 
       <ul>
-        <li><a href="reference/datastructures.html#litestar.datastructures.URL.__new__.params.url">(litestar.datastructures.URL.__new__ parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.URL.__new__.params.url">(litestar.datastructures.URL.__new__ parameter)</a>
 </li>
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Contact.url">(litestar.openapi.spec.Contact attribute)</a>
 </li>
@@ -12264,7 +12317,7 @@ document.write(`
         <li><a href="reference/testing.html#litestar.testing.RequestFactory.put.params.user">(litestar.testing.RequestFactory.put parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.URL.username">username (litestar.datastructures.URL attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.URL.username">username (litestar.datastructures.URL attribute)</a>
 
       <ul>
         <li><a href="reference/stores/redis.html#litestar.stores.redis.RedisStore.with_client.params.username">(litestar.stores.redis.RedisStore.with_client parameter)</a>
@@ -12294,7 +12347,7 @@ document.write(`
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/datastructures.html#litestar.datastructures.ImmutableState.validate">validate() (litestar.datastructures.ImmutableState class method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.ImmutableState.validate">validate() (litestar.datastructures.ImmutableState class method)</a>
 </li>
       <li><a href="reference/controller.html#litestar.controller.Controller.validate_route_handlers">validate_route_handlers() (litestar.controller.Controller method)</a>
 </li>
@@ -12307,19 +12360,19 @@ document.write(`
 </li>
         <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticSchemaPlugin.is_plugin_supported_type.params.value">(litestar.contrib.pydantic.PydanticSchemaPlugin.is_plugin_supported_type parameter)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.Cookie.value">(litestar.datastructures.Cookie attribute)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.Cookie.value">(litestar.datastructures.Cookie attribute)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.ImmutableState.validate.params.value">(litestar.datastructures.ImmutableState.validate parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.ImmutableState.validate.params.value">(litestar.datastructures.ImmutableState.validate parameter)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.MutableScopeHeaders.add.params.value">(litestar.datastructures.MutableScopeHeaders.add parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.MutableScopeHeaders.add.params.value">(litestar.datastructures.MutableScopeHeaders.add parameter)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.MutableScopeHeaders.extend_header_value.params.value">(litestar.datastructures.MutableScopeHeaders.extend_header_value parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.MutableScopeHeaders.extend_header_value.params.value">(litestar.datastructures.MutableScopeHeaders.extend_header_value parameter)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.ResponseHeader.value">(litestar.datastructures.ResponseHeader attribute)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.ResponseHeader.value">(litestar.datastructures.ResponseHeader attribute)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.State.__setattr__.params.value">(litestar.datastructures.State.__setattr__ parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.State.__setattr__.params.value">(litestar.datastructures.State.__setattr__ parameter)</a>
 </li>
-        <li><a href="reference/datastructures.html#litestar.datastructures.State.__setitem__.params.value">(litestar.datastructures.State.__setitem__ parameter)</a>
+        <li><a href="reference/datastructures/index.html#litestar.datastructures.State.__setitem__.params.value">(litestar.datastructures.State.__setitem__ parameter)</a>
 </li>
         <li><a href="reference/middleware/logging.html#litestar.middleware.logging.LoggingMiddlewareConfig.__post_init__.params.value">(litestar.middleware.logging.LoggingMiddlewareConfig.__post_init__ parameter)</a>
 </li>
@@ -12484,7 +12537,7 @@ document.write(`
         <li><a href="reference/stores/redis.html#litestar.stores.redis.RedisStore.with_namespace">(litestar.stores.redis.RedisStore method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.URL.with_replacements">with_replacements() (litestar.datastructures.URL method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.URL.with_replacements">with_replacements() (litestar.datastructures.URL method)</a>
 </li>
       <li><a href="reference/events.html#litestar.events.EventListener.wrap_in_error_handler">wrap_in_error_handler() (litestar.events.EventListener static method)</a>
 </li>
@@ -12492,7 +12545,7 @@ document.write(`
 </li>
       <li><a href="reference/logging/config.html#litestar.logging.config.StructLoggingConfig.wrapper_class">wrapper_class (litestar.logging.config.StructLoggingConfig attribute)</a>
 </li>
-      <li><a href="reference/datastructures.html#litestar.datastructures.UploadFile.write">write() (litestar.datastructures.UploadFile method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.UploadFile.write">write() (litestar.datastructures.UploadFile method)</a>
 
       <ul>
         <li><a href="reference/middleware/compression.html#litestar.middleware.compression.CompressionFacade.write">(litestar.middleware.compression.CompressionFacade method)</a>
