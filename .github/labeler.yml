@@ -17,13 +17,13 @@ labels:
     matcher:
       title: '^docs(\([^)]+\))?:'
 
-  - label: 'breaking'
+  - label: 'Breaking 🔨'
     sync: true
     matcher:
       title: '^(feat|fix)(\([^)]+\))?!:'
 
   # -- distinct areas ----------------------------------------------------------
-  - label: 'area/version-3'
+  - label: '3.x'
     sync: true
     matcher:
       baseBranch: '^v3$'
