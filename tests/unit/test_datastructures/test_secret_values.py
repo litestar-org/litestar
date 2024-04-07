@@ -2,9 +2,13 @@ from __future__ import annotations
 
 import msgspec
 import pytest
+from typing_extensions import Annotated
 
-from litestar import get, post
+from litestar import Litestar, get, post
 from litestar.datastructures.secret_values import SecretBytes, SecretString
+from litestar.openapi.spec.parameter import Parameter as OpenAPIParameter
+from litestar.openapi.spec.schema import Schema
+from litestar.params import Parameter
 from litestar.serialization import default_deserializer, default_serializer
 from litestar.testing import create_test_client
 
@@ -125,3 +129,32 @@ def test_decode_secret_string_on_model_client_error(secret_type: type[SecretStri
             "detail": "Validation failed for POST /",
             "extra": [{"message": "Unsupported type: <class 'int'>", "key": "secret", "source": "body"}],
         }
+
+
+def test_secret_openapi() -> None:
+    @get(sync_to_thread=False)
+    def get_secret(secret: Annotated[SecretString, Parameter(header="x-secret")]) -> str:
+        return secret.get_obscured()
+
+    app = Litestar(route_handlers=[get_secret])
+    paths = app.openapi_schema.paths
+    assert paths is not None
+    op = paths["/"].get
+    assert op is not None
+    assert op.parameters is not None
+    param = op.parameters[0]
+    assert isinstance(param, OpenAPIParameter)
+    assert param.name == "x-secret"
+    assert param.param_in == "header"
+    assert isinstance(param.schema, Schema)
+    assert param.schema.type == "string"
+
+
+def test_secret_value_in_model_repr() -> None:
+    class Model(msgspec.Struct):
+        string: SecretString
+        bytes: SecretBytes
+
+    model = Model(string=SecretString("super-secret"), bytes=SecretBytes(b"super-secret"))
+    assert repr(model) == "Model(string=SecretString('******'), bytes=SecretBytes(b'******'))"
+    assert str(model) == "Model(string=SecretString('******'), bytes=SecretBytes(b'******'))"

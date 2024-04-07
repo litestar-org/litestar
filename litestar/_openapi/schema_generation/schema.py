@@ -46,7 +46,7 @@ from litestar._openapi.schema_generation.utils import (
     _type_or_first_not_none_inner_type,
     get_json_schema_formatted_examples,
 )
-from litestar.datastructures import UploadFile
+from litestar.datastructures import SecretBytes, SecretString, UploadFile
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
 from litestar.openapi.spec.schema import Schema, SchemaDataContainer
@@ -114,6 +114,8 @@ TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
     OrderedDict: Schema(type=OpenAPIType.OBJECT),
     Path: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URI),
     Pattern: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.REGEX),
+    SecretBytes: Schema(type=OpenAPIType.STRING),
+    SecretString: Schema(type=OpenAPIType.STRING),
     Sequence: Schema(type=OpenAPIType.ARRAY),
     Set: Schema(type=OpenAPIType.ARRAY),
     Tuple: Schema(type=OpenAPIType.ARRAY),
