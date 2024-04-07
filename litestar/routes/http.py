@@ -96,7 +96,7 @@ class HTTPRoute(BaseRoute):
         http- methods and route handlers.
         """
         for route_handler in self.route_handlers:
-            kwargs_model = self.create_handler_kwargs_model(route_handler=route_handler)
+            kwargs_model = route_handler.create_kwargs_model(path_parameters=self.path_parameters)
             for http_method in route_handler.http_methods:
                 if self.route_handler_map.get(http_method):
                     raise ImproperlyConfiguredException(

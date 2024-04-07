@@ -670,7 +670,8 @@ class Litestar(Router):
                 route.create_handler_map()
 
             elif isinstance(route, WebSocketRoute):
-                route.handler_parameter_model = route.create_handler_kwargs_model(route.route_handler)
+                handler = route.route_handler
+                route.handler_parameter_model = handler.create_kwargs_model(path_parameters=route.path_parameters)
 
             for plugin in self.plugins.receive_route:
                 plugin.receive_route(route)
@@ -762,7 +763,7 @@ class Litestar(Router):
             (
                 route
                 for route in routes
-                if passed_parameters.issuperset({param.name for param in route.path_parameters})
+                if passed_parameters.issuperset(route.path_parameters)
             ),
             routes[-1],
         )
