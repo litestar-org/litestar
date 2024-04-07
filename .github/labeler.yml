@@ -271,9 +271,8 @@ labels:
   - label: 'area/private-api'
     sync: true
     matcher:
-    files:
-      any: ['litestar/_*.py', 'litestar/*/_*.py', 'litestar/_*/**/*.py']
-
+      files:
+        any: ['litestar/_*.py', 'litestar/*/_*.py', 'litestar/_*/**/*.py']
 
   # -- Size Based Labels -------------------------------------------------------
   - label: 'size: small'
