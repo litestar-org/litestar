@@ -115,8 +115,14 @@ def default_deserializer(
             if predicate(target_type):
                 return decoder(target_type, value)
 
-    if issubclass(target_type, (Path, PurePath, ImmutableState, UUID, SecretString, SecretBytes)):
+    if issubclass(target_type, (Path, PurePath, ImmutableState, UUID)):
         return target_type(value)
+
+    if issubclass(target_type, SecretBytes) and isinstance(value, (bytes, str)):
+        return SecretBytes(value.encode("utf-8") if isinstance(value, str) else value)
+
+    if issubclass(target_type, SecretString) and isinstance(value, str):
+        return SecretString(value)
 
     raise TypeError(f"Unsupported type: {type(value)!r}")
 

@@ -1,6 +1,9 @@
 from __future__ import annotations
 
-from litestar import get
+import msgspec
+import pytest
+
+from litestar import get, post
 from litestar.datastructures.secret_values import SecretBytes, SecretString
 from litestar.serialization import default_deserializer, default_serializer
 from litestar.testing import create_test_client
@@ -116,3 +119,47 @@ def test_secret_string_parameter() -> None:
         response = client.get("/?secret=super-secret")
         assert response.status_code == 200
         assert response.json() == "******"
+
+
+def test_decode_secret_string_on_model() -> None:
+    class Model(msgspec.Struct):
+        secret: SecretString
+
+    @post(signature_types=[Model])
+    async def post_secret(data: Model) -> None:
+        assert data.secret.get_secret() == "super"
+
+    with create_test_client([post_secret]) as client:
+        response = client.post("/", json={"secret": "super"})
+        assert response.status_code == 201
+
+
+def test_decode_secret_bytes_on_model() -> None:
+    class Model(msgspec.Struct):
+        secret: SecretBytes
+
+    @post(signature_types=[Model])
+    async def post_secret(data: Model) -> None:
+        assert data.secret.get_secret() == b"super"
+
+    with create_test_client([post_secret]) as client:
+        response = client.post("/", json={"secret": "super"})
+        assert response.status_code == 201
+
+
+@pytest.mark.parametrize(("secret_type",), [(SecretString,), (SecretBytes,)])
+def test_decode_secret_string_on_model_client_error(secret_type: type[SecretString | SecretBytes]) -> None:
+    model = msgspec.defstruct(name="Model", fields=[("secret", secret_type)])
+
+    @post(signature_namespace={"model": model})
+    async def post_secret(data: model) -> None:
+        return None
+
+    with create_test_client([post_secret]) as client:
+        response = client.post("/", json={"secret": 123})
+        assert response.status_code == 400
+        assert response.json() == {
+            "status_code": 400,
+            "detail": "Validation failed for POST /",
+            "extra": [{"message": "Unsupported type: <class 'int'>", "key": "secret", "source": "body"}],
+        }
