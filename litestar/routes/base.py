@@ -138,7 +138,9 @@ class BaseRoute(ABC):
             )
 
     @classmethod
-    def _parse_path(cls, path: str) -> tuple[str, str, list[str | PathParameterDefinition], dict[str, PathParameterDefinition]]:
+    def _parse_path(
+        cls, path: str
+    ) -> tuple[str, str, list[str | PathParameterDefinition], dict[str, PathParameterDefinition]]:
         """Normalize and parse a path.
 
         Splits the path into a list of components, parsing any that are path parameters. Also builds the OpenAPI
