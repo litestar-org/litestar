@@ -46,5 +46,5 @@ guidelines:
 
 - Store secrets securely, using environment variables, secret management services, or encrypted databases.
 - Always use constant time comparison functions such as :func:`secrets.compare_digest` for comparing secret values to
-mitigate the risk of timing attacks.
+  mitigate the risk of timing attacks.
 - Implement access controls and logging to monitor and restrict who can access sensitive information.
