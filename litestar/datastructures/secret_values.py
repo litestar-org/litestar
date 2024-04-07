@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 from typing import Generic, TypeVar, Union
 
 __all__ = (
@@ -16,7 +17,7 @@ SecretT = TypeVar("SecretT", bound=Union[str, bytes])
 """Type that represents a secret value of type ``str`` or ``bytes``."""
 
 
-class SecretValue(Generic[SecretT]):
+class SecretValue(ABC, Generic[SecretT]):
     """Represents a secret value that can be of type `str` or `bytes`."""
 
     def __init__(self, secret_value: SecretT) -> None:
@@ -37,7 +38,8 @@ class SecretValue(Generic[SecretT]):
 
         return self._secret_value
 
-    def _get_obscured_representation(self) -> SecretT:
+    @abstractmethod
+    def get_obscured(self) -> SecretT:
         """Return the hidden representation of the secret value.
 
         Raises:
@@ -46,15 +48,6 @@ class SecretValue(Generic[SecretT]):
 
         raise NotImplementedError("Subclasses must implement _get_obscured_representation")
 
-    def __len__(self) -> int:
-        """Returns the length of the actual secret value.
-
-        Returns:
-            int: Length of the secret value.
-        """
-
-        return len(self.get_secret())
-
     def __str__(self) -> str:
         """Returns a string representation of the hidden secret value.
 
@@ -62,7 +55,7 @@ class SecretValue(Generic[SecretT]):
             str: String representation of the hidden secret value.
         """
 
-        return str(self._get_obscured_representation())
+        return str(self.get_obscured())
 
     def __repr__(self) -> str:
         """Returns a string representation of the object for debugging purposes.
@@ -72,34 +65,13 @@ class SecretValue(Generic[SecretT]):
         """
 
         class_name = self.__class__.__name__
-        return f"{class_name}({self._get_obscured_representation()!r})"
-
-    def __eq__(self, other: object) -> bool:
-        """Checks if the given object is equal to the current instance.
-
-        Args:
-            other: The object to compare.
-
-        Returns:
-            bool: True if equal, False otherwise.
-        """
-
-        return isinstance(other, self.__class__) and self.get_secret() == other._secret_value
-
-    def __hash__(self) -> int:
-        """Returns the hash value of the actual secret value.
-
-        Returns:
-            int: Hash value of the secret value.
-        """
-
-        return hash(self.get_secret())
+        return f"{class_name}({self.get_obscured()!r})"
 
 
 class SecretString(SecretValue[str]):
     """Represents a secret string value."""
 
-    def _get_obscured_representation(self) -> str:
+    def get_obscured(self) -> str:
         """Overrides the base class method to return the hidden string value.
 
         Returns:
@@ -112,7 +84,7 @@ class SecretString(SecretValue[str]):
 class SecretBytes(SecretValue[bytes]):
     """Represents a secret bytes value."""
 
-    def _get_obscured_representation(self) -> bytes:
+    def get_obscured(self) -> bytes:
         """Overrides the base class method to return the hidden bytes value.
 
         Returns:
