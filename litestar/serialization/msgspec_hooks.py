@@ -53,8 +53,8 @@ DEFAULT_TYPE_ENCODERS: TypeEncodersMap = {
     deque: list,
     Decimal: lambda val: int(val) if val.as_tuple().exponent >= 0 else float(val),
     Pattern: lambda val: val.pattern,
-    SecretBytes: lambda _: "******",
-    SecretString: lambda _: "******",
+    SecretBytes: lambda val: val.get_obscured().decode("utf-8"),
+    SecretString: lambda val: val.get_obscured(),
     # support subclasses of stdlib types, If no previous type matched, these will be
     # the last type in the mro, so we use this to (attempt to) convert a subclass into
     # its base class. # see https://github.com/jcrist/msgspec/issues/248
