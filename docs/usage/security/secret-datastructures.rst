@@ -20,7 +20,7 @@ The following example demonstrates how to use :class:`~datastructures.SecretStri
 
     When storing and comparing secrets, use secure practices to prevent unauthorized access. For example, use
     environment variables, secret management services, or encrypted databases to store secrets securely. When comparing
-    secrets, use :func:`secrets.compare_digest` to mitigate the risk of timing attacks.
+    secrets, use :func:`secrets.compare_digest` or similar to mitigate the risk of timing attacks.
 
 .. note::
 
@@ -45,5 +45,6 @@ it's vital to adopt secure practices for storing and comparing secrets within yo
 guidelines:
 
 - Store secrets securely, using environment variables, secret management services, or encrypted databases.
-- Always use :func:`secrets.compare_digest` for comparing secret values to mitigate the risk of timing attacks.
+- Always use constant time comparison functions such as :func:`secrets.compare_digest` for comparing secret values to
+mitigate the risk of timing attacks.
 - Implement access controls and logging to monitor and restrict who can access sensitive information.
