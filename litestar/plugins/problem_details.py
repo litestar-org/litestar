@@ -3,18 +3,22 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Callable, Mapping, TypeVar
 
-from litestar.connection.request import Request
+from typing_extensions import TypeAlias
+
 from litestar.exceptions.http_exceptions import HTTPException
 from litestar.plugins.base import InitPluginProtocol
 from litestar.response.base import Response
-from litestar.types.callable_types import ExceptionHandler, ExceptionT
 
 if TYPE_CHECKING:
     from litestar.config.app import AppConfig
+    from litestar.connection.request import Request
+    from litestar.types.callable_types import ExceptionHandler, ExceptionT
 
 ProblemDetailsExceptionT = TypeVar("ProblemDetailsExceptionT", bound="ProblemDetailsException")
-ProblemDetailsExceptionHandlerType = Callable[[Request, ProblemDetailsExceptionT], Response]
-ExceptionToProblemDetailMapType = Mapping[type[ExceptionT], Callable[[ExceptionT], ProblemDetailsExceptionT]]
+ProblemDetailsExceptionHandlerType: TypeAlias = "Callable[[Request, ProblemDetailsExceptionT], Response]"
+ExceptionToProblemDetailMapType: TypeAlias = (
+    "Mapping[type[ExceptionT], Callable[[ExceptionT], ProblemDetailsExceptionT]]"
+)
 
 
 def _problem_details_exception_handler(request: Request, exc: ProblemDetailsException) -> Response:
