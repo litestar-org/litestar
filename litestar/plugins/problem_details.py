@@ -24,7 +24,7 @@ def _problem_details_exception_handler(request: Request, exc: ProblemDetailsExce
 def _create_exception_handler(
     exc_to_problem_details_exc_fn: Callable[[ExceptionT], ProblemDetailsException], exc_type: type[ExceptionT]
 ) -> ExceptionHandler:
-    def _exception_handler(req: Request, exc: exc_type) -> Response:
+    def _exception_handler(req: Request, exc: exc_type) -> Response:  # type: ignore[valid-type]
         problem_details_exc = exc_to_problem_details_exc_fn(exc)
 
         return problem_details_exc.to_response(req)
