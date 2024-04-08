@@ -281,22 +281,22 @@ labels:
       files:
         count:
           gte: 1
-          lte: 4
+          lte: 10
 
   - label: 'size: medium'
     sync: true
     matcher:
       files:
         count:
-          gte: 5
-          lte: 10
+          gte: 10
+          lte: 25
 
   - label: 'size: large'
     sync: true
     matcher:
       files:
         count:
-          gte: 11
+          gte: 26
 
 # -- Merge Checks --------------------------------------------------------------
 checks:
