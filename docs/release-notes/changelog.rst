@@ -3,6 +3,34 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.8.1
+    :date: 2024-04-08
+
+    .. change:: ASGI lifespan msg after lifespan context exception
+        :type: bugfix
+        :pr: 3315
+
+        An exception raised within an asgi lifespan context manager would result in a "lifespan.startup.failed" message
+
+        This PR modifies `ASGIRouter.lifespan()` so that it sends a shutdown failure message if we've already confirmed
+        startup.
+
+    .. change:: Fix when pydantic==1.10 is installed
+        :type: bugfix
+        :pr: 3335
+        :issue: 3334
+
+        This PR fixes a bug introduced in #3296 where it failed to take into account that the `pydantic_v2` variable could be `Empty`.
+
+    .. change:: OpenAPI router and controller on same app.
+        :type: bugfix
+        :pr: 3338
+        :issue: 3337
+
+        Fixes an `ImproperlyConfiguredException` where an app that explicitly registers an `OpenAPIController` on the application, and implicitly uses the OpenAPI router via the `OpenAPIConfig` object. This was caused by the two different handlers being given the same name as defined in `litestar.constants`.
+
+        PR adds a distinct name for use by the handler that serves `openapi.json` on the controller.
+
 .. changelog:: 2.8.0
     :date: 2024-04-05
 
