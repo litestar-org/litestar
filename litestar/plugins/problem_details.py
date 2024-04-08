@@ -39,7 +39,7 @@ def _http_exception_to_problem_detail_exception(exc: HTTPException) -> ProblemDe
 class ProblemDetailsException(HTTPException):
     """A problem details exception as per RFC 9457."""
 
-    _PROBLEM_DETAIL_MEDIA_TYPE = "application/problem+json"
+    _PROBLEM_DETAILS_MEDIA_TYPE = "application/problem+json"
 
     def __init__(
         self,
@@ -79,7 +79,7 @@ class ProblemDetailsException(HTTPException):
             if (value := getattr(self, attr, None)) is not None:
                 problem_details[attr] = value
 
-        return Response(problem_details, headers=self.headers, media_type=self._PROBLEM_DETAIL_MEDIA_TYPE)
+        return Response(problem_details, headers=self.headers, media_type=self._PROBLEM_DETAILS_MEDIA_TYPE)
 
 
 @dataclass
