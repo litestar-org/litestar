@@ -56,6 +56,7 @@ def test_raising_problem_details_exception(exception: ProblemDetailsException, e
 
         assert response.headers["content-type"] == "application/problem+json"
         assert response.json() == expected
+        assert response.status_code == expected["status"]
 
 
 @pytest.mark.parametrize("enable", (True, False))
@@ -92,6 +93,7 @@ def test_exception_to_problem_detail_map() -> None:
     with create_test_client([get_foo], plugins=[ProblemDetailsPlugin(config)]) as client:
         response = client.get("/")
 
+        assert response.status_code == 400
         assert response.headers["content-type"] == "application/problem+json"
         assert response.json() == {
             "type": "validation-error",

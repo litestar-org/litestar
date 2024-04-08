@@ -79,7 +79,12 @@ class ProblemDetailsException(HTTPException):
             if (value := getattr(self, attr, None)) is not None:
                 problem_details[attr] = value
 
-        return Response(problem_details, headers=self.headers, media_type=self._PROBLEM_DETAILS_MEDIA_TYPE)
+        return Response(
+            problem_details,
+            headers=self.headers,
+            media_type=self._PROBLEM_DETAILS_MEDIA_TYPE,
+            status_code=self.status_code,
+        )
 
 
 @dataclass
