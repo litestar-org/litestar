@@ -101,7 +101,8 @@ class ProblemDetailsConfig:
     """A mapping to convert exceptions into ``ProblemDetailsException.``
 
     All exceptions provided in this will get a custom exception handler where these exceptions
-    are converted into ``ProblemDetailException`` before handling them.
+    are converted into ``ProblemDetailException`` before handling them. This can be used to override
+    the handler for ``HTTPException`` as well.
     """
 
 
