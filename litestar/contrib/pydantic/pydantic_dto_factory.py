@@ -46,17 +46,23 @@ T = TypeVar("T", bound="ModelType | Collection[ModelType]")
 
 __all__ = ("PydanticDTO",)
 
-_down_types = {
-    pydantic_v2.JsonValue: Any,
+_down_types: dict[Any, Any] = {
     pydantic_v1.EmailStr: str,
-    pydantic_v2.EmailStr: str,
     pydantic_v1.IPvAnyAddress: str,
-    pydantic_v2.IPvAnyAddress: str,
     pydantic_v1.IPvAnyInterface: str,
-    pydantic_v2.IPvAnyInterface: str,
     pydantic_v1.IPvAnyNetwork: str,
-    pydantic_v2.IPvAnyNetwork: str,
 }
+
+if pydantic_v2 is not Empty:  # type: ignore[comparison-overlap]  # pragma: no cover
+    _down_types.update(
+        {
+            pydantic_v2.JsonValue: Any,
+            pydantic_v2.EmailStr: str,
+            pydantic_v2.IPvAnyAddress: str,
+            pydantic_v2.IPvAnyInterface: str,
+            pydantic_v2.IPvAnyNetwork: str,
+        }
+    )
 
 
 def convert_validation_error(validation_error: ValidationErrorV1 | ValidationErrorV2) -> list[dict[str, Any]]:
