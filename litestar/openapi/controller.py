@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 from functools import cached_property
-from typing import TYPE_CHECKING, Any, Callable, Literal
+from typing import TYPE_CHECKING, Any, Callable, Final, Literal
+from uuid import uuid4
 
-from litestar.constants import OPENAPI_JSON_HANDLER_NAME, OPENAPI_NOT_INITIALIZED
+from litestar.constants import OPENAPI_NOT_INITIALIZED
 from litestar.controller import Controller
 from litestar.enums import MediaType, OpenAPIMediaType
 from litestar.exceptions import ImproperlyConfiguredException
@@ -14,12 +15,16 @@ from litestar.serialization import encode_json
 from litestar.serialization.msgspec_hooks import decode_json
 from litestar.status_codes import HTTP_404_NOT_FOUND
 
-__all__ = ("OpenAPIController",)
-
-
 if TYPE_CHECKING:
     from litestar.connection.request import Request
     from litestar.openapi.spec.open_api import OpenAPI
+
+__all__ = ("OpenAPIController",)
+
+# NOTE: We are explicitly using a different name to the one defined in litestar.constants so that an openapi
+#   controller can be added to a router on the same application as the openapi router.
+#   See: https://github.com/litestar-org/litestar/issues/3337
+OPENAPI_JSON_HANDLER_NAME: Final = f"{uuid4().hex}_litestar_openapi_json"
 
 
 class OpenAPIController(Controller):
