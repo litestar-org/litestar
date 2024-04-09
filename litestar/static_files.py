@@ -1,23 +1,22 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from pathlib import PurePath  # noqa: TCH003
-from typing import TYPE_CHECKING, Any, Sequence
+from os.path import commonpath
+from pathlib import Path, PurePath
+from typing import TYPE_CHECKING, Any, Literal, Sequence
 
-from litestar.exceptions import ImproperlyConfiguredException
-from litestar.file_system import BaseLocalFileSystem
-from litestar.handlers import asgi, get, head
-from litestar.response.file import ASGIFileResponse  # noqa: TCH001
+from litestar.exceptions import ImproperlyConfiguredException, NotFoundException
+from litestar.file_system import BaseLocalFileSystem, FileSystemAdapter
+from litestar.handlers import get, head
+from litestar.response.file import ASGIFileResponse
 from litestar.router import Router
-from litestar.static_files.base import StaticFiles
-from litestar.types import Empty
-from litestar.utils import normalize_path, warn_deprecation
+from litestar.status_codes import HTTP_404_NOT_FOUND
+from litestar.types import Empty, FileInfo
+from litestar.utils import normalize_path
 
-__all__ = ("StaticFilesConfig",)
+__all__ = ("create_static_files_router",)
 
 if TYPE_CHECKING:
     from litestar.datastructures import CacheControlHeader
-    from litestar.handlers.asgi_handlers import ASGIRouteHandler
     from litestar.openapi.spec import SecurityRequirement
     from litestar.types import (
         AfterRequestHookHandler,
@@ -29,81 +28,6 @@ if TYPE_CHECKING:
         Middleware,
         PathType,
     )
-
-
-@dataclass
-class StaticFilesConfig:
-    """Configuration for static file service.
-
-    To enable static files, pass an instance of this class to the :class:`Litestar <litestar.app.Litestar>` constructor using
-    the 'static_files_config' key.
-    """
-
-    path: str
-    """Path to serve static files from.
-
-    Note that the path cannot contain path parameters.
-    """
-    directories: list[PathType]
-    """A list of directories to serve files from."""
-    html_mode: bool = False
-    """Flag dictating whether serving html.
-
-    If true, the default file will be 'index.html'.
-    """
-    name: str | None = None
-    """An optional string identifying the static files handler."""
-    file_system: Any = BaseLocalFileSystem()  # noqa: RUF009
-    """The file_system spec to use for serving files.
-
-    Notes:
-        - A file_system is a class that adheres to the
-            :class:`FileSystemProtocol <litestar.types.FileSystemProtocol>`.
-        - You can use any of the file systems exported from the
-            [fsspec](https://filesystem-spec.readthedocs.io/en/latest/) library for this purpose.
-    """
-    opt: dict[str, Any] | None = None
-    """A string key dictionary of arbitrary values that will be added to the static files handler."""
-    guards: list[Guard] | None = None
-    """A list of :class:`Guard <litestar.types.Guard>` callables."""
-    exception_handlers: ExceptionHandlersMap | None = None
-    """A dictionary that maps handler functions to status codes and/or exception types."""
-    send_as_attachment: bool = False
-    """Whether to send the file as an attachment."""
-
-    def __post_init__(self) -> None:
-        _validate_config(path=self.path, directories=self.directories, file_system=self.file_system)
-        self.path = normalize_path(self.path)
-        warn_deprecation(
-            "2.6.0",
-            kind="class",
-            deprecated_name="StaticFilesConfig",
-            removal_in="3.0",
-            alternative="create_static_files_router",
-            info='Replace static_files_config=[StaticFilesConfig(path="/static", directories=["assets"])] with '
-            'route_handlers=[..., create_static_files_router(path="/static", directories=["assets"])]',
-        )
-
-    def to_static_files_app(self) -> ASGIRouteHandler:
-        """Return an ASGI app serving static files based on the config.
-
-        Returns:
-            :class:`StaticFiles <litestar.static_files.StaticFiles>`
-        """
-        static_files = StaticFiles(
-            is_html_mode=self.html_mode,
-            directories=self.directories,
-            file_system=self.file_system,
-            send_as_attachment=self.send_as_attachment,
-        )
-        return asgi(
-            path=self.path,
-            name=self.name,
-            is_static=True,
-            opt=self.opt,
-            guards=self.guards,
-            exception_handlers=self.exception_handlers,
-        )(static_files)
 
 
 def create_static_files_router(
@@ -166,22 +90,32 @@ def create_static_files_router(
     if cache_control:
         headers = {cache_control.HEADER_NAME: cache_control.to_header()}
 
-    static_files = StaticFiles(
-        is_html_mode=html_mode,
-        directories=directories,
-        file_system=file_system,
-        send_as_attachment=send_as_attachment,
-        resolve_symlinks=resolve_symlinks,
-        headers=headers,
-    )
+    resolved_directories = tuple(Path(p).resolve() if resolve_symlinks else Path(p) for p in directories)
+    adapter = FileSystemAdapter(file_system)
 
     @get("{file_path:path}", name=name)
     async def get_handler(file_path: PurePath) -> ASGIFileResponse:
-        return await static_files.handle(path=file_path.as_posix(), is_head_response=False)
+        return await _handler(
+            path=file_path.as_posix(),
+            is_head_response=False,
+            directories=resolved_directories,
+            adapter=adapter,
+            is_html_mode=html_mode,
+            send_as_attachment=send_as_attachment,
+            headers=headers,
+        )
 
     @head("/{file_path:path}", name=f"{name}/head")
     async def head_handler(file_path: PurePath) -> ASGIFileResponse:
-        return await static_files.handle(path=file_path.as_posix(), is_head_response=True)
+        return await _handler(
+            path=file_path.as_posix(),
+            is_head_response=True,
+            directories=resolved_directories,
+            adapter=adapter,
+            is_html_mode=html_mode,
+            send_as_attachment=send_as_attachment,
+            headers=headers,
+        )
 
     handlers = [get_handler, head_handler]
 
@@ -189,7 +123,15 @@ def create_static_files_router(
 
         @get("/", name=f"{name}/index")
         async def index_handler() -> ASGIFileResponse:
-            return await static_files.handle(path="/", is_head_response=False)
+            return await _handler(
+                path="/",
+                is_head_response=False,
+                directories=resolved_directories,
+                adapter=adapter,
+                is_html_mode=True,
+                send_as_attachment=send_as_attachment,
+                headers=headers,
+            )
 
         handlers.append(index_handler)
 
@@ -208,6 +150,84 @@ def create_static_files_router(
         security=security,
         tags=tags,
     )
+
+
+async def _handler(
+    *,
+    path: str,
+    is_head_response: bool,
+    directories: tuple[Path, ...],
+    send_as_attachment: bool,
+    adapter: FileSystemAdapter,
+    is_html_mode: bool,
+    headers: dict[str, str] | None,
+) -> ASGIFileResponse:
+    split_path = path.split("/")
+    filename = split_path[-1]
+    joined_path = Path(*split_path)
+    resolved_path, fs_info = await _get_fs_info(directories=directories, file_path=joined_path, adapter=adapter)
+    content_disposition_type: Literal["inline", "attachment"] = "attachment" if send_as_attachment else "inline"
+
+    if is_html_mode and fs_info and fs_info["type"] == "directory":
+        filename = "index.html"
+        resolved_path, fs_info = await _get_fs_info(
+            directories=directories,
+            file_path=Path(resolved_path or joined_path) / filename,
+            adapter=adapter,
+        )
+
+    if fs_info and fs_info["type"] == "file":
+        return ASGIFileResponse(
+            file_path=resolved_path or joined_path,
+            file_info=fs_info,
+            file_system=adapter.file_system,
+            filename=filename,
+            content_disposition_type=content_disposition_type,
+            is_head_response=is_head_response,
+            headers=headers,
+        )
+
+    if is_html_mode:
+        # for some reason coverage doesn't catch these two lines
+        filename = "404.html"  # pragma: no cover
+        resolved_path, fs_info = await _get_fs_info(  # pragma: no cover
+            directories=directories,
+            file_path=filename,
+            adapter=adapter,
+        )
+
+        if fs_info and fs_info["type"] == "file":
+            return ASGIFileResponse(
+                file_path=resolved_path or joined_path,
+                file_info=fs_info,
+                file_system=adapter.file_system,
+                filename=filename,
+                status_code=HTTP_404_NOT_FOUND,
+                content_disposition_type=content_disposition_type,
+                is_head_response=is_head_response,
+                headers=headers,
+            )
+
+    raise NotFoundException(
+        f"no file or directory match the path {resolved_path or joined_path} was found"
+    )  # pragma: no cover
+
+
+async def _get_fs_info(
+    directories: Sequence[PathType],
+    file_path: PathType,
+    adapter: FileSystemAdapter,
+) -> tuple[Path, FileInfo] | tuple[None, None]:
+    """Return the resolved path and a :class:`stat_result <os.stat_result>`"""
+    for directory in directories:
+        try:
+            joined_path = Path(directory, file_path)
+            file_info = await adapter.info(joined_path)
+            if file_info and commonpath([str(directory), file_info["name"], joined_path]) == str(directory):
+                return joined_path, file_info
+        except FileNotFoundError:
+            continue
+    return None, None
 
 
 def _validate_config(path: str, directories: list[PathType], file_system: Any) -> None:
