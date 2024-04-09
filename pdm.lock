@@ -5,11 +5,11 @@
 groups = ["default", "annotated-types", "attrs", "brotli", "cli", "cryptography", "dev", "dev-contrib", "docs", "full", "jinja", "jwt", "linting", "mako", "minijinja", "opentelemetry", "piccolo", "picologging", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "test"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:aee1fc0768448e2e9d242daa64ddac161ce72c4d1aa92f5ad3658871a19752a3"
+content_hash = "sha256:33c8a861fc8e4c383f392ee3d1a9ed5fb721e370cf16dfff4365eab49b12b90b"
 
 [[package]]
 name = "advanced-alchemy"
-version = "0.9.0"
+version = "0.8.4"
 requires_python = ">=3.8"
 summary = "Ready-to-go SQLAlchemy concoctions."
 groups = ["docs", "full", "sqlalchemy"]
@@ -20,8 +20,8 @@ dependencies = [
     "typing-extensions>=4.0.0",
 ]
 files = [
-    {file = "advanced_alchemy-0.9.0-py3-none-any.whl", hash = "sha256:882cf8b27cc8800f80971d44eb2c65f3a8718c28f2552a04ffe345ba7ac1e922"},
-    {file = "advanced_alchemy-0.9.0.tar.gz", hash = "sha256:25c27f57cb1b9cebf3073742c64061cea2b8b765660cb59fa02430cfb7a5c018"},
+    {file = "advanced_alchemy-0.8.4-py3-none-any.whl", hash = "sha256:0ad4e2e33cfa6f8641ea7e9df50c8dbb18890000080b74d85305ba8821c2ce50"},
+    {file = "advanced_alchemy-0.8.4.tar.gz", hash = "sha256:6436ebad0e0b92ef5093bf425961f5469020035c65953ff7f619aef24a08fc71"},
 ]
 
 [[package]]
