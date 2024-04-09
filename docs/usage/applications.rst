@@ -129,7 +129,9 @@ To seed application state, you can pass a :class:`~.datastructures.state.State` 
 .. literalinclude:: /examples/application_state/passing_initial_state.py
     :caption: Using Application State
 
-:class:`~.datastructures.state.State` can be initialized with a :class:`dictionary <dict>` or ``None``.
+.. note:: :class:`~.datastructures.state.State` can be initialized with a :class:`dictionary <dict>`, an instance of
+    :class:`~.datastructures.state.ImmutableState` or :class:`~.datastructures.state.State`,
+    or a :class:`list` of :class:`tuples <tuple>` containing key/value pairs.
 
 .. attention:: You may instruct :class:`~.datastructures.state.State` to deep copy initialized data to prevent mutation
     from outside the application context. To do this, st :paramref:`~.datastructures.state.State.deep_copy` to
