@@ -21,7 +21,7 @@ ExceptionToProblemDetailMapType: TypeAlias = (
 )
 
 
-def _problem_details_exception_handler(request: Request, exc: ProblemDetailsException) -> Response:
+def _problem_details_exception_handler(request: Request[Any, Any, Any], exc: ProblemDetailsException) -> Response[Any]:
     return exc.to_response(request)
 
 
@@ -75,7 +75,7 @@ class ProblemDetailsException(HTTPException):
         self.title = title
         self.instance = instance
 
-    def to_response(self, request: Request) -> Response:
+    def to_response(self, request: Request[Any, Any, Any]) -> Response[dict[str, Any]]:
         """Convert the problem details exception into a ``Response.``"""
 
         problem_details = {"type": self.type_, "status": self.status_code}
