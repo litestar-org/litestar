@@ -322,6 +322,15 @@ jobs:
         with:
           python-version: "3.12"
 
+      - uses: pdm-project/setup-pdm@v4
+        name: Set up PDM
+        with:
+          python-version: "3.12"
+          allow-python-prereleases: false
+          cache: true
+          cache-dependency-path: |
+            ./pdm.lock
+
       - name: Install dependencies
         run: |
           pdm install

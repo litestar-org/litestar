@@ -6,6 +6,33 @@ on:
   workflow_dispatch:
 
 jobs:
+
+  publish-release:
+    name: upload release to PyPI
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    environment: release
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: pdm-project/setup-pdm@v4
+        name: Set up PDM
+        with:
+          python-version: "3.12"
+          cache: true
+
+      - name: Build package
+        run: pdm build
+
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+
   notify-issues:
     needs: publish-release
     name: Notify issues
