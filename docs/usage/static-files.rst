@@ -71,7 +71,7 @@ Retrieving paths to static files
 under which a specific file will be available:
 
 .. literalinclude:: /examples/static_files/route_reverse.py
-    :caption: Retrieving paths to static files using :meth:`Litestar.route_reverse <litestar.app.Litestar.route_reverse>`
+    :caption: Retrieving paths to static files using :meth:`~.app.Litestar.route_reverse`
 
 .. tip:: The ``name`` parameter has to match the ``name`` parameter passed to
     :func:`create_static_files_router`, which defaults to ``static``.
