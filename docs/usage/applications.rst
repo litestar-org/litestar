@@ -133,9 +133,9 @@ To seed application state, you can pass a :class:`~.datastructures.state.State` 
     :class:`~.datastructures.state.ImmutableState` or :class:`~.datastructures.state.State`,
     or a :class:`list` of :class:`tuples <tuple>` containing key/value pairs.
 
-.. attention:: You may instruct :class:`~.datastructures.state.State` to deep copy initialized data to prevent mutation
-    from outside the application context. To do this, st :paramref:`~.datastructures.state.State.deep_copy` to
-    ``True`` in the :class:`~.datastructures.state.State` constructor.
+You may instruct :class:`~.datastructures.state.State` to deep copy initialized data to prevent mutation from outside the application context. 
+
+To do this, set :paramref:`~.datastructures.state.State.deep_copy` to ``True`` in the :class:`~.datastructures.state.State` constructor.
 
 Injecting Application State into Route Handlers and Dependencies
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
