@@ -276,8 +276,8 @@ jobs:
             docs/_build/html
             .pr_number
 
-  test_pydantic_1_app:
-    name: Test Minimal Pydantic 1 application
+  test_minimal_app:
+    name: Test Minimal Application with Base Dependencies
     runs-on: ubuntu-latest
     env:
       python_version: "3.12"
@@ -298,6 +298,29 @@ jobs:
           cache: true
           cache-dependency-path: |
             ./pdm.lock
+
+      - name: Install dependencies
+        run: pdm install
+
+      - name: Set pythonpath
+        run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
+
+      - name: Test
+        run: mv tests/examples/test_hello_world.py test_hello_world.py && pdm run pytest test_hello_world.py
+
+  test_pydantic_1_app:
+    name: Test Minimal Pydantic 1 application
+    runs-on: ubuntu-latest
+    env:
+      python_version: "3.12"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
 
       - name: Install dependencies
         run: |
