@@ -79,9 +79,14 @@ class ProblemDetailsException(HTTPException):
         """Convert the problem details exception into a ``Response.``"""
 
         problem_details = {"type": self.type_, "status": self.status_code}
-        for attr in ("title", "instance", "detail", "extra"):
+        for attr in ("title", "instance", "detail"):
             if (value := getattr(self, attr, None)) is not None:
                 problem_details[attr] = value
+
+        if isinstance(self.extra, Mapping):
+            problem_details.update(self.extra)
+        elif self.extra is not None:
+            problem_details["extra"] = self.extra
 
         return Response(
             problem_details,
