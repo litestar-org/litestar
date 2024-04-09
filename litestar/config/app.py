@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import enum
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Callable, Sequence
+from typing import TYPE_CHECKING, Any, Callable
 
 from litestar.config.allowed_hosts import AllowedHostsConfig
 from litestar.config.response_cache import ResponseCacheConfig
@@ -13,12 +13,12 @@ from litestar.types.empty import Empty
 if TYPE_CHECKING:
     from contextlib import AbstractAsyncContextManager
 
-    from litestar import Litestar
+    from litestar import Litestar, Response
     from litestar.config.compression import CompressionConfig
     from litestar.config.cors import CORSConfig
     from litestar.config.csrf import CSRFConfig
     from litestar.connection import Request, WebSocket
-    from litestar.datastructures import CacheControlHeader, ETag, ResponseHeader
+    from litestar.datastructures import CacheControlHeader, ETag
     from litestar.di import Provide
     from litestar.dto import AbstractDTO
     from litestar.events.emitter import BaseEventEmitterBackend
@@ -43,7 +43,7 @@ if TYPE_CHECKING:
         Middleware,
         ParametersMap,
         ResponseCookies,
-        ResponseType,
+        ResponseHeaders,
         TypeEncodersMap,
     )
     from litestar.types.callable_types import LifespanHook
@@ -151,17 +151,23 @@ class AppConfig:
     """
     parameters: ParametersMap = field(default_factory=dict)
     """A mapping of :class:`Parameter <.params.Parameter>` definitions available to all application paths."""
+    path: str = field(default="")
+    """A base path that prefixed to all route handlers, controllers and routers associated with the
+    application instance.
+
+    .. versionadded:: 2.8.0
+    """
     pdb_on_exception: bool = field(default=False)
     """Drop into the PDB on an exception"""
     plugins: list[PluginProtocol] = field(default_factory=list)
     """List of :class:`SerializationPluginProtocol <.plugins.SerializationPluginProtocol>`."""
     request_class: type[Request] | None = field(default=None)
     """An optional subclass of :class:`Request <.connection.Request>` to use for http connections."""
-    response_class: ResponseType | None = field(default=None)
+    response_class: type[Response] | None = field(default=None)
     """A custom subclass of :class:`Response <.response.Response>` to be used as the app's default response."""
     response_cookies: ResponseCookies = field(default_factory=list)
     """A list of :class:`Cookie <.datastructures.Cookie>`."""
-    response_headers: Sequence[ResponseHeader] = field(default_factory=list)
+    response_headers: ResponseHeaders = field(default_factory=list)
     """A string keyed dictionary mapping :class:`ResponseHeader <.datastructures.ResponseHeader>`."""
     response_cache_config: ResponseCacheConfig = field(default_factory=ResponseCacheConfig)
     """Configures caching behavior of the application."""
@@ -198,10 +204,10 @@ class AppConfig:
     """A list of string tags that will be appended to the schema of all route handlers under the application."""
     template_config: TemplateConfigType | None = field(default=None)
     """An instance of :class:`TemplateConfig <.template.TemplateConfig>`."""
-    type_encoders: TypeEncodersMap | None = field(default=None)
-    """A mapping of types to callables that transform them into types supported for serialization."""
     type_decoders: TypeDecodersSequence | None = field(default=None)
     """A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization."""
+    type_encoders: TypeEncodersMap | None = field(default=None)
+    """A mapping of types to callables that transform them into types supported for serialization."""
     websocket_class: type[WebSocket] | None = field(default=None)
     """An optional subclass of :class:`WebSocket <.connection.WebSocket>` to use for websocket connections."""
     multipart_form_part_limit: int = field(default=1000)

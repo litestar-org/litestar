@@ -12,14 +12,14 @@ from litestar.utils.predicates import is_class_and_subclass
 if TYPE_CHECKING:
     from contextlib import AbstractAsyncContextManager
 
-    from litestar import Request, WebSocket
+    from litestar import Request, Response, WebSocket
     from litestar.config.allowed_hosts import AllowedHostsConfig
     from litestar.config.app import ExperimentalFeatures
     from litestar.config.compression import CompressionConfig
     from litestar.config.cors import CORSConfig
     from litestar.config.csrf import CSRFConfig
     from litestar.config.response_cache import ResponseCacheConfig
-    from litestar.datastructures import CacheControlHeader, ETag, ResponseHeader, State
+    from litestar.datastructures import CacheControlHeader, ETag, State
     from litestar.dto import AbstractDTO
     from litestar.events import BaseEventEmitterBackend, EventListener
     from litestar.logging.config import BaseLoggingConfig
@@ -47,7 +47,7 @@ if TYPE_CHECKING:
         OnAppInitHandler,
         ParametersMap,
         ResponseCookies,
-        ResponseType,
+        ResponseHeaders,
         TypeEncodersMap,
     )
 
@@ -86,15 +86,16 @@ def create_test_client(
     openapi_config: OpenAPIConfig | None = DEFAULT_OPENAPI_CONFIG,
     opt: Mapping[str, Any] | None = None,
     parameters: ParametersMap | None = None,
+    path: str | None = None,
     plugins: Sequence[PluginProtocol] | None = None,
     lifespan: list[Callable[[Litestar], AbstractAsyncContextManager] | AbstractAsyncContextManager] | None = None,
     raise_server_exceptions: bool = True,
     pdb_on_exception: bool | None = None,
     request_class: type[Request] | None = None,
     response_cache_config: ResponseCacheConfig | None = None,
-    response_class: ResponseType | None = None,
+    response_class: type[Response] | None = None,
     response_cookies: ResponseCookies | None = None,
-    response_headers: Sequence[ResponseHeader] | None = None,
+    response_headers: ResponseHeaders | None = None,
     return_dto: type[AbstractDTO] | None | EmptyType = Empty,
     root_path: str = "",
     security: Sequence[SecurityRequirement] | None = None,
@@ -201,6 +202,10 @@ def create_test_client(
             :class:`ASGI Scope <.types.Scope>`.
         parameters: A mapping of :class:`Parameter <.params.Parameter>` definitions available to all application
             paths.
+        path: A path fragment that is prefixed to all route handlers, controllers and routers associated
+            with the application instance.
+
+            .. versionadded:: 2.8.0
         pdb_on_exception: Drop into the PDB when an exception occurs.
         plugins: Sequence of plugins.
         request_class: An optional subclass of :class:`Request <.connection.Request>` to use for http connections.
@@ -273,6 +278,7 @@ def create_test_client(
         openapi_config=openapi_config,
         opt=opt,
         parameters=parameters,
+        path=path,
         pdb_on_exception=pdb_on_exception,
         plugins=plugins,
         request_class=request_class,
@@ -343,13 +349,14 @@ def create_async_test_client(
     opt: Mapping[str, Any] | None = None,
     parameters: ParametersMap | None = None,
     pdb_on_exception: bool | None = None,
+    path: str | None = None,
     plugins: Sequence[PluginProtocol] | None = None,
     raise_server_exceptions: bool = True,
     request_class: type[Request] | None = None,
     response_cache_config: ResponseCacheConfig | None = None,
-    response_class: ResponseType | None = None,
+    response_class: type[Response] | None = None,
     response_cookies: ResponseCookies | None = None,
-    response_headers: Sequence[ResponseHeader] | None = None,
+    response_headers: ResponseHeaders | None = None,
     return_dto: type[AbstractDTO] | None | EmptyType = Empty,
     root_path: str = "",
     security: Sequence[SecurityRequirement] | None = None,
@@ -456,6 +463,10 @@ def create_async_test_client(
             :class:`ASGI Scope <.types.Scope>`.
         parameters: A mapping of :class:`Parameter <.params.Parameter>` definitions available to all application
             paths.
+        path: A path fragment that is prefixed to all route handlers, controllers and routers associated
+            with the application instance.
+
+            .. versionadded:: 2.8.0
         pdb_on_exception: Drop into the PDB when an exception occurs.
         plugins: Sequence of plugins.
         request_class: An optional subclass of :class:`Request <.connection.Request>` to use for http connections.
@@ -527,6 +538,7 @@ def create_async_test_client(
         openapi_config=openapi_config,
         opt=opt,
         parameters=parameters,
+        path=path,
         pdb_on_exception=pdb_on_exception,
         plugins=plugins,
         request_class=request_class,

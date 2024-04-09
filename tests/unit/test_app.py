@@ -6,7 +6,7 @@ import logging
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from dataclasses import fields
-from typing import TYPE_CHECKING, List, Tuple
+from typing import TYPE_CHECKING, Callable, List, Tuple
 from unittest.mock import MagicMock, Mock, PropertyMock
 
 import pytest
@@ -14,7 +14,7 @@ from click import Group
 from pytest import MonkeyPatch
 
 from litestar import Litestar, MediaType, Request, Response, get
-from litestar.config.app import AppConfig
+from litestar.config.app import AppConfig, ExperimentalFeatures
 from litestar.config.response_cache import ResponseCacheConfig
 from litestar.contrib.sqlalchemy.plugins import SQLAlchemySerializationPlugin
 from litestar.datastructures import MutableScopeHeaders, State
@@ -164,15 +164,7 @@ def test_app_config_object_used(app_config_object: AppConfig, monkeypatch: pytes
     # have been accessed during app instantiation.
     property_mocks: List[Tuple[str, Mock]] = []
     for field in fields(AppConfig):
-        if field.name == "response_cache_config":
-            property_mock = PropertyMock(return_value=ResponseCacheConfig())
-        if field.name in ["event_emitter_backend", "response_cache_config"]:
-            property_mock = PropertyMock(return_value=Mock())
-        else:
-            # default iterable return value allows the mock properties that need to be iterated over in
-            # `Litestar.__init__()` to not blow up, for other properties it shouldn't matter what the value is for the
-            # sake of this test.
-            property_mock = PropertyMock(return_value=[])
+        property_mock = PropertyMock()
         property_mocks.append((field.name, property_mock))
         monkeypatch.setattr(type(app_config_object), field.name, property_mock, raising=False)
 
@@ -221,6 +213,22 @@ def test_set_state() -> None:
     assert app.state._state == {"a": "b", "c": "D", "e": "f"}
 
 
+async def test_dont_override_initial_state(create_scope: Callable[..., Scope]) -> None:
+    app = Litestar()
+
+    scope = create_scope(headers=[], state={"foo": "bar"})
+
+    async def send(message: Message) -> None:
+        pass
+
+    async def receive() -> None:
+        pass
+
+    await app(scope, receive, send)  # type: ignore[arg-type]
+
+    assert scope["state"].get("foo") == "bar"
+
+
 def test_app_from_config(app_config_object: AppConfig) -> None:
     Litestar.from_config(app_config_object)
 
@@ -246,8 +254,7 @@ def test_before_send() -> None:
 
 def test_using_custom_http_exception_handler() -> None:
     @get("/{param:int}")
-    def my_route_handler(param: int) -> None:
-        ...
+    def my_route_handler(param: int) -> None: ...
 
     def my_custom_handler(_: Request, __: Exception) -> Response:
         return Response(content="custom message", media_type=MediaType.TEXT, status_code=HTTP_400_BAD_REQUEST)
@@ -438,3 +445,17 @@ def test_lifespan_context_and_shutdown_hook_execution_order() -> None:
     assert events[1] == "ctx_1"
     assert events[2] == "hook_a"
     assert events[3] == "hook_b"
+
+
+def test_use_dto_codegen_feature_flag_warns() -> None:
+    with pytest.warns(LitestarWarning, match="Use of redundant experimental feature flag DTO_CODEGEN"):
+        Litestar(experimental_features=[ExperimentalFeatures.DTO_CODEGEN])
+
+
+def test_using_custom_path_parameter() -> None:
+    @get()
+    def my_route_handler() -> None: ...
+
+    with create_test_client(my_route_handler, path="/abc") as client:
+        response = client.get("/abc")
+        assert response.status_code == HTTP_200_OK

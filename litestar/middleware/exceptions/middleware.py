@@ -9,10 +9,10 @@ from typing import TYPE_CHECKING, Any, Type, cast
 
 from litestar.datastructures import Headers
 from litestar.enums import MediaType, ScopeType
-from litestar.exceptions import WebSocketException
+from litestar.exceptions import HTTPException, LitestarException, WebSocketException
 from litestar.middleware.cors import CORSMiddleware
 from litestar.middleware.exceptions._debug_response import _get_type_encoders_for_request, create_debug_response
-from litestar.serialization import encode_json
+from litestar.serialization import encode_json, get_serializer
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.utils.deprecation import warn_deprecation
 
@@ -20,6 +20,8 @@ __all__ = ("ExceptionHandlerMiddleware", "ExceptionResponseContent", "create_exc
 
 
 if TYPE_CHECKING:
+    from starlette.exceptions import HTTPException as StarletteHTTPException
+
     from litestar import Response
     from litestar.app import Litestar
     from litestar.connection import Request
@@ -58,15 +60,16 @@ def get_exception_handler(exception_handlers: ExceptionHandlersMap, exc: Excepti
     if not exception_handlers:
         return None
 
-    status_code: int | None = getattr(exc, "status_code", None)
-    if status_code and (exception_handler := exception_handlers.get(status_code)):
-        return exception_handler
+    default_handler: ExceptionHandler | None = None
+    if isinstance(exc, HTTPException):
+        if exception_handler := exception_handlers.get(exc.status_code):
+            return exception_handler
+    else:
+        default_handler = exception_handlers.get(HTTP_500_INTERNAL_SERVER_ERROR)
 
     return next(
         (exception_handlers[cast("Type[Exception]", cls)] for cls in getmro(type(exc)) if cls in exception_handlers),
-        exception_handlers[HTTP_500_INTERNAL_SERVER_ERROR]
-        if not hasattr(exc, "status_code") and HTTP_500_INTERNAL_SERVER_ERROR in exception_handlers
-        else None,
+        default_handler,
     )
 
 
@@ -94,17 +97,29 @@ class ExceptionResponseContent:
         from litestar.response import Response
 
         content: Any = {k: v for k, v in asdict(self).items() if k not in ("headers", "media_type") and v is not None}
+        type_encoders = _get_type_encoders_for_request(request) if request is not None else None
 
         if self.media_type != MediaType.JSON:
-            content = encode_json(content)
+            content = encode_json(content, get_serializer(type_encoders))
 
         return Response(
             content=content,
             headers=self.headers,
             status_code=self.status_code,
             media_type=self.media_type,
-            type_encoders=_get_type_encoders_for_request(request) if request is not None else None,
+            type_encoders=type_encoders,
         )
+
+
+def _starlette_exception_handler(request: Request[Any, Any, Any], exc: StarletteHTTPException) -> Response:
+    return create_exception_response(
+        request=request,
+        exc=HTTPException(
+            detail=exc.detail,
+            status_code=exc.status_code,
+            headers=exc.headers,
+        ),
+    )
 
 
 def create_exception_response(request: Request[Any, Any, Any], exc: Exception) -> Response:
@@ -122,11 +137,23 @@ def create_exception_response(request: Request[Any, Any, Any], exc: Exception) -
     Returns:
         Response: HTTP response constructed from exception details.
     """
-    status_code = getattr(exc, "status_code", HTTP_500_INTERNAL_SERVER_ERROR)
-    if status_code == HTTP_500_INTERNAL_SERVER_ERROR:
-        detail = "Internal Server Error"
+    headers: dict[str, Any] | None
+    extra: dict[str, Any] | list | None
+
+    if isinstance(exc, HTTPException):
+        status_code = exc.status_code
+        headers = exc.headers
+        extra = exc.extra
     else:
-        detail = getattr(exc, "detail", repr(exc))
+        status_code = HTTP_500_INTERNAL_SERVER_ERROR
+        headers = None
+        extra = None
+
+    detail = (
+        exc.detail
+        if isinstance(exc, LitestarException) and status_code != HTTP_500_INTERNAL_SERVER_ERROR
+        else "Internal Server Error"
+    )
 
     try:
         media_type = request.route_handler.media_type
@@ -136,8 +163,8 @@ def create_exception_response(request: Request[Any, Any, Any], exc: Exception) -
     content = ExceptionResponseContent(
         status_code=status_code,
         detail=detail,
-        headers=getattr(exc, "headers", None),
-        extra=getattr(exc, "extra", None),
+        headers=headers,
+        extra=extra,
         media_type=media_type,
     )
     return content.to_response(request=request)
@@ -246,12 +273,13 @@ class ExceptionHandlerMiddleware:
         Returns:
             None.
         """
+        code = 4000 + HTTP_500_INTERNAL_SERVER_ERROR
+        reason = "Internal Server Error"
         if isinstance(exc, WebSocketException):
             code = exc.code
             reason = exc.detail
-        else:
-            code = 4000 + getattr(exc, "status_code", HTTP_500_INTERNAL_SERVER_ERROR)
-            reason = getattr(exc, "detail", repr(exc))
+        elif isinstance(exc, LitestarException):
+            reason = exc.detail
 
         event: WebSocketCloseEvent = {"type": "websocket.close", "code": code, "reason": reason}
         await send(event)
@@ -266,7 +294,7 @@ class ExceptionHandlerMiddleware:
         Returns:
             An HTTP response.
         """
-        status_code = getattr(exc, "status_code", HTTP_500_INTERNAL_SERVER_ERROR)
+        status_code = exc.status_code if isinstance(exc, HTTPException) else HTTP_500_INTERNAL_SERVER_ERROR
         if status_code == HTTP_500_INTERNAL_SERVER_ERROR and self._get_debug_scope(request.scope):
             return create_debug_response(request=request, exc=exc)
         return create_exception_response(request=request, exc=exc)
