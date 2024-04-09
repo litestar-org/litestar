@@ -26,14 +26,12 @@ except ImportError as e:
     raise MissingDependencyException("pydantic") from e
 
 try:
-    # check if we have pydantic v2 installed, and try to import both versions
     import pydantic as pydantic_v2
 
     assert pydantic_v2.__version__.startswith("2.")  # noqa: S101
 
     from pydantic import v1 as pydantic_v1
 except AssertionError:
-    # check if pydantic 1 is installed and import it
     import pydantic as pydantic_v1  # type: ignore[no-redef]
 
     pydantic_v2 = None  # type: ignore[assignment]
