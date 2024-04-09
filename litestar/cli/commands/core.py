@@ -221,11 +221,11 @@ def run_command(
 ) -> None:
     """Run a Litestar app; requires ``uvicorn``.
 
-    The app can be either passed as a module path in the form of <module name>.<submodule>:<app instance or factory>,
-    set as an environment variable LITESTAR_APP with the same format or automatically discovered from one of these
-    canonical paths: app.py, asgi.py, application.py or app/__init__.py. When auto-discovering application factories,
-    functions with the name ``create_app`` are considered, or functions that are annotated as returning a ``Litestar``
-    instance.
+    The app can be either passed as a module path in the form of ``<module name>.<submodule>:<app instance or factory>``
+    set as an environment variable ``LITESTAR_APP`` with the same format or automatically discovered from one of these
+    canonical paths: ``app.py``, ``asgi.py``, ``application.py`` or ``app/__init__.py``.
+    When auto-discovering application factories, functions with the name ``create_app`` are considered,
+    or functions that are annotated as returning a ``Litestar`` instance.
     """
 
     if debug:
