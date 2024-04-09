@@ -265,7 +265,7 @@ be used to fetch this :term:`history` and put it into a subscriber's :term:`even
     amount of entries exceed the maximum backlog size, the execution will wait until
     previous events have been processed.
 
-    .. seealso:: * `Managing backpressure`_
+   Read more: `Managing backpressure`_
 
 The :class:`Subscriber`
 -----------------------
