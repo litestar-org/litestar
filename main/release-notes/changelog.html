@@ -1530,6 +1530,23 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.8.2">
+<h2>2.8.2<a class="headerlink" href="#2.8.2" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2024-04-09<section id="2.8.2-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.8.2-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>pydantic v2 import tests for pydantic v1.10.15<a class="headerlink reference internal" href="#2.8.2-pydantic v2 import tests for pydantic v1.10.15" id="2.8.2-pydantic v2 import tests for pydantic v1.10.15">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fixes bug with Pydantic v1 environment test causing the test to run against v2. Adds assertion for version to
+the test.</p>
+<p>Fixes a bug exposed by above that relied on Pydantic not having <cite>v1</cite> in the package namespace if <cite>v1</cite> is
+installed. This doesn’t hold true after Pydantic’s <cite>1.10.15</cite> release.</p>
+<p>Moves application environment tests from the release job into the normal CI run.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3348">litestar-org/litestar#3348</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3347">litestar-org/litestar#3347</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.8.1">
 <h2>2.8.1<a class="headerlink" href="#2.8.1" title="Permalink to this heading">#</a></h2>
 <strong>Released: </strong>2024-04-08<section id="2.8.1-bugfix">
@@ -5754,6 +5771,10 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.8.2">2.8.2</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.8.2-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.8.1">2.8.1</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.8.1-bugfix">Bugfixes</a></li>
 </ul>
