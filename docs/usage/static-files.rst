@@ -57,7 +57,7 @@ Using a custom router class
 ---------------------------
 
 The router class used can be customized with the
-:paramref:`~litestar.static_files.create_static_files_router.params.router_class` parameter:
+:paramref:`~.static_files.create_static_files_router.params.router_class` parameter:
 
 .. literalinclude:: /examples/static_files/custom_router.py
     :caption: Using a custom router class with
