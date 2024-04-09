@@ -10,6 +10,7 @@ from litestar.contrib.pydantic.utils import (
     is_pydantic_constrained_field,
     is_pydantic_model_class,
     is_pydantic_undefined,
+    is_pydantic_v2,
     pydantic_get_type_hints_with_generics_resolved,
     pydantic_unwrap_and_get_origin,
 )
@@ -28,10 +29,11 @@ except ImportError as e:
 try:
     import pydantic as pydantic_v2
 
-    assert pydantic_v2.__version__.startswith("2.")  # noqa: S101
+    if not is_pydantic_v2(pydantic_v2):
+        raise ImportError
 
     from pydantic import v1 as pydantic_v1
-except AssertionError:
+except ImportError:
     import pydantic as pydantic_v1  # type: ignore[no-redef]
 
     pydantic_v2 = None  # type: ignore[assignment]
