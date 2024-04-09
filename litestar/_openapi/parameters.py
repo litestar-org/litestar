@@ -81,7 +81,7 @@ class ParameterFactory:
         self,
         context: OpenAPIContext,
         route_handler: BaseRouteHandler,
-        path_parameters: tuple[PathParameterDefinition, ...],
+        path_parameters: dict[str, PathParameterDefinition],
     ) -> None:
         """Initialize ParameterFactory.
 
@@ -96,7 +96,7 @@ class ParameterFactory:
         self.parameters = ParameterCollection(route_handler)
         self.dependency_providers = route_handler.resolve_dependencies()
         self.layered_parameters = route_handler.resolve_layered_parameters()
-        self.path_parameters: dict[str, PathParameterDefinition] = {p.name: p for p in path_parameters}
+        self.path_parameters = path_parameters
 
     def create_parameter(self, field_definition: FieldDefinition, parameter_name: str) -> Parameter:
         """Create an OpenAPI Parameter instance for a field definition.
@@ -233,7 +233,7 @@ class ParameterFactory:
 def create_parameters_for_handler(
     context: OpenAPIContext,
     route_handler: BaseRouteHandler,
-    path_parameters: tuple[PathParameterDefinition, ...],
+    path_parameters: dict[str, PathParameterDefinition],
 ) -> list[Parameter]:
     """Create a list of path/query/header Parameter models for the given PathHandler."""
     factory = ParameterFactory(

@@ -27,6 +27,7 @@ from litestar.utils.signature import ParsedSignature, add_types_to_signature_nam
 if TYPE_CHECKING:
     from typing_extensions import Self
 
+    from litestar._kwargs import KwargsModel
     from litestar.app import Litestar
     from litestar.connection import ASGIConnection
     from litestar.controller import Controller
@@ -35,6 +36,7 @@ if TYPE_CHECKING:
     from litestar.router import Router
     from litestar.types import AnyCallable, AsyncAnyCallable, ExceptionHandler
     from litestar.types.empty import EmptyType
+    from litestar.types.internal_types import PathParameterDefinition
 
 __all__ = ("BaseRouteHandler",)
 
@@ -564,3 +566,18 @@ class BaseRouteHandler:
         if not hasattr(target, "__qualname__"):
             target = type(target)
         return f"{target.__module__}.{target.__qualname__}"
+
+    def create_kwargs_model(
+        self,
+        path_parameters: dict[str, PathParameterDefinition],
+    ) -> KwargsModel:
+        """Create a `KwargsModel` for a given route handler."""
+        from litestar._kwargs import KwargsModel
+
+        return KwargsModel.create_for_signature_model(
+            signature_model=self.signature_model,
+            parsed_signature=self.parsed_fn_signature,
+            dependencies=self.resolve_dependencies(),
+            path_parameters=set(path_parameters.keys()),
+            layered_parameters=self.resolve_layered_parameters(),
+        )

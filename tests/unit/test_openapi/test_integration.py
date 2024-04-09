@@ -10,7 +10,7 @@ import pytest
 import yaml
 from typing_extensions import Annotated
 
-from litestar import Controller, Litestar, delete, get, patch, post
+from litestar import Controller, Litestar, Router, delete, get, patch, post
 from litestar._openapi.plugin import OpenAPIPlugin
 from litestar.enums import MediaType, OpenAPIMediaType, ParamType
 from litestar.openapi import OpenAPIConfig, OpenAPIController
@@ -503,3 +503,40 @@ def test_components_schemas_in_alphabetical_order() -> None:
         "test_components_schemas_in_alphabetical_order.C",
     ]
     assert list(openapi.components.schemas.keys()) == expected_keys
+
+
+def test_openapi_controller_and_openapi_router_on_same_app() -> None:
+    """Test that OpenAPIController and OpenAPIRouter can coexist on the same app.
+
+    As part of backward compatibility with new plugin-based OpenAPI router approach, we did not consider
+    the case where an OpenAPIController is registered on the application by means other than via the
+    OpenAPIConfig object. This is an approach that has been used to serve the openapi both under the
+    `/schema` and `/some-prefix/schema` paths. This test ensures that the OpenAPIController and OpenAPIRouter
+    can coexist on the same app.
+
+    See: https://github.com/litestar-org/litestar/issues/3337
+    """
+    router = Router(path="/abc", route_handlers=[OpenAPIController])
+    openapi_config = OpenAPIConfig("Litestar", "v0.0.1")  # no openapi_controller specified means we use the router
+    app = Litestar([router], openapi_config=openapi_config)
+    assert sorted(r.path for r in app.routes) == [
+        "/abc/schema",
+        "/abc/schema/elements",
+        "/abc/schema/oauth2-redirect.html",
+        "/abc/schema/openapi.json",
+        "/abc/schema/openapi.yaml",
+        "/abc/schema/openapi.yml",
+        "/abc/schema/rapidoc",
+        "/abc/schema/redoc",
+        "/abc/schema/swagger",
+        "/schema",
+        "/schema/elements",
+        "/schema/oauth2-redirect.html",
+        "/schema/openapi.json",
+        "/schema/openapi.yaml",
+        "/schema/openapi.yml",
+        "/schema/rapidoc",
+        "/schema/redoc",
+        "/schema/swagger",
+        "/schema/{path:str}",
+    ]
