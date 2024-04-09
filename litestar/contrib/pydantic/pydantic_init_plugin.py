@@ -15,17 +15,22 @@ from litestar.typing import _KWARG_META_EXTRACTORS
 from litestar.utils import is_class_and_subclass
 
 try:
+    import pydantic as _  # noqa: F401
+except ImportError as e:
+    raise MissingDependencyException("pydantic") from e
+
+try:
     # check if we have pydantic v2 installed, and try to import both versions
     import pydantic as pydantic_v2
-    from pydantic import v1 as pydantic_v1
-except ImportError:
-    # check if pydantic 1 is installed and import it
-    try:
-        import pydantic as pydantic_v1  # type: ignore[no-redef]
 
-        pydantic_v2 = None  # type: ignore[assignment]
-    except ImportError as e:
-        raise MissingDependencyException("pydantic") from e
+    assert pydantic_v2.__version__.startswith("2.")  # noqa: S101
+
+    from pydantic import v1 as pydantic_v1
+except AssertionError:
+    # check if pydantic 1 is installed and import it
+    import pydantic as pydantic_v1  # type: ignore[no-redef]
+
+    pydantic_v2 = None  # type: ignore[assignment]
 
 
 if TYPE_CHECKING:
