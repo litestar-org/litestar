@@ -25,13 +25,16 @@ except ImportError as e:
 
 try:
     import pydantic as pydantic_v2
+
+    assert pydantic_v2.__version__.startswith("2.")  # noqa: S101
+
     from pydantic import ValidationError as ValidationErrorV2
     from pydantic import v1 as pydantic_v1
     from pydantic.v1 import ValidationError as ValidationErrorV1
 
     ModelType: TypeAlias = "pydantic_v1.BaseModel | pydantic_v2.BaseModel"
 
-except ImportError:
+except AssertionError:
     import pydantic as pydantic_v1  # type: ignore[no-redef]
 
     pydantic_v2 = Empty  # type: ignore[assignment]
