@@ -227,4 +227,4 @@ def is_pydantic_v2(module: ModuleType) -> bool:
     Returns:
         True if the module is pydantic v2, otherwise False.
     """
-    return module.__version__.startswith("2.")
+    return bool(module.__version__.startswith("2."))
