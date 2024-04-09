@@ -8,7 +8,7 @@ from msgspec import ValidationError
 from typing_extensions import Buffer, TypeGuard
 
 from litestar._signature.types import ExtendedMsgSpecValidationError
-from litestar.contrib.pydantic.utils import is_pydantic_constrained_field
+from litestar.contrib.pydantic.utils import is_pydantic_constrained_field, is_pydantic_v2
 from litestar.exceptions import MissingDependencyException
 from litestar.plugins import InitPluginProtocol
 from litestar.typing import _KWARG_META_EXTRACTORS
@@ -22,10 +22,11 @@ except ImportError as e:
 try:
     import pydantic as pydantic_v2
 
-    assert pydantic_v2.__version__.startswith("2.")  # noqa: S101
+    if not is_pydantic_v2(pydantic_v2):
+        raise ImportError
 
     from pydantic import v1 as pydantic_v1
-except AssertionError:
+except ImportError:
     import pydantic as pydantic_v1  # type: ignore[no-redef]
 
     pydantic_v2 = None  # type: ignore[assignment]
