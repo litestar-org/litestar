@@ -109,5 +109,5 @@ Existing code can be upgraded to :func:`create_static_files_router` by replacing
     :caption: Using the deprecated :class:`StaticFilesConfig <litestar.static_files.config.StaticFilesConfig>`
 
 .. literalinclude:: /examples/static_files/upgrade_from_static_2.py
-    :caption: Upgrading from :class:`StaticFilesConfig <litestar.static_files.config.StaticFilesConfig>` to
+    :caption: Upgrading from :class:`~.static_files.config.StaticFilesConfig` to
       :func:`create_static_files_router`
