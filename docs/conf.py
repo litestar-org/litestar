@@ -28,6 +28,10 @@ author = "Litestar-Org"
 release = os.getenv("_LITESTAR_DOCS_BUILD_VERSION", importlib.metadata.version("litestar").rsplit(".")[0])
 environment = os.getenv("_LITESTAR_DOCS_BUILD_ENVIRONMENT", "local")
 
+rst_epilog = f"""
+.. |version| replace:: {release}
+"""
+
 extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.autosectionlabel",
@@ -258,7 +262,6 @@ suppress_warnings = [
 # -- Style configuration -----------------------------------------------------
 html_theme = "litestar_sphinx_theme"
 html_title = "Litestar Framework"
-html_favicon = "_static/favicon.svg"  # TODO: fix existence
 pygments_style = "lightbulb"
 
 html_static_path = ["_static"]
@@ -274,7 +277,7 @@ html_context = {
     "source_user": "litestar-org",
     "source_repo": "litestar",
     # "source_version": "main",  # TODO: We should set this with an envvar depending on which branch we are building?
-    "current_version": "latest",
+    "current_version": "latest",  # TODO: Version dropdown only show caret and now text
     "versions": [  # TODO(provinzkraut): this needs to use versions.json but im not 100% on how to do this yet
         ("latest", "/latest"),
         ("development", "/main"),
@@ -282,6 +285,7 @@ html_context = {
         ("v2", "/2"),
         ("v1", "/1"),
     ],
+    "version": release,
 }
 
 html_theme_options = {
