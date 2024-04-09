@@ -1540,17 +1540,15 @@ document.write(`
 <section id="application-objects">
 <h2>Application objects<a class="headerlink" href="#application-objects" title="Permalink to this heading">#</a></h2>
 <p>At the root of every Litestar application is an instance of the <a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a>
-class. Typically, this code will be placed in a file called <code class="docutils literal notranslate"><span class="pre">main.py</span></code> at the project’s root directory.</p>
-<p>Creating an app is straightforward – the only required arg is a list
+class. Typically, this code will be placed in a file called <code class="docutils literal notranslate"><span class="pre">main.py</span></code>, <code class="docutils literal notranslate"><span class="pre">app.py</span></code>, <code class="docutils literal notranslate"><span class="pre">asgi.py</span></code> or similar
+at the project’s root directory.</p>
+<p>These entry points are also used during <a class="reference internal" href="cli.html#autodiscovery"><span class="std std-ref">CLI autodiscovery</span></a></p>
+<p>Creating an app is straightforward – the only required <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">args</span></a> is a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>
 of <a class="reference internal" href="../reference/controller.html#litestar.controller.Controller" title="litestar.controller.Controller"><code class="xref py py-class docutils literal notranslate"><span class="pre">Controllers</span></code></a>, <a class="reference internal" href="../reference/router.html#litestar.router.Router" title="litestar.router.Router"><code class="xref py py-class docutils literal notranslate"><span class="pre">Routers</span></code></a>,
 or <a class="reference internal" href="../reference/handlers.html#litestar.handlers.BaseRouteHandler" title="litestar.handlers.BaseRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">Route</span> <span class="pre">handlers</span></code></a>:</p>
-<div class="sd-tab-set docutils">
-<input id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-0">
-Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text">Hello World</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
+<div class="code-block-caption"><span class="caption-text">A simple Hello World Litestar app</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 
@@ -1565,27 +1563,6 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-</div>
-<input checked="checked" id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-1">
-Python 3.10+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">Hello World</span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-
-
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">hello_world</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handler function that returns a greeting dictionary.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">}</span>
-
-
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">hello_world</span><span class="p">])</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/
@@ -1593,8 +1570,9 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<p>The app instance is the root level of the app - it has the base path of <code class="docutils literal notranslate"><span class="pre">/</span></code> and all root level Controllers, Routers,
-and Route Handlers should be registered on it.</p>
+<p>The app instance is the root level of the app - it has the base path of <code class="docutils literal notranslate"><span class="pre">/</span></code> and all root level
+<a class="reference internal" href="../reference/controller.html#litestar.controller.Controller" title="litestar.controller.Controller"><code class="xref py py-class docutils literal notranslate"><span class="pre">Controllers</span></code></a>, <a class="reference internal" href="../reference/router.html#litestar.router.Router" title="litestar.router.Router"><code class="xref py py-class docutils literal notranslate"><span class="pre">Routers</span></code></a>,
+and <a class="reference internal" href="../reference/handlers.html#litestar.handlers.BaseRouteHandler" title="litestar.handlers.BaseRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">Route</span> <span class="pre">handlers</span></code></a> should be registered on it.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p>To learn more about registering routes, check out this chapter in the documentation:</p>
@@ -1605,266 +1583,211 @@ and Route Handlers should be registered on it.</p>
 </section>
 <section id="startup-and-shutdown">
 <h2>Startup and Shutdown<a class="headerlink" href="#startup-and-shutdown" title="Permalink to this heading">#</a></h2>
-<p>You can pass a list of callables - either sync or async functions, methods, or class instances - to the <code class="docutils literal notranslate"><span class="pre">on_startup</span></code>
-/ <code class="docutils literal notranslate"><span class="pre">on_shutdown</span></code> kwargs of the <a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a> instance. Those will be called in
-order, once the ASGI server (uvicorn, hypercorn, etc.) emits the respective event.</p>
+<p>You can pass a list of <a class="reference external" href="https://docs.python.org/3/glossary.html#term-callable" title="(in Python v3.12)"><span class="xref std std-term">callables</span></a> - either sync or async functions, methods, or class instances
+- to the <a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.on_startup" title="litestar.app.Litestar"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">on_startup</span></code></a> / <a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.on_shutdown" title="litestar.app.Litestar"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">on_shutdown</span></code></a>
+<a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">kwargs</span></a> of the <a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">app</span></code></a> instance. Those will be called in
+order, once the ASGI server such as <a class="reference external" href="https://www.uvicorn.org/">uvicorn</a>,
+<a class="reference external" href="https://hypercorn.readthedocs.io/en/latest/#/">Hypercorn</a>, <a class="reference external" href="https://github.com/emmett-framework/granian/">Granian</a>,
+<a class="reference external" href="https://github.com/django/daphne/">Daphne</a>, etc. emits the respective event.</p>
 <div class="mermaid">
             flowchart LR
     Startup[ASGI-Event: lifespan.startup] --&gt; on_startup
     Shutdown[ASGI-Event: lifespan.shutdown] --&gt; on_shutdown
         </div><p>A classic use case for this is database connectivity. Often, we want to establish a database connection on application
 startup, and then close it gracefully upon shutdown.</p>
-<p>For example, lets create a database connection using the async engine from
+<p>For example, let us create a database connection using the async engine from
 <a class="reference external" href="https://docs.sqlalchemy.org/en/latest/orm/extensions/asyncio.html">SQLAlchemy</a>. We create two functions, one to get or
-establish the connection, and another to close it, and then pass them to the Litestar constructor:</p>
-<div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">Startup and Shutdown</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">cast</span>
+establish the connection, and another to close it, and then pass them to the <a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a> constructor:</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Startup and Shutdown</span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>import<span class="w"> </span>os
+from<span class="w"> </span>typing<span class="w"> </span>import<span class="w"> </span>cast
 
-<span class="kn">from</span> <span class="nn">sqlalchemy.ext.asyncio</span> <span class="kn">import</span> <span class="n">AsyncEngine</span><span class="p">,</span> <span class="n">create_async_engine</span>
+from<span class="w"> </span>sqlalchemy.ext.asyncio<span class="w"> </span>import<span class="w"> </span>AsyncEngine,<span class="w"> </span>create_async_engine
 
-<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+from<span class="w"> </span>litestar<span class="w"> </span>import<span class="w"> </span>Litestar
 
-<span class="n">DB_URI</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;DATABASE_URI&quot;</span><span class="p">,</span> <span class="s2">&quot;postgresql+asyncpg://postgres:mysecretpassword@pg.db:5432/db&quot;</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">get_db_connection</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncEngine</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the db engine.</span>
-
-<span class="sd">    If it doesn&#39;t exist, creates it and saves it in on the application state object</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="s2">&quot;engine&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">engine</span> <span class="o">=</span> <span class="n">create_async_engine</span><span class="p">(</span><span class="n">DB_URI</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;AsyncEngine&quot;</span><span class="p">,</span> <span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span>
+<span class="nv">DB_URI</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>os.environ.get<span class="o">(</span><span class="s2">&quot;DATABASE_URI&quot;</span>,<span class="w"> </span><span class="s2">&quot;postgresql+asyncpg://postgres:mysecretpassword@pg.db:5432/db&quot;</span><span class="o">)</span>
 
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">close_db_connection</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Closes the db connection stored in the application State object.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="s2">&quot;engine&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="k">await</span> <span class="n">cast</span><span class="p">(</span><span class="s2">&quot;AsyncEngine&quot;</span><span class="p">,</span> <span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">engine</span><span class="p">)</span><span class="o">.</span><span class="n">dispose</span><span class="p">()</span>
+def<span class="w"> </span>get_db_connection<span class="o">(</span>app:<span class="w"> </span>Litestar<span class="o">)</span><span class="w"> </span>-&gt;<span class="w"> </span>AsyncEngine:
+<span class="w">    </span><span class="s2">&quot;&quot;&quot;Returns the db engine.</span>
+
+<span class="s2">    If it doesn&#39;t exist, creates it and saves it in on the application state object</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span>not<span class="w"> </span>getattr<span class="o">(</span>app.state,<span class="w"> </span><span class="s2">&quot;engine&quot;</span>,<span class="w"> </span>None<span class="o">)</span>:
+<span class="w">        </span>app.state.engine<span class="w"> </span><span class="o">=</span><span class="w"> </span>create_async_engine<span class="o">(</span>DB_URI<span class="o">)</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span>cast<span class="o">(</span><span class="s2">&quot;AsyncEngine&quot;</span>,<span class="w"> </span>app.state.engine<span class="o">)</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">get_db_connection</span><span class="p">],</span> <span class="n">on_shutdown</span><span class="o">=</span><span class="p">[</span><span class="n">close_db_connection</span><span class="p">])</span>
+async<span class="w"> </span>def<span class="w"> </span>close_db_connection<span class="o">(</span>app:<span class="w"> </span>Litestar<span class="o">)</span><span class="w"> </span>-&gt;<span class="w"> </span>None:
+<span class="w">    </span><span class="s2">&quot;&quot;&quot;Closes the db connection stored in the application State object.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span>getattr<span class="o">(</span>app.state,<span class="w"> </span><span class="s2">&quot;engine&quot;</span>,<span class="w"> </span>None<span class="o">)</span>:
+<span class="w">        </span>await<span class="w"> </span>cast<span class="o">(</span><span class="s2">&quot;AsyncEngine&quot;</span>,<span class="w"> </span>app.state.engine<span class="o">)</span>.dispose<span class="o">()</span>
+
+
+<span class="nv">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Litestar<span class="o">(</span><span class="nv">on_startup</span><span class="o">=[</span>get_db_connection<span class="o">]</span>,<span class="w"> </span><span class="nv">on_shutdown</span><span class="o">=[</span>close_db_connection<span class="o">])</span>
 </pre></div>
 </div>
 </div>
 </section>
 <section id="lifespan-context-managers">
 <span id="id1"></span><h2>Lifespan context managers<a class="headerlink" href="#lifespan-context-managers" title="Permalink to this heading">#</a></h2>
-<p>In addition to the lifespan hooks, Litestar also supports managing the lifespan of an
-application using asynchronous context managers. This can be useful when dealing with
-long running tasks, or those that need to keep a certain context object, such as a
-connection, around.</p>
-<div class="sd-tab-set docutils">
-<input id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-2">
-Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">Handling a database connection</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">asynccontextmanager</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">AsyncGenerator</span>
+<p>In addition to the lifespan hooks, Litestar also supports managing the lifespan of an application using an
+<a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-context-manager" title="(in Python v3.12)"><span class="xref std std-term">asynchronous context manager</span></a>. This can be useful when dealing with long running tasks, or those that need to
+keep a certain context object, such as a connection, around.</p>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Handling a database connection</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>from<span class="w"> </span>contextlib<span class="w"> </span>import<span class="w"> </span>asynccontextmanager
+from<span class="w"> </span>typing<span class="w"> </span>import<span class="w"> </span>AsyncGenerator
 
-<span class="kn">from</span> <span class="nn">sqlalchemy.ext.asyncio</span> <span class="kn">import</span> <span class="n">create_async_engine</span>
+from<span class="w"> </span>sqlalchemy.ext.asyncio<span class="w"> </span>import<span class="w"> </span>create_async_engine
 
-<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+from<span class="w"> </span>litestar<span class="w"> </span>import<span class="w"> </span>Litestar
 
 
-<span class="nd">@asynccontextmanager</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">db_connection</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-    <span class="n">engine</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="s2">&quot;engine&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">engine</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">engine</span> <span class="o">=</span> <span class="n">create_async_engine</span><span class="p">(</span><span class="s2">&quot;postgresql+asyncpg://postgres:mysecretpassword@pg.db:5432/db&quot;</span><span class="p">)</span>
-        <span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">engine</span> <span class="o">=</span> <span class="n">engine</span>
+@asynccontextmanager
+async<span class="w"> </span>def<span class="w"> </span>db_connection<span class="o">(</span>app:<span class="w"> </span>Litestar<span class="o">)</span><span class="w"> </span>-&gt;<span class="w"> </span>AsyncGenerator<span class="o">[</span>None,<span class="w"> </span>None<span class="o">]</span>:
+<span class="w">    </span><span class="nv">engine</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>getattr<span class="o">(</span>app.state,<span class="w"> </span><span class="s2">&quot;engine&quot;</span>,<span class="w"> </span>None<span class="o">)</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span>engine<span class="w"> </span>is<span class="w"> </span>None:
+<span class="w">        </span><span class="nv">engine</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>create_async_engine<span class="o">(</span><span class="s2">&quot;postgresql+asyncpg://postgres:mysecretpassword@pg.db:5432/db&quot;</span><span class="o">)</span>
+<span class="w">        </span>app.state.engine<span class="w"> </span><span class="o">=</span><span class="w"> </span>engine
 
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">yield</span>
-    <span class="k">finally</span><span class="p">:</span>
-        <span class="k">await</span> <span class="n">engine</span><span class="o">.</span><span class="n">dispose</span><span class="p">()</span>
+<span class="w">    </span>try:
+<span class="w">        </span>yield
+<span class="w">    </span>finally:
+<span class="w">        </span>await<span class="w"> </span>engine.dispose<span class="o">()</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">lifespan</span><span class="o">=</span><span class="p">[</span><span class="n">db_connection</span><span class="p">])</span>
+<span class="nv">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Litestar<span class="o">(</span><span class="nv">lifespan</span><span class="o">=[</span>db_connection<span class="o">])</span>
 </pre></div>
-</div>
-</div>
-</div>
-<input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-3">
-Python 3.9+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">Handling a database connection</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">asynccontextmanager</span>
-<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">AsyncGenerator</span>
-
-<span class="kn">from</span> <span class="nn">sqlalchemy.ext.asyncio</span> <span class="kn">import</span> <span class="n">create_async_engine</span>
-
-<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-
-
-<span class="nd">@asynccontextmanager</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">db_connection</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
-    <span class="n">engine</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="s2">&quot;engine&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">engine</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">engine</span> <span class="o">=</span> <span class="n">create_async_engine</span><span class="p">(</span><span class="s2">&quot;postgresql+asyncpg://postgres:mysecretpassword@pg.db:5432/db&quot;</span><span class="p">)</span>
-        <span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">engine</span> <span class="o">=</span> <span class="n">engine</span>
-
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">yield</span>
-    <span class="k">finally</span><span class="p">:</span>
-        <span class="k">await</span> <span class="n">engine</span><span class="o">.</span><span class="n">dispose</span><span class="p">()</span>
-
-
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">lifespan</span><span class="o">=</span><span class="p">[</span><span class="n">db_connection</span><span class="p">])</span>
-</pre></div>
-</div>
-</div>
 </div>
 </div>
 </section>
 <section id="order-of-execution">
 <h2>Order of execution<a class="headerlink" href="#order-of-execution" title="Permalink to this heading">#</a></h2>
-<p>When multiple lifespan context managers and <code class="docutils literal notranslate"><span class="pre">on_shutdown</span></code> hooks are specified, Litestar will invoke the context
-managers in inverse order before the shutdown hooks are invoked.</p>
+<p>When multiple lifespan context managers and <a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.on_shutdown" title="litestar.app.Litestar"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">on_shutdown</span></code></a>  hooks are specified,
+Litestar will invoke the <a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-context-manager" title="(in Python v3.12)"><span class="xref std std-term">context managers</span></a> in inverse order before the
+shutdown hooks are invoked.</p>
 <p>Consider the case where there are two lifespan context managers <code class="docutils literal notranslate"><span class="pre">ctx_a</span></code> and <code class="docutils literal notranslate"><span class="pre">ctx_b</span></code> as well as two shutdown hooks
 <code class="docutils literal notranslate"><span class="pre">hook_a</span></code> and <code class="docutils literal notranslate"><span class="pre">hook_b</span></code> as shown in the following code:</p>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">Example of multiple <a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-context-manager" title="(in Python v3.12)"><span class="xref std std-term">context managers</span></a> and shutdown hooks</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">lifespan</span><span class="o">=</span><span class="p">[</span><span class="n">ctx_a</span><span class="p">,</span> <span class="n">ctx_b</span><span class="p">],</span> <span class="n">on_shutdown</span><span class="o">=</span><span class="p">[</span><span class="n">hook_a</span><span class="p">,</span> <span class="n">hook_b</span><span class="p">])</span>
 </pre></div>
+</div>
 </div>
 <p>During shutdown, they are executed in the following order:</p>
 <div class="mermaid">
             flowchart LR
     ctx_b --&gt; ctx_a --&gt; hook_a --&gt; hook_b
-        </div><p>As seen, the context managers are invoked in inverse order.
+        </div><p>As seen, the <a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-context-manager" title="(in Python v3.12)"><span class="xref std std-term">context managers</span></a> are invoked in inverse order.
 On the other hand, the shutdown hooks are invoked in their specified order.</p>
 </section>
 <section id="using-application-state">
 <span id="application-state"></span><h2>Using Application State<a class="headerlink" href="#using-application-state" title="Permalink to this heading">#</a></h2>
-<p>As seen in the examples for the <cite>on_startup / on_shutdown &lt;Startup and Shutdown&gt;</cite>,
-callables passed to these hooks can receive an optional kwarg called <code class="docutils literal notranslate"><span class="pre">app</span></code>, through which the application’s state object
-and other properties can be accessed.
-The advantage of using application <code class="docutils literal notranslate"><span class="pre">state</span></code>, is that it can be accessed during multiple stages of the connection, and
-it can be injected into dependencies and route handlers.</p>
-<p>The Application State is an instance of the <a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.State" title="litestar.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a> datastructure, and it is accessible
-via the <a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">app.state</span></code></a> attribute. As such it can be accessed wherever the app instance is accessible.</p>
-<p>It’s important to understand in this context that the application instance is injected into the ASGI <code class="docutils literal notranslate"><span class="pre">scope</span></code> mapping for
-each connection (i.e. request or websocket connection) as <code class="docutils literal notranslate"><span class="pre">scope[&quot;app&quot;].state</span></code>. This makes the application accessible
-wherever the scope mapping is available, e.g. in middleware, on <a class="reference internal" href="../reference/connection.html#litestar.connection.Request" title="litestar.connection.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> and
-<a class="reference internal" href="../reference/connection.html#litestar.connection.WebSocket" title="litestar.connection.websocket.WebSocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">Websocket</span></code></a> instances (accessible as <code class="docutils literal notranslate"><span class="pre">request.app</span></code> / <code class="docutils literal notranslate"><span class="pre">socket.app</span></code>), and many
+<p>As seen in the examples for the <a class="reference external" href="#startup-and-shutdown">on_startup / on_shutdown</a>, <a class="reference external" href="https://docs.python.org/3/glossary.html#term-callable" title="(in Python v3.12)"><span class="xref std std-term">callables</span></a>
+passed to these hooks can receive an optional <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">kwarg</span></a> called <code class="docutils literal notranslate"><span class="pre">app</span></code>, through which the application’s
+state object and other properties can be accessed. The advantage of using application <a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.state" title="litestar.app.Litestar"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">state</span></code></a>,
+is that it can be accessed during multiple stages of the connection, and it can be injected into dependencies and
+route handlers.</p>
+<p>The Application State is an instance of the <a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.State" title="litestar.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">datastructures.state.State</span></code></a> datastructure, and it is
+accessible via the <a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.state" title="litestar.app.Litestar"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">state</span></code></a> attribute. As such it can be accessed wherever the app instance
+is accessible.</p>
+<p><a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.state" title="litestar.app.Litestar"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">state</span></code></a> is one of the
+<a class="reference internal" href="routing/handlers.html#reserved-keyword-arguments"><span class="std std-ref">reserved keyword arguments</span></a>.</p>
+<p>It is important to understand in this context that the application instance is injected into the ASGI <code class="docutils literal notranslate"><span class="pre">scope</span></code> mapping
+for each connection (i.e. request or websocket connection) as <code class="docutils literal notranslate"><span class="pre">scope[&quot;app&quot;]</span></code>. This makes the application
+accessible wherever the scope mapping is available, e.g. in middleware, on <a class="reference internal" href="../reference/connection.html#litestar.connection.Request" title="litestar.connection.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> and
+<a class="reference internal" href="../reference/connection.html#litestar.connection.WebSocket" title="litestar.connection.websocket.WebSocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocket</span></code></a> instances (accessible as <code class="docutils literal notranslate"><span class="pre">request.app</span></code> / <code class="docutils literal notranslate"><span class="pre">socket.app</span></code>), and many
 other places.</p>
-<p>Therefore, state offers an easy way to share contextual data between disparate parts of the application, as seen below:</p>
-<div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">Using Application State</span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span>
+<p>Therefore, <a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.state" title="litestar.app.Litestar"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">state</span></code></a> offers an easy way to share contextual data between disparate parts
+of the application, as seen below:</p>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">Using Application State</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>import<span class="w"> </span>logging
+from<span class="w"> </span>typing<span class="w"> </span>import<span class="w"> </span>TYPE_CHECKING,<span class="w"> </span>Any
 
-<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">State</span>
-<span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
+from<span class="w"> </span>litestar<span class="w"> </span>import<span class="w"> </span>Litestar,<span class="w"> </span>Request,<span class="w"> </span>get
+from<span class="w"> </span>litestar.datastructures<span class="w"> </span>import<span class="w"> </span>State
+from<span class="w"> </span>litestar.di<span class="w"> </span>import<span class="w"> </span>Provide
 
-<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">litestar.types</span> <span class="kn">import</span> <span class="n">ASGIApp</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Send</span>
+<span class="k">if</span><span class="w"> </span>TYPE_CHECKING:
+<span class="w">    </span>from<span class="w"> </span>litestar.types<span class="w"> </span>import<span class="w"> </span>ASGIApp,<span class="w"> </span>Receive,<span class="w"> </span>Scope,<span class="w"> </span>Send
 
-<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">set_state_on_startup</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Startup and shutdown hooks can receive `State` as a keyword arg.&quot;&quot;&quot;</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="s2">&quot;abc123&quot;</span>
+<span class="nv">logger</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>logging.getLogger<span class="o">(</span>__name__<span class="o">)</span>
 
 
-<span class="k">def</span> <span class="nf">middleware_factory</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">app</span><span class="p">:</span> <span class="s2">&quot;ASGIApp&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ASGIApp&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A middleware can access application state via `scope`.&quot;&quot;&quot;</span>
-
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">my_middleware</span><span class="p">(</span><span class="n">scope</span><span class="p">:</span> <span class="s2">&quot;Scope&quot;</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="s2">&quot;Receive&quot;</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="s2">&quot;Send&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">state</span> <span class="o">=</span> <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;app&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">state</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;state value in middleware: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-        <span class="k">await</span> <span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">my_middleware</span>
+def<span class="w"> </span>set_state_on_startup<span class="o">(</span>app:<span class="w"> </span>Litestar<span class="o">)</span><span class="w"> </span>-&gt;<span class="w"> </span>None:
+<span class="w">    </span><span class="s2">&quot;&quot;&quot;Startup and shutdown hooks can receive `State` as a keyword arg.&quot;&quot;&quot;</span>
+<span class="w">    </span>app.state.value<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;abc123&quot;</span>
 
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">my_dependency</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Dependencies can receive state via injection.&quot;&quot;&quot;</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;state value in dependency: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+def<span class="w"> </span>middleware_factory<span class="o">(</span>*,<span class="w"> </span>app:<span class="w"> </span><span class="s2">&quot;ASGIApp&quot;</span><span class="o">)</span><span class="w"> </span>-&gt;<span class="w"> </span><span class="s2">&quot;ASGIApp&quot;</span>:
+<span class="w">    </span><span class="s2">&quot;&quot;&quot;A middleware can access application state via `scope`.&quot;&quot;&quot;</span>
+
+<span class="w">    </span>async<span class="w"> </span>def<span class="w"> </span>my_middleware<span class="o">(</span>scope:<span class="w"> </span><span class="s2">&quot;Scope&quot;</span>,<span class="w"> </span>receive:<span class="w"> </span><span class="s2">&quot;Receive&quot;</span>,<span class="w"> </span>send:<span class="w"> </span><span class="s2">&quot;Send&quot;</span><span class="o">)</span><span class="w"> </span>-&gt;<span class="w"> </span>None:
+<span class="w">        </span><span class="nv">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>scope<span class="o">[</span><span class="s2">&quot;app&quot;</span><span class="o">]</span>.state
+<span class="w">        </span>logger.info<span class="o">(</span><span class="s2">&quot;state value in middleware: %s&quot;</span>,<span class="w"> </span>state.value<span class="o">)</span>
+<span class="w">        </span>await<span class="w"> </span>app<span class="o">(</span>scope,<span class="w"> </span>receive,<span class="w"> </span>send<span class="o">)</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span>my_middleware
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;dep&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">my_dependency</span><span class="p">)},</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">middleware_factory</span><span class="p">],</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">get_handler</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">,</span> <span class="n">dep</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Handlers can receive state via injection.&quot;&quot;&quot;</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;state value in handler from `State`: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;state value in handler from `Request`: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+async<span class="w"> </span>def<span class="w"> </span>my_dependency<span class="o">(</span>state:<span class="w"> </span>State<span class="o">)</span><span class="w"> </span>-&gt;<span class="w"> </span>Any:
+<span class="w">    </span><span class="s2">&quot;&quot;&quot;Dependencies can receive state via injection.&quot;&quot;&quot;</span>
+<span class="w">    </span>logger.info<span class="o">(</span><span class="s2">&quot;state value in dependency: %s&quot;</span>,<span class="w"> </span>state.value<span class="o">)</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_handler</span><span class="p">],</span> <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">set_state_on_startup</span><span class="p">])</span>
+@get<span class="o">(</span><span class="s2">&quot;/&quot;</span>,<span class="w"> </span><span class="nv">dependencies</span><span class="o">={</span><span class="s2">&quot;dep&quot;</span>:<span class="w"> </span>Provide<span class="o">(</span>my_dependency<span class="o">)}</span>,<span class="w"> </span><span class="nv">middleware</span><span class="o">=[</span>middleware_factory<span class="o">]</span>,<span class="w"> </span><span class="nv">sync_to_thread</span><span class="o">=</span>False<span class="o">)</span>
+def<span class="w"> </span>get_handler<span class="o">(</span>state:<span class="w"> </span>State,<span class="w"> </span>request:<span class="w"> </span>Request,<span class="w"> </span>dep:<span class="w"> </span>Any<span class="o">)</span><span class="w"> </span>-&gt;<span class="w"> </span>None:
+<span class="w">    </span><span class="s2">&quot;&quot;&quot;Handlers can receive state via injection.&quot;&quot;&quot;</span>
+<span class="w">    </span>logger.info<span class="o">(</span><span class="s2">&quot;state value in handler from `State`: %s&quot;</span>,<span class="w"> </span>state.value<span class="o">)</span>
+<span class="w">    </span>logger.info<span class="o">(</span><span class="s2">&quot;state value in handler from `Request`: %s&quot;</span>,<span class="w"> </span>request.app.state.value<span class="o">)</span>
+
+
+<span class="nv">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Litestar<span class="o">(</span><span class="nv">route_handlers</span><span class="o">=[</span>get_handler<span class="o">]</span>,<span class="w"> </span><span class="nv">on_startup</span><span class="o">=[</span>set_state_on_startup<span class="o">])</span>
 </pre></div>
 </div>
 </div>
 <section id="initializing-application-state">
 <span id="id2"></span><h3>Initializing Application State<a class="headerlink" href="#initializing-application-state" title="Permalink to this heading">#</a></h3>
-<p>To seed application state, you can pass a <a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.State" title="litestar.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a> object to the <code class="docutils literal notranslate"><span class="pre">state</span></code> kwarg of
-the Litestar constructor:</p>
-<div class="sd-tab-set docutils">
-<input id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-4">
-Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text">Using Application State</span><a class="headerlink" href="#id10" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+<p>To seed application state, you can pass a <a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.State" title="litestar.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a> object to the
+<a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.state" title="litestar.app.Litestar"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">state</span></code></a> parameter of the Litestar constructor:</p>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">Using Application State</span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>from<span class="w"> </span>typing<span class="w"> </span>import<span class="w"> </span>Any,<span class="w"> </span>Dict
 
-<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">State</span>
+from<span class="w"> </span>litestar<span class="w"> </span>import<span class="w"> </span>Litestar,<span class="w"> </span>get
+from<span class="w"> </span>litestar.datastructures<span class="w"> </span>import<span class="w"> </span>State
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="n">state</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
+@get<span class="o">(</span><span class="s2">&quot;/&quot;</span>,<span class="w"> </span><span class="nv">sync_to_thread</span><span class="o">=</span>False<span class="o">)</span>
+def<span class="w"> </span>handler<span class="o">(</span>state:<span class="w"> </span>State<span class="o">)</span><span class="w"> </span>-&gt;<span class="w"> </span>Dict<span class="o">[</span>str,<span class="w"> </span>Any<span class="o">]</span>:
+<span class="w">    </span><span class="k">return</span><span class="w"> </span>state.dict<span class="o">()</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">],</span> <span class="n">state</span><span class="o">=</span><span class="n">State</span><span class="p">({</span><span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">}))</span>
+<span class="nv">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Litestar<span class="o">(</span><span class="nv">route_handlers</span><span class="o">=[</span>handler<span class="o">]</span>,<span class="w"> </span><span class="nv">state</span><span class="o">=</span>State<span class="o">({</span><span class="s2">&quot;count&quot;</span>:<span class="w"> </span><span class="m">100</span><span class="o">}))</span>
 </pre></div>
-</div>
-</div>
-</div>
-<input checked="checked" id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-5">
-Python 3.10+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id11">
-<div class="code-block-caption"><span class="caption-text">Using Application State</span><a class="headerlink" href="#id11" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
-
-<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">State</span>
-
-
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="n">state</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
-
-
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">],</span> <span class="n">state</span><span class="o">=</span><span class="n">State</span><span class="p">({</span><span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">}))</span>
-</pre></div>
-</div>
-</div>
 </div>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.State" title="litestar.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a> can be initialized with a dictionary, an instance of
+<p><a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.State" title="litestar.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a> can be initialized with a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dictionary</span></code></a>, an instance of
 <a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.ImmutableState" title="litestar.datastructures.state.ImmutableState"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImmutableState</span></code></a> or <a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.State" title="litestar.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a>,
-or a list of tuples containing key/value pairs.</p>
+or a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuples</span></code></a> containing key/value pairs.</p>
 </div>
-<div class="admonition attention">
-<p class="admonition-title">Attention</p>
-<p>You may instruct <a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.State" title="litestar.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a> to deep copy initialized data to prevent mutation from
-outside the application context. To do this, pass <code class="docutils literal notranslate"><span class="pre">deep_copy=True</span></code> to the <a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.State" title="litestar.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a>
-constructor.</p>
-</div>
+<p>You may instruct <a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.State" title="litestar.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a> to deep copy initialized data to prevent mutation from outside
+the application context.</p>
+<p>To do this, set <a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.State.params.deep_copy" title="litestar.datastructures.state.State"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">deep_copy</span></code></a> to <code class="docutils literal notranslate"><span class="pre">True</span></code> in the
+<a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.State" title="litestar.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a> constructor.</p>
 </section>
 <section id="injecting-application-state-into-route-handlers-and-dependencies">
 <h3>Injecting Application State into Route Handlers and Dependencies<a class="headerlink" href="#injecting-application-state-into-route-handlers-and-dependencies" title="Permalink to this heading">#</a></h3>
 <p>As seen in the above example, Litestar offers an easy way to inject state into route handlers and dependencies - simply
-by specifying <code class="docutils literal notranslate"><span class="pre">state</span></code> as a kwarg to the handler function. I.e., you can simply do this in handler function or dependency
-to access the application state:</p>
+by specifying <code class="docutils literal notranslate"><span class="pre">state</span></code> as a kwarg to the handler or dependency function. For example:</p>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">Accessing application <a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.State" title="litestar.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a> in a handler function</span><a class="headerlink" href="#id10" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
 <span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">State</span>
 
@@ -1873,114 +1796,89 @@ to access the application state:</p>
 <span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">State</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
+</div>
 <p>When using this pattern you can specify the class to use for the state object. This type is not merely for type
-checkers, rather Litestar will instantiate a new state instance based on the type you set there. This allows users to
-use custom classes for State, e.g.:</p>
-<p>While this is very powerful, it might encourage users to follow anti-patterns: it’s important to emphasize that using
-state can lead to code that’s hard to reason about and bugs that are difficult to understand, due to changes in
+checkers, rather Litestar will instantiate a new <code class="docutils literal notranslate"><span class="pre">state</span></code> instance based on the type you set there.
+This allows users to use custom classes for <a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.State" title="litestar.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a>.</p>
+<p>While this is very powerful, it might encourage users to follow anti-patterns: it is important to emphasize that using
+state can lead to code that is hard to reason about and bugs that are difficult to understand, due to changes in
 different ASGI contexts. As such, this pattern should be used only when it is the best choice and in a limited fashion.
-To discourage its use, Litestar also offers a builtin <code class="docutils literal notranslate"><span class="pre">ImmutableState</span></code> class. You can use this class to type state and
-ensure that no mutation of state is allowed:</p>
-<div class="sd-tab-set docutils">
-<input id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-6">
-Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id12">
-<div class="code-block-caption"><span class="caption-text">Using Custom State</span><a class="headerlink" href="#id12" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+To discourage its use, Litestar also offers a builtin <a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.ImmutableState" title="litestar.datastructures.state.ImmutableState"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImmutableState</span></code></a> class.
+You can use this class to type state and ensure that no mutation of state is allowed:</p>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text">Using Custom State to ensure immutability</span><a class="headerlink" href="#id11" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>from<span class="w"> </span>typing<span class="w"> </span>import<span class="w"> </span>Any,<span class="w"> </span>Dict
 
-<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">ImmutableState</span>
+from<span class="w"> </span>litestar<span class="w"> </span>import<span class="w"> </span>Litestar,<span class="w"> </span>get
+from<span class="w"> </span>litestar.datastructures<span class="w"> </span>import<span class="w"> </span>ImmutableState
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">ImmutableState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-    <span class="nb">setattr</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="s2">&quot;count&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># raises AttributeError</span>
-    <span class="k">return</span> <span class="n">state</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
+@get<span class="o">(</span><span class="s2">&quot;/&quot;</span>,<span class="w"> </span><span class="nv">sync_to_thread</span><span class="o">=</span>False<span class="o">)</span>
+def<span class="w"> </span>handler<span class="o">(</span>state:<span class="w"> </span>ImmutableState<span class="o">)</span><span class="w"> </span>-&gt;<span class="w"> </span>Dict<span class="o">[</span>str,<span class="w"> </span>Any<span class="o">]</span>:
+<span class="w">    </span>setattr<span class="o">(</span>state,<span class="w"> </span><span class="s2">&quot;count&quot;</span>,<span class="w"> </span><span class="m">1</span><span class="o">)</span><span class="w">  </span><span class="c1"># raises AttributeError</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span>state.dict<span class="o">()</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">])</span>
+<span class="nv">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Litestar<span class="o">(</span><span class="nv">route_handlers</span><span class="o">=[</span>handler<span class="o">])</span>
 </pre></div>
-</div>
-</div>
-</div>
-<input checked="checked" id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-7">
-Python 3.10+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id13">
-<div class="code-block-caption"><span class="caption-text">Using Custom State</span><a class="headerlink" href="#id13" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
-
-<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">ImmutableState</span>
-
-
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">state</span><span class="p">:</span> <span class="n">ImmutableState</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-    <span class="nb">setattr</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="s2">&quot;count&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># raises AttributeError</span>
-    <span class="k">return</span> <span class="n">state</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
-
-
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">])</span>
-</pre></div>
-</div>
-</div>
 </div>
 </div>
 </section>
 </section>
 <section id="application-hooks">
 <h2>Application Hooks<a class="headerlink" href="#application-hooks" title="Permalink to this heading">#</a></h2>
-<p>Litestar includes several application level hooks that allow users to run their own sync or async callables. While you
-are free to use these hooks as you see fit, the design intention behind them is to allow for easy instrumentation for
-observability (monitoring, tracing, logging, etc.).</p>
+<p>Litestar includes several application level hooks that allow users to run their own sync or async
+<a class="reference external" href="https://docs.python.org/3/glossary.html#term-callable" title="(in Python v3.12)"><span class="xref std std-term">callables</span></a>. While you are free to use these hooks as you see fit, the design intention
+behind them is to allow for easy instrumentation for observability (monitoring, tracing, logging, etc.).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>All application hook kwargs detailed below receive either a single callable or a list of callables.
-If a list is provided, it is called in the order it is given.</p>
+<p>All application hook kwargs detailed below receive either a single <a class="reference external" href="https://docs.python.org/3/glossary.html#term-callable" title="(in Python v3.12)"><span>callable</span></a> or a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>
+of <a class="reference external" href="https://docs.python.org/3/glossary.html#term-callable" title="(in Python v3.12)"><span class="xref std std-term">callables</span></a>.
+If a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> is provided, it is called in the order it is given.</p>
 </div>
 <section id="after-exception">
 <h3>After Exception<a class="headerlink" href="#after-exception" title="Permalink to this heading">#</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">after_exception</span></code> hook takes a <a class="reference internal" href="../reference/types.html#litestar.types.AfterExceptionHookHandler" title="litestar.types.AfterExceptionHookHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">sync</span> <span class="pre">or</span> <span class="pre">async</span> <span class="pre">callable</span></code></a> that is called with
-two arguments: the <code class="docutils literal notranslate"><span class="pre">exception</span></code> that occurred and the ASGI <code class="docutils literal notranslate"><span class="pre">scope</span></code> of the request or websocket connection.</p>
-<div class="literal-block-wrapper docutils container" id="id14">
-<div class="code-block-caption"><span class="caption-text">After Exception Hook</span><a class="headerlink" href="#id14" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<p>The <a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.after_exception" title="litestar.app.Litestar"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">after_exception</span></code></a> hook takes a
+<a class="reference internal" href="../reference/types.html#litestar.types.AfterExceptionHookHandler" title="litestar.types.AfterExceptionHookHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">sync</span> <span class="pre">or</span> <span class="pre">async</span> <span class="pre">callable</span></code></a> that is called with two arguments:
+the <code class="docutils literal notranslate"><span class="pre">exception</span></code> that occurred and the ASGI <code class="docutils literal notranslate"><span class="pre">scope</span></code> of the request or websocket connection.</p>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text">After Exception Hook</span><a class="headerlink" href="#id12" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>import<span class="w"> </span>logging
+from<span class="w"> </span>typing<span class="w"> </span>import<span class="w"> </span>TYPE_CHECKING
 
-<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">litestar.exceptions</span> <span class="kn">import</span> <span class="n">HTTPException</span>
-<span class="kn">from</span> <span class="nn">litestar.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_400_BAD_REQUEST</span>
+from<span class="w"> </span>litestar<span class="w"> </span>import<span class="w"> </span>Litestar,<span class="w"> </span>get
+from<span class="w"> </span>litestar.exceptions<span class="w"> </span>import<span class="w"> </span>HTTPException
+from<span class="w"> </span>litestar.status_codes<span class="w"> </span>import<span class="w"> </span>HTTP_400_BAD_REQUEST
 
-<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+<span class="nv">logger</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>logging.getLogger<span class="o">()</span>
 
-<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">litestar.types</span> <span class="kn">import</span> <span class="n">Scope</span>
-
-
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/some-path&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">my_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Route handler that raises an exception.&quot;&quot;&quot;</span>
-    <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">detail</span><span class="o">=</span><span class="s2">&quot;bad request&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="n">HTTP_400_BAD_REQUEST</span><span class="p">)</span>
+<span class="k">if</span><span class="w"> </span>TYPE_CHECKING:
+<span class="w">    </span>from<span class="w"> </span>litestar.types<span class="w"> </span>import<span class="w"> </span>Scope
 
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">after_exception_handler</span><span class="p">(</span><span class="n">exc</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="s2">&quot;Scope&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Hook function that will be invoked after each exception.&quot;&quot;&quot;</span>
-    <span class="n">state</span> <span class="o">=</span> <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;app&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">state</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="s2">&quot;error_count&quot;</span><span class="p">):</span>
-        <span class="n">state</span><span class="o">.</span><span class="n">error_count</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">state</span><span class="o">.</span><span class="n">error_count</span> <span class="o">+=</span> <span class="mi">1</span>
-
-    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-        <span class="s2">&quot;an exception of type </span><span class="si">%s</span><span class="s2"> has occurred for requested path </span><span class="si">%s</span><span class="s2"> and the application error count is </span><span class="si">%d</span><span class="s2">.&quot;</span><span class="p">,</span>
-        <span class="nb">type</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span>
-        <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;path&quot;</span><span class="p">],</span>
-        <span class="n">state</span><span class="o">.</span><span class="n">error_count</span><span class="p">,</span>
-    <span class="p">)</span>
+@get<span class="o">(</span><span class="s2">&quot;/some-path&quot;</span>,<span class="w"> </span><span class="nv">sync_to_thread</span><span class="o">=</span>False<span class="o">)</span>
+def<span class="w"> </span>my_handler<span class="o">()</span><span class="w"> </span>-&gt;<span class="w"> </span>None:
+<span class="w">    </span><span class="s2">&quot;&quot;&quot;Route handler that raises an exception.&quot;&quot;&quot;</span>
+<span class="w">    </span>raise<span class="w"> </span>HTTPException<span class="o">(</span><span class="nv">detail</span><span class="o">=</span><span class="s2">&quot;bad request&quot;</span>,<span class="w"> </span><span class="nv">status_code</span><span class="o">=</span>HTTP_400_BAD_REQUEST<span class="o">)</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">my_handler</span><span class="p">],</span> <span class="n">after_exception</span><span class="o">=</span><span class="p">[</span><span class="n">after_exception_handler</span><span class="p">])</span>
+async<span class="w"> </span>def<span class="w"> </span>after_exception_handler<span class="o">(</span>exc:<span class="w"> </span>Exception,<span class="w"> </span>scope:<span class="w"> </span><span class="s2">&quot;Scope&quot;</span><span class="o">)</span><span class="w"> </span>-&gt;<span class="w"> </span>None:
+<span class="w">    </span><span class="s2">&quot;&quot;&quot;Hook function that will be invoked after each exception.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="nv">state</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>scope<span class="o">[</span><span class="s2">&quot;app&quot;</span><span class="o">]</span>.state
+<span class="w">    </span><span class="k">if</span><span class="w"> </span>not<span class="w"> </span>hasattr<span class="o">(</span>state,<span class="w"> </span><span class="s2">&quot;error_count&quot;</span><span class="o">)</span>:
+<span class="w">        </span>state.error_count<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span>
+<span class="w">    </span><span class="k">else</span>:
+<span class="w">        </span>state.error_count<span class="w"> </span>+<span class="o">=</span><span class="w"> </span><span class="m">1</span>
+
+<span class="w">    </span>logger.info<span class="o">(</span>
+<span class="w">        </span><span class="s2">&quot;an exception of type %s has occurred for requested path %s and the application error count is %d.&quot;</span>,
+<span class="w">        </span>type<span class="o">(</span>exc<span class="o">)</span>.__name__,
+<span class="w">        </span>scope<span class="o">[</span><span class="s2">&quot;path&quot;</span><span class="o">]</span>,
+<span class="w">        </span>state.error_count,
+<span class="w">    </span><span class="o">)</span>
+
+
+<span class="nv">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Litestar<span class="o">([</span>my_handler<span class="o">]</span>,<span class="w"> </span><span class="nv">after_exception</span><span class="o">=[</span>after_exception_handler<span class="o">])</span>
 </pre></div>
 </div>
 </div>
@@ -1992,136 +1890,88 @@ To handle exceptions you should define <a class="reference internal" href="excep
 </section>
 <section id="before-send">
 <h3>Before Send<a class="headerlink" href="#before-send" title="Permalink to this heading">#</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">before_send</span></code> hook takes a <a class="reference internal" href="../reference/types.html#litestar.types.BeforeMessageSendHookHandler" title="litestar.types.BeforeMessageSendHookHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">sync</span> <span class="pre">or</span> <span class="pre">async</span> <span class="pre">callable</span></code></a> that is called when
-an ASGI message is sent. The hook receives the message instance and the ASGI <code class="docutils literal notranslate"><span class="pre">scope</span></code>.</p>
-<div class="sd-tab-set docutils">
-<input id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-8">
-Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id15">
-<div class="code-block-caption"><span class="caption-text">Before Send Hook</span><a class="headerlink" href="#id15" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<p>The <a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.before_send" title="litestar.app.Litestar"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">before_send</span></code></a> hook takes a
+<a class="reference internal" href="../reference/types.html#litestar.types.BeforeMessageSendHookHandler" title="litestar.types.BeforeMessageSendHookHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">sync</span> <span class="pre">or</span> <span class="pre">async</span> <span class="pre">callable</span></code></a> that is called when an ASGI message is
+sent. The hook receives the message instance and the ASGI <code class="docutils literal notranslate"><span class="pre">scope</span></code>.</p>
+<div class="literal-block-wrapper docutils container" id="id13">
+<div class="code-block-caption"><span class="caption-text">Before Send Hook</span><a class="headerlink" href="#id13" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>from<span class="w"> </span>__future__<span class="w"> </span>import<span class="w"> </span>annotations
 
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+from<span class="w"> </span>typing<span class="w"> </span>import<span class="w"> </span>TYPE_CHECKING
 
-<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">MutableScopeHeaders</span>
+from<span class="w"> </span>litestar<span class="w"> </span>import<span class="w"> </span>Litestar,<span class="w"> </span>get
+from<span class="w"> </span>litestar.datastructures<span class="w"> </span>import<span class="w"> </span>MutableScopeHeaders
 
-<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
+<span class="k">if</span><span class="w"> </span>TYPE_CHECKING:
+<span class="w">    </span>from<span class="w"> </span>typing<span class="w"> </span>import<span class="w"> </span>Dict
 
-    <span class="kn">from</span> <span class="nn">litestar.types</span> <span class="kn">import</span> <span class="n">Message</span><span class="p">,</span> <span class="n">Scope</span>
+<span class="w">    </span>from<span class="w"> </span>litestar.types<span class="w"> </span>import<span class="w"> </span>Message,<span class="w"> </span>Scope
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/test&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Example Handler function.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">}</span>
+@get<span class="o">(</span><span class="s2">&quot;/test&quot;</span>,<span class="w"> </span><span class="nv">sync_to_thread</span><span class="o">=</span>False<span class="o">)</span>
+def<span class="w"> </span>handler<span class="o">()</span><span class="w"> </span>-&gt;<span class="w"> </span>Dict<span class="o">[</span>str,<span class="w"> </span>str<span class="o">]</span>:
+<span class="w">    </span><span class="s2">&quot;&quot;&quot;Example Handler function.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="o">{</span><span class="s2">&quot;key&quot;</span>:<span class="w"> </span><span class="s2">&quot;value&quot;</span><span class="o">}</span>
 
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">before_send_hook_handler</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n">Message</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The function will be called on each ASGI message.</span>
+async<span class="w"> </span>def<span class="w"> </span>before_send_hook_handler<span class="o">(</span>message:<span class="w"> </span>Message,<span class="w"> </span>scope:<span class="w"> </span>Scope<span class="o">)</span><span class="w"> </span>-&gt;<span class="w"> </span>None:
+<span class="w">    </span><span class="s2">&quot;&quot;&quot;The function will be called on each ASGI message.</span>
 
-<span class="sd">    We therefore ensure it runs only on the message start event.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">message</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http.response.start&quot;</span><span class="p">:</span>
-        <span class="n">headers</span> <span class="o">=</span> <span class="n">MutableScopeHeaders</span><span class="o">.</span><span class="n">from_message</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">)</span>
-        <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;My Header&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;app&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">message</span>
-
-
-<span class="k">def</span> <span class="nf">on_startup</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A function that will populate the app state before any requests are received.&quot;&quot;&quot;</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;value injected during send&quot;</span>
+<span class="s2">    We therefore ensure it runs only on the message start event.</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span>message<span class="o">[</span><span class="s2">&quot;type&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="s2">&quot;http.response.start&quot;</span>:
+<span class="w">        </span><span class="nv">headers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>MutableScopeHeaders.from_message<span class="o">(</span><span class="nv">message</span><span class="o">=</span>message<span class="o">)</span>
+<span class="w">        </span>headers<span class="o">[</span><span class="s2">&quot;My Header&quot;</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>scope<span class="o">[</span><span class="s2">&quot;app&quot;</span><span class="o">]</span>.state.message
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">],</span> <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span> <span class="n">before_send</span><span class="o">=</span><span class="p">[</span><span class="n">before_send_hook_handler</span><span class="p">])</span>
+def<span class="w"> </span>on_startup<span class="o">(</span>app:<span class="w"> </span>Litestar<span class="o">)</span><span class="w"> </span>-&gt;<span class="w"> </span>None:
+<span class="w">    </span><span class="s2">&quot;&quot;&quot;A function that will populate the app state before any requests are received.&quot;&quot;&quot;</span>
+<span class="w">    </span>app.state.message<span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;value injected during send&quot;</span>
+
+
+<span class="nv">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Litestar<span class="o">(</span><span class="nv">route_handlers</span><span class="o">=[</span>handler<span class="o">]</span>,<span class="w"> </span><span class="nv">on_startup</span><span class="o">=[</span>on_startup<span class="o">]</span>,<span class="w"> </span><span class="nv">before_send</span><span class="o">=[</span>before_send_hook_handler<span class="o">])</span>
 </pre></div>
-</div>
-</div>
-</div>
-<input checked="checked" id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-9">
-Python 3.10+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id16">
-<div class="code-block-caption"><span class="caption-text">Before Send Hook</span><a class="headerlink" href="#id16" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
-
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
-
-<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">MutableScopeHeaders</span>
-
-<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-
-    <span class="kn">from</span> <span class="nn">litestar.types</span> <span class="kn">import</span> <span class="n">Message</span><span class="p">,</span> <span class="n">Scope</span>
-
-
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/test&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Example Handler function.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">}</span>
-
-
-<span class="k">async</span> <span class="k">def</span> <span class="nf">before_send_hook_handler</span><span class="p">(</span><span class="n">message</span><span class="p">:</span> <span class="n">Message</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;The function will be called on each ASGI message.</span>
-
-<span class="sd">    We therefore ensure it runs only on the message start event.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">message</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http.response.start&quot;</span><span class="p">:</span>
-        <span class="n">headers</span> <span class="o">=</span> <span class="n">MutableScopeHeaders</span><span class="o">.</span><span class="n">from_message</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">)</span>
-        <span class="n">headers</span><span class="p">[</span><span class="s2">&quot;My Header&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;app&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">message</span>
-
-
-<span class="k">def</span> <span class="nf">on_startup</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;A function that will populate the app state before any requests are received.&quot;&quot;&quot;</span>
-    <span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="s2">&quot;value injected during send&quot;</span>
-
-
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">],</span> <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span> <span class="n">before_send</span><span class="o">=</span><span class="p">[</span><span class="n">before_send_hook_handler</span><span class="p">])</span>
-</pre></div>
-</div>
-</div>
 </div>
 </div>
 </section>
 <section id="initialization">
 <h3>Initialization<a class="headerlink" href="#initialization" title="Permalink to this heading">#</a></h3>
-<p>Litestar includes a hook for intercepting the arguments passed to the <a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span> <span class="pre">constructor</span></code></a>,
-before they are used to instantiate the application.</p>
-<p>Handlers can be passed to the <code class="docutils literal notranslate"><span class="pre">on_app_init</span></code> parameter on construction of the application, and in turn, each will receive
-an instance of <a class="reference internal" href="../reference/config.html#litestar.config.app.AppConfig" title="litestar.config.app.AppConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></a> and must return an instance of same.</p>
+<p>Litestar includes a hook for intercepting the arguments passed to the
+<a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span> <span class="pre">constructor</span></code></a>, before they are used to instantiate the application.</p>
+<p>Handlers can be passed to the <a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.on_app_init" title="litestar.app.Litestar"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">on_app_init</span></code></a> parameter on construction of the application,
+and in turn, each will receive an instance of <a class="reference internal" href="../reference/config.html#litestar.config.app.AppConfig" title="litestar.config.app.AppConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AppConfig</span></code></a> and must return an instance of same.</p>
 <p>This hook is useful for applying common configuration between applications, and for use by developers who may wish to
 develop third-party application configuration systems.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><code class="docutils literal notranslate"><span class="pre">on_app_init</span></code> handlers cannot be <code class="docutils literal notranslate"><span class="pre">async</span> <span class="pre">def</span></code> functions, as they are called within <code class="docutils literal notranslate"><span class="pre">Litestar.__init__()</span></code>,
-outside of an async context.</p>
+<p><a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.on_app_init" title="litestar.app.Litestar"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">on_app_init</span></code></a> handlers cannot be <a class="reference external" href="https://docs.python.org/3/reference/compound_stmts.html#async-def" title="(in Python v3.12)"><span>Coroutine function definition</span></a> functions, as they are
+called within <a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.__init__" title="litestar.app.Litestar"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">__init__</span></code></a>, outside of an async context.</p>
 </div>
-<div class="literal-block-wrapper docutils container" id="id17">
-<div class="code-block-caption"><span class="caption-text">After Exception Hook</span><a class="headerlink" href="#id17" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<div class="literal-block-wrapper docutils container" id="id14">
+<div class="code-block-caption"><span class="caption-text">Example usage of the <code class="docutils literal notranslate"><span class="pre">on_app_init</span></code> hook to modify the application configuration.</span><a class="headerlink" href="#id14" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>from<span class="w"> </span>typing<span class="w"> </span>import<span class="w"> </span>TYPE_CHECKING
 
-<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+from<span class="w"> </span>litestar<span class="w"> </span>import<span class="w"> </span>Litestar
 
-<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">litestar.config.app</span> <span class="kn">import</span> <span class="n">AppConfig</span>
-
-
-<span class="k">async</span> <span class="k">def</span> <span class="nf">close_db_connection</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Closes the database connection on application shutdown.&quot;&quot;&quot;</span>
+<span class="k">if</span><span class="w"> </span>TYPE_CHECKING:
+<span class="w">    </span>from<span class="w"> </span>litestar.config.app<span class="w"> </span>import<span class="w"> </span>AppConfig
 
 
-<span class="k">def</span> <span class="nf">receive_app_config</span><span class="p">(</span><span class="n">app_config</span><span class="p">:</span> <span class="s2">&quot;AppConfig&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;AppConfig&quot;</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Receives parameters from the application.</span>
-
-<span class="sd">    In reality, this would be a library of boilerplate that is carried from one application to another, or a third-party</span>
-<span class="sd">    developed application configuration tool.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">app_config</span><span class="o">.</span><span class="n">on_shutdown</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">close_db_connection</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">app_config</span>
+async<span class="w"> </span>def<span class="w"> </span>close_db_connection<span class="o">()</span><span class="w"> </span>-&gt;<span class="w"> </span>None:
+<span class="w">    </span><span class="s2">&quot;&quot;&quot;Closes the database connection on application shutdown.&quot;&quot;&quot;</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([],</span> <span class="n">on_app_init</span><span class="o">=</span><span class="p">[</span><span class="n">receive_app_config</span><span class="p">])</span>
+def<span class="w"> </span>receive_app_config<span class="o">(</span>app_config:<span class="w"> </span><span class="s2">&quot;AppConfig&quot;</span><span class="o">)</span><span class="w"> </span>-&gt;<span class="w"> </span><span class="s2">&quot;AppConfig&quot;</span>:
+<span class="w">    </span><span class="s2">&quot;&quot;&quot;Receives parameters from the application.</span>
+
+<span class="s2">    In reality, this would be a library of boilerplate that is carried from one application to another, or a third-party</span>
+<span class="s2">    developed application configuration tool.</span>
+<span class="s2">    &quot;&quot;&quot;</span>
+<span class="w">    </span>app_config.on_shutdown.append<span class="o">(</span>close_db_connection<span class="o">)</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span>app_config
+
+
+<span class="nv">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Litestar<span class="o">([]</span>,<span class="w"> </span><span class="nv">on_app_init</span><span class="o">=[</span>receive_app_config<span class="o">])</span>
 </pre></div>
 </div>
 </div>
@@ -2129,14 +1979,14 @@ outside of an async context.</p>
 </section>
 <section id="layered-architecture">
 <span id="id3"></span><h2>Layered architecture<a class="headerlink" href="#layered-architecture" title="Permalink to this heading">#</a></h2>
-<p>Litestar has a layered architecture compromising of (generally speaking) 4 layers:</p>
+<p>Litestar has a layered architecture compromising of 4 layers:</p>
 <ol class="arabic simple">
-<li><p>The application object</p></li>
-<li><p>Routers</p></li>
-<li><p>Controllers</p></li>
-<li><p>Handlers</p></li>
+<li><p><a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">The</span> <span class="pre">application</span> <span class="pre">object</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/router.html#litestar.router.Router" title="litestar.router.Router"><code class="xref py py-class docutils literal notranslate"><span class="pre">Routers</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/controller.html#litestar.controller.Controller" title="litestar.controller.Controller"><code class="xref py py-class docutils literal notranslate"><span class="pre">Controllers</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/handlers.html#litestar.handlers.BaseRouteHandler" title="litestar.handlers.BaseRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">Handlers</span></code></a></p></li>
 </ol>
-<p>There are many parameters that can be defined on every layer, in which case the parameter
+<p>There are many <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.12)"><span class="xref std std-term">parameters</span></a> that can be defined on every layer, in which case the <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.12)"><span class="xref std std-term">parameter</span></a>
 defined on the layer <strong>closest to the handler</strong> takes precedence. This allows for maximum
 flexibility and simplicity when configuring complex applications and enables transparent
 overriding of parameters.</p>
