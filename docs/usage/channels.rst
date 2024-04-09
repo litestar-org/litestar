@@ -146,7 +146,7 @@ Configuring the :term:`channels <channel>`
 
 The :term:`channels <channel>` managed by the plugin can be either defined upfront, passing them to the
 :paramref:`~ChannelsPlugin.channels` parameter, or created "on the fly"
-(i.e. on the first :term:`subscription` to a channel) by setting
+(i.e., on the first :term:`subscription` to a channel) by setting
 :paramref:`~ChannelsPlugin.arbitrary_channels_allowed` to ``True``.
 
 .. code-block:: python
