@@ -99,7 +99,7 @@ class ProblemDetailsConfig:
     """The exception handler used for ``ProblemdetailsException.``"""
 
     enable_for_all_http_exceptions: bool = False
-    """Flag indicating whether to convert all exceptions into ``ProblemDetailsException.``"""
+    """Flag indicating whether to convert all ``HTTPException`` into ``ProblemDetailsException.``"""
 
     exception_to_problem_detail_map: ExceptionToProblemDetailMapType = field(default_factory=dict)
     """A mapping to convert exceptions into ``ProblemDetailsException.``
