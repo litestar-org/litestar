@@ -3,6 +3,22 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.8.2
+    :date: 2024-04-09
+
+    .. change:: pydantic v2 import tests for pydantic v1.10.15
+        :type: bugfix
+        :pr: 3347
+        :issue: 3348
+
+        Fixes bug with Pydantic v1 environment test causing the test to run against v2. Adds assertion for version to
+        the test.
+
+        Fixes a bug exposed by above that relied on Pydantic not having `v1` in the package namespace if `v1` is
+        installed. This doesn't hold true after Pydantic's `1.10.15` release.
+
+        Moves application environment tests from the release job into the normal CI run.
+
 .. changelog:: 2.8.1
     :date: 2024-04-08
 
