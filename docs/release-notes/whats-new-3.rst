@@ -24,7 +24,7 @@ Imports
 
 
 Removal of ``StaticFileConfig``
-------------------------------
+-------------------------------
 
 The ``StaticFilesConfig`` has been removed, alongside these related parameters and
 functions:
