@@ -423,7 +423,7 @@
 
         Static file serving has been implemented with regular route handlers instead of
         a specialised ASGI app. At the moment, this is complementary to the usage of
-        `litestar.static_files.StaticFilesConfig`` to maintain backwards
+        ``litestar.static_files.StaticFilesConfig`` to maintain backwards
         compatibility.
 
         This achieves a few things:
