@@ -45,7 +45,6 @@ from litestar.plugins import (
 from litestar.plugins.base import CLIPlugin
 from litestar.router import Router
 from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
-from litestar.static_files.base import StaticFiles
 from litestar.stores.registry import StoreRegistry
 from litestar.types import Empty, TypeDecodersSequence
 from litestar.types.internal_types import PathParameterDefinition, TemplateConfigType
@@ -67,13 +66,11 @@ if TYPE_CHECKING:
     from litestar.openapi.spec import SecurityRequirement
     from litestar.openapi.spec.open_api import OpenAPI
     from litestar.response import Response
-    from litestar.static_files.config import StaticFilesConfig
     from litestar.stores.base import Store
     from litestar.types import (
         AfterExceptionHookHandler,
         AfterRequestHookHandler,
         AfterResponseHookHandler,
-        AnyCallable,
         ASGIApp,
         BeforeMessageSendHookHandler,
         BeforeRequestHookHandler,
@@ -139,7 +136,6 @@ class Litestar(Router):
         "_server_lifespan_managers",
         "_debug",
         "_openapi_schema",
-        "_static_files_config",
         "plugins",
         "after_exception",
         "allowed_hosts",
@@ -210,7 +206,6 @@ class Litestar(Router):
         signature_namespace: Mapping[str, Any] | None = None,
         signature_types: Sequence[Any] | None = None,
         state: State | None = None,
-        static_files_config: Sequence[StaticFilesConfig] | None = None,
         stores: StoreRegistry | dict[str, Store] | None = None,
         tags: Sequence[str] | None = None,
         template_config: TemplateConfigType | None = None,
@@ -302,7 +297,6 @@ class Litestar(Router):
             signature_types: A sequence of types for use in forward reference resolution during signature modeling.
                 These types will be added to the signature namespace using their ``__name__`` attribute.
             state: An optional :class:`State <.datastructures.State>` for application state.
-            static_files_config: A sequence of :class:`StaticFilesConfig <.static_files.StaticFilesConfig>`
             stores: Central registry of :class:`Store <.stores.base.Store>` that will be available throughout the
                 application. If this is a dictionary to it will be passed to a
                 :class:`StoreRegistry <.stores.registry.StoreRegistry>`. If it is a
@@ -370,7 +364,6 @@ class Litestar(Router):
             signature_namespace=dict(signature_namespace or {}),
             signature_types=list(signature_types or []),
             state=state or State(),
-            static_files_config=list(static_files_config or []),
             stores=stores,
             tags=list(tags or []),
             template_config=template_config,
@@ -428,7 +421,6 @@ class Litestar(Router):
         self.request_class: type[Request] = config.request_class or Request
         self.response_cache_config = config.response_cache_config
         self.state = config.state
-        self._static_files_config = config.static_files_config
         self.template_engine = config.template_config.engine_instance if config.template_config else None
         self.websocket_class: type[WebSocket] = config.websocket_class or WebSocket
         self.debug = config.debug
@@ -487,15 +479,7 @@ class Litestar(Router):
             self.get_logger = self.logging_config.configure()
             self.logger = self.get_logger("litestar")
 
-        for static_config in self._static_files_config:
-            self.register(static_config.to_static_files_app())
-
         self.asgi_handler = self._create_asgi_handler()
-
-    @property
-    @deprecated(version="2.6.0", kind="property", info="Use create_static_files router instead")
-    def static_files_config(self) -> list[StaticFilesConfig]:
-        return self._static_files_config
 
     @property
     @deprecated(version="2.0", alternative="Litestar.plugins.cli", kind="property")
@@ -779,49 +763,6 @@ class Litestar(Router):
                 output.append(component)
 
         return join_paths(output)
-
-    @deprecated(
-        "2.6.0", info="Use create_static_files router instead of StaticFilesConfig, which works with route_reverse"
-    )
-    def url_for_static_asset(self, name: str, file_path: str) -> str:
-        """Receives a static files handler name, an asset file path and returns resolved url path to the asset.
-
-        Examples:
-            .. code-block:: python
-
-                from litestar import Litestar
-                from litestar.static_files.config import StaticFilesConfig
-
-                app = Litestar(
-                    static_files_config=[
-                        StaticFilesConfig(directories=["css"], path="/static/css", name="css")
-                    ]
-                )
-
-                path = app.url_for_static_asset("css", "main.css")
-
-                # /static/css/main.css
-
-        Args:
-            name: A static handler unique name.
-            file_path: a string containing path to an asset.
-
-        Raises:
-            NoRouteMatchFoundException: If static files handler with ``name`` does not exist.
-
-        Returns:
-            A url path to the asset.
-        """
-
-        handler_index = self.get_handler_index_by_name(name)
-        if handler_index is None:
-            raise NoRouteMatchFoundException(f"Static handler {name} can not be found")
-
-        handler_fn = cast("AnyCallable", handler_index["handler"].fn)
-        if not isinstance(handler_fn, StaticFiles):
-            raise NoRouteMatchFoundException(f"Handler with name {name} is not a static files handler")
-
-        return join_paths([handler_index["paths"][0], file_path])  # type: ignore[unreachable]
 
     @property
     def route_handler_method_view(self) -> dict[str, list[str]]:

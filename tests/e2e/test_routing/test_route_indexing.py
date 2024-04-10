@@ -16,7 +16,6 @@ from litestar import (
 )
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers.http_handlers import HTTPRouteHandler
-from litestar.static_files.config import StaticFilesConfig
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -130,9 +129,3 @@ def test_indexing_validation(tmp_path: "Path") -> None:
 
     with pytest.raises(ImproperlyConfiguredException):
         Litestar(route_handlers=[handler_one, handler_two])
-
-    with pytest.raises(ImproperlyConfiguredException):
-        Litestar(
-            route_handlers=[handler_one],
-            static_files_config=[StaticFilesConfig(path="/static", directories=[tmp_path], name="same-name")],
-        )
