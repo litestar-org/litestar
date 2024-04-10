@@ -5,7 +5,7 @@
 groups = ["default", "annotated-types", "attrs", "brotli", "cli", "cryptography", "dev", "dev-contrib", "docs", "full", "jinja", "jwt", "linting", "mako", "minijinja", "opentelemetry", "piccolo", "picologging", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "test"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:33c8a861fc8e4c383f392ee3d1a9ed5fb721e370cf16dfff4365eab49b12b90b"
+content_hash = "sha256:e5803ff230565dd1f271d57731ccb117b91bf050b9129a398d1ba674c0031606"
 
 [[package]]
 name = "advanced-alchemy"
@@ -2995,16 +2995,17 @@ files = [
 ]
 
 [[package]]
-name = "pytest-lazy-fixture"
-version = "0.6.3"
-summary = "It helps to use fixtures in pytest.mark.parametrize"
+name = "pytest-lazy-fixtures"
+version = "1.0.7"
+requires_python = ">=3.8,<4.0"
+summary = "Allows you to use fixtures in @pytest.mark.parametrize."
 groups = ["test"]
 dependencies = [
-    "pytest>=3.2.5",
+    "pytest>=7",
 ]
 files = [
-    {file = "pytest-lazy-fixture-0.6.3.tar.gz", hash = "sha256:0e7d0c7f74ba33e6e80905e9bfd81f9d15ef9a790de97993e34213deb5ad10ac"},
-    {file = "pytest_lazy_fixture-0.6.3-py3-none-any.whl", hash = "sha256:e0b379f38299ff27a653f03eaa69b08a6fd4484e46fd1c9907d984b9f9daeda6"},
+    {file = "pytest_lazy_fixtures-1.0.7-py3-none-any.whl", hash = "sha256:71428385b166cdb0fa3f2a3c72b5a5f95fa58f977816877b9b9c1e857143e194"},
+    {file = "pytest_lazy_fixtures-1.0.7.tar.gz", hash = "sha256:87ef7424dc0229ff9cb72d482f49b7806535c3500641f612c13ddf243c9adacb"},
 ]
 
 [[package]]
@@ -3619,6 +3620,19 @@ files = [
 ]
 
 [[package]]
+name = "sphinx-paramlinks"
+version = "0.6.0"
+summary = "Allows param links in Sphinx function/method descriptions to be linkable"
+groups = ["docs"]
+dependencies = [
+    "Sphinx>=4.0.0",
+    "docutils",
+]
+files = [
+    {file = "sphinx-paramlinks-0.6.0.tar.gz", hash = "sha256:746a0816860aa3fff5d8d746efcbec4deead421f152687411db1d613d29f915e"},
+]
+
+[[package]]
 name = "sphinx-prompt"
 version = "1.5.0"
 summary = "Sphinx directive to add unselectable prompt"
@@ -4230,17 +4244,6 @@ dependencies = [
 files = [
     {file = "types-pyOpenSSL-24.0.0.20240311.tar.gz", hash = "sha256:7bca00cfc4e7ef9c5d2663c6a1c068c35798e59670595439f6296e7ba3d58083"},
     {file = "types_pyOpenSSL-24.0.0.20240311-py3-none-any.whl", hash = "sha256:6e8e8bfad34924067333232c93f7fc4b369856d8bea0d5c9d1808cb290ab1972"},
-]
-
-[[package]]
-name = "types-pytest-lazy-fixture"
-version = "0.6.3.20240310"
-requires_python = ">=3.8"
-summary = "Typing stubs for pytest-lazy-fixture"
-groups = ["linting"]
-files = [
-    {file = "types-pytest-lazy-fixture-0.6.3.20240310.tar.gz", hash = "sha256:990bb96f556369ce8e37562171e75ad52956444b5a71c85b3e7f51db4cafcc7b"},
-    {file = "types_pytest_lazy_fixture-0.6.3.20240310-py3-none-any.whl", hash = "sha256:50618fba86e576e72cb3c200d940ad6d2a899c3493239806b907a964fbb527c6"},
 ]
 
 [[package]]
