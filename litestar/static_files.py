@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from os.path import commonpath
 from pathlib import Path, PurePath
-from typing import TYPE_CHECKING, Any, Literal, Sequence
+from typing import TYPE_CHECKING, Any, Literal, Sequence, Mapping
 
 from litestar.exceptions import ImproperlyConfiguredException, NotFoundException
 from litestar.file_system import BaseLocalFileSystem, FileSystemAdapter
@@ -32,7 +32,7 @@ if TYPE_CHECKING:
 
 def create_static_files_router(
     path: str,
-    directories: list[PathType],
+    directories: Sequence[PathType],
     file_system: Any = None,
     send_as_attachment: bool = False,
     html_mode: bool = False,
@@ -42,10 +42,10 @@ def create_static_files_router(
     before_request: BeforeRequestHookHandler | None = None,
     cache_control: CacheControlHeader | None = None,
     exception_handlers: ExceptionHandlersMap | None = None,
-    guards: list[Guard] | None = None,
+    guards: Sequence[Guard] | None = None,
     include_in_schema: bool | EmptyType = Empty,
     middleware: Sequence[Middleware] | None = None,
-    opt: dict[str, Any] | None = None,
+    opt: Mapping[str, Any] | None = None,
     security: Sequence[SecurityRequirement] | None = None,
     tags: Sequence[str] | None = None,
     router_class: type[Router] = Router,
@@ -82,6 +82,8 @@ def create_static_files_router(
 
     if file_system is None:
         file_system = BaseLocalFileSystem()
+
+    directories = list(directories)
 
     _validate_config(path=path, directories=directories, file_system=file_system)
     path = normalize_path(path)
