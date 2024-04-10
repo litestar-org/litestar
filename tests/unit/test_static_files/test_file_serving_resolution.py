@@ -8,9 +8,8 @@ from typing import TYPE_CHECKING
 import brotli
 import pytest
 
-from litestar import MediaType, get
-from litestar.file_system import FileSystemAdapter
-from litestar.static_files import _get_fs_info, create_static_files_router
+from litestar import MediaType, Router, get
+from litestar.static_files import StaticFiles, StaticFilesConfig, create_static_files_router
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 

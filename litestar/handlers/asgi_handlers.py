@@ -26,10 +26,9 @@ if TYPE_CHECKING:
 
 
 class ASGIRouteHandler(BaseRouteHandler):
-    __slots__ = (
-        "copy_scope",
-        "is_mount",
-    )
+
+
+    __slots__ = ("copy_scope", "is_mount",)
 
     def __init__(
         self,
