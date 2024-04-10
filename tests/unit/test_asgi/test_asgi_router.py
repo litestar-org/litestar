@@ -29,7 +29,7 @@ def test_add_mount_route_disallow_path_parameter() -> None:
         return None
 
     with pytest.raises(ImproperlyConfiguredException):
-        Litestar(route_handlers=[asgi("/mount-path", is_static=True)(handler), asgi("/mount-path/{id:str}")(handler)])
+        Litestar(route_handlers=[asgi("/mount-path", is_mount=True)(handler), asgi("/mount-path/{id:str}")(handler)])
 
 
 class _LifeSpanCallable:
