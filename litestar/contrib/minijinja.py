@@ -13,7 +13,6 @@ from litestar.template.base import (
     TemplateProtocol,
     csrf_token,
     url_for,
-    url_for_static_asset,
 )
 from litestar.utils.deprecation import warn_deprecation
 
@@ -142,7 +141,6 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
 
         self.register_template_callable("url_for", _transform_state(url_for))
         self.register_template_callable("csrf_token", _transform_state(csrf_token))
-        self.register_template_callable("url_for_static_asset", _transform_state(url_for_static_asset))
 
     def get_template(self, template_name: str) -> MiniJinjaTemplate:
         """Retrieve a template by matching its name (dotted path) with files in the directory or directories provided.

@@ -12,8 +12,7 @@ from typing_extensions import Annotated, NotRequired, Required, TypedDict, get_a
 
 from litestar import Controller, Router, post
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.file_system import BaseLocalFileSystem
-from litestar.static_files import StaticFiles
+from litestar.response.base import ASGIResponse
 from litestar.types.asgi_types import Receive, Scope, Send
 from litestar.types.builtin_types import NoneType
 from litestar.types.empty import Empty
@@ -28,8 +27,8 @@ class ConcreteT: ...
 
 
 def test_get_fn_type_hints_asgi_app() -> None:
-    app = StaticFiles(is_html_mode=False, directories=[], file_system=BaseLocalFileSystem())
-    assert get_fn_type_hints(app) == {"scope": Scope, "receive": Receive, "send": Send, "return": NoneType}
+    app = ASGIResponse()
+    assert get_fn_type_hints(app.__call__) == {"scope": Scope, "receive": Receive, "send": Send, "return": NoneType}
 
 
 def func(a: int, b: str, c: float) -> None: ...
