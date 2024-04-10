@@ -226,7 +226,7 @@ This can be used for a variety of purposes, including adding additional routes t
 OAuth2 in Swagger UI
 --------------------
 
-When using Swagger, OAuth2 settings can be configured via the ``init_oauth`` param of
+When using Swagger, OAuth2 settings can be configured via the :paramref:`~.openapi.plugins.SwaggerRenderPlugin.init_oauth` param of
 :meth:`SwaggerRenderPlugin <litestar.openapi.plugins.SwaggerRenderPlugin.__init__>`, which can be set to a dictionary
 containing the parameters described in the Swagger UI documentation for OAuth2
 `here <https://swagger.io/docs/open-source-tools/swagger-ui/usage/oauth2/>`_.
