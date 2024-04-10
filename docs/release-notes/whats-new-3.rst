@@ -18,7 +18,7 @@ Imports
 +====================================================+========================================================================+
 | **SECTION**                                                                                                                 |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| Put your shit here from v2                         | Put your shit here from v3                                             |
++ Put your shit here from v2                         | Put your shit here from v3                                             |
 +----------------------------------------------------+------------------------------------------------------------------------+
 
 
@@ -118,6 +118,7 @@ replace the usages of ``app`` with ``request.app``.
 Deprecated scope state utilities removed
 ----------------------------------------
 
+Make more sections as they are appropriate :)
 Litestar has previously made available utilities for storing and retrieving data in the ASGI scope state. These
 utilities have been removed in version 3.0.0. If you need to store data in the ASGI scope state, you should use do so
 using a namespace that is unique to your application and unlikely to conflict with other applications.
