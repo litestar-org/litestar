@@ -146,8 +146,7 @@ def parse_path_to_route(
             if not children or all(sub_route not in path for sub_route in children):  # type: ignore[operator]
                 asgi_app, handler = parse_node_handlers(node=mount_node, method=method)
                 remaining_path = remaining_path or "/"
-                if not mount_node.is_static:
-                    remaining_path = remaining_path if remaining_path.endswith("/") else f"{remaining_path}/"
+                remaining_path = remaining_path if remaining_path.endswith("/") else f"{remaining_path}/"
                 return asgi_app, handler, remaining_path, {}
 
         node, path_parameters, path = traverse_route_map(
