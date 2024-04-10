@@ -22,6 +22,24 @@ Imports
 +----------------------------------------------------+------------------------------------------------------------------------+
 
 
+
+Removal of ``StaticFileConfig``
+-------------------------------
+
+The ``StaticFilesConfig`` has been removed, alongside these related parameters and
+functions:
+
+- ``Litestar.static_files_config``
+- ``Litestar.url_for_static_asset``
+- ``Request.url_for_static_asset``
+
+:func:`create_static_files_router` is a drop-in replacement for ``StaticFilesConfig``,
+and can simply be added to the ``route_handlers`` like any other regular handler.
+
+Usage of ``url_for_static_assets`` should be replaced with a ``url_for("static", ...)``
+call.
+
+
 Other Changes
 -------------
 

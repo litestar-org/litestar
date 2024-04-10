@@ -74,7 +74,6 @@ def app_config_object() -> AppConfig:
         response_headers=[],
         route_handlers=[],
         security=[],
-        static_files_config=[],
         tags=[],
         template_config=None,
         websocket_class=None,
