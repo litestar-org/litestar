@@ -1,7 +1,7 @@
 Static files
 ============
 
-To serve static files (e.g., serve arbitrary files from a given directory), the
+To serve static files (i.e., serve arbitrary files from a given directory), the
 :func:`~litestar.static_files.create_static_files_router` can be used to create a
 :class:`Router <litestar.router.Router>` to handle this task.
 
