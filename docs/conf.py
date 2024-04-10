@@ -4,6 +4,7 @@ import importlib.metadata
 import os
 import re
 import warnings
+from datetime import datetime
 from functools import partial
 from typing import Any
 
@@ -22,9 +23,10 @@ PY_ATTR = "py:attr"
 PY_OBJ = "py:obj"
 PY_FUNC = "py:func"
 
+current_year = datetime.now().year
 project = "Litestar"
-copyright = "2023, Litestar-Org"
-author = "Litestar-Org"
+copyright = f"{current_year}, Litestar Organization"
+author = "Litestar Organization"
 release = os.getenv("_LITESTAR_DOCS_BUILD_VERSION", importlib.metadata.version("litestar").rsplit(".")[0])
 environment = os.getenv("_LITESTAR_DOCS_BUILD_ENVIRONMENT", "local")
 
