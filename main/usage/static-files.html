@@ -1535,10 +1535,12 @@ document.write(`
                   
   <section id="static-files">
 <h1>Static files<a class="headerlink" href="#static-files" title="Permalink to this heading">#</a></h1>
-<p>To serve static files (i.e. serve arbitrary files from a given directory), the
+<p>To serve static files (i.e., serve arbitrary files from a given directory), the
 <a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router" title="litestar.static_files.create_static_files_router"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_static_files_router()</span></code></a> can be used to create a
 <a class="reference internal" href="../reference/router.html#litestar.router.Router" title="litestar.router.Router"><code class="xref py py-class docutils literal notranslate"><span class="pre">Router</span></code></a> to handle this task.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">Serving static files using <a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router" title="litestar.static_files.create_static_files_router"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_static_files_router</span></code></a></span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
 <span class="kn">from</span> <span class="nn">litestar.static_files</span> <span class="kn">import</span> <span class="n">create_static_files_router</span>
@@ -1557,7 +1559,9 @@ document.write(`
     <span class="p">],</span>
     <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span>
 <span class="p">)</span>
+
 </pre></div>
+</div>
 </div>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
@@ -1576,55 +1580,67 @@ application is started</p>
 <section id="sending-files-as-attachments">
 <h2>Sending files as attachments<a class="headerlink" href="#sending-files-as-attachments" title="Permalink to this heading">#</a></h2>
 <p>By default, files are sent “inline”, meaning they will have a
-<code class="docutils literal notranslate"><span class="pre">Content-Disposition:</span> <span class="pre">inline</span></code> header. Setting <code class="docutils literal notranslate"><span class="pre">send_as_attachment=True</span></code> flag will
-send them with a <code class="docutils literal notranslate"><span class="pre">Content-Disposition:</span> <span class="pre">attachment</span></code> instead:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-<span class="kn">from</span> <span class="nn">litestar.static_files</span> <span class="kn">import</span> <span class="n">create_static_files_router</span>
+<code class="docutils literal notranslate"><span class="pre">Content-Disposition:</span> <span class="pre">inline</span></code> header.</p>
+<p>Setting <a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router.params.send_as_attachment" title="litestar.static_files.create_static_files_router.params.send_as_attachment"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">send_as_attachment</span></code></a> to <code class="docutils literal notranslate"><span class="pre">True</span></code> will send
+them with a <code class="docutils literal notranslate"><span class="pre">Content-Disposition:</span> <span class="pre">attachment</span></code> instead:</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Sending files as attachments using the the
+<a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router.params.send_as_attachment" title="litestar.static_files.create_static_files_router.params.send_as_attachment"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">send_as_attachment</span></code></a> parameter
+of <a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router" title="litestar.static_files.create_static_files_router"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_static_files_router()</span></code></a></span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>from<span class="w"> </span>litestar<span class="w"> </span>import<span class="w"> </span>Litestar
+from<span class="w"> </span>litestar.static_files<span class="w"> </span>import<span class="w"> </span>create_static_files_router
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
-        <span class="n">create_static_files_router</span><span class="p">(</span>
-            <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span><span class="p">,</span>
-            <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;assets&quot;</span><span class="p">],</span>
-            <span class="n">send_as_attachment</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="p">]</span>
-<span class="p">)</span>
+<span class="nv">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Litestar<span class="o">(</span>
+<span class="w">    </span><span class="nv">route_handlers</span><span class="o">=[</span>
+<span class="w">        </span>create_static_files_router<span class="o">(</span>
+<span class="w">            </span><span class="nv">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span>,
+<span class="w">            </span><span class="nv">directories</span><span class="o">=[</span><span class="s2">&quot;assets&quot;</span><span class="o">]</span>,
+<span class="w">            </span><span class="nv">send_as_attachment</span><span class="o">=</span>True,
+<span class="w">        </span><span class="o">)</span>
+<span class="w">    </span><span class="o">]</span>
+<span class="o">)</span>
 </pre></div>
+</div>
 </div>
 </section>
 <section id="html-mode">
 <h2>HTML mode<a class="headerlink" href="#html-mode" title="Permalink to this heading">#</a></h2>
-<p>“HTML mode” can be enabled by setting <code class="docutils literal notranslate"><span class="pre">html_mode=True</span></code>. This will:</p>
+<p>“HTML mode” can be enabled by setting <a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router.params.html_mode" title="litestar.static_files.create_static_files_router.params.html_mode"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">html_mode</span></code></a>
+to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<p>This will:</p>
 <ul class="simple">
 <li><p>Serve and <code class="docutils literal notranslate"><span class="pre">/index.html</span></code> when the path <code class="docutils literal notranslate"><span class="pre">/</span></code> is requested</p></li>
 <li><p>Attempt to serve <code class="docutils literal notranslate"><span class="pre">/404.html</span></code> when a requested file is not found</p></li>
 </ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">Serving HTML files using the <a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router.params.html_mode" title="litestar.static_files.create_static_files_router.params.html_mode"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">html_mode</span></code></a>
+parameter of <a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router" title="litestar.static_files.create_static_files_router"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_static_files_router()</span></code></a></span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>from<span class="w"> </span>pathlib<span class="w"> </span>import<span class="w"> </span>Path
 
-<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-<span class="kn">from</span> <span class="nn">litestar.static_files</span> <span class="kn">import</span> <span class="n">create_static_files_router</span>
+from<span class="w"> </span>litestar<span class="w"> </span>import<span class="w"> </span>Litestar
+from<span class="w"> </span>litestar.static_files<span class="w"> </span>import<span class="w"> </span>create_static_files_router
 
-<span class="n">HTML_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;html&quot;</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">on_startup</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">HTML_DIR</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">HTML_DIR</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;index.html&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">&quot;&lt;strong&gt;Hello, world!&lt;/strong&gt;&quot;</span><span class="p">)</span>
-    <span class="n">HTML_DIR</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;404.html&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">&quot;&lt;h1&gt;Not found&lt;/h1&gt;&quot;</span><span class="p">)</span>
+<span class="nv">HTML_DIR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Path<span class="o">(</span><span class="s2">&quot;html&quot;</span><span class="o">)</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
-        <span class="n">create_static_files_router</span><span class="p">(</span>
-            <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span>
-            <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;html&quot;</span><span class="p">],</span>
-            <span class="n">html_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="p">],</span>
-    <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span>
-<span class="p">)</span>
+def<span class="w"> </span>on_startup<span class="o">()</span><span class="w"> </span>-&gt;<span class="w"> </span>None:
+<span class="w">    </span>HTML_DIR.mkdir<span class="o">(</span><span class="nv">exist_ok</span><span class="o">=</span>True<span class="o">)</span>
+<span class="w">    </span>HTML_DIR.joinpath<span class="o">(</span><span class="s2">&quot;index.html&quot;</span><span class="o">)</span>.write_text<span class="o">(</span><span class="s2">&quot;&lt;strong&gt;Hello, world!&lt;/strong&gt;&quot;</span><span class="o">)</span>
+<span class="w">    </span>HTML_DIR.joinpath<span class="o">(</span><span class="s2">&quot;404.html&quot;</span><span class="o">)</span>.write_text<span class="o">(</span><span class="s2">&quot;&lt;h1&gt;Not found&lt;/h1&gt;&quot;</span><span class="o">)</span>
+
+
+<span class="nv">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Litestar<span class="o">(</span>
+<span class="w">    </span><span class="nv">route_handlers</span><span class="o">=[</span>
+<span class="w">        </span>create_static_files_router<span class="o">(</span>
+<span class="w">            </span><span class="nv">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span>,
+<span class="w">            </span><span class="nv">directories</span><span class="o">=[</span><span class="s2">&quot;html&quot;</span><span class="o">]</span>,
+<span class="w">            </span><span class="nv">html_mode</span><span class="o">=</span>True,
+<span class="w">        </span><span class="o">)</span>
+<span class="w">    </span><span class="o">]</span>,
+<span class="w">    </span><span class="nv">on_startup</span><span class="o">=[</span>on_startup<span class="o">]</span>,
+<span class="o">)</span>
 </pre></div>
+</div>
 </div>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
@@ -1642,45 +1658,54 @@ send them with a <code class="docutils literal notranslate"><span class="pre">Co
 <h2>Passing options to the generated router<a class="headerlink" href="#passing-options-to-the-generated-router" title="Permalink to this heading">#</a></h2>
 <p>Options available on <a class="reference internal" href="../reference/router.html#litestar.router.Router" title="litestar.router.Router"><code class="xref py py-class docutils literal notranslate"><span class="pre">Router</span></code></a> can be passed to directly
 <a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router" title="litestar.static_files.create_static_files_router"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_static_files_router()</span></code></a>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-<span class="kn">from</span> <span class="nn">litestar.static_files</span> <span class="kn">import</span> <span class="n">create_static_files_router</span>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">Passing options to the router generated by
+<a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router" title="litestar.static_files.create_static_files_router"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_static_files_router()</span></code></a></span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>from<span class="w"> </span>litestar<span class="w"> </span>import<span class="w"> </span>Litestar
+from<span class="w"> </span>litestar.static_files<span class="w"> </span>import<span class="w"> </span>create_static_files_router
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
-        <span class="n">create_static_files_router</span><span class="p">(</span>
-            <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span>
-            <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;assets&quot;</span><span class="p">],</span>
-            <span class="n">opt</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;some&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
-            <span class="n">include_in_schema</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;static&quot;</span><span class="p">],</span>
-        <span class="p">)</span>
-    <span class="p">]</span>
-<span class="p">)</span>
+<span class="nv">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Litestar<span class="o">(</span>
+<span class="w">    </span><span class="nv">route_handlers</span><span class="o">=[</span>
+<span class="w">        </span>create_static_files_router<span class="o">(</span>
+<span class="w">            </span><span class="nv">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span>,
+<span class="w">            </span><span class="nv">directories</span><span class="o">=[</span><span class="s2">&quot;assets&quot;</span><span class="o">]</span>,
+<span class="w">            </span><span class="nv">opt</span><span class="o">={</span><span class="s2">&quot;some&quot;</span>:<span class="w"> </span>True<span class="o">}</span>,
+<span class="w">            </span><span class="nv">include_in_schema</span><span class="o">=</span>False,
+<span class="w">            </span><span class="nv">tags</span><span class="o">=[</span><span class="s2">&quot;static&quot;</span><span class="o">]</span>,
+<span class="w">        </span><span class="o">)</span>
+<span class="w">    </span><span class="o">]</span>
+<span class="o">)</span>
 </pre></div>
+</div>
 </div>
 </section>
 <section id="using-a-custom-router-class">
 <h2>Using a custom router class<a class="headerlink" href="#using-a-custom-router-class" title="Permalink to this heading">#</a></h2>
-<p>The router class used can be customized with the <code class="docutils literal notranslate"><span class="pre">router_class</span></code> parameter:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-<span class="kn">from</span> <span class="nn">litestar.router</span> <span class="kn">import</span> <span class="n">Router</span>
-<span class="kn">from</span> <span class="nn">litestar.static_files</span> <span class="kn">import</span> <span class="n">create_static_files_router</span>
+<p>The router class used can be customized with the
+<a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router.params.router_class" title="litestar.static_files.create_static_files_router.params.router_class"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">router_class</span></code></a> parameter:</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Using a custom router class with
+<a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router" title="litestar.static_files.create_static_files_router"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_static_files_router()</span></code></a></span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>from<span class="w"> </span>litestar<span class="w"> </span>import<span class="w"> </span>Litestar
+from<span class="w"> </span>litestar.router<span class="w"> </span>import<span class="w"> </span>Router
+from<span class="w"> </span>litestar.static_files<span class="w"> </span>import<span class="w"> </span>create_static_files_router
 
 
-<span class="k">class</span> <span class="nc">MyRouter</span><span class="p">(</span><span class="n">Router</span><span class="p">):</span>
-    <span class="k">pass</span>
+class<span class="w"> </span>MyRouter<span class="o">(</span>Router<span class="o">)</span>:
+<span class="w">    </span>pass
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
-        <span class="n">create_static_files_router</span><span class="p">(</span>
-            <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span><span class="p">,</span>
-            <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;assets&quot;</span><span class="p">],</span>
-            <span class="n">router_class</span><span class="o">=</span><span class="n">MyRouter</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="p">]</span>
-<span class="p">)</span>
+<span class="nv">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Litestar<span class="o">(</span>
+<span class="w">    </span><span class="nv">route_handlers</span><span class="o">=[</span>
+<span class="w">        </span>create_static_files_router<span class="o">(</span>
+<span class="w">            </span><span class="nv">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span>,
+<span class="w">            </span><span class="nv">directories</span><span class="o">=[</span><span class="s2">&quot;assets&quot;</span><span class="o">]</span>,
+<span class="w">            </span><span class="nv">router_class</span><span class="o">=</span>MyRouter,
+<span class="w">        </span><span class="o">)</span>
+<span class="w">    </span><span class="o">]</span>
+<span class="o">)</span>
 </pre></div>
+</div>
 </div>
 </section>
 <section id="retrieving-paths-to-static-files">
@@ -1688,18 +1713,21 @@ send them with a <code class="docutils literal notranslate"><span class="pre">Co
 <p><a class="reference internal" href="../reference/app.html#litestar.app.Litestar.route_reverse" title="litestar.app.Litestar.route_reverse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">route_reverse()</span></code></a> and
 <a class="reference internal" href="../reference/connection.html#litestar.connection.ASGIConnection.url_for" title="litestar.connection.ASGIConnection.url_for"><code class="xref py py-meth docutils literal notranslate"><span class="pre">url_for()</span></code></a> can be used to retrieve the path
 under which a specific file will be available:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-<span class="kn">from</span> <span class="nn">litestar.static_files</span> <span class="kn">import</span> <span class="n">create_static_files_router</span>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Retrieving paths to static files using <a class="reference internal" href="../reference/app.html#litestar.app.Litestar.route_reverse" title="litestar.app.Litestar.route_reverse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">route_reverse()</span></code></a></span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>from<span class="w"> </span>litestar<span class="w"> </span>import<span class="w"> </span>Litestar
+from<span class="w"> </span>litestar.static_files<span class="w"> </span>import<span class="w"> </span>create_static_files_router
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
-        <span class="n">create_static_files_router</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span><span class="p">,</span> <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;assets&quot;</span><span class="p">]),</span>
-    <span class="p">]</span>
-<span class="p">)</span>
+<span class="nv">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Litestar<span class="o">(</span>
+<span class="w">    </span><span class="nv">route_handlers</span><span class="o">=[</span>
+<span class="w">        </span>create_static_files_router<span class="o">(</span><span class="nv">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span>,<span class="w"> </span><span class="nv">directories</span><span class="o">=[</span><span class="s2">&quot;assets&quot;</span><span class="o">])</span>,
+<span class="w">    </span><span class="o">]</span>
+<span class="o">)</span>
 
 
-<span class="nb">print</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">route_reverse</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="s2">&quot;/some_file.txt&quot;</span><span class="p">))</span>  <span class="c1"># /static/some_file.txt</span>
+print<span class="o">(</span>app.route_reverse<span class="o">(</span><span class="nv">name</span><span class="o">=</span><span class="s2">&quot;static&quot;</span>,<span class="w"> </span><span class="nv">file_path</span><span class="o">=</span><span class="s2">&quot;/some_file.txt&quot;</span><span class="o">))</span><span class="w">  </span><span class="c1"># /static/some_file.txt</span>
 </pre></div>
+</div>
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
@@ -1721,52 +1749,61 @@ with support for popular cloud providers available via 3rd party implementations
 <li><p>Google Cloud Storage via <a class="reference external" href="https://gcsfs.readthedocs.io/en/latest/">GCFS</a></p></li>
 <li><p>Azure Blob Storage via <a class="reference external" href="https://github.com/fsspec/adlfs">adlfs</a></p></li>
 </ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">fsspec.implementations.ftp</span> <span class="kn">import</span> <span class="n">FTPFileSystem</span>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">Using a custom file system with
+<a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router" title="litestar.static_files.create_static_files_router"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_static_files_router()</span></code></a></span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>from<span class="w"> </span>fsspec.implementations.ftp<span class="w"> </span>import<span class="w"> </span>FTPFileSystem
 
-<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-<span class="kn">from</span> <span class="nn">litestar.static_files</span> <span class="kn">import</span> <span class="n">create_static_files_router</span>
+from<span class="w"> </span>litestar<span class="w"> </span>import<span class="w"> </span>Litestar
+from<span class="w"> </span>litestar.static_files<span class="w"> </span>import<span class="w"> </span>create_static_files_router
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
-        <span class="n">create_static_files_router</span><span class="p">(</span>
-            <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span><span class="p">,</span>
-            <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;assets&quot;</span><span class="p">],</span>
-            <span class="n">file_system</span><span class="o">=</span><span class="n">FTPFileSystem</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">),</span>
-        <span class="p">),</span>
-    <span class="p">]</span>
-<span class="p">)</span>
+<span class="nv">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Litestar<span class="o">(</span>
+<span class="w">    </span><span class="nv">route_handlers</span><span class="o">=[</span>
+<span class="w">        </span>create_static_files_router<span class="o">(</span>
+<span class="w">            </span><span class="nv">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span>,
+<span class="w">            </span><span class="nv">directories</span><span class="o">=[</span><span class="s2">&quot;assets&quot;</span><span class="o">]</span>,
+<span class="w">            </span><span class="nv">file_system</span><span class="o">=</span>FTPFileSystem<span class="o">(</span><span class="nv">host</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="o">)</span>,
+<span class="w">        </span><span class="o">)</span>,
+<span class="w">    </span><span class="o">]</span>
+<span class="o">)</span>
 </pre></div>
+</div>
 </div>
 </section>
 <section id="upgrading-from-legacy-staticfilesconfig">
 <h2>Upgrading from legacy StaticFilesConfig<a class="headerlink" href="#upgrading-from-legacy-staticfilesconfig" title="Permalink to this heading">#</a></h2>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>Info
-<a class="reference internal" href="../reference/static_files.html#litestar.static_files.StaticFilesConfig" title="litestar.static_files.StaticFilesConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">StaticFilesConfig</span></code></a> is deprecated and will be removed in Litestar 3.0</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version v3.0: </span><a class="reference internal" href="../reference/static_files.html#litestar.static_files.StaticFilesConfig" title="litestar.static_files.StaticFilesConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">StaticFilesConfig</span></code></a> is deprecated and will be removed in Litestar 3.0</p>
 </div>
 <p>Existing code can be upgraded to <a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router" title="litestar.static_files.create_static_files_router"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_static_files_router()</span></code></a> by replacing
 <a class="reference internal" href="../reference/static_files.html#litestar.static_files.StaticFilesConfig" title="litestar.static_files.StaticFilesConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">StaticFilesConfig</span></code></a> instances with this function call and passing the result to
 <code class="docutils literal notranslate"><span class="pre">route_handlers</span></code> instead of <code class="docutils literal notranslate"><span class="pre">static_files_config</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-<span class="kn">from</span> <span class="nn">litestar.static_files.config</span> <span class="kn">import</span> <span class="n">StaticFilesConfig</span>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">Using the deprecated <a class="reference internal" href="../reference/static_files.html#litestar.static_files.StaticFilesConfig" title="litestar.static_files.config.StaticFilesConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">StaticFilesConfig</span></code></a></span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>from<span class="w"> </span>litestar<span class="w"> </span>import<span class="w"> </span>Litestar
+from<span class="w"> </span>litestar.static_files.config<span class="w"> </span>import<span class="w"> </span>StaticFilesConfig
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-    <span class="n">static_files_config</span><span class="o">=</span><span class="p">[</span>
-        <span class="n">StaticFilesConfig</span><span class="p">(</span><span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;assets&quot;</span><span class="p">],</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span><span class="p">),</span>
-    <span class="p">],</span>
-<span class="p">)</span>
+<span class="nv">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Litestar<span class="o">(</span>
+<span class="w">    </span><span class="nv">static_files_config</span><span class="o">=[</span>
+<span class="w">        </span>StaticFilesConfig<span class="o">(</span><span class="nv">directories</span><span class="o">=[</span><span class="s2">&quot;assets&quot;</span><span class="o">]</span>,<span class="w"> </span><span class="nv">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span><span class="o">)</span>,
+<span class="w">    </span><span class="o">]</span>,
+<span class="o">)</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-<span class="kn">from</span> <span class="nn">litestar.static_files</span> <span class="kn">import</span> <span class="n">create_static_files_router</span>
+</div>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">Upgrading from <a class="reference internal" href="../reference/static_files.html#litestar.static_files.StaticFilesConfig" title="litestar.static_files.config.StaticFilesConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">StaticFilesConfig</span></code></a> to
+<a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router" title="litestar.static_files.create_static_files_router"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_static_files_router()</span></code></a></span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>from<span class="w"> </span>litestar<span class="w"> </span>import<span class="w"> </span>Litestar
+from<span class="w"> </span>litestar.static_files<span class="w"> </span>import<span class="w"> </span>create_static_files_router
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
-        <span class="n">create_static_files_router</span><span class="p">(</span><span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;assets&quot;</span><span class="p">],</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span><span class="p">),</span>
-    <span class="p">],</span>
-<span class="p">)</span>
+<span class="nv">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Litestar<span class="o">(</span>
+<span class="w">    </span><span class="nv">route_handlers</span><span class="o">=[</span>
+<span class="w">        </span>create_static_files_router<span class="o">(</span><span class="nv">directories</span><span class="o">=[</span><span class="s2">&quot;assets&quot;</span><span class="o">]</span>,<span class="w"> </span><span class="nv">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span><span class="o">)</span>,
+<span class="w">    </span><span class="o">]</span>,
+<span class="o">)</span>
 </pre></div>
+</div>
 </div>
 </section>
 </section>
