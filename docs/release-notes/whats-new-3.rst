@@ -18,7 +18,7 @@ Imports
 +====================================================+========================================================================+
 | **SECTION**                                                                                                                 |
 +----------------------------------------------------+------------------------------------------------------------------------+
-+ Put your shit here from v2                         | Put your shit here from v3                                             |
+| Put your shit here from v2                         | Put your shit here from v3                                             |
 +----------------------------------------------------+------------------------------------------------------------------------+
 
 
@@ -61,3 +61,47 @@ must explicitly set it:
     @get("/")
     def my_handler(param: int | None = None) -> ...:
         ...
+
+
+OpenAPI Controller Replaced by Plugins
+--------------------------------------
+
+In version 3.0, the OpenAPI controller pattern, deprecated in v2.8, has been removed in
+favor of a more flexible plugin system.
+
+Elimination of ``OpenAPIController`` Subclassing
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Previously, users configured elements such as the root path and styling by subclassing OpenAPIController and setting it
+on the ``OpenAPIConfig.openapi_controller`` attribute. As of version 3.0, this pattern has been removed. Instead, users
+are required to transition to using UI plugins for configuration.
+
+Migration Steps:
+
+1. Remove any implementations subclassing ``OpenAPIController``.
+2. Use the :attr:`OpenAPIConfig.render_plugins` attribute to configure the OpenAPI UI made available to your users.
+   If no plugin is supplied, we automatically add the :class:`ScalarRenderPlugin` for the default configuration.
+3. Use the :attr:`OpenAPIConfig.openapi_router` attribute for additional configuration.
+
+See the :doc:`/usage/openapi/ui_plugins` documentation for more information on how to configure OpenAPI plugins.
+
+Changes to Endpoint Configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The ``OpenAPIConfig.enabled_endpoints`` attribute is no longer available in version 3.0.0. This attribute previously
+enabled a set of endpoints that would serve different OpenAPI UIs. In the new version, only the ``openapi.json``
+endpoint is enabled by default, alongside the ``Scalar`` UI plugin as the default.
+
+To adapt to this change, you should explicitly configure any additional endpoints you need by properly setting up the
+necessary plugins within the :attr:`OpenAPIConfig.render_plugins` parameter.
+
+Modification to ``root_schema_site`` Handling
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The ``root_schema_site`` attribute, which enabled serving a particular UI at the OpenAPI root path, has been removed in
+version 3.0. The new approach automatically assigns the first :class:`OpenAPIRenderPlugin` listed in the
+:attr:`OpenAPIConfig.render_plugins` list to serve at the ``/schema`` endpoint, unless a plugin has been defined with
+the root path (``/``), in which case that plugin will be used.
+
+For those previously using the ``root_schema_site`` attribute, the migration involves ensuring that the UI intended to
+be served at the ``/schema`` endpoint is the first plugin listed in the :attr:`OpenAPIConfig.render_plugins`.
