@@ -186,7 +186,7 @@ def is_non_string_sequence(annotation: Any) -> TypeGuard[Sequence[Any]]:
     annotation: A type.
 
     Returns:
-        A typeguard determining whether the type can be cast as :class`Sequence <typing.Sequence>` that is not a string.
+        A typeguard determining whether the type can be cast as :class:`Sequence <typing.Sequence>` that is not a string.
     """
     origin = get_origin_or_inner_type(annotation)
     if not origin and not isclass(annotation):

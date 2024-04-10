@@ -49,11 +49,14 @@ def load_version_spec() -> VersionSpec:
     return {"versions": [], "latest": ""}
 
 
-def build(output_dir: str, version: str | None) -> None:
+def build(output_dir: str, version: str | None, environment: str = "local") -> None:
     if version is None:
         version = importlib.metadata.version("litestar").rsplit(".")[0]
     else:
         os.environ["_LITESTAR_DOCS_BUILD_VERSION"] = version
+
+    if environment is not None:
+        os.environ["_LITESTAR_DOCS_BUILD_ENVIRONMENT"] = environment
 
     subprocess.run(["make", "docs"], check=True)  # noqa: S603 S607
 
