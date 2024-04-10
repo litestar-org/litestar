@@ -13,12 +13,12 @@ if TYPE_CHECKING:
 
 
 @pytest.mark.parametrize("directories", [[], [""]])
-def test_config_validation_of_directories(directories: List[str]) -> None:
+def test_validation_of_directories(directories: List[str]) -> None:
     with pytest.raises(ImproperlyConfiguredException):
         create_static_files_router(path="/static", directories=directories)
 
 
-def test_config_validation_of_path(tmpdir: "Path") -> None:
+def test_validation_of_path(tmpdir: "Path") -> None:
     path = tmpdir / "text.txt"
     path.write_text("content", "utf-8")
 
@@ -29,7 +29,7 @@ def test_config_validation_of_path(tmpdir: "Path") -> None:
         create_static_files_router(path="/{param:int}", directories=[tmpdir])
 
 
-def test_config_validation_of_file_system(tmpdir: "Path") -> None:
+def test_validation_of_file_system(tmpdir: "Path") -> None:
     class FSWithoutOpen:
         def info(self) -> None:
             return

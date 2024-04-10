@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from litestar.types import FileSystemProtocol
 
 
-def test_default_static_files_config(
+def test_default_static_files_router(
     tmpdir: Path,
 ) -> None:
     path = tmpdir / "test.txt"
@@ -42,7 +42,7 @@ def setup_dirs(tmpdir: Path) -> tuple[Path, Path]:
     return paths[0], paths[1]
 
 
-def test_multiple_static_files_configs(setup_dirs: tuple[Path, Path]) -> None:
+def test_multiple_static_files_routers(setup_dirs: tuple[Path, Path]) -> None:
     root1, root2 = setup_dirs
 
     with create_test_client(
@@ -60,7 +60,7 @@ def test_multiple_static_files_configs(setup_dirs: tuple[Path, Path]) -> None:
         assert response.text == "content2"
 
 
-def test_static_files_configs_with_mixed_file_systems(
+def test_static_files_routers_with_mixed_file_systems(
     file_system: FileSystemProtocol, setup_dirs: tuple[Path, Path]
 ) -> None:
     root1, root2 = setup_dirs
@@ -80,7 +80,7 @@ def test_static_files_configs_with_mixed_file_systems(
         assert response.text == "content2"
 
 
-def test_static_files_config_with_multiple_directories(
+def test_static_files_routers_with_multiple_directories(
     file_system: FileSystemProtocol, setup_dirs: tuple[Path, Path]
 ) -> None:
     root1, root2 = setup_dirs
