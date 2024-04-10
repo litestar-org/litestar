@@ -94,5 +94,3 @@ with support for popular cloud providers available via 3rd party implementations
 .. literalinclude:: /examples/static_files/file_system.py
     :caption: Using a custom file system with
       :func:`create_static_files_router`
-
-

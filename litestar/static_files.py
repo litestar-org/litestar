@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from os.path import commonpath
 from pathlib import Path, PurePath
-from typing import TYPE_CHECKING, Any, Literal, Sequence, Mapping
+from typing import TYPE_CHECKING, Any, Literal, Mapping, Sequence
 
 from litestar.exceptions import ImproperlyConfiguredException, NotFoundException
 from litestar.file_system import BaseLocalFileSystem, FileSystemAdapter
