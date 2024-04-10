@@ -10,7 +10,8 @@ import pytest
 
 from litestar import MediaType, get
 from litestar.file_system import FileSystemAdapter
-from litestar.static_files import _get_fs_info, create_static_files_router
+from litestar.static_files import _get_fs_info
+from litestar.static_files import create_static_files_router
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 
