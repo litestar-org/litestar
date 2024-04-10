@@ -31,6 +31,7 @@
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=a746c00c" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=1d4867fe" />
     <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css?v=9e3812bb" />
   
@@ -52,7 +53,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Stores" href="stores.html" />
-    <link rel="prev" title="JWT Security Backends" href="security/jwt.html" />
+    <link rel="prev" title="Handling Secrets" href="security/secret-datastructures.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -1187,7 +1188,7 @@ document.write(`
 <li class="toctree-l1 current active has-children"><a class="reference internal" href="index.html">Usage</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="applications.html">Applications</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="routing/overview.html">Routing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="routing/overview.html">Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="routing/handlers.html">Route handlers</a></li>
 <li class="toctree-l3"><a class="reference internal" href="routing/parameters.html">Parameters</a></li>
 </ul>
@@ -1258,6 +1259,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="security/guards.html">Guards</a></li>
 <li class="toctree-l3"><a class="reference internal" href="security/excluding-and-including-endpoints.html">Excluding and including endpoints</a></li>
 <li class="toctree-l3"><a class="reference internal" href="security/jwt.html">JWT Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="security/secret-datastructures.html">Handling Secrets</a></li>
 </ul>
 </li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Static files</a></li>
@@ -1307,9 +1309,12 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/controller.html">controller</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/concurrency.html">cli</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/data_extractors.html">data_extractors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/datastructures.html">datastructures</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/datastructures/index.html">datastructures</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/datastructures/secret_values.html">secret_values</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/di.html">di</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/dto/config.html">config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/dto/data_structures.html">data_structures</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/dto/field.html">field</a></li>
@@ -1323,13 +1328,13 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/events.html">events</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/exceptions.html">exceptions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/handlers.html">handlers</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/logging/config.html">config</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/logging/picologging.html">picologging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/logging/standard.html">standard</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-19"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/authentication.html">authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/compression.html">compression</a></li>
@@ -1337,7 +1342,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/csrf.html">csrf</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/logging.html">logging</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/middleware/rate_limit.html">rate_limit</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-19"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../reference/middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-20"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/base.html">base</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/client_side.html">client_side</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/server_side.html">server_side</a></li>
@@ -1345,7 +1350,7 @@ document.write(`
 </li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-20"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/openapi/openapi.html">openapi</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/openapi/plugins.html">plugins</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/openapi/spec.html">spec</a></li>
@@ -1353,13 +1358,13 @@ document.write(`
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/pagination.html">pagination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/params.html">params</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/flash_messages.html">flash</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/repository/index.html">repository</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/repository/index.html">repository</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-23"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/repository/abc.html">abc</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/repository/filters.html">filters</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/repository/exceptions.html">exceptions</a></li>
@@ -1367,7 +1372,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../reference/repository/handlers.html">handlers</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/response/index.html">response</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-23"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/response/index.html">response</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/response/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/response/file.html">file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/response/redirect.html">redirect</a></li>
@@ -1378,7 +1383,7 @@ document.write(`
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/router.html">router</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/routes.html">routes</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/security/jwt.html">jwt</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/security/session_auth.html">session_auth</a></li>
 </ul>
@@ -1386,7 +1391,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/serialization.html">serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/static_files.html">static_files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/status_codes.html">status_code</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../reference/stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-26"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/base.html">base</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/file.html">file</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/memory.html">memory</a></li>
@@ -1404,14 +1409,14 @@ document.write(`
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Guides</span></p>
 <ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-26"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-27"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../migration/flask.html">From Flask</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../migration/fastapi.html">From Starlette / FastAPI</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-27"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../topics/sync-vs-async.html">Sync vs. Async</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../topics/deployment/index.html">Deployment</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../topics/deployment/index.html">Deployment</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../topics/deployment/nginx-unit.html">NGINX Unit</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../topics/deployment/manually-with-asgi-server.html">Manually with ASGI server</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../topics/deployment/docker.html">Docker</a></li>
@@ -1420,15 +1425,15 @@ document.write(`
 </li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorials/todo-app/index.html">Developing a basic TODO application</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-30"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-30"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorials/todo-app/index.html">Developing a basic TODO application</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-31"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/todo-app/0-application-basics.html">Application basics</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/todo-app/1-accessing-the-list.html">Accessing the list</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/todo-app/2-interacting-with-the-list.html">Making the list interactive</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/todo-app/3-assembling-the-app.html">Recap and assembling the final application</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorials/sqlalchemy/index.html">Improving the TODO app with SQLAlchemy</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-31"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorials/sqlalchemy/index.html">Improving the TODO app with SQLAlchemy</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-32"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/sqlalchemy/0-introduction.html">Introduction</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/sqlalchemy/1-provide-session-with-di.html">Providing the session with DI</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/sqlalchemy/2-serialization-plugin.html">Using the serialization plugin</a></li>
@@ -1436,7 +1441,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/sqlalchemy/4-final-touches-and-recap.html">Final touches and recap</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorials/dto-tutorial/index.html">Data Transfer Object Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-32"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorials/dto-tutorial/index.html">Data Transfer Object Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-33"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/dto-tutorial/01-simple-dto-exclude.html">Our first DTO</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/dto-tutorial/02-nested-exclude.html">Excluding from nested models</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/dto-tutorial/03-nested-collection-exclude.html">Excluding from collections of nested models</a></li>
@@ -1449,7 +1454,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/dto-tutorial/10-layered-dto-declarations.html">Declaring DTOs on app layers</a></li>
 </ul>
 </li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorials/repository-tutorial/index.html">SQLAlchemy Repository Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-33"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../tutorials/repository-tutorial/index.html">SQLAlchemy Repository Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-34"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/01-modeling-and-features.html">Introduction to Database Modeling and Repository Features</a></li>
 
 
@@ -1530,10 +1535,12 @@ document.write(`
                   
   <section id="static-files">
 <h1>Static files<a class="headerlink" href="#static-files" title="Permalink to this heading">#</a></h1>
-<p>To serve static files (i.e. serve arbitrary files from a given directory), the
+<p>To serve static files (i.e., serve arbitrary files from a given directory), the
 <a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router" title="litestar.static_files.create_static_files_router"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_static_files_router()</span></code></a> can be used to create a
 <a class="reference internal" href="../reference/router.html#litestar.router.Router" title="litestar.router.Router"><code class="xref py py-class docutils literal notranslate"><span class="pre">Router</span></code></a> to handle this task.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">Serving static files using <a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router" title="litestar.static_files.create_static_files_router"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_static_files_router</span></code></a></span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
 <span class="kn">from</span> <span class="nn">litestar.static_files</span> <span class="kn">import</span> <span class="n">create_static_files_router</span>
@@ -1552,7 +1559,9 @@ document.write(`
     <span class="p">],</span>
     <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span>
 <span class="p">)</span>
+
 </pre></div>
+</div>
 </div>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
@@ -1571,55 +1580,67 @@ application is started</p>
 <section id="sending-files-as-attachments">
 <h2>Sending files as attachments<a class="headerlink" href="#sending-files-as-attachments" title="Permalink to this heading">#</a></h2>
 <p>By default, files are sent “inline”, meaning they will have a
-<code class="docutils literal notranslate"><span class="pre">Content-Disposition:</span> <span class="pre">inline</span></code> header. Setting <code class="docutils literal notranslate"><span class="pre">send_as_attachment=True</span></code> flag will
-send them with a <code class="docutils literal notranslate"><span class="pre">Content-Disposition:</span> <span class="pre">attachment</span></code> instead:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-<span class="kn">from</span> <span class="nn">litestar.static_files</span> <span class="kn">import</span> <span class="n">create_static_files_router</span>
+<code class="docutils literal notranslate"><span class="pre">Content-Disposition:</span> <span class="pre">inline</span></code> header.</p>
+<p>Setting <a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router.params.send_as_attachment" title="litestar.static_files.create_static_files_router.params.send_as_attachment"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">send_as_attachment</span></code></a> to <code class="docutils literal notranslate"><span class="pre">True</span></code> will send
+them with a <code class="docutils literal notranslate"><span class="pre">Content-Disposition:</span> <span class="pre">attachment</span></code> instead:</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Sending files as attachments using the the
+<a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router.params.send_as_attachment" title="litestar.static_files.create_static_files_router.params.send_as_attachment"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">send_as_attachment</span></code></a> parameter
+of <a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router" title="litestar.static_files.create_static_files_router"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_static_files_router()</span></code></a></span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>from<span class="w"> </span>litestar<span class="w"> </span>import<span class="w"> </span>Litestar
+from<span class="w"> </span>litestar.static_files<span class="w"> </span>import<span class="w"> </span>create_static_files_router
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
-        <span class="n">create_static_files_router</span><span class="p">(</span>
-            <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span><span class="p">,</span>
-            <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;assets&quot;</span><span class="p">],</span>
-            <span class="n">send_as_attachment</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="p">]</span>
-<span class="p">)</span>
+<span class="nv">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Litestar<span class="o">(</span>
+<span class="w">    </span><span class="nv">route_handlers</span><span class="o">=[</span>
+<span class="w">        </span>create_static_files_router<span class="o">(</span>
+<span class="w">            </span><span class="nv">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span>,
+<span class="w">            </span><span class="nv">directories</span><span class="o">=[</span><span class="s2">&quot;assets&quot;</span><span class="o">]</span>,
+<span class="w">            </span><span class="nv">send_as_attachment</span><span class="o">=</span>True,
+<span class="w">        </span><span class="o">)</span>
+<span class="w">    </span><span class="o">]</span>
+<span class="o">)</span>
 </pre></div>
+</div>
 </div>
 </section>
 <section id="html-mode">
 <h2>HTML mode<a class="headerlink" href="#html-mode" title="Permalink to this heading">#</a></h2>
-<p>“HTML mode” can be enabled by setting <code class="docutils literal notranslate"><span class="pre">html_mode=True</span></code>. This will:</p>
+<p>“HTML mode” can be enabled by setting <a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router.params.html_mode" title="litestar.static_files.create_static_files_router.params.html_mode"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">html_mode</span></code></a>
+to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<p>This will:</p>
 <ul class="simple">
 <li><p>Serve and <code class="docutils literal notranslate"><span class="pre">/index.html</span></code> when the path <code class="docutils literal notranslate"><span class="pre">/</span></code> is requested</p></li>
 <li><p>Attempt to serve <code class="docutils literal notranslate"><span class="pre">/404.html</span></code> when a requested file is not found</p></li>
 </ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">Serving HTML files using the <a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router.params.html_mode" title="litestar.static_files.create_static_files_router.params.html_mode"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">html_mode</span></code></a>
+parameter of <a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router" title="litestar.static_files.create_static_files_router"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_static_files_router()</span></code></a></span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>from<span class="w"> </span>pathlib<span class="w"> </span>import<span class="w"> </span>Path
 
-<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-<span class="kn">from</span> <span class="nn">litestar.static_files</span> <span class="kn">import</span> <span class="n">create_static_files_router</span>
+from<span class="w"> </span>litestar<span class="w"> </span>import<span class="w"> </span>Litestar
+from<span class="w"> </span>litestar.static_files<span class="w"> </span>import<span class="w"> </span>create_static_files_router
 
-<span class="n">HTML_DIR</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;html&quot;</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">on_startup</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">HTML_DIR</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">HTML_DIR</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;index.html&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">&quot;&lt;strong&gt;Hello, world!&lt;/strong&gt;&quot;</span><span class="p">)</span>
-    <span class="n">HTML_DIR</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;404.html&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">write_text</span><span class="p">(</span><span class="s2">&quot;&lt;h1&gt;Not found&lt;/h1&gt;&quot;</span><span class="p">)</span>
+<span class="nv">HTML_DIR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Path<span class="o">(</span><span class="s2">&quot;html&quot;</span><span class="o">)</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
-        <span class="n">create_static_files_router</span><span class="p">(</span>
-            <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span>
-            <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;html&quot;</span><span class="p">],</span>
-            <span class="n">html_mode</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="p">],</span>
-    <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">on_startup</span><span class="p">],</span>
-<span class="p">)</span>
+def<span class="w"> </span>on_startup<span class="o">()</span><span class="w"> </span>-&gt;<span class="w"> </span>None:
+<span class="w">    </span>HTML_DIR.mkdir<span class="o">(</span><span class="nv">exist_ok</span><span class="o">=</span>True<span class="o">)</span>
+<span class="w">    </span>HTML_DIR.joinpath<span class="o">(</span><span class="s2">&quot;index.html&quot;</span><span class="o">)</span>.write_text<span class="o">(</span><span class="s2">&quot;&lt;strong&gt;Hello, world!&lt;/strong&gt;&quot;</span><span class="o">)</span>
+<span class="w">    </span>HTML_DIR.joinpath<span class="o">(</span><span class="s2">&quot;404.html&quot;</span><span class="o">)</span>.write_text<span class="o">(</span><span class="s2">&quot;&lt;h1&gt;Not found&lt;/h1&gt;&quot;</span><span class="o">)</span>
+
+
+<span class="nv">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Litestar<span class="o">(</span>
+<span class="w">    </span><span class="nv">route_handlers</span><span class="o">=[</span>
+<span class="w">        </span>create_static_files_router<span class="o">(</span>
+<span class="w">            </span><span class="nv">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span>,
+<span class="w">            </span><span class="nv">directories</span><span class="o">=[</span><span class="s2">&quot;html&quot;</span><span class="o">]</span>,
+<span class="w">            </span><span class="nv">html_mode</span><span class="o">=</span>True,
+<span class="w">        </span><span class="o">)</span>
+<span class="w">    </span><span class="o">]</span>,
+<span class="w">    </span><span class="nv">on_startup</span><span class="o">=[</span>on_startup<span class="o">]</span>,
+<span class="o">)</span>
 </pre></div>
+</div>
 </div>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
@@ -1637,45 +1658,54 @@ send them with a <code class="docutils literal notranslate"><span class="pre">Co
 <h2>Passing options to the generated router<a class="headerlink" href="#passing-options-to-the-generated-router" title="Permalink to this heading">#</a></h2>
 <p>Options available on <a class="reference internal" href="../reference/router.html#litestar.router.Router" title="litestar.router.Router"><code class="xref py py-class docutils literal notranslate"><span class="pre">Router</span></code></a> can be passed to directly
 <a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router" title="litestar.static_files.create_static_files_router"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_static_files_router()</span></code></a>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-<span class="kn">from</span> <span class="nn">litestar.static_files</span> <span class="kn">import</span> <span class="n">create_static_files_router</span>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">Passing options to the router generated by
+<a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router" title="litestar.static_files.create_static_files_router"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_static_files_router()</span></code></a></span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>from<span class="w"> </span>litestar<span class="w"> </span>import<span class="w"> </span>Litestar
+from<span class="w"> </span>litestar.static_files<span class="w"> </span>import<span class="w"> </span>create_static_files_router
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
-        <span class="n">create_static_files_router</span><span class="p">(</span>
-            <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span>
-            <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;assets&quot;</span><span class="p">],</span>
-            <span class="n">opt</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;some&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
-            <span class="n">include_in_schema</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="n">tags</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;static&quot;</span><span class="p">],</span>
-        <span class="p">)</span>
-    <span class="p">]</span>
-<span class="p">)</span>
+<span class="nv">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Litestar<span class="o">(</span>
+<span class="w">    </span><span class="nv">route_handlers</span><span class="o">=[</span>
+<span class="w">        </span>create_static_files_router<span class="o">(</span>
+<span class="w">            </span><span class="nv">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span>,
+<span class="w">            </span><span class="nv">directories</span><span class="o">=[</span><span class="s2">&quot;assets&quot;</span><span class="o">]</span>,
+<span class="w">            </span><span class="nv">opt</span><span class="o">={</span><span class="s2">&quot;some&quot;</span>:<span class="w"> </span>True<span class="o">}</span>,
+<span class="w">            </span><span class="nv">include_in_schema</span><span class="o">=</span>False,
+<span class="w">            </span><span class="nv">tags</span><span class="o">=[</span><span class="s2">&quot;static&quot;</span><span class="o">]</span>,
+<span class="w">        </span><span class="o">)</span>
+<span class="w">    </span><span class="o">]</span>
+<span class="o">)</span>
 </pre></div>
+</div>
 </div>
 </section>
 <section id="using-a-custom-router-class">
 <h2>Using a custom router class<a class="headerlink" href="#using-a-custom-router-class" title="Permalink to this heading">#</a></h2>
-<p>The router class used can be customized with the <code class="docutils literal notranslate"><span class="pre">router_class</span></code> parameter:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-<span class="kn">from</span> <span class="nn">litestar.router</span> <span class="kn">import</span> <span class="n">Router</span>
-<span class="kn">from</span> <span class="nn">litestar.static_files</span> <span class="kn">import</span> <span class="n">create_static_files_router</span>
+<p>The router class used can be customized with the
+<a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router.params.router_class" title="litestar.static_files.create_static_files_router.params.router_class"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">router_class</span></code></a> parameter:</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Using a custom router class with
+<a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router" title="litestar.static_files.create_static_files_router"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_static_files_router()</span></code></a></span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>from<span class="w"> </span>litestar<span class="w"> </span>import<span class="w"> </span>Litestar
+from<span class="w"> </span>litestar.router<span class="w"> </span>import<span class="w"> </span>Router
+from<span class="w"> </span>litestar.static_files<span class="w"> </span>import<span class="w"> </span>create_static_files_router
 
 
-<span class="k">class</span> <span class="nc">MyRouter</span><span class="p">(</span><span class="n">Router</span><span class="p">):</span>
-    <span class="k">pass</span>
+class<span class="w"> </span>MyRouter<span class="o">(</span>Router<span class="o">)</span>:
+<span class="w">    </span>pass
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
-        <span class="n">create_static_files_router</span><span class="p">(</span>
-            <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span><span class="p">,</span>
-            <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;assets&quot;</span><span class="p">],</span>
-            <span class="n">router_class</span><span class="o">=</span><span class="n">MyRouter</span><span class="p">,</span>
-        <span class="p">)</span>
-    <span class="p">]</span>
-<span class="p">)</span>
+<span class="nv">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Litestar<span class="o">(</span>
+<span class="w">    </span><span class="nv">route_handlers</span><span class="o">=[</span>
+<span class="w">        </span>create_static_files_router<span class="o">(</span>
+<span class="w">            </span><span class="nv">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span>,
+<span class="w">            </span><span class="nv">directories</span><span class="o">=[</span><span class="s2">&quot;assets&quot;</span><span class="o">]</span>,
+<span class="w">            </span><span class="nv">router_class</span><span class="o">=</span>MyRouter,
+<span class="w">        </span><span class="o">)</span>
+<span class="w">    </span><span class="o">]</span>
+<span class="o">)</span>
 </pre></div>
+</div>
 </div>
 </section>
 <section id="retrieving-paths-to-static-files">
@@ -1683,18 +1713,21 @@ send them with a <code class="docutils literal notranslate"><span class="pre">Co
 <p><a class="reference internal" href="../reference/app.html#litestar.app.Litestar.route_reverse" title="litestar.app.Litestar.route_reverse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">route_reverse()</span></code></a> and
 <a class="reference internal" href="../reference/connection.html#litestar.connection.ASGIConnection.url_for" title="litestar.connection.ASGIConnection.url_for"><code class="xref py py-meth docutils literal notranslate"><span class="pre">url_for()</span></code></a> can be used to retrieve the path
 under which a specific file will be available:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-<span class="kn">from</span> <span class="nn">litestar.static_files</span> <span class="kn">import</span> <span class="n">create_static_files_router</span>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Retrieving paths to static files using <a class="reference internal" href="../reference/app.html#litestar.app.Litestar.route_reverse" title="litestar.app.Litestar.route_reverse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">route_reverse()</span></code></a></span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>from<span class="w"> </span>litestar<span class="w"> </span>import<span class="w"> </span>Litestar
+from<span class="w"> </span>litestar.static_files<span class="w"> </span>import<span class="w"> </span>create_static_files_router
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
-        <span class="n">create_static_files_router</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span><span class="p">,</span> <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;assets&quot;</span><span class="p">]),</span>
-    <span class="p">]</span>
-<span class="p">)</span>
+<span class="nv">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Litestar<span class="o">(</span>
+<span class="w">    </span><span class="nv">route_handlers</span><span class="o">=[</span>
+<span class="w">        </span>create_static_files_router<span class="o">(</span><span class="nv">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span>,<span class="w"> </span><span class="nv">directories</span><span class="o">=[</span><span class="s2">&quot;assets&quot;</span><span class="o">])</span>,
+<span class="w">    </span><span class="o">]</span>
+<span class="o">)</span>
 
 
-<span class="nb">print</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">route_reverse</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;static&quot;</span><span class="p">,</span> <span class="n">file_path</span><span class="o">=</span><span class="s2">&quot;/some_file.txt&quot;</span><span class="p">))</span>  <span class="c1"># /static/some_file.txt</span>
+print<span class="o">(</span>app.route_reverse<span class="o">(</span><span class="nv">name</span><span class="o">=</span><span class="s2">&quot;static&quot;</span>,<span class="w"> </span><span class="nv">file_path</span><span class="o">=</span><span class="s2">&quot;/some_file.txt&quot;</span><span class="o">))</span><span class="w">  </span><span class="c1"># /static/some_file.txt</span>
 </pre></div>
+</div>
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
@@ -1716,52 +1749,61 @@ with support for popular cloud providers available via 3rd party implementations
 <li><p>Google Cloud Storage via <a class="reference external" href="https://gcsfs.readthedocs.io/en/latest/">GCFS</a></p></li>
 <li><p>Azure Blob Storage via <a class="reference external" href="https://github.com/fsspec/adlfs">adlfs</a></p></li>
 </ul>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">fsspec.implementations.ftp</span> <span class="kn">import</span> <span class="n">FTPFileSystem</span>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">Using a custom file system with
+<a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router" title="litestar.static_files.create_static_files_router"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_static_files_router()</span></code></a></span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>from<span class="w"> </span>fsspec.implementations.ftp<span class="w"> </span>import<span class="w"> </span>FTPFileSystem
 
-<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-<span class="kn">from</span> <span class="nn">litestar.static_files</span> <span class="kn">import</span> <span class="n">create_static_files_router</span>
+from<span class="w"> </span>litestar<span class="w"> </span>import<span class="w"> </span>Litestar
+from<span class="w"> </span>litestar.static_files<span class="w"> </span>import<span class="w"> </span>create_static_files_router
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
-        <span class="n">create_static_files_router</span><span class="p">(</span>
-            <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span><span class="p">,</span>
-            <span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;assets&quot;</span><span class="p">],</span>
-            <span class="n">file_system</span><span class="o">=</span><span class="n">FTPFileSystem</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">),</span>
-        <span class="p">),</span>
-    <span class="p">]</span>
-<span class="p">)</span>
+<span class="nv">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Litestar<span class="o">(</span>
+<span class="w">    </span><span class="nv">route_handlers</span><span class="o">=[</span>
+<span class="w">        </span>create_static_files_router<span class="o">(</span>
+<span class="w">            </span><span class="nv">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span>,
+<span class="w">            </span><span class="nv">directories</span><span class="o">=[</span><span class="s2">&quot;assets&quot;</span><span class="o">]</span>,
+<span class="w">            </span><span class="nv">file_system</span><span class="o">=</span>FTPFileSystem<span class="o">(</span><span class="nv">host</span><span class="o">=</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="o">)</span>,
+<span class="w">        </span><span class="o">)</span>,
+<span class="w">    </span><span class="o">]</span>
+<span class="o">)</span>
 </pre></div>
+</div>
 </div>
 </section>
 <section id="upgrading-from-legacy-staticfilesconfig">
 <h2>Upgrading from legacy StaticFilesConfig<a class="headerlink" href="#upgrading-from-legacy-staticfilesconfig" title="Permalink to this heading">#</a></h2>
-<div class="admonition important">
-<p class="admonition-title">Important</p>
-<p>Info
-<a class="reference internal" href="../reference/static_files.html#litestar.static_files.StaticFilesConfig" title="litestar.static_files.StaticFilesConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">StaticFilesConfig</span></code></a> is deprecated and will be removed in Litestar 3.0</p>
+<div class="deprecated">
+<p><span class="versionmodified deprecated">Deprecated since version v3.0: </span><a class="reference internal" href="../reference/static_files.html#litestar.static_files.StaticFilesConfig" title="litestar.static_files.StaticFilesConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">StaticFilesConfig</span></code></a> is deprecated and will be removed in Litestar 3.0</p>
 </div>
 <p>Existing code can be upgraded to <a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router" title="litestar.static_files.create_static_files_router"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_static_files_router()</span></code></a> by replacing
 <a class="reference internal" href="../reference/static_files.html#litestar.static_files.StaticFilesConfig" title="litestar.static_files.StaticFilesConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">StaticFilesConfig</span></code></a> instances with this function call and passing the result to
 <code class="docutils literal notranslate"><span class="pre">route_handlers</span></code> instead of <code class="docutils literal notranslate"><span class="pre">static_files_config</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-<span class="kn">from</span> <span class="nn">litestar.static_files.config</span> <span class="kn">import</span> <span class="n">StaticFilesConfig</span>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">Using the deprecated <a class="reference internal" href="../reference/static_files.html#litestar.static_files.StaticFilesConfig" title="litestar.static_files.config.StaticFilesConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">StaticFilesConfig</span></code></a></span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>from<span class="w"> </span>litestar<span class="w"> </span>import<span class="w"> </span>Litestar
+from<span class="w"> </span>litestar.static_files.config<span class="w"> </span>import<span class="w"> </span>StaticFilesConfig
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-    <span class="n">static_files_config</span><span class="o">=</span><span class="p">[</span>
-        <span class="n">StaticFilesConfig</span><span class="p">(</span><span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;assets&quot;</span><span class="p">],</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span><span class="p">),</span>
-    <span class="p">],</span>
-<span class="p">)</span>
+<span class="nv">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Litestar<span class="o">(</span>
+<span class="w">    </span><span class="nv">static_files_config</span><span class="o">=[</span>
+<span class="w">        </span>StaticFilesConfig<span class="o">(</span><span class="nv">directories</span><span class="o">=[</span><span class="s2">&quot;assets&quot;</span><span class="o">]</span>,<span class="w"> </span><span class="nv">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span><span class="o">)</span>,
+<span class="w">    </span><span class="o">]</span>,
+<span class="o">)</span>
 </pre></div>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-<span class="kn">from</span> <span class="nn">litestar.static_files</span> <span class="kn">import</span> <span class="n">create_static_files_router</span>
+</div>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">Upgrading from <a class="reference internal" href="../reference/static_files.html#litestar.static_files.StaticFilesConfig" title="litestar.static_files.config.StaticFilesConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">StaticFilesConfig</span></code></a> to
+<a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router" title="litestar.static_files.create_static_files_router"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_static_files_router()</span></code></a></span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>from<span class="w"> </span>litestar<span class="w"> </span>import<span class="w"> </span>Litestar
+from<span class="w"> </span>litestar.static_files<span class="w"> </span>import<span class="w"> </span>create_static_files_router
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span>
-        <span class="n">create_static_files_router</span><span class="p">(</span><span class="n">directories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;assets&quot;</span><span class="p">],</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span><span class="p">),</span>
-    <span class="p">],</span>
-<span class="p">)</span>
+<span class="nv">app</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>Litestar<span class="o">(</span>
+<span class="w">    </span><span class="nv">route_handlers</span><span class="o">=[</span>
+<span class="w">        </span>create_static_files_router<span class="o">(</span><span class="nv">directories</span><span class="o">=[</span><span class="s2">&quot;assets&quot;</span><span class="o">]</span>,<span class="w"> </span><span class="nv">path</span><span class="o">=</span><span class="s2">&quot;/static&quot;</span><span class="o">)</span>,
+<span class="w">    </span><span class="o">]</span>,
+<span class="o">)</span>
 </pre></div>
+</div>
 </div>
 </section>
 </section>
@@ -1777,12 +1819,12 @@ with support for popular cloud providers available via 3rd party implementations
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="security/jwt.html"
+       href="security/secret-datastructures.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">JWT Security Backends</p>
+        <p class="prev-next-title">Handling Secrets</p>
       </div>
     </a>
     <a class="right-next"
