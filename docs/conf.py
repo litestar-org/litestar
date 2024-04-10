@@ -44,6 +44,7 @@ extensions = [
     "sphinxcontrib.mermaid",
     "sphinx_click",
     "sphinx_paramlinks",
+    "sphinx_togglebutton",
 ]
 
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
