@@ -134,7 +134,6 @@ nitpick_ignore = [
     (PY_CLASS, "litestar.template.base.TemplateType_co"),
     (PY_CLASS, "litestar.template.base.ContextType_co"),
     (PY_CLASS, "litestar.template.base.R"),
-    (PY_ATTR, "litestar.openapi.controller.OpenAPIController.swagger_ui_init_oauth"),
     # intentionally undocumented
     (PY_CLASS, "BacklogStrategy"),
     (PY_CLASS, "ExceptionT"),
@@ -191,6 +190,8 @@ nitpick_ignore = [
     ("py:exc", "HTTPExceptions"),
     (PY_CLASS, "litestar.template.Template"),
     (PY_CLASS, "litestar.middleware.compression.gzip_facade.GzipCompression"),
+    (PY_CLASS, "litestar.openapi.OpenAPIController"),
+    (PY_CLASS, "openapi.controller.OpenAPIController"),
 ]
 
 nitpick_ignore_regex = [
@@ -229,7 +230,6 @@ ignore_missing_refs = {
     # No idea what autodoc is doing here. Possibly unfixable on our end
     "litestar.template.base.TemplateEngineProtocol.get_template": {"litestar.template.base.T_co"},
     "litestar.template": {"litestar.template.base.T_co"},
-    "litestar.openapi.OpenAPIController.security": {"SecurityRequirement"},
     "litestar.response.file.async_file_iterator": {"FileSystemAdapter"},
     "advanced_alchemy._listeners.touch_updated_timestamp": {"Session"},
     re.compile("litestar.response.redirect.*"): {"RedirectStatusType"},

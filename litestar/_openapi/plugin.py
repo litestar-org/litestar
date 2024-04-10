@@ -185,10 +185,7 @@ class OpenAPIPlugin(InitPluginProtocol, ReceiveRoutePlugin):
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
         if app_config.openapi_config:
             self._openapi_config = app_config.openapi_config
-            if (controller := app_config.openapi_config.openapi_controller) is not None:
-                app_config.route_handlers.append(controller)
-            else:
-                app_config.route_handlers.append(self.create_openapi_router())
+            app_config.route_handlers.append(self.create_openapi_router())
         return app_config
 
     @property
