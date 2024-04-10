@@ -44,6 +44,7 @@ from litestar.plugins import (
 )
 from litestar.plugins.base import CLIPlugin
 from litestar.router import Router
+from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from litestar.stores.registry import StoreRegistry
 from litestar.types import Empty, TypeDecodersSequence
 from litestar.types.internal_types import PathParameterDefinition, TemplateConfigType
