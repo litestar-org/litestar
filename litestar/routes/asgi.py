@@ -32,7 +32,6 @@ class ASGIRoute(BaseRoute):
         super().__init__(
             path=path,
             scope_type=ScopeType.ASGI,
-            handler_names=[route_handler.handler_name],
         )
 
     async def handle(self, scope: Scope, receive: Receive, send: Send) -> None:

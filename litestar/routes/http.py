@@ -56,7 +56,6 @@ class HTTPRoute(BaseRoute):
             methods=methods,
             path=path,
             scope_type=ScopeType.HTTP,
-            handler_names=[route_handler.handler_name for route_handler in self.route_handlers],
         )
 
     async def handle(self, scope: HTTPScope, receive: Receive, send: Send) -> None:  # type: ignore[override]

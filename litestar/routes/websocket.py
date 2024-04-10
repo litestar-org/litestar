@@ -40,7 +40,6 @@ class WebSocketRoute(BaseRoute):
         super().__init__(
             path=path,
             scope_type=ScopeType.WEBSOCKET,
-            handler_names=[route_handler.handler_name],
         )
 
     async def handle(self, scope: WebSocketScope, receive: Receive, send: Send) -> None:  # type: ignore[override]

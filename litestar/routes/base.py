@@ -86,7 +86,6 @@ class BaseRoute(ABC):
     def __init__(
         self,
         *,
-        handler_names: list[str],
         path: str,
         scope_type: ScopeType,
         methods: list[Method] | None = None,
@@ -94,13 +93,11 @@ class BaseRoute(ABC):
         """Initialize the route.
 
         Args:
-            handler_names: Names of the associated handler functions
             path: Base path of the route
             scope_type: Type of the ASGI scope
             methods: Supported methods
         """
         self.path, self.path_format, self.path_components, self.path_parameters = self._parse_path(path)
-        self.handler_names = handler_names
         self.scope_type = scope_type
         self.methods = set(methods or [])
 
