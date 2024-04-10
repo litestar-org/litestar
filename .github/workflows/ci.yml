@@ -152,35 +152,6 @@ jobs:
       - name: Test
         run: pdm run pytest tests -m server_integration
 
-  upload-test-coverage:
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Download Artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: coverage-data
-
-      - name: Combine coverage files
-        run: |
-          python -Im pip install coverage covdefaults
-          python -Im coverage combine
-          python -Im coverage xml -i
-
-      - name: Fix coverage file name
-        run: sed -i "s/home\/runner\/work\/litestar\/litestar/github\/workspace/g" coverage.xml
-
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          files: coverage.xml
-          token: ${{ secrets.CODECOV_TOKEN }}
-
   test-platform-compat:
     if: github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'test platform compat')
     strategy:
@@ -275,3 +246,109 @@ jobs:
           path: |
             docs/_build/html
             .pr_number
+
+  test_minimal_app:
+    name: Test Minimal Application with Base Dependencies
+    runs-on: ubuntu-latest
+    env:
+      python_version: "3.12"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: pdm-project/setup-pdm@v4
+        name: Set up PDM
+        with:
+          python-version: "3.12"
+          allow-python-prereleases: false
+          cache: true
+          cache-dependency-path: |
+            ./pdm.lock
+
+      - name: Install dependencies
+        run: pdm install
+
+      - name: Set pythonpath
+        run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
+
+      - name: Test
+        run: mv tests/examples/test_hello_world.py test_hello_world.py && pdm run pytest test_hello_world.py
+
+  test_pydantic_1_app:
+    name: Test Minimal Pydantic 1 application
+    runs-on: ubuntu-latest
+    env:
+      python_version: "3.12"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: pdm-project/setup-pdm@v4
+        name: Set up PDM
+        with:
+          python-version: "3.12"
+          allow-python-prereleases: false
+          cache: true
+          cache-dependency-path: |
+            ./pdm.lock
+
+      - name: Install dependencies
+        run: |
+          pdm install
+          pdm run python -m ensurepip
+          pdm run python -m pip install "pydantic==1.*"
+
+      - name: Set pythonpath
+        run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
+
+      - name: Test
+        run: pdm run coverage run --branch -m unittest test_apps/pydantic_1_app.py
+
+      - name: Rename coverage file
+        run: mv .coverage* .coverage.pydantic_v1
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: coverage-data
+          path: .coverage.pydantic_v1
+
+  upload-test-coverage:
+    runs-on: ubuntu-latest
+    needs:
+      - test
+      - test_pydantic_1_app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: coverage-data
+
+      - name: Combine coverage files
+        run: |
+          python -Im pip install coverage covdefaults
+          python -Im coverage combine
+          python -Im coverage xml -i
+
+      - name: Fix coverage file name
+        run: sed -i "s/home\/runner\/work\/litestar\/litestar/github\/workspace/g" coverage.xml
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: coverage.xml
+          token: ${{ secrets.CODECOV_TOKEN }}

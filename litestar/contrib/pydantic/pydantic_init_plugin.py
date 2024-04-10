@@ -8,24 +8,28 @@ from msgspec import ValidationError
 from typing_extensions import Buffer, TypeGuard
 
 from litestar._signature.types import ExtendedMsgSpecValidationError
-from litestar.contrib.pydantic.utils import is_pydantic_constrained_field
+from litestar.contrib.pydantic.utils import is_pydantic_constrained_field, is_pydantic_v2
 from litestar.exceptions import MissingDependencyException
 from litestar.plugins import InitPluginProtocol
 from litestar.typing import _KWARG_META_EXTRACTORS
 from litestar.utils import is_class_and_subclass
 
 try:
-    # check if we have pydantic v2 installed, and try to import both versions
+    import pydantic as _  # noqa: F401
+except ImportError as e:
+    raise MissingDependencyException("pydantic") from e
+
+try:
     import pydantic as pydantic_v2
+
+    if not is_pydantic_v2(pydantic_v2):
+        raise ImportError
+
     from pydantic import v1 as pydantic_v1
 except ImportError:
-    # check if pydantic 1 is installed and import it
-    try:
-        import pydantic as pydantic_v1  # type: ignore[no-redef]
+    import pydantic as pydantic_v1  # type: ignore[no-redef]
 
-        pydantic_v2 = None  # type: ignore[assignment]
-    except ImportError as e:
-        raise MissingDependencyException("pydantic") from e
+    pydantic_v2 = None  # type: ignore[assignment]
 
 
 if TYPE_CHECKING:
