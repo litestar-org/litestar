@@ -22,6 +22,8 @@ Imports
 +----------------------------------------------------+------------------------------------------------------------------------+
 
 
+Other Changes
+-------------
 Removal of ``StaticFileConfig``
 -------------------------------
 
@@ -92,6 +94,7 @@ The ``OpenAPIConfig.enabled_endpoints`` attribute is no longer available in vers
 enabled a set of endpoints that would serve different OpenAPI UIs. In the new version, only the ``openapi.json``
 endpoint is enabled by default, alongside the ``Scalar`` UI plugin as the default.
 
+Make more sections as they are appropriate :)
 To adapt to this change, you should explicitly configure any additional endpoints you need by properly setting up the
 necessary plugins within the :attr:`OpenAPIConfig.render_plugins` parameter.
 
