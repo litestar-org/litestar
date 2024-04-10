@@ -142,8 +142,12 @@ docs = [
     "sphinx-click>=4.4.0",
     "sphinxcontrib-mermaid>=0.9.2",
     "auto-pytabs[sphinx]>=0.4.0",
-    "litestar-sphinx-theme @ git+https://github.com/litestar-org/litestar-sphinx-theme.git",
     "sphinx-paramlinks>=0.6.0",
+#    "litestar-sphinx-theme @ {root:uri}/../litestar-sphinx-theme", # only needed when working on the theme
+    "litestar-sphinx-theme @ git+https://github.com/litestar-org/litestar-sphinx-theme.git@v3",
+    "litestar[full] @ {root:uri}/",
+    "asyncpg",
+    "psycopg",
 ]
 linting = [
   "ruff>=0.2.1",
