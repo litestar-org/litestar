@@ -49,7 +49,6 @@ def add_mount_route(
             current_node = current_node.children[component]  # type: ignore[index]
 
     current_node.is_mount = True
-    current_node.is_static = route.route_handler.is_static
 
     if route.path != "/":
         mount_routes[route.path] = root_node.children[route.path] = current_node
