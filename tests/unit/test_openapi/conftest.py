@@ -6,7 +6,6 @@ import pytest
 from litestar import Controller, MediaType, delete, get, patch, post, put
 from litestar.datastructures import ResponseHeader, State
 from litestar.dto import DataclassDTO, DTOConfig, DTOData
-from litestar.openapi.controller import OpenAPIController
 from litestar.openapi.spec.example import Example
 from litestar.params import Parameter
 from tests.models import DataclassPerson, DataclassPersonFactory, DataclassPet
@@ -145,8 +144,3 @@ def person_controller(disable_warn_implicit_sync_to_thread: None) -> Type[Contro
 def pet_controller(disable_warn_implicit_sync_to_thread: None) -> Type[Controller]:
     """Fixture without a top-level mark."""
     return create_pet_controller()
-
-
-@pytest.fixture(params=[OpenAPIController, None])
-def openapi_controller(request: pytest.FixtureRequest) -> Optional[Type[OpenAPIController]]:
-    return request.param  # type: ignore[no-any-return]
