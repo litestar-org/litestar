@@ -51,7 +51,7 @@
 
 .. container:: buttons
 
-    `Get Started <getting-started>`_
+    :doc:`Get Started <getting-started>`
     `Usage Docs <usage>`_
     `API Docs <reference>`_
     `Blog <https://blog.litestar.dev>`_
