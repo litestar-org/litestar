@@ -123,7 +123,7 @@ class HandlerIndex(TypedDict):
     identifier: str
     """Unique identifier of the handler.
 
-    Either equal to :attr`__name__ <obj.__name__>` attribute or ``__str__`` value of the handler.
+    Either equal to ``__name__`` attribute or ``__str__`` value of the handler.
     """
 
 
