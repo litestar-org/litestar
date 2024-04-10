@@ -26,7 +26,7 @@ class ASGIRouteHandler(BaseRouteHandler):
     Use this decorator to decorate ASGI applications.
     """
 
-    __slots__ = ("copy_scope", "is_mount", "is_static")
+    __slots__ = ("copy_scope", "is_mount",)
 
     def __init__(
         self,
@@ -37,7 +37,6 @@ class ASGIRouteHandler(BaseRouteHandler):
         name: str | None = None,
         opt: Mapping[str, Any] | None = None,
         is_mount: bool = False,
-        is_static: bool = False,
         signature_namespace: Mapping[str, Any] | None = None,
         copy_scope: bool | None = None,
         **kwargs: Any,
@@ -57,16 +56,13 @@ class ASGIRouteHandler(BaseRouteHandler):
                 accept any arbitrary paths that begin with the defined prefixed path. For example, a mount with the path
                 ``/some-path/`` will accept requests for ``/some-path/`` and any sub path under this, e.g.
                 ``/some-path/sub-path/`` etc.
-            is_static: A boolean dictating whether the handler's paths should be regarded as static paths. Static paths
-                are used to deliver static files.
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             copy_scope: Copy the ASGI 'scope' before calling the mounted application. Should be set to 'True' unless
                 side effects via scope mutations by the mounted ASGI application are intentional
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
-        self.is_mount = is_mount or is_static
-        self.is_static = is_static
+        self.is_mount = is_mount
         self.copy_scope = copy_scope
 
         super().__init__(
