@@ -12,10 +12,12 @@ from litestar.utils.empty import value_or_default
 
 from .base import NamespacedStore
 
-__all__ = ("RedisStore",)
-
 if TYPE_CHECKING:
     from types import TracebackType
+
+    from redis.asyncio.connection import Connection
+
+__all__ = ("RedisStore",)
 
 
 class RedisStore(NamespacedStore):
@@ -109,7 +111,7 @@ class RedisStore(NamespacedStore):
             password: Redis password to use
             namespace: Virtual key namespace to use
         """
-        pool = ConnectionPool.from_url(
+        pool: ConnectionPool[Connection] = ConnectionPool.from_url(
             url=url,
             db=db,
             decode_responses=False,
