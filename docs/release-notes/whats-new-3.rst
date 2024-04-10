@@ -21,6 +21,48 @@ Imports
 + Put your shit here from v2                         | Put your shit here from v3                                             |
 +----------------------------------------------------+------------------------------------------------------------------------+
 
+
+Removal of ``StaticFileConfig``
+-------------------------------
+
+The ``StaticFilesConfig`` has been removed, alongside these related parameters and
+functions:
+
+- ``Litestar.static_files_config``
+- ``Litestar.url_for_static_asset``
+- ``Request.url_for_static_asset``
+
+:func:`create_static_files_router` is a drop-in replacement for ``StaticFilesConfig``,
+and can simply be added to the ``route_handlers`` like any other regular handler.
+
+Usage of ``url_for_static_assets`` should be replaced with a ``url_for("static", ...)``
+call.
+
+
+Implicit Optional Default Parameters
+------------------------------------
+
+In v2, if a handler was typed with an optional parameter it would be implicitly given a default value of ``None``. For
+example, if the following handler is called with no query parameter, the value ``None`` would be passed in to the
+handler for the ``param`` parameter:
+
+.. code-block:: python
+
+    @get("/")
+    def my_handler(param: int | None) -> ...:
+        ...
+
+This legacy behavior originates from our history of using Pydantic v1 models to represent handler signatures. In v3, we
+no longer make this implicit conversion. If you want to have a default value of ``None`` for an optional parameter, you
+must explicitly set it:
+
+.. code-block:: python
+
+    @get("/")
+    def my_handler(param: int | None = None) -> ...:
+        ...
+
+
 OpenAPI Controller Replaced by Plugins
 --------------------------------------
 

@@ -129,9 +129,6 @@ class RateLimitMiddleware(AbstractMiddleware):
         if getattr(route_handler, "is_mount", False):
             identifier += "::mount"
 
-        if getattr(route_handler, "is_static", False):
-            identifier += "::static"
-
         return f"{type(self).__name__}::{identifier}"
 
     async def retrieve_cached_history(self, key: str, store: Store) -> CacheObject:
