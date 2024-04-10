@@ -431,7 +431,7 @@
         - Fixes https://github.com/litestar-org/litestar/issues/2629
         - Circumvents special casing needed in the routing logic for the static files app
         - Removes the need for a ``static_files_config`` attribute on the app
-        - Removes the need for a special :meth:`~litestar.app.Litestar.url_for_static_asset`
+        - Removes the need for a special ``litestar.app.Litestar.url_for_static_asset``
           method on the app since `route_reverse` can be used instead
 
         Additionally:
