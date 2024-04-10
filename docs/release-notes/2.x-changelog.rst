@@ -423,7 +423,7 @@
 
         Static file serving has been implemented with regular route handlers instead of
         a specialised ASGI app. At the moment, this is complementary to the usage of
-        :class:`~litestar.static_files.StaticFilesConfig` to maintain backwards
+        `litestar.static_files.StaticFilesConfig`` to maintain backwards
         compatibility.
 
         This achieves a few things:
@@ -431,7 +431,7 @@
         - Fixes https://github.com/litestar-org/litestar/issues/2629
         - Circumvents special casing needed in the routing logic for the static files app
         - Removes the need for a ``static_files_config`` attribute on the app
-        - Removes the need for a special :meth:`~litestar.app.Litestar.url_for_static_asset`
+        - Removes the need for a special ``litestar.app.Litestar.url_for_static_asset``
           method on the app since `route_reverse` can be used instead
 
         Additionally:
@@ -1943,7 +1943,7 @@
         :pr: 2154
 
         Fixed a bug that would result in a ``404 - Not Found`` when requesting a static
-        file where the :attr:`~litestar.static_files.StaticFilesConfig.path` was also
+        file where the ``litestar.static_files.StaticFilesConfig.path`` was also
         used by a route handler.
 
     .. change:: HTMX: Missing default values for ``receive`` and ``send`` parameters of ``HTMXRequest``
