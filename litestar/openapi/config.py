@@ -97,9 +97,9 @@ class OpenAPIConfig:
     """
     render_plugins: Sequence[OpenAPIRenderPlugin] = field(default=(ScalarRenderPlugin(),))
     """Plugins for rendering OpenAPI documentation UIs.
-    
+
     .. versionchanged:: 3.0.0
-    
+
         Default behavior changed to serve only :class:`ScalarRenderPlugin`.
     """
     openapi_router: Router | None = None
