@@ -108,6 +108,6 @@ def cleanup_logging_impl() -> Generator:
         del queue_listener_handler
 
 
-def not_none(val: T | T | None) -> T:
+def not_none(val: T | None) -> T:
     assert val is not None
     return val
