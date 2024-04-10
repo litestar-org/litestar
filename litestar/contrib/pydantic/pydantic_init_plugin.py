@@ -33,8 +33,6 @@ except ImportError:
 
 
 if TYPE_CHECKING:
-    from pydantic.typing import AbstractSetIntStr, MappingIntStrAny
-
     from litestar.config.app import AppConfig
     from litestar.types.serialization import PydanticV1FieldsListType, PydanticV2FieldsListType
 
@@ -137,11 +135,11 @@ class PydanticInitPlugin(InitPluginProtocol):
 
     def __init__(
         self,
-        exclude: PydanticV1FieldsListType | PydanticV2FieldsListType = None,
+        exclude: PydanticV1FieldsListType | PydanticV2FieldsListType | None = None,
         exclude_defaults: bool = False,
         exclude_none: bool = False,
         exclude_unset: bool = False,
-        include: PydanticV1FieldsListType | PydanticV2FieldsListType = None,
+        include: PydanticV1FieldsListType | PydanticV2FieldsListType | None = None,
         prefer_alias: bool = False,
     ) -> None:
         self.exclude = exclude
@@ -154,11 +152,11 @@ class PydanticInitPlugin(InitPluginProtocol):
     @classmethod
     def encoders(
         cls,
-        exclude: PydanticV1FieldsListType | PydanticV2FieldsListType = None,
+        exclude: PydanticV1FieldsListType | PydanticV2FieldsListType | None = None,
         exclude_defaults: bool = False,
         exclude_none: bool = False,
         exclude_unset: bool = False,
-        include: PydanticV1FieldsListType | PydanticV2FieldsListType = None,
+        include: PydanticV1FieldsListType | PydanticV2FieldsListType | None = None,
         prefer_alias: bool = False,
     ) -> dict[Any, Callable[[Any], Any]]:
         encoders = {
@@ -200,11 +198,11 @@ class PydanticInitPlugin(InitPluginProtocol):
 
     @staticmethod
     def _create_pydantic_v1_encoders(
-        exclude: AbstractSetIntStr | MappingIntStrAny | None = None,
+        exclude: PydanticV1FieldsListType | None = None,
         exclude_defaults: bool = False,
         exclude_none: bool = False,
         exclude_unset: bool = False,
-        include: AbstractSetIntStr | MappingIntStrAny | None = None,
+        include: PydanticV1FieldsListType | None = None,
         prefer_alias: bool = False,
     ) -> dict[Any, Callable[[Any], Any]]:  # pragma: no cover
         return {
@@ -229,11 +227,11 @@ class PydanticInitPlugin(InitPluginProtocol):
 
     @staticmethod
     def _create_pydantic_v2_encoders(
-        exclude: PydanticV2FieldsListType = None,
+        exclude: PydanticV2FieldsListType | None = None,
         exclude_defaults: bool = False,
         exclude_none: bool = False,
         exclude_unset: bool = False,
-        include: PydanticV2FieldsListType = None,
+        include: PydanticV2FieldsListType | None = None,
         prefer_alias: bool = False,
     ) -> dict[Any, Callable[[Any], Any]]:
         encoders: dict[Any, Callable[[Any], Any]] = {

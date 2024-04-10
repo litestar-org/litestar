@@ -56,11 +56,11 @@ class PydanticPlugin(InitPluginProtocol):
 
     def __init__(
         self,
-        exclude: PydanticV1FieldsListType | PydanticV2FieldsListType = None,
+        exclude: PydanticV1FieldsListType | PydanticV2FieldsListType | None = None,
         exclude_defaults: bool = False,
         exclude_none: bool = False,
         exclude_unset: bool = False,
-        include: PydanticV1FieldsListType | PydanticV2FieldsListType = None,
+        include: PydanticV1FieldsListType | PydanticV2FieldsListType | None = None,
         prefer_alias: bool = False,
     ) -> None:
         """Initialize ``PydanticPlugin``.
