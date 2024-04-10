@@ -350,7 +350,7 @@ from litestar.handlers import get
 from typing import Optional
 
 @get(path=["/", "/{path:path}"])
-async def pathfinder(path: Optional[Path]) -> str:
+async def pathfinder(path: Optional[Path] = None) -> str:
     return str(path)
 
 app = Litestar(route_handlers=[pathfinder], debug=True)
