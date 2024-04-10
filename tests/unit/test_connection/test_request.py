@@ -23,12 +23,9 @@ from litestar.exceptions import (
 from litestar.middleware import MiddlewareProtocol
 from litestar.response.base import ASGIResponse
 from litestar.serialization import encode_json, encode_msgpack
-from litestar.static_files.config import StaticFilesConfig
 from litestar.testing import TestClient, create_test_client
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     from litestar.types import ASGIApp, Receive, Scope, Send
 
 
@@ -100,26 +97,6 @@ def test_request_url_for() -> None:
         assert response.json() == {"url": "http://testserver.local/proxy"}
 
         response = client.get("/test-none")
-        assert response.status_code == 500
-
-
-def test_request_asset_url(tmp_path: Path) -> None:
-    @get(path="/resolver", signature_namespace={"dict": Dict})
-    def resolver(request: Request) -> dict[str, str]:
-        return {"url": request.url_for_static_asset("js", "main.js")}
-
-    @get(path="/resolver-none", signature_namespace={"dict": Dict})
-    def resolver_none(request: Request) -> dict[str, str]:
-        return {"url": request.url_for_static_asset("none", "main.js")}
-
-    with create_test_client(
-        route_handlers=[resolver, resolver_none],
-        static_files_config=[StaticFilesConfig(path="/static/js", directories=[tmp_path], name="js")],
-    ) as client:
-        response = client.get("/resolver")
-        assert response.json() == {"url": "http://testserver.local/static/js/main.js"}
-
-        response = client.get("/resolver-none")
         assert response.status_code == 500
 
 
