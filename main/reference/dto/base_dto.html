@@ -1640,8 +1640,16 @@ document.write(`
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">create_openapi_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_definition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><span class="pre">FieldDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">handler_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_creator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SchemaCreator</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../openapi/spec.html#litestar.openapi.spec.Reference" title="litestar.openapi.spec.Reference"><span class="pre">Reference</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../openapi/spec.html#litestar.openapi.spec.Schema" title="litestar.openapi.spec.Schema"><span class="pre">Schema</span></a></span></span><a class="headerlink" href="#litestar.dto.base_dto.AbstractDTO.create_openapi_schema" title="Permalink to this definition">#</a></dt>
 <dd><p>Create an OpenAPI request body.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>OpenAPI request body.</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="litestar.dto.base_dto.AbstractDTO.create_openapi_schema.params.field_definition"></span><strong>field_definition</strong><a class="paramlink headerlink reference internal" href="#litestar.dto.base_dto.AbstractDTO.create_openapi_schema.params.field_definition">¶</a> – A parsed type annotation that represents the annotation used on the handler.</p></li>
+<li><p><span class="target" id="litestar.dto.base_dto.AbstractDTO.create_openapi_schema.params.handler_id"></span><strong>handler_id</strong><a class="paramlink headerlink reference internal" href="#litestar.dto.base_dto.AbstractDTO.create_openapi_schema.params.handler_id">¶</a> – ID of the route handler for which to create a DTO instance.</p></li>
+<li><p><span class="target" id="litestar.dto.base_dto.AbstractDTO.create_openapi_schema.params.schema_creator"></span><strong>schema_creator</strong><a class="paramlink headerlink reference internal" href="#litestar.dto.base_dto.AbstractDTO.create_openapi_schema.params.schema_creator">¶</a> – A factory for creating schemas. Has a <code class="docutils literal notranslate"><span class="pre">for_field_definition()</span></code> method that accepts a
+<a class="reference internal" href="../typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldDefinition</span></code></a> instance.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>OpenAPI request body.</p>
 </dd>
 </dl>
 </dd></dl>
