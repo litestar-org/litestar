@@ -63,9 +63,11 @@ Defining DTOs on layers
 DTOs can be defined on any :ref:`Layer <layered-architecture>` of the application. The DTO type applied is the one
 defined in the ownership chain, closest to the handler in question.
 
-.. literalinclude:: /examples/data_transfer_objects/defining_dtos_on_layers.py
-    :caption: Controller defined DTOs
-    :language: python
+.. dropdown:: Example of defining DTOs on layers
+
+    .. literalinclude:: /examples/data_transfer_objects/defining_dtos_on_layers.py
+        :caption: Controller defined DTOs
+        :language: python
 
 In this example, the ``User`` instance received by any handler that declares a ``data`` kwarg, is converted by the
 ``UserDTO`` type, and all handler return values are converted into an encodable type by ``UserReturnDTO`` (except for

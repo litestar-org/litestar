@@ -1,9 +1,20 @@
+from dataclasses import dataclass
 from typing import List
 from uuid import UUID, uuid4
 
 from litestar import Controller, delete, get, post, put
+from litestar.app import Litestar
+from litestar.dto import DataclassDTO
 
-from .models import User, UserDTO, UserReturnDTO
+
+@dataclass
+class User:
+    id: UUID
+    name: str
+
+
+UserDTO = DataclassDTO[User]
+UserReturnDTO = DataclassDTO[User]
 
 
 class UserController(Controller):
@@ -29,3 +40,6 @@ class UserController(Controller):
     @delete("/{user_id:uuid}", return_dto=None, sync_to_thread=False)
     def delete_user(self, user_id: UUID) -> None:
         return None
+
+
+app = Litestar([UserController])
