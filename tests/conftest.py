@@ -9,7 +9,7 @@ import sys
 from datetime import datetime
 from os import urandom
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Generator, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Generator, Union, cast
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -30,6 +30,7 @@ from litestar.stores.file import FileStore
 from litestar.stores.memory import MemoryStore
 from litestar.stores.redis import RedisStore
 from litestar.testing import RequestFactory
+from tests.helpers import not_none
 
 if TYPE_CHECKING:
     from types import ModuleType
@@ -228,11 +229,6 @@ def create_module(tmp_path: Path, monkeypatch: MonkeyPatch) -> Callable[[str], M
         Returns:
             An imported module.
         """
-        T = TypeVar("T")
-
-        def not_none(val: T | T | None) -> T:
-            assert val is not None
-            return val
 
         def module_name_generator() -> str:
             letters = string.ascii_lowercase

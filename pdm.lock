@@ -679,7 +679,7 @@ files = [
 
 [[package]]
 name = "codecov-cli"
-version = "0.4.9"
+version = "0.5.0"
 requires_python = ">=3.8"
 summary = "Codecov Command Line Interface"
 dependencies = [
@@ -691,10 +691,10 @@ dependencies = [
     "tree-sitter==0.20.*",
 ]
 files = [
-    {file = "codecov-cli-0.4.9.tar.gz", hash = "sha256:89c4a6b39094dc4181c6797fa9f8cbc2b03cd76038b2f491c3ee030428ee1e0d"},
-    {file = "codecov_cli-0.4.9-cp311-cp311-macosx_12_6_x86_64.whl", hash = "sha256:7bfe0ab74fdcc2ace01f5ba2433e770eb8c9cd88ff7c6bbb5a9b4820e279f956"},
-    {file = "codecov_cli-0.4.9-cp311-cp311-manylinux2014_x86_64.whl", hash = "sha256:d18f313235a912398f6bde96c918bbe153ad892d8077e9386302d78ec189faaf"},
-    {file = "codecov_cli-0.4.9-cp311-cp311-win_amd64.whl", hash = "sha256:b831ec08da58b8164455bb0fb822c2a31ebd5c991700e6f8024cb296abf463c7"},
+    {file = "codecov-cli-0.5.0.tar.gz", hash = "sha256:11dfd62eca5a2badab4a72d920b0b362ae82a76d60ea573652996308c9e29dd5"},
+    {file = "codecov_cli-0.5.0-cp311-cp311-macosx_12_6_x86_64.whl", hash = "sha256:a2aa22ce477fc998b21af1a617edb3fb5a62e806890b2d72184ec19bf7417af2"},
+    {file = "codecov_cli-0.5.0-cp311-cp311-manylinux2014_x86_64.whl", hash = "sha256:faa7bb96c7715aa025ddaa5b0166e7e8cb48aa3de23f9a089a8422da18fe5964"},
+    {file = "codecov_cli-0.5.0-cp311-cp311-win_amd64.whl", hash = "sha256:a8ad69987389f15c131f5774f3b2a63c01840f10a67a7d6a26c41193d776f654"},
 ]
 
 [[package]]
@@ -1455,7 +1455,7 @@ files = [
 
 [[package]]
 name = "hypothesis"
-version = "6.100.0"
+version = "6.100.1"
 requires_python = ">=3.8"
 summary = "A library for property-based testing"
 dependencies = [
@@ -1464,8 +1464,8 @@ dependencies = [
     "sortedcontainers<3.0.0,>=2.1.0",
 ]
 files = [
-    {file = "hypothesis-6.100.0-py3-none-any.whl", hash = "sha256:ceaeb7c051085dbec37f2fc4dca524b6304472ff1887fed53b3d84705507c10e"},
-    {file = "hypothesis-6.100.0.tar.gz", hash = "sha256:1841f6b5083844cd4b66965e44a17c0dc8fe8e9c6370c1f7b8d50647fcb2efd3"},
+    {file = "hypothesis-6.100.1-py3-none-any.whl", hash = "sha256:3dacf6ec90e8d14aaee02cde081ac9a17d5b70105e45e6ac822db72052c0195b"},
+    {file = "hypothesis-6.100.1.tar.gz", hash = "sha256:ebff09d7fa4f1fb6a855a812baf17e578b4481b7b70ec6d96496210d1a4c6c35"},
 ]
 
 [[package]]
@@ -4038,7 +4038,7 @@ files = [
 
 [[package]]
 name = "types-redis"
-version = "4.6.0.20240311"
+version = "4.6.0.20240409"
 requires_python = ">=3.8"
 summary = "Typing stubs for redis"
 dependencies = [
@@ -4046,8 +4046,8 @@ dependencies = [
     "types-pyOpenSSL",
 ]
 files = [
-    {file = "types-redis-4.6.0.20240311.tar.gz", hash = "sha256:e049bbdff0e0a1f8e701b64636811291d21bff79bf1e7850850a44055224a85f"},
-    {file = "types_redis-4.6.0.20240311-py3-none-any.whl", hash = "sha256:6b9d68a29aba1ee400c823d8e5fe88675282eb69d7211e72fe65dbe54b33daca"},
+    {file = "types-redis-4.6.0.20240409.tar.gz", hash = "sha256:ce217c279581d769df992c5b76d61c65425b0a679626048e633e643868eb881b"},
+    {file = "types_redis-4.6.0.20240409-py3-none-any.whl", hash = "sha256:a3b92760c49a034827a0c3825206728df4e61e981c1324099d4414335af4f52f"},
 ]
 
 [[package]]
