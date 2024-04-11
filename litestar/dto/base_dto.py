@@ -195,11 +195,31 @@ class AbstractDTO(Generic[T]):
     ) -> Reference | Schema:
         """Create an OpenAPI request body.
 
+        Args:
+            field_definition: A parsed type annotation that represents the annotation used on the handler.
+            handler_id: ID of the route handler for which to create a DTO instance.
+            schema_creator: A factory for creating schemas. Has a ``for_field_definition()`` method that accepts a
+                :class:`~litestar.typing.FieldDefinition` instance.
+
         Returns:
             OpenAPI request body.
         """
         key = "data_backend" if field_definition.name == "data" else "return_backend"
         backend = cls._dto_backends[handler_id][key]  # type: ignore[literal-required]
+
+        if backend.wrapper_attribute_name:
+            # The DTO has been built for a handler that has a DTO supported type wrapped in a generic type.
+            #
+            # The backend doesn't receive the full annotation, only the type of the attribute on the outer type that
+            # holds the DTO supported type.
+            #
+            # This special casing rebuilds the outer generic type annotation with the original model replaced by the DTO
+            # generated transfer model type in the type arguments.
+            transfer_model = backend.transfer_model_type
+            generic_args = tuple(transfer_model if a is cls.model_type else a for a in field_definition.args)
+            return schema_creator.for_field_definition(
+                FieldDefinition.from_annotation(field_definition.origin[generic_args])
+            )
         return schema_creator.for_field_definition(FieldDefinition.from_annotation(backend.annotation))
 
     @classmethod
