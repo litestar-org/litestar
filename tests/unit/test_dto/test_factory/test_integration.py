@@ -905,7 +905,9 @@ def test_msgspec_dto_dont_copy_length_constraint_for_partial_dto() -> None:
         assert client.post("/", json={"bar": "1", "baz": "123"}).status_code == 201
 
 
-def test_openapi_schema_for_type_with_generic_wrapper(create_module: Callable[[str], ModuleType]) -> None:
+def test_openapi_schema_for_type_with_generic_pagination_type(
+    create_module: Callable[[str], ModuleType], use_experimental_dto_backend: bool
+) -> None:
     module = create_module(
         """
 from dataclasses import dataclass
@@ -914,12 +916,10 @@ from litestar import Litestar, get
 from litestar.dto import DataclassDTO
 from litestar.pagination import ClassicPagination
 
-
 @dataclass
 class Test:
     name: str
     age: int
-
 
 @get("/without-dto", sync_to_thread=False)
 def without_dto() -> ClassicPagination[Test]:
@@ -930,7 +930,6 @@ def without_dto() -> ClassicPagination[Test]:
         total_pages=2,
     )
 
-
 @get("/with-dto", return_dto=DataclassDTO[Test], sync_to_thread=False)
 def with_dto() -> ClassicPagination[Test]:
     return ClassicPagination(
@@ -939,7 +938,6 @@ def with_dto() -> ClassicPagination[Test]:
         current_page=2,
         total_pages=2,
     )
-
 
 app = Litestar([without_dto, with_dto])
 """
@@ -955,3 +953,53 @@ app = Litestar([without_dto, with_dto])
     assert isinstance(without_dto_schema, Schema)
     assert isinstance(with_dto_schema, Schema)
     assert not_none(without_dto_schema.properties).keys() == not_none(with_dto_schema.properties).keys()
+
+
+def test_openapi_schema_for_type_with_custom_generic_type(
+    create_module: Callable[[str], ModuleType], use_experimental_dto_backend: bool
+) -> None:
+    module = create_module(
+        """
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Generic, List, TypeVar
+
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+
+from litestar import Litestar, get
+from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
+from litestar.dto import DTOConfig
+
+T = TypeVar("T")
+
+@dataclass
+class WithCount(Generic[T]):
+    count: int
+    data: List[T]
+
+class Base(DeclarativeBase): ...
+
+class User(Base):
+    __tablename__ = "user"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str]
+    password: Mapped[str]
+    created_at: Mapped[datetime]
+
+class UserDTO(SQLAlchemyDTO[User]):
+    config = DTOConfig(exclude={"password", "created_at"})
+
+@get("/users", dto=UserDTO, sync_to_thread=False)
+def get_users() -> WithCount[User]:
+    return WithCount(
+        count=1, data=[User(id=1, name="Litestar User", password="xyz", created_at=datetime.now())]
+    )
+
+app = Litestar(route_handlers=[get_users])
+"""
+    )
+    openapi = cast("Litestar", module.app).openapi_schema
+    schema = openapi.components.schemas["WithCount[litestar.dto._backend.GetUsersUserResponseBody]"]
+    assert not_none(schema.properties).keys() == {"count", "data"}
+    model_schema = openapi.components.schemas["GetUsersUserResponseBody"]
+    assert not_none(model_schema.properties).keys() == {"id", "name"}
