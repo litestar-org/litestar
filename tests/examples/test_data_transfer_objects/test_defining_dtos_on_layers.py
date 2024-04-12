@@ -2,16 +2,13 @@ from __future__ import annotations
 
 from unittest.mock import ANY
 
-import pytest
-from docs.examples.data_transfer_objects.defining_dtos_on_layers import app
-
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from litestar.testing import TestClient
 
-pytestmark = pytest.mark.xdist_group("dto_examples")
-
 
 def test_create_user(user_data: dict) -> None:
+    from docs.examples.data_transfer_objects.defining_dtos_on_layers import app
+
     with TestClient(app=app) as client:
         response = client.post("/", json=user_data)
 
@@ -20,6 +17,8 @@ def test_create_user(user_data: dict) -> None:
 
 
 def test_get_users() -> None:
+    from docs.examples.data_transfer_objects.defining_dtos_on_layers import app
+
     with TestClient(app=app) as client:
         response = client.get("/")
 
@@ -28,6 +27,8 @@ def test_get_users() -> None:
 
 
 def test_get_user() -> None:
+    from docs.examples.data_transfer_objects.defining_dtos_on_layers import app
+
     with TestClient(app=app) as client:
         response = client.get("/a3cad591-5b01-4341-ae8f-94f78f790674")
 
@@ -41,6 +42,8 @@ def test_get_user() -> None:
 
 
 def test_update_user(user_data: dict) -> None:
+    from docs.examples.data_transfer_objects.defining_dtos_on_layers import app
+
     with TestClient(app=app) as client:
         response = client.put("/a3cad591-5b01-4341-ae8f-94f78f790674", json=user_data)
 
@@ -49,6 +52,8 @@ def test_update_user(user_data: dict) -> None:
 
 
 def test_delete_user() -> None:
+    from docs.examples.data_transfer_objects.defining_dtos_on_layers import app
+
     with TestClient(app=app) as client:
         response = client.delete("/a3cad591-5b01-4341-ae8f-94f78f790674")
 
