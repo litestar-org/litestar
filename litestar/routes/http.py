@@ -6,10 +6,8 @@ from typing import TYPE_CHECKING, Any, cast
 from msgspec.msgpack import decode as _decode_msgpack_plain
 
 from litestar.datastructures.upload_file import UploadFile
-from litestar.enums import HttpMethod, MediaType, ScopeType
+from litestar.enums import ScopeType
 from litestar.exceptions import ClientException, ImproperlyConfiguredException, SerializationException
-from litestar.handlers.http_handlers import HTTPRouteHandler
-from litestar.response import Response
 from litestar.routes.base import BaseRoute
 from litestar.status_codes import HTTP_204_NO_CONTENT
 from litestar.types.empty import Empty
@@ -19,6 +17,7 @@ if TYPE_CHECKING:
     from litestar._kwargs import KwargsModel
     from litestar._kwargs.cleanup import DependencyCleanupGroup
     from litestar.connection import Request
+    from litestar.handlers.http_handlers import HTTPRouteHandler
     from litestar.types import ASGIApp, HTTPScope, Method, Receive, Scope, Send
 
 
@@ -43,12 +42,6 @@ class HTTPRoute(BaseRoute):
             route_handlers: A list of :class:`~.handlers.HTTPRouteHandler`.
         """
         methods = list(chain.from_iterable([route_handler.http_methods for route_handler in route_handlers]))
-        if "OPTIONS" not in methods:
-            methods.append("OPTIONS")
-            options_handler = self.create_options_handler(path)
-            options_handler.owner = route_handlers[0].owner
-            route_handlers.append(options_handler)
-
         self.route_handlers = route_handlers
         self.route_handler_map: dict[Method, tuple[HTTPRouteHandler, KwargsModel]] = {}
 
@@ -234,37 +227,6 @@ class HTTPRoute(BaseRoute):
                 await send(message)
 
         return cached_response
-
-    def create_options_handler(self, path: str) -> HTTPRouteHandler:
-        """Args:
-            path: The route path
-
-        Returns:
-            An HTTP route handler for OPTIONS requests.
-        """
-
-        def options_handler(scope: Scope) -> Response:
-            """Handler function for OPTIONS requests.
-
-            Args:
-                scope: The ASGI Scope.
-
-            Returns:
-                Response
-            """
-            return Response(
-                content=None,
-                status_code=HTTP_204_NO_CONTENT,
-                headers={"Allow": ", ".join(sorted(self.methods))},  # pyright: ignore
-                media_type=MediaType.TEXT,
-            )
-
-        return HTTPRouteHandler(
-            path=path,
-            http_method=[HttpMethod.OPTIONS],
-            include_in_schema=False,
-            sync_to_thread=False,
-        )(options_handler)
 
     @staticmethod
     async def _cleanup_temporary_files(form_data: dict[str, Any]) -> None:

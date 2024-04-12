@@ -9,6 +9,7 @@ from litestar.controller import Controller
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers.asgi_handlers import ASGIRouteHandler
 from litestar.handlers.http_handlers import HTTPRouteHandler
+from litestar.handlers.http_handlers._options import create_options_handler
 from litestar.handlers.websocket_handlers import WebsocketListener, WebsocketRouteHandler
 from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from litestar.types.empty import Empty
@@ -236,11 +237,11 @@ class Router:
 
                     route: WebSocketRoute | ASGIRoute | HTTPRoute = HTTPRoute(
                         path=path,
-                        route_handlers=http_handlers,
+                        route_handlers=_maybe_add_options_handler(path, http_handlers),
                     )
                     self.routes[existing_route_index] = route
                 else:
-                    route = HTTPRoute(path=path, route_handlers=http_handlers)
+                    route = HTTPRoute(path=path, route_handlers=_maybe_add_options_handler(path, http_handlers))
                     self.routes.append(route)
 
                 routes.append(route)
@@ -336,3 +337,12 @@ class Router:
             "If you passed in a function or method, "
             "make sure to decorate it first with one of the routing decorators"
         )
+
+
+def _maybe_add_options_handler(path: str, http_handlers: list[HTTPRouteHandler]) -> list[HTTPRouteHandler]:
+    handler_methods = {method for handler in http_handlers for method in handler.http_methods}
+    if "OPTIONS" not in handler_methods:
+        options_handler = create_options_handler(path=path, allow_methods=handler_methods)
+        options_handler.owner = http_handlers[0].owner
+        return [*http_handlers, options_handler]
+    return http_handlers
