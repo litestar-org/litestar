@@ -11,7 +11,7 @@ def test_create_user(user_data: dict) -> None:
         response = client.post("/", json=user_data)
 
     assert response.status_code == HTTP_201_CREATED
-    assert response.json() == {"id": "a3cad591-5b01-4341-ae8f-94f78f790674", "name": "Litestar User"}
+    assert response.json() == {"id": ANY, "name": "Mr Sunglass", "email": "mr.sunglass@example.com", "age": 30}
 
 
 def test_get_users() -> None:
@@ -19,7 +19,7 @@ def test_get_users() -> None:
         response = client.get("/")
 
     assert response.status_code == HTTP_200_OK
-    assert response.json() == [{"id": ANY, "name": "Litestar User"}]
+    assert response.json() == [{"id": ANY, "name": "Mr Sunglass", "email": "mr.sunglass@example.com", "age": 30}]
 
 
 def test_get_user() -> None:
@@ -27,7 +27,12 @@ def test_get_user() -> None:
         response = client.get("a3cad591-5b01-4341-ae8f-94f78f790674")
 
     assert response.status_code == HTTP_200_OK
-    assert response.json() == {"id": "a3cad591-5b01-4341-ae8f-94f78f790674", "name": "Litestar User"}
+    assert response.json() == {
+        "id": "a3cad591-5b01-4341-ae8f-94f78f790674",
+        "name": "Mr Sunglass",
+        "email": "mr.sunglass@example.com",
+        "age": 30,
+    }
 
 
 def test_update_user(user_data: dict) -> None:
@@ -35,7 +40,7 @@ def test_update_user(user_data: dict) -> None:
         response = client.put("/a3cad591-5b01-4341-ae8f-94f78f790674", json=user_data)
 
     assert response.status_code == HTTP_200_OK
-    assert response.json() == {"id": "a3cad591-5b01-4341-ae8f-94f78f790674", "name": "Litestar User"}
+    assert response.json() == {"id": ANY, "name": "Mr Sunglass", "email": "mr.sunglass@example.com", "age": 30}
 
 
 def test_delete_user() -> None:
