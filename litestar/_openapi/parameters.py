@@ -218,11 +218,15 @@ class ParameterFactory:
         # not all path parameters have to be consumed by the handler. Because even not
         # consumed path parameters must still be specified, we create stub parameters
         # for the unconsumed ones so a correct OpenAPI schema can be generated
+        dependency_fields = {
+            name for dep in self.dependency_providers.values() for name in dep.parsed_fn_signature.parameters
+        }
         params_not_consumed_by_handler = set(self.path_parameters) - handler_fields.keys()
+        unconsumed_path_parameters = params_not_consumed_by_handler - dependency_fields
         handler_fields.update(
             {
                 param_name: FieldDefinition.from_kwarg(self.path_parameters[param_name].type, name=param_name)
-                for param_name in params_not_consumed_by_handler
+                for param_name in unconsumed_path_parameters
             }
         )
 
