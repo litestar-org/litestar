@@ -41,12 +41,11 @@ class HTTPRoute(BaseRoute):
             path: The path for the route.
             route_handlers: A list of :class:`~.handlers.HTTPRouteHandler`.
         """
-        methods = list(chain.from_iterable([route_handler.http_methods for route_handler in route_handlers]))
+        self.methods = set(chain.from_iterable([route_handler.http_methods for route_handler in route_handlers]))
         self.route_handlers = route_handlers
         self.route_handler_map: dict[Method, tuple[HTTPRouteHandler, KwargsModel]] = {}
 
         super().__init__(
-            methods=methods,
             path=path,
             scope_type=ScopeType.HTTP,
         )

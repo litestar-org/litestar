@@ -16,7 +16,7 @@ from litestar.utils import join_paths, normalize_path
 
 if TYPE_CHECKING:
     from litestar.enums import ScopeType
-    from litestar.types import Method, Receive, Scope, Send
+    from litestar.types import Receive, Scope, Send
 
 
 def _parse_datetime(value: str) -> datetime:
@@ -88,18 +88,15 @@ class BaseRoute(ABC):
         *,
         path: str,
         scope_type: ScopeType,
-        methods: list[Method] | None = None,
     ) -> None:
         """Initialize the route.
 
         Args:
             path: Base path of the route
             scope_type: Type of the ASGI scope
-            methods: Supported methods
         """
         self.path, self.path_format, self.path_components, self.path_parameters = self._parse_path(path)
         self.scope_type = scope_type
-        self.methods = set(methods or [])
 
     @abstractmethod
     async def handle(self, scope: Scope, receive: Receive, send: Send) -> None:
