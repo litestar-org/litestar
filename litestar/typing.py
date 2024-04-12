@@ -512,13 +512,11 @@ class FieldDefinition:
         if not kwargs.get("kwarg_definition"):
             if isinstance(kwargs.get("default"), (KwargDefinition, DependencyKwarg)):
                 kwargs["kwarg_definition"] = kwargs.pop("default")
-            elif any(isinstance(v, (KwargDefinition, DependencyKwarg)) for v in metadata):
-                kwarg_definition = kwargs["kwarg_definition"] = next(  # pragma: no cover
-                    # see https://github.com/nedbat/coveragepy/issues/475
-                    v
-                    for v in metadata
-                    if isinstance(v, (KwargDefinition, DependencyKwarg))
-                )
+            elif kwarg_definition := next(
+                (v for v in metadata if isinstance(v, (KwargDefinition, DependencyKwarg))), None
+            ):
+                kwargs["kwarg_definition"] = kwarg_definition
+
                 if kwarg_definition.default is not Empty:
                     warnings.warn(
                         f"Deprecated default value specification for annotation '{annotation}'. Setting defaults "
@@ -529,7 +527,7 @@ class FieldDefinition:
                         category=DeprecationWarning,
                         stacklevel=2,
                     )
-                    if "default" in kwargs and kwarg_definition.default != kwargs["default"]:
+                    if kwargs.get("default", Empty) is not Empty and kwarg_definition.default != kwargs["default"]:
                         warnings.warn(
                             f"Ambiguous default values for annotation '{annotation}'. The default value "
                             f"'{kwarg_definition.default!r}' set inside the parameter annotation differs from the "
