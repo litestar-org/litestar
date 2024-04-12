@@ -22,18 +22,18 @@ class UserWriteDTO(DataclassDTO[User]):
     config = DTOConfig(exclude={"id"})
 
 
-UserReadDTO = DataclassDTO[User]
+class UserReadDTO(DataclassDTO[User]): ...
 
 
 class UserController(Controller):
     dto = UserWriteDTO
     return_dto = UserReadDTO
 
-    @post(sync_to_thread=False)
+    @post("/", sync_to_thread=False)
     def create_user(self, data: User) -> User:
         return data
 
-    @get(sync_to_thread=False)
+    @get("/", sync_to_thread=False)
     def get_users(self) -> List[User]:
         return [User(name="Mr Sunglass", email="mr.sunglass@example.com", age=30)]
 
@@ -50,4 +50,4 @@ class UserController(Controller):
         return None
 
 
-app = Litestar([UserController])
+app = Litestar(UserController)
