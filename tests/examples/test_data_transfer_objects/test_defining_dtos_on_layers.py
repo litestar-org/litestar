@@ -2,10 +2,13 @@ from __future__ import annotations
 
 from unittest.mock import ANY
 
+import pytest
 from docs.examples.data_transfer_objects.defining_dtos_on_layers import app
 
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
 from litestar.testing import TestClient
+
+pytestmark = pytest.mark.xdist_group("dto_examples")
 
 
 def test_create_user(user_data: dict) -> None:

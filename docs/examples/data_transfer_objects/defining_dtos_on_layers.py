@@ -50,4 +50,4 @@ class UserController(Controller):
         return None
 
 
-app = Litestar([UserController], debug=True)
+app = Litestar([UserController])
