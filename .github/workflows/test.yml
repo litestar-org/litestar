@@ -52,7 +52,7 @@ jobs:
 
       - name: Test
         if: ${{ !inputs.coverage }}
-        run: pdm run pytest docs/examples tests -n auto
+        run: pdm run pytest docs/examples tests
 
       - name: Test with coverage
         if: inputs.coverage
