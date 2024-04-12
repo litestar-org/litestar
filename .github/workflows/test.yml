@@ -56,7 +56,7 @@ jobs:
 
       - name: Test with coverage
         if: inputs.coverage
-        run: pdm run pytest docs/examples tests -n auto --cov
+        run: pdm run pytest docs/examples tests --cov
 
       - name: Rename coverage file
         if: inputs.coverage
