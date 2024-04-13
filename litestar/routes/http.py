@@ -14,7 +14,6 @@ from litestar.types.empty import Empty
 from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
-    from litestar._kwargs import KwargsModel
     from litestar._kwargs.cleanup import DependencyCleanupGroup
     from litestar.connection import Request
     from litestar.handlers.http_handlers import HTTPRouteHandler
@@ -43,7 +42,7 @@ class HTTPRoute(BaseRoute):
         """
         self.methods = set(chain.from_iterable([route_handler.http_methods for route_handler in route_handlers]))
         self.route_handlers = route_handlers
-        self.route_handler_map: dict[Method, tuple[HTTPRouteHandler, KwargsModel]] = {}
+        self.route_handler_map: dict[Method, HTTPRouteHandler] = {}
 
         super().__init__(
             path=path,
@@ -62,15 +61,13 @@ class HTTPRoute(BaseRoute):
         Returns:
             None
         """
-        route_handler, parameter_model = self.route_handler_map[scope["method"]]
+        route_handler = self.route_handler_map[scope["method"]]
         request: Request[Any, Any, Any] = route_handler.resolve_request_class()(scope=scope, receive=receive, send=send)
 
         if route_handler.resolve_guards():
             await route_handler.authorize_connection(connection=request)
 
-        response = await self._get_response_for_request(
-            scope=scope, request=request, route_handler=route_handler, parameter_model=parameter_model
-        )
+        response = await self._get_response_for_request(scope=scope, request=request, route_handler=route_handler)
 
         await response(scope, receive, send)
 
@@ -86,18 +83,17 @@ class HTTPRoute(BaseRoute):
         """
         for route_handler in self.route_handlers:
             for http_method in route_handler.http_methods:
-                if self.route_handler_map.get(http_method):
+                if http_method in self.route_handler_map:
                     raise ImproperlyConfiguredException(
                         f"Handler already registered for path {self.path!r} and http method {http_method}"
                     )
-                self.route_handler_map[http_method] = (route_handler, route_handler._kwargs_model)
+                self.route_handler_map[http_method] = route_handler
 
     async def _get_response_for_request(
         self,
         scope: Scope,
         request: Request[Any, Any, Any],
         route_handler: HTTPRouteHandler,
-        parameter_model: KwargsModel,
     ) -> ASGIApp:
         """Return a response for the request.
 
@@ -109,7 +105,6 @@ class HTTPRoute(BaseRoute):
             scope: The Request's scope
             request: The Request instance
             route_handler: The HTTPRouteHandler instance
-            parameter_model: The Handler's KwargsModel
 
         Returns:
             An instance of Response or a compatible ASGIApp or a subclass of it
@@ -119,13 +114,9 @@ class HTTPRoute(BaseRoute):
         ):
             return response
 
-        return await self._call_handler_function(
-            scope=scope, request=request, parameter_model=parameter_model, route_handler=route_handler
-        )
+        return await self._call_handler_function(scope=scope, request=request, route_handler=route_handler)
 
-    async def _call_handler_function(
-        self, scope: Scope, request: Request, parameter_model: KwargsModel, route_handler: HTTPRouteHandler
-    ) -> ASGIApp:
+    async def _call_handler_function(self, scope: Scope, request: Request, route_handler: HTTPRouteHandler) -> ASGIApp:
         """Call the before request handlers, retrieve any data required for the route handler, and call the route
         handler's ``to_response`` method.
 
@@ -139,9 +130,7 @@ class HTTPRoute(BaseRoute):
             response_data = await before_request_handler(request)
 
         if not response_data:
-            response_data, cleanup_group = await self._get_response_data(
-                route_handler=route_handler, parameter_model=parameter_model, request=request
-            )
+            response_data, cleanup_group = await self._get_response_data(route_handler=route_handler, request=request)
 
         response: ASGIApp = await route_handler.to_response(data=response_data, request=request)
 
@@ -150,13 +139,13 @@ class HTTPRoute(BaseRoute):
 
         return response
 
-    @staticmethod
     async def _get_response_data(
-        route_handler: HTTPRouteHandler, parameter_model: KwargsModel, request: Request
+        self, route_handler: HTTPRouteHandler, request: Request
     ) -> tuple[Any, DependencyCleanupGroup | None]:
         """Determine what kwargs are required for the given route handler's ``fn`` and calls it."""
         parsed_kwargs: dict[str, Any] = {}
         cleanup_group: DependencyCleanupGroup | None = None
+        parameter_model = route_handler._get_kwargs_model_for_route(self)
 
         if parameter_model.has_kwargs and route_handler.signature_model:
             kwargs = parameter_model.to_kwargs(connection=request)

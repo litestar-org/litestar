@@ -49,6 +49,7 @@ from litestar.utils.warnings import warn_implicit_sync_to_thread, warn_sync_to_t
 if TYPE_CHECKING:
     from typing import Any, Awaitable, Callable
 
+    from litestar._kwargs import KwargsModel
     from litestar.app import Litestar
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
     from litestar.config.response_cache import CACHE_FOREVER
@@ -83,6 +84,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         "_resolved_request_class",
         "_resolved_tags",
         "_resolved_security",
+        "_kwargs_models",
         "after_request",
         "after_response",
         "background",
@@ -297,6 +299,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self._resolved_request_class: type[Request] | EmptyType = Empty
         self._resolved_security: list[SecurityRequirement] | EmptyType = Empty
         self._resolved_tags: list[str] | EmptyType = Empty
+        self._kwargs_models: dict[int, KwargsModel] = {}
 
     def __call__(self, fn: AnyCallable) -> HTTPRouteHandler:
         """Replace a function with itself."""
@@ -558,7 +561,6 @@ class HTTPRouteHandler(BaseRouteHandler):
 
     def on_registration(self, app: Litestar, route: BaseRoute) -> None:
         super().on_registration(app, route=route)
-        self.create_kwargs_model(path_parameters=route.path_parameters)
         self.resolve_after_response()
         self.resolve_include_in_schema()
         self.has_sync_callable = not is_async_callable(self.fn)
@@ -566,6 +568,14 @@ class HTTPRouteHandler(BaseRouteHandler):
         if self.has_sync_callable and self.sync_to_thread:
             self._fn = ensure_async_callable(self.fn)
             self.has_sync_callable = False
+
+        self._get_kwargs_model_for_route(route)
+
+    def _get_kwargs_model_for_route(self, route: BaseRoute) -> KwargsModel:
+        key = id(route)
+        if (model := self._kwargs_models.get(key)) is None:
+            model = self._kwargs_models[key] = self._create_kwargs_model(route.path_parameters)
+        return model
 
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once it is set by inspecting its return annotations."""

@@ -62,7 +62,6 @@ class BaseRouteHandler:
         "_resolved_type_decoders",
         "_resolved_type_encoders",
         "_signature_model",
-        "_kwargs_model",
         "dependencies",
         "dto",
         "exception_handlers",
@@ -133,7 +132,6 @@ class BaseRouteHandler:
         self._resolved_type_decoders: TypeDecodersSequence | EmptyType = Empty
         self._resolved_type_encoders: TypeEncodersMap | EmptyType = Empty
         self._signature_model: type[SignatureModel] | EmptyType = Empty
-        self._kwargs_model: KwargsModel | EmptyType = Empty
 
         self.dependencies = dependencies
         self.dto = dto
@@ -570,14 +568,14 @@ class BaseRouteHandler:
             target = type(target)
         return f"{target.__module__}.{target.__qualname__}"
 
-    def create_kwargs_model(
+    def _create_kwargs_model(
         self,
         path_parameters: dict[str, PathParameterDefinition],
-    ) -> None:
+    ) -> KwargsModel:
         """Create a `KwargsModel` for a given route handler."""
         from litestar._kwargs import KwargsModel
 
-        self._kwargs_model = KwargsModel.create_for_signature_model(
+        return KwargsModel.create_for_signature_model(
             signature_model=self.signature_model,
             parsed_signature=self.parsed_fn_signature,
             dependencies=self.resolve_dependencies(),

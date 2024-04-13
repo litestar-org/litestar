@@ -5,13 +5,15 @@ from typing import TYPE_CHECKING, Any, Mapping
 from litestar.connection import WebSocket
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import BaseRouteHandler
+from litestar.types import Empty
 from litestar.types.builtin_types import NoneType
 from litestar.utils.predicates import is_async_callable
 
 if TYPE_CHECKING:
+    from litestar._kwargs import KwargsModel
     from litestar.app import Litestar
     from litestar.routes import BaseRoute
-    from litestar.types import Dependencies, ExceptionHandler, Guard, Middleware
+    from litestar.types import Dependencies, EmptyType, ExceptionHandler, Guard, Middleware
 
 
 class WebsocketRouteHandler(BaseRouteHandler):
@@ -20,7 +22,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
     Use this decorator to decorate websocket handler functions.
     """
 
-    __slots__ = ("websocket_class",)
+    __slots__ = ("websocket_class", "_kwargs_model")
 
     def __init__(
         self,
@@ -56,6 +58,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
                 default websocket class.
         """
         self.websocket_class = websocket_class
+        self._kwargs_model: KwargsModel | EmptyType = Empty
 
         super().__init__(
             path=path,
@@ -101,7 +104,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
 
     def on_registration(self, app: Litestar, route: BaseRoute) -> None:
         super().on_registration(app=app, route=route)
-        self.create_kwargs_model(path_parameters=route.path_parameters)
+        self._kwargs_model = self._create_kwargs_model(path_parameters=route.path_parameters)
 
 
 websocket = WebsocketRouteHandler
