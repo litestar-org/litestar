@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from itertools import chain
 from typing import TYPE_CHECKING, Any, cast
 
 from msgspec.msgpack import decode as _decode_msgpack_plain
@@ -40,14 +39,13 @@ class HTTPRoute(BaseRoute):
             path: The path for the route.
             route_handlers: A list of :class:`~.handlers.HTTPRouteHandler`.
         """
-        self.methods = set(chain.from_iterable([route_handler.http_methods for route_handler in route_handlers]))
-        self.route_handlers = route_handlers
-        self.route_handler_map: dict[Method, HTTPRouteHandler] = {}
-
         super().__init__(
             path=path,
             scope_type=ScopeType.HTTP,
         )
+        self.route_handler_map: dict[Method, HTTPRouteHandler] = self.create_handler_map(route_handlers)
+        self.route_handlers = tuple(self.route_handler_map.values())
+        self.methods = tuple(self.route_handler_map)
 
     async def handle(self, scope: HTTPScope, receive: Receive, send: Send) -> None:  # type: ignore[override]
         """ASGI app that creates a Request from the passed in args, determines which handler function to call and then
@@ -77,17 +75,19 @@ class HTTPRoute(BaseRoute):
         if form_data := scope.get("_form", {}):
             await self._cleanup_temporary_files(form_data=cast("dict[str, Any]", form_data))
 
-    def create_handler_map(self) -> None:
+    def create_handler_map(self, route_handlers: list[HTTPRouteHandler]) -> dict[Method, HTTPRouteHandler]:
         """Parse the ``router_handlers`` of this route and return a mapping of
         http- methods and route handlers.
         """
-        for route_handler in self.route_handlers:
+        handler_map = {}
+        for route_handler in route_handlers:
             for http_method in route_handler.http_methods:
-                if http_method in self.route_handler_map:
+                if http_method in handler_map:
                     raise ImproperlyConfiguredException(
                         f"Handler already registered for path {self.path!r} and http method {http_method}"
                     )
-                self.route_handler_map[http_method] = route_handler
+                handler_map[http_method] = route_handler
+        return handler_map
 
     async def _get_response_for_request(
         self,
