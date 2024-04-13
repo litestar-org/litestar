@@ -296,7 +296,7 @@ def test_cache_control_header_prevent_storing() -> None:
 def test_cache_control_header_unsupported_type_annotation() -> None:
     @dataclass
     class InvalidCacheControlHeader(CacheControlHeader):
-        unsupported_type: Union[int, str] = "foo"
+        foo_field: Union[int, str] = "foo"
 
     with pytest.raises(ImproperlyConfiguredException):
         InvalidCacheControlHeader.from_header("unsupported_type")

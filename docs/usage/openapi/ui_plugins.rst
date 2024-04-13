@@ -13,7 +13,7 @@ Litestar maintains and ships with UI plugins for a range of popular popular Open
 - `RapiDoc <https://rapidocweb.com/>`_
 - `ReDoc <https://redocly.com/>`_
 - `Stoplight Elements <https://stoplight.io/open-source/elements>`_
-- `Swagger UI <https://swagger.io/tools/swagger-ui/yy>`_
+- `Swagger UI <https://swagger.io/tools/swagger-ui/>`_
 - `YAML <https://yaml.org/>`_
 
 Each plugin is easily configurable, allowing developers to customize aspects like version, paths, CSS and JavaScript
