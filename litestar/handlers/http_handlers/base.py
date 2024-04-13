@@ -56,6 +56,7 @@ if TYPE_CHECKING:
     from litestar.dto import AbstractDTO
     from litestar.openapi.datastructures import ResponseSpec
     from litestar.openapi.spec import SecurityRequirement
+    from litestar.routes import BaseRoute
     from litestar.types.callable_types import AsyncAnyCallable, OperationIDCreator
     from litestar.types.composite_types import TypeDecodersSequence
 
@@ -555,8 +556,9 @@ class HTTPRouteHandler(BaseRouteHandler):
         response_handler = self.get_response_handler(is_response_type_data=isinstance(data, Response))
         return await response_handler(data=data, request=request)
 
-    def on_registration(self, app: Litestar) -> None:
-        super().on_registration(app)
+    def on_registration(self, app: Litestar, route: BaseRoute) -> None:
+        super().on_registration(app, route=route)
+        self.create_kwargs_model(path_parameters=route.path_parameters)
         self.resolve_after_response()
         self.resolve_include_in_schema()
         self.has_sync_callable = not is_async_callable(self.fn)

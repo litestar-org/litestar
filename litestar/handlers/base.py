@@ -34,6 +34,7 @@ if TYPE_CHECKING:
     from litestar.dto import AbstractDTO
     from litestar.params import ParameterKwarg
     from litestar.router import Router
+    from litestar.routes import BaseRoute
     from litestar.types import AnyCallable, AsyncAnyCallable, ExceptionHandler
     from litestar.types.empty import EmptyType
     from litestar.types.internal_types import PathParameterDefinition
@@ -61,6 +62,7 @@ class BaseRouteHandler:
         "_resolved_type_decoders",
         "_resolved_type_encoders",
         "_signature_model",
+        "_kwargs_model",
         "dependencies",
         "dto",
         "exception_handlers",
@@ -131,6 +133,7 @@ class BaseRouteHandler:
         self._resolved_type_decoders: TypeDecodersSequence | EmptyType = Empty
         self._resolved_type_encoders: TypeEncodersMap | EmptyType = Empty
         self._signature_model: type[SignatureModel] | EmptyType = Empty
+        self._kwargs_model: KwargsModel | EmptyType = Empty
 
         self.dependencies = dependencies
         self.dto = dto
@@ -526,7 +529,7 @@ class BaseRouteHandler:
                     f"If you wish to override a provider, it must have the same key."
                 )
 
-    def on_registration(self, app: Litestar) -> None:
+    def on_registration(self, app: Litestar, route: BaseRoute) -> None:
         """Called once per handler when the app object is instantiated.
 
         Args:
@@ -570,11 +573,11 @@ class BaseRouteHandler:
     def create_kwargs_model(
         self,
         path_parameters: dict[str, PathParameterDefinition],
-    ) -> KwargsModel:
+    ) -> None:
         """Create a `KwargsModel` for a given route handler."""
         from litestar._kwargs import KwargsModel
 
-        return KwargsModel.create_for_signature_model(
+        self._kwargs_model = KwargsModel.create_for_signature_model(
             signature_model=self.signature_model,
             parsed_signature=self.parsed_fn_signature,
             dependencies=self.resolve_dependencies(),

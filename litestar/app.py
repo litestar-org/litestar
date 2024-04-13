@@ -648,14 +648,10 @@ class Litestar(Router):
             route_handlers = get_route_handlers(route)
 
             for route_handler in route_handlers:
-                route_handler.on_registration(self)
+                route_handler.on_registration(self, route=route)
 
             if isinstance(route, HTTPRoute):
                 route.create_handler_map()
-
-            elif isinstance(route, WebSocketRoute):
-                handler = route.route_handler
-                route.handler_parameter_model = handler.create_kwargs_model(path_parameters=route.path_parameters)
 
             for plugin in self.plugins.receive_route:
                 plugin.receive_route(route)

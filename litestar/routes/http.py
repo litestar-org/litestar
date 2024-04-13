@@ -85,13 +85,12 @@ class HTTPRoute(BaseRoute):
         http- methods and route handlers.
         """
         for route_handler in self.route_handlers:
-            kwargs_model = route_handler.create_kwargs_model(path_parameters=self.path_parameters)
             for http_method in route_handler.http_methods:
                 if self.route_handler_map.get(http_method):
                     raise ImproperlyConfiguredException(
                         f"Handler already registered for path {self.path!r} and http method {http_method}"
                     )
-                self.route_handler_map[http_method] = (route_handler, kwargs_model)
+                self.route_handler_map[http_method] = (route_handler, route_handler._kwargs_model)
 
     async def _get_response_for_request(
         self,
