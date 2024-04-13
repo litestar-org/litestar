@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 
     from litestar._kwargs import KwargsModel
     from litestar.app import Litestar
-    from litestar.connection import ASGIConnection
+    from litestar.connection import ASGIConnection, Request, WebSocket
     from litestar.controller import Controller
     from litestar.dto import AbstractDTO
     from litestar.params import ParameterKwarg
@@ -511,7 +511,7 @@ class BaseRouteHandler:
 
         return self._resolved_return_dto
 
-    async def authorize_connection(self, connection: ASGIConnection) -> None:
+    async def authorize_connection(self, connection: ASGIConnection | Request | WebSocket) -> None:
         """Ensure the connection is authorized by running all the route guards in scope."""
         for guard in self.resolve_guards():
             await guard(connection, copy(self))  # type: ignore[misc]
