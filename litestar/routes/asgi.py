@@ -1,17 +1,17 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
-from litestar.connection import ASGIConnection
 from litestar.enums import ScopeType
 from litestar.routes.base import BaseRoute
+from litestar.types import Scope
 
 if TYPE_CHECKING:
     from litestar.handlers.asgi_handlers import ASGIRouteHandler
-    from litestar.types import Receive, Scope, Send
+    from litestar.types import Receive, Send
 
 
-class ASGIRoute(BaseRoute):
+class ASGIRoute(BaseRoute[Scope]):
     """An ASGI route, handling a single ``ASGIRouteHandler``"""
 
     __slots__ = ("route_handler",)
@@ -46,8 +46,4 @@ class ASGIRoute(BaseRoute):
             None
         """
 
-        if self.route_handler.resolve_guards():
-            connection = ASGIConnection["ASGIRouteHandler", Any, Any, Any](scope=scope, receive=receive)
-            await self.route_handler.authorize_connection(connection=connection)
-
-        await self.route_handler.fn(scope=scope, receive=receive, send=send)
+        await self.route_handler.handle(scope=scope, receive=receive, send=send)

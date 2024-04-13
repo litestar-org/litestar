@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any, Callable, Generic, TypeVar
 from uuid import UUID
 
 import msgspec
@@ -14,9 +14,11 @@ from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types.internal_types import PathParameterDefinition
 from litestar.utils import join_paths, normalize_path
 
+ScopeT = TypeVar("ScopeT", bound="BaseScope")
+
 if TYPE_CHECKING:
     from litestar.enums import ScopeType
-    from litestar.types import Receive, Scope, Send
+    from litestar.types import BaseScope, Receive, Send
 
 
 def _parse_datetime(value: str) -> datetime:
@@ -66,7 +68,7 @@ parsers_map: dict[Any, Callable[[Any], Any]] = {
 }
 
 
-class BaseRoute(ABC):
+class BaseRoute(ABC, Generic[ScopeT]):
     """Base Route class used by Litestar.
 
     It's an abstract class meant to be extended.
@@ -99,7 +101,7 @@ class BaseRoute(ABC):
         self.scope_type = scope_type
 
     @abstractmethod
-    async def handle(self, scope: Scope, receive: Receive, send: Send) -> None:
+    async def handle(self, scope: ScopeT, receive: Receive, send: Send) -> None:
         """ASGI App of the route.
 
         Args:

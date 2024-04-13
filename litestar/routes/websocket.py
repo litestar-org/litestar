@@ -1,20 +1,17 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from litestar.enums import ScopeType
-from litestar.exceptions import ImproperlyConfiguredException
 from litestar.routes.base import BaseRoute
-from litestar.types import Empty
+from litestar.types import WebSocketScope
 
 if TYPE_CHECKING:
-    from litestar._kwargs.cleanup import DependencyCleanupGroup
-    from litestar.connection import WebSocket
     from litestar.handlers.websocket_handlers import WebsocketRouteHandler
-    from litestar.types import Receive, Send, WebSocketScope
+    from litestar.types import Receive, Send
 
 
-class WebSocketRoute(BaseRoute):
+class WebSocketRoute(BaseRoute[WebSocketScope]):
     """A websocket route, handling a single ``WebsocketRouteHandler``"""
 
     __slots__ = ("route_handler",)
@@ -38,7 +35,7 @@ class WebSocketRoute(BaseRoute):
             scope_type=ScopeType.WEBSOCKET,
         )
 
-    async def handle(self, scope: WebSocketScope, receive: Receive, send: Send) -> None:  # type: ignore[override]
+    async def handle(self, scope: WebSocketScope, receive: Receive, send: Send) -> None:
         """ASGI app that creates a WebSocket from the passed in args, and then awaits the handler function.
 
         Args:
@@ -50,36 +47,4 @@ class WebSocketRoute(BaseRoute):
             None
         """
 
-        handler_parameter_model = self.route_handler._kwargs_model
-        if handler_parameter_model is Empty:
-            raise ImproperlyConfiguredException("handler parameter model not defined")
-
-        if not handler_parameter_model:  # pragma: no cover
-            raise ImproperlyConfiguredException("handler parameter model not defined")
-
-        websocket: WebSocket[Any, Any, Any] = self.route_handler.resolve_websocket_class()(
-            scope=scope, receive=receive, send=send
-        )
-
-        if self.route_handler.resolve_guards():
-            await self.route_handler.authorize_connection(connection=websocket)
-
-        parsed_kwargs: dict[str, Any] = {}
-        cleanup_group: DependencyCleanupGroup | None = None
-
-        if handler_parameter_model.has_kwargs and self.route_handler.signature_model:
-            parsed_kwargs = handler_parameter_model.to_kwargs(connection=websocket)
-
-            if handler_parameter_model.dependency_batches:
-                cleanup_group = await handler_parameter_model.resolve_dependencies(websocket, parsed_kwargs)
-
-            parsed_kwargs = self.route_handler.signature_model.parse_values_from_connection_kwargs(
-                connection=websocket, **parsed_kwargs
-            )
-
-        if cleanup_group:
-            async with cleanup_group:
-                await self.route_handler.fn(**parsed_kwargs)
-            await cleanup_group.cleanup()
-        else:
-            await self.route_handler.fn(**parsed_kwargs)
+        await self.route_handler.handle(scope=scope, receive=receive, send=send)

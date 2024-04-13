@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Mapping, Sequence
 
+from litestar.connection import ASGIConnection
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers.base import BaseRouteHandler
 from litestar.types.builtin_types import NoneType
@@ -15,6 +16,9 @@ if TYPE_CHECKING:
         ExceptionHandlersMap,
         Guard,
         MaybePartial,  # noqa: F401
+        Receive,
+        Scope,
+        Send,
     )
 
 
@@ -81,6 +85,24 @@ class ASGIRouteHandler(BaseRouteHandler):
             )
         if not is_async_callable(self.fn):
             raise ImproperlyConfiguredException("Functions decorated with 'asgi' must be async functions")
+
+    async def handle(self, scope: Scope, receive: Receive, send: Send) -> None:
+        """ASGI app that authorizes the connection and then awaits the handler function.
+
+        Args:
+            scope: The ASGI connection scope.
+            receive: The ASGI receive function.
+            send: The ASGI send function.
+
+        Returns:
+            None
+        """
+
+        if self.resolve_guards():
+            connection = ASGIConnection["ASGIRouteHandler", Any, Any, Any](scope=scope, receive=receive)
+            await self.authorize_connection(connection=connection)
+
+        await self.fn(scope=scope, receive=receive, send=send)
 
 
 asgi = ASGIRouteHandler
