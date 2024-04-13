@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, Iterable, cast
 
 from msgspec.msgpack import decode as _decode_msgpack_plain
 
@@ -31,7 +31,7 @@ class HTTPRoute(BaseRoute):
         self,
         *,
         path: str,
-        route_handlers: list[HTTPRouteHandler],
+        route_handlers: Iterable[HTTPRouteHandler],
     ) -> None:
         """Initialize ``HTTPRoute``.
 
@@ -75,7 +75,7 @@ class HTTPRoute(BaseRoute):
         if form_data := scope.get("_form", {}):
             await self._cleanup_temporary_files(form_data=cast("dict[str, Any]", form_data))
 
-    def create_handler_map(self, route_handlers: list[HTTPRouteHandler]) -> dict[Method, HTTPRouteHandler]:
+    def create_handler_map(self, route_handlers: Iterable[HTTPRouteHandler]) -> dict[Method, HTTPRouteHandler]:
         """Parse the ``router_handlers`` of this route and return a mapping of
         http- methods and route handlers.
         """
