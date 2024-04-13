@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from litestar.enums import ScopeType
 from litestar.routes.base import BaseRoute
 from litestar.types import Scope
 
@@ -29,10 +28,7 @@ class ASGIRoute(BaseRoute[Scope]):
             route_handler: An instance of :class:`~.handlers.ASGIRouteHandler`.
         """
         self.route_handler = route_handler
-        super().__init__(
-            path=path,
-            scope_type=ScopeType.ASGI,
-        )
+        super().__init__(path=path)
 
     async def handle(self, scope: Scope, receive: Receive, send: Send) -> None:
         """ASGI app that authorizes the connection and then awaits the handler function.

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Iterable
 
-from litestar.enums import ScopeType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.routes.base import BaseRoute
 from litestar.types import HTTPScope
@@ -32,10 +31,7 @@ class HTTPRoute(BaseRoute[HTTPScope]):
             path: The path for the route.
             route_handlers: A list of :class:`~.handlers.HTTPRouteHandler`.
         """
-        super().__init__(
-            path=path,
-            scope_type=ScopeType.HTTP,
-        )
+        super().__init__(path=path)
         self.route_handler_map: dict[Method, HTTPRouteHandler] = self.create_handler_map(route_handlers)
         self.route_handlers = tuple(self.route_handler_map.values())
         self.methods = tuple(self.route_handler_map)

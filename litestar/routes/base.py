@@ -17,7 +17,6 @@ from litestar.utils import join_paths, normalize_path
 ScopeT = TypeVar("ScopeT", bound="BaseScope")
 
 if TYPE_CHECKING:
-    from litestar.enums import ScopeType
     from litestar.types import BaseScope, Receive, Send
 
 
@@ -89,16 +88,13 @@ class BaseRoute(ABC, Generic[ScopeT]):
         self,
         *,
         path: str,
-        scope_type: ScopeType,
     ) -> None:
         """Initialize the route.
 
         Args:
             path: Base path of the route
-            scope_type: Type of the ASGI scope
         """
         self.path, self.path_format, self.path_components, self.path_parameters = self._parse_path(path)
-        self.scope_type = scope_type
 
     @abstractmethod
     async def handle(self, scope: ScopeT, receive: Receive, send: Send) -> None:

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from litestar.enums import ScopeType
 from litestar.routes.base import BaseRoute
 from litestar.types import WebSocketScope
 
@@ -30,10 +29,7 @@ class WebSocketRoute(BaseRoute[WebSocketScope]):
         """
         self.route_handler = route_handler
 
-        super().__init__(
-            path=path,
-            scope_type=ScopeType.WEBSOCKET,
-        )
+        super().__init__(path=path)
 
     async def handle(self, scope: WebSocketScope, receive: Receive, send: Send) -> None:
         """ASGI app that creates a WebSocket from the passed in args, and then awaits the handler function.
