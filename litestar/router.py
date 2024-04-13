@@ -260,17 +260,15 @@ class Router:
 
     @property
     def route_handler_method_map(self) -> dict[str, RouteHandlerMapItem]:
-        """Map route paths to :class:`RouteHandlerMapItem <litestar.types.internal_typ es.RouteHandlerMapItem>`
+        """Map route paths to :class:`RouteHandlerMapItem <litestar.types.internal_types.RouteHandlerMapItem>`
 
         Returns:
              A dictionary mapping paths to route handlers
         """
-        route_map: dict[str, RouteHandlerMapItem] = defaultdict(dict)
+        route_map: defaultdict[str, RouteHandlerMapItem] = defaultdict(dict)
         for route in self.routes:
             if isinstance(route, HTTPRoute):
-                for route_handler in route.route_handlers:
-                    for method in route_handler.http_methods:
-                        route_map[route.path][method] = route_handler
+                route_map[route.path] = route.route_handler_map  # type: ignore[assignment]
             else:
                 route_map[route.path]["websocket" if isinstance(route, WebSocketRoute) else "asgi"] = (
                     route.route_handler
@@ -297,6 +295,7 @@ class Router:
                 for path in value.paths
             }
 
+        # handle controllers
         handlers_map: defaultdict[str, RouteHandlerMapItem] = defaultdict(dict)
         for route_handler in value.get_route_handlers():
             for handler_path in route_handler.paths:
