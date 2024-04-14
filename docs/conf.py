@@ -192,6 +192,7 @@ nitpick_ignore = [
     (PY_CLASS, "litestar.middleware.compression.gzip_facade.GzipCompression"),
     (PY_CLASS, "litestar.openapi.OpenAPIController"),
     (PY_CLASS, "openapi.controller.OpenAPIController"),
+    (PY_OBJ, "ScopeT"),
 ]
 
 nitpick_ignore_regex = [
