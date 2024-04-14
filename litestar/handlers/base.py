@@ -531,6 +531,7 @@ class BaseRouteHandler:
 
         Args:
             app: The :class:`Litestar<.app.Litestar>` app object.
+            route: The route this handler is being registered on
 
         Returns:
             None
