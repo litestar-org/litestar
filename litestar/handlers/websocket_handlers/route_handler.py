@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Mapping
 from litestar.connection import WebSocket
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import BaseRouteHandler
-from litestar.types import Empty, Receive, Send, WebSocketScope
+from litestar.types import Empty
 from litestar.types.builtin_types import NoneType
 from litestar.utils.predicates import is_async_callable
 
@@ -107,13 +107,11 @@ class WebsocketRouteHandler(BaseRouteHandler):
         super().on_registration(app=app, route=route)
         self._kwargs_model = self._create_kwargs_model(path_parameters=route.path_parameters)
 
-    async def handle(self, scope: WebSocketScope, receive: Receive, send: Send) -> None:
+    async def handle(self, connection: WebSocket[Any, Any, Any]) -> None:
         """ASGI app that creates a WebSocket from the passed in args, and then awaits the handler function.
 
         Args:
-            scope: The ASGI connection scope.
-            receive: The ASGI receive function.
-            send: The ASGI send function.
+            connection: WebSocket connection
 
         Returns:
             None
@@ -123,21 +121,21 @@ class WebsocketRouteHandler(BaseRouteHandler):
         if handler_parameter_model is Empty:
             raise ImproperlyConfiguredException("handler parameter model not defined")
 
-        socket: WebSocket[Any, Any, Any] = self.resolve_websocket_class()(scope=scope, receive=receive, send=send)
-
         if self.resolve_guards():
-            await self.authorize_connection(connection=socket)
+            await self.authorize_connection(connection=connection)
 
         parsed_kwargs: dict[str, Any] = {}
         cleanup_group: DependencyCleanupGroup | None = None
 
         if handler_parameter_model.has_kwargs and self.signature_model:
-            parsed_kwargs = handler_parameter_model.to_kwargs(connection=socket)
+            parsed_kwargs = handler_parameter_model.to_kwargs(connection=connection)
 
             if handler_parameter_model.dependency_batches:
-                cleanup_group = await handler_parameter_model.resolve_dependencies(socket, parsed_kwargs)
+                cleanup_group = await handler_parameter_model.resolve_dependencies(connection, parsed_kwargs)
 
-            parsed_kwargs = self.signature_model.parse_values_from_connection_kwargs(connection=socket, **parsed_kwargs)
+            parsed_kwargs = self.signature_model.parse_values_from_connection_kwargs(
+                connection=connection, **parsed_kwargs
+            )
 
         if cleanup_group:
             async with cleanup_group:

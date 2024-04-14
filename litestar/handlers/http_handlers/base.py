@@ -41,7 +41,6 @@ from litestar.types import (
     EmptyType,
     ExceptionHandlersMap,
     Guard,
-    HTTPScope,
     Method,
     Middleware,
     Receive,
@@ -620,31 +619,28 @@ class HTTPRouteHandler(BaseRouteHandler):
         if "data" in self.parsed_fn_signature.parameters and "GET" in self.http_methods:
             raise ImproperlyConfiguredException("'data' kwarg is unsupported for 'GET' request handlers")
 
-    async def handle(self, scope: HTTPScope, receive: Receive, send: Send) -> None:
+    async def handle(self, connection: Request[Any, Any, Any]) -> None:
         """ASGI app that creates a Request from the passed in args, determines which handler function to call and then
         handles the call.
 
         Args:
-            scope: The ASGI connection scope.
-            receive: The ASGI receive function.
-            send: The ASGI send function.
+            connection: The request
 
         Returns:
             None
         """
-        request: Request[Any, Any, Any] = self.resolve_request_class()(scope=scope, receive=receive, send=send)
 
         if self.resolve_guards():
-            await self.authorize_connection(connection=request)
+            await self.authorize_connection(connection=connection)
 
-        response = await self._get_response_for_request(request=request)
+        response = await self._get_response_for_request(request=connection)
 
-        await response(scope, receive, send)
+        await response(connection.scope, connection.receive, connection.send)
 
         if after_response_handler := self.resolve_after_response():
-            await after_response_handler(request)
+            await after_response_handler(connection)
 
-        if form_data := scope.get("_form", {}):
+        if form_data := connection.scope.get("_form", {}):
             await cleanup_temporary_files(form_data=cast("dict[str, Any]", form_data))
 
     async def _get_response_for_request(
@@ -734,7 +730,6 @@ class HTTPRouteHandler(BaseRouteHandler):
 
         Args:
             request: The :class:`Request <litestar.connection.Request>` instance
-            route_handler: The :class:`~.handlers.HTTPRouteHandler` instance
 
         Returns:
             A cached response instance, if existing.
