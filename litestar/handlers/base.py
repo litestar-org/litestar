@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from copy import copy
 from functools import partial
-from typing import TYPE_CHECKING, Any, Callable, Mapping, Sequence, cast
+from typing import TYPE_CHECKING, Any, Callable, Iterable, Mapping, Sequence, cast
 
 from litestar._signature import SignatureModel
 from litestar.di import Provide
@@ -37,7 +37,6 @@ if TYPE_CHECKING:
     from litestar.routes import BaseRoute
     from litestar.types import AnyCallable, AsyncAnyCallable, ExceptionHandler
     from litestar.types.empty import EmptyType
-    from litestar.types.internal_types import PathParameterDefinition
 
 __all__ = ("BaseRouteHandler",)
 
@@ -570,7 +569,7 @@ class BaseRouteHandler:
 
     def _create_kwargs_model(
         self,
-        path_parameters: dict[str, PathParameterDefinition],
+        path_parameters: Iterable[str],
     ) -> KwargsModel:
         """Create a `KwargsModel` for a given route handler."""
         from litestar._kwargs import KwargsModel
@@ -579,6 +578,6 @@ class BaseRouteHandler:
             signature_model=self.signature_model,
             parsed_signature=self.parsed_fn_signature,
             dependencies=self.resolve_dependencies(),
-            path_parameters=set(path_parameters.keys()),
+            path_parameters=set(path_parameters),
             layered_parameters=self.resolve_layered_parameters(),
         )

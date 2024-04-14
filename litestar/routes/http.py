@@ -49,7 +49,7 @@ class HTTPRoute(BaseRoute[HTTPScope]):
             None
         """
         route_handler = self.route_handler_map[scope["method"]]
-        await route_handler.handle(scope=scope, receive=receive, send=send, route=self)
+        await route_handler.handle(scope=scope, receive=receive, send=send)
 
     def create_handler_map(self, route_handlers: Iterable[HTTPRouteHandler]) -> dict[Method, HTTPRouteHandler]:
         """Parse the ``router_handlers`` of this route and return a mapping of
