@@ -310,7 +310,7 @@ html_theme_options = {
         "Help": {
             "Discord Help Forum": {
                 "description": "Dedicated Discord help forum",
-                "link": "https://discord.gg/litestar-919193495116337154",
+                "link": "https://discord.gg/litestar",
                 "icon": "coc",
             },
             "GitHub Discussions": {
