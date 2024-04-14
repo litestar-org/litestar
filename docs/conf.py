@@ -192,7 +192,6 @@ nitpick_ignore = [
     (PY_CLASS, "litestar.middleware.compression.gzip_facade.GzipCompression"),
     (PY_CLASS, "litestar.openapi.OpenAPIController"),
     (PY_CLASS, "openapi.controller.OpenAPIController"),
-    (PY_OBJ, "ScopeT"),
 ]
 
 nitpick_ignore_regex = [
@@ -221,6 +220,7 @@ nitpick_ignore_regex = [
     (PY_RE, r"advanced_alchemy\.config.common\.EngineT"),
     (PY_RE, r"advanced_alchemy\.config.common\.SessionT"),
     (PY_RE, r".*R"),
+    (PY_RE, r".*ScopeT"),
 ]
 
 # Warnings about missing references to those targets in the specified location will be ignored.
