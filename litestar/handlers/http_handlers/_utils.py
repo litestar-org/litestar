@@ -11,7 +11,6 @@ from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CON
 from litestar.types.builtin_types import NoneType
 
 if TYPE_CHECKING:
-    from litestar.app import Litestar
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
     from litestar.connection import Request
     from litestar.datastructures import Cookie, ResponseHeader
@@ -59,7 +58,6 @@ def create_data_handler(
     async def handler(
         data: Any,
         request: Request[Any, Any, Any],
-        app: Litestar,
         **kwargs: Any,
     ) -> ASGIApp:
         if isawaitable(data):
@@ -76,7 +74,7 @@ def create_data_handler(
         if after_request:
             response = await after_request(response)  # type: ignore[arg-type,misc]
 
-        return response.to_asgi_response(app=None, request=request, headers=normalize_headers(headers), cookies=cookies)  # pyright: ignore
+        return response.to_asgi_response(request=request, headers=normalize_headers(headers), cookies=cookies)  # pyright: ignore
 
     return handler
 
@@ -144,13 +142,11 @@ def create_response_handler(
 
     async def handler(
         data: Response,
-        app: Litestar,
         request: Request,
         **kwargs: Any,  # kwargs is for return dto
     ) -> ASGIApp:
         response = await after_request(data) if after_request else data  # type:ignore[arg-type,misc]
         return response.to_asgi_response(  # type: ignore[no-any-return]
-            app=None,
             background=background,
             cookies=cookie_list,
             headers=normalized_headers,
