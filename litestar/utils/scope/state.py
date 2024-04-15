@@ -11,6 +11,7 @@ if TYPE_CHECKING:
 
     from litestar.datastructures import URL, Accept, Headers
     from litestar.types.asgi_types import Scope
+    from litestar.types.composite_types import ExceptionHandlersMap
 
 CONNECTION_STATE_KEY: Final = "_ls_connection_state"
 
@@ -33,6 +34,7 @@ class ScopeState:
         "csrf_token",
         "dependency_cache",
         "do_cache",
+        "exception_handlers",
         "flash_messages",
         "form",
         "headers",
@@ -56,6 +58,7 @@ class ScopeState:
         self.csrf_token = Empty
         self.dependency_cache = Empty
         self.do_cache = Empty
+        self.exception_handlers = Empty
         self.form = Empty
         self.flash_messages = []
         self.headers = Empty
@@ -77,6 +80,7 @@ class ScopeState:
     csrf_token: str | EmptyType
     dependency_cache: dict[str, Any] | EmptyType
     do_cache: bool | EmptyType
+    exception_handlers: ExceptionHandlersMap | EmptyType
     form: dict[str, str | list[str]] | EmptyType
     flash_messages: list[dict[str, str]]
     headers: Headers | EmptyType

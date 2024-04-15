@@ -13,9 +13,7 @@ from litestar._asgi.routing_trie.types import create_node
 from litestar._asgi.utils import get_route_handlers
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.utils import normalize_path
-
-__all__ = ("ASGIRouter",)
-
+from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
     from litestar._asgi.routing_trie.types import RouteTrieNode
@@ -24,6 +22,7 @@ if TYPE_CHECKING:
     from litestar.routes.base import BaseRoute
     from litestar.types import (
         ASGIApp,
+        ExceptionHandlersMap,
         LifeSpanReceive,
         LifeSpanSend,
         LifeSpanShutdownCompleteEvent,
@@ -37,6 +36,8 @@ if TYPE_CHECKING:
         Send,
     )
 
+__all__ = ("ASGIRouter",)
+
 
 class ASGIRouter:
     """Litestar ASGI router.
@@ -45,6 +46,7 @@ class ASGIRouter:
     """
 
     __slots__ = (
+        "_app_exception_handlers",
         "_mount_paths_regex",
         "_mount_routes",
         "_plain_routes",
@@ -62,6 +64,7 @@ class ASGIRouter:
         Args:
             app: The Litestar app instance
         """
+        self._app_exception_handlers: ExceptionHandlersMap = app.exception_handlers
         self._mount_paths_regex: Pattern | None = None
         self._mount_routes: dict[str, RouteTrieNode] = {}
         self._plain_routes: set[str] = set()
@@ -83,9 +86,15 @@ class ASGIRouter:
             path = path.split(root_path, maxsplit=1)[-1]
         normalized_path = normalize_path(path)
 
-        asgi_app, scope["route_handler"], scope["path"], scope["path_params"] = self.handle_routing(
-            path=normalized_path, method=scope.get("method")
-        )
+        try:
+            asgi_app, scope["route_handler"], scope["path"], scope["path_params"] = self.handle_routing(
+                path=normalized_path, method=scope.get("method")
+            )
+        except Exception:
+            ScopeState.from_scope(scope).exception_handlers = self._app_exception_handlers
+            raise
+        else:
+            ScopeState.from_scope(scope).exception_handlers = scope["route_handler"].resolve_exception_handlers()
         await asgi_app(scope, receive, send)
 
     @lru_cache(1024)  # noqa: B019

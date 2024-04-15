@@ -412,7 +412,6 @@ class Litestar(Router):
         self.get_logger: GetLogger = get_logger_placeholder
         self.logger: Logger | None = None
         self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = []
-        self.asgi_router = ASGIRouter(app=self)
 
         self.after_exception = [ensure_async_callable(h) for h in config.after_exception]
         self.allowed_hosts = cast("AllowedHostsConfig | None", config.allowed_hosts)
@@ -478,6 +477,8 @@ class Litestar(Router):
             include_in_schema=config.include_in_schema,
             websocket_class=self.websocket_class,
         )
+
+        self.asgi_router = ASGIRouter(app=self)
 
         for route_handler in config.route_handlers:
             self.register(route_handler)
@@ -839,10 +840,7 @@ class Litestar(Router):
 
         If CORS or TrustedHost configs are provided to the constructor, they will wrap the router as well.
         """
-        asgi_handler = wrap_in_exception_handler(
-            app=self.asgi_router,
-            exception_handlers=self.exception_handlers or {},  # pyright: ignore
-        )
+        asgi_handler = wrap_in_exception_handler(app=self.asgi_router)
 
         if self.cors_config:
             return CORSMiddleware(app=asgi_handler, config=self.cors_config)

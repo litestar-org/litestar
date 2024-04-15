@@ -189,24 +189,19 @@ def build_route_middleware_stack(
     from litestar.middleware.response_cache import ResponseCacheMiddleware
     from litestar.routes import HTTPRoute
 
+    asgi_handler: ASGIApp = route.handle  # type: ignore[assignment]
+    handler_middleware = route_handler.resolve_middleware()
     has_cached_route = isinstance(route, HTTPRoute) and any(r.cache for r in route.route_handlers)
     has_middleware = (
-        app.csrf_config
-        or app.compression_config
-        or has_cached_route
-        or app.allowed_hosts
-        or route_handler.resolve_middleware()
+        app.csrf_config or app.compression_config or has_cached_route or app.allowed_hosts or handler_middleware
     )
-
-    asgi_handler: ASGIApp = route.handle  # type: ignore[assignment]
-    exception_handlers = route_handler.resolve_exception_handlers()
 
     if has_middleware:
         # if there is middleware, they may wrap the `send()` coro, so we need to wrap the handler in
         # an exception handler middleware first. This is because it is the exception handler middleware
         # that calls `send()` if an exception is raised from the handler. Without this, any `send()`
         # wrappers added by middleware will not be called.
-        asgi_handler = wrap_in_exception_handler(app=asgi_handler, exception_handlers=exception_handlers)
+        asgi_handler = wrap_in_exception_handler(app=asgi_handler)
 
         if app.csrf_config:
             asgi_handler = CSRFMiddleware(app=asgi_handler, config=app.csrf_config)
@@ -220,18 +215,10 @@ def build_route_middleware_stack(
         if app.allowed_hosts:
             asgi_handler = AllowedHostsMiddleware(app=asgi_handler, config=app.allowed_hosts)
 
-        for middleware in route_handler.resolve_middleware():
+        for middleware in handler_middleware:
             if hasattr(middleware, "__iter__"):
                 handler, kwargs = cast("tuple[Any, dict[str, Any]]", middleware)
                 asgi_handler = handler(app=asgi_handler, **kwargs)
             else:
                 asgi_handler = middleware(app=asgi_handler)  # type: ignore[call-arg]
-
-    if exception_handlers:
-        # we wrap the entire stack again in ExceptionHandlerMiddleware
-        # this is so that exceptions raised by middleware are processed by the exception handlers
-        return wrap_in_exception_handler(
-            app=asgi_handler,
-            exception_handlers=exception_handlers,
-        )
     return asgi_handler
