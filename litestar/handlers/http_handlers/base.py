@@ -472,7 +472,7 @@ class HTTPRouteHandler(BaseRouteHandler):
 
         return self._resolved_tags
 
-    def get_response_handler(self, is_response_type_data: bool = False) -> Callable[[Any], Awaitable[ASGIApp]]:
+    def get_response_handler(self, is_response_type_data: bool = False) -> Callable[..., Awaitable[ASGIApp]]:
         """Resolve the response_handler function for the route handler.
 
         This method is memoized so the computation occurs only once.
@@ -538,11 +538,10 @@ class HTTPRouteHandler(BaseRouteHandler):
             else self._response_handler_mapping["default_handler"],
         )
 
-    async def to_response(self, app: Litestar, data: Any, request: Request) -> ASGIApp:
+    async def to_response(self, data: Any, request: Request) -> ASGIApp:
         """Return a :class:`Response <.response.Response>` from the handler by resolving and calling it.
 
         Args:
-            app: The :class:`Litestar <litestar.app.Litestar>` app instance
             data: Either an instance of a :class:`Response <.response.Response>`,
                 a Response instance or an arbitrary value.
             request: A :class:`Request <.connection.Request>` instance
@@ -554,7 +553,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             data = return_dto_type(request).data_to_encodable_type(data)
 
         response_handler = self.get_response_handler(is_response_type_data=isinstance(data, Response))
-        return await response_handler(app=app, data=data, request=request)  # type: ignore[call-arg]
+        return await response_handler(data=data, request=request)
 
     def on_registration(self, app: Litestar) -> None:
         super().on_registration(app)

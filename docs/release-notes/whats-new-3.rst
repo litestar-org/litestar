@@ -105,3 +105,11 @@ the root path (``/``), in which case that plugin will be used.
 
 For those previously using the ``root_schema_site`` attribute, the migration involves ensuring that the UI intended to
 be served at the ``/schema`` endpoint is the first plugin listed in the :attr:`OpenAPIConfig.render_plugins`.
+
+
+Deprecated ``app`` parameter for ``Response.to_asgi_response`` has been removed
+-------------------------------------------------------------------------------
+
+The parameter ``app`` for :meth:`~response.Response.to_asgi_response` has been removed.
+If you need access to the app instance inside a custom ``to_asgi_response`` method,
+replace the usages of ``app`` with ``request.app``.
