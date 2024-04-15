@@ -252,7 +252,7 @@ class ExceptionHandlerMiddleware:
         exception_handler = get_exception_handler(self.exception_handlers, exc) or self.default_http_exception_handler
         request: Request[Any, Any, Any] = litestar_app.request_class(scope=scope, receive=receive, send=send)
         response = exception_handler(request, exc)
-        await response.to_asgi_response(app=None, request=request)(scope=scope, receive=receive, send=send)
+        await response.to_asgi_response(request=request)(scope=scope, receive=receive, send=send)
 
     @staticmethod
     async def handle_websocket_exception(send: Send, exc: Exception) -> None:
