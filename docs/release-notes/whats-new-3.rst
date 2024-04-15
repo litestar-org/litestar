@@ -178,3 +178,11 @@ After:
     @get(handler_class=MyHTTPRouteHandler)
     async def handler() -> Any:
         ...
+
+
+Deprecated ``app`` parameter for ``Response.to_asgi_response`` has been removed
+-------------------------------------------------------------------------------
+
+The parameter ``app`` for :meth:`~response.Response.to_asgi_response` has been removed.
+If you need access to the app instance inside a custom ``to_asgi_response`` method,
+replace the usages of ``app`` with ``request.app``.
