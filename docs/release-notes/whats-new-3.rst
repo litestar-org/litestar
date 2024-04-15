@@ -113,3 +113,32 @@ Deprecated ``app`` parameter for ``Response.to_asgi_response`` has been removed
 The parameter ``app`` for :meth:`~response.Response.to_asgi_response` has been removed.
 If you need access to the app instance inside a custom ``to_asgi_response`` method,
 replace the usages of ``app`` with ``request.app``.
+
+
+Deprecated scope state utilities removed
+----------------------------------------
+
+Litestar has previously made available utilities for storing and retrieving data in the ASGI scope state. These
+utilities have been removed in version 3.0.0. If you need to store data in the ASGI scope state, you should use do so
+using a namespace that is unique to your application and unlikely to conflict with other applications.
+
+The following utilities have been removed:
+
+- ``get_litestar_scope_state``
+- ``set_litestar_scope_state``
+- ``delete_litestar_scope_state``
+
+
+Deprecated utility function ``is_sync_or_async_generator`` removed
+------------------------------------------------------------------
+
+The utility function ``is_sync_or_async_generator`` has been removed as it is no longer used internally.
+
+If you were relying on this utility, you can define it yourself as follows:
+
+.. code-block:: python
+
+    from inspect import isasyncgenfunction, isgeneratorfunction
+
+    def is_sync_or_async_generator(obj: Any) -> bool:
+        return isgeneratorfunction(obj) or isasyncgenfunction(obj)
