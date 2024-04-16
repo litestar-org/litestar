@@ -839,14 +839,15 @@ class Litestar(Router):
 
         If CORS or TrustedHost configs are provided to the constructor, they will wrap the router as well.
         """
-        asgi_handler: ASGIApp = self.asgi_router
-        if self.cors_config:
-            asgi_handler = CORSMiddleware(app=asgi_handler, config=self.cors_config)
-
-        return wrap_in_exception_handler(
-            app=asgi_handler,
+        asgi_handler = wrap_in_exception_handler(
+            app=self.asgi_router,
             exception_handlers=self.exception_handlers or {},  # pyright: ignore
         )
+
+        if self.cors_config:
+            return CORSMiddleware(app=asgi_handler, config=self.cors_config)
+
+        return asgi_handler
 
     def _wrap_send(self, send: Send, scope: Scope) -> Send:
         """Wrap the ASGI send and handles any 'before send' hooks.
