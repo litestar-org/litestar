@@ -45,7 +45,7 @@ class CORSMiddleware(AbstractMiddleware):
 
         if scope["type"] == ScopeType.HTTP and scope["method"] == HttpMethod.OPTIONS and origin:
             request = scope["app"].request_class(scope=scope, receive=receive, send=send)
-            asgi_response = self.create_preflight_response(origin=origin, request_headers=headers).to_asgi_response(
+            asgi_response = self._create_preflight_response(origin=origin, request_headers=headers).to_asgi_response(
                 app=None, request=request
             )
             await asgi_response(scope, receive, send)
@@ -86,7 +86,7 @@ class CORSMiddleware(AbstractMiddleware):
 
         return wrapped_send
 
-    def create_preflight_response(self, origin: str, request_headers: Headers) -> Response[str | None]:
+    def _create_preflight_response(self, origin: str, request_headers: Headers) -> Response[str | None]:
         pre_flight_method = request_headers.get("Access-Control-Request-Method")
         failures = []
 
