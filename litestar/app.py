@@ -32,7 +32,7 @@ from litestar.exceptions import (
     NoRouteMatchFoundException,
 )
 from litestar.logging.config import LoggingConfig, get_logger_placeholder
-from litestar.middleware.cors import CORSMiddleware
+from litestar.middleware._internal import CORSMiddleware
 from litestar.openapi.config import OpenAPIConfig
 from litestar.plugins import (
     CLIPluginProtocol,
