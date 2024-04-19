@@ -592,16 +592,24 @@ def test_routes_with_different_path_param_types_get_merged() -> None:
 
 def test_unconsumed_path_parameters_are_documented() -> None:
     # https://github.com/litestar-org/litestar/issues/3290
-    @get("/{param:str}")
-    async def handler() -> None:
+    # https://github.com/litestar-org/litestar/issues/3369
+
+    async def dd(param3: Annotated[str, Parameter(description="123")]) -> str:
+        return param3
+
+    async def d(dep_dep: str, param2: Annotated[str, Parameter(description="abc")]) -> str:
+        return f"{dep_dep}_{param2}"
+
+    @get("/{param1:str}/{param2:str}/{param3:str}", dependencies={"dep": d, "dep_dep": dd})
+    async def handler(dep: str) -> None:
         pass
 
     app = Litestar([handler])
-    params = app.openapi_schema.paths["/{param}"].get.parameters  # type: ignore[index, union-attr]
+    params = app.openapi_schema.paths["/{param1}/{param2}/{param3}"].get.parameters  # type: ignore[index, union-attr]
     assert params
-    assert len(params) == 1
-    param = params[0]
-    assert isinstance(param, OpenAPIParameter)
-    assert param.name == "param"
-    assert param.required is True
-    assert param.param_in is ParamType.PATH
+    assert len(params) == 3
+    for i, param in enumerate(sorted(params, key=lambda p: p.name), 1):  # pyright: ignore
+        assert isinstance(param, OpenAPIParameter)
+        assert param.name == f"param{i}"
+        assert param.required is True
+        assert param.param_in is ParamType.PATH
