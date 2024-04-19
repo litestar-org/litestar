@@ -677,10 +677,6 @@ document.write(`
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
-      <span class="fa-solid fa-outdent"></span>
-    </label>
-  
 </div>
 
     </nav>
@@ -1538,45 +1534,6 @@ document.write(`
                   
   <section id="module-litestar.middleware.cors">
 <span id="cors"></span><h1>cors<a class="headerlink" href="#module-litestar.middleware.cors" title="Permalink to this heading">#</a></h1>
-<dl class="py class">
-<dt class="sig sig-object py" id="litestar.middleware.cors.CORSMiddleware">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.middleware.cors.</span></span><span class="sig-name descname"><span class="pre">CORSMiddleware</span></span><a class="headerlink" href="#litestar.middleware.cors.CORSMiddleware" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="index.html#litestar.middleware.AbstractMiddleware" title="litestar.middleware.base.AbstractMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractMiddleware</span></code></a></p>
-<p>CORS Middleware.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.middleware.cors.CORSMiddleware.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../types.html#litestar.types.ASGIApp" title="litestar.types.ASGIApp"><span class="pre">ASGIApp</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../config.html#litestar.config.cors.CORSConfig" title="litestar.config.cors.CORSConfig"><span class="pre">CORSConfig</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.middleware.cors.CORSMiddleware.__init__" title="Permalink to this definition">#</a></dt>
-<dd><p>Middleware that adds CORS validation to the application.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="litestar.middleware.cors.CORSMiddleware.params.app"></span><strong>app</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.cors.CORSMiddleware.params.app">¶</a> – The <code class="docutils literal notranslate"><span class="pre">next</span></code> ASGI app to call.</p></li>
-<li><p><span class="target" id="litestar.middleware.cors.CORSMiddleware.params.config"></span><strong>config</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.cors.CORSMiddleware.params.config">¶</a> – An instance of <a class="reference internal" href="../config.html#litestar.config.cors.CORSConfig" title="litestar.config.cors.CORSConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CORSConfig</span></code></a></p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.middleware.cors.CORSMiddleware.send_wrapper">
-<span class="sig-name descname"><span class="pre">send_wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">send</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../types.html#litestar.types.Send" title="litestar.types.Send"><span class="pre">Send</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_cookie</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../types.html#litestar.types.Send" title="litestar.types.Send"><span class="pre">Send</span></a></span></span><a class="headerlink" href="#litestar.middleware.cors.CORSMiddleware.send_wrapper" title="Permalink to this definition">#</a></dt>
-<dd><p>Wrap <code class="docutils literal notranslate"><span class="pre">send</span></code> to ensure that state is not disconnected.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="litestar.middleware.cors.CORSMiddleware.send_wrapper.params.has_cookie"></span><strong>has_cookie</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.cors.CORSMiddleware.send_wrapper.params.has_cookie">¶</a> – Boolean flag dictating if the connection has a cookie set.</p></li>
-<li><p><span class="target" id="litestar.middleware.cors.CORSMiddleware.send_wrapper.params.origin"></span><strong>origin</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.cors.CORSMiddleware.send_wrapper.params.origin">¶</a> – The value of the <code class="docutils literal notranslate"><span class="pre">Origin</span></code> header.</p></li>
-<li><p><span class="target" id="litestar.middleware.cors.CORSMiddleware.send_wrapper.params.send"></span><strong>send</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.cors.CORSMiddleware.send_wrapper.params.send">¶</a> – The ASGI send function.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An ASGI send function.</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
 </section>
 
 
@@ -1613,25 +1570,6 @@ document.write(`
             </div>
             
             
-              
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-  <div class="sidebar-secondary-item">
-
-  <div class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-  </div>
-  <nav class="bd-toc-nav page-toc">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.middleware.cors.CORSMiddleware"><code class="docutils literal notranslate"><span class="pre">CORSMiddleware</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.middleware.cors.CORSMiddleware.__init__"><code class="docutils literal notranslate"><span class="pre">CORSMiddleware.__init__()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.middleware.cors.CORSMiddleware.send_wrapper"><code class="docutils literal notranslate"><span class="pre">CORSMiddleware.send_wrapper()</span></code></a></li>
-</ul>
-</li>
-</ul>
-  </nav></div>
-
-</div></div>
               
             
           </div>
