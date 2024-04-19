@@ -1706,6 +1706,15 @@
       "contributions": [
         "test"
       ]
+    },
+    {
+      "login": "maintain0404",
+      "name": "Taein Min",
+      "avatar_url": "https://avatars.githubusercontent.com/u/50428534?v=4",
+      "profile": "https://github.com/maintain0404",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
