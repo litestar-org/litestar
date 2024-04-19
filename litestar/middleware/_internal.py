@@ -6,9 +6,6 @@ from litestar.datastructures import Headers, MutableScopeHeaders
 from litestar.enums import ScopeType
 from litestar.middleware.base import AbstractMiddleware
 
-__all__ = ("CORSMiddleware",)
-
-
 if TYPE_CHECKING:
     from litestar.config.cors import CORSConfig
     from litestar.types import ASGIApp, Message, Receive, Scope, Send
