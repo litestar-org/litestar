@@ -168,3 +168,8 @@ def test_openapi_config_enabled_endpoints_deprecation() -> None:
 
     with pytest.warns(DeprecationWarning):
         OpenAPIConfig(title="API", version="1.0", enabled_endpoints={"redoc"})
+
+
+def test_cors_middleware_public_interface_deprecation() -> None:
+    with pytest.warns(DeprecationWarning):
+        from litestar.middleware.cors import CORSMiddleware  # noqa: F401
