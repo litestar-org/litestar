@@ -31,13 +31,27 @@ from litestar.testing.helpers import create_test_client
             ProblemDetailsException(
                 status_code=400,
                 detail="validation error",
-                extra={"detail": "must be positive integer", "pointer": "#age"},
+                extra={"error": "must be positive integer", "pointer": "#age"},
             ),
             {
                 "type": "about:blank",
                 "status": 400,
                 "detail": "validation error",
-                "extra": {"detail": "must be positive integer", "pointer": "#age"},
+                "error": "must be positive integer",
+                "pointer": "#age",
+            },
+        ),
+        (
+            ProblemDetailsException(
+                status_code=400,
+                detail="validation error",
+                extra=[{"error": "must be positive integer", "pointer": "#age"}],
+            ),
+            {
+                "type": "about:blank",
+                "status": 400,
+                "detail": "validation error",
+                "extra": [{"error": "must be positive integer", "pointer": "#age"}],
             },
         ),
         (
@@ -99,5 +113,5 @@ def test_exception_to_problem_detail_map() -> None:
             "type": "validation-error",
             "status": 400,
             "detail": "Not enough balance",
-            "extra": {"accounts": ["/account/1", "/account/2"]},
+            "accounts": ["/account/1", "/account/2"],
         }

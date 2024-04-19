@@ -85,8 +85,11 @@ class ProblemDetailsException(HTTPException):
 
         if isinstance(self.extra, Mapping):
             problem_details.update(self.extra)
-        elif self.extra is not None:
-            problem_details["extra"] = self.extra
+        elif (extra := self.extra) is not None:
+            if isinstance(extra, Mapping):
+                problem_details.update(extra)
+            else:
+                problem_details["extra"] = extra
 
         return Response(
             problem_details,
