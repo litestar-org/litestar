@@ -28,7 +28,7 @@ def test_setting_cors_middleware() -> None:
             cur = cast("Any", cur.app)
         unpacked_middleware.append(cur)
         assert len(unpacked_middleware) == 4
-        cors_middleware = cast("Any", unpacked_middleware[1])
+        cors_middleware = cast("Any", unpacked_middleware[0])
         assert isinstance(cors_middleware, CORSMiddleware)
         assert cors_middleware.config.allow_headers == ["*"]
         assert cors_middleware.config.allow_methods == ["*"]
