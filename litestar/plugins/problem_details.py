@@ -1,3 +1,4 @@
+"""..versionadded:: 2.9.0"""
 from __future__ import annotations
 
 from dataclasses import dataclass, field
