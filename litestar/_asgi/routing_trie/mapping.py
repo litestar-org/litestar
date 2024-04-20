@@ -197,10 +197,10 @@ def build_route_middleware_stack(
     )
 
     if has_middleware:
-        # if there is middleware, they may wrap the `send()` coro, so we need to wrap the handler in
-        # an exception handler middleware first. This is because it is the exception handler middleware
-        # that calls `send()` if an exception is raised from the handler. Without this, any `send()`
-        # wrappers added by middleware will not be called.
+        # If there is an exception raised from the handler, the first ExceptionHandlerMiddleware that catches the
+        # exception will create the response and call send(). As middleware may wrap the send() callable, we need there
+        # to be an instance of ExceptionHandlerMiddleware in between the handler and the middleware so that any send
+        # wrappers instated by middleware are called. If there is no middleware, we can skip this step.
         asgi_handler = wrap_in_exception_handler(app=asgi_handler)
 
         if app.csrf_config:
