@@ -240,31 +240,14 @@ plain :class:`Mapping[str, str] <typing.Mapping>`. The typing of
 :class:`ResponseHeader <.datastructures.response_header.ResponseHeader>` was also
 changed to be more strict and now only allows string values.
 
-.. code-block:: python
+.. literalinclude:: /examples/whats_new/response_headers_v1.py
     :caption: 1.51
-
-    from starlite import ResponseHeader, get
-
-
-    @get(response_headers={"my-header": ResponseHeader(value="header-value")})
-    async def handler() -> str: ...
+    :language: python
 
 
-.. code-block:: python
+.. literalinclude:: /examples/whats_new/response_headers_v2.py
     :caption: 2.x
-
-    from litestar import ResponseHeader, get
-
-
-    @get(response_headers=[ResponseHeader(name="my-header", value="header-value")])
-    async def handler() -> str: ...
-
-
-    # or
-
-
-    @get(response_headers={"my-header": "header-value"})
-    async def handler() -> str: ...
+    :language: python
 
 
 Response cookies
@@ -273,17 +256,16 @@ Response cookies
 Response cookies might now also be set using a
 :class:`Mapping[str, str] <typing.Mapping>`, analogous to `Response headers`_.
 
-.. code-block:: python
+.. literalinclude:: /examples/whats_new/response_cookies_v2.py
+    :caption: 1.51
+    :language: python
 
-    @get("/", response_cookies=[Cookie(key="foo", value="bar")])
-    async def handler() -> None: ...
 
 is equivalent to
 
-.. code-block:: python
-
-    @get("/", response_cookies={"foo": "bar"})
-    async def handler() -> None: ...
+.. literalinclude:: /examples/whats_new/response_cookies_v2.py
+    :caption: 2.x
+    :language: python
 
 
 SQLAlchemy Plugin
@@ -336,17 +318,14 @@ The 2 argument for of ``before_send`` hook handlers has been removed. Existing h
 should be changed to include an additional ``scope`` parameter.
 
 
-.. code-block:: python
+.. literalinclude:: /examples/whats_new/before_send_v1.py
     :caption: 1.51
+    :language: python
 
-    async def before_send(message: Message, state: State) -> None: ...
 
-
-.. code-block:: python
+.. literalinclude:: /examples/whats_new/before_send_v2.py
     :caption: 2.x
-
-    async def before_send(message: Message, state: State, scope: Scope) -> None: ...
-
+    :language: python
 
 
 .. seealso::
@@ -363,17 +342,16 @@ with a ``state`` keyword argument, accepting an optional
 
 Existing code using this keyword argument will need to be changed from
 
-.. code-block:: python
+.. literalinclude:: /examples/whats_new/initial_state_v1.py
     :caption: 1.51
+    :language: python
 
-    app = Starlite(..., initial_state={"some": "key"})
 
 to
 
-.. code-block:: python
+.. literalinclude:: /examples/whats_new/initial_state_v2.py
     :caption: 2.x
-
-    app = Litestar(..., state=State({"some": "key"}))
+    :language: python
 
 
 Stores
@@ -444,28 +422,8 @@ and can be used to define DTOs:
 
 For example, to define a DTO from a dataclass:
 
-.. code-block:: python
-
-    from dataclasses import dataclass
-
-    from litestar import get
-    from litestar.dto import DTOConfig, DataclassDTO
-
-
-    @dataclass
-    class MyType:
-        some_field: str
-        another_field: int
-
-
-    class MyDTO(DataclassDTO[MyType]):
-        config = DTOConfig(exclude={"another_field"})
-
-
-    @get(dto=MyDTO)
-    async def handler() -> MyType:
-        return MyType(some_field="some value", another_field=42)
-
+.. literalinclude:: /examples/data_transfer_objects/define_dto_from_dataclass.py
+    :language: python
 
 .. literalinclude:: /examples/data_transfer_objects/the_return_dto_parameter.py
     :language: python
