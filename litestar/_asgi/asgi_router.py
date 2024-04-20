@@ -87,14 +87,15 @@ class ASGIRouter:
         normalized_path = normalize_path(path)
 
         try:
-            asgi_app, scope["route_handler"], scope["path"], scope["path_params"] = self.handle_routing(
+            asgi_app, route_handler, scope["path"], scope["path_params"] = self.handle_routing(
                 path=normalized_path, method=scope.get("method")
             )
         except Exception:
             ScopeState.from_scope(scope).exception_handlers = self._app_exception_handlers
             raise
         else:
-            ScopeState.from_scope(scope).exception_handlers = scope["route_handler"].resolve_exception_handlers()
+            ScopeState.from_scope(scope).exception_handlers = route_handler.resolve_exception_handlers()
+            scope["route_handler"] = route_handler
         await asgi_app(scope, receive, send)
 
     @lru_cache(1024)  # noqa: B019
