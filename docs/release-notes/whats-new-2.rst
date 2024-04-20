@@ -461,18 +461,14 @@ their first parameter. If your ``on_startup`` and ``on_shutdown`` hooks made use
 application state, they will now have to access it through the provided application
 instance.
 
-.. code-block:: python
+.. literalinclude:: /examples/whats_new/lifespan_hook_v1.py
+    :language: python
     :caption: 1.51
 
-    def on_startup(state: State) -> None:
-        print(state.something)
 
-
-.. code-block:: python
+.. literalinclude:: /examples/whats_new/lifespan_hook_v2.py
+    :language: python
     :caption: 2.x
-
-    def on_startup(app: Litestar) -> None:
-        print(app.state.something)
 
 
 Dependencies without ``Provide``
@@ -482,21 +478,16 @@ Dependencies may now be declared without :class:`~litestar.di.Provide`, by passi
 callable directly. This can be advantageous in places where the configuration options
 of :class:`~litestar.di.Provide` are not needed.
 
-.. code-block:: python
+.. literalinclude:: /examples/whats_new/dependencies_without_provide_v1.py
+    :language: python
+    :caption: 1.51
 
-    async def some_dependency() -> str: ...
-
-
-    app = Litestar(dependencies={"some": Provide(some_dependency)})
 
 is equivalent to
 
-.. code-block:: python
-
-    async def some_dependency() -> str: ...
-
-
-    app = Litestar(dependencies={"some": some_dependency})
+.. literalinclude:: /examples/whats_new/dependencies_without_provide_v2.py
+    :language: python
+    :caption: 2.x
 
 
 ``sync_to_thread``
@@ -513,26 +504,14 @@ a thread pool, passing ``sync_to_thread=False`` will also silence the warning.
     ``LITESTAR_WARN_IMPLICIT_SYNC_TO_THREAD=0``
 
 
-.. code-block:: python
+.. literalinclude:: /examples/whats_new/sync_to_thread_v1.py
+    :language: python
     :caption: 1.51
 
-    @get()
-    def handler() -> None: ...
 
-
-.. code-block:: python
+.. literalinclude:: /examples/whats_new/sync_to_thread_v2.py
+    :language: python
     :caption: 2.x
-
-    @get(sync_to_thread=False)
-    def handler() -> None: ...
-
-or
-
-.. code-block:: python
-    :caption: 2.x
-
-    @get(sync_to_thread=True)
-    def handler() -> None: ...
 
 
 .. seealso::
@@ -584,17 +563,9 @@ handlers, OOP based event dispatching, data iterators and more.
 .. literalinclude:: /examples/websockets/with_dto.py
     :language: python
 
-.. code-block:: python
+.. literalinclude:: /examples/websockets/receiving_json_and_sending_it_back_as_messagepack.py
     :caption: Receiving JSON and sending it back as MessagePack
-
-    from litestar import websocket, WebSocket
-
-
-    @websocket("/")
-    async def handler(socket: WebSocket) -> None:
-        await socket.accept()
-        async for message in socket.iter_data(mode):
-            await socket.send_msgpack(message)
+    :language: python
 
 
 .. seealso::
@@ -617,15 +588,14 @@ TBD
 :class:`Annotated <typing.Annotated>` can now be used in route handler and
 dependencies to specify additional information about the fields
 
-.. code-block:: python
+.. literalinclude:: /examples/whats_new/attrs_v1.py
+    :language: python
+    :caption: 1.51
 
-    @get("/")
-    def index(param: int = Parameter(gt=5)) -> dict[str, int]: ...
 
-.. code-block:: python
-
-    @get("/")
-    def index(param: Annotated[int, Parameter(gt=5)]) -> dict[str, int]: ...
+.. literalinclude:: /examples/whats_new/attrs_v2.py
+    :language: python
+    :caption: 2.x
 
 
 Channels
