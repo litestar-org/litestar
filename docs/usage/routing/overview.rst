@@ -145,6 +145,7 @@ requests addressed to a given path.
 
     .. literalinclude:: /examples/routing/mount_custom_app.py
         :caption: Mounting an ASGI App
+        :language: python
 
 The handler function will receive all requests with an url that begins with ``/some/sub-path``, e.g, ``/some/sub-path``,
 ``/some/sub-path/abc``, ``/some/sub-path/123/another/sub-path``, etc.
