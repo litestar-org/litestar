@@ -9,7 +9,10 @@ from typing import TYPE_CHECKING, Any, Type, cast
 
 from litestar.enums import MediaType, ScopeType
 from litestar.exceptions import HTTPException, LitestarException, WebSocketException
-from litestar.middleware.exceptions._debug_response import _get_type_encoders_for_request, create_debug_response
+from litestar.middleware._internal.exceptions._debug_response import (
+    _get_type_encoders_for_request,
+    create_debug_response,
+)
 from litestar.serialization import encode_json, get_serializer
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.utils.deprecation import warn_deprecation

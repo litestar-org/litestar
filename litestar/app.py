@@ -32,7 +32,7 @@ from litestar.exceptions import (
     NoRouteMatchFoundException,
 )
 from litestar.logging.config import LoggingConfig, get_logger_placeholder
-from litestar.middleware._internal import CORSMiddleware
+from litestar.middleware._internal.cors import CORSMiddleware
 from litestar.openapi.config import OpenAPIConfig
 from litestar.plugins import (
     CLIPluginProtocol,
@@ -441,7 +441,7 @@ class Litestar(Router):
         try:
             from starlette.exceptions import HTTPException as StarletteHTTPException
 
-            from litestar.middleware.exceptions.middleware import _starlette_exception_handler
+            from litestar.middleware._internal.exceptions.middleware import _starlette_exception_handler
 
             config.exception_handlers.setdefault(StarletteHTTPException, _starlette_exception_handler)
         except ImportError:

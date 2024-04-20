@@ -11,9 +11,12 @@ from structlog.testing import capture_logs
 from litestar import Litestar, MediaType, Request, Response, get
 from litestar.exceptions import HTTPException, InternalServerException, ValidationException
 from litestar.logging.config import LoggingConfig, StructLoggingConfig
-from litestar.middleware.exceptions import ExceptionHandlerMiddleware
-from litestar.middleware.exceptions._debug_response import get_symbol_name
-from litestar.middleware.exceptions.middleware import _starlette_exception_handler, get_exception_handler
+from litestar.middleware._internal.exceptions._debug_response import get_symbol_name
+from litestar.middleware._internal.exceptions.middleware import (
+    ExceptionHandlerMiddleware,
+    _starlette_exception_handler,
+    get_exception_handler,
+)
 from litestar.status_codes import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import TestClient, create_test_client
 from litestar.types import ExceptionHandlersMap
@@ -328,7 +331,7 @@ def test_pdb_on_exception(mocker: MockerFixture) -> None:
     def handler() -> None:
         raise ValueError("Test debug exception")
 
-    mock_post_mortem = mocker.patch("litestar.middleware.exceptions.middleware.pdb.post_mortem")
+    mock_post_mortem = mocker.patch("litestar.middleware._internal.exceptions.middleware.pdb.post_mortem")
 
     app = Litestar([handler], pdb_on_exception=True)
 
