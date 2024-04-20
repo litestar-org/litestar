@@ -423,12 +423,12 @@ class OptionalFiles:
 
 @pytest.mark.parametrize("file_model", (Files, OptionalFiles))
 @pytest.mark.parametrize("file_count", (1, 2))
-def test_upload_multiple_files_in_model(file_count: int, file_model: type) -> None:
+def test_upload_multiple_files_in_model(file_count: int, file_model: type[Files | OptionalFiles]) -> None:
     @post("/", signature_namespace={"file_model": file_model})
-    async def handler(data: file_model = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
-        assert len(data.file_list) == file_count
+    async def handler(data: file_model = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:  # type: ignore[valid-type]
+        assert len(data.file_list) == file_count  # type: ignore[attr-defined]
 
-        for file in data.file_list:
+        for file in data.file_list:  # type: ignore[attr-defined]
             assert await file.read() == b"1"
 
     with create_test_client([handler]) as client:
