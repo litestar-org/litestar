@@ -25,7 +25,7 @@ Configuring schema generation on a route handler
 By default, an `operation <https://spec.openapis.org/oas/latest.html#operation-object>`_ schema is generated for all route
 handlers. You can omit a route handler from the schema by setting ``include_in_schema=False``:
 
-.. literalinclude:: /examples/openapi/configure_schema_generation_on_route.py
+.. literalinclude:: /examples/openapi/configure_schema_generation_on_route_1.py
    :language: python
 
 
