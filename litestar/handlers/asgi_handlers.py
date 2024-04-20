@@ -85,6 +85,8 @@ class ASGIRouteHandler(BaseRouteHandler):
 
     async def handle(self, connection: ASGIConnection[ASGIRouteHandler, Any, Any, Any]) -> None:
         """ASGI app that authorizes the connection and then awaits the handler function.
+    
+    .. versionadded: 3.0
 
         Args:
             connection: The ASGI connection

@@ -620,8 +620,10 @@ class HTTPRouteHandler(BaseRouteHandler):
             raise ImproperlyConfiguredException("'data' kwarg is unsupported for 'GET' request handlers")
 
     async def handle(self, connection: Request[Any, Any, Any]) -> None:
-        """ASGI app that creates a Request from the passed in args, determines which handler function to call and then
+        """ASGI app that creates a :class:`~.connection.Request` from the passed in args, determines which handler function to call and then
         handles the call.
+    
+    .. versionadded: 3.0
 
         Args:
             connection: The request
