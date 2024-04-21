@@ -12,6 +12,7 @@ __all__ = ("ASGIRouteHandler", "asgi")
 
 
 if TYPE_CHECKING:
+    from litestar.connection import ASGIConnection
     from litestar import Litestar
     from litestar.connection import ASGIConnection
     from litestar.routes import BaseRoute

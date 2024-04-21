@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, Callable, Mapping
 from litestar.connection import WebSocket
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import BaseRouteHandler
+from litestar.types import Empty
 from litestar.types import AsyncAnyCallable, Empty
 from litestar.types.builtin_types import NoneType
 from litestar.utils.predicates import is_async_callable

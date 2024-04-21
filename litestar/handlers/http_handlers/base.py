@@ -19,6 +19,7 @@ from litestar.exceptions import (
 )
 from litestar.handlers.base import BaseRouteHandler
 from litestar.handlers.http_handlers._utils import (
+    cleanup_temporary_files,
     create_data_handler,
     create_generic_asgi_response_handler,
     create_response_handler,
@@ -53,6 +54,8 @@ from litestar.types import (
 )
 from litestar.types.builtin_types import NoneType
 from litestar.utils import ensure_async_callable
+from litestar.utils.predicates import is_async_callable
+from litestar.utils.scope.state import ScopeState
 from litestar.utils.predicates import is_async_callable, is_class_and_subclass
 from litestar.utils.scope.state import ScopeState
 from litestar.utils.warnings import warn_implicit_sync_to_thread, warn_sync_to_thread_with_async_callable
@@ -596,6 +599,14 @@ class HTTPRouteHandler(BaseRouteHandler):
         super().on_registration(app, route=route)
         self.resolve_after_response()
         self.resolve_include_in_schema()
+
+        self._get_kwargs_model_for_route(route.path_parameters)
+
+    def _get_kwargs_model_for_route(self, path_parameters: Iterable[str]) -> KwargsModel:
+        key = tuple(path_parameters)
+        if (model := self._kwargs_models.get(key)) is None:
+            model = self._kwargs_models[key] = self._create_kwargs_model(path_parameters)
+        return model
 
         self._get_kwargs_model_for_route(route.path_parameters)
 
