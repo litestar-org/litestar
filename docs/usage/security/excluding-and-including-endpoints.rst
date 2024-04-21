@@ -29,11 +29,11 @@ Exclude from auth
 --------------------
 Sometimes, you might want to apply authentication to all endpoints under a route but a few selected. In this case, you can pass ``exclude_from_auth=True`` to the route handler as shown below.
 
-.. literalinclude:: /examples/security/excluding_from_auth.py
+.. literalinclude:: /examples/security/exclude_from_auth.py
     :language: python
 
 
 You can set an alternative option key in the security configuration, e.g., you can use ``no_auth`` instead of ``exclude_from_auth``.
 
-.. literalinclude:: /examples/security/excluding_from_auth_with_key.py
+.. literalinclude:: /examples/security/exclude_from_auth_with_key.py
     :language: python
