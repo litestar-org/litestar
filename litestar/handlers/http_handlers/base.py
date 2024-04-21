@@ -27,7 +27,7 @@ from litestar.handlers.http_handlers._utils import (
     normalize_http_method, cleanup_temporary_files,
 )
 from litestar.openapi.spec import Operation
-from litestar.response import File, Response
+from litestar.response import Response, File
 from litestar.response.file import ASGIFileResponse
 from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED
 from litestar.types import (
