@@ -137,7 +137,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
                 cleanup_group = await handler_parameter_model.resolve_dependencies(connection, parsed_kwargs)
 
             parsed_kwargs = self.signature_model.parse_values_from_connection_kwargs(
-                connection=connection, kwargs=parsed_kwargs
+                connection=connection, **parsed_kwargs
             )
 
         if cleanup_group:
@@ -146,6 +146,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
             await cleanup_group.cleanup()
         else:
             await self.fn(**parsed_kwargs)
+
 
 
 def websocket(
