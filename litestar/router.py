@@ -341,7 +341,7 @@ class Router:
 def _maybe_add_options_handler(path: str, http_handlers: list[HTTPRouteHandler]) -> list[HTTPRouteHandler]:
     handler_methods = {method for handler in http_handlers for method in handler.http_methods}
     if "OPTIONS" not in handler_methods:
-        options_handler = create_options_handler(path=path, allow_methods=handler_methods)  # pyright: ignore
+        options_handler = create_options_handler(path=path, allow_methods={*handler_methods, "OPTIONS"})  # pyright: ignore
         options_handler.owner = http_handlers[0].owner
         return [*http_handlers, options_handler]
     return http_handlers
