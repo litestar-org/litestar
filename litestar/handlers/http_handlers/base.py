@@ -24,7 +24,7 @@ from litestar.handlers.http_handlers._utils import (
     create_response_handler,
     get_default_status_code,
     is_empty_response_annotation,
-    normalize_http_method,
+    normalize_http_method, cleanup_temporary_files,
 )
 from litestar.openapi.spec import Operation
 from litestar.response import File, Response
@@ -53,7 +53,8 @@ from litestar.types import (
 )
 from litestar.types.builtin_types import NoneType
 from litestar.utils import ensure_async_callable
-from litestar.utils.predicates import is_async_callable, is_class_and_subclass
+from litestar.utils.predicates import is_async_callable
+from litestar.utils.predicates import is_class_and_subclass
 from litestar.utils.scope.state import ScopeState
 from litestar.utils.warnings import warn_implicit_sync_to_thread, warn_sync_to_thread_with_async_callable
 
@@ -90,6 +91,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         "_resolved_request_max_body_size",
         "_resolved_response_class",
         "_resolved_security",
+        "_kwargs_models",
         "_resolved_tags",
         "_response_handler_mapping",
         "after_request",
@@ -598,6 +600,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.resolve_include_in_schema()
 
         self._get_kwargs_model_for_route(route.path_parameters)
+
 
     def _get_kwargs_model_for_route(self, path_parameters: Iterable[str]) -> KwargsModel:
         key = tuple(path_parameters)
