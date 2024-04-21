@@ -1,0 +1,3 @@
+async def after_exception_handler(
+        exc: Exception, scope: Scope, state: State
+) -> None: ...

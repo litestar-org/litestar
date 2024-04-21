@@ -1,0 +1,3 @@
+async def before_send_hook_handler(
+        message: Message, state: State, scope: Scope
+) -> None: ...
