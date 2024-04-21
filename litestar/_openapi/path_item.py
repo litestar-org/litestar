@@ -35,9 +35,7 @@ class PathItemFactory:
         Returns:
             A PathItem instance.
         """
-        for http_method, handler_tuple in self.route.route_handler_map.items():
-            route_handler, _ = handler_tuple
-
+        for http_method, route_handler in self.route.route_handler_map.items():
             if not route_handler.resolve_include_in_schema():
                 continue
 

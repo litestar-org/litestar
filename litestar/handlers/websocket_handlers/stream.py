@@ -216,7 +216,7 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
         self._fn = self._ws_stream_options.generator_fn  # type: ignore[assignment]
         return self
 
-    def on_registration(self, app: Litestar) -> None:
+    def on_registration(self, app: Litestar, route) -> None:
         parsed_handler_signature = parsed_stream_fn_signature = ParsedSignature.from_fn(
             self.fn, self.resolve_signature_namespace()
         )
