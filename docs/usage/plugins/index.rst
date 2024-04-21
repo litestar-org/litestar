@@ -129,3 +129,4 @@ signature (their :func:`__init__` method).
     :titlesonly:
 
     flash_messages
+    problem_details
