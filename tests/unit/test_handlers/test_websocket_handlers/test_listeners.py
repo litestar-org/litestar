@@ -12,6 +12,7 @@ from litestar.di import Provide
 from litestar.dto import DataclassDTO, dto_field
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers.websocket_handlers import WebsocketListener, websocket_listener
+from litestar.routes import WebSocketRoute
 from litestar.testing import create_test_client
 from litestar.types.asgi_types import WebSocketMode
 
@@ -235,7 +236,7 @@ def test_listener_callback_no_data_arg_raises() -> None:
         @websocket_listener("/")
         def handler() -> None: ...
 
-        handler.on_registration(Litestar())
+        handler.on_registration(Litestar(), WebSocketRoute(path="/", route_handler=handler))
 
 
 def test_listener_callback_request_and_body_arg_raises() -> None:
@@ -244,14 +245,14 @@ def test_listener_callback_request_and_body_arg_raises() -> None:
         @websocket_listener("/")
         def handler_request(data: str, request: Request) -> None: ...
 
-        handler_request.on_registration(Litestar())
+        handler_request.on_registration(Litestar(), WebSocketRoute(path="/", route_handler=handler_request))
 
     with pytest.raises(ImproperlyConfiguredException):
 
         @websocket_listener("/")
         def handler_body(data: str, body: bytes) -> None: ...
 
-        handler_body.on_registration(Litestar())
+        handler_body.on_registration(Litestar(), WebSocketRoute(path="/", route_handler=handler_body))
 
 
 def test_listener_accept_connection_callback() -> None:

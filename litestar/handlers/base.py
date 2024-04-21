@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from copy import copy
 from functools import partial
-from typing import TYPE_CHECKING, Any, Callable, Mapping, Sequence, cast
+from typing import TYPE_CHECKING, Any, Callable, Iterable, Mapping, Sequence, cast
 
 from litestar._signature import SignatureModel
 from litestar.di import Provide
@@ -34,9 +34,9 @@ if TYPE_CHECKING:
     from litestar.dto import AbstractDTO
     from litestar.params import ParameterKwarg
     from litestar.router import Router
+    from litestar.routes import BaseRoute
     from litestar.types import AnyCallable, AsyncAnyCallable, ExceptionHandler
     from litestar.types.empty import EmptyType
-    from litestar.types.internal_types import PathParameterDefinition
 
 __all__ = ("BaseRouteHandler",)
 
@@ -526,11 +526,12 @@ class BaseRouteHandler:
                     f"If you wish to override a provider, it must have the same key."
                 )
 
-    def on_registration(self, app: Litestar) -> None:
+    def on_registration(self, app: Litestar, route: BaseRoute) -> None:
         """Called once per handler when the app object is instantiated.
 
         Args:
             app: The :class:`Litestar<.app.Litestar>` app object.
+            route: The route this handler is being registered on
 
         Returns:
             None
@@ -567,9 +568,9 @@ class BaseRouteHandler:
             target = type(target)
         return f"{target.__module__}.{target.__qualname__}"
 
-    def create_kwargs_model(
+    def _create_kwargs_model(
         self,
-        path_parameters: dict[str, PathParameterDefinition],
+        path_parameters: Iterable[str],
     ) -> KwargsModel:
         """Create a `KwargsModel` for a given route handler."""
         from litestar._kwargs import KwargsModel
@@ -578,6 +579,6 @@ class BaseRouteHandler:
             signature_model=self.signature_model,
             parsed_signature=self.parsed_fn_signature,
             dependencies=self.resolve_dependencies(),
-            path_parameters=set(path_parameters.keys()),
+            path_parameters=set(path_parameters),
             layered_parameters=self.resolve_layered_parameters(),
         )

@@ -241,6 +241,7 @@ nitpick_ignore_regex = [
     (PY_RE, r"advanced_alchemy\.config.common\.EngineT"),
     (PY_RE, r"advanced_alchemy\.config.common\.SessionT"),
     (PY_RE, r".*R"),
+    (PY_RE, r".*ScopeT"),
     (PY_OBJ, r"litestar.security.jwt.auth.TokenT"),
     (PY_CLASS, "ExceptionToProblemDetailMapType"),
     (PY_CLASS, "litestar.security.jwt.token.JWTDecodeOptions"),
