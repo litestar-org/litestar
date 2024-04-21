@@ -143,8 +143,7 @@ def configure_node(
         node.path_parameters = {}
 
     if isinstance(route, HTTPRoute):
-        for method, handler_mapping in route.route_handler_map.items():
-            handler, _ = handler_mapping
+        for method, handler in route.route_handler_map.items():
             node.asgi_handlers[method] = ASGIHandlerTuple(
                 asgi_app=build_route_middleware_stack(app=app, route=route, route_handler=handler),
                 handler=handler,
