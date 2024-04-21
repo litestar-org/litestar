@@ -1,4 +1,5 @@
-"""..versionadded:: 2.9.0"""
+"""Plugin for converting exceptions into a problem details response."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field
