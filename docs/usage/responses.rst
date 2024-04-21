@@ -284,8 +284,8 @@ The respective descriptions will be used for the OpenAPI documentation.
     If you don't need those, you can optionally define `response_headers` using a mapping - such as a dictionary -
     as well:
 
-.. literalinclude:: /examples/responses/response_headers_attributes.py
-    :language: python
+    .. literalinclude:: /examples/responses/response_headers_attributes.py
+        :language: python
 
 
 Setting Headers Dynamically
