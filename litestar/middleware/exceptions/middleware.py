@@ -7,17 +7,12 @@ from sys import exc_info
 from traceback import format_exception
 from typing import TYPE_CHECKING, Any, Type, cast
 
-from litestar.datastructures import Headers
 from litestar.enums import MediaType, ScopeType
 from litestar.exceptions import HTTPException, LitestarException, WebSocketException
-from litestar.middleware.cors import CORSMiddleware
 from litestar.middleware.exceptions._debug_response import _get_type_encoders_for_request, create_debug_response
 from litestar.serialization import encode_json, get_serializer
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.utils.deprecation import warn_deprecation
-
-__all__ = ("ExceptionHandlerMiddleware", "ExceptionResponseContent", "create_exception_response")
-
 
 if TYPE_CHECKING:
     from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -36,6 +31,8 @@ if TYPE_CHECKING:
         Send,
     )
     from litestar.types.asgi_types import WebSocketCloseEvent
+
+__all__ = ("ExceptionHandlerMiddleware", "ExceptionResponseContent", "create_exception_response")
 
 
 def get_exception_handler(exception_handlers: ExceptionHandlersMap, exc: Exception) -> ExceptionHandler | None:
@@ -251,11 +248,6 @@ class ExceptionHandlerMiddleware:
         Returns:
             None.
         """
-
-        headers = Headers.from_scope(scope=scope)
-        if litestar_app.cors_config and (origin := headers.get("origin")):
-            cors_middleware = CORSMiddleware(app=self.app, config=litestar_app.cors_config)
-            send = cors_middleware.send_wrapper(send=send, origin=origin, has_cookie="cookie" in headers)
 
         exception_handler = get_exception_handler(self.exception_handlers, exc) or self.default_http_exception_handler
         request: Request[Any, Any, Any] = litestar_app.request_class(scope=scope, receive=receive, send=send)

@@ -32,7 +32,7 @@ from litestar.exceptions import (
     NoRouteMatchFoundException,
 )
 from litestar.logging.config import LoggingConfig, get_logger_placeholder
-from litestar.middleware.cors import CORSMiddleware
+from litestar.middleware._internal import CORSMiddleware
 from litestar.openapi.config import OpenAPIConfig
 from litestar.plugins import (
     CLIPluginProtocol,
@@ -245,7 +245,7 @@ class Litestar(Router):
                 this app. Can be overridden by route handlers.
             compression_config: Configures compression behaviour of the application, this enabled a builtin or user
                 defined Compression middleware.
-            cors_config: If set, configures :class:`CORSMiddleware <.middleware.cors.CORSMiddleware>`.
+            cors_config: If set, configures CORS handling for the application.
             csrf_config: If set, configures :class:`CSRFMiddleware <.middleware.csrf.CSRFMiddleware>`.
             debug: If ``True``, app errors rendered as HTML with a stack trace.
             dependencies: A string keyed mapping of dependency :class:`Providers <.di.Provide>`.
@@ -839,14 +839,15 @@ class Litestar(Router):
 
         If CORS or TrustedHost configs are provided to the constructor, they will wrap the router as well.
         """
-        asgi_handler: ASGIApp = self.asgi_router
-        if self.cors_config:
-            asgi_handler = CORSMiddleware(app=asgi_handler, config=self.cors_config)
-
-        return wrap_in_exception_handler(
-            app=asgi_handler,
+        asgi_handler = wrap_in_exception_handler(
+            app=self.asgi_router,
             exception_handlers=self.exception_handlers or {},  # pyright: ignore
         )
+
+        if self.cors_config:
+            return CORSMiddleware(app=asgi_handler, config=self.cors_config)
+
+        return asgi_handler
 
     def _wrap_send(self, send: Send, scope: Scope) -> Send:
         """Wrap the ASGI send and handles any 'before send' hooks.
