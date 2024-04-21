@@ -394,10 +394,15 @@ def test_image_upload() -> None:
         assert response.status_code == HTTP_201_CREATED
 
 
+@pytest.mark.parametrize("optional", [True, False])
 @pytest.mark.parametrize("file_count", (1, 2))
-def test_upload_multiple_files(file_count: int) -> None:
-    @post("/")
-    async def handler(data: List[UploadFile] = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
+def test_upload_multiple_files(file_count: int, optional: bool) -> None:
+    annotation = List[UploadFile]
+    if optional:
+        annotation = Optional[annotation]  # type: ignore[misc, assignment]
+
+    @post("/", signature_namespace={"annotation": annotation})
+    async def handler(data: annotation = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
         assert len(data) == file_count
 
         for file in data:

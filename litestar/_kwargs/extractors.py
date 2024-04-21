@@ -349,7 +349,10 @@ async def _extract_multipart(
 
     if field_definition.is_non_string_sequence:
         values = list(form_values.values())
-        if field_definition.has_inner_subclass_of(UploadFile) and isinstance(values[0], list):
+        if isinstance(values[0], list) and (
+            field_definition.has_inner_subclass_of(UploadFile)
+            or (field_definition.is_optional and field_definition.inner_types[0].is_non_string_sequence)
+        ):
             return values[0]
 
         return values
