@@ -38,7 +38,7 @@ def create_factory(route: BaseRoute, handler: HTTPRouteHandler) -> ParameterFact
 def _create_parameters(app: Litestar, path: str) -> List["OpenAPIParameter"]:
     index = find_index(app.routes, lambda x: x.path_format == path)
     route = app.routes[index]
-    route_handler = route.route_handler_map["GET"][0]  # type: ignore[union-attr]
+    route_handler = route.route_handler_map["GET"]  # type: ignore[union-attr]
     handler = route_handler.fn
     assert callable(handler)
     return create_factory(route, route_handler).create_parameters_for_handler()
