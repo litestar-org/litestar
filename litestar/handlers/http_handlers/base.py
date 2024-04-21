@@ -621,15 +621,15 @@ class HTTPRouteHandler(BaseRouteHandler):
 
     async def handle(self, connection: Request[Any, Any, Any]) -> None:
         """ASGI app that creates a :class:`~.connection.Request` from the passed in args, determines which handler function to call and then
-        handles the call.
-    
-    .. versionadded: 3.0
+            handles the call.
+
+        .. versionadded: 3.0
 
         Args:
-            connection: The request
+                connection: The request
 
         Returns:
-            None
+                None
         """
 
         if self.resolve_guards():
