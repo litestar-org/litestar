@@ -9,6 +9,7 @@ from litestar.controller import Controller
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers.asgi_handlers import ASGIRouteHandler
 from litestar.handlers.http_handlers import HTTPRouteHandler
+from litestar.handlers.http_handlers._options import create_options_handler
 from litestar.handlers.websocket_handlers import WebsocketListener, WebsocketRouteHandler
 from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from litestar.types.empty import Empty
@@ -236,11 +237,11 @@ class Router:
 
                     route: WebSocketRoute | ASGIRoute | HTTPRoute = HTTPRoute(
                         path=path,
-                        route_handlers=http_handlers,
+                        route_handlers=_maybe_add_options_handler(path, http_handlers),
                     )
                     self.routes[existing_route_index] = route
                 else:
-                    route = HTTPRoute(path=path, route_handlers=http_handlers)
+                    route = HTTPRoute(path=path, route_handlers=_maybe_add_options_handler(path, http_handlers))
                     self.routes.append(route)
 
                 routes.append(route)
@@ -259,17 +260,15 @@ class Router:
 
     @property
     def route_handler_method_map(self) -> dict[str, RouteHandlerMapItem]:
-        """Map route paths to :class:`RouteHandlerMapItem <litestar.types.internal_typ es.RouteHandlerMapItem>`
+        """Map route paths to :class:`~litestar.types.internal_types.RouteHandlerMapItem`
 
         Returns:
              A dictionary mapping paths to route handlers
         """
-        route_map: dict[str, RouteHandlerMapItem] = defaultdict(dict)
+        route_map: defaultdict[str, RouteHandlerMapItem] = defaultdict(dict)
         for route in self.routes:
             if isinstance(route, HTTPRoute):
-                for route_handler in route.route_handlers:
-                    for method in route_handler.http_methods:
-                        route_map[route.path][method] = route_handler
+                route_map[route.path] = route.route_handler_map  # type: ignore[assignment]
             else:
                 route_map[route.path]["websocket" if isinstance(route, WebSocketRoute) else "asgi"] = (
                     route.route_handler
@@ -296,6 +295,7 @@ class Router:
                 for path in value.paths
             }
 
+        # handle controllers
         handlers_map: defaultdict[str, RouteHandlerMapItem] = defaultdict(dict)
         for route_handler in value.get_route_handlers():
             for handler_path in route_handler.paths:
@@ -336,3 +336,12 @@ class Router:
             "If you passed in a function or method, "
             "make sure to decorate it first with one of the routing decorators"
         )
+
+
+def _maybe_add_options_handler(path: str, http_handlers: list[HTTPRouteHandler]) -> list[HTTPRouteHandler]:
+    handler_methods = {method for handler in http_handlers for method in handler.http_methods}
+    if "OPTIONS" not in handler_methods:
+        options_handler = create_options_handler(path=path, allow_methods={*handler_methods, "OPTIONS"})  # pyright: ignore
+        options_handler.owner = http_handlers[0].owner
+        return [*http_handlers, options_handler]
+    return http_handlers
