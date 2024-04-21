@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING, AnyStr, Mapping, Sequence, TypedDict, cast
+from typing import TYPE_CHECKING, AnyStr, Iterable, Mapping, Sequence, TypedDict, cast
+
+from msgspec.msgpack import decode as _decode_msgpack_plain
 
 from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
 from litestar.connection import Request
@@ -9,11 +11,14 @@ from litestar.datastructures.cookie import Cookie
 from litestar.datastructures.response_header import ResponseHeader
 from litestar.enums import HttpMethod, MediaType
 from litestar.exceptions import (
+    ClientException,
     HTTPException,
     ImproperlyConfiguredException,
+    SerializationException,
 )
 from litestar.handlers.base import BaseRouteHandler
 from litestar.handlers.http_handlers._utils import (
+    cleanup_temporary_files,
     create_data_handler,
     create_generic_asgi_response_handler,
     create_response_handler,
@@ -38,17 +43,23 @@ from litestar.types import (
     Guard,
     Method,
     Middleware,
+    Receive,
     ResponseCookies,
     ResponseHeaders,
+    Scope,
+    Send,
     TypeEncodersMap,
 )
 from litestar.utils import ensure_async_callable
 from litestar.utils.predicates import is_async_callable
+from litestar.utils.scope.state import ScopeState
 from litestar.utils.warnings import warn_implicit_sync_to_thread, warn_sync_to_thread_with_async_callable
 
 if TYPE_CHECKING:
     from typing import Any, Awaitable, Callable
 
+    from litestar._kwargs import KwargsModel
+    from litestar._kwargs.cleanup import DependencyCleanupGroup
     from litestar.app import Litestar
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
     from litestar.config.response_cache import CACHE_FOREVER
@@ -56,6 +67,7 @@ if TYPE_CHECKING:
     from litestar.dto import AbstractDTO
     from litestar.openapi.datastructures import ResponseSpec
     from litestar.openapi.spec import SecurityRequirement
+    from litestar.routes import BaseRoute
     from litestar.types.callable_types import AsyncAnyCallable, OperationIDCreator
     from litestar.types.composite_types import TypeDecodersSequence
 
@@ -82,6 +94,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         "_resolved_request_class",
         "_resolved_tags",
         "_resolved_security",
+        "_kwargs_models",
         "after_request",
         "after_response",
         "background",
@@ -296,6 +309,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self._resolved_request_class: type[Request] | EmptyType = Empty
         self._resolved_security: list[SecurityRequirement] | EmptyType = Empty
         self._resolved_tags: list[str] | EmptyType = Empty
+        self._kwargs_models: dict[tuple[str, ...], KwargsModel] = {}
 
     def __call__(self, fn: AnyCallable) -> HTTPRouteHandler:
         """Replace a function with itself."""
@@ -555,8 +569,8 @@ class HTTPRouteHandler(BaseRouteHandler):
         response_handler = self.get_response_handler(is_response_type_data=isinstance(data, Response))
         return await response_handler(data=data, request=request)
 
-    def on_registration(self, app: Litestar) -> None:
-        super().on_registration(app)
+    def on_registration(self, app: Litestar, route: BaseRoute) -> None:
+        super().on_registration(app, route=route)
         self.resolve_after_response()
         self.resolve_include_in_schema()
         self.has_sync_callable = not is_async_callable(self.fn)
@@ -564,6 +578,14 @@ class HTTPRouteHandler(BaseRouteHandler):
         if self.has_sync_callable and self.sync_to_thread:
             self._fn = ensure_async_callable(self.fn)
             self.has_sync_callable = False
+
+        self._get_kwargs_model_for_route(route.path_parameters)
+
+    def _get_kwargs_model_for_route(self, path_parameters: Iterable[str]) -> KwargsModel:
+        key = tuple(path_parameters)
+        if (model := self._kwargs_models.get(key)) is None:
+            model = self._kwargs_models[key] = self._create_kwargs_model(path_parameters)
+        return model
 
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once it is set by inspecting its return annotations."""
@@ -596,6 +618,142 @@ class HTTPRouteHandler(BaseRouteHandler):
 
         if "data" in self.parsed_fn_signature.parameters and "GET" in self.http_methods:
             raise ImproperlyConfiguredException("'data' kwarg is unsupported for 'GET' request handlers")
+
+    async def handle(self, connection: Request[Any, Any, Any]) -> None:
+        """ASGI app that creates a :class:`~.connection.Request` from the passed in args, determines which handler function to call and then
+            handles the call.
+
+        .. versionadded: 3.0
+
+        Args:
+                connection: The request
+
+        Returns:
+                None
+        """
+
+        if self.resolve_guards():
+            await self.authorize_connection(connection=connection)
+
+        response = await self._get_response_for_request(request=connection)
+
+        await response(connection.scope, connection.receive, connection.send)
+
+        if after_response_handler := self.resolve_after_response():
+            await after_response_handler(connection)
+
+        if form_data := connection.scope.get("_form", {}):
+            await cleanup_temporary_files(form_data=cast("dict[str, Any]", form_data))
+
+    async def _get_response_for_request(
+        self,
+        request: Request[Any, Any, Any],
+    ) -> ASGIApp:
+        """Return a response for the request.
+
+        If caching is enabled and a response exist in the cache, the cached response will be returned.
+        If caching is enabled and a response does not exist in the cache, the newly created
+        response will be cached.
+
+        Args:
+            request: The Request instance
+
+        Returns:
+            An instance of Response or a compatible ASGIApp or a subclass of it
+        """
+        if self.cache and (response := await self._get_cached_response(request=request)):
+            return response
+
+        return await self._call_handler_function(request=request)
+
+    async def _call_handler_function(self, request: Request) -> ASGIApp:
+        """Call the before request handlers, retrieve any data required for the route handler, and call the route
+        handler's ``to_response`` method.
+
+        This is wrapped in a try except block - and if an exception is raised,
+        it tries to pass it to an appropriate exception handler - if defined.
+        """
+        response_data: Any = None
+        cleanup_group: DependencyCleanupGroup | None = None
+
+        if before_request_handler := self.resolve_before_request():
+            response_data = await before_request_handler(request)
+
+        if not response_data:
+            response_data, cleanup_group = await self._get_response_data(request=request)
+
+        response: ASGIApp = await self.to_response(data=response_data, request=request)
+
+        if cleanup_group:
+            await cleanup_group.cleanup()
+
+        return response
+
+    async def _get_response_data(self, request: Request) -> tuple[Any, DependencyCleanupGroup | None]:
+        """Determine what kwargs are required for the given route handler's ``fn`` and calls it."""
+        parsed_kwargs: dict[str, Any] = {}
+        cleanup_group: DependencyCleanupGroup | None = None
+        parameter_model = self._get_kwargs_model_for_route(request.scope["path_params"].keys())
+
+        if parameter_model.has_kwargs and self.signature_model:
+            kwargs = parameter_model.to_kwargs(connection=request)
+
+            if "data" in kwargs:
+                try:
+                    data = await kwargs["data"]
+                except SerializationException as e:
+                    raise ClientException(str(e)) from e
+
+                if data is Empty:
+                    del kwargs["data"]
+                else:
+                    kwargs["data"] = data
+
+            if "body" in kwargs:
+                kwargs["body"] = await kwargs["body"]
+
+            if parameter_model.dependency_batches:
+                cleanup_group = await parameter_model.resolve_dependencies(request, kwargs)
+
+            parsed_kwargs = self.signature_model.parse_values_from_connection_kwargs(connection=request, **kwargs)
+
+        if cleanup_group:
+            async with cleanup_group:
+                data = self.fn(**parsed_kwargs) if self.has_sync_callable else await self.fn(**parsed_kwargs)
+        elif self.has_sync_callable:
+            data = self.fn(**parsed_kwargs)
+        else:
+            data = await self.fn(**parsed_kwargs)
+
+        return data, cleanup_group
+
+    async def _get_cached_response(self, request: Request) -> ASGIApp | None:
+        """Retrieve and un-pickle the cached response, if existing.
+
+        Args:
+            request: The :class:`Request <litestar.connection.Request>` instance
+
+        Returns:
+            A cached response instance, if existing.
+        """
+
+        cache_config = request.app.response_cache_config
+        cache_key = (self.cache_key_builder or cache_config.key_builder)(request)
+        store = cache_config.get_store_from_app(request.app)
+
+        if not (cached_response_data := await store.get(key=cache_key)):
+            return None
+
+        # we use the regular msgspec.msgpack.decode here since we don't need any of
+        # the added decoders
+        messages = _decode_msgpack_plain(cached_response_data)
+
+        async def cached_response(scope: Scope, receive: Receive, send: Send) -> None:
+            ScopeState.from_scope(scope).is_cached = True
+            for message in messages:
+                await send(message)
+
+        return cached_response
 
 
 route = HTTPRouteHandler
