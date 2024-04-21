@@ -16,6 +16,7 @@ from litestar import (
 )
 from litestar import route as route_decorator
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.routes import HTTPRoute
 
 
 @pytest.fixture
@@ -46,12 +47,13 @@ def test_register_with_controller_class(controller: Type[Controller]) -> None:
     router = Router(path="/base", route_handlers=[controller])
     assert len(router.routes) == 3
     for route in router.routes:
-        if len(route.methods) == 2:
-            assert sorted(route.methods) == sorted(["GET", "OPTIONS"])  # pyright: ignore
-            assert route.path == "/base/test/{id:int}"
-        elif len(route.methods) == 3:
-            assert sorted(route.methods) == sorted(["GET", "POST", "OPTIONS"])  # pyright: ignore
-            assert route.path == "/base/test"
+        if isinstance(route, HTTPRoute):
+            if len(route.methods) == 2:
+                assert sorted(route.methods) == sorted(["GET", "OPTIONS"])  # pyright: ignore
+                assert route.path == "/base/test/{id:int}"
+            elif len(route.methods) == 3:
+                assert sorted(route.methods) == sorted(["GET", "POST", "OPTIONS"])  # pyright: ignore
+                assert route.path == "/base/test"
 
 
 def test_register_controller_on_different_routers(controller: Type[Controller]) -> None:
@@ -82,12 +84,13 @@ def test_register_with_router_instance(controller: Type[Controller]) -> None:
 
     assert len(base_router.routes) == 3
     for route in base_router.routes:
-        if len(route.methods) == 2:
-            assert sorted(route.methods) == sorted(["GET", "OPTIONS"])  # pyright: ignore
-            assert route.path == "/base/top-level/test/{id:int}"
-        elif len(route.methods) == 3:
-            assert sorted(route.methods) == sorted(["GET", "POST", "OPTIONS"])  # pyright: ignore
-            assert route.path == "/base/top-level/test"
+        if isinstance(route, HTTPRoute):
+            if len(route.methods) == 2:
+                assert sorted(route.methods) == sorted(["GET", "OPTIONS"])  # pyright: ignore
+                assert route.path == "/base/top-level/test/{id:int}"
+            elif len(route.methods) == 3:
+                assert sorted(route.methods) == sorted(["GET", "POST", "OPTIONS"])  # pyright: ignore
+                assert route.path == "/base/top-level/test"
 
 
 def test_register_with_route_handler_functions() -> None:
@@ -106,13 +109,14 @@ def test_register_with_route_handler_functions() -> None:
     router = Router(path="/base", route_handlers=[first_route_handler, second_route_handler, third_route_handler])
     assert len(router.routes) == 2
     for route in router.routes:
-        if len(route.methods) == 2:
-            assert sorted(route.methods) == sorted(["GET", "OPTIONS"])  # pyright: ignore
-            assert route.path == "/base/second"
-        else:
-            assert sorted(route.methods) == sorted(["GET", "POST", "PATCH", "OPTIONS"])  # pyright: ignore
-            assert route.path == "/base/first"
-            assert route.path == "/base/first"
+        if isinstance(route, HTTPRoute):
+            if len(route.methods) == 2:
+                assert sorted(route.methods) == sorted(["GET", "OPTIONS"])  # pyright: ignore
+                assert route.path == "/base/second"
+            else:
+                assert sorted(route.methods) == sorted(["GET", "POST", "PATCH", "OPTIONS"])  # pyright: ignore
+                assert route.path == "/base/first"
+                assert route.path == "/base/first"
 
 
 def test_register_validation_wrong_class() -> None:

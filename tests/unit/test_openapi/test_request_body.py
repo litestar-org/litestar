@@ -50,7 +50,7 @@ def create_request(openapi_context: OpenAPIContext) -> RequestBodyFactory:
 
 def test_create_request_body(person_controller: Type[Controller], create_request: RequestBodyFactory) -> None:
     for route in Litestar(route_handlers=[person_controller]).routes:
-        for route_handler, _ in route.route_handler_map.values():  # type: ignore[union-attr]
+        for route_handler in route.route_handler_map.values():  # type: ignore[union-attr]
             handler_fields = route_handler.parsed_fn_signature.parameters
             if "data" in handler_fields:
                 request_body = create_request(route_handler, handler_fields["data"])
