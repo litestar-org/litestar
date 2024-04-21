@@ -4,6 +4,7 @@ from functools import lru_cache
 from inspect import isawaitable
 from typing import TYPE_CHECKING, Any, Sequence, cast
 
+from litestar.datastructures import UploadFile
 from litestar.enums import HttpMethod
 from litestar.exceptions import ValidationException
 from litestar.response import Response
@@ -215,3 +216,9 @@ def is_empty_response_annotation(return_annotation: FieldDefinition) -> bool:
 
 
 HTTP_METHOD_NAMES = {m.value for m in HttpMethod}
+
+
+async def cleanup_temporary_files(form_data: dict[str, Any]) -> None:
+    for v in form_data.values():
+        if isinstance(v, UploadFile) and not v.file.closed:
+            await v.close()
