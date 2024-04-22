@@ -1535,16 +1535,16 @@ document.write(`
                   
   <section id="websockets">
 <h1>WebSockets<a class="headerlink" href="#websockets" title="Permalink to this heading">#</a></h1>
-<p>Handling WebSocket in an application often involves dealing with low level constructs
+<p>Handling WebSockets in an application often involves dealing with low level constructs
 such as the socket itself, setting up a loop and listening for incoming data, handling
 exceptions, and parsing incoming and serializing outgoing data. In addition to the
-low-level <a class="reference internal" href="../reference/handlers.html#litestar.handlers.websocket" title="litestar.handlers.websocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">websocket</span> <span class="pre">route</span> <span class="pre">handler</span></code></a>, Litestar offers two
+low-level <a class="reference internal" href="../reference/handlers.html#litestar.handlers.websocket" title="litestar.handlers.websocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocket</span> <span class="pre">route</span> <span class="pre">handler</span></code></a>, Litestar offers two
 high level interfaces:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../reference/handlers.html#litestar.handlers.websocket_listener" title="litestar.handlers.websocket_listener"><code class="xref py py-class docutils literal notranslate"><span class="pre">websocket_listener</span></code></a></p></li>
 <li><p><a class="reference internal" href="../reference/handlers.html#litestar.handlers.WebsocketListener" title="litestar.handlers.WebsocketListener"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketListener</span></code></a></p></li>
 </ul>
-<p>These treat a WebSocket handler like any other route handler; As a callable that takes
+<p>These treat a WebSocket handler like any other route handler: as a callable that takes
 in incoming data in an already pre-processed form and returns data to be serialized and
 sent over the connection. The low level details will be handled behind the curtains.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
@@ -1565,13 +1565,13 @@ parameter. This works like a regular route handler, so it’s possible to specif
 type of data which should be received, and it will be converted accordingly.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Contrary to websocket route handlers, function decorated with
+<p>Contrary to WebSocket route handlers, functions decorated with
 <a class="reference internal" href="../reference/handlers.html#litestar.handlers.websocket_listener" title="litestar.handlers.websocket_listener"><code class="xref py py-class docutils literal notranslate"><span class="pre">websocket_listener</span></code></a> don’t have to be
 asynchronous.</p>
 </div>
 <section id="receiving-data">
 <h2>Receiving data<a class="headerlink" href="#receiving-data" title="Permalink to this heading">#</a></h2>
-<p>Data can be received in listener via the <code class="docutils literal notranslate"><span class="pre">data</span></code> parameter. The data passed to this
+<p>Data can be received in the listener via the <code class="docutils literal notranslate"><span class="pre">data</span></code> parameter. The data passed to this
 will be converted / parsed according to the given type annotation and supports
 <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>, or arbitrary <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>s / or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>s in the
 form of JSON.</p>
@@ -1648,14 +1648,14 @@ Bytes</label><div class="sd-tab-content docutils">
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>Contrary to route handlers, JSON data will only be parsed but not validated. This
-is a currently limitation of the implementation and will change in future versions.</p>
+is a limitation of the current implementation and will change in future versions.</p>
 </div>
 </section>
 <section id="sending-data">
 <h2>Sending data<a class="headerlink" href="#sending-data" title="Permalink to this heading">#</a></h2>
 <p>Sending data is done by simply returning the value to be sent from the handler function.
 Similar to receiving data, type annotations configure how the data is being handled.
-Values are are not <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> are assumed to be JSON encodable and
+Values that are not <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> are assumed to be JSON encodable and
 will be serialized accordingly before being sent. This serialization is available for
 all data types currently supported by Litestar (
 <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html" title="(in Python v3.12)"><span class="xref std std-doc">dataclasses</span></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a>,
@@ -1809,7 +1809,7 @@ Binary mode</label><div class="sd-tab-content docutils">
 <p class="admonition-title">Important</p>
 <p>Once configured with a mode, a listener will only listen to socket events of the
 appropriate type. This means if a listener is configured to use <code class="docutils literal notranslate"><span class="pre">binary</span></code> mode,
-it will not respond to websocket events sending data in the text channel</p>
+it will not respond to WebSocket events sending data in the text channel.</p>
 </div>
 </section>
 <section id="setting-the-send-mode">
@@ -1929,7 +1929,7 @@ function via the <code class="docutils literal notranslate"><span class="pre">so
 </div>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p>Since websockets are inherently asynchronous, to interact with the asynchronous
+<p>Since WebSockets are inherently asynchronous, to interact with the asynchronous
 methods on <a class="reference internal" href="../reference/connection.html#litestar.connection.WebSocket" title="litestar.connection.WebSocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocket</span></code></a>, the handler function needs
 to be asynchronous.</p>
 </div>
@@ -2019,7 +2019,7 @@ Async</label><div class="sd-tab-content docutils">
 <p><span class="versionmodified added">New in version 2.7.0.</span></p>
 </div>
 <p>Litestar supports custom <code class="docutils literal notranslate"><span class="pre">websocket_class</span></code> instances, which can be used to further configure the default <a class="reference internal" href="../reference/connection.html#litestar.connection.WebSocket" title="litestar.connection.WebSocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocket</span></code></a>.
-The example below illustrates how to implement custom websocket class for the whole application.</p>
+The example below illustrates how to implement a custom WebSocket class for the whole application.</p>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header">
 Example of a custom websocket at the application level<div class="sd-summary-down docutils">
@@ -2052,7 +2052,7 @@ Example of a custom websocket at the application level<div class="sd-summary-dow
 </details><div class="admonition-layered-architecture admonition">
 <p class="admonition-title">Layered architecture</p>
 <p>WebSocket classes are part of Litestar’s layered architecture, which means you can
-set a websocket class on every layer of the application. If you have set a webscoket
+set a WebSocket class on every layer of the application. If you have set a WebSocket
 class on multiple layers, the layer closest to the route handler will take precedence.</p>
 <p>You can read more about this in the <a class="reference internal" href="applications.html#layered-architecture"><span class="std std-ref">Layered architecture</span></a> section</p>
 </div>

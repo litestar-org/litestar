@@ -2,17 +2,17 @@ WebSockets
 ==========
 
 
-Handling WebSocket in an application often involves dealing with low level constructs
+Handling WebSockets in an application often involves dealing with low level constructs
 such as the socket itself, setting up a loop and listening for incoming data, handling
 exceptions, and parsing incoming and serializing outgoing data. In addition to the
-low-level :class:`websocket route handler <.handlers.websocket>`, Litestar offers two
+low-level :class:`WebSocket route handler <.handlers.websocket>`, Litestar offers two
 high level interfaces:
 
 - :class:`websocket_listener <.handlers.websocket_listener>`
 - :class:`WebSocketListener <.handlers.WebsocketListener>`
 
 
-These treat a WebSocket handler like any other route handler; As a callable that takes
+These treat a WebSocket handler like any other route handler: as a callable that takes
 in incoming data in an already pre-processed form and returns data to be serialized and
 sent over the connection. The low level details will be handled behind the curtains.
 
@@ -37,7 +37,7 @@ parameter. This works like a regular route handler, so it's possible to specify 
 type of data which should be received, and it will be converted accordingly.
 
 .. note::
-    Contrary to websocket route handlers, function decorated with
+    Contrary to WebSocket route handlers, functions decorated with
     :class:`websocket_listener <.handlers.websocket_listener>` don't have to be
     asynchronous.
 
@@ -46,7 +46,7 @@ type of data which should be received, and it will be converted accordingly.
 Receiving data
 --------------
 
-Data can be received in listener via the ``data`` parameter. The data passed to this
+Data can be received in the listener via the ``data`` parameter. The data passed to this
 will be converted / parsed according to the given type annotation and supports
 :class:`str`, :class:`bytes`, or arbitrary :class:`dict`\ s / or :class:`list`\ s in the
 form of JSON.
@@ -72,7 +72,7 @@ form of JSON.
 .. important::
 
     Contrary to route handlers, JSON data will only be parsed but not validated. This
-    is a currently limitation of the implementation and will change in future versions.
+    is a limitation of the current implementation and will change in future versions.
 
 
 Sending data
@@ -80,7 +80,7 @@ Sending data
 
 Sending data is done by simply returning the value to be sent from the handler function.
 Similar to receiving data, type annotations configure how the data is being handled.
-Values are are not :class:`str` or :class:`bytes` are assumed to be JSON encodable and
+Values that are not :class:`str` or :class:`bytes` are assumed to be JSON encodable and
 will be serialized accordingly before being sent. This serialization is available for
 all data types currently supported by Litestar (
 :doc:`dataclasses <python:library/dataclasses>`\ , :class:`TypedDict <typing.TypedDict>`,
@@ -151,7 +151,7 @@ Setting the receive mode
 .. important::
     Once configured with a mode, a listener will only listen to socket events of the
     appropriate type. This means if a listener is configured to use ``binary`` mode,
-    it will not respond to websocket events sending data in the text channel
+    it will not respond to WebSocket events sending data in the text channel.
 
 
 Setting the send mode
@@ -212,7 +212,7 @@ function via the ``socket`` argument:
 
 
 .. important::
-    Since websockets are inherently asynchronous, to interact with the asynchronous
+    Since WebSockets are inherently asynchronous, to interact with the asynchronous
     methods on :class:`WebSocket <.connection.WebSocket>`, the handler function needs
     to be asynchronous.
 
@@ -257,7 +257,7 @@ Custom WebSocket
 .. versionadded:: 2.7.0
 
 Litestar supports custom ``websocket_class`` instances, which can be used to further configure the default :class:`WebSocket`.
-The example below illustrates how to implement custom websocket class for the whole application.
+The example below illustrates how to implement a custom WebSocket class for the whole application.
 
 .. dropdown:: Example of a custom websocket at the application level
 
@@ -267,7 +267,7 @@ The example below illustrates how to implement custom websocket class for the wh
 .. admonition:: Layered architecture
 
    WebSocket classes are part of Litestar's layered architecture, which means you can
-   set a websocket class on every layer of the application. If you have set a webscoket
+   set a WebSocket class on every layer of the application. If you have set a WebSocket
    class on multiple layers, the layer closest to the route handler will take precedence.
 
    You can read more about this in the :ref:`usage/applications:layered architecture` section
