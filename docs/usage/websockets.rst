@@ -12,7 +12,7 @@ high level interfaces:
 - :class:`WebSocketListener <.handlers.WebsocketListener>`
 
 
-These treat a WebSocket handler like any other route handler, as a callable that takes
+These treat a WebSocket handler like any other route handler: as a callable that takes
 in incoming data in an already pre-processed form and returns data to be serialized and
 sent over the connection. The low level details will be handled behind the curtains.
 
