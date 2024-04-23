@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from contextlib import suppress
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Mapping
 
@@ -49,16 +50,12 @@ class FlashPlugin(InitPluginProtocol):
         """
         if self.config.session_config is None:
             raise litestar.exceptions.ImproperlyConfiguredException("Flash messages require a session middleware.")
-        template_callable: Callable[[Any], Any]
-        try:
+        template_callable: Callable[[Any], Any] = get_flashes
+        with suppress(MissingDependencyException):
             from litestar.contrib.minijinja import MiniJinjaTemplateEngine, _transform_state
-        except MissingDependencyException:  # pragma: no cover
-            template_callable = get_flashes
-        else:
+
             if isinstance(self.config.template_config.engine_instance, MiniJinjaTemplateEngine):
                 template_callable = _transform_state(get_flashes)
-            else:
-                template_callable = get_flashes
 
         self.config.template_config.engine_instance.register_template_callable("get_flashes", template_callable)  # pyright: ignore[reportGeneralTypeIssues]
         return app_config
