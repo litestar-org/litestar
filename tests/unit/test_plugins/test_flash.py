@@ -93,8 +93,8 @@ def test_flash_plugin(
         assert "Flash Test!" in r.text
         r = client.post("/check")
         assert r.status_code == 200
-        assert "Flash Test!" in r.text
         assert "User not Found!" in r.text
+        assert "Flash Test!" in r.text
 
 
 def test_flash_config_doesnt_have_session() -> None:
