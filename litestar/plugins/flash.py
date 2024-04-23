@@ -70,8 +70,4 @@ def flash(
 
 
 def get_flashes(context: Mapping[str, Any]) -> Any:
-    return (
-        _get_request_from_context(context).session.pop("_messages")
-        if "_messages" in _get_request_from_context(context).session
-        else []
-    )
+    return _get_request_from_context(context).session.pop("_messages", [])
