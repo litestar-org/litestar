@@ -9,6 +9,8 @@ from typing import TYPE_CHECKING, Any, Mapping
 import litestar.exceptions
 from litestar import Request
 from litestar.exceptions import MissingDependencyException
+from litestar.middleware import DefineMiddleware
+from litestar.middleware.session import SessionMiddleware
 from litestar.plugins import InitPluginProtocol
 from litestar.template.base import _get_request_from_context
 
@@ -16,7 +18,6 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from litestar.config.app import AppConfig
-    from litestar.middleware.session.server_side import ServerSideSessionConfig
     from litestar.template import TemplateConfig
 
 
@@ -25,7 +26,7 @@ class FlashConfig:
     """Configuration for Flash messages."""
 
     template_config: TemplateConfig
-    session_config: ServerSideSessionConfig | None
+    session_config: SessionMiddleware
 
 
 class FlashPlugin(InitPluginProtocol):
@@ -48,7 +49,10 @@ class FlashPlugin(InitPluginProtocol):
         Returns:
             The application configuration with the message callable registered.
         """
-        if self.config.session_config is None:
+        for mw in app_config.middleware:
+            if isinstance(mw, DefineMiddleware) and issubclass(mw.middleware, SessionMiddleware):
+                break
+        else:
             raise litestar.exceptions.ImproperlyConfiguredException("Flash messages require a session middleware.")
         template_callable: Callable[[Any], Any] = get_flashes
         with suppress(MissingDependencyException):
