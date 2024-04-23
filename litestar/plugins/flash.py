@@ -5,16 +5,17 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Mapping
 
+import litestar.exceptions
+from litestar import Request
 from litestar.exceptions import MissingDependencyException
 from litestar.plugins import InitPluginProtocol
 from litestar.template.base import _get_request_from_context
-from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
     from litestar.config.app import AppConfig
-    from litestar.connection import ASGIConnection
+    from litestar.middleware.session.server_side import ServerSideSessionConfig
     from litestar.template import TemplateConfig
 
 
@@ -23,6 +24,7 @@ class FlashConfig:
     """Configuration for Flash messages."""
 
     template_config: TemplateConfig
+    session_config: ServerSideSessionConfig | None
 
 
 class FlashPlugin(InitPluginProtocol):
@@ -45,6 +47,8 @@ class FlashPlugin(InitPluginProtocol):
         Returns:
             The application configuration with the message callable registered.
         """
+        if self.config.session_config is None:
+            raise litestar.exceptions.ImproperlyConfiguredException("Flash messages require a session middleware.")
         template_callable: Callable[[Any], Any]
         try:
             from litestar.contrib.minijinja import MiniJinjaTemplateEngine, _transform_state
@@ -60,26 +64,19 @@ class FlashPlugin(InitPluginProtocol):
         return app_config
 
 
-def flash(connection: ASGIConnection, message: str, category: str) -> None:
-    """Add a flash message to the request scope.
-
-    Args:
-        connection: The connection instance.
-        message: The message to flash.
-        category: The category of the message.
-    """
-    scope_state = ScopeState.from_scope(connection.scope)
-    scope_state.flash_messages.append({"message": message, "category": category})
+def flash(
+    request: Request,
+    message: Any,
+    category: str,
+) -> None:
+    if "_messages" not in request.session:
+        request.session["_messages"] = []
+    request.session["_messages"].append({"message": message, "category": category})
 
 
 def get_flashes(context: Mapping[str, Any]) -> Any:
-    """Get flash messages from the request scope, if any.
-
-    Args:
-        context: The context dictionary.
-
-    Returns:
-        The flash messages, if any.
-    """
-    scope_state = ScopeState.from_scope(_get_request_from_context(context).scope)
-    return scope_state.flash_messages
+    return (
+        _get_request_from_context(context).session.pop("_messages")
+        if "_messages" in _get_request_from_context(context).session
+        else []
+    )
