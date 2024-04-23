@@ -2,23 +2,23 @@
 
 from __future__ import annotations
 
+import contextvars
 from contextlib import suppress
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Mapping
 
-import litestar.exceptions
-from litestar import Request
-from litestar.exceptions import MissingDependencyException
-from litestar.middleware.session import SessionMiddleware
+from litestar.exceptions import ImproperlyConfiguredException, MissingDependencyException
 from litestar.plugins import InitPluginProtocol
-from litestar.template.base import _get_request_from_context
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+    from litestar import Request
     from litestar.config.app import AppConfig
     from litestar.middleware.session.server_side import ServerSideSessionConfig
     from litestar.template import TemplateConfig
+
+flash_ctx_var = contextvars.ContextVar("flash_messages", default=[])
 
 
 @dataclass
@@ -49,11 +49,8 @@ class FlashPlugin(InitPluginProtocol):
         Returns:
             The application configuration with the message callable registered.
         """
-        for mw in app_config.middleware:
-            if isinstance(mw, SessionMiddleware):
-                break
-        else:
-            raise litestar.exceptions.ImproperlyConfiguredException("Flash messages require a session middleware.")
+        if self.config.session_config is None:
+            raise ImproperlyConfiguredException("Flash messages require a session middleware.")
         template_callable: Callable[[Any], Any] = get_flashes
         with suppress(MissingDependencyException):
             from litestar.contrib.minijinja import MiniJinjaTemplateEngine, _transform_state
@@ -70,8 +67,14 @@ def flash(
     message: Any,
     category: str,
 ) -> None:
-    request.session.setdefault("_messages", []).append({"message": message, "category": category})
+    # request.session.setdefault("_messages", []).append({"message": message, "category": category})
+    current = flash_ctx_var.get()
+    current.append({"message": message, "category": category})
+    flash_ctx_var.set(current)
 
 
 def get_flashes(context: Mapping[str, Any]) -> Any:
-    return _get_request_from_context(context).session.pop("_messages", [])
+    # return _get_request_from_context(context).session.pop("_messages", [])
+    client_addr = flash_ctx_var.get()
+    flash_ctx_var.set([])
+    return client_addr
