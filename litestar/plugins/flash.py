@@ -66,9 +66,7 @@ def flash(
     message: Any,
     category: str,
 ) -> None:
-    if "_messages" not in request.session:
-        request.session["_messages"] = []
-    request.session["_messages"].append({"message": message, "category": category})
+    request.session.setdefault("_messages", []).append({"message": message, "category": category})
 
 
 def get_flashes(context: Mapping[str, Any]) -> Any:
