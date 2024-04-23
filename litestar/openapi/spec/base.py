@@ -2,7 +2,11 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass, fields, is_dataclass
 from enum import Enum
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
+    from dataclasses import Field
 
 __all__ = ("BaseSchemaObject",)
 
@@ -34,13 +38,16 @@ def _normalize_value(value: Any) -> Any:
 class BaseSchemaObject:
     """Base class for schema spec objects"""
 
+    def _iter_fields(self) -> Iterator[Field[Any]]:
+        yield from fields(self)
+
     def to_schema(self) -> dict[str, Any]:
         """Transform the spec dataclass object into a string keyed dictionary. This method traverses all nested values
         recursively.
         """
         result: dict[str, Any] = {}
 
-        for field in fields(self):
+        for field in self._iter_fields():
             value = _normalize_value(getattr(self, field.name, None))
 
             if value is not None:

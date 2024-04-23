@@ -28,16 +28,12 @@ def test_merged_components_correct() -> None:
         "examples": {"example-one": {"summary": "an example"}},
         "headers": {
             "one": {
-                "name": "",
-                "in": "header",
                 "required": False,
                 "deprecated": False,
                 "allowEmptyValue": False,
                 "allowReserved": False,
             },
             "two": {
-                "name": "",
-                "in": "header",
                 "required": False,
                 "deprecated": False,
                 "allowEmptyValue": False,
