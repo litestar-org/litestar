@@ -13,6 +13,7 @@ from litestar.middleware import DefineMiddleware
 from litestar.middleware.session import SessionMiddleware
 from litestar.plugins import InitPluginProtocol
 from litestar.template.base import _get_request_from_context
+from litestar.utils.predicates import is_class_and_subclass
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -49,7 +50,7 @@ class FlashPlugin(InitPluginProtocol):
             The application configuration with the message callable registered.
         """
         for mw in app_config.middleware:
-            if isinstance(mw, DefineMiddleware) and issubclass(mw.middleware, SessionMiddleware):
+            if isinstance(mw, DefineMiddleware) and is_class_and_subclass(mw.middleware, SessionMiddleware):
                 break
         else:
             raise litestar.exceptions.ImproperlyConfiguredException("Flash messages require a session middleware.")
