@@ -26,7 +26,6 @@ class FlashConfig:
     """Configuration for Flash messages."""
 
     template_config: TemplateConfig
-    session_config: SessionMiddleware
 
 
 class FlashPlugin(InitPluginProtocol):

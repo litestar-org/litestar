@@ -78,7 +78,7 @@ def test_flash_plugin(
         engine=engine,
     )
     session_config = ServerSideSessionConfig()
-    flash_config = FlashConfig(template_config=template_config, session_config=session_config)
+    flash_config = FlashConfig(template_config=template_config)
     with create_test_client(
         plugins=[FlashPlugin(config=flash_config)],
         route_handlers=[index, login, check],
@@ -99,6 +99,6 @@ def test_flash_plugin(
 
 def test_flash_config_doesnt_have_session() -> None:
     template_config = TemplateConfig(directory=Path("tests/templates"), engine=JinjaTemplateEngine)
-    flash_config = FlashConfig(template_config=template_config, session_config=None)
+    flash_config = FlashConfig(template_config=template_config)
     with pytest.raises(ImproperlyConfiguredException):
         Litestar(plugins=[FlashPlugin(config=flash_config)])
