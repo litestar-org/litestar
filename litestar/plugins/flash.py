@@ -49,8 +49,7 @@ class FlashPlugin(InitPluginProtocol):
             The application configuration with the message callable registered.
         """
         for mw in app_config.middleware:
-            m = mw.middleware
-            if isinstance(mw, DefineMiddleware) and issubclass(m, SessionMiddleware):
+            if isinstance(mw, DefineMiddleware) and issubclass(mw.middleware, SessionMiddleware):
                 break
         else:
             raise litestar.exceptions.ImproperlyConfiguredException("Flash messages require a session middleware.")
