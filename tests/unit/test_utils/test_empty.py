@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from litestar.utils.empty import Empty, EmptyValueError, value_or_raise
+from litestar.types.empty import Empty
+from litestar.utils.empty import EmptyValueError, value_or_raise
 
 
 def test_value_or_raise_empty() -> None:

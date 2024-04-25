@@ -2,6 +2,8 @@ import importlib
 
 import pytest
 
+from litestar.types.asgi_types import ASGIApp
+
 
 @pytest.mark.parametrize(
     "import_path, import_name",
@@ -173,3 +175,17 @@ def test_openapi_config_enabled_endpoints_deprecation() -> None:
 def test_cors_middleware_public_interface_deprecation() -> None:
     with pytest.warns(DeprecationWarning):
         from litestar.middleware.cors import CORSMiddleware  # noqa: F401
+
+
+def test_exception_handler_middleware_debug_deprecation(mock_asgi_app: ASGIApp) -> None:
+    from litestar.middleware._internal.exceptions import ExceptionHandlerMiddleware
+
+    with pytest.warns(DeprecationWarning):
+        ExceptionHandlerMiddleware(mock_asgi_app, debug=True)
+
+
+def test_exception_handler_middleware_exception_handlers_deprecation(mock_asgi_app: ASGIApp) -> None:
+    from litestar.middleware._internal.exceptions import ExceptionHandlerMiddleware
+
+    with pytest.warns(DeprecationWarning):
+        ExceptionHandlerMiddleware(mock_asgi_app, debug=None, exception_handlers={})
