@@ -189,3 +189,13 @@ def test_exception_handler_middleware_exception_handlers_deprecation(mock_asgi_a
 
     with pytest.warns(DeprecationWarning):
         ExceptionHandlerMiddleware(mock_asgi_app, debug=None, exception_handlers={})
+
+
+def test_deprecate_exception_handler_middleware() -> None:
+    with pytest.warns(DeprecationWarning):
+        from litestar.middleware.exceptions import ExceptionHandlerMiddleware  # noqa: F401
+
+
+def test_deprecate_exception_handler_middleware_2() -> None:
+    with pytest.warns(DeprecationWarning):
+        from litestar.middleware.exceptions.middleware import ExceptionHandlerMiddleware  # noqa: F401
