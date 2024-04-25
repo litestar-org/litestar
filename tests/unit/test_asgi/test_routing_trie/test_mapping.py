@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from unittest.mock import AsyncMock, MagicMock
+from typing import Any, Iterator
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -30,7 +31,7 @@ def test_build_route_middleware_stack_no_middleware(monkeypatch: pytest.MonkeyPa
 def test_build_route_middleware_stack_with_middleware(monkeypatch: pytest.MonkeyPatch) -> None:
     # proves that if there is middleware, the route handler is wrapped in the exception handling
     # middleware, before being wrapped in the middleware stack.
-    mock_middleware = AsyncMock()
+    mock_middleware = MagicMock()
     del mock_middleware.__iter__
 
     @get("/", middleware=[mock_middleware])
@@ -42,3 +43,34 @@ def test_build_route_middleware_stack_with_middleware(monkeypatch: pytest.Monkey
     mock_middleware.assert_called_once()
     ((_, kw_args),) = mock_middleware.call_args_list
     assert isinstance(kw_args["app"], ExceptionHandlerMiddleware)
+
+
+def test_build_route_middleware_stack_with_starlette_middleware(monkeypatch: pytest.MonkeyPatch) -> None:
+    # test our support for starlette's Middleware class
+    class Middleware:
+        """A Starlette ``Middleware`` class.
+
+        See https://github.com/encode/starlette/blob/23c81da94b57701eabd43f582093442e6811f81d/starlette/middleware/__init__.py#L4-L17
+        """
+
+        def __init__(self, cls: Any, **options: Any) -> None:
+            self.cls = cls
+            self.options = options
+
+        def __iter__(self) -> Iterator[Any]:
+            as_tuple = (self.cls, self.options)
+            return iter(as_tuple)
+
+    mock_middleware = MagicMock()
+    mock_middleware_arg = MagicMock()
+    del mock_middleware.__iter__
+
+    @get("/", middleware=[Middleware(mock_middleware, arg=mock_middleware_arg)])  # type: ignore[list-item]
+    async def handler() -> None:
+        pass
+
+    route = HTTPRoute(path="/", route_handlers=[handler])
+    build_route_middleware_stack(app=Litestar(), route=route, route_handler=handler)
+    ((_, kw_args),) = mock_middleware.call_args_list
+    assert isinstance(kw_args["app"], ExceptionHandlerMiddleware)
+    assert kw_args["arg"] is mock_middleware_arg
