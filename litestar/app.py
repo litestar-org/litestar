@@ -32,7 +32,7 @@ from litestar.exceptions import (
     NoRouteMatchFoundException,
 )
 from litestar.logging.config import LoggingConfig, get_logger_placeholder
-from litestar.middleware._internal import CORSMiddleware
+from litestar.middleware._internal.cors import CORSMiddleware
 from litestar.openapi.config import OpenAPIConfig
 from litestar.plugins import (
     CLIPluginProtocol,
@@ -412,7 +412,6 @@ class Litestar(Router):
         self.get_logger: GetLogger = get_logger_placeholder
         self.logger: Logger | None = None
         self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = []
-        self.asgi_router = ASGIRouter(app=self)
 
         self.after_exception = [ensure_async_callable(h) for h in config.after_exception]
         self.allowed_hosts = cast("AllowedHostsConfig | None", config.allowed_hosts)
@@ -442,7 +441,7 @@ class Litestar(Router):
         try:
             from starlette.exceptions import HTTPException as StarletteHTTPException
 
-            from litestar.middleware.exceptions.middleware import _starlette_exception_handler
+            from litestar.middleware._internal.exceptions.middleware import _starlette_exception_handler
 
             config.exception_handlers.setdefault(StarletteHTTPException, _starlette_exception_handler)
         except ImportError:
@@ -478,6 +477,8 @@ class Litestar(Router):
             include_in_schema=config.include_in_schema,
             websocket_class=self.websocket_class,
         )
+
+        self.asgi_router = ASGIRouter(app=self)
 
         for route_handler in config.route_handlers:
             self.register(route_handler)
@@ -839,10 +840,7 @@ class Litestar(Router):
 
         If CORS or TrustedHost configs are provided to the constructor, they will wrap the router as well.
         """
-        asgi_handler = wrap_in_exception_handler(
-            app=self.asgi_router,
-            exception_handlers=self.exception_handlers or {},  # pyright: ignore
-        )
+        asgi_handler = wrap_in_exception_handler(app=self.asgi_router)
 
         if self.cors_config:
             return CORSMiddleware(app=asgi_handler, config=self.cors_config)
