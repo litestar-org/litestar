@@ -195,7 +195,37 @@ def test_deprecate_exception_handler_middleware() -> None:
     with pytest.warns(DeprecationWarning):
         from litestar.middleware.exceptions import ExceptionHandlerMiddleware  # noqa: F401
 
+    with pytest.raises(ImportError):
+        from litestar.middleware.exceptions.middleware import OtherName  # noqa: F401
+
 
 def test_deprecate_exception_handler_middleware_2() -> None:
     with pytest.warns(DeprecationWarning):
         from litestar.middleware.exceptions.middleware import ExceptionHandlerMiddleware  # noqa: F401
+
+    with pytest.raises(ImportError):
+        from litestar.middleware.exceptions import OtherName  # noqa: F401
+
+
+def test_deprecate_create_debug_response() -> None:
+    with pytest.warns(DeprecationWarning):
+        from litestar.middleware.exceptions._debug_response import create_debug_response  # noqa: F401
+
+    with pytest.raises(ImportError):
+        from litestar.middleware.exceptions._debug_response import OtherName  # noqa: F401
+
+
+def test_deprecate_create_exception_response() -> None:
+    with pytest.warns(DeprecationWarning):
+        from litestar.middleware.exceptions.middleware import create_exception_response  # noqa: F401
+
+    with pytest.raises(ImportError):
+        from litestar.middleware.exceptions.middleware import OtherName  # noqa: F401
+
+
+def test_deprecate_exception_response_content() -> None:
+    with pytest.warns(DeprecationWarning):
+        from litestar.middleware.exceptions.middleware import ExceptionResponseContent  # noqa: F401
+
+    with pytest.raises(ImportError):
+        from litestar.middleware.exceptions.middleware import OtherName  # noqa: F401

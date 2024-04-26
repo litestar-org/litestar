@@ -10,8 +10,8 @@ from structlog.testing import capture_logs
 
 from litestar import Litestar, MediaType, Request, Response, get
 from litestar.exceptions import HTTPException, InternalServerException, ValidationException
+from litestar.exceptions.responses._debug_response import get_symbol_name
 from litestar.logging.config import LoggingConfig, StructLoggingConfig
-from litestar.middleware._internal.exceptions._debug_response import get_symbol_name
 from litestar.middleware._internal.exceptions.middleware import (
     ExceptionHandlerMiddleware,
     _starlette_exception_handler,
