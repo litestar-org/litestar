@@ -37,13 +37,15 @@ async def get_handler() -> str:
     return "Hello, world!"
 
 
-def test_regular_handler_under_mounted_asgi_app() -> None:
-    app = Litestar(
-        route_handlers=[asgi("/", is_mount=True)(asgi_app), get_handler],
-        openapi_config=None,
-        debug=True,
-    )
+app = Litestar(
+    route_handlers=[asgi_handler, get_handler],
+    openapi_config=None,
+    debug=True,
+)
 
+
+def test_regular_handler_under_mounted_asgi_app() -> None:
+    # https://github.com/litestar-org/litestar/issues/3429
     with TestClient(app) as client:
         resp = client.get("/some/path")
         assert resp.content == b"/some/path"
