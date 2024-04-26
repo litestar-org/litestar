@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from litestar import Litestar, asgi, get
+from litestar.enums import ScopeType
 from litestar.testing import TestClient
 
 if TYPE_CHECKING:
@@ -10,7 +11,7 @@ if TYPE_CHECKING:
 
 
 async def asgi_app(scope: Scope, receive: Receive, send: Send) -> None:
-    assert scope["type"] == "http"
+    assert scope["type"] == ScopeType.HTTP
     await send(
         {
             "type": "http.response.start",
@@ -25,6 +26,7 @@ async def asgi_app(scope: Scope, receive: Receive, send: Send) -> None:
         {
             "type": "http.response.body",
             "body": scope["raw_path"],
+            "more_body": False,
         }
     )
 
