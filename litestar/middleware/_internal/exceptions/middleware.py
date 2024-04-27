@@ -91,18 +91,12 @@ class ExceptionHandlerMiddleware:
     This used in multiple layers of Litestar.
     """
 
-    def __init__(
-        self, app: ASGIApp, debug: bool | None, exception_handlers: ExceptionHandlersMap | None = None
-    ) -> None:
+    def __init__(self, app: ASGIApp, exception_handlers: ExceptionHandlersMap | None = None) -> None:
         """Initialize ``ExceptionHandlerMiddleware``.
 
         Args:
             app: The ``next`` ASGI app to call.
-            debug: Whether ``debug`` mode is enabled. Deprecated. Debug mode will be inferred from the request scope
             exception_handlers: A dictionary mapping status codes and/or exception types to handler functions.
-
-        .. deprecated:: 2.0.0
-            The ``debug`` parameter is deprecated. It will be inferred from the request scope
 
         .. deprecated:: 2.9.0
             The ``exception_handlers`` parameter is deprecated. It will be inferred from the application or the
@@ -110,16 +104,6 @@ class ExceptionHandlerMiddleware:
         """
         self.app = app
         self.exception_handlers = exception_handlers
-        self.debug = debug
-
-        if debug is not None:
-            warn_deprecation(
-                "2.0.0",
-                deprecated_name="debug",
-                kind="parameter",
-                info="Debug mode will be inferred from the request scope",
-                removal_in="3.0.0",
-            )
 
         if exception_handlers is not None:
             warn_deprecation(
@@ -129,8 +113,6 @@ class ExceptionHandlerMiddleware:
                 info="It will be inferred from the application or the route handler",
                 removal_in="3.0.0",
             )
-
-        self._get_debug = self._get_debug_scope if debug is None else lambda *a: debug
 
     @staticmethod
     def _get_debug_scope(scope: Scope) -> bool:
