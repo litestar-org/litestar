@@ -7,25 +7,23 @@ Litestar exports :class:`~.middleware.authentication.AbstractAuthenticationMiddl
 To add authentication to your app using this class as a basis, subclass it and implement the abstract method
 :meth:`~.middleware.authentication.AbstractAuthenticationMiddleware.authenticate_request`:
 
-.. dropdown:: Click to see an example
+.. code-block:: python
+    :caption: Adding authentication to your app by subclassing
+      :class:`~.middleware.authentication.AbstractAuthenticationMiddleware`
 
-    .. code-block:: python
-        :caption: Adding authentication to your app by subclassing
-          :class:`~.middleware.authentication.AbstractAuthenticationMiddleware`
-
-        from litestar.middleware import (
-           AbstractAuthenticationMiddleware,
-           AuthenticationResult,
-        )
-        from litestar.connection import ASGIConnection
+    from litestar.middleware import (
+       AbstractAuthenticationMiddleware,
+       AuthenticationResult,
+    )
+    from litestar.connection import ASGIConnection
 
 
-        class MyAuthenticationMiddleware(AbstractAuthenticationMiddleware):
-           async def authenticate_request(
-               self, connection: ASGIConnection
-           ) -> AuthenticationResult:
-               # do something here.
-               ...
+    class MyAuthenticationMiddleware(AbstractAuthenticationMiddleware):
+       async def authenticate_request(
+           self, connection: ASGIConnection
+       ) -> AuthenticationResult:
+           # do something here.
+           ...
 
 As you can see, ``authenticate_request`` is an async function that receives a connection instance and is supposed to return
 an :class:`~.middleware.authentication.AuthenticationResult` instance, which is a
@@ -49,25 +47,23 @@ Since the above is quite hard to grasp in the abstract, let us see an example.
 We start off by creating a user model. It can be implemented using Pydantic, an ODM, ORM, etc. For the sake of the
 example here let us say it is a `SQLAlchemy <https://docs.sqlalchemy.org/>`_ model:
 
-.. dropdown:: Click to see the User model
+.. code-block:: python
+    :caption: my_app/db/models.py
 
-    .. code-block:: python
-        :caption: my_app/db/models.py
+    import uuid
 
-        import uuid
+    from sqlalchemy import Column
+    from sqlalchemy.dialects.postgresql import UUID
+    from sqlalchemy.orm import declarative_base
 
-        from sqlalchemy import Column
-        from sqlalchemy.dialects.postgresql import UUID
-        from sqlalchemy.orm import declarative_base
-
-        Base = declarative_base()
+    Base = declarative_base()
 
 
-        class User(Base):
-            id: uuid.UUID | None = Column(
-                UUID(as_uuid=True), default=uuid.uuid4, primary_key=True
-            )
-            # ... other fields follow, but we only require id for this example
+    class User(Base):
+        id: uuid.UUID | None = Column(
+            UUID(as_uuid=True), default=uuid.uuid4, primary_key=True
+        )
+        # ... other fields follow, but we only require id for this example
 
 We will also need some utility methods to encode and decode tokens. To this end we will use
 the `python-jose <https://github.com/mpdavis/python-jose>`_ library. We will also create a Pydantic model representing a
@@ -168,64 +164,59 @@ We can now create our authentication middleware:
 
 Finally, we need to pass our middleware to the Litestar constructor:
 
-.. dropdown:: Click to see the main.py entrypoint
 
-    .. code-block:: python
-        :caption: my_app/main.py
+.. code-block:: python
+    :caption: my_app/main.py
 
-        from litestar import Litestar
-        from litestar.middleware.base import DefineMiddleware
+    from litestar import Litestar
+    from litestar.middleware.base import DefineMiddleware
 
-        from my_app.security.authentication_middleware import JWTAuthenticationMiddleware
+    from my_app.security.authentication_middleware import JWTAuthenticationMiddleware
 
-        # you can optionally exclude certain paths from authentication.
-        # the following excludes all routes mounted at or under `/schema*`
-        auth_mw = DefineMiddleware(JWTAuthenticationMiddleware, exclude="schema")
+    # you can optionally exclude certain paths from authentication.
+    # the following excludes all routes mounted at or under `/schema*`
+    auth_mw = DefineMiddleware(JWTAuthenticationMiddleware, exclude="schema")
 
-        app = Litestar(route_handlers=[...], middleware=[auth_mw])
+    app = Litestar(route_handlers=[...], middleware=[auth_mw])
 
 That is it. The ``JWTAuthenticationMiddleware`` will now run for every request, and we would be able to access these in a
 http route handler in the following way:
 
-.. dropdown:: Click to see how to access the user and auth in a route handler with the JWTAuthenticationMiddleware
+.. code-block:: python
+    :caption: Accessing the user and auth in a route handler with the JWTAuthenticationMiddleware
 
-    .. code-block:: python
-        :caption: Accessing the user and auth in a route handler with the JWTAuthenticationMiddleware
+    from litestar import Request, get
+    from litestar.datastructures import State
 
-        from litestar import Request, get
-        from litestar.datastructures import State
-
-        from my_app.db.models import User
-        from my_app.security.jwt import Token
+    from my_app.db.models import User
+    from my_app.security.jwt import Token
 
 
-        @get("/")
-        def my_route_handler(request: Request[User, Token, State]) -> None:
-        user = request.user  # correctly typed as User
-        auth = request.auth  # correctly typed as Token
-        assert isinstance(user, User)
-        assert isinstance(auth, Token)
+    @get("/")
+    def my_route_handler(request: Request[User, Token, State]) -> None:
+      user = request.user  # correctly typed as User
+      auth = request.auth  # correctly typed as Token
+      assert isinstance(user, User)
+      assert isinstance(auth, Token)
 
 Or for a websocket route:
 
-.. dropdown:: Click to see how to access the user and auth in a websocket route handler with the JWTAuthenticationMiddleware
+.. code-block:: python
+    :caption: Accessing the user and auth in a websocket route handler with the JWTAuthenticationMiddleware
 
-    .. code-block:: python
-        :caption: Accessing the user and auth in a websocket route handler with the JWTAuthenticationMiddleware
+    from litestar import WebSocket, websocket
+    from litestar.datastructures import State
 
-        from litestar import WebSocket, websocket
-        from litestar.datastructures import State
-
-        from my_app.db.models import User
-        from my_app.security.jwt import Token
+    from my_app.db.models import User
+    from my_app.security.jwt import Token
 
 
-        @websocket("/")
-        async def my_route_handler(socket: WebSocket[User, Token, State]) -> None:
-           user = socket.user  # correctly typed as User
-           auth = socket.auth  # correctly typed as Token
-           assert isinstance(user, User)
-           assert isinstance(auth, Token)
+    @websocket("/")
+    async def my_route_handler(socket: WebSocket[User, Token, State]) -> None:
+       user = socket.user  # correctly typed as User
+       auth = socket.auth  # correctly typed as Token
+       assert isinstance(user, User)
+       assert isinstance(auth, Token)
 
 And if you would like to exclude individual routes outside those configured:
 
@@ -263,27 +254,25 @@ And if you would like to exclude individual routes outside those configured:
 
 And of course use the same kind of mechanism for dependencies:
 
-.. dropdown:: Click to see how to use the JWTAuthenticationMiddleware in a dependency
+.. code-block:: python
+    :caption: Using the JWTAuthenticationMiddleware in a dependency
 
-    .. code-block:: python
-        :caption: Using the JWTAuthenticationMiddleware in a dependency
+    from typing import Any
 
-        from typing import Any
+    from litestar import Request, Provide, Router
+    from litestar.datastructures import State
 
-        from litestar import Request, Provide, Router
-        from litestar.datastructures import State
-
-        from my_app.db.models import User
-        from my_app.security.jwt import Token
+    from my_app.db.models import User
+    from my_app.security.jwt import Token
 
 
-        async def my_dependency(request: Request[User, Token, State]) -> Any:
-           user = request.user  # correctly typed as User
-           auth = request.auth  # correctly typed as Token
-           assert isinstance(user, User)
-           assert isinstance(auth, Token)
+    async def my_dependency(request: Request[User, Token, State]) -> Any:
+       user = request.user  # correctly typed as User
+       auth = request.auth  # correctly typed as Token
+       assert isinstance(user, User)
+       assert isinstance(auth, Token)
 
 
-        my_router = Router(
-           path="sub-path/", dependencies={"some_dependency": Provide(my_dependency)}
-        )
+    my_router = Router(
+       path="sub-path/", dependencies={"some_dependency": Provide(my_dependency)}
+    )
