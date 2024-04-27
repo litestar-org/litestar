@@ -7,7 +7,7 @@ import pytest
 
 from litestar import Request, get
 from litestar._openapi.schema_generation import SchemaCreator
-from litestar.dto import AbstractDTO, DTOField, DTOFieldDefinition
+from litestar.dto import AbstractDTO, DTOConfig, DTOField, DTOFieldDefinition
 from litestar.enums import MediaType
 from litestar.openapi.spec import Reference, Schema
 from litestar.testing import RequestFactory
@@ -20,8 +20,10 @@ T = TypeVar("T", bound=Model)
 
 
 @pytest.fixture
-def ModelDataDTO() -> type[AbstractDTO]:
+def ModelDataDTO(use_experimental_dto_backend: bool) -> type[AbstractDTO]:
     class DTOCls(AbstractDTO[Model]):
+        config = DTOConfig(experimental_codegen_backend=use_experimental_dto_backend)
+
         def decode_builtins(self, value: Any) -> Model:
             return Model(a=1, b="2")
 
