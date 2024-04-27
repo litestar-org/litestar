@@ -1,15 +1,22 @@
 """Plugin for creating and retrieving flash messages."""
 
-from dataclasses import dataclass
-from typing import Any, Mapping
+from __future__ import annotations
 
-from litestar.config.app import AppConfig
-from litestar.connection import ASGIConnection
-from litestar.contrib.minijinja import MiniJinjaTemplateEngine
+from contextlib import suppress
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Any, Mapping
+
+from litestar.exceptions import MissingDependencyException
 from litestar.plugins import InitPluginProtocol
-from litestar.template import TemplateConfig
 from litestar.template.base import _get_request_from_context
 from litestar.utils.scope.state import ScopeState
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from litestar.config.app import AppConfig
+    from litestar.connection import ASGIConnection
+    from litestar.template import TemplateConfig
 
 
 @dataclass
@@ -39,14 +46,14 @@ class FlashPlugin(InitPluginProtocol):
         Returns:
             The application configuration with the message callable registered.
         """
-        if isinstance(self.config.template_config.engine_instance, MiniJinjaTemplateEngine):
-            from litestar.contrib.minijinja import _transform_state
+        template_callable: Callable[[Any], Any] = get_flashes
+        with suppress(MissingDependencyException):
+            from litestar.contrib.minijinja import MiniJinjaTemplateEngine, _transform_state
 
-            self.config.template_config.engine_instance.register_template_callable(
-                "get_flashes", _transform_state(get_flashes)
-            )
-        else:
-            self.config.template_config.engine_instance.register_template_callable("get_flashes", get_flashes)
+            if isinstance(self.config.template_config.engine_instance, MiniJinjaTemplateEngine):
+                template_callable = _transform_state(get_flashes)
+
+        self.config.template_config.engine_instance.register_template_callable("get_flashes", template_callable)  # pyright: ignore[reportGeneralTypeIssues]
         return app_config
 
 

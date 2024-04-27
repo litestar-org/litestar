@@ -1,7 +1,9 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Literal
+from dataclasses import Field, dataclass
+from typing import TYPE_CHECKING, Any, Iterator, Literal
+
+from typing_extensions import override
 
 from litestar.openapi.spec.base import BaseSchemaObject
 
@@ -119,3 +121,7 @@ class OpenAPIHeader(BaseSchemaObject):
 
     The key is the media type and the value describes it. The map MUST only contain one entry.
     """
+
+    @override
+    def _iter_fields(self) -> Iterator[Field[Any]]:
+        yield from (f for f in super()._iter_fields() if f.name not in {"name", "param_in"})
