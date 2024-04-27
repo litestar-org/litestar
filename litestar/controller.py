@@ -222,7 +222,7 @@ class Controller:
             route_handler = deepcopy(self_handler)
             # at the point we get a reference to the handler function, it's unbound, so
             # we replace it with a regular bound method here
-            route_handler._fn = types.MethodType(route_handler._fn, self)
+            route_handler.fn = types.MethodType(route_handler.fn, self)
             route_handler.owner = self
             route_handlers.append(route_handler)
 

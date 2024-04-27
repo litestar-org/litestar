@@ -575,7 +575,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.has_sync_callable = not is_async_callable(self.fn)
 
         if self.has_sync_callable and self.sync_to_thread:
-            self._fn = ensure_async_callable(self.fn)
+            self.fn = ensure_async_callable(self.fn)
             self.has_sync_callable = False
 
         self._get_kwargs_model_for_route(route.path_parameters)

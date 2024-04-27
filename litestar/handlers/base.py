@@ -48,7 +48,6 @@ class BaseRouteHandler:
     """
 
     __slots__ = (
-        "_fn",
         "_parsed_data_field",
         "_parsed_fn_signature",
         "_parsed_return_field",
@@ -64,6 +63,7 @@ class BaseRouteHandler:
         "dependencies",
         "dto",
         "exception_handlers",
+        "fn",
         "guards",
         "middleware",
         "name",
@@ -152,7 +152,7 @@ class BaseRouteHandler:
         self.paths = (
             {normalize_path(p) for p in path} if path and isinstance(path, list) else {normalize_path(path or "/")}  # type: ignore[arg-type]
         )
-        self._fn = self._prepare_fn(fn)
+        self.fn = self._prepare_fn(fn)
 
     def _prepare_fn(self, fn: AsyncAnyCallable) -> AsyncAnyCallable:
         return fn
@@ -199,20 +199,6 @@ class BaseRouteHandler:
                 type_decoders=self.resolve_type_decoders(),
             )
         return self._signature_model
-
-    @property
-    def fn(self) -> AsyncAnyCallable:
-        """Get the handler function.
-
-        Raises:
-            ImproperlyConfiguredException: if handler fn is not set.
-
-        Returns:
-            Handler function
-        """
-        if not hasattr(self, "_fn"):
-            raise ImproperlyConfiguredException("No callable has been registered for this handler")
-        return self._fn
 
     @property
     def parsed_fn_signature(self) -> ParsedSignature:
