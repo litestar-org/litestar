@@ -1,8 +1,8 @@
-from litestar import WebSocket, websocket
-from litestar.datastructures import State
-
 from my_app.db.models import User
 from my_app.security.jwt import Token
+
+from litestar import WebSocket, websocket
+from litestar.datastructures import State
 
 
 @websocket("/")

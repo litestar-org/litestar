@@ -4,9 +4,8 @@ from litestar.response import Template
 
 @get(path="/form")
 def get_form(
-        request: HTMXRequest,
+    request: HTMXRequest,
 ) -> Template:  # Return type is Template and not HTMXTemplate.
-    ...
     return HTMXTemplate(
         template_name="partial.html",
         context=context,

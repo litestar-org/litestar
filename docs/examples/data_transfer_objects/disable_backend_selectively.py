@@ -1,5 +1,6 @@
 from dataclasses import dataclass
-from litestar.dto import DTOConfig, DataclassDTO
+
+from litestar.dto import DataclassDTO, DTOConfig
 
 
 @dataclass

@@ -1,4 +1,4 @@
-from litestar import Litestar, get, MediaType
+from litestar import Litestar, MediaType, get
 
 
 @get("/json")

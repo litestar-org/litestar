@@ -1,7 +1,7 @@
+from my_app.security.authentication_middleware import JWTAuthenticationMiddleware
+
 from litestar import Litestar
 from litestar.middleware.base import DefineMiddleware
-
-from my_app.security.authentication_middleware import JWTAuthenticationMiddleware
 
 # you can optionally exclude certain paths from authentication.
 # the following excludes all routes mounted at or under `/schema*`

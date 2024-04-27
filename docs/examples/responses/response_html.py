@@ -1,4 +1,4 @@
-from litestar import get, MediaType
+from litestar import MediaType, get
 
 
 @get(path="/page", media_type=MediaType.HTML)

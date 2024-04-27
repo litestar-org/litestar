@@ -1,4 +1,4 @@
-from litestar import get, Litestar
+from litestar import Litestar, get
 
 
 @get(["/", "/sub-path"])

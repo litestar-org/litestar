@@ -1,6 +1,7 @@
+from click import Group
+
 from litestar import Litestar
 from litestar.plugins import CLIPluginProtocol
-from click import Group
 
 
 class CLIPlugin(CLIPluginProtocol):

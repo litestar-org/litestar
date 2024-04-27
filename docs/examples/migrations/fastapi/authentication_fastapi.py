@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, Request
+from fastapi import Depends, FastAPI, Request
 
 
 async def authenticate(request: Request) -> None: ...

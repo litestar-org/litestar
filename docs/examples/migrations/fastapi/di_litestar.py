@@ -1,4 +1,4 @@
-from litestar import Litestar, Provide, get, Router
+from litestar import Litestar, Provide, Router, get
 
 
 async def route_dependency() -> bool: ...
@@ -14,9 +14,7 @@ async def app_dependency(nested: str) -> int: ...
 
 
 @get("/", dependencies={"val_route": Provide(route_dependency)})
-async def handler(
-        val_route: bool, val_router: int, val_nested: str, val_app: int
-) -> None: ...
+async def handler(val_route: bool, val_router: int, val_nested: str, val_app: int) -> None: ...
 
 
 router = Router(dependencies={"val_router": Provide(router_dependency)})

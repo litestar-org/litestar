@@ -1,12 +1,11 @@
+from pathlib import Path
+
+from litestar import Litestar, get
 from litestar.contrib.htmx.request import HTMXRequest
 from litestar.contrib.htmx.response import HTMXTemplate
-from litestar import get, Litestar
-from litestar.response import Template
-
 from litestar.contrib.jinja import JinjaTemplateEngine
+from litestar.response import Template
 from litestar.template.config import TemplateConfig
-
-from pathlib import Path
 
 
 @get(path="/form")

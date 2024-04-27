@@ -1,6 +1,5 @@
 @get("/contact-us")
 def handler() -> TriggerEvent:
-    ...
     return TriggerEvent(
         content="Success!",
         name="showMessage",

@@ -1,6 +1,7 @@
+from pydantic import UUID4, BaseModel
+
 from litestar import Controller, patch
 from litestar.di import Provide
-from pydantic import BaseModel, UUID4
 
 
 class User(BaseModel):

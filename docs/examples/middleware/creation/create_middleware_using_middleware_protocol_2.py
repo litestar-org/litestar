@@ -1,8 +1,8 @@
 import logging
 
-from litestar.types import ASGIApp, Receive, Scope, Send
 from litestar import Request
 from litestar.middleware.base import MiddlewareProtocol
+from litestar.types import ASGIApp, Receive, Scope, Send
 
 logger = logging.getLogger(__name__)
 

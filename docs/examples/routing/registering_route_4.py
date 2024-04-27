@@ -1,4 +1,5 @@
 from typing import Any
+
 from litestar import Litestar, Request, get
 
 

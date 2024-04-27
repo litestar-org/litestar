@@ -1,10 +1,9 @@
-from uuid import UUID
 from dataclasses import dataclass
+
+from db import user_repository
 
 from litestar import Request, post
 from litestar.events import listener
-
-from db import user_repository
 from utils.client import client
 from utils.email import send_farewell_email
 

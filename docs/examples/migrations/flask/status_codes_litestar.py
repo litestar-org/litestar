@@ -1,4 +1,4 @@
-from litestar import Litestar, get, Response
+from litestar import Litestar, Response, get
 
 
 @get("/static", status_code=404)

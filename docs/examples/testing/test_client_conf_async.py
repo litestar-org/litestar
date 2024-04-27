@@ -1,10 +1,9 @@
 from typing import TYPE_CHECKING, AsyncIterator
 
 import pytest
+from my_app.main import app
 
 from litestar.testing import AsyncTestClient
-
-from my_app.main import app
 
 if TYPE_CHECKING:
     from litestar import Litestar

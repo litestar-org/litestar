@@ -1,14 +1,9 @@
-...
-
-
 @get("/secured")
-def secured_route() -> Any:
-    ...
+def secured_route() -> Any: ...
 
 
 @get("/unsecured", no_auth=True)
-def unsecured_route() -> Any:
-    ...
+def unsecured_route() -> Any: ...
 
 
 session_auth = SessionAuth[User, ServerSideSessionBackend](
@@ -19,6 +14,5 @@ session_auth = SessionAuth[User, ServerSideSessionBackend](
     # exclude any URLs that should not have authentication.
     # We exclude the documentation URLs, signup and login.
     exclude=["/login", "/signup", "/schema"],
-    exclude_opt_key="no_auth"  # default value is `exclude_from_auth`
+    exclude_opt_key="no_auth",  # default value is `exclude_from_auth`
 )
-...

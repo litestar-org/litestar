@@ -1,4 +1,4 @@
-from litestar import get, Request
+from litestar import Request, get
 
 
 @get(

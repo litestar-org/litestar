@@ -1,9 +1,8 @@
 import time
 
 from litestar.datastructures import MutableScopeHeaders
-from litestar.types import Message, Receive, Scope, Send
 from litestar.middleware.base import MiddlewareProtocol
-from litestar.types import ASGIApp
+from litestar.types import ASGIApp, Message, Receive, Scope, Send
 
 
 class ProcessTimeHeader(MiddlewareProtocol):

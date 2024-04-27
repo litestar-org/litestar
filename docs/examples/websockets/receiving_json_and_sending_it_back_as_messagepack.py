@@ -1,4 +1,4 @@
-from litestar import websocket, WebSocket
+from litestar import WebSocket, websocket
 
 
 @websocket("/")

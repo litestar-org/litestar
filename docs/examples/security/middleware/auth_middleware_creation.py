@@ -1,16 +1,16 @@
-from typing import cast, TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.db.models import User
+from app.security.jwt import decode_jwt_token
+from litestar.connection import ASGIConnection
+from litestar.exceptions import NotAuthorizedException
 from litestar.middleware import (
     AbstractAuthenticationMiddleware,
     AuthenticationResult,
 )
-from litestar.exceptions import NotAuthorizedException
-from litestar.connection import ASGIConnection
-
-from app.db.models import User
-from app.security.jwt import decode_jwt_token
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncEngine
@@ -19,9 +19,7 @@ API_KEY_HEADER = "X-API-KEY"
 
 
 class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
-    async def authenticate_request(
-            self, connection: ASGIConnection
-    ) -> AuthenticationResult:
+    async def authenticate_request(self, connection: ASGIConnection) -> AuthenticationResult:
         """
         Given a request, parse the request api key stored in the header and retrieve the user correlating to the token from the DB
         """
@@ -37,9 +35,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         engine = cast("AsyncEngine", connection.app.state.postgres_connection)
         async with AsyncSession(engine) as async_session:
             async with async_session.begin():
-                user = await async_session.execute(
-                    select(User).where(User.id == token.sub)
-                )
+                user = await async_session.execute(select(User).where(User.id == token.sub))
         if not user:
             raise NotAuthorizedException()
         return AuthenticationResult(user=user, auth=token)

@@ -1,9 +1,9 @@
 import anyio
+from my_app.security.authentication_middleware import JWTAuthenticationMiddleware
+
 from litestar import Litestar, MediaType, Response, get
 from litestar.exceptions import NotFoundException
 from litestar.middleware.base import DefineMiddleware
-
-from my_app.security.authentication_middleware import JWTAuthenticationMiddleware
 
 # you can optionally exclude certain paths from authentication.
 # the following excludes all routes mounted at or under `/schema*`

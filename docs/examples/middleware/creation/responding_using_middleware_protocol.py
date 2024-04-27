@@ -1,8 +1,7 @@
-from litestar.types import ASGIApp, Receive, Scope, Send
-
-from litestar.response.redirect import ASGIRedirectResponse
 from litestar import Request
 from litestar.middleware.base import MiddlewareProtocol
+from litestar.response.redirect import ASGIRedirectResponse
+from litestar.types import ASGIApp, Receive, Scope, Send
 
 
 class RedirectMiddleware(MiddlewareProtocol):

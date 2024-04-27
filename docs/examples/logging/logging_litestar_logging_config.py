@@ -1,7 +1,6 @@
 import logging
 
 from litestar import Litestar, Request, get
-from litestar.logging.config import LoggingConfig
 
 
 def get_logger(mod_name: str) -> logging.Logger:

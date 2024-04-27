@@ -1,4 +1,5 @@
-from typing import Protocol, Union, List
+from typing import List, Protocol, Union
+
 from pydantic import DirectoryPath
 
 # the template class of the respective library

@@ -17,10 +17,6 @@ class ItemNotFound(BaseModel):
 
 @get(
     path="/items/{pk:int}",
-    responses={
-        404: ResponseSpec(
-            data_container=ItemNotFound, description="Item was removed or not found"
-        )
-    },
+    responses={404: ResponseSpec(data_container=ItemNotFound, description="Item was removed or not found")},
 )
 def retrieve_item(pk: int) -> Item: ...

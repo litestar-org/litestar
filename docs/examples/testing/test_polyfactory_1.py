@@ -1,6 +1,7 @@
 from typing import Protocol, runtime_checkable
 
 from polyfactory.factories.pydantic import BaseModel
+
 from litestar import get
 
 

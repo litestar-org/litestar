@@ -2,10 +2,10 @@ from datetime import datetime, timedelta
 from uuid import UUID
 
 from jose import JWTError, jwt
-from pydantic import BaseModel, UUID4
-from litestar.exceptions import NotAuthorizedException
+from pydantic import UUID4, BaseModel
 
 from app.config import settings
+from litestar.exceptions import NotAuthorizedException
 
 DEFAULT_TIME_DELTA = timedelta(days=1)
 ALGORITHM = "HS256"
@@ -24,9 +24,7 @@ def decode_jwt_token(encoded_token: str) -> Token:
     If the token is invalid or expired (i.e. the value stored under the exp key is in the past) an exception is raised
     """
     try:
-        payload = jwt.decode(
-            token=encoded_token, key=settings.JWT_SECRET, algorithms=[ALGORITHM]
-        )
+        payload = jwt.decode(token=encoded_token, key=settings.JWT_SECRET, algorithms=[ALGORITHM])
         return Token(**payload)
     except JWTError as e:
         raise NotAuthorizedException("Invalid token") from e
