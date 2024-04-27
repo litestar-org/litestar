@@ -301,7 +301,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.response_cookies: Sequence[Cookie] | None = narrow_response_cookies(response_cookies)
         self.response_headers: Sequence[ResponseHeader] | None = narrow_response_headers(response_headers)
 
-        self.sync_to_thread = sync_to_thread
         self.has_sync_callable = has_sync_callable
         # OpenAPI related attributes
         self.content_encoding = content_encoding
