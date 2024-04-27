@@ -57,7 +57,7 @@ intersphinx_mapping = {
     "tortoise": ("https://tortoise.github.io/", None),
     "piccolo": ("https://piccolo-orm.readthedocs.io/en/latest", None),
     "opentelemetry": ("https://opentelemetry-python.readthedocs.io/en/latest/", None),
-    "advanced-alchemy": ("https://docs.advanced-alchemy.jolt.rs/latest/", None),
+    "advanced-alchemy": ("https://docs.advanced-alchemy.litestar.dev/latest/", None),
     "jinja2": ("https://jinja.palletsprojects.com/en/latest/", None),
     "trio": ("https://trio.readthedocs.io/en/stable/", None),
 }
@@ -310,7 +310,7 @@ html_theme_options = {
         "Help": {
             "Discord Help Forum": {
                 "description": "Dedicated Discord help forum",
-                "link": "https://discord.gg/litestar-919193495116337154",
+                "link": "https://discord.gg/litestar",
                 "icon": "coc",
             },
             "GitHub Discussions": {
