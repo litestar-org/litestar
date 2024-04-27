@@ -36,9 +36,9 @@ def test_route_handler_kwarg_handling(
 ) -> None:
     if not http_method:
         with pytest.raises(ImproperlyConfiguredException):
-            HTTPRouteHandler(http_method=http_method)
+            HTTPRouteHandler(http_method=http_method, fn=dummy_method)
     else:
-        decorator = HTTPRouteHandler(
+        result = HTTPRouteHandler(
             http_method=http_method,
             media_type=media_type,
             include_in_schema=include_in_schema,
@@ -46,8 +46,8 @@ def test_route_handler_kwarg_handling(
             response_headers=response_headers,
             status_code=status_code,
             path=path,
+            fn=dummy_method,
         )
-        result = decorator(dummy_method)
         if isinstance(http_method, list):
             assert all(method in result.http_methods for method in http_method)
         else:

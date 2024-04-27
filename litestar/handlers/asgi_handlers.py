@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Mapping, Sequence
+from typing import TYPE_CHECKING, Any, Callable, Mapping, Sequence
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers.base import BaseRouteHandler
@@ -13,9 +13,9 @@ __all__ = ("ASGIRouteHandler", "asgi")
 if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
     from litestar.types import (
+        AsyncAnyCallable,
         ExceptionHandlersMap,
         Guard,
-        MaybePartial,  # noqa: F401
     )
 
 
@@ -31,6 +31,7 @@ class ASGIRouteHandler(BaseRouteHandler):
         self,
         path: str | Sequence[str] | None = None,
         *,
+        fn: AsyncAnyCallable,
         exception_handlers: ExceptionHandlersMap | None = None,
         guards: Sequence[Guard] | None = None,
         name: str | None = None,
@@ -61,6 +62,7 @@ class ASGIRouteHandler(BaseRouteHandler):
         self.is_mount = is_mount
         super().__init__(
             path,
+            fn=fn,
             exception_handlers=exception_handlers,
             guards=guards,
             name=name,
@@ -101,4 +103,28 @@ class ASGIRouteHandler(BaseRouteHandler):
         await self.fn(scope=connection.scope, receive=connection.receive, send=connection.send)
 
 
-asgi = ASGIRouteHandler
+def asgi(
+    path: str | Sequence[str] | None = None,
+    *,
+    exception_handlers: ExceptionHandlersMap | None = None,
+    guards: Sequence[Guard] | None = None,
+    name: str | None = None,
+    opt: Mapping[str, Any] | None = None,
+    is_mount: bool = False,
+    signature_namespace: Mapping[str, Any] | None = None,
+    **kwargs: Any,
+) -> Callable[[AsyncAnyCallable], ASGIRouteHandler]:
+    def decorator(fn: AsyncAnyCallable) -> ASGIRouteHandler:
+        return ASGIRouteHandler(
+            fn=fn,
+            path=path,
+            exception_handlers=exception_handlers,
+            guards=guards,
+            name=name,
+            opt=opt,
+            is_mount=is_mount,
+            signature_namespace=signature_namespace,
+            **kwargs,
+        )
+
+    return decorator

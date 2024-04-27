@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Mapping
+from typing import TYPE_CHECKING, Any, Callable, Mapping
 
 from litestar.connection import WebSocket
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import BaseRouteHandler
-from litestar.types import Empty
+from litestar.types import AsyncAnyCallable, Empty
 from litestar.types.builtin_types import NoneType
 from litestar.utils.predicates import is_async_callable
 
@@ -29,6 +29,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
         self,
         path: str | list[str] | None = None,
         *,
+        fn: AsyncAnyCallable,
         dependencies: Dependencies | None = None,
         exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
         guards: list[Guard] | None = None,
@@ -62,6 +63,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
         self._kwargs_model: KwargsModel | EmptyType = Empty
 
         super().__init__(
+            fn=fn,
             path=path,
             dependencies=dependencies,
             exception_handlers=exception_handlers,
@@ -145,4 +147,32 @@ class WebsocketRouteHandler(BaseRouteHandler):
             await self.fn(**parsed_kwargs)
 
 
-websocket = WebsocketRouteHandler
+def websocket(
+    path: str | list[str] | None = None,
+    *,
+    dependencies: Dependencies | None = None,
+    exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
+    guards: list[Guard] | None = None,
+    middleware: list[Middleware] | None = None,
+    name: str | None = None,
+    opt: dict[str, Any] | None = None,
+    signature_namespace: Mapping[str, Any] | None = None,
+    websocket_class: type[WebSocket] | None = None,
+    **kwargs: Any,
+) -> Callable[[AsyncAnyCallable], WebsocketRouteHandler]:
+    def decorator(fn: AsyncAnyCallable) -> WebsocketRouteHandler:
+        return WebsocketRouteHandler(
+            path=path,
+            fn=fn,
+            dependencies=dependencies,
+            exception_handlers=exception_handlers,
+            guards=guards,
+            middleware=middleware,
+            name=name,
+            opt=opt,
+            signature_namespace=signature_namespace,
+            websocket_class=websocket_class,
+            **kwargs,
+        )
+
+    return decorator

@@ -27,7 +27,8 @@ from litestar.handlers.http_handlers._utils import (
     normalize_http_method,
 )
 from litestar.openapi.spec import Operation
-from litestar.response import Response
+from litestar.response import File, Response
+from litestar.response.file import ASGIFileResponse
 from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED
 from litestar.types import (
     AfterRequestHookHandler,
@@ -50,8 +51,9 @@ from litestar.types import (
     Send,
     TypeEncodersMap,
 )
+from litestar.types.builtin_types import NoneType
 from litestar.utils import ensure_async_callable
-from litestar.utils.predicates import is_async_callable
+from litestar.utils.predicates import is_async_callable, is_class_and_subclass
 from litestar.utils.scope.state import ScopeState
 from litestar.utils.warnings import warn_implicit_sync_to_thread, warn_sync_to_thread_with_async_callable
 
@@ -71,7 +73,7 @@ if TYPE_CHECKING:
     from litestar.types.callable_types import AsyncAnyCallable, OperationIDCreator
     from litestar.types.composite_types import TypeDecodersSequence
 
-__all__ = ("HTTPRouteHandler", "route")
+__all__ = ("HTTPRouteHandler",)
 
 
 class ResponseHandlerMap(TypedDict):
@@ -134,6 +136,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self,
         path: str | Sequence[str] | None = None,
         *,
+        fn: AnyCallable,
         after_request: AfterRequestHookHandler | None = None,
         after_response: AfterResponseHookHandler | None = None,
         background: BackgroundTask | BackgroundTasks | None = None,
@@ -255,7 +258,14 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.http_methods = normalize_http_method(http_methods=http_method)
         self.status_code = status_code or get_default_status_code(http_methods=self.http_methods)
 
+        if not is_async_callable(fn):
+            if sync_to_thread is None:
+                warn_implicit_sync_to_thread(fn, stacklevel=3)
+        elif sync_to_thread is not None:
+            warn_sync_to_thread_with_async_callable(fn, stacklevel=3)
+
         super().__init__(
+            fn=fn,
             path=path,
             dependencies=dependencies,
             dto=dto,
@@ -310,17 +320,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         self._resolved_security: list[SecurityRequirement] | EmptyType = Empty
         self._resolved_tags: list[str] | EmptyType = Empty
         self._kwargs_models: dict[tuple[str, ...], KwargsModel] = {}
-
-    def __call__(self, fn: AnyCallable) -> HTTPRouteHandler:
-        """Replace a function with itself."""
-        if not is_async_callable(fn):
-            if self.sync_to_thread is None:
-                warn_implicit_sync_to_thread(fn, stacklevel=3)
-        elif self.sync_to_thread is not None:
-            warn_sync_to_thread_with_async_callable(fn, stacklevel=3)
-
-        super().__call__(fn)
-        return self
 
     def resolve_request_class(self) -> type[Request]:
         """Return the closest custom Request class in the owner graph or the default Request class.
@@ -619,6 +618,16 @@ class HTTPRouteHandler(BaseRouteHandler):
         if "data" in self.parsed_fn_signature.parameters and "GET" in self.http_methods:
             raise ImproperlyConfiguredException("'data' kwarg is unsupported for 'GET' request handlers")
 
+        if self.http_methods == {HttpMethod.HEAD}:
+            # we allow here File and File because these have special setting for head responses
+            return_annotation = self.parsed_fn_signature.return_type.annotation
+            if not (
+                return_annotation in {NoneType, None}
+                or is_class_and_subclass(return_annotation, File)
+                or is_class_and_subclass(return_annotation, ASGIFileResponse)
+            ):
+                raise ImproperlyConfiguredException("A response to a head request should not have a body")
+
     async def handle(self, connection: Request[Any, Any, Any]) -> None:
         """ASGI app that creates a :class:`~.connection.Request` from the passed in args, determines which handler function to call and then
             handles the call.
@@ -754,6 +763,3 @@ class HTTPRouteHandler(BaseRouteHandler):
                 await send(message)
 
         return cached_response
-
-
-route = HTTPRouteHandler

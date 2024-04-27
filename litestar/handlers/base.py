@@ -80,6 +80,7 @@ class BaseRouteHandler:
         self,
         path: str | Sequence[str] | None = None,
         *,
+        fn: AsyncAnyCallable,
         dependencies: Dependencies | None = None,
         dto: type[AbstractDTO] | None | EmptyType = Empty,
         exception_handlers: ExceptionHandlersMap | None = None,
@@ -151,11 +152,10 @@ class BaseRouteHandler:
         self.paths = (
             {normalize_path(p) for p in path} if path and isinstance(path, list) else {normalize_path(path or "/")}  # type: ignore[arg-type]
         )
+        self._fn = self._prepare_fn(fn)
 
-    def __call__(self, fn: AsyncAnyCallable) -> Self:
-        """Replace a function with itself."""
-        self._fn = fn
-        return self
+    def _prepare_fn(self, fn: AsyncAnyCallable) -> AsyncAnyCallable:
+        return fn
 
     @property
     def handler_id(self) -> str:
@@ -434,13 +434,13 @@ class BaseRouteHandler:
         When merging keys from multiple layers, if the same key is defined by multiple layers, the value from the
         layer closest to the response handler will take precedence.
         """
-        if self._resolved_layered_parameters is Empty:
+        if self._resolved_signature_namespace is Empty:
             ns: dict[str, Any] = {}
             for layer in self.ownership_layers:
                 ns.update(layer.signature_namespace)
 
             self._resolved_signature_namespace = ns
-        return cast("dict[str, Any]", self._resolved_signature_namespace)
+        return self._resolved_signature_namespace
 
     def resolve_data_dto(self) -> type[AbstractDTO] | None:
         """Resolve the data_dto by starting from the route handler and moving up.
