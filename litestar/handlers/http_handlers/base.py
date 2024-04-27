@@ -264,6 +264,12 @@ class HTTPRouteHandler(BaseRouteHandler):
         elif sync_to_thread is not None:
             warn_sync_to_thread_with_async_callable(fn, stacklevel=3)
 
+        has_sync_callable = not is_async_callable(fn)
+
+        if has_sync_callable and sync_to_thread:
+            fn = ensure_async_callable(fn)
+            has_sync_callable = False
+
         super().__init__(
             fn=fn,
             path=path,
@@ -296,6 +302,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.response_headers: Sequence[ResponseHeader] | None = narrow_response_headers(response_headers)
 
         self.sync_to_thread = sync_to_thread
+        self.has_sync_callable = has_sync_callable
         # OpenAPI related attributes
         self.content_encoding = content_encoding
         self.content_media_type = content_media_type
@@ -572,11 +579,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         super().on_registration(app, route=route)
         self.resolve_after_response()
         self.resolve_include_in_schema()
-        self.has_sync_callable = not is_async_callable(self.fn)
-
-        if self.has_sync_callable and self.sync_to_thread:
-            self.fn = ensure_async_callable(self.fn)
-            self.has_sync_callable = False
 
         self._get_kwargs_model_for_route(route.path_parameters)
 
