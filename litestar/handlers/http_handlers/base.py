@@ -261,15 +261,11 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.http_methods = normalize_http_method(http_methods=http_method)
         self.status_code = status_code or get_default_status_code(http_methods=self.http_methods)
 
-        if has_sync_callable := not is_async_callable(fn):
+        if not is_async_callable(fn):
             if sync_to_thread is None:
                 warn_implicit_sync_to_thread(fn, stacklevel=3)
         elif sync_to_thread is not None:
             warn_sync_to_thread_with_async_callable(fn, stacklevel=3)
-
-        if has_sync_callable and sync_to_thread:
-            fn = ensure_async_callable(fn)
-            has_sync_callable = False
 
         super().__init__(
             fn=fn,
