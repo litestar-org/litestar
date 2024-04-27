@@ -6,7 +6,6 @@ on:
   push:
     branches:
       - main
-      - develop
       - v3.0
 
 jobs:
@@ -43,10 +42,6 @@ jobs:
       - name: Build docs (main branch)
         run: pdm run python tools/build_docs.py docs-build --version main
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-
-      - name: Build docs (develop branch)
-        run: pdm run python tools/build_docs.py docs-build --version develop
-        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
 
       - name: Build docs (v3.0 branch)
         run: pdm run python tools/build_docs.py docs-build --version 3-dev
