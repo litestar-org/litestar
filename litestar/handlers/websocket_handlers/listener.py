@@ -147,6 +147,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         Args:
             path: A path fragment for the route handler function or a sequence of path fragments. If not given defaults
                 to ``/``
+            fn: The handler function
             connection_accept_handler: A callable that accepts a :class:`WebSocket <.connection.WebSocket>` instance
                 and returns a coroutine that when awaited, will accept the connection. Defaults to ``WebSocket.accept``.
             connection_lifespan: An asynchronous context manager, handling the lifespan of the connection. By default,

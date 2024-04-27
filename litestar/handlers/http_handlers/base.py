@@ -185,6 +185,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         Args:
             path: A path fragment for the route handler function or a sequence of path fragments.
                 If not given defaults to ``/``
+            fn: The handler function
             after_request: A sync or async function executed before a :class:`Request <.connection.Request>` is passed
                 to any route handler. If this function returns a value, the request will not reach the route handler,
                 and instead this value will be used.

@@ -43,14 +43,15 @@ class ASGIRouteHandler(BaseRouteHandler):
         """Initialize ``ASGIRouteHandler``.
 
         Args:
+            path: A path fragment for the route handler function or a list of path fragments. If not given defaults to
+                ``/``
+            fn: The handler function
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
             guards: A sequence of :class:`Guard <.types.Guard>` callables.
             name: A string identifying the route handler.
             opt: A string key mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
                 wherever you have access to :class:`Request <.connection.Request>` or
                 :class:`ASGI Scope <.types.Scope>`.
-            path: A path fragment for the route handler function or a list of path fragments. If not given defaults to
-                ``/``
             is_mount: A boolean dictating whether the handler's paths should be regarded as mount paths. Mount path
                 accept any arbitrary paths that begin with the defined prefixed path. For example, a mount with the path
                 ``/some-path/`` will accept requests for ``/some-path/`` and any sub path under this, e.g.
