@@ -293,40 +293,40 @@ def test_create_date_constrained_field_schema_pydantic_v2(annotation: Any) -> No
     assert schema.format == OpenAPIFormat.DATE
     assert any(
         (
-            datetime.fromordinal(getattr(m, "gt", None).toordinal()).replace(tzinfo=timezone.utc)
+            datetime.fromordinal(getattr(m, "gt", None).toordinal()).replace(tzinfo=timezone.utc)  # type: ignore[union-attr]
             if getattr(m, "gt", None) is not None
             else None
-        )  # type: ignore[union-attr]
+        )
         == (datetime.fromtimestamp(schema.exclusive_minimum, tz=timezone.utc) if schema.exclusive_minimum else None)
         for m in field_definition.metadata
         if m
     )
     assert any(
         (
-            datetime.fromordinal(getattr(m, "ge", None).toordinal()).replace(tzinfo=timezone.utc)
+            datetime.fromordinal(getattr(m, "ge", None).toordinal()).replace(tzinfo=timezone.utc)  # type: ignore[union-attr]
             if getattr(m, "ge", None) is not None
             else None
-        )  # type: ignore[union-attr]
+        )
         == (datetime.fromtimestamp(schema.minimum, tz=timezone.utc) if schema.minimum else None)
         for m in field_definition.metadata
         if m
     )
     assert any(
         (
-            datetime.fromordinal(getattr(m, "lt", None).toordinal()).replace(tzinfo=timezone.utc)
+            datetime.fromordinal(getattr(m, "lt", None).toordinal()).replace(tzinfo=timezone.utc)  # type: ignore[union-attr]
             if getattr(m, "lt", None) is not None
             else None
-        )  # type: ignore[union-attr]
+        )
         == (datetime.fromtimestamp(schema.exclusive_maximum, tz=timezone.utc) if schema.exclusive_maximum else None)
         for m in field_definition.metadata
         if m
     )
     assert any(
         (
-            datetime.fromordinal(getattr(m, "le", None).toordinal()).replace(tzinfo=timezone.utc)
+            datetime.fromordinal(getattr(m, "le", None).toordinal()).replace(tzinfo=timezone.utc)  # type: ignore[union-attr]
             if getattr(m, "le", None) is not None
             else None
-        )  # type: ignore[union-attr]
+        )
         == (datetime.fromtimestamp(schema.maximum, tz=timezone.utc) if schema.maximum else None)
         for m in field_definition.metadata
         if m
