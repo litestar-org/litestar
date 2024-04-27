@@ -299,7 +299,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.response_headers: Sequence[ResponseHeader] | None = narrow_response_headers(response_headers)
         self.request_max_body_size = request_max_body_size
 
-        self.has_sync_callable = has_sync_callable
         # OpenAPI related attributes
         self.content_encoding = content_encoding
         self.content_media_type = content_media_type
