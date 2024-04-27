@@ -65,7 +65,7 @@ intersphinx_mapping = {
     "tortoise": ("https://tortoise.github.io/", None),
     "piccolo": ("https://piccolo-orm.readthedocs.io/en/latest", None),
     "opentelemetry": ("https://opentelemetry-python.readthedocs.io/en/latest/", None),
-    "advanced-alchemy": ("https://docs.advanced-alchemy.jolt.rs/latest/", None),
+    "advanced-alchemy": ("https://docs.advanced-alchemy.litestar.dev/latest/", None),
     "jinja2": ("https://jinja.palletsprojects.com/en/latest/", None),
     "trio": ("https://trio.readthedocs.io/en/stable/", None),
 }
@@ -414,7 +414,5 @@ def delayed_setup(app: Sphinx) -> None:
 
 def setup(app: Sphinx) -> dict[str, bool]:
     app.connect("builder-inited", delayed_setup, priority=0)
-
     app.setup_extension("litestar_sphinx_theme")
-
     return {"parallel_read_safe": True, "parallel_write_safe": True}
