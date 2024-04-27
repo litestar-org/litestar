@@ -27,6 +27,7 @@ REDIRECT_TEMPLATE = """
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--version", required=False)
+parser.add_argument("--environment", required=False)
 parser.add_argument("output")
 
 
@@ -86,7 +87,7 @@ def build(output_dir: str, version: str | None, environment: str = "local") -> N
 
 def main() -> None:
     args = parser.parse_args()
-    build(output_dir=args.output, version=args.version)
+    build(output_dir=args.output, version=args.version, environment=args.environment)
 
 
 if __name__ == "__main__":
