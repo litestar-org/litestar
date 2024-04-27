@@ -1254,7 +1254,7 @@ document.write(`
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../responses.html">Responses</a></li>
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">Security</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="abstract-authentication-middleware.html">AbstractAuthenticationMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="abstract-authentication-middleware.html">Implementing Custom Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="security-backends.html">Security Backends</a></li>
 <li class="toctree-l3 current active"><a class="current reference internal" href="#">Guards</a></li>
 <li class="toctree-l3"><a class="reference internal" href="excluding-and-including-endpoints.html">Excluding and including endpoints</a></li>
@@ -1538,46 +1538,70 @@ document.write(`
                   
   <section id="guards">
 <h1>Guards<a class="headerlink" href="#guards" title="Permalink to this heading">#</a></h1>
-<p>Guards are callables that receive two arguments - <code class="docutils literal notranslate"><span class="pre">connection</span></code>, which is the
+<p>Guards are <a class="reference external" href="https://docs.python.org/3/glossary.html#term-callable" title="(in Python v3.12)"><span class="xref std std-term">callables</span></a> that receive two arguments - <code class="docutils literal notranslate"><span class="pre">connection</span></code>, which is the
 <a class="reference internal" href="../../reference/connection.html#litestar.connection.ASGIConnection" title="litestar.connection.ASGIConnection"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIConnection</span></code></a> instance, and <code class="docutils literal notranslate"><span class="pre">route_handler</span></code>, which is a copy of the
 <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.BaseRouteHandler" title="litestar.handlers.BaseRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRouteHandler</span></code></a>. Their role is to <em>authorize</em> the request by verifying that
 the connection is allowed to reach the endpoint handler in question. If verification fails, the guard should raise an
-HTTPException, usually a <a class="reference internal" href="../../reference/exceptions.html#litestar.exceptions.NotAuthorizedException" title="litestar.exceptions.NotAuthorizedException"><code class="xref py py-class docutils literal notranslate"><span class="pre">NotAuthorizedException</span></code></a> with a <code class="docutils literal notranslate"><span class="pre">status_code</span></code>
-of 401.</p>
+<a class="reference internal" href="../../reference/exceptions.html#litestar.exceptions.HTTPException" title="litestar.exceptions.HTTPException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">HTTPException</span></code></a>, usually a <a class="reference internal" href="../../reference/exceptions.html#litestar.exceptions.NotAuthorizedException" title="litestar.exceptions.NotAuthorizedException"><code class="xref py py-class docutils literal notranslate"><span class="pre">NotAuthorizedException</span></code></a> with a
+<code class="docutils literal notranslate"><span class="pre">status_code</span></code> of <code class="docutils literal notranslate"><span class="pre">401</span></code>.</p>
 <p>To illustrate this we will implement a rudimentary role based authorization system in our Litestar app. As we have done
-for <code class="docutils literal notranslate"><span class="pre">authentication</span></code>, we will assume that we added some sort of persistence layer without actually
-specifying it in the example.</p>
+for <code class="docutils literal notranslate"><span class="pre">authentication</span></code>, we will assume that we added some sort of persistence layer without actually specifying it in
+the example.</p>
 <p>We begin by creating an <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a> with two roles - <code class="docutils literal notranslate"><span class="pre">consumer</span></code> and <code class="docutils literal notranslate"><span class="pre">admin</span></code>:</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">Defining the UserRole enum</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 
 
 <span class="k">class</span> <span class="nc">UserRole</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
-    <span class="n">CONSUMER</span> <span class="o">=</span> <span class="s2">&quot;consumer&quot;</span>
-    <span class="n">ADMIN</span> <span class="o">=</span> <span class="s2">&quot;admin&quot;</span>
+   <span class="n">CONSUMER</span> <span class="o">=</span> <span class="s2">&quot;consumer&quot;</span>
+   <span class="n">ADMIN</span> <span class="o">=</span> <span class="s2">&quot;admin&quot;</span>
 </pre></div>
 </div>
+</div>
 <p>Our <code class="docutils literal notranslate"><span class="pre">User</span></code> model will now look like this:</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Click to expand the User model<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">User model for role based authorization</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">UUID4</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 
 
 <span class="k">class</span> <span class="nc">UserRole</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
-    <span class="n">CONSUMER</span> <span class="o">=</span> <span class="s2">&quot;consumer&quot;</span>
-    <span class="n">ADMIN</span> <span class="o">=</span> <span class="s2">&quot;admin&quot;</span>
+   <span class="n">CONSUMER</span> <span class="o">=</span> <span class="s2">&quot;consumer&quot;</span>
+   <span class="n">ADMIN</span> <span class="o">=</span> <span class="s2">&quot;admin&quot;</span>
 
 
 <span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="nb">id</span><span class="p">:</span> <span class="n">UUID4</span>
-    <span class="n">role</span><span class="p">:</span> <span class="n">UserRole</span>
+   <span class="nb">id</span><span class="p">:</span> <span class="n">UUID4</span>
+   <span class="n">role</span><span class="p">:</span> <span class="n">UserRole</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_admin</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Determines whether the user is an admin user&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">role</span> <span class="o">==</span> <span class="n">UserRole</span><span class="o">.</span><span class="n">ADMIN</span>
+   <span class="nd">@property</span>
+   <span class="k">def</span> <span class="nf">is_admin</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">       </span><span class="sd">&quot;&quot;&quot;Determines whether the user is an admin user&quot;&quot;&quot;</span>
+       <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">role</span> <span class="o">==</span> <span class="n">UserRole</span><span class="o">.</span><span class="n">ADMIN</span>
 </pre></div>
 </div>
-<p>Given that the User model has a “role” property we can use it to authorize a request. Let’s create a guard that only
-allows admin users to access certain route handlers and then add it to a route handler function:</p>
+</div>
+</div>
+</details><p>Given that the <code class="docutils literal notranslate"><span class="pre">User</span></code> model has a <code class="docutils literal notranslate"><span class="pre">role</span></code> property we can use it to authorize a request.
+Let us create a guard that only allows admin users to access certain route handlers and then add it to a route
+handler function:</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Click to expand the <code class="docutils literal notranslate"><span class="pre">admin_user_guard</span></code> guard<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">Defining the <code class="docutils literal notranslate"><span class="pre">admin_user_guard</span></code> guard used to authorize certain route handlers</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
 
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">UUID4</span>
@@ -1588,34 +1612,45 @@ allows admin users to access certain route handlers and then add it to a route h
 
 
 <span class="k">class</span> <span class="nc">UserRole</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Enum</span><span class="p">):</span>
-    <span class="n">CONSUMER</span> <span class="o">=</span> <span class="s2">&quot;consumer&quot;</span>
-    <span class="n">ADMIN</span> <span class="o">=</span> <span class="s2">&quot;admin&quot;</span>
+   <span class="n">CONSUMER</span> <span class="o">=</span> <span class="s2">&quot;consumer&quot;</span>
+   <span class="n">ADMIN</span> <span class="o">=</span> <span class="s2">&quot;admin&quot;</span>
 
 
 <span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="nb">id</span><span class="p">:</span> <span class="n">UUID4</span>
-    <span class="n">role</span><span class="p">:</span> <span class="n">UserRole</span>
+   <span class="nb">id</span><span class="p">:</span> <span class="n">UUID4</span>
+   <span class="n">role</span><span class="p">:</span> <span class="n">UserRole</span>
 
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">is_admin</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Determines whether the user is an admin user&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">role</span> <span class="o">==</span> <span class="n">UserRole</span><span class="o">.</span><span class="n">ADMIN</span>
+   <span class="nd">@property</span>
+   <span class="k">def</span> <span class="nf">is_admin</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">       </span><span class="sd">&quot;&quot;&quot;Determines whether the user is an admin user&quot;&quot;&quot;</span>
+       <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">role</span> <span class="o">==</span> <span class="n">UserRole</span><span class="o">.</span><span class="n">ADMIN</span>
 
 
 <span class="k">def</span> <span class="nf">admin_user_guard</span><span class="p">(</span><span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="n">BaseRouteHandler</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">connection</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_admin</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">NotAuthorizedException</span><span class="p">()</span>
+   <span class="k">if</span> <span class="ow">not</span> <span class="n">connection</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_admin</span><span class="p">:</span>
+       <span class="k">raise</span> <span class="n">NotAuthorizedException</span><span class="p">()</span>
 
 
 <span class="nd">@post</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/user&quot;</span><span class="p">,</span> <span class="n">guards</span><span class="o">=</span><span class="p">[</span><span class="n">admin_user_guard</span><span class="p">])</span>
 <span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
 </div>
-<p>Thus, only an admin user would be able to send a post request to the <code class="docutils literal notranslate"><span class="pre">create_user</span></code> handler.</p>
+</div>
+</div>
+</details><p>Thus, only an admin user would be able to send a post request to the <code class="docutils literal notranslate"><span class="pre">create_user</span></code> handler.</p>
 <section id="guard-scopes">
 <h2>Guard scopes<a class="headerlink" href="#guard-scopes" title="Permalink to this heading">#</a></h2>
-<p>Guards can be declared on all levels of the app - the Litestar instance, routers, controllers, and individual route
-handlers:</p>
+<p>Guards are part of Litestar’s <a class="reference internal" href="../applications.html#layered-architecture"><span class="std std-ref">layered architecture</span></a> and can be declared
+on all layers of the app - the Litestar instance, routers, controllers, and individual route handlers:</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Example of declaring guards on different layers of the app<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">Declaring guards on different layers of the app</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">Router</span><span class="p">,</span> <span class="n">Litestar</span>
 <span class="kn">from</span> <span class="nn">litestar.connection</span> <span class="kn">import</span> <span class="n">ASGIConnection</span>
 <span class="kn">from</span> <span class="nn">litestar.handlers.base</span> <span class="kn">import</span> <span class="n">BaseRouteHandler</span>
@@ -1626,10 +1661,10 @@ handlers:</p>
 
 <span class="c1"># controller</span>
 <span class="k">class</span> <span class="nc">UserController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
-    <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/user&quot;</span>
-    <span class="n">guards</span> <span class="o">=</span> <span class="p">[</span><span class="n">my_guard</span><span class="p">]</span>
+   <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/user&quot;</span>
+   <span class="n">guards</span> <span class="o">=</span> <span class="p">[</span><span class="n">my_guard</span><span class="p">]</span>
 
-    <span class="o">...</span>
+   <span class="o">...</span>
 
 
 <span class="c1"># router</span>
@@ -1639,11 +1674,18 @@ handlers:</p>
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">admin_router</span><span class="p">],</span> <span class="n">guards</span><span class="o">=</span><span class="p">[</span><span class="n">my_guard</span><span class="p">])</span>
 </pre></div>
 </div>
-<p>The deciding factor on where to place a guard is on the kind of access restriction that are required: do only specific
-route handlers need to be restricted? An entire controller? All the paths under a specific router? Or the entire app?</p>
-<p>As you can see in the above examples - <code class="docutils literal notranslate"><span class="pre">guards</span></code> is a list. This means you can add <strong>multiple</strong> guards at every layer.
-Unlike <code class="docutils literal notranslate"><span class="pre">dependencies</span></code> , guards do not override each other but are rather <em>cumulative</em>. This means that you can define
-guards on different levels of your app, and they will combine.</p>
+</div>
+</div>
+</details><p>The placement of guards within the Litestar application depends on the scope and level of access control needed:</p>
+<ul class="simple">
+<li><p>Should restrictions apply to individual route handlers?</p></li>
+<li><p>Is the access control intended for all actions within a controller?</p></li>
+<li><p>Are you aiming to secure all routes managed by a specific router?</p></li>
+<li><p>Or do you need to enforce access control across the entire application?</p></li>
+</ul>
+<p>As you can see in the above examples - <code class="docutils literal notranslate"><span class="pre">guards</span></code> is a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>. This means you can add <strong>multiple</strong> guards at
+every layer. Unlike <a class="reference internal" href="../dependency-injection.html"><span class="doc">dependencies</span></a> , guards do not override each other but are
+rather <em>cumulative</em>. This means that you can define guards on different layers of your app, and they will combine.</p>
 <div class="admonition caution">
 <p class="admonition-title">Caution</p>
 <p>If guards are placed at the controller or the app level, they <strong>will</strong> be executed on all <code class="docutils literal notranslate"><span class="pre">OPTIONS</span></code> requests as well.
@@ -1654,7 +1696,7 @@ For more details, including a workaround, refer <a class="github reference exter
 <h2>The route handler “opt” key<a class="headerlink" href="#the-route-handler-opt-key" title="Permalink to this heading">#</a></h2>
 <p>Occasionally there might be a need to set some values on the route handler itself - these can be permissions, or some
 other flag. This can be achieved with <a class="reference internal" href="../routing/handlers.html#handler-opts"><span class="std std-ref">the opts kwarg</span></a> of route handler</p>
-<p>To illustrate this lets say we want to have an endpoint that is guarded by a “secret” token, to which end we create
+<p>To illustrate this let us say we want to have an endpoint that is guarded by a “secret” token, to which end we create
 the following guard:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
 <span class="kn">from</span> <span class="nn">litestar.exceptions</span> <span class="kn">import</span> <span class="n">NotAuthorizedException</span>
