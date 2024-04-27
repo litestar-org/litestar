@@ -267,6 +267,12 @@ class HTTPRouteHandler(BaseRouteHandler):
         elif sync_to_thread is not None:
             warn_sync_to_thread_with_async_callable(fn, stacklevel=3)
 
+        has_sync_callable = not is_async_callable(fn)
+
+        if has_sync_callable and sync_to_thread:
+            fn = ensure_async_callable(fn)
+            has_sync_callable = False
+
         super().__init__(
             fn=fn,
             path=path,
