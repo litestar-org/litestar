@@ -1,1504 +1,162 @@
-
 <!DOCTYPE html>
+<html lang="en" data-accent-color="amber" data-content_root="">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Index - Litestar Framework</title>
+    <link rel="shortcut icon" href="_static/favicon.svg"/><link rel="index" title="Index" href="#" /><link rel="search" title="Search" href="search.html" />
 
-
-<html lang="en" data-content_root="" >
-
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index &#8212; Litestar Framework</title>
-  
-  
-  
-  <script data-cfasync="false">
-    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
-  </script>
-  
-  <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="_static/styles/bootstrap.css?digest=5b4479735964841361fd" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=5b4479735964841361fd" rel="stylesheet" />
-
-  
-  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=5b4479735964841361fd" rel="stylesheet" />
-  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
-<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
-
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=a746c00c" />
+  <script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(sessionStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="_static/pygments.css?v=aecf457f" />
+    <link rel="stylesheet" type="text/css" href="_static/shibuya.css?v=aa21bc99" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx_paramlinks.css" />
-    <link rel="stylesheet" type="text/css" href="_static/style.css?v=1d4867fe" />
-    <link rel="stylesheet" type="text/css" href="_static/litestar-sphinx-theme.css?v=9e3812bb" />
-  
-  <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=5b4479735964841361fd" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd" />
-  <script src="_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=5b4479735964841361fd"></script>
+    <link media="print" rel="stylesheet" type="text/css" href="_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="_static/style.css?v=10936375" />
+    <link rel="stylesheet" type="text/css" href="_static/litestar-sphinx-theme.css?v=9fce248e" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    </head>
+<body><div class="document"><div class="announcement">
+    <div class="announcement-inner">
+      <p>You are viewing the <bold>v3-development</bold> version of the documentation. Click here to go to the latest version.</p>
+      <button class="announcement-close" aria-label="Close announcement">
+        <i class="i-icon close"></i>
+      </button>
+    </div>
+  </div><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand mr-4" href="/">
+      <img class="light-logo" src="_static/logo-light.svg" alt="Litestar" height="28" />
+      <img class="dark-logo" src="_static/logo-dark.svg" alt="Litestar" height="28" />
+      <strong>Litestar</strong>
+    </a>
+    <div class="sy-head-links" id="NavLinks">
+      <nav class="sy-head-nav">
 
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=c19e757c"></script>
-    <script src="_static/doctools.js?v=888ff710"></script>
-    <script src="_static/sphinx_highlight.js?v=4825356b"></script>
-    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
-    <script src="_static/copybutton.js?v=f281be69"></script>
-    <script src="_static/litestar-theme.js?v=ab2dcc9e"></script>
-    <script src="_static/design-tabs.js?v=36754332"></script>
-    <script src="https://unpkg.com/mermaid@10.2.0/dist/mermaid.min.js"></script>
-    <script>mermaid.initialize({startOnLoad:true});</script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'genindex';</script>
-    <script src="_static/versioning.js?v=68b42869"></script>
-    <link rel="icon" href="_static/favicon.png"/>
-    <link rel="index" title="Index" href="#" />
-    <link rel="search" title="Search" href="search.html" />
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <meta name="docsearch:language" content="en"/>
-  </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
-  
-  
-  <a class="skip-link" href="#main-content">Skip to main content</a>
-  
-  <div id="pst-scroll-pixel-helper"></div>
-
-  
-  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
-    <i class="fa-solid fa-arrow-up"></i>
-    Back to top
-  </button>
-
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          name="__primary"
-          id="__primary"/>
-  <label class="overlay overlay-primary" for="__primary"></label>
-  
-  <input type="checkbox"
-          class="sidebar-toggle"
-          name="__secondary"
-          id="__secondary"/>
-  <label class="overlay overlay-secondary" for="__secondary"></label>
-  
-  <div class="search-button__wrapper">
-    <div class="search-button__overlay"></div>
-    <div class="search-button__search-container">
-<form class="bd-search d-flex align-items-center"
-      action="search.html"
-      method="get">
-  <i class="fa-solid fa-magnifying-glass"></i>
-  <input type="search"
-         class="form-control"
-         name="q"
-         id="search-input"
-         placeholder="Search the docs ..."
-         aria-label="Search the docs ..."
-         autocomplete="off"
-         autocorrect="off"
-         autocapitalize="off"
-         spellcheck="false"/>
-  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form></div>
+<ul><li class="link"><a href="index.html">Home</a></li>
+      <li class="link"><button type="button">
+            <span>Community</span>
+            <i class="i-icon chevron"></i>
+          </button>
+        <ul>
+          <li><a href="contribution-guide.html">
+                <span>Contributing</span>
+                <small>Learn how to contribute to the Litestar project</small>
+              </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
+                <span>Code of Conduct</span>
+                <small>Review the etiquette for interacting with the Litestar community</small>
+              </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file#security-ov-file">
+                <span>Security</span>
+                <small>Overview of Litestar's security protocols</small>
+              </a></li></ul>
+      </li>
+      <li class="link"><button type="button">
+            <span>About</span>
+            <i class="i-icon chevron"></i>
+          </button>
+        <ul>
+          <li><a href="https://litestar.dev/about/organization">
+                <span>Litestar Organization</span>
+                <small>Details about the Litestar organization</small>
+              </a></li><li><a href="https://litestar.dev/about/litestar-releases">
+                <span>Releases</span>
+                <small>Explore the release process, versioning, and deprecation policy for Litestar</small>
+              </a></li></ul>
+      </li>
+      <li class="link"><button type="button">
+            <span>Release notes</span>
+            <i class="i-icon chevron"></i>
+          </button>
+        <ul>
+          <li><a href="release-notes/whats-new-3.html">
+                <span>What's new in 3.0</span>
+                <small>Explore the new features in Litestar 3.0</small>
+              </a></li><li><a href="release-notes/changelog.html">
+                <span>3.x Changelog</span>
+                <small>All changes in the 3.x series</small>
+              </a></li><li><a href="https://docs.litestar.dev/2/release-notes/changelog.html">
+                <span>2.x Changelog</span>
+                <small>All changes in the 2.x series</small>
+              </a></li></ul>
+      </li>
+      <li class="link"><button type="button">
+            <span>Help</span>
+            <i class="i-icon chevron"></i>
+          </button>
+        <ul>
+          <li><a href="https://discord.gg/litestar">
+                <span>Discord Help Forum</span>
+                <small>Dedicated Discord help forum</small>
+              </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
+                <span>GitHub Discussions</span>
+                <small>GitHub Discussions</small>
+              </a></li><li><a href="https://stackoverflow.com/questions/tagged/litestar">
+                <span>Stack Overflow</span>
+                <small>We monitor the <code><b>litestar</b></code> tag on Stack Overflow</small>
+              </a></li></ul>
+      </li><li class="link">
+          <a href="https://github.com/sponsors/Litestar-Org">
+            <span>Sponsor</span>
+            
+          </a>
+        </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden">
+        
+<form class="searchbox flex items-center" action="search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form>
+        
+  <div class="nav-versions">
+    <button type="button" aria-label="Versions">
+      <span class="md:hidden">Versions</span>
+      <span class="hidden md:inline">latest</span>
+      <i class="i-icon chevron"></i>
+    </button>
+    <div class="nav-versions-choices">
+      <ul><li><a href="/latest">latest</a></li><li><a href="/main">development</a></li><li><a href="/3-dev">v3</a></li><li><a href="/2">v2</a></li><li><a href="/1">v1</a></li></ul></div>
   </div>
-  
-    <nav class="bd-header navbar navbar-expand-lg bd-navbar">
-<div class="bd-header__inner bd-page-width">
-  <label class="sidebar-toggle primary-toggle" for="__primary">
-    <span class="fa-solid fa-bars"></span>
-  </label>
-  
-  
-  <div class=" navbar-header-items__start">
-    
-      <div class="navbar-item">
-
-   
-
-<a class="navbar-brand logo" href="https://litestar.dev">
-  
-  
-  
-  
-  
-    
-    
-      
-    
-    
-    <img src="_static/logo.svg" class="logo__image only-light" alt="Litestar Framework - Home"/>
-    <script>document.write(`<img src="_static/logo.svg" class="logo__image only-dark" alt="Litestar Framework - Home"/>`);</script>
-  
-  
-</a></div>
-    
-  </div>
-  
-  <div class=" navbar-header-items">
-    
-    <div class="me-auto navbar-header-items__center">
-      
-        <div class="navbar-item">
-
-
-
-
-    <nav class="hidden lg:flex lg:gap-x-4">
         
-    
-        
-            <a href="index.html"
-               class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold select-none cursor-pointer">Documentation</a>
-        
-    
-        
-            
-    <div class="relative">
-        <span type="button"
-                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
-                data-dropdown-state="closed"
-                aria-expanded="false">
-            Community
-            <div class="menu-state-indicator flex">
-                
-    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
-     aria-hidden="true">
-    <path fill-rule="evenodd"
-          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-          clip-rule="evenodd"/>
-</svg>
-
-            </div>
-        </span>
-
-        <div class="
-            absolute -left-8 top-full z-10 mt-3
-            w-max max-w-md
-            overflow-hidden rounded-3xl
-            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
-            hidden
-            st-dropdown-menu">
-            <div class="p-4">
-                
-                    
-    
-        <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-zinc-800">
-            <div class="
-            h-11 w-11 flex flex-none items-center justify-center
-            rounded-lg
-            bg-gray-50 group-hover:bg-white dark:bg-zinc-900 dark:group-hover:bg-zinc-700
-            text-gray-600 dark:text-gray-300 group-hover:text-litestar-gold">
-                
-    <svg class="h-6 w-6" fill="none"
-     viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-    <path stroke-linecap="round" stroke-linejoin="round"
-          d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6z"/>
-    <path stroke-linecap="round" stroke-linejoin="round"
-          d="M13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z"/>
-</svg>
-
-            </div>
-            <div class="flex-auto">
-                
-    <a href="https://docs.litestar.dev/latest/contribution-guide.html"
-       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
-        Contributing
-        <span class="absolute inset-0"></span>
-    </a>
-
-                <div class="mt-1 text-gray-600 dark:text-gray-300">Learn how to contribute to the Litestar project</div>
-            </div>
+        <div class="sy-head-social flex items-center">
+            <a class="flex items-center" href="https://discord.gg/litestar-919193495116337154" aria-label="Discord">
+              <i class="i-icon discord"></i>
+            </a>
         </div>
-    
-
-                
-                    
-    
-        <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-zinc-800">
-            <div class="
-            h-11 w-11 flex flex-none items-center justify-center
-            rounded-lg
-            bg-gray-50 group-hover:bg-white dark:bg-zinc-900 dark:group-hover:bg-zinc-700
-            text-gray-600 dark:text-gray-300 group-hover:text-litestar-gold">
-                
-    <svg class="h-6 w-6" fill="none"
-     viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-    <path stroke-linecap="round" stroke-linejoin="round"
-          d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zM12 2.25V4.5m5.834.166l-1.591 1.591M20.25 10.5H18M7.757 14.743l-1.59 1.59M6 10.5H3.75m4.007-4.243l-1.59-1.59"/>
-</svg>
-
-            </div>
-            <div class="flex-auto">
-                
-    <a href="https://github.com/litestar-org/.github?tab=coc-ov-file"
-       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
-        Code of Conduct
-        <span class="absolute inset-0"></span>
-    </a>
-
-                <div class="mt-1 text-gray-600 dark:text-gray-300">Review the etiquette for interacting with the Litestar community</div>
-            </div>
-        </div>
-    
-
-                
-                    
-    
-        <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-zinc-800">
-            <div class="
-            h-11 w-11 flex flex-none items-center justify-center
-            rounded-lg
-            bg-gray-50 group-hover:bg-white dark:bg-zinc-900 dark:group-hover:bg-zinc-700
-            text-gray-600 dark:text-gray-300 group-hover:text-litestar-gold">
-                
-    <svg class="h-6 w-6" fill="none"
-     viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-    <path stroke-linecap="round" stroke-linejoin="round"
-          d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zM12 2.25V4.5m5.834.166l-1.591 1.591M20.25 10.5H18M7.757 14.743l-1.59 1.59M6 10.5H3.75m4.007-4.243l-1.59-1.59"/>
-</svg>
-
-            </div>
-            <div class="flex-auto">
-                
-    <a href="https://github.com/litestar-org/.github?tab=coc-ov-file#security-ov-file"
-       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
-        Security
-        <span class="absolute inset-0"></span>
-    </a>
-
-                <div class="mt-1 text-gray-600 dark:text-gray-300">Overview of Litestar's security protocols</div>
-            </div>
-        </div>
-    
-
-                
-            </div>
-        </div>
-    </div>
-
-        
-    
-        
-            
-    <div class="relative">
-        <span type="button"
-                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
-                data-dropdown-state="closed"
-                aria-expanded="false">
-            About
-            <div class="menu-state-indicator flex">
-                
-    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
-     aria-hidden="true">
-    <path fill-rule="evenodd"
-          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-          clip-rule="evenodd"/>
-</svg>
-
-            </div>
-        </span>
-
-        <div class="
-            absolute -left-8 top-full z-10 mt-3
-            w-max max-w-md
-            overflow-hidden rounded-3xl
-            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
-            hidden
-            st-dropdown-menu">
-            <div class="p-4">
-                
-                    
-    
-        <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-zinc-800">
-            <div class="
-            h-11 w-11 flex flex-none items-center justify-center
-            rounded-lg
-            bg-gray-50 group-hover:bg-white dark:bg-zinc-900 dark:group-hover:bg-zinc-700
-            text-gray-600 dark:text-gray-300 group-hover:text-litestar-gold">
-                
-    <svg class="h-6 w-6" aria-hidden="true"
-     fill="none" stroke="currentColor" stroke-width="1.5"
-     viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"
-          stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-
-            </div>
-            <div class="flex-auto">
-                
-    <a href="https://litestar.dev/about/organization"
-       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
-        Litestar Organization
-        <span class="absolute inset-0"></span>
-    </a>
-
-                <div class="mt-1 text-gray-600 dark:text-gray-300">Details about the Litestar organization</div>
-            </div>
-        </div>
-    
-
-                
-                    
-    
-        <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-zinc-800">
-            <div class="
-            h-11 w-11 flex flex-none items-center justify-center
-            rounded-lg
-            bg-gray-50 group-hover:bg-white dark:bg-zinc-900 dark:group-hover:bg-zinc-700
-            text-gray-600 dark:text-gray-300 group-hover:text-litestar-gold">
-                
-    <svg class="h-6 w-6" aria-hidden="true"
-     fill="none" stroke="currentColor" stroke-width="1.5"
-     viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path d="M9 12.75l3 3m0 0l3-3m-3 3v-7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-
-            </div>
-            <div class="flex-auto">
-                
-    <a href="https://litestar.dev/about/litestar-releases"
-       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
-        Releases
-        <span class="absolute inset-0"></span>
-    </a>
-
-                <div class="mt-1 text-gray-600 dark:text-gray-300">Explore the release process, versioning, and deprecation policy for Litestar</div>
-            </div>
-        </div>
-    
-
-                
-            </div>
-        </div>
-    </div>
-
-        
-    
-        
-            
-    <div class="relative">
-        <span type="button"
-                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
-                data-dropdown-state="closed"
-                aria-expanded="false">
-            Release notes
-            <div class="menu-state-indicator flex">
-                
-    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
-     aria-hidden="true">
-    <path fill-rule="evenodd"
-          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-          clip-rule="evenodd"/>
-</svg>
-
-            </div>
-        </span>
-
-        <div class="
-            absolute -left-8 top-full z-10 mt-3
-            w-max max-w-md
-            overflow-hidden rounded-3xl
-            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
-            hidden
-            st-dropdown-menu">
-            <div class="p-4">
-                
-                    
-    
-        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
-            
-    <a href="release-notes/whats-new-2.html"
-       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
-        What's new in 2.0
-        <span class="absolute inset-0"></span>
-    </a>
-
-        </div>
-    
-
-                
-                    
-    
-        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
-            
-    <a href="https://docs.litestar.dev/2/release-notes/changelog.html"
-       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
-        2.x Changelog
-        <span class="absolute inset-0"></span>
-    </a>
-
-        </div>
-    
-
-                
-                    
-    
-        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
-            
-    <a href="https://docs.litestar.dev/1/release-notes/changelog.html"
-       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
-        1.x Changelog
-        <span class="absolute inset-0"></span>
-    </a>
-
-        </div>
-    
-
-                
-            </div>
-        </div>
-    </div>
-
-        
-    
-        
-            
-    <div class="relative">
-        <span type="button"
-                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
-                data-dropdown-state="closed"
-                aria-expanded="false">
-            Help
-            <div class="menu-state-indicator flex">
-                
-    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
-     aria-hidden="true">
-    <path fill-rule="evenodd"
-          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-          clip-rule="evenodd"/>
-</svg>
-
-            </div>
-        </span>
-
-        <div class="
-            absolute -left-8 top-full z-10 mt-3
-            w-max max-w-md
-            overflow-hidden rounded-3xl
-            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
-            hidden
-            st-dropdown-menu">
-            <div class="p-4">
-                
-                    
-    
-        <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-zinc-800">
-            <div class="
-            h-11 w-11 flex flex-none items-center justify-center
-            rounded-lg
-            bg-gray-50 group-hover:bg-white dark:bg-zinc-900 dark:group-hover:bg-zinc-700
-            text-gray-600 dark:text-gray-300 group-hover:text-litestar-gold">
-                
-    <svg class="h-6 w-6" fill="none"
-     viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-    <path stroke-linecap="round" stroke-linejoin="round"
-          d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zM12 2.25V4.5m5.834.166l-1.591 1.591M20.25 10.5H18M7.757 14.743l-1.59 1.59M6 10.5H3.75m4.007-4.243l-1.59-1.59"/>
-</svg>
-
-            </div>
-            <div class="flex-auto">
-                
-    <a href="https://discord.gg/litestar-919193495116337154"
-       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
-        Discord Help Forum
-        <span class="absolute inset-0"></span>
-    </a>
-
-                <div class="mt-1 text-gray-600 dark:text-gray-300">Dedicated Discord help forum</div>
-            </div>
-        </div>
-    
-
-                
-                    
-    
-        <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-zinc-800">
-            <div class="
-            h-11 w-11 flex flex-none items-center justify-center
-            rounded-lg
-            bg-gray-50 group-hover:bg-white dark:bg-zinc-900 dark:group-hover:bg-zinc-700
-            text-gray-600 dark:text-gray-300 group-hover:text-litestar-gold">
-                
-    <svg class="h-6 w-6" fill="none"
-     viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-    <path stroke-linecap="round" stroke-linejoin="round"
-          d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zM12 2.25V4.5m5.834.166l-1.591 1.591M20.25 10.5H18M7.757 14.743l-1.59 1.59M6 10.5H3.75m4.007-4.243l-1.59-1.59"/>
-</svg>
-
-            </div>
-            <div class="flex-auto">
-                
-    <a href="https://github.com/orgs/litestar-org/discussions"
-       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
-        GitHub Discussions
-        <span class="absolute inset-0"></span>
-    </a>
-
-                <div class="mt-1 text-gray-600 dark:text-gray-300">GitHub Discussions </div>
-            </div>
-        </div>
-    
-
-                
-                    
-    
-        <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-zinc-800">
-            <div class="
-            h-11 w-11 flex flex-none items-center justify-center
-            rounded-lg
-            bg-gray-50 group-hover:bg-white dark:bg-zinc-900 dark:group-hover:bg-zinc-700
-            text-gray-600 dark:text-gray-300 group-hover:text-litestar-gold">
-                
-    <svg class="h-6 w-6" fill="none"
-     viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-    <path stroke-linecap="round" stroke-linejoin="round"
-          d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zM12 2.25V4.5m5.834.166l-1.591 1.591M20.25 10.5H18M7.757 14.743l-1.59 1.59M6 10.5H3.75m4.007-4.243l-1.59-1.59"/>
-</svg>
-
-            </div>
-            <div class="flex-auto">
-                
-    <a href="https://stackoverflow.com/questions/tagged/litestar"
-       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
-        Stack Overflow
-        <span class="absolute inset-0"></span>
-    </a>
-
-                <div class="mt-1 text-gray-600 dark:text-gray-300">We monitor the <code><b>litestar</b></code> tag on Stack Overflow</div>
-            </div>
-        </div>
-    
-
-                
-            </div>
-        </div>
-    </div>
-
-        
-    
-
-    </nav>
-</div>
-      
-    </div>
-    
-    
-    <div class="navbar-header-items__end">
-      
-        <div class="navbar-item navbar-persistent--container">
-          
-
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
-        </div>
-      
-        <div class="navbar-item navbar-persistent--container">
-          
-
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
-  </button>
-`);
-</script>
-        </div>
-      
-      
-        <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
-    aria-label="Icon Links">
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          
-          
-          <a href="https://github.com/litestar-org/litestar" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i></span>
-            <span class="sr-only">GitHub</span></a>
-        </li>
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          
-          
-          <a href="https://discord.gg/litestar-919193495116337154" title="Discord" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i></span>
-            <span class="sr-only">Discord</span></a>
-        </li>
-</ul></div>
-      
-    </div>
-    
-  </div>
-  
-  
-    <div class="navbar-persistent--mobile">
-
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-  </button>
-`);
-</script>
-    </div>
-  
-    <div class="navbar-persistent--mobile">
-
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
-    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
-  </button>
-`);
-</script>
-    </div>
-  
-
-  
-</div>
-
-    </nav>
-  
-  <div class="bd-container">
-    <div class="bd-container__inner bd-page-width">
-      
-      <div class="bd-sidebar-primary bd-sidebar">
-        
-
-  
-  <div class="sidebar-header-items sidebar-primary__section">
-    
-    
-      <div class="sidebar-header-items__center">
-        
-          <div class="navbar-item">
-
-
-
-
-    <nav class="hidden lg:flex lg:gap-x-4">
-        
-    
-        
-            <a href="index.html"
-               class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold select-none cursor-pointer">Documentation</a>
-        
-    
-        
-            
-    <div class="relative">
-        <span type="button"
-                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
-                data-dropdown-state="closed"
-                aria-expanded="false">
-            Community
-            <div class="menu-state-indicator flex">
-                
-    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
-     aria-hidden="true">
-    <path fill-rule="evenodd"
-          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-          clip-rule="evenodd"/>
-</svg>
-
-            </div>
-        </span>
-
-        <div class="
-            absolute -left-8 top-full z-10 mt-3
-            w-max max-w-md
-            overflow-hidden rounded-3xl
-            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
-            hidden
-            st-dropdown-menu">
-            <div class="p-4">
-                
-                    
-    
-        <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-zinc-800">
-            <div class="
-            h-11 w-11 flex flex-none items-center justify-center
-            rounded-lg
-            bg-gray-50 group-hover:bg-white dark:bg-zinc-900 dark:group-hover:bg-zinc-700
-            text-gray-600 dark:text-gray-300 group-hover:text-litestar-gold">
-                
-    <svg class="h-6 w-6" fill="none"
-     viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-    <path stroke-linecap="round" stroke-linejoin="round"
-          d="M10.5 6a7.5 7.5 0 107.5 7.5h-7.5V6z"/>
-    <path stroke-linecap="round" stroke-linejoin="round"
-          d="M13.5 10.5H21A7.5 7.5 0 0013.5 3v7.5z"/>
-</svg>
-
-            </div>
-            <div class="flex-auto">
-                
-    <a href="https://docs.litestar.dev/latest/contribution-guide.html"
-       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
-        Contributing
-        <span class="absolute inset-0"></span>
-    </a>
-
-                <div class="mt-1 text-gray-600 dark:text-gray-300">Learn how to contribute to the Litestar project</div>
-            </div>
-        </div>
-    
-
-                
-                    
-    
-        <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-zinc-800">
-            <div class="
-            h-11 w-11 flex flex-none items-center justify-center
-            rounded-lg
-            bg-gray-50 group-hover:bg-white dark:bg-zinc-900 dark:group-hover:bg-zinc-700
-            text-gray-600 dark:text-gray-300 group-hover:text-litestar-gold">
-                
-    <svg class="h-6 w-6" fill="none"
-     viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-    <path stroke-linecap="round" stroke-linejoin="round"
-          d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zM12 2.25V4.5m5.834.166l-1.591 1.591M20.25 10.5H18M7.757 14.743l-1.59 1.59M6 10.5H3.75m4.007-4.243l-1.59-1.59"/>
-</svg>
-
-            </div>
-            <div class="flex-auto">
-                
-    <a href="https://github.com/litestar-org/.github?tab=coc-ov-file"
-       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
-        Code of Conduct
-        <span class="absolute inset-0"></span>
-    </a>
-
-                <div class="mt-1 text-gray-600 dark:text-gray-300">Review the etiquette for interacting with the Litestar community</div>
-            </div>
-        </div>
-    
-
-                
-                    
-    
-        <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-zinc-800">
-            <div class="
-            h-11 w-11 flex flex-none items-center justify-center
-            rounded-lg
-            bg-gray-50 group-hover:bg-white dark:bg-zinc-900 dark:group-hover:bg-zinc-700
-            text-gray-600 dark:text-gray-300 group-hover:text-litestar-gold">
-                
-    <svg class="h-6 w-6" fill="none"
-     viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-    <path stroke-linecap="round" stroke-linejoin="round"
-          d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zM12 2.25V4.5m5.834.166l-1.591 1.591M20.25 10.5H18M7.757 14.743l-1.59 1.59M6 10.5H3.75m4.007-4.243l-1.59-1.59"/>
-</svg>
-
-            </div>
-            <div class="flex-auto">
-                
-    <a href="https://github.com/litestar-org/.github?tab=coc-ov-file#security-ov-file"
-       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
-        Security
-        <span class="absolute inset-0"></span>
-    </a>
-
-                <div class="mt-1 text-gray-600 dark:text-gray-300">Overview of Litestar's security protocols</div>
-            </div>
-        </div>
-    
-
-                
-            </div>
-        </div>
-    </div>
-
-        
-    
-        
-            
-    <div class="relative">
-        <span type="button"
-                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
-                data-dropdown-state="closed"
-                aria-expanded="false">
-            About
-            <div class="menu-state-indicator flex">
-                
-    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
-     aria-hidden="true">
-    <path fill-rule="evenodd"
-          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-          clip-rule="evenodd"/>
-</svg>
-
-            </div>
-        </span>
-
-        <div class="
-            absolute -left-8 top-full z-10 mt-3
-            w-max max-w-md
-            overflow-hidden rounded-3xl
-            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
-            hidden
-            st-dropdown-menu">
-            <div class="p-4">
-                
-                    
-    
-        <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-zinc-800">
-            <div class="
-            h-11 w-11 flex flex-none items-center justify-center
-            rounded-lg
-            bg-gray-50 group-hover:bg-white dark:bg-zinc-900 dark:group-hover:bg-zinc-700
-            text-gray-600 dark:text-gray-300 group-hover:text-litestar-gold">
-                
-    <svg class="h-6 w-6" aria-hidden="true"
-     fill="none" stroke="currentColor" stroke-width="1.5"
-     viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"
-          stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-
-            </div>
-            <div class="flex-auto">
-                
-    <a href="https://litestar.dev/about/organization"
-       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
-        Litestar Organization
-        <span class="absolute inset-0"></span>
-    </a>
-
-                <div class="mt-1 text-gray-600 dark:text-gray-300">Details about the Litestar organization</div>
-            </div>
-        </div>
-    
-
-                
-                    
-    
-        <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-zinc-800">
-            <div class="
-            h-11 w-11 flex flex-none items-center justify-center
-            rounded-lg
-            bg-gray-50 group-hover:bg-white dark:bg-zinc-900 dark:group-hover:bg-zinc-700
-            text-gray-600 dark:text-gray-300 group-hover:text-litestar-gold">
-                
-    <svg class="h-6 w-6" aria-hidden="true"
-     fill="none" stroke="currentColor" stroke-width="1.5"
-     viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path d="M9 12.75l3 3m0 0l3-3m-3 3v-7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          stroke-linecap="round" stroke-linejoin="round"></path>
-</svg>
-
-            </div>
-            <div class="flex-auto">
-                
-    <a href="https://litestar.dev/about/litestar-releases"
-       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
-        Releases
-        <span class="absolute inset-0"></span>
-    </a>
-
-                <div class="mt-1 text-gray-600 dark:text-gray-300">Explore the release process, versioning, and deprecation policy for Litestar</div>
-            </div>
-        </div>
-    
-
-                
-            </div>
-        </div>
-    </div>
-
-        
-    
-        
-            
-    <div class="relative">
-        <span type="button"
-                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
-                data-dropdown-state="closed"
-                aria-expanded="false">
-            Release notes
-            <div class="menu-state-indicator flex">
-                
-    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
-     aria-hidden="true">
-    <path fill-rule="evenodd"
-          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-          clip-rule="evenodd"/>
-</svg>
-
-            </div>
-        </span>
-
-        <div class="
-            absolute -left-8 top-full z-10 mt-3
-            w-max max-w-md
-            overflow-hidden rounded-3xl
-            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
-            hidden
-            st-dropdown-menu">
-            <div class="p-4">
-                
-                    
-    
-        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
-            
-    <a href="release-notes/whats-new-2.html"
-       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
-        What's new in 2.0
-        <span class="absolute inset-0"></span>
-    </a>
-
-        </div>
-    
-
-                
-                    
-    
-        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
-            
-    <a href="https://docs.litestar.dev/2/release-notes/changelog.html"
-       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
-        2.x Changelog
-        <span class="absolute inset-0"></span>
-    </a>
-
-        </div>
-    
-
-                
-                    
-    
-        <div class="group relative rounded-lg p-2 text-sm hover:bg-gray-50 dark:hover:bg-zinc-800">
-            
-    <a href="https://docs.litestar.dev/1/release-notes/changelog.html"
-       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
-        1.x Changelog
-        <span class="absolute inset-0"></span>
-    </a>
-
-        </div>
-    
-
-                
-            </div>
-        </div>
-    </div>
-
-        
-    
-        
-            
-    <div class="relative">
-        <span type="button"
-                class="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:!text-litestar-gold st-dropdown-toggle dropdown-closed select-none cursor-pointer"
-                data-dropdown-state="closed"
-                aria-expanded="false">
-            Help
-            <div class="menu-state-indicator flex">
-                
-    <svg class="h-5 w-5 flex-none text-gray-400" viewBox="0 0 20 20" fill="currentColor"
-     aria-hidden="true">
-    <path fill-rule="evenodd"
-          d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-          clip-rule="evenodd"/>
-</svg>
-
-            </div>
-        </span>
-
-        <div class="
-            absolute -left-8 top-full z-10 mt-3
-            w-max max-w-md
-            overflow-hidden rounded-3xl
-            bg-white shadow-lg dark:!bg-zinc-700 ring-1 ring-gray-900/5
-            hidden
-            st-dropdown-menu">
-            <div class="p-4">
-                
-                    
-    
-        <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-zinc-800">
-            <div class="
-            h-11 w-11 flex flex-none items-center justify-center
-            rounded-lg
-            bg-gray-50 group-hover:bg-white dark:bg-zinc-900 dark:group-hover:bg-zinc-700
-            text-gray-600 dark:text-gray-300 group-hover:text-litestar-gold">
-                
-    <svg class="h-6 w-6" fill="none"
-     viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-    <path stroke-linecap="round" stroke-linejoin="round"
-          d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zM12 2.25V4.5m5.834.166l-1.591 1.591M20.25 10.5H18M7.757 14.743l-1.59 1.59M6 10.5H3.75m4.007-4.243l-1.59-1.59"/>
-</svg>
-
-            </div>
-            <div class="flex-auto">
-                
-    <a href="https://discord.gg/litestar-919193495116337154"
-       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
-        Discord Help Forum
-        <span class="absolute inset-0"></span>
-    </a>
-
-                <div class="mt-1 text-gray-600 dark:text-gray-300">Dedicated Discord help forum</div>
-            </div>
-        </div>
-    
-
-                
-                    
-    
-        <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-zinc-800">
-            <div class="
-            h-11 w-11 flex flex-none items-center justify-center
-            rounded-lg
-            bg-gray-50 group-hover:bg-white dark:bg-zinc-900 dark:group-hover:bg-zinc-700
-            text-gray-600 dark:text-gray-300 group-hover:text-litestar-gold">
-                
-    <svg class="h-6 w-6" fill="none"
-     viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-    <path stroke-linecap="round" stroke-linejoin="round"
-          d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zM12 2.25V4.5m5.834.166l-1.591 1.591M20.25 10.5H18M7.757 14.743l-1.59 1.59M6 10.5H3.75m4.007-4.243l-1.59-1.59"/>
-</svg>
-
-            </div>
-            <div class="flex-auto">
-                
-    <a href="https://github.com/orgs/litestar-org/discussions"
-       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
-        GitHub Discussions
-        <span class="absolute inset-0"></span>
-    </a>
-
-                <div class="mt-1 text-gray-600 dark:text-gray-300">GitHub Discussions </div>
-            </div>
-        </div>
-    
-
-                
-                    
-    
-        <div class="group relative flex items-center gap-x-6 rounded-lg p-4 text-sm leading-6 hover:bg-gray-50 dark:hover:bg-zinc-800">
-            <div class="
-            h-11 w-11 flex flex-none items-center justify-center
-            rounded-lg
-            bg-gray-50 group-hover:bg-white dark:bg-zinc-900 dark:group-hover:bg-zinc-700
-            text-gray-600 dark:text-gray-300 group-hover:text-litestar-gold">
-                
-    <svg class="h-6 w-6" fill="none"
-     viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
-    <path stroke-linecap="round" stroke-linejoin="round"
-          d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zM12 2.25V4.5m5.834.166l-1.591 1.591M20.25 10.5H18M7.757 14.743l-1.59 1.59M6 10.5H3.75m4.007-4.243l-1.59-1.59"/>
-</svg>
-
-            </div>
-            <div class="flex-auto">
-                
-    <a href="https://stackoverflow.com/questions/tagged/litestar"
-       class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
-        Stack Overflow
-        <span class="absolute inset-0"></span>
-    </a>
-
-                <div class="mt-1 text-gray-600 dark:text-gray-300">We monitor the <code><b>litestar</b></code> tag on Stack Overflow</div>
-            </div>
-        </div>
-    
-
-                
-            </div>
-        </div>
-    </div>
-
-        
-    
-
-    </nav>
-</div>
-        
       </div>
-    
-    
-    
-      <div class="sidebar-header-items__end">
-        
-          <div class="navbar-item"><ul class="navbar-icon-links navbar-nav"
-    aria-label="Icon Links">
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          
-          
-          <a href="https://github.com/litestar-org/litestar" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i></span>
-            <span class="sr-only">GitHub</span></a>
-        </li>
-        <li class="nav-item">
-          
-          
-          
-          
-          
-          
-          
-          
-          <a href="https://discord.gg/litestar-919193495116337154" title="Discord" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-discord fa-lg" aria-hidden="true"></i></span>
-            <span class="sr-only">Discord</span></a>
-        </li>
-</ul></div>
-        
-      </div>
-    
-  </div>
-  
-    <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item">
-<nav class="bd-docs-nav bd-links"
-     aria-label="Section Navigation">
-  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
-  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Documentation</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="usage/index.html">Usage</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-1"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="usage/applications.html">Applications</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="usage/routing/index.html">Routing</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-2"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="usage/routing/overview.html">Overview</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/routing/handlers.html">Route handlers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/routing/parameters.html">Parameters</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="usage/requests.html">Requests</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage/caching.html">Caching</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage/channels.html">Channels</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage/cli.html">CLI</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="usage/databases/index.html">Databases</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-3"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3 has-children"><a class="reference internal" href="usage/databases/sqlalchemy/index.html">SQLAlchemy</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-4"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="usage/databases/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="usage/databases/sqlalchemy/plugins/index.html">Plugins</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="usage/databases/piccolo.html">Piccolo ORM</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="usage/debugging.html">Debugging</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage/dependency-injection.html">Dependency Injection</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="usage/dto/index.html">Data Transfer Object (DTO)</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-5"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="usage/dto/0-basic-use.html">Basic Use</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/dto/1-abstract-dto.html">AbstractDTO</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/dto/2-creating-custom-dto-classes.html">Implementing Custom DTO Classes</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="usage/events.html">Events</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage/exceptions.html">Exceptions and exception handling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage/htmx.html">HTMX</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage/logging.html">Logging</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="usage/metrics/index.html">Metrics</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-6"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="usage/metrics/open-telemetry.html">OpenTelemetry</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/metrics/prometheus.html">Prometheus</a></li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="usage/middleware/index.html">Middleware</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-7"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="usage/middleware/using-middleware.html">Using Middleware</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/middleware/builtin-middleware.html">Built-in middleware</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/middleware/creating-middleware.html">Creating Middleware</a></li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="usage/openapi/index.html">OpenAPI</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-8"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="usage/openapi/schema_generation.html">Configuring schema generation</a></li>
-
-
-
-
-<li class="toctree-l3"><a class="reference internal" href="usage/openapi/ui_plugins.html">OpenAPI UI Plugins</a></li>
-
-
-
-
-
-
-
-
-
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="usage/plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="usage/plugins/flash_messages.html">Flash Messages</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="usage/responses.html">Responses</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="usage/security/index.html">Security</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="usage/security/abstract-authentication-middleware.html">AbstractAuthenticationMiddleware</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/security/security-backends.html">Security Backends</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/security/guards.html">Guards</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/security/excluding-and-including-endpoints.html">Excluding and including endpoints</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/security/jwt.html">JWT Security Backends</a></li>
-<li class="toctree-l3"><a class="reference internal" href="usage/security/secret-datastructures.html">Handling Secrets</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="usage/static-files.html">Static files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage/stores.html">Stores</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage/templating.html">Templating</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage/testing.html">Testing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usage/websockets.html">WebSockets</a></li>
-</ul>
-</li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="reference/index.html">API reference</a><input class="toctree-checkbox" id="toctree-checkbox-11" name="toctree-checkbox-11" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-11"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="reference/app.html">app</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/background_tasks.html">background_tasks</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/channels/index.html">channels</a><input class="toctree-checkbox" id="toctree-checkbox-12" name="toctree-checkbox-12" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-12"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="reference/channels/plugin.html">plugin</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/channels/subscriber.html">subscriber</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="reference/channels/backends/index.html">backends</a><input class="toctree-checkbox" id="toctree-checkbox-13" name="toctree-checkbox-13" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-13"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="reference/channels/backends/base.html">base</a></li>
-<li class="toctree-l4"><a class="reference internal" href="reference/channels/backends/memory.html">memory</a></li>
-<li class="toctree-l4"><a class="reference internal" href="reference/channels/backends/redis.html">redis</a></li>
-<li class="toctree-l4"><a class="reference internal" href="reference/channels/backends/psycopg.html">psycopg</a></li>
-<li class="toctree-l4"><a class="reference internal" href="reference/channels/backends/asyncpg.html">asyncpg</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="reference/cli.html">cli</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/config.html">config</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/connection.html">connection</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/contrib/index.html">contrib</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="reference/contrib/htmx.html">HTMX</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/contrib/jinja.html">jinja</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/contrib/jwt.html">jwt</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/contrib/mako.html">mako</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/contrib/opentelemetry.html">opentelemetry</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/contrib/piccolo.html">piccolo_orm</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/contrib/pydantic.html">pydantic</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="reference/contrib/sqlalchemy/index.html">sqlalchemy</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="reference/contrib/sqlalchemy/plugins.html">plugins</a></li>
-<li class="toctree-l4"><a class="reference internal" href="reference/contrib/sqlalchemy/repository.html">repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="reference/contrib/sqlalchemy/types.html">types</a></li>
-<li class="toctree-l4"><a class="reference internal" href="reference/contrib/sqlalchemy/base.html">base</a></li>
-<li class="toctree-l4"><a class="reference internal" href="reference/contrib/sqlalchemy/dto.html">DTO</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="reference/controller.html">controller</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/concurrency.html">cli</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/data_extractors.html">data_extractors</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/datastructures/index.html">datastructures</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="reference/datastructures/secret_values.html">secret_values</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="reference/di.html">di</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/dto/index.html">dto</a><input class="toctree-checkbox" id="toctree-checkbox-17" name="toctree-checkbox-17" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-17"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="reference/dto/config.html">config</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/dto/data_structures.html">data_structures</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/dto/field.html">field</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/dto/types.html">types</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/dto/base_dto.html">base_dto</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/dto/msgspec_dto.html">msgspec_dto</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/dto/dataclass_dto.html">dataclass_dto</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="reference/enums.html">enums</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/events.html">events</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/exceptions.html">exceptions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/handlers.html">handlers</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/logging/index.html">logging</a><input class="toctree-checkbox" id="toctree-checkbox-18" name="toctree-checkbox-18" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-18"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="reference/logging/config.html">config</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/logging/picologging.html">picologging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/logging/standard.html">standard</a></li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/middleware/index.html">middleware</a><input class="toctree-checkbox" id="toctree-checkbox-19" name="toctree-checkbox-19" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-19"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/middleware/authentication.html">authentication</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/middleware/compression.html">compression</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/middleware/cors.html">cors</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/middleware/csrf.html">csrf</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/middleware/logging.html">logging</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/middleware/rate_limit.html">rate_limit</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="reference/middleware/session/index.html">session</a><input class="toctree-checkbox" id="toctree-checkbox-20" name="toctree-checkbox-20" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-20"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="reference/middleware/session/base.html">base</a></li>
-<li class="toctree-l4"><a class="reference internal" href="reference/middleware/session/client_side.html">client_side</a></li>
-<li class="toctree-l4"><a class="reference internal" href="reference/middleware/session/server_side.html">server_side</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/openapi/index.html">openapi</a><input class="toctree-checkbox" id="toctree-checkbox-21" name="toctree-checkbox-21" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-21"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="reference/openapi/openapi.html">openapi</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/openapi/plugins.html">plugins</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/openapi/spec.html">spec</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="reference/pagination.html">pagination</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/params.html">params</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="reference/plugins/flash_messages.html">flash</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/plugins/structlog.html">structlog</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/repository/index.html">repository</a><input class="toctree-checkbox" id="toctree-checkbox-23" name="toctree-checkbox-23" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-23"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="reference/repository/abc.html">abc</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/repository/filters.html">filters</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/repository/exceptions.html">exceptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/repository/testing.html">testing</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/repository/handlers.html">handlers</a></li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/response/index.html">response</a><input class="toctree-checkbox" id="toctree-checkbox-24" name="toctree-checkbox-24" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-24"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="reference/response/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/response/file.html">file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/response/redirect.html">redirect</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/response/streaming.html">streaming</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/response/sse.html">SSE (Server Sent Events)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/response/template.html">template</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="reference/router.html">router</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/routes.html">routes</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/security/index.html">security</a><input class="toctree-checkbox" id="toctree-checkbox-25" name="toctree-checkbox-25" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-25"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="reference/security/jwt.html">jwt</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/security/session_auth.html">session_auth</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="reference/serialization.html">serialization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/static_files.html">static_files</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/status_codes.html">status_code</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="reference/stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-26"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="reference/stores/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/stores/file.html">file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/stores/memory.html">memory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/stores/redis.html">redis</a></li>
-<li class="toctree-l3"><a class="reference internal" href="reference/stores/registry.html">registry</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="reference/template.html">template</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/testing.html">testing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/types.html">types</a></li>
-<li class="toctree-l2"><a class="reference internal" href="reference/typing.html">typing</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="benchmarks.html">Benchmarks</a></li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Guides</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1 has-children"><a class="reference internal" href="migration/index.html">Migrating to Litestar</a><input class="toctree-checkbox" id="toctree-checkbox-27" name="toctree-checkbox-27" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-27"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="migration/flask.html">From Flask</a></li>
-<li class="toctree-l2"><a class="reference internal" href="migration/fastapi.html">From Starlette / FastAPI</a></li>
-</ul>
-</li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="topics/index.html">Topics</a><input class="toctree-checkbox" id="toctree-checkbox-28" name="toctree-checkbox-28" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-28"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="topics/sync-vs-async.html">Sync vs. Async</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="topics/deployment/index.html">Deployment</a><input class="toctree-checkbox" id="toctree-checkbox-29" name="toctree-checkbox-29" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-29"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="topics/deployment/nginx-unit.html">NGINX Unit</a></li>
-<li class="toctree-l3"><a class="reference internal" href="topics/deployment/manually-with-asgi-server.html">Manually with ASGI server</a></li>
-<li class="toctree-l3"><a class="reference internal" href="topics/deployment/docker.html">Docker</a></li>
-<li class="toctree-l3"><a class="reference internal" href="topics/deployment/supervisor.html">Supervisor (Linux)</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="tutorials/index.html">Tutorials</a><input class="toctree-checkbox" id="toctree-checkbox-30" name="toctree-checkbox-30" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-30"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="tutorials/todo-app/index.html">Developing a basic TODO application</a><input class="toctree-checkbox" id="toctree-checkbox-31" name="toctree-checkbox-31" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-31"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/todo-app/0-application-basics.html">Application basics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/todo-app/1-accessing-the-list.html">Accessing the list</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/todo-app/2-interacting-with-the-list.html">Making the list interactive</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/todo-app/3-assembling-the-app.html">Recap and assembling the final application</a></li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="tutorials/sqlalchemy/index.html">Improving the TODO app with SQLAlchemy</a><input class="toctree-checkbox" id="toctree-checkbox-32" name="toctree-checkbox-32" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-32"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/sqlalchemy/0-introduction.html">Introduction</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/sqlalchemy/1-provide-session-with-di.html">Providing the session with DI</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/sqlalchemy/2-serialization-plugin.html">Using the serialization plugin</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/sqlalchemy/3-init-plugin.html">Using the init plugin</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/sqlalchemy/4-final-touches-and-recap.html">Final touches and recap</a></li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="tutorials/dto-tutorial/index.html">Data Transfer Object Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-33" name="toctree-checkbox-33" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-33"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/dto-tutorial/01-simple-dto-exclude.html">Our first DTO</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/dto-tutorial/02-nested-exclude.html">Excluding from nested models</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/dto-tutorial/03-nested-collection-exclude.html">Excluding from collections of nested models</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/dto-tutorial/04-max-nested-depth.html">Max nested depth</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/dto-tutorial/05-renaming-fields.html">Renaming fields</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/dto-tutorial/06-receiving-data.html">Receiving data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/dto-tutorial/07-read-only-fields.html">Read only fields</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/dto-tutorial/08-dto-data.html">Accessing the data</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/dto-tutorial/09-updating.html">Updating instances</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/dto-tutorial/10-layered-dto-declarations.html">Declaring DTOs on app layers</a></li>
-</ul>
-</li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="tutorials/repository-tutorial/index.html">SQLAlchemy Repository Tutorial</a><input class="toctree-checkbox" id="toctree-checkbox-34" name="toctree-checkbox-34" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-34"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="tutorials/repository-tutorial/01-modeling-and-features.html">Introduction to Database Modeling and Repository Features</a></li>
-
-
-<li class="toctree-l3"><a class="reference internal" href="tutorials/repository-tutorial/02-repository-introduction.html">Interacting with repositories</a></li>
-
-
-<li class="toctree-l3"><a class="reference internal" href="tutorials/repository-tutorial/03-repository-controller.html">Working with Controllers and Repositories</a></li>
-
-<li class="toctree-l3"><a class="reference internal" href="tutorials/repository-tutorial/04-repository-other.html">Adding Additional Features to the Repository</a></li>
-
-
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Contributing</span></p>
-<ul class="nav bd-sidenav">
-<li class="toctree-l1"><a class="reference internal" href="contribution-guide.html">Contribution Guide</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/search?q=user%3Alitestar-org+state%3Aopen+label%3A%22good+first+issue%22+++no%3Aassignee+&amp;type=issues=">Available Issues</a></li>
-
-</ul>
-</div>
-</nav></div>
     </div>
-  
-  
-  <div class="sidebar-primary-items__end sidebar-primary__section">
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden">
+      <button class="js-theme theme-switch flex items-center"
+        data-aria-auto="Switch to light color mode"
+        data-aria-light="Switch to dark color mode"
+        data-aria-dark="Switch to auto color mode">
+        <i class="i-icon theme-icon"></i>
+      </button>
+      <button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="NavLinks" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2 -translate-x-2"></span>
+          <span class="hamburger_3 -translate-x-1"></span>
+        </div>
+      </button>
+    </div>
   </div>
-  
-  <div id="rtd-footer-container"></div>
-
-
-      </div>
-      
-      <main id="main-content" class="bd-main">
+</div><div class="sy-container mx-auto body">
+    <main class="sy-content mx-auto pt-12 px-6 xl:px-12 break-words">
+      <article class="yue" role="main">
         
-        
-          <div class="bd-content">
-            <div class="bd-article-container">
-              
-              <div class="bd-header-article"></div>
-              
-              
-              
-                
-<div id="searchbox"></div>
-                <article class="bd-article" role="main">
-                  
 
 <h1 id="index">Index</h1>
 
@@ -2033,8 +691,6 @@ document.write(`
 </li>
         <li><a href="reference/response/base.html#litestar.response.base.ASGIResponse.__call__">(litestar.response.base.ASGIResponse method)</a>
 </li>
-        <li><a href="reference/static_files.html#litestar.static_files.StaticFiles.__call__">(litestar.static_files.StaticFiles method)</a>
-</li>
       </ul></li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.ImmutableState.__copy__">__copy__() (litestar.datastructures.ImmutableState method)</a>
 </li>
@@ -2285,8 +941,6 @@ document.write(`
 </li>
         <li><a href="reference/middleware/compression.html#litestar.middleware.compression.CompressionMiddleware.__init__">(litestar.middleware.compression.CompressionMiddleware method)</a>
 </li>
-        <li><a href="reference/middleware/cors.html#litestar.middleware.cors.CORSMiddleware.__init__">(litestar.middleware.cors.CORSMiddleware method)</a>
-</li>
         <li><a href="reference/middleware/csrf.html#litestar.middleware.csrf.CSRFMiddleware.__init__">(litestar.middleware.csrf.CSRFMiddleware method)</a>
 </li>
         <li><a href="reference/middleware/index.html#litestar.middleware.DefineMiddleware.__init__">(litestar.middleware.DefineMiddleware method)</a>
@@ -2513,10 +1167,6 @@ document.write(`
 </li>
         <li><a href="reference/security/session_auth.html#litestar.security.session_auth.SessionAuth.__init__">(litestar.security.session_auth.SessionAuth method)</a>
 </li>
-        <li><a href="reference/static_files.html#litestar.static_files.StaticFiles.__init__">(litestar.static_files.StaticFiles method)</a>
-</li>
-        <li><a href="reference/static_files.html#litestar.static_files.StaticFilesConfig.__init__">(litestar.static_files.StaticFilesConfig method)</a>
-</li>
         <li><a href="reference/stores/file.html#litestar.stores.file.FileStore.__init__">(litestar.stores.file.FileStore method)</a>
 </li>
         <li><a href="reference/stores/memory.html#litestar.stores.memory.MemoryStore.__init__">(litestar.stores.memory.MemoryStore method)</a>
@@ -2717,8 +1367,6 @@ document.write(`
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.put.params.after_request">(litestar.handlers.put parameter)</a>
 </li>
-        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.after_request">(litestar.openapi.OpenAPIController attribute)</a>
-</li>
         <li><a href="reference/router.html#litestar.router.Router.params.after_request">(litestar.router.Router parameter)</a>
 </li>
         <li><a href="reference/static_files.html#litestar.static_files.create_static_files_router.params.after_request">(litestar.static_files.create_static_files_router parameter)</a>
@@ -2748,8 +1396,6 @@ document.write(`
         <li><a href="reference/handlers.html#litestar.handlers.post.params.after_response">(litestar.handlers.post parameter)</a>
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.put.params.after_response">(litestar.handlers.put parameter)</a>
-</li>
-        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.after_response">(litestar.openapi.OpenAPIController attribute)</a>
 </li>
         <li><a href="reference/router.html#litestar.router.Router.params.after_response">(litestar.router.Router parameter)</a>
 </li>
@@ -2867,7 +1513,7 @@ document.write(`
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.on_registration.params.app">(litestar.handlers.HTTPRouteHandler.on_registration parameter)</a>
 </li>
-        <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.to_response.params.app">(litestar.handlers.HTTPRouteHandler.to_response parameter)</a>
+        <li><a href="reference/handlers.html#litestar.handlers.WebsocketRouteHandler.on_registration.params.app">(litestar.handlers.WebsocketRouteHandler.on_registration parameter)</a>
 </li>
         <li><a href="reference/middleware/index.html#litestar.middleware.AbstractAuthenticationMiddleware.params.app">(litestar.middleware.AbstractAuthenticationMiddleware parameter)</a>
 </li>
@@ -2878,8 +1524,6 @@ document.write(`
         <li><a href="reference/middleware/authentication.html#litestar.middleware.authentication.AbstractAuthenticationMiddleware.params.app">(litestar.middleware.authentication.AbstractAuthenticationMiddleware parameter)</a>
 </li>
         <li><a href="reference/middleware/compression.html#litestar.middleware.compression.CompressionMiddleware.params.app">(litestar.middleware.compression.CompressionMiddleware parameter)</a>
-</li>
-        <li><a href="reference/middleware/cors.html#litestar.middleware.cors.CORSMiddleware.params.app">(litestar.middleware.cors.CORSMiddleware parameter)</a>
 </li>
         <li><a href="reference/middleware/csrf.html#litestar.middleware.csrf.CSRFMiddleware.params.app">(litestar.middleware.csrf.CSRFMiddleware parameter)</a>
 </li>
@@ -2897,25 +1541,9 @@ document.write(`
 </li>
         <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.update_app_state.params.app">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.update_app_state parameter)</a>
 </li>
-        <li><a href="reference/response/base.html#litestar.response.base.Response.to_asgi_response.params.app">(litestar.response.base.Response.to_asgi_response parameter)</a>
-</li>
         <li><a href="reference/response/file.html#litestar.response.file.File.to_asgi_response.params.app">(litestar.response.file.File.to_asgi_response parameter)</a>
 </li>
         <li><a href="reference/response/index.html#litestar.response.File.to_asgi_response.params.app">(litestar.response.File.to_asgi_response parameter)</a>
-</li>
-        <li><a href="reference/response/redirect.html#litestar.response.redirect.Redirect.to_asgi_response.params.app">(litestar.response.redirect.Redirect.to_asgi_response parameter)</a>
-</li>
-        <li><a href="reference/response/index.html#litestar.response.Redirect.to_asgi_response.params.app">(litestar.response.Redirect.to_asgi_response parameter)</a>
-</li>
-        <li><a href="reference/response/index.html#litestar.response.Response.to_asgi_response.params.app">(litestar.response.Response.to_asgi_response parameter)</a>
-</li>
-        <li><a href="reference/response/index.html#litestar.response.Stream.to_asgi_response.params.app">(litestar.response.Stream.to_asgi_response parameter)</a>
-</li>
-        <li><a href="reference/response/streaming.html#litestar.response.streaming.Stream.to_asgi_response.params.app">(litestar.response.streaming.Stream.to_asgi_response parameter)</a>
-</li>
-        <li><a href="reference/response/template.html#litestar.response.template.Template.to_asgi_response.params.app">(litestar.response.template.Template.to_asgi_response parameter)</a>
-</li>
-        <li><a href="reference/response/index.html#litestar.response.Template.to_asgi_response.params.app">(litestar.response.Template.to_asgi_response parameter)</a>
 </li>
         <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTAuthenticationMiddleware.params.app">(litestar.security.jwt.JWTAuthenticationMiddleware parameter)</a>
 </li>
@@ -3325,8 +1953,6 @@ document.write(`
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.put.params.before_request">(litestar.handlers.put parameter)</a>
 </li>
-        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.before_request">(litestar.openapi.OpenAPIController attribute)</a>
-</li>
         <li><a href="reference/router.html#litestar.router.Router.params.before_request">(litestar.router.Router parameter)</a>
 </li>
         <li><a href="reference/static_files.html#litestar.static_files.create_static_files_router.params.before_request">(litestar.static_files.create_static_files_router parameter)</a>
@@ -3701,8 +2327,6 @@ document.write(`
 </li>
         <li><a href="reference/middleware/compression.html#litestar.middleware.compression.CompressionMiddleware.params.config">(litestar.middleware.compression.CompressionMiddleware parameter)</a>
 </li>
-        <li><a href="reference/middleware/cors.html#litestar.middleware.cors.CORSMiddleware.params.config">(litestar.middleware.cors.CORSMiddleware parameter)</a>
-</li>
         <li><a href="reference/middleware/csrf.html#litestar.middleware.csrf.CSRFMiddleware.params.config">(litestar.middleware.csrf.CSRFMiddleware parameter)</a>
 </li>
         <li><a href="reference/middleware/logging.html#litestar.middleware.logging.LoggingMiddleware.params.config">(litestar.middleware.logging.LoggingMiddleware parameter)</a>
@@ -3752,6 +2376,12 @@ document.write(`
         <li><a href="reference/data_extractors.html#litestar.data_extractors.ConnectionDataExtractor.extract_query.params.connection">(litestar.data_extractors.ConnectionDataExtractor.extract_query parameter)</a>
 </li>
         <li><a href="reference/data_extractors.html#litestar.data_extractors.ConnectionDataExtractor.extract_scheme.params.connection">(litestar.data_extractors.ConnectionDataExtractor.extract_scheme parameter)</a>
+</li>
+        <li><a href="reference/handlers.html#litestar.handlers.ASGIRouteHandler.handle.params.connection">(litestar.handlers.ASGIRouteHandler.handle parameter)</a>
+</li>
+        <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.handle.params.connection">(litestar.handlers.HTTPRouteHandler.handle parameter)</a>
+</li>
+        <li><a href="reference/handlers.html#litestar.handlers.WebsocketRouteHandler.handle.params.connection">(litestar.handlers.WebsocketRouteHandler.handle parameter)</a>
 </li>
         <li><a href="reference/middleware/index.html#litestar.middleware.AbstractAuthenticationMiddleware.authenticate_request.params.connection">(litestar.middleware.AbstractAuthenticationMiddleware.authenticate_request parameter)</a>
 </li>
@@ -4108,8 +2738,6 @@ document.write(`
       </ul></li>
       <li><a href="reference/config.html#litestar.config.cors.CORSConfig">CORSConfig (class in litestar.config.cors)</a>
 </li>
-      <li><a href="reference/middleware/cors.html#litestar.middleware.cors.CORSMiddleware">CORSMiddleware (class in litestar.middleware.cors)</a>
-</li>
       <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.count">count() (litestar.repository.abc.AbstractAsyncRepository method)</a>
 
       <ul>
@@ -4154,11 +2782,7 @@ document.write(`
 </li>
       <li><a href="reference/dto/data_structures.html#litestar.dto.data_structures.DTOData.create_instance">create_instance() (litestar.dto.data_structures.DTOData method)</a>
 </li>
-      <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.create_kwargs_model">create_kwargs_model() (litestar.handlers.BaseRouteHandler method)</a>
-</li>
       <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.create_openapi_schema">create_openapi_schema() (litestar.dto.base_dto.AbstractDTO class method)</a>
-</li>
-      <li><a href="reference/routes.html#litestar.routes.HTTPRoute.create_options_handler">create_options_handler() (litestar.routes.HTTPRoute method)</a>
 </li>
       <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.create_registry">create_registry() (in module litestar.contrib.sqlalchemy.base)</a>
 </li>
@@ -4545,8 +3169,6 @@ document.write(`
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.WebsocketRouteHandler.params.dependencies">(litestar.handlers.WebsocketRouteHandler parameter)</a>
 </li>
-        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.dependencies">(litestar.openapi.OpenAPIController attribute)</a>
-</li>
         <li><a href="reference/router.html#litestar.router.Router.params.dependencies">(litestar.router.Router parameter)</a>
 </li>
         <li><a href="reference/security/index.html#litestar.security.AbstractSecurityConfig.dependencies">(litestar.security.AbstractSecurityConfig attribute)</a>
@@ -4717,15 +3339,7 @@ document.write(`
       <li><a href="reference/plugins/index.html#litestar.plugins.DIPlugin">DIPlugin (class in litestar.plugins)</a>
 </li>
       <li><a href="reference/static_files.html#litestar.static_files.create_static_files_router.params.directories">directories (litestar.static_files.create_static_files_router parameter)</a>
-
-      <ul>
-        <li><a href="reference/static_files.html#litestar.static_files.StaticFiles.params.directories">(litestar.static_files.StaticFiles parameter)</a>
 </li>
-        <li><a href="reference/static_files.html#litestar.static_files.StaticFiles.get_fs_info.params.directories">(litestar.static_files.StaticFiles.get_fs_info parameter)</a>
-</li>
-        <li><a href="reference/static_files.html#litestar.static_files.StaticFilesConfig.directories">(litestar.static_files.StaticFilesConfig attribute)</a>
-</li>
-      </ul></li>
       <li><a href="reference/contrib/jinja.html#litestar.contrib.jinja.JinjaTemplateEngine.params.directory">directory (litestar.contrib.jinja.JinjaTemplateEngine parameter)</a>
 
       <ul>
@@ -4801,8 +3415,6 @@ document.write(`
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.WebsocketListenerRouteHandler.params.dto">(litestar.handlers.WebsocketListenerRouteHandler parameter)</a>
 </li>
-        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.dto">(litestar.openapi.OpenAPIController attribute)</a>
-</li>
         <li><a href="reference/router.html#litestar.router.Router.params.dto">(litestar.router.Router parameter)</a>
 </li>
         <li><a href="reference/testing.html#litestar.testing.create_async_test_client.params.dto">(litestar.testing.create_async_test_client parameter)</a>
@@ -4857,8 +3469,6 @@ document.write(`
       <li><a href="reference/plugins/structlog.html#litestar.plugins.structlog.StructlogConfig.enable_middleware_logging">enable_middleware_logging (litestar.plugins.structlog.StructlogConfig attribute)</a>
 </li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.enable_touch_updated_timestamp_listener">enable_touch_updated_timestamp_listener (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig attribute)</a>
-</li>
-      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.enabled_endpoints">enabled_endpoints (litestar.openapi.OpenAPIConfig attribute)</a>
 </li>
       <li><a href="reference/security/jwt.html#litestar.security.jwt.Token.encode">encode() (litestar.security.jwt.Token method)</a>
 </li>
@@ -5039,8 +3649,6 @@ document.write(`
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.put.params.etag">(litestar.handlers.put parameter)</a>
 </li>
-        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.etag">(litestar.openapi.OpenAPIController attribute)</a>
-</li>
         <li><a href="reference/response/base.html#litestar.response.base.Response.set_etag.params.etag">(litestar.response.base.Response.set_etag parameter)</a>
 </li>
         <li><a href="reference/response/index.html#litestar.response.File.params.etag">(litestar.response.File parameter)</a>
@@ -5179,21 +3787,15 @@ document.write(`
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.WebsocketRouteHandler.params.exception_handlers">(litestar.handlers.WebsocketRouteHandler parameter)</a>
 </li>
-        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.exception_handlers">(litestar.openapi.OpenAPIController attribute)</a>
-</li>
         <li><a href="reference/router.html#litestar.router.Router.params.exception_handlers">(litestar.router.Router parameter)</a>
 </li>
         <li><a href="reference/static_files.html#litestar.static_files.create_static_files_router.params.exception_handlers">(litestar.static_files.create_static_files_router parameter)</a>
-</li>
-        <li><a href="reference/static_files.html#litestar.static_files.StaticFilesConfig.exception_handlers">(litestar.static_files.StaticFilesConfig attribute)</a>
 </li>
         <li><a href="reference/testing.html#litestar.testing.create_async_test_client.params.exception_handlers">(litestar.testing.create_async_test_client parameter)</a>
 </li>
         <li><a href="reference/testing.html#litestar.testing.create_test_client.params.exception_handlers">(litestar.testing.create_test_client parameter)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/logging/config.html#litestar.logging.config.BaseLoggingConfig.exception_logging_handler">exception_logging_handler (litestar.logging.config.BaseLoggingConfig attribute)</a>
 
       <ul>
@@ -5202,6 +3804,8 @@ document.write(`
         <li><a href="reference/logging/config.html#litestar.logging.config.StructLoggingConfig.exception_logging_handler">(litestar.logging.config.StructLoggingConfig attribute)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/types.html#litestar.types.ExceptionHandler">ExceptionHandler (in module litestar.types)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.ExceptionHandlersMap">ExceptionHandlersMap (in module litestar.types)</a>
@@ -5558,13 +4162,7 @@ document.write(`
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/types.html#litestar.types.Logger.fatal">fatal() (litestar.types.Logger method)</a>
 </li>
-      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.favicon">favicon (litestar.openapi.OpenAPIController property)</a>
-
-      <ul>
-        <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.OpenAPIRenderPlugin.params.favicon">(litestar.openapi.plugins.OpenAPIRenderPlugin parameter)</a>
-</li>
-      </ul></li>
-      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.favicon_url">favicon_url (litestar.openapi.OpenAPIController attribute)</a>
+      <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.OpenAPIRenderPlugin.params.favicon">favicon (litestar.openapi.plugins.OpenAPIRenderPlugin parameter)</a>
 </li>
       <li><a href="reference/contrib/piccolo.html#litestar.contrib.piccolo.PiccoloDTO.detect_nested_field.params.field_definition">field_definition (litestar.contrib.piccolo.PiccoloDTO.detect_nested_field parameter)</a>
 
@@ -5580,6 +4178,8 @@ document.write(`
         <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin.supports_type.params.field_definition">(litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin.supports_type parameter)</a>
 </li>
         <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.create_for_field_definition.params.field_definition">(litestar.dto.base_dto.AbstractDTO.create_for_field_definition parameter)</a>
+</li>
+        <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.create_openapi_schema.params.field_definition">(litestar.dto.base_dto.AbstractDTO.create_openapi_schema parameter)</a>
 </li>
         <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.detect_nested_field.params.field_definition">(litestar.dto.base_dto.AbstractDTO.detect_nested_field parameter)</a>
 </li>
@@ -5636,16 +4236,10 @@ document.write(`
         <li><a href="reference/response/file.html#litestar.response.file.File.params.file_info">(litestar.response.file.File parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/app.html#litestar.app.Litestar.url_for_static_asset.params.file_path">file_path (litestar.app.Litestar.url_for_static_asset parameter)</a>
+      <li><a href="reference/response/file.html#litestar.response.file.ASGIFileResponse.params.file_path">file_path (litestar.response.file.ASGIFileResponse parameter)</a>
 
       <ul>
-        <li><a href="reference/connection.html#litestar.connection.ASGIConnection.url_for_static_asset.params.file_path">(litestar.connection.ASGIConnection.url_for_static_asset parameter)</a>
-</li>
-        <li><a href="reference/response/file.html#litestar.response.file.ASGIFileResponse.params.file_path">(litestar.response.file.ASGIFileResponse parameter)</a>
-</li>
         <li><a href="reference/response/file.html#litestar.response.file.async_file_iterator.params.file_path">(litestar.response.file.async_file_iterator parameter)</a>
-</li>
-        <li><a href="reference/static_files.html#litestar.static_files.StaticFiles.get_fs_info.params.file_path">(litestar.static_files.StaticFiles.get_fs_info parameter)</a>
 </li>
       </ul></li>
       <li><a href="reference/response/index.html#litestar.response.File.params.file_system">file_system (litestar.response.File parameter)</a>
@@ -5656,10 +4250,6 @@ document.write(`
         <li><a href="reference/response/file.html#litestar.response.file.File.params.file_system">(litestar.response.file.File parameter)</a>
 </li>
         <li><a href="reference/static_files.html#litestar.static_files.create_static_files_router.params.file_system">(litestar.static_files.create_static_files_router parameter)</a>
-</li>
-        <li><a href="reference/static_files.html#litestar.static_files.StaticFiles.params.file_system">(litestar.static_files.StaticFiles parameter)</a>
-</li>
-        <li><a href="reference/static_files.html#litestar.static_files.StaticFilesConfig.file_system">(litestar.static_files.StaticFilesConfig attribute)</a>
 </li>
       </ul></li>
       <li><a href="reference/types.html#litestar.types.FileInfo">FileInfo (class in litestar.types)</a>
@@ -5692,10 +4282,10 @@ document.write(`
         <li><a href="reference/testing.html#litestar.testing.TestClient.request.params.files">(litestar.testing.TestClient.request parameter)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/stores/file.html#litestar.stores.file.FileStore">FileStore (class in litestar.stores.file)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/types.html#litestar.types.FileSystemProtocol">FileSystemProtocol (class in litestar.types)</a>
 </li>
       <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.filter_collection_by_kwargs">filter_collection_by_kwargs() (litestar.repository.abc.AbstractAsyncRepository method)</a>
@@ -5900,8 +4490,6 @@ document.write(`
 </li>
       <li><a href="reference/plugins/flash_messages.html#litestar.plugins.flash.get_flashes">get_flashes() (in module litestar.plugins.flash)</a>
 </li>
-      <li><a href="reference/static_files.html#litestar.static_files.StaticFiles.get_fs_info">get_fs_info() (litestar.static_files.StaticFiles method)</a>
-</li>
       <li><a href="reference/app.html#litestar.app.Litestar.get_handler_index_by_name">get_handler_index_by_name() (litestar.app.Litestar method)</a>
 </li>
       <li><a href="reference/channels/backends/asyncpg.html#litestar.channels.backends.asyncpg.AsyncPgChannelsBackend.get_history">get_history() (litestar.channels.backends.asyncpg.AsyncPgChannelsBackend method)</a>
@@ -5966,21 +4554,19 @@ document.write(`
       </ul></li>
       <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.OpenAPIRenderPlugin.get_openapi_json_route">get_openapi_json_route() (litestar.openapi.plugins.OpenAPIRenderPlugin static method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.get_or_create">get_or_create() (litestar.repository.abc.AbstractAsyncRepository method)</a>
 
       <ul>
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.get_or_create">(litestar.repository.abc.AbstractSyncRepository method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.get_response_handler">get_response_handler() (litestar.handlers.HTTPRouteHandler method)</a>
 </li>
       <li><a href="reference/router.html#litestar.router.Router.get_route_handler_map">get_route_handler_map() (litestar.router.Router class method)</a>
 </li>
       <li><a href="reference/controller.html#litestar.controller.Controller.get_route_handlers">get_route_handlers() (litestar.controller.Controller method)</a>
-</li>
-      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.get_schema_from_request">get_schema_from_request() (litestar.openapi.OpenAPIController static method)</a>
 </li>
       <li><a href="reference/datastructures/secret_values.html#litestar.datastructures.secret_values.SecretValue.get_secret">get_secret() (litestar.datastructures.secret_values.SecretValue method)</a>
 </li>
@@ -6083,8 +4669,6 @@ document.write(`
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.WebsocketRouteHandler.params.guards">(litestar.handlers.WebsocketRouteHandler parameter)</a>
 </li>
-        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.guards">(litestar.openapi.OpenAPIController attribute)</a>
-</li>
         <li><a href="reference/router.html#litestar.router.Router.params.guards">(litestar.router.Router parameter)</a>
 </li>
         <li><a href="reference/security/index.html#litestar.security.AbstractSecurityConfig.guards">(litestar.security.AbstractSecurityConfig attribute)</a>
@@ -6098,8 +4682,6 @@ document.write(`
         <li><a href="reference/security/session_auth.html#litestar.security.session_auth.SessionAuth.guards">(litestar.security.session_auth.SessionAuth attribute)</a>
 </li>
         <li><a href="reference/static_files.html#litestar.static_files.create_static_files_router.params.guards">(litestar.static_files.create_static_files_router parameter)</a>
-</li>
-        <li><a href="reference/static_files.html#litestar.static_files.StaticFilesConfig.guards">(litestar.static_files.StaticFilesConfig attribute)</a>
 </li>
         <li><a href="reference/testing.html#litestar.testing.create_async_test_client.params.guards">(litestar.testing.create_async_test_client parameter)</a>
 </li>
@@ -6116,9 +4698,15 @@ document.write(`
 <h2 id="H">H</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/routes.html#litestar.routes.ASGIRoute.handle">handle() (litestar.routes.ASGIRoute method)</a>
+      <li><a href="reference/handlers.html#litestar.handlers.ASGIRouteHandler.handle">handle() (litestar.handlers.ASGIRouteHandler method)</a>
 
       <ul>
+        <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.handle">(litestar.handlers.HTTPRouteHandler method)</a>
+</li>
+        <li><a href="reference/handlers.html#litestar.handlers.WebsocketRouteHandler.handle">(litestar.handlers.WebsocketRouteHandler method)</a>
+</li>
+        <li><a href="reference/routes.html#litestar.routes.ASGIRoute.handle">(litestar.routes.ASGIRoute method)</a>
+</li>
         <li><a href="reference/routes.html#litestar.routes.BaseRoute.handle">(litestar.routes.BaseRoute method)</a>
 </li>
         <li><a href="reference/routes.html#litestar.routes.HTTPRoute.handle">(litestar.routes.HTTPRoute method)</a>
@@ -6133,6 +4721,8 @@ document.write(`
       <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.create_for_field_definition.params.handler_id">handler_id (litestar.dto.base_dto.AbstractDTO.create_for_field_definition parameter)</a>
 
       <ul>
+        <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.create_openapi_schema.params.handler_id">(litestar.dto.base_dto.AbstractDTO.create_openapi_schema parameter)</a>
+</li>
         <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.handler_id">(litestar.handlers.BaseRouteHandler property)</a>
 </li>
       </ul></li>
@@ -6144,8 +4734,6 @@ document.write(`
       </ul></li>
       <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.handler_name">handler_name (litestar.handlers.BaseRouteHandler property)</a>
 </li>
-      <li><a href="reference/routes.html#litestar.routes.BaseRoute.params.handler_names">handler_names (litestar.routes.BaseRoute parameter)</a>
-</li>
       <li><a href="reference/app.html#litestar.app.HandlerIndex">HandlerIndex (class in litestar.app)</a>
 </li>
       <li><a href="reference/logging/config.html#litestar.logging.config.LoggingConfig.handlers">handlers (litestar.logging.config.LoggingConfig attribute)</a>
@@ -6156,8 +4744,6 @@ document.write(`
         <li><a href="reference/logging/standard.html#litestar.logging.standard.QueueListenerHandler.params.handlers">(litestar.logging.standard.QueueListenerHandler parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/middleware/cors.html#litestar.middleware.cors.CORSMiddleware.send_wrapper.params.has_cookie">has_cookie (litestar.middleware.cors.CORSMiddleware.send_wrapper parameter)</a>
-</li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.has_default">has_default (litestar.typing.FieldDefinition property)</a>
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.has_inner_subclass_of">has_inner_subclass_of() (litestar.typing.FieldDefinition method)</a>
@@ -6269,8 +4855,6 @@ document.write(`
 </li>
         <li><a href="reference/security/index.html#litestar.security.AbstractSecurityConfig.create_response.params.headers">(litestar.security.AbstractSecurityConfig.create_response parameter)</a>
 </li>
-        <li><a href="reference/static_files.html#litestar.static_files.StaticFiles.params.headers">(litestar.static_files.StaticFiles parameter)</a>
-</li>
         <li><a href="reference/testing.html#litestar.testing.AsyncTestClient.delete.params.headers">(litestar.testing.AsyncTestClient.delete parameter)</a>
 </li>
         <li><a href="reference/testing.html#litestar.testing.AsyncTestClient.get.params.headers">(litestar.testing.AsyncTestClient.get parameter)</a>
@@ -6332,16 +4916,12 @@ document.write(`
 </li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.Address.host">host (litestar.datastructures.Address attribute)</a>
 </li>
-      <li><a href="reference/datastructures/index.html#litestar.datastructures.URL.hostname">hostname (litestar.datastructures.URL attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/static_files.html#litestar.static_files.create_static_files_router.params.html_mode">html_mode (litestar.static_files.create_static_files_router parameter)</a>
-
-      <ul>
-        <li><a href="reference/static_files.html#litestar.static_files.StaticFilesConfig.html_mode">(litestar.static_files.StaticFilesConfig attribute)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.URL.hostname">hostname (litestar.datastructures.URL attribute)</a>
 </li>
-      </ul></li>
+      <li><a href="reference/static_files.html#litestar.static_files.create_static_files_router.params.html_mode">html_mode (litestar.static_files.create_static_files_router parameter)</a>
+</li>
       <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.request.HTMXDetails">HTMXDetails (class in litestar.contrib.htmx.request)</a>
 </li>
       <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.request.HTMXRequest">HTMXRequest (class in litestar.contrib.htmx.request)</a>
@@ -6635,8 +5215,6 @@ document.write(`
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.put.params.include_in_schema">(litestar.handlers.put parameter)</a>
 </li>
-        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.include_in_schema">(litestar.openapi.OpenAPIController attribute)</a>
-</li>
         <li><a href="reference/router.html#litestar.router.Router.params.include_in_schema">(litestar.router.Router parameter)</a>
 </li>
         <li><a href="reference/static_files.html#litestar.static_files.create_static_files_router.params.include_in_schema">(litestar.static_files.create_static_files_router parameter)</a>
@@ -6748,8 +5326,6 @@ document.write(`
         <li><a href="reference/response/index.html#litestar.response.Template.to_asgi_response.params.is_head_response">(litestar.response.Template.to_asgi_response parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/static_files.html#litestar.static_files.StaticFiles.params.is_html_mode">is_html_mode (litestar.static_files.StaticFiles parameter)</a>
-</li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_literal">is_literal (litestar.typing.FieldDefinition property)</a>
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_mapping">is_mapping (litestar.typing.FieldDefinition property)</a>
@@ -6787,8 +5363,6 @@ document.write(`
       <li><a href="reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber.is_running">is_running (litestar.channels.subscriber.Subscriber property)</a>
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_simple_type">is_simple_type (litestar.typing.FieldDefinition property)</a>
-</li>
-      <li><a href="reference/handlers.html#litestar.handlers.ASGIRouteHandler.params.is_static">is_static (litestar.handlers.ASGIRouteHandler parameter)</a>
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_subclass_of">is_subclass_of() (litestar.typing.FieldDefinition method)</a>
 </li>
@@ -8212,8 +6786,6 @@ document.write(`
       </ul></li>
       <li><a href="reference/exceptions.html#litestar.exceptions.MethodNotAllowedException">MethodNotAllowedException</a>
 </li>
-      <li><a href="reference/routes.html#litestar.routes.BaseRoute.params.methods">methods (litestar.routes.BaseRoute parameter)</a>
-</li>
       <li><a href="reference/types.html#litestar.types.Middleware">Middleware (in module litestar.types)</a>
 </li>
       <li><a href="reference/app.html#litestar.app.Litestar.params.middleware">middleware (litestar.app.Litestar parameter)</a>
@@ -8254,8 +6826,6 @@ document.write(`
         <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitConfig.middleware">(litestar.middleware.rate_limit.RateLimitConfig property)</a>
 </li>
         <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.BaseBackendConfig.middleware">(litestar.middleware.session.base.BaseBackendConfig property)</a>
-</li>
-        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.middleware">(litestar.openapi.OpenAPIController attribute)</a>
 </li>
         <li><a href="reference/router.html#litestar.router.Router.params.middleware">(litestar.router.Router parameter)</a>
 </li>
@@ -8608,11 +7178,7 @@ document.write(`
       <ul>
         <li><a href="reference/app.html#litestar.app.Litestar.route_reverse.params.name">(litestar.app.Litestar.route_reverse parameter)</a>
 </li>
-        <li><a href="reference/app.html#litestar.app.Litestar.url_for_static_asset.params.name">(litestar.app.Litestar.url_for_static_asset parameter)</a>
-</li>
         <li><a href="reference/connection.html#litestar.connection.ASGIConnection.url_for.params.name">(litestar.connection.ASGIConnection.url_for parameter)</a>
-</li>
-        <li><a href="reference/connection.html#litestar.connection.ASGIConnection.url_for_static_asset.params.name">(litestar.connection.ASGIConnection.url_for_static_asset parameter)</a>
 </li>
         <li><a href="reference/datastructures/index.html#litestar.datastructures.ResponseHeader.name">(litestar.datastructures.ResponseHeader attribute)</a>
 </li>
@@ -8655,8 +7221,6 @@ document.write(`
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.XML.name">(litestar.openapi.spec.XML attribute)</a>
 </li>
         <li><a href="reference/static_files.html#litestar.static_files.create_static_files_router.params.name">(litestar.static_files.create_static_files_router parameter)</a>
-</li>
-        <li><a href="reference/static_files.html#litestar.static_files.StaticFilesConfig.name">(litestar.static_files.StaticFilesConfig attribute)</a>
 </li>
         <li><a href="reference/stores/registry.html#litestar.stores.registry.StoreRegistry.get.params.name">(litestar.stores.registry.StoreRegistry.get parameter)</a>
 </li>
@@ -8826,6 +7390,8 @@ document.write(`
       <ul>
         <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.on_registration">(litestar.handlers.HTTPRouteHandler method)</a>
 </li>
+        <li><a href="reference/handlers.html#litestar.handlers.WebsocketRouteHandler.on_registration">(litestar.handlers.WebsocketRouteHandler method)</a>
+</li>
       </ul></li>
       <li><a href="reference/app.html#litestar.app.Litestar.params.on_shutdown">on_shutdown (litestar.app.Litestar parameter)</a>
 
@@ -8899,6 +7465,8 @@ document.write(`
         <li><a href="reference/security/session_auth.html#litestar.security.session_auth.SessionAuth.openapi_components">(litestar.security.session_auth.SessionAuth property)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/app.html#litestar.app.Litestar.params.openapi_config">openapi_config (litestar.app.Litestar parameter)</a>
 
       <ul>
@@ -8909,10 +7477,6 @@ document.write(`
         <li><a href="reference/testing.html#litestar.testing.create_test_client.params.openapi_config">(litestar.testing.create_test_client parameter)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.openapi_controller">openapi_controller (litestar.openapi.OpenAPIConfig attribute)</a>
-</li>
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.openapi_router">openapi_router (litestar.openapi.OpenAPIConfig attribute)</a>
 </li>
       <li><a href="reference/app.html#litestar.app.Litestar.openapi_schema">openapi_schema (litestar.app.Litestar property)</a>
@@ -8946,8 +7510,6 @@ document.write(`
 </li>
       </ul></li>
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig">OpenAPIConfig (class in litestar.openapi)</a>
-</li>
-      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController">OpenAPIController (class in litestar.openapi)</a>
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OpenAPIFormat">OpenAPIFormat (class in litestar.openapi.spec)</a>
 </li>
@@ -9048,13 +7610,9 @@ document.write(`
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.WebsocketRouteHandler.params.opt">(litestar.handlers.WebsocketRouteHandler parameter)</a>
 </li>
-        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.opt">(litestar.openapi.OpenAPIController attribute)</a>
-</li>
         <li><a href="reference/router.html#litestar.router.Router.params.opt">(litestar.router.Router parameter)</a>
 </li>
         <li><a href="reference/static_files.html#litestar.static_files.create_static_files_router.params.opt">(litestar.static_files.create_static_files_router parameter)</a>
-</li>
-        <li><a href="reference/static_files.html#litestar.static_files.StaticFilesConfig.opt">(litestar.static_files.StaticFilesConfig attribute)</a>
 </li>
         <li><a href="reference/testing.html#litestar.testing.create_async_test_client.params.opt">(litestar.testing.create_async_test_client parameter)</a>
 </li>
@@ -9074,8 +7632,6 @@ document.write(`
       <li><a href="reference/config.html#litestar.config.cors.CORSConfig.is_origin_allowed.params.origin">origin (litestar.config.cors.CORSConfig.is_origin_allowed parameter)</a>
 
       <ul>
-        <li><a href="reference/middleware/cors.html#litestar.middleware.cors.CORSMiddleware.send_wrapper.params.origin">(litestar.middleware.cors.CORSMiddleware.send_wrapper parameter)</a>
-</li>
         <li><a href="reference/typing.html#litestar.typing.FieldDefinition.origin">(litestar.typing.FieldDefinition attribute)</a>
 </li>
       </ul></li>
@@ -9087,8 +7643,6 @@ document.write(`
         <li><a href="reference/controller.html#litestar.controller.Controller.params.owner">(litestar.controller.Controller parameter)</a>
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.WebsocketListener.params.owner">(litestar.handlers.WebsocketListener parameter)</a>
-</li>
-        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.owner">(litestar.openapi.OpenAPIController attribute)</a>
 </li>
       </ul></li>
       <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.ownership_layers">ownership_layers (litestar.handlers.BaseRouteHandler property)</a>
@@ -9135,8 +7689,6 @@ document.write(`
         <li><a href="reference/config.html#litestar.config.app.AppConfig.parameters">(litestar.config.app.AppConfig attribute)</a>
 </li>
         <li><a href="reference/controller.html#litestar.controller.Controller.parameters">(litestar.controller.Controller attribute)</a>
-</li>
-        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.parameters">(litestar.openapi.OpenAPIController attribute)</a>
 </li>
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Components.parameters">(litestar.openapi.spec.Components attribute)</a>
 </li>
@@ -9278,8 +7830,6 @@ document.write(`
 </li>
         <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.path">(litestar.openapi.OpenAPIConfig attribute)</a>
 </li>
-        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.path">(litestar.openapi.OpenAPIController attribute)</a>
-</li>
         <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.OpenAPIRenderPlugin.params.path">(litestar.openapi.plugins.OpenAPIRenderPlugin parameter)</a>
 </li>
         <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.OpenAPIRenderPlugin.has_path.params.path">(litestar.openapi.plugins.OpenAPIRenderPlugin.has_path parameter)</a>
@@ -9320,8 +7870,6 @@ document.write(`
 </li>
         <li><a href="reference/routes.html#litestar.routes.HTTPRoute.params.path">(litestar.routes.HTTPRoute parameter)</a>
 </li>
-        <li><a href="reference/routes.html#litestar.routes.HTTPRoute.create_options_handler.params.path">(litestar.routes.HTTPRoute.create_options_handler parameter)</a>
-</li>
         <li><a href="reference/routes.html#litestar.routes.WebSocketRoute.params.path">(litestar.routes.WebSocketRoute parameter)</a>
 </li>
         <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTCookieAuth.path">(litestar.security.jwt.JWTCookieAuth attribute)</a>
@@ -9329,8 +7877,6 @@ document.write(`
         <li><a href="reference/security/jwt.html#litestar.security.jwt.OAuth2PasswordBearerAuth.path">(litestar.security.jwt.OAuth2PasswordBearerAuth attribute)</a>
 </li>
         <li><a href="reference/static_files.html#litestar.static_files.create_static_files_router.params.path">(litestar.static_files.create_static_files_router parameter)</a>
-</li>
-        <li><a href="reference/static_files.html#litestar.static_files.StaticFilesConfig.path">(litestar.static_files.StaticFilesConfig attribute)</a>
 </li>
         <li><a href="reference/stores/file.html#litestar.stores.file.FileStore.path">(litestar.stores.file.FileStore attribute)</a>
 </li>
@@ -9651,10 +8197,6 @@ document.write(`
       </ul></li>
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.random_seed">random_seed (litestar.openapi.OpenAPIConfig attribute)</a>
 </li>
-      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.rapidoc_js_url">rapidoc_js_url (litestar.openapi.OpenAPIController attribute)</a>
-</li>
-      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.rapidoc_version">rapidoc_version (litestar.openapi.OpenAPIController attribute)</a>
-</li>
       <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.RapidocRenderPlugin">RapidocRenderPlugin (class in litestar.openapi.plugins)</a>
 </li>
       <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitConfig.rate_limit">rate_limit (litestar.middleware.rate_limit.RateLimitConfig attribute)</a>
@@ -9732,8 +8274,6 @@ document.write(`
 </li>
         <li><a href="reference/routes.html#litestar.routes.WebSocketRoute.handle.params.receive">(litestar.routes.WebSocketRoute.handle parameter)</a>
 </li>
-        <li><a href="reference/static_files.html#litestar.static_files.StaticFiles.__call__.params.receive">(litestar.static_files.StaticFiles.__call__ parameter)</a>
-</li>
       </ul></li>
       <li><a href="reference/testing.html#litestar.testing.WebSocketTestSession.receive">receive() (litestar.testing.WebSocketTestSession method)</a>
 </li>
@@ -9802,12 +8342,6 @@ document.write(`
       <li><a href="reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsStreamBackend">RedisChannelsStreamBackend (class in litestar.channels.backends.redis)</a>
 </li>
       <li><a href="reference/stores/redis.html#litestar.stores.redis.RedisStore">RedisStore (class in litestar.stores.redis)</a>
-</li>
-      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.redoc_google_fonts">redoc_google_fonts (litestar.openapi.OpenAPIController attribute)</a>
-</li>
-      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.redoc_js_url">redoc_js_url (litestar.openapi.OpenAPIController attribute)</a>
-</li>
-      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.redoc_version">redoc_version (litestar.openapi.OpenAPIController attribute)</a>
 </li>
       <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.RedocRenderPlugin">RedocRenderPlugin (class in litestar.openapi.plugins)</a>
 </li>
@@ -9887,19 +8421,11 @@ document.write(`
         <li><a href="reference/template.html#litestar.template.TemplateProtocol.render">(litestar.template.TemplateProtocol method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.render_404_page">render_404_page() (litestar.openapi.OpenAPIController method)</a>
-</li>
       <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.OpenAPIRenderPlugin.render_json">render_json() (litestar.openapi.plugins.OpenAPIRenderPlugin static method)</a>
-</li>
-      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.render_methods_map">render_methods_map (litestar.openapi.OpenAPIController property)</a>
 </li>
       <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.SwaggerRenderPlugin.render_oauth2_redirect">render_oauth2_redirect() (litestar.openapi.plugins.SwaggerRenderPlugin static method)</a>
 </li>
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.render_plugins">render_plugins (litestar.openapi.OpenAPIConfig attribute)</a>
-</li>
-      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.render_redoc">render_redoc() (litestar.openapi.OpenAPIController method)</a>
-</li>
-      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.render_stoplight_elements">render_stoplight_elements() (litestar.openapi.OpenAPIController method)</a>
 </li>
       <li><a href="reference/contrib/jinja.html#litestar.contrib.jinja.JinjaTemplateEngine.render_string">render_string() (litestar.contrib.jinja.JinjaTemplateEngine method)</a>
 
@@ -9909,10 +8435,6 @@ document.write(`
         <li><a href="reference/template.html#litestar.template.TemplateEngineProtocol.render_string">(litestar.template.TemplateEngineProtocol method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.render_swagger_ui">render_swagger_ui() (litestar.openapi.OpenAPIController method)</a>
-</li>
-      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.render_swagger_ui_oauth2_redirect">render_swagger_ui_oauth2_redirect() (litestar.openapi.OpenAPIController method)</a>
-</li>
       <li><a href="reference/stores/base.html#litestar.stores.base.Store.get.params.renew_for">renew_for (litestar.stores.base.Store.get parameter)</a>
 
       <ul>
@@ -9945,18 +8467,6 @@ document.write(`
         <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.cache_key_from_request.params.request">(litestar.middleware.rate_limit.RateLimitMiddleware.cache_key_from_request parameter)</a>
 </li>
         <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.should_check_request.params.request">(litestar.middleware.rate_limit.RateLimitMiddleware.should_check_request parameter)</a>
-</li>
-        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.get_schema_from_request.params.request">(litestar.openapi.OpenAPIController.get_schema_from_request parameter)</a>
-</li>
-        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.render_redoc.params.request">(litestar.openapi.OpenAPIController.render_redoc parameter)</a>
-</li>
-        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.render_stoplight_elements.params.request">(litestar.openapi.OpenAPIController.render_stoplight_elements parameter)</a>
-</li>
-        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.render_swagger_ui.params.request">(litestar.openapi.OpenAPIController.render_swagger_ui parameter)</a>
-</li>
-        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.render_swagger_ui_oauth2_redirect.params.request">(litestar.openapi.OpenAPIController.render_swagger_ui_oauth2_redirect parameter)</a>
-</li>
-        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.should_serve_endpoint.params.request">(litestar.openapi.OpenAPIController.should_serve_endpoint parameter)</a>
 </li>
         <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.OpenAPIRenderPlugin.render.params.request">(litestar.openapi.plugins.OpenAPIRenderPlugin.render parameter)</a>
 </li>
@@ -10034,8 +8544,6 @@ document.write(`
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.put.params.request_class">(litestar.handlers.put parameter)</a>
 </li>
-        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.request_class">(litestar.openapi.OpenAPIController attribute)</a>
-</li>
         <li><a href="reference/router.html#litestar.router.Router.params.request_class">(litestar.router.Router parameter)</a>
 </li>
         <li><a href="reference/testing.html#litestar.testing.create_async_test_client.params.request_class">(litestar.testing.create_async_test_client parameter)</a>
@@ -10081,12 +8589,12 @@ document.write(`
         <li><a href="reference/params.html#litestar.params.ParameterKwarg.required">(litestar.params.ParameterKwarg attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.resolve_after_response">resolve_after_response() (litestar.handlers.HTTPRouteHandler method)</a>
 </li>
       <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.resolve_before_request">resolve_before_request() (litestar.handlers.HTTPRouteHandler method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.resolve_data_dto">resolve_data_dto() (litestar.handlers.BaseRouteHandler method)</a>
 </li>
       <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.resolve_dependencies">resolve_dependencies() (litestar.handlers.BaseRouteHandler method)</a>
@@ -10124,11 +8632,7 @@ document.write(`
       <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.resolve_signature_namespace">resolve_signature_namespace() (litestar.handlers.BaseRouteHandler method)</a>
 </li>
       <li><a href="reference/static_files.html#litestar.static_files.create_static_files_router.params.resolve_symlinks">resolve_symlinks (litestar.static_files.create_static_files_router parameter)</a>
-
-      <ul>
-        <li><a href="reference/static_files.html#litestar.static_files.StaticFiles.params.resolve_symlinks">(litestar.static_files.StaticFiles parameter)</a>
 </li>
-      </ul></li>
       <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.resolve_tags">resolve_tags() (litestar.handlers.HTTPRouteHandler method)</a>
 </li>
       <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.resolve_type_decoders">resolve_type_decoders() (litestar.handlers.BaseRouteHandler method)</a>
@@ -10184,8 +8688,6 @@ document.write(`
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.put.params.response_class">(litestar.handlers.put parameter)</a>
 </li>
-        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.response_class">(litestar.openapi.OpenAPIController attribute)</a>
-</li>
         <li><a href="reference/router.html#litestar.router.Router.params.response_class">(litestar.router.Router parameter)</a>
 </li>
         <li><a href="reference/testing.html#litestar.testing.create_async_test_client.params.response_class">(litestar.testing.create_async_test_client parameter)</a>
@@ -10213,8 +8715,6 @@ document.write(`
         <li><a href="reference/handlers.html#litestar.handlers.post.params.response_cookies">(litestar.handlers.post parameter)</a>
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.put.params.response_cookies">(litestar.handlers.put parameter)</a>
-</li>
-        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.response_cookies">(litestar.openapi.OpenAPIController attribute)</a>
 </li>
         <li><a href="reference/router.html#litestar.router.Router.params.response_cookies">(litestar.router.Router parameter)</a>
 </li>
@@ -10261,8 +8761,6 @@ document.write(`
         <li><a href="reference/handlers.html#litestar.handlers.post.params.response_headers">(litestar.handlers.post parameter)</a>
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.put.params.response_headers">(litestar.handlers.put parameter)</a>
-</li>
-        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.response_headers">(litestar.openapi.OpenAPIController attribute)</a>
 </li>
         <li><a href="reference/router.html#litestar.router.Router.params.response_headers">(litestar.router.Router parameter)</a>
 </li>
@@ -10396,8 +8894,6 @@ document.write(`
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.WebsocketListenerRouteHandler.params.return_dto">(litestar.handlers.WebsocketListenerRouteHandler parameter)</a>
 </li>
-        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.return_dto">(litestar.openapi.OpenAPIController attribute)</a>
-</li>
         <li><a href="reference/router.html#litestar.router.Router.params.return_dto">(litestar.router.Router parameter)</a>
 </li>
         <li><a href="reference/testing.html#litestar.testing.create_async_test_client.params.return_dto">(litestar.testing.create_async_test_client parameter)</a>
@@ -10442,10 +8938,16 @@ document.write(`
         <li><a href="reference/testing.html#litestar.testing.TestClient.params.root_path">(litestar.testing.TestClient parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.root_schema_site">root_schema_site (litestar.openapi.OpenAPIConfig attribute)</a>
-</li>
       <li><a href="reference/handlers.html#litestar.handlers.route">route (in module litestar.handlers)</a>
+
+      <ul>
+        <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.on_registration.params.route">(litestar.handlers.BaseRouteHandler.on_registration parameter)</a>
 </li>
+        <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.on_registration.params.route">(litestar.handlers.HTTPRouteHandler.on_registration parameter)</a>
+</li>
+        <li><a href="reference/handlers.html#litestar.handlers.WebsocketRouteHandler.on_registration.params.route">(litestar.handlers.WebsocketRouteHandler.on_registration parameter)</a>
+</li>
+      </ul></li>
       <li><a href="reference/connection.html#litestar.connection.ASGIConnection.route_handler">route_handler (litestar.connection.ASGIConnection property)</a>
 
       <ul>
@@ -10557,6 +9059,8 @@ document.write(`
       <ul>
         <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticSchemaPlugin.to_openapi_schema.params.schema_creator">(litestar.contrib.pydantic.PydanticSchemaPlugin.to_openapi_schema parameter)</a>
 </li>
+        <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.create_openapi_schema.params.schema_creator">(litestar.dto.base_dto.AbstractDTO.create_openapi_schema parameter)</a>
+</li>
         <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema.params.schema_creator">(litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema parameter)</a>
 </li>
       </ul></li>
@@ -10647,8 +9151,6 @@ document.write(`
 </li>
         <li><a href="reference/routes.html#litestar.routes.WebSocketRoute.handle.params.scope">(litestar.routes.WebSocketRoute.handle parameter)</a>
 </li>
-        <li><a href="reference/static_files.html#litestar.static_files.StaticFiles.__call__.params.scope">(litestar.static_files.StaticFiles.__call__ parameter)</a>
-</li>
       </ul></li>
       <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.BaseSessionBackend.store_in_message.params.scope_session">scope_session (litestar.middleware.session.base.BaseSessionBackend.store_in_message parameter)</a>
 
@@ -10659,8 +9161,6 @@ document.write(`
 </li>
       </ul></li>
       <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryConfig.scope_span_details_extractor">scope_span_details_extractor() (litestar.contrib.opentelemetry.OpenTelemetryConfig method)</a>
-</li>
-      <li><a href="reference/routes.html#litestar.routes.BaseRoute.params.scope_type">scope_type (litestar.routes.BaseRoute parameter)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.Scopes">Scopes (in module litestar.types)</a>
 </li>
@@ -10767,8 +9267,6 @@ document.write(`
 </li>
         <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.security">(litestar.openapi.OpenAPIConfig attribute)</a>
 </li>
-        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.security">(litestar.openapi.OpenAPIController attribute)</a>
-</li>
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OpenAPI.security">(litestar.openapi.spec.OpenAPI attribute)</a>
 </li>
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Operation.security">(litestar.openapi.spec.Operation attribute)</a>
@@ -10823,8 +9321,6 @@ document.write(`
 </li>
         <li><a href="reference/middleware/compression.html#litestar.middleware.compression.CompressionMiddleware.create_compression_send_wrapper.params.send">(litestar.middleware.compression.CompressionMiddleware.create_compression_send_wrapper parameter)</a>
 </li>
-        <li><a href="reference/middleware/cors.html#litestar.middleware.cors.CORSMiddleware.send_wrapper.params.send">(litestar.middleware.cors.CORSMiddleware.send_wrapper parameter)</a>
-</li>
         <li><a href="reference/middleware/csrf.html#litestar.middleware.csrf.CSRFMiddleware.__call__.params.send">(litestar.middleware.csrf.CSRFMiddleware.__call__ parameter)</a>
 </li>
         <li><a href="reference/middleware/csrf.html#litestar.middleware.csrf.CSRFMiddleware.create_send_wrapper.params.send">(litestar.middleware.csrf.CSRFMiddleware.create_send_wrapper parameter)</a>
@@ -10855,19 +9351,11 @@ document.write(`
 </li>
         <li><a href="reference/routes.html#litestar.routes.WebSocketRoute.handle.params.send">(litestar.routes.WebSocketRoute.handle parameter)</a>
 </li>
-        <li><a href="reference/static_files.html#litestar.static_files.StaticFiles.__call__.params.send">(litestar.static_files.StaticFiles.__call__ parameter)</a>
-</li>
       </ul></li>
       <li><a href="reference/testing.html#litestar.testing.WebSocketTestSession.send">send() (litestar.testing.WebSocketTestSession method)</a>
 </li>
       <li><a href="reference/static_files.html#litestar.static_files.create_static_files_router.params.send_as_attachment">send_as_attachment (litestar.static_files.create_static_files_router parameter)</a>
-
-      <ul>
-        <li><a href="reference/static_files.html#litestar.static_files.StaticFiles.params.send_as_attachment">(litestar.static_files.StaticFiles parameter)</a>
 </li>
-        <li><a href="reference/static_files.html#litestar.static_files.StaticFilesConfig.send_as_attachment">(litestar.static_files.StaticFilesConfig attribute)</a>
-</li>
-      </ul></li>
       <li><a href="reference/response/base.html#litestar.response.base.ASGIResponse.send_body">send_body() (litestar.response.base.ASGIResponse method)</a>
 
       <ul>
@@ -10919,11 +9407,7 @@ document.write(`
 </li>
       </ul></li>
       <li><a href="reference/connection.html#litestar.connection.WebSocket.send_wrapper">send_wrapper() (litestar.connection.WebSocket method)</a>
-
-      <ul>
-        <li><a href="reference/middleware/cors.html#litestar.middleware.cors.CORSMiddleware.send_wrapper">(litestar.middleware.cors.CORSMiddleware method)</a>
 </li>
-      </ul></li>
       <li><a href="reference/exceptions.html#litestar.exceptions.SerializationException">SerializationException</a>
 </li>
       <li><a href="reference/plugins/index.html#litestar.plugins.SerializationPluginProtocol">SerializationPluginProtocol (class in litestar.plugins)</a>
@@ -11081,12 +9565,12 @@ document.write(`
         <li><a href="reference/stores/redis.html#litestar.stores.redis.RedisStore.set">(litestar.stores.redis.RedisStore method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/concurrency.html#litestar.concurrency.set_asyncio_executor">set_asyncio_executor() (in module litestar.concurrency)</a>
 </li>
       <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.set_cached_history">set_cached_history() (litestar.middleware.rate_limit.RateLimitMiddleware method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/response/base.html#litestar.response.base.Response.set_cookie">set_cookie() (litestar.response.base.Response method)</a>
 
       <ul>
@@ -11135,8 +9619,6 @@ document.write(`
 </li>
       <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.should_check_request">should_check_request() (litestar.middleware.rate_limit.RateLimitMiddleware method)</a>
 </li>
-      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.should_serve_endpoint">should_serve_endpoint() (litestar.openapi.OpenAPIController method)</a>
-</li>
       <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.signature_model">signature_model (litestar.handlers.BaseRouteHandler property)</a>
 
       <ul>
@@ -11173,8 +9655,6 @@ document.write(`
         <li><a href="reference/handlers.html#litestar.handlers.WebsocketListenerRouteHandler.params.signature_namespace">(litestar.handlers.WebsocketListenerRouteHandler parameter)</a>
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.WebsocketRouteHandler.params.signature_namespace">(litestar.handlers.WebsocketRouteHandler parameter)</a>
-</li>
-        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.signature_namespace">(litestar.openapi.OpenAPIController attribute)</a>
 </li>
         <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.signature_namespace">(litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig property)</a>
 </li>
@@ -11317,20 +9797,6 @@ document.write(`
         <li><a href="reference/testing.html#litestar.testing.RequestFactory.put.params.state">(litestar.testing.RequestFactory.put parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/app.html#litestar.app.Litestar.params.static_files_config">static_files_config (litestar.app.Litestar parameter)</a>
-
-      <ul>
-        <li><a href="reference/config.html#litestar.config.app.AppConfig.static_files_config">(litestar.config.app.AppConfig attribute)</a>
-</li>
-        <li><a href="reference/testing.html#litestar.testing.create_async_test_client.params.static_files_config">(litestar.testing.create_async_test_client parameter)</a>
-</li>
-        <li><a href="reference/testing.html#litestar.testing.create_test_client.params.static_files_config">(litestar.testing.create_test_client parameter)</a>
-</li>
-      </ul></li>
-      <li><a href="reference/static_files.html#litestar.static_files.StaticFiles">StaticFiles (class in litestar.static_files)</a>
-</li>
-      <li><a href="reference/static_files.html#litestar.static_files.StaticFilesConfig">StaticFilesConfig (class in litestar.static_files)</a>
-</li>
       <li><a href="reference/exceptions.html#litestar.exceptions.ClientException.status_code">status_code (litestar.exceptions.ClientException attribute)</a>
 
       <ul>
@@ -11423,12 +9889,6 @@ document.write(`
       </ul></li>
       <li><a href="reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber.stop">stop() (litestar.channels.subscriber.Subscriber method)</a>
 </li>
-      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.stoplight_elements_css_url">stoplight_elements_css_url (litestar.openapi.OpenAPIController attribute)</a>
-</li>
-      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.stoplight_elements_js_url">stoplight_elements_js_url (litestar.openapi.OpenAPIController attribute)</a>
-</li>
-      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.stoplight_elements_version">stoplight_elements_version (litestar.openapi.OpenAPIController attribute)</a>
-</li>
       <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.StoplightRenderPlugin">StoplightRenderPlugin (class in litestar.openapi.plugins)</a>
 </li>
       <li><a href="reference/stores/base.html#litestar.stores.base.StorageObject">StorageObject (class in litestar.stores.base)</a>
@@ -11520,8 +9980,6 @@ document.write(`
       <li><a href="reference/datastructures/index.html#litestar.datastructures.ResponseHeader.style">style (litestar.datastructures.ResponseHeader attribute)</a>
 
       <ul>
-        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.style">(litestar.openapi.OpenAPIController attribute)</a>
-</li>
         <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.OpenAPIRenderPlugin.params.style">(litestar.openapi.plugins.OpenAPIRenderPlugin parameter)</a>
 </li>
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Encoding.style">(litestar.openapi.spec.Encoding attribute)</a>
@@ -11605,16 +10063,6 @@ document.write(`
         <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySerializationPlugin.supports_type">(litestar.plugins.sqlalchemy.SQLAlchemySerializationPlugin method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.swagger_css_url">swagger_css_url (litestar.openapi.OpenAPIController attribute)</a>
-</li>
-      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.swagger_ui_bundle_js_url">swagger_ui_bundle_js_url (litestar.openapi.OpenAPIController attribute)</a>
-</li>
-      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.swagger_ui_init_oauth">swagger_ui_init_oauth (litestar.openapi.OpenAPIController attribute)</a>
-</li>
-      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.swagger_ui_standalone_preset_js_url">swagger_ui_standalone_preset_js_url (litestar.openapi.OpenAPIController attribute)</a>
-</li>
-      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.swagger_ui_version">swagger_ui_version (litestar.openapi.OpenAPIController attribute)</a>
-</li>
       <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.SwaggerRenderPlugin">SwaggerRenderPlugin (class in litestar.openapi.plugins)</a>
 </li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.AsyncSessionConfig.sync_session_class">sync_session_class (litestar.contrib.sqlalchemy.plugins.AsyncSessionConfig attribute)</a>
@@ -11681,8 +10129,6 @@ document.write(`
         <li><a href="reference/handlers.html#litestar.handlers.put.params.tags">(litestar.handlers.put parameter)</a>
 </li>
         <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.tags">(litestar.openapi.OpenAPIConfig attribute)</a>
-</li>
-        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.tags">(litestar.openapi.OpenAPIController attribute)</a>
 </li>
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OpenAPI.tags">(litestar.openapi.spec.OpenAPI attribute)</a>
 </li>
@@ -11907,11 +10353,9 @@ document.write(`
       </ul></li>
       <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.to_response">to_response() (litestar.handlers.HTTPRouteHandler method)</a>
 </li>
-      <li><a href="reference/openapi/spec.html#litestar.openapi.spec.BaseSchemaObject.to_schema">to_schema() (litestar.openapi.spec.BaseSchemaObject method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/static_files.html#litestar.static_files.StaticFilesConfig.to_static_files_app">to_static_files_app() (litestar.static_files.StaticFilesConfig method)</a>
+      <li><a href="reference/openapi/spec.html#litestar.openapi.spec.BaseSchemaObject.to_schema">to_schema() (litestar.openapi.spec.BaseSchemaObject method)</a>
 </li>
       <li><a href="reference/security/jwt.html#litestar.security.jwt.Token">Token (class in litestar.security.jwt)</a>
 </li>
@@ -12058,8 +10502,6 @@ document.write(`
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.WebsocketListenerRouteHandler.params.type_decoders">(litestar.handlers.WebsocketListenerRouteHandler parameter)</a>
 </li>
-        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.type_decoders">(litestar.openapi.OpenAPIController attribute)</a>
-</li>
         <li><a href="reference/router.html#litestar.router.Router.params.type_decoders">(litestar.router.Router parameter)</a>
 </li>
         <li><a href="reference/serialization.html#litestar.serialization.decode_json.params.type_decoders">(litestar.serialization.decode_json parameter)</a>
@@ -12101,8 +10543,6 @@ document.write(`
         <li><a href="reference/handlers.html#litestar.handlers.WebsocketListenerRouteHandler.params.type_encoders">(litestar.handlers.WebsocketListenerRouteHandler parameter)</a>
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.WebsocketRouteHandler.params.type_encoders">(litestar.handlers.WebsocketRouteHandler parameter)</a>
-</li>
-        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.type_encoders">(litestar.openapi.OpenAPIController attribute)</a>
 </li>
         <li><a href="reference/response/base.html#litestar.response.base.Response.params.type_encoders">(litestar.response.base.Response parameter)</a>
 </li>
@@ -12287,12 +10727,6 @@ document.write(`
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/connection.html#litestar.connection.ASGIConnection.url_for">url_for() (litestar.connection.ASGIConnection method)</a>
 </li>
-      <li><a href="reference/app.html#litestar.app.Litestar.url_for_static_asset">url_for_static_asset() (litestar.app.Litestar method)</a>
-
-      <ul>
-        <li><a href="reference/connection.html#litestar.connection.ASGIConnection.url_for_static_asset">(litestar.connection.ASGIConnection method)</a>
-</li>
-      </ul></li>
       <li><a href="reference/di.html#litestar.di.Provide.params.use_cache">use_cache (litestar.di.Provide parameter)</a>
 </li>
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.use_handler_docstrings">use_handler_docstrings (litestar.openapi.OpenAPIConfig attribute)</a>
@@ -12472,8 +10906,6 @@ document.write(`
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.WebsocketRouteHandler.params.websocket_class">(litestar.handlers.WebsocketRouteHandler parameter)</a>
 </li>
-        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.websocket_class">(litestar.openapi.OpenAPIController attribute)</a>
-</li>
         <li><a href="reference/router.html#litestar.router.Router.params.websocket_class">(litestar.router.Router parameter)</a>
 </li>
         <li><a href="reference/testing.html#litestar.testing.create_async_test_client.params.websocket_class">(litestar.testing.create_async_test_client parameter)</a>
@@ -12517,10 +10949,10 @@ document.write(`
 </li>
       <li><a href="reference/handlers.html#litestar.handlers.WebsocketRouteHandler">WebsocketRouteHandler (class in litestar.handlers)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/types.html#litestar.types.WebSocketScope">WebSocketScope (in module litestar.types)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/types.html#litestar.types.WebSocketSendEvent">WebSocketSendEvent (class in litestar.types)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.WebSocketSendMessage">WebSocketSendMessage (in module litestar.types)</a>
@@ -12618,74 +11050,47 @@ document.write(`
 
 
 
-                </article>
-              
-              
-              
-              
-              
-                <footer class="prev-next-footer">
-                  
-<div class="prev-next-area">
-</div>
-                </footer>
-              
-            </div>
-            
-            
-              
-            
-          </div>
-          <footer class="bd-footer-content">
-            
-          </footer>
+      </article>
+      
+    </main>
+  </div><footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2024, Litestar Organization</p>
         
-      </main>
+        <p>
+          Made with
+          
+          <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+          
+          <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+        </p>
+      </div>
+      <div class="sy-foot-socials">
+          <a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)"><i class="i-icon x-twitter"></i></a>
+          <a href="https://discord.gg/litestar-919193495116337154" aria-label="Discord"><i class="i-icon discord"></i></a>
+          <a href="https://www.reddit.com/r/LitestarAPI" aria-label="Reddit"><i class="i-icon reddit"></i></a>
+      </div>
     </div>
   </div>
-  
-  <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="_static/scripts/bootstrap.js?digest=5b4479735964841361fd"></script>
-<script src="_static/scripts/pydata-sphinx-theme.js?digest=5b4479735964841361fd"></script>
-
-  <footer class="bd-footer">
-<div class="bd-footer__inner bd-page-width">
-  
-    <div class="footer-items__start">
-      
-        <div class="footer-item">
-
-  <p class="copyright">
+</footer></div>
+      <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=c19e757c"></script>
+      <script src="_static/doctools.js?v=888ff710"></script>
+      <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=f281be69"></script>
+      <script src="_static/litestar-theme.js?v=ab2dcc9e"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+      <script src="_static/design-tabs.js?v=36754332"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script src="_static/shibuya.js?v=9aab5f5b"></script>
+      <script src="https://unpkg.com/mermaid@10.2.0/dist/mermaid.min.js"></script>
+      <script>mermaid.initialize({startOnLoad:true});</script>
+      <script src="_static/versioning.js?v=bc681eff"></script>
     
-      © Copyright 2023, Litestar-Org.
-      <br/>
-    
-  </p>
-</div>
-      
-        <div class="footer-item">
-
-  <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.1.2.
-    <br/>
-  </p>
-</div>
-      
-    </div>
-  
-  
-  
-    <div class="footer-items__end">
-      
-        <div class="footer-item">
-<p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.14.4.
-</p></div>
-      
-    </div>
-  
-</div>
-
-  </footer>
-  </body>
+</body>
 </html>

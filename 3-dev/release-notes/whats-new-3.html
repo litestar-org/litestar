@@ -1,0 +1,751 @@
+
+  <!DOCTYPE html>
+<html lang="en" data-accent-color="amber" data-content_root="">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>What’s changed in 3.0? - Litestar Framework</title>
+    <link rel="shortcut icon" href="../_static/favicon.svg"/><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" />
+
+  <script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(sessionStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=aecf457f" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=aa21bc99" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
+    <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="../_static/style.css?v=10936375" />
+    <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css?v=9fce248e" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/><meta property="og:title" content="What’s changed in 3.0?"/>
+<meta name="twitter:card" content="summary"/>
+<meta property="og:image" content="_static/logo-light.svg"/>
+  </head>
+<body><div class="document"><div class="announcement">
+    <div class="announcement-inner">
+      <p>You are viewing the <bold>v3-development</bold> version of the documentation. Click here to go to the latest version.</p>
+      <button class="announcement-close" aria-label="Close announcement">
+        <i class="i-icon close"></i>
+      </button>
+    </div>
+  </div><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand mr-4" href="/">
+      <img class="light-logo" src="../_static/logo-light.svg" alt="Litestar" height="28" />
+      <img class="dark-logo" src="../_static/logo-dark.svg" alt="Litestar" height="28" />
+      <strong>Litestar</strong>
+    </a>
+    <div class="sy-head-links" id="NavLinks">
+      <nav class="sy-head-nav">
+
+<ul><li class="link"><a href="../index.html">Home</a></li>
+      <li class="link"><button type="button">
+            <span>Community</span>
+            <i class="i-icon chevron"></i>
+          </button>
+        <ul>
+          <li><a href="../contribution-guide.html">
+                <span>Contributing</span>
+                <small>Learn how to contribute to the Litestar project</small>
+              </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
+                <span>Code of Conduct</span>
+                <small>Review the etiquette for interacting with the Litestar community</small>
+              </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file#security-ov-file">
+                <span>Security</span>
+                <small>Overview of Litestar's security protocols</small>
+              </a></li></ul>
+      </li>
+      <li class="link"><button type="button">
+            <span>About</span>
+            <i class="i-icon chevron"></i>
+          </button>
+        <ul>
+          <li><a href="https://litestar.dev/about/organization">
+                <span>Litestar Organization</span>
+                <small>Details about the Litestar organization</small>
+              </a></li><li><a href="https://litestar.dev/about/litestar-releases">
+                <span>Releases</span>
+                <small>Explore the release process, versioning, and deprecation policy for Litestar</small>
+              </a></li></ul>
+      </li>
+      <li class="link"><button type="button">
+            <span>Release notes</span>
+            <i class="i-icon chevron"></i>
+          </button>
+        <ul>
+          <li><a href="#">
+                <span>What's new in 3.0</span>
+                <small>Explore the new features in Litestar 3.0</small>
+              </a></li><li><a href="changelog.html">
+                <span>3.x Changelog</span>
+                <small>All changes in the 3.x series</small>
+              </a></li><li><a href="https://docs.litestar.dev/2/release-notes/changelog.html">
+                <span>2.x Changelog</span>
+                <small>All changes in the 2.x series</small>
+              </a></li></ul>
+      </li>
+      <li class="link"><button type="button">
+            <span>Help</span>
+            <i class="i-icon chevron"></i>
+          </button>
+        <ul>
+          <li><a href="https://discord.gg/litestar">
+                <span>Discord Help Forum</span>
+                <small>Dedicated Discord help forum</small>
+              </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
+                <span>GitHub Discussions</span>
+                <small>GitHub Discussions</small>
+              </a></li><li><a href="https://stackoverflow.com/questions/tagged/litestar">
+                <span>Stack Overflow</span>
+                <small>We monitor the <code><b>litestar</b></code> tag on Stack Overflow</small>
+              </a></li></ul>
+      </li><li class="link">
+          <a href="https://github.com/sponsors/Litestar-Org">
+            <span>Sponsor</span>
+            
+          </a>
+        </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden">
+        
+<form class="searchbox flex items-center" action="../search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form>
+        
+  <div class="nav-versions">
+    <button type="button" aria-label="Versions">
+      <span class="md:hidden">Versions</span>
+      <span class="hidden md:inline">latest</span>
+      <i class="i-icon chevron"></i>
+    </button>
+    <div class="nav-versions-choices">
+      <ul><li><a href="/latest">latest</a></li><li><a href="/main">development</a></li><li><a href="/3-dev">v3</a></li><li><a href="/2">v2</a></li><li><a href="/1">v1</a></li></ul></div>
+  </div>
+        
+        <div class="sy-head-social flex items-center">
+            <a class="flex items-center" href="https://discord.gg/litestar-919193495116337154" aria-label="Discord">
+              <i class="i-icon discord"></i>
+            </a>
+        </div>
+      </div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden">
+      <button class="js-theme theme-switch flex items-center"
+        data-aria-auto="Switch to light color mode"
+        data-aria-light="Switch to dark color mode"
+        data-aria-dark="Switch to auto color mode">
+        <i class="i-icon theme-icon"></i>
+      </button>
+      <button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="NavLinks" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2 -translate-x-2"></span>
+          <span class="hamburger_3 -translate-x-1"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+<div class="sidebar-links">
+  <ul>
+    <li><a class="icon-link" href="https://github.com/orgs/litestar-org/discussions">
+  <span class="icon">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path fill="var(--accent-9)" fill-rule="evenodd" clip-rule="evenodd" d="M11 5a6 6 0 0 0-4.687 9.746c.215.27.315.62.231.954l-.514 2.058a1 1 0 0 0 1.485 1.1l2.848-1.71c.174-.104.374-.15.576-.148H13a6 6 0 0 0 0-12h-2Z"/>
+      <circle fill="white" cx="12" cy="11" r="1"/>
+      <circle fill="white" cx="9" cy="11" r="1"/>
+      <circle fill="white" cx="15" cy="11" r="1"/>
+    </svg>
+  </span>
+  <span class="text">Discussion</span>
+</a></li>
+  </ul>
+</div>
+
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage/index.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../usage/applications.html">Applications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/routing/index.html">Routing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../usage/routing/overview.html">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/routing/handlers.html">Route handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/routing/parameters.html">Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/requests.html">Requests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/caching.html">Caching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/channels.html">Channels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/cli.html">CLI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/databases/index.html">Databases</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../usage/databases/sqlalchemy/index.html">SQLAlchemy</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../usage/databases/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../usage/databases/sqlalchemy/plugins/index.html">Plugins</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="../usage/databases/sqlalchemy/plugins/sqlalchemy_plugin.html">SQLAlchemy Plugin</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../usage/databases/sqlalchemy/plugins/sqlalchemy_init_plugin.html">SQLAlchemy Init Plugin</a></li>
+<li class="toctree-l5"><a class="reference internal" href="../usage/databases/sqlalchemy/plugins/sqlalchemy_serialization_plugin.html">SQLAlchemy Serialization Plugin</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/databases/piccolo.html">Piccolo ORM</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/debugging.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/dependency-injection.html">Dependency Injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/dto/index.html">Data Transfer Object (DTO)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../usage/dto/0-basic-use.html">Basic Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/dto/1-abstract-dto.html">AbstractDTO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/dto/2-creating-custom-dto-classes.html">Implementing Custom DTO Classes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/events.html">Events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/exceptions.html">Exceptions and exception handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/htmx.html">HTMX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/logging.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/metrics/index.html">Metrics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../usage/metrics/open-telemetry.html">OpenTelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/metrics/prometheus.html">Prometheus</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/middleware/index.html">Middleware</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../usage/middleware/using-middleware.html">Using Middleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/middleware/builtin-middleware.html">Built-in middleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/middleware/creating-middleware.html">Creating Middleware</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/openapi/index.html">OpenAPI</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../usage/openapi/schema_generation.html">Configuring schema generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/openapi/schema_generation.html#configuring-schema-generation-on-a-route-handler">Configuring schema generation on a route handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/openapi/schema_generation.html#accessing-the-openapi-schema-in-code">Accessing the OpenAPI schema in code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/openapi/schema_generation.html#customizing-pydantic-model-schemas">Customizing Pydantic model schemas</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/openapi/schema_generation.html#customizing-operation-class">Customizing <code class="docutils literal notranslate"><span class="pre">Operation</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/openapi/ui_plugins.html">OpenAPI UI Plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/openapi/ui_plugins.html#using-openapi-ui-plugins">Using OpenAPI UI Plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/openapi/ui_plugins.html#configuring-openapi-ui-plugins">Configuring OpenAPI UI Plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/openapi/ui_plugins.html#configuring-the-openapi-root-path">Configuring the OpenAPI Root Path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/openapi/ui_plugins.html#building-your-own-openapi-ui-plugin">Building your own OpenAPI UI Plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/openapi/ui_plugins.html#interacting-with-the-router">Interacting with the <code class="docutils literal notranslate"><span class="pre">Router</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/openapi/ui_plugins.html#oauth2-in-swagger-ui">OAuth2 in Swagger UI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/openapi/ui_plugins.html#customizing-the-openapi-ui">Customizing the OpenAPI UI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/openapi/ui_plugins.html#cdn-and-offline-file-support">CDN and offline file support</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/plugins/index.html">Plugins</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../usage/plugins/flash_messages.html">Flash Messages</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/responses.html">Responses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/security/index.html">Security</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../usage/security/abstract-authentication-middleware.html">AbstractAuthenticationMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/security/security-backends.html">Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/security/guards.html">Guards</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/security/excluding-and-including-endpoints.html">Excluding and including endpoints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/security/jwt.html">JWT Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/security/secret-datastructures.html">Handling Secrets</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/static-files.html">Static files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/stores.html">Stores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/templating.html">Templating</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/testing.html">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/websockets.html">WebSockets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/index.html">API reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../reference/app.html">app</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/background_tasks.html">background_tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/channels/index.html">channels</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/channels/plugin.html">plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/channels/subscriber.html">subscriber</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/channels/backends/index.html">backends</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../reference/channels/backends/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/channels/backends/memory.html">memory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/channels/backends/redis.html">redis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/channels/backends/psycopg.html">psycopg</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/channels/backends/asyncpg.html">asyncpg</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/cli.html">cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/config.html">config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/connection.html">connection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/contrib/index.html">contrib</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/contrib/htmx.html">HTMX</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/contrib/jinja.html">jinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/contrib/jwt.html">jwt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/contrib/mako.html">mako</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/contrib/opentelemetry.html">opentelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/contrib/piccolo.html">piccolo_orm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/contrib/pydantic.html">pydantic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/contrib/sqlalchemy/index.html">sqlalchemy</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/plugins.html">plugins</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/repository.html">repository</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/types.html">types</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/contrib/sqlalchemy/dto.html">DTO</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/controller.html">controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/concurrency.html">cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/data_extractors.html">data_extractors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/datastructures/index.html">datastructures</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/datastructures/secret_values.html">secret_values</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/di.html">di</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/dto/index.html">dto</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/config.html">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/data_structures.html">data_structures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/field.html">field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/types.html">types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/base_dto.html">base_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/msgspec_dto.html">msgspec_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/dto/dataclass_dto.html">dataclass_dto</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/enums.html">enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/events.html">events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/exceptions.html">exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/handlers.html">handlers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/logging/index.html">logging</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/logging/config.html">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/logging/picologging.html">picologging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/logging/standard.html">standard</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/middleware/index.html">middleware</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/authentication.html">authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/compression.html">compression</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/cors.html">cors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/csrf.html">csrf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/logging.html">logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/rate_limit.html">rate_limit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/middleware/session/index.html">session</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/client_side.html">client_side</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../reference/middleware/session/server_side.html">server_side</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/openapi/index.html">openapi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/openapi/openapi.html">openapi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/openapi/plugins.html">plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/openapi/spec.html">spec</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/pagination.html">pagination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/params.html">params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/plugins/index.html">plugins</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/structlog.html">structlog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/repository/index.html">repository</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/repository/abc.html">abc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/repository/filters.html">filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/repository/exceptions.html">exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/repository/testing.html">testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/repository/handlers.html">handlers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/response/index.html">response</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/response/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/response/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/response/redirect.html">redirect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/response/streaming.html">streaming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/response/sse.html">SSE (Server Sent Events)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/response/template.html">template</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/router.html">router</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/routes.html">routes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/security/index.html">security</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/security/jwt.html">jwt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/security/session_auth.html">session_auth</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/serialization.html">serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/static_files.html">static_files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/status_codes.html">status_code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/stores/index.html">stores</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../reference/stores/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/stores/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/stores/memory.html">memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/stores/redis.html">redis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/stores/registry.html">registry</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/template.html">template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/testing.html">testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/types.html">types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/typing.html">typing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../benchmarks.html">Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../migration/index.html">Migrating to Litestar</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../migration/flask.html">From Flask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../migration/fastapi.html">From Starlette / FastAPI</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../topics/index.html">Topics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../topics/sync-vs-async.html">Sync vs. Async</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../topics/deployment/index.html">Deployment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../topics/deployment/nginx-unit.html">NGINX Unit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../topics/deployment/manually-with-asgi-server.html">Manually with ASGI server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../topics/deployment/docker.html">Docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../topics/deployment/supervisor.html">Supervisor (Linux)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/todo-app/index.html">Developing a basic TODO application</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/todo-app/0-application-basics.html">Application basics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/todo-app/1-accessing-the-list.html">Accessing the list</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/todo-app/2-interacting-with-the-list.html">Making the list interactive</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/todo-app/3-assembling-the-app.html">Recap and assembling the final application</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/sqlalchemy/index.html">Improving the TODO app with SQLAlchemy</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/sqlalchemy/0-introduction.html">Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/sqlalchemy/1-provide-session-with-di.html">Providing the session with DI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/sqlalchemy/2-serialization-plugin.html">Using the serialization plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/sqlalchemy/3-init-plugin.html">Using the init plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/sqlalchemy/4-final-touches-and-recap.html">Final touches and recap</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/dto-tutorial/index.html">Data Transfer Object Tutorial</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/dto-tutorial/01-simple-dto-exclude.html">Our first DTO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/dto-tutorial/02-nested-exclude.html">Excluding from nested models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/dto-tutorial/03-nested-collection-exclude.html">Excluding from collections of nested models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/dto-tutorial/04-max-nested-depth.html">Max nested depth</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/dto-tutorial/05-renaming-fields.html">Renaming fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/dto-tutorial/06-receiving-data.html">Receiving data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/dto-tutorial/07-read-only-fields.html">Read only fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/dto-tutorial/08-dto-data.html">Accessing the data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/dto-tutorial/09-updating.html">Updating instances</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/dto-tutorial/10-layered-dto-declarations.html">Declaring DTOs on app layers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../tutorials/repository-tutorial/index.html">SQLAlchemy Repository Tutorial</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/01-modeling-and-features.html">Introduction to Database Modeling and Repository Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/01-modeling-and-features.html#modeling">Modeling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/01-modeling-and-features.html#full-code">Full Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/02-repository-introduction.html">Interacting with repositories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/02-repository-introduction.html#working-with-bulk-data-operations">Working with Bulk Data Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/02-repository-introduction.html#full-code">Full Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/03-repository-controller.html">Working with Controllers and Repositories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/03-repository-controller.html#full-code">Full Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/04-repository-other.html">Adding Additional Features to the Repository</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/04-repository-other.html#slug-fields">Slug Fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../tutorials/repository-tutorial/04-repository-other.html#full-code">Full Code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contribution-guide.html">Contribution Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/search?q=user%3Alitestar-org+state%3Aopen+label%3A%22good+first+issue%22+++no%3Aassignee+&amp;type=issues=">Available Issues</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/litestar-org/.github?tab=coc-ov-file#readme">Code of Conduct</a></li>
+</ul>
+
+        </div>
+      </div>
+      
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-icon close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4">
+  <div class="localtoc">
+    <h3>On this page</h3>
+    <ul>
+<li><a class="reference internal" href="#imports">Imports</a></li>
+<li><a class="reference internal" href="#removal-of-staticfileconfig">Removal of <code class="docutils literal notranslate"><span class="pre">StaticFileConfig</span></code></a></li>
+<li><a class="reference internal" href="#implicit-optional-default-parameters">Implicit Optional Default Parameters</a></li>
+<li><a class="reference internal" href="#openapi-controller-replaced-by-plugins">OpenAPI Controller Replaced by Plugins</a><ul>
+<li><a class="reference internal" href="#elimination-of-openapicontroller-subclassing">Elimination of <code class="docutils literal notranslate"><span class="pre">OpenAPIController</span></code> Subclassing</a></li>
+<li><a class="reference internal" href="#changes-to-endpoint-configuration">Changes to Endpoint Configuration</a></li>
+<li><a class="reference internal" href="#modification-to-root-schema-site-handling">Modification to <code class="docutils literal notranslate"><span class="pre">root_schema_site</span></code> Handling</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#deprecated-app-parameter-for-response-to-asgi-response-has-been-removed">Deprecated <code class="docutils literal notranslate"><span class="pre">app</span></code> parameter for <code class="docutils literal notranslate"><span class="pre">Response.to_asgi_response</span></code> has been removed</a></li>
+<li><a class="reference internal" href="#deprecated-scope-state-utilities-removed">Deprecated scope state utilities removed</a></li>
+<li><a class="reference internal" href="#deprecated-utility-function-is-sync-or-async-generator-removed">Deprecated utility function <code class="docutils literal notranslate"><span class="pre">is_sync_or_async_generator</span></code> removed</a></li>
+</ul>
+
+  </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
+  data-type="github" data-user="litestar-org" data-repo="litestar">
+  <span class="w-8 flex items-center justify-around shrink-0 text-3xl">
+    <i class="i-icon github"></i>
+  </span>
+  <span class="flex-grow px-2">
+    <span>litestar-org/litestar</span>
+    <span class="flex text-sm repo-stats-count">
+      <span class="flex items-center pr-3">
+        <i class="i-icon star"></i>
+        <strong class="js-repo-stars ml-1">0</strong>
+      </span>
+      <span class="flex items-center">
+        <i class="i-icon git-fork"></i>
+        <strong class="js-repo-forks ml-1">0</strong>
+      </span>
+    </span>
+  </span>
+</a><div class="edit-this-page">
+  <a href="https://github.com/litestar-org/litestar/blob/master/docs/release-notes/whats-new-3.rst">Edit this page</a>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div>
+    </div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+    <div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-icon menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList">
+      
+      
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="../index.html"><span itemprop="name">Litestar</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li>
+      
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">What’s changed in 3.0?</strong>
+        <meta itemprop="position" content="2" />
+      </li>
+      
+      
+    </ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-icon outdent"></i>
+      </button>
+    </div>
+  </div>
+</div>
+    <div class="flex flex-col break-words justify-between">
+      <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+        <article class="yue" role="main">
+          <section id="what-s-changed-in-3-0">
+<h1>What’s changed in 3.0?<a class="headerlink" href="#what-s-changed-in-3-0" title="Permalink to this heading">¶</a></h1>
+<p>This document is an overview of the changes between version <strong>2.11.x</strong> and <strong>3.0</strong>.
+For a detailed list of all changes, including changes between versions leading up to the
+3.0 release, consult the <a class="reference internal" href="changelog.html"><span class="doc">3.x Changelog</span></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <strong>2.11</strong> release line is unaffected by this change</p>
+</div>
+<section id="imports">
+<h2>Imports<a class="headerlink" href="#imports" title="Permalink to this heading">¶</a></h2>
+<div class="table-wrapper docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p><code class="docutils literal notranslate"><span class="pre">2.11</span></code></p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">3.x</span></code></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td colspan="2"><p><strong>SECTION</strong></p></td>
+</tr>
+<tr class="row-odd"><td><p>Put your shit here from v2</p></td>
+<td><p>Put your shit here from v3</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="removal-of-staticfileconfig">
+<h2>Removal of <code class="docutils literal notranslate"><span class="pre">StaticFileConfig</span></code><a class="headerlink" href="#removal-of-staticfileconfig" title="Permalink to this heading">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">StaticFilesConfig</span></code> has been removed, alongside these related parameters and
+functions:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Litestar.static_files_config</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Litestar.url_for_static_asset</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Request.url_for_static_asset</span></code></p></li>
+</ul>
+<p><a class="reference internal" href="../reference/static_files.html#litestar.static_files.create_static_files_router" title="litestar.static_files.create_static_files_router"><code class="xref py py-func docutils literal notranslate"><span class="pre">create_static_files_router()</span></code></a> is a drop-in replacement for <code class="docutils literal notranslate"><span class="pre">StaticFilesConfig</span></code>,
+and can simply be added to the <code class="docutils literal notranslate"><span class="pre">route_handlers</span></code> like any other regular handler.</p>
+<p>Usage of <code class="docutils literal notranslate"><span class="pre">url_for_static_assets</span></code> should be replaced with a <code class="docutils literal notranslate"><span class="pre">url_for(&quot;static&quot;,</span> <span class="pre">...)</span></code>
+call.</p>
+</section>
+<section id="implicit-optional-default-parameters">
+<h2>Implicit Optional Default Parameters<a class="headerlink" href="#implicit-optional-default-parameters" title="Permalink to this heading">¶</a></h2>
+<p>In v2, if a handler was typed with an optional parameter it would be implicitly given a default value of <code class="docutils literal notranslate"><span class="pre">None</span></code>. For
+example, if the following handler is called with no query parameter, the value <code class="docutils literal notranslate"><span class="pre">None</span></code> would be passed in to the
+handler for the <code class="docutils literal notranslate"><span class="pre">param</span></code> parameter:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="2"><span class="k">def</span> <span class="nf">my_handler</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="o">...</span><span class="p">:</span>
+</span><span data-line="3">    <span class="o">...</span>
+</span></pre></div>
+</div>
+<p>This legacy behavior originates from our history of using Pydantic v1 models to represent handler signatures. In v3, we
+no longer make this implicit conversion. If you want to have a default value of <code class="docutils literal notranslate"><span class="pre">None</span></code> for an optional parameter, you
+must explicitly set it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="2"><span class="k">def</span> <span class="nf">my_handler</span><span class="p">(</span><span class="n">param</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="o">...</span><span class="p">:</span>
+</span><span data-line="3">    <span class="o">...</span>
+</span></pre></div>
+</div>
+</section>
+<section id="openapi-controller-replaced-by-plugins">
+<h2>OpenAPI Controller Replaced by Plugins<a class="headerlink" href="#openapi-controller-replaced-by-plugins" title="Permalink to this heading">¶</a></h2>
+<p>In version 3.0, the OpenAPI controller pattern, deprecated in v2.8, has been removed in
+favor of a more flexible plugin system.</p>
+<section id="elimination-of-openapicontroller-subclassing">
+<h3>Elimination of <code class="docutils literal notranslate"><span class="pre">OpenAPIController</span></code> Subclassing<a class="headerlink" href="#elimination-of-openapicontroller-subclassing" title="Permalink to this heading">¶</a></h3>
+<p>Previously, users configured elements such as the root path and styling by subclassing OpenAPIController and setting it
+on the <code class="docutils literal notranslate"><span class="pre">OpenAPIConfig.openapi_controller</span></code> attribute. As of version 3.0, this pattern has been removed. Instead, users
+are required to transition to using UI plugins for configuration.</p>
+<p>Migration Steps:</p>
+<ol class="arabic simple">
+<li><p>Remove any implementations subclassing <code class="docutils literal notranslate"><span class="pre">OpenAPIController</span></code>.</p></li>
+<li><p>Use the <a class="reference internal" href="../reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.render_plugins" title="litestar.openapi.OpenAPIConfig.render_plugins"><code class="xref py py-attr docutils literal notranslate"><span class="pre">OpenAPIConfig.render_plugins</span></code></a> attribute to configure the OpenAPI UI made available to your users.
+If no plugin is supplied, we automatically add the <a class="reference internal" href="../reference/openapi/plugins.html#litestar.openapi.plugins.ScalarRenderPlugin" title="litestar.openapi.plugins.ScalarRenderPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ScalarRenderPlugin</span></code></a> for the default configuration.</p></li>
+<li><p>Use the <a class="reference internal" href="../reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.openapi_router" title="litestar.openapi.OpenAPIConfig.openapi_router"><code class="xref py py-attr docutils literal notranslate"><span class="pre">OpenAPIConfig.openapi_router</span></code></a> attribute for additional configuration.</p></li>
+</ol>
+<p>See the <a class="reference internal" href="../usage/openapi/ui_plugins.html"><span class="doc">OpenAPI UI Plugins</span></a> documentation for more information on how to configure OpenAPI plugins.</p>
+</section>
+<section id="changes-to-endpoint-configuration">
+<h3>Changes to Endpoint Configuration<a class="headerlink" href="#changes-to-endpoint-configuration" title="Permalink to this heading">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">OpenAPIConfig.enabled_endpoints</span></code> attribute is no longer available in version 3.0.0. This attribute previously
+enabled a set of endpoints that would serve different OpenAPI UIs. In the new version, only the <code class="docutils literal notranslate"><span class="pre">openapi.json</span></code>
+endpoint is enabled by default, alongside the <code class="docutils literal notranslate"><span class="pre">Scalar</span></code> UI plugin as the default.</p>
+<p>To adapt to this change, you should explicitly configure any additional endpoints you need by properly setting up the
+necessary plugins within the <a class="reference internal" href="../reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.render_plugins" title="litestar.openapi.OpenAPIConfig.render_plugins"><code class="xref py py-attr docutils literal notranslate"><span class="pre">OpenAPIConfig.render_plugins</span></code></a> parameter.</p>
+</section>
+<section id="modification-to-root-schema-site-handling">
+<h3>Modification to <code class="docutils literal notranslate"><span class="pre">root_schema_site</span></code> Handling<a class="headerlink" href="#modification-to-root-schema-site-handling" title="Permalink to this heading">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">root_schema_site</span></code> attribute, which enabled serving a particular UI at the OpenAPI root path, has been removed in
+version 3.0. The new approach automatically assigns the first <a class="reference internal" href="../reference/openapi/plugins.html#litestar.openapi.plugins.OpenAPIRenderPlugin" title="litestar.openapi.plugins.OpenAPIRenderPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAPIRenderPlugin</span></code></a> listed in the
+<a class="reference internal" href="../reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.render_plugins" title="litestar.openapi.OpenAPIConfig.render_plugins"><code class="xref py py-attr docutils literal notranslate"><span class="pre">OpenAPIConfig.render_plugins</span></code></a> list to serve at the <code class="docutils literal notranslate"><span class="pre">/schema</span></code> endpoint, unless a plugin has been defined with
+the root path (<code class="docutils literal notranslate"><span class="pre">/</span></code>), in which case that plugin will be used.</p>
+<p>For those previously using the <code class="docutils literal notranslate"><span class="pre">root_schema_site</span></code> attribute, the migration involves ensuring that the UI intended to
+be served at the <code class="docutils literal notranslate"><span class="pre">/schema</span></code> endpoint is the first plugin listed in the <a class="reference internal" href="../reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.render_plugins" title="litestar.openapi.OpenAPIConfig.render_plugins"><code class="xref py py-attr docutils literal notranslate"><span class="pre">OpenAPIConfig.render_plugins</span></code></a>.</p>
+</section>
+</section>
+<section id="deprecated-app-parameter-for-response-to-asgi-response-has-been-removed">
+<h2>Deprecated <code class="docutils literal notranslate"><span class="pre">app</span></code> parameter for <code class="docutils literal notranslate"><span class="pre">Response.to_asgi_response</span></code> has been removed<a class="headerlink" href="#deprecated-app-parameter-for-response-to-asgi-response-has-been-removed" title="Permalink to this heading">¶</a></h2>
+<p>The parameter <code class="docutils literal notranslate"><span class="pre">app</span></code> for <a class="reference internal" href="../reference/response/index.html#litestar.response.Response.to_asgi_response" title="litestar.response.Response.to_asgi_response"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_asgi_response()</span></code></a> has been removed.
+If you need access to the app instance inside a custom <code class="docutils literal notranslate"><span class="pre">to_asgi_response</span></code> method,
+replace the usages of <code class="docutils literal notranslate"><span class="pre">app</span></code> with <code class="docutils literal notranslate"><span class="pre">request.app</span></code>.</p>
+</section>
+<section id="deprecated-scope-state-utilities-removed">
+<h2>Deprecated scope state utilities removed<a class="headerlink" href="#deprecated-scope-state-utilities-removed" title="Permalink to this heading">¶</a></h2>
+<p>Litestar has previously made available utilities for storing and retrieving data in the ASGI scope state. These
+utilities have been removed in version 3.0.0. If you need to store data in the ASGI scope state, you should use do so
+using a namespace that is unique to your application and unlikely to conflict with other applications.</p>
+<p>The following utilities have been removed:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">get_litestar_scope_state</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">set_litestar_scope_state</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">delete_litestar_scope_state</span></code></p></li>
+</ul>
+</section>
+<section id="deprecated-utility-function-is-sync-or-async-generator-removed">
+<h2>Deprecated utility function <code class="docutils literal notranslate"><span class="pre">is_sync_or_async_generator</span></code> removed<a class="headerlink" href="#deprecated-utility-function-is-sync-or-async-generator-removed" title="Permalink to this heading">¶</a></h2>
+<p>The utility function <code class="docutils literal notranslate"><span class="pre">is_sync_or_async_generator</span></code> has been removed as it is no longer used internally.</p>
+<p>If you were relying on this utility, you can define it yourself as follows:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">isasyncgenfunction</span><span class="p">,</span> <span class="n">isgeneratorfunction</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="k">def</span> <span class="nf">is_sync_or_async_generator</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span data-line="4">    <span class="k">return</span> <span class="n">isgeneratorfunction</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="ow">or</span> <span class="n">isasyncgenfunction</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+</section>
+
+        </article>
+        <button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button>
+        
+        <div class="navigation flex print:hidden">
+  
+  
+</div>
+        
+      </div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2024, Litestar Organization</p>
+        
+        <p>
+          Made with
+          
+          <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+          
+          <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+        </p>
+      </div>
+      <div class="sy-foot-socials">
+          <a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)"><i class="i-icon x-twitter"></i></a>
+          <a href="https://discord.gg/litestar-919193495116337154" aria-label="Discord"><i class="i-icon discord"></i></a>
+          <a href="https://www.reddit.com/r/LitestarAPI" aria-label="Reddit"><i class="i-icon reddit"></i></a>
+      </div>
+    </div>
+  </div>
+</footer></div>
+      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=c19e757c"></script>
+      <script src="../_static/doctools.js?v=888ff710"></script>
+      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../_static/copybutton.js?v=f281be69"></script>
+      <script src="../_static/litestar-theme.js?v=ab2dcc9e"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+      <script src="../_static/design-tabs.js?v=36754332"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script src="../_static/shibuya.js?v=9aab5f5b"></script>
+      <script src="../_static/versioning.js?v=bc681eff"></script>
+    
+</body>
+</html>

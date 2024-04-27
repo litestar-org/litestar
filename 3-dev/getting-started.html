@@ -1,0 +1,1147 @@
+
+  <!DOCTYPE html>
+<html lang="en" data-accent-color="amber" data-content_root="">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Getting Started - Litestar Framework</title>
+    <link rel="shortcut icon" href="_static/favicon.svg"/><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Usage" href="usage/index.html" /><link rel="prev" title="Sponsors" href="index.html" />
+
+  <script>
+    function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
+    setColorMode(sessionStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="_static/pygments.css?v=aecf457f" />
+    <link rel="stylesheet" type="text/css" href="_static/shibuya.css?v=aa21bc99" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
+    <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx_paramlinks.css" />
+    <link media="print" rel="stylesheet" type="text/css" href="_static/print.css?v=20ff2c19" />
+    <link rel="stylesheet" type="text/css" href="_static/style.css?v=10936375" />
+    <link rel="stylesheet" type="text/css" href="_static/litestar-sphinx-theme.css?v=9fce248e" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sy-f-text: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+  --sy-f-heading: "Inter", var(--sy-f-sys), var(--sy-f-cjk), sans-serif;
+}
+</style>
+    <meta property="og:type" content="website"/><meta property="og:title" content="Getting Started"/>
+<meta name="twitter:card" content="summary"/>
+<meta property="og:image" content="_static/logo-light.svg"/>
+  </head>
+<body><div class="document"><div class="announcement">
+    <div class="announcement-inner">
+      <p>You are viewing the <bold>v3-development</bold> version of the documentation. Click here to go to the latest version.</p>
+      <button class="announcement-close" aria-label="Close announcement">
+        <i class="i-icon close"></i>
+      </button>
+    </div>
+  </div><div class="sy-head">
+  <div class="sy-head-blur"></div>
+  <div class="sy-head-inner sy-container mx-auto">
+    <a class="sy-head-brand mr-4" href="/">
+      <img class="light-logo" src="_static/logo-light.svg" alt="Litestar" height="28" />
+      <img class="dark-logo" src="_static/logo-dark.svg" alt="Litestar" height="28" />
+      <strong>Litestar</strong>
+    </a>
+    <div class="sy-head-links" id="NavLinks">
+      <nav class="sy-head-nav">
+
+<ul><li class="link"><a href="index.html">Home</a></li>
+      <li class="link"><button type="button">
+            <span>Community</span>
+            <i class="i-icon chevron"></i>
+          </button>
+        <ul>
+          <li><a href="contribution-guide.html">
+                <span>Contributing</span>
+                <small>Learn how to contribute to the Litestar project</small>
+              </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
+                <span>Code of Conduct</span>
+                <small>Review the etiquette for interacting with the Litestar community</small>
+              </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file#security-ov-file">
+                <span>Security</span>
+                <small>Overview of Litestar's security protocols</small>
+              </a></li></ul>
+      </li>
+      <li class="link"><button type="button">
+            <span>About</span>
+            <i class="i-icon chevron"></i>
+          </button>
+        <ul>
+          <li><a href="https://litestar.dev/about/organization">
+                <span>Litestar Organization</span>
+                <small>Details about the Litestar organization</small>
+              </a></li><li><a href="https://litestar.dev/about/litestar-releases">
+                <span>Releases</span>
+                <small>Explore the release process, versioning, and deprecation policy for Litestar</small>
+              </a></li></ul>
+      </li>
+      <li class="link"><button type="button">
+            <span>Release notes</span>
+            <i class="i-icon chevron"></i>
+          </button>
+        <ul>
+          <li><a href="release-notes/whats-new-3.html">
+                <span>What's new in 3.0</span>
+                <small>Explore the new features in Litestar 3.0</small>
+              </a></li><li><a href="release-notes/changelog.html">
+                <span>3.x Changelog</span>
+                <small>All changes in the 3.x series</small>
+              </a></li><li><a href="https://docs.litestar.dev/2/release-notes/changelog.html">
+                <span>2.x Changelog</span>
+                <small>All changes in the 2.x series</small>
+              </a></li></ul>
+      </li>
+      <li class="link"><button type="button">
+            <span>Help</span>
+            <i class="i-icon chevron"></i>
+          </button>
+        <ul>
+          <li><a href="https://discord.gg/litestar">
+                <span>Discord Help Forum</span>
+                <small>Dedicated Discord help forum</small>
+              </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
+                <span>GitHub Discussions</span>
+                <small>GitHub Discussions</small>
+              </a></li><li><a href="https://stackoverflow.com/questions/tagged/litestar">
+                <span>Stack Overflow</span>
+                <small>We monitor the <code><b>litestar</b></code> tag on Stack Overflow</small>
+              </a></li></ul>
+      </li><li class="link">
+          <a href="https://github.com/sponsors/Litestar-Org">
+            <span>Sponsor</span>
+            
+          </a>
+        </li></ul></nav>
+      <div class="sy-head-extra flex items-center print:hidden">
+        
+<form class="searchbox flex items-center" action="search.html" method="get">
+  <input type="text" name="q" placeholder="Search" />
+  <kbd>/</kbd>
+</form>
+        
+  <div class="nav-versions">
+    <button type="button" aria-label="Versions">
+      <span class="md:hidden">Versions</span>
+      <span class="hidden md:inline">latest</span>
+      <i class="i-icon chevron"></i>
+    </button>
+    <div class="nav-versions-choices">
+      <ul><li><a href="/latest">latest</a></li><li><a href="/main">development</a></li><li><a href="/3-dev">v3</a></li><li><a href="/2">v2</a></li><li><a href="/1">v1</a></li></ul></div>
+  </div>
+        
+        <div class="sy-head-social flex items-center">
+            <a class="flex items-center" href="https://discord.gg/litestar-919193495116337154" aria-label="Discord">
+              <i class="i-icon discord"></i>
+            </a>
+        </div>
+      </div>
+    </div>
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden">
+      <button class="js-theme theme-switch flex items-center"
+        data-aria-auto="Switch to light color mode"
+        data-aria-light="Switch to dark color mode"
+        data-aria-dark="Switch to auto color mode">
+        <i class="i-icon theme-icon"></i>
+      </button>
+      <button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="NavLinks" aria-expanded="false">
+        <div class="hamburger">
+          <span class="hamburger_1"></span>
+          <span class="hamburger_2 -translate-x-2"></span>
+          <span class="hamburger_3 -translate-x-1"></span>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+<div class="sy-page sy-container flex mx-auto">
+  <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
+    <div class="sy-lside-inner md:sticky">
+      <div class="sy-scrollbar p-6">
+<div class="sidebar-links">
+  <ul>
+    <li><a class="icon-link" href="https://github.com/orgs/litestar-org/discussions">
+  <span class="icon">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path fill="var(--accent-9)" fill-rule="evenodd" clip-rule="evenodd" d="M11 5a6 6 0 0 0-4.687 9.746c.215.27.315.62.231.954l-.514 2.058a1 1 0 0 0 1.485 1.1l2.848-1.71c.174-.104.374-.15.576-.148H13a6 6 0 0 0 0-12h-2Z"/>
+      <circle fill="white" cx="12" cy="11" r="1"/>
+      <circle fill="white" cx="9" cy="11" r="1"/>
+      <circle fill="white" cx="15" cy="11" r="1"/>
+    </svg>
+  </span>
+  <span class="text">Discussion</span>
+</a></li>
+  </ul>
+</div>
+
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage/index.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage/applications.html">Applications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/routing/index.html">Routing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="usage/routing/overview.html">Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/routing/handlers.html">Route handlers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/routing/parameters.html">Parameters</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="usage/requests.html">Requests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/caching.html">Caching</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/channels.html">Channels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/cli.html">CLI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/databases/index.html">Databases</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="usage/databases/sqlalchemy/index.html">SQLAlchemy</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="usage/databases/sqlalchemy/models_and_repository.html">SQLAlchemy Models &amp; Repository</a></li>
+<li class="toctree-l4"><a class="reference internal" href="usage/databases/sqlalchemy/plugins/index.html">Plugins</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="usage/databases/sqlalchemy/plugins/sqlalchemy_plugin.html">SQLAlchemy Plugin</a></li>
+<li class="toctree-l5"><a class="reference internal" href="usage/databases/sqlalchemy/plugins/sqlalchemy_init_plugin.html">SQLAlchemy Init Plugin</a></li>
+<li class="toctree-l5"><a class="reference internal" href="usage/databases/sqlalchemy/plugins/sqlalchemy_serialization_plugin.html">SQLAlchemy Serialization Plugin</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="usage/databases/piccolo.html">Piccolo ORM</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="usage/debugging.html">Debugging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/dependency-injection.html">Dependency Injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/dto/index.html">Data Transfer Object (DTO)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="usage/dto/0-basic-use.html">Basic Use</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/dto/1-abstract-dto.html">AbstractDTO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/dto/2-creating-custom-dto-classes.html">Implementing Custom DTO Classes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="usage/events.html">Events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/exceptions.html">Exceptions and exception handling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/htmx.html">HTMX</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/lifecycle-hooks.html">Life Cycle Hooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/logging.html">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/metrics/index.html">Metrics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="usage/metrics/open-telemetry.html">OpenTelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/metrics/prometheus.html">Prometheus</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="usage/middleware/index.html">Middleware</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="usage/middleware/using-middleware.html">Using Middleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/middleware/builtin-middleware.html">Built-in middleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/middleware/creating-middleware.html">Creating Middleware</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="usage/openapi/index.html">OpenAPI</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="usage/openapi/schema_generation.html">Configuring schema generation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/openapi/schema_generation.html#configuring-schema-generation-on-a-route-handler">Configuring schema generation on a route handler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/openapi/schema_generation.html#accessing-the-openapi-schema-in-code">Accessing the OpenAPI schema in code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/openapi/schema_generation.html#customizing-pydantic-model-schemas">Customizing Pydantic model schemas</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/openapi/schema_generation.html#customizing-operation-class">Customizing <code class="docutils literal notranslate"><span class="pre">Operation</span></code> class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/openapi/ui_plugins.html">OpenAPI UI Plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/openapi/ui_plugins.html#using-openapi-ui-plugins">Using OpenAPI UI Plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/openapi/ui_plugins.html#configuring-openapi-ui-plugins">Configuring OpenAPI UI Plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/openapi/ui_plugins.html#configuring-the-openapi-root-path">Configuring the OpenAPI Root Path</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/openapi/ui_plugins.html#building-your-own-openapi-ui-plugin">Building your own OpenAPI UI Plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/openapi/ui_plugins.html#interacting-with-the-router">Interacting with the <code class="docutils literal notranslate"><span class="pre">Router</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/openapi/ui_plugins.html#oauth2-in-swagger-ui">OAuth2 in Swagger UI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/openapi/ui_plugins.html#customizing-the-openapi-ui">Customizing the OpenAPI UI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/openapi/ui_plugins.html#cdn-and-offline-file-support">CDN and offline file support</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="usage/plugins/index.html">Plugins</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="usage/plugins/flash_messages.html">Flash Messages</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="usage/responses.html">Responses</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/security/index.html">Security</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="usage/security/abstract-authentication-middleware.html">AbstractAuthenticationMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/security/security-backends.html">Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/security/guards.html">Guards</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/security/excluding-and-including-endpoints.html">Excluding and including endpoints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/security/jwt.html">JWT Security Backends</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/security/secret-datastructures.html">Handling Secrets</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="usage/static-files.html">Static files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/stores.html">Stores</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/templating.html">Templating</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/testing.html">Testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/websockets.html">WebSockets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reference/index.html">API reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference/app.html">app</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/background_tasks.html">background_tasks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/channels/index.html">channels</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/channels/plugin.html">plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/channels/subscriber.html">subscriber</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/channels/backends/index.html">backends</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reference/channels/backends/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference/channels/backends/memory.html">memory</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference/channels/backends/redis.html">redis</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference/channels/backends/psycopg.html">psycopg</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference/channels/backends/asyncpg.html">asyncpg</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reference/cli.html">cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/config.html">config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/connection.html">connection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/contrib/index.html">contrib</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/contrib/htmx.html">HTMX</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/contrib/jinja.html">jinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/contrib/jwt.html">jwt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/contrib/mako.html">mako</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/contrib/opentelemetry.html">opentelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/contrib/piccolo.html">piccolo_orm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/contrib/pydantic.html">pydantic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/contrib/sqlalchemy/index.html">sqlalchemy</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reference/contrib/sqlalchemy/plugins.html">plugins</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference/contrib/sqlalchemy/repository.html">repository</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference/contrib/sqlalchemy/types.html">types</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference/contrib/sqlalchemy/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference/contrib/sqlalchemy/dto.html">DTO</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reference/controller.html">controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/concurrency.html">cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/data_extractors.html">data_extractors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/datastructures/index.html">datastructures</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/datastructures/secret_values.html">secret_values</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reference/di.html">di</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/dto/index.html">dto</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/dto/config.html">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/dto/data_structures.html">data_structures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/dto/field.html">field</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/dto/types.html">types</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/dto/base_dto.html">base_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/dto/msgspec_dto.html">msgspec_dto</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/dto/dataclass_dto.html">dataclass_dto</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reference/enums.html">enums</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/events.html">events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/exceptions.html">exceptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/handlers.html">handlers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/logging/index.html">logging</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/logging/config.html">config</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/logging/picologging.html">picologging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/logging/standard.html">standard</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reference/middleware/index.html">middleware</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/middleware/allowed_hosts.html">allowed_hosts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/middleware/authentication.html">authentication</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/middleware/compression.html">compression</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/middleware/cors.html">cors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/middleware/csrf.html">csrf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/middleware/logging.html">logging</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/middleware/rate_limit.html">rate_limit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/middleware/session/index.html">session</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="reference/middleware/session/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference/middleware/session/client_side.html">client_side</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reference/middleware/session/server_side.html">server_side</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reference/openapi/index.html">openapi</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/openapi/openapi.html">openapi</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/openapi/plugins.html">plugins</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/openapi/spec.html">spec</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reference/pagination.html">pagination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/params.html">params</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/plugins/index.html">plugins</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/plugins/structlog.html">structlog</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reference/repository/index.html">repository</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/repository/abc.html">abc</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/repository/filters.html">filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/repository/exceptions.html">exceptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/repository/testing.html">testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/repository/handlers.html">handlers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reference/response/index.html">response</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/response/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/response/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/response/redirect.html">redirect</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/response/streaming.html">streaming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/response/sse.html">SSE (Server Sent Events)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/response/template.html">template</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reference/router.html">router</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/routes.html">routes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/security/index.html">security</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/security/jwt.html">jwt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/security/session_auth.html">session_auth</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reference/serialization.html">serialization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/static_files.html">static_files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/status_codes.html">status_code</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/stores/index.html">stores</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/stores/base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/stores/file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/stores/memory.html">memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/stores/redis.html">redis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/stores/registry.html">registry</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="reference/template.html">template</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/testing.html">testing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/types.html">types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reference/typing.html">typing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="benchmarks.html">Benchmarks</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="migration/index.html">Migrating to Litestar</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="migration/flask.html">From Flask</a></li>
+<li class="toctree-l2"><a class="reference internal" href="migration/fastapi.html">From Starlette / FastAPI</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="topics/index.html">Topics</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="topics/sync-vs-async.html">Sync vs. Async</a></li>
+<li class="toctree-l2"><a class="reference internal" href="topics/deployment/index.html">Deployment</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="topics/deployment/nginx-unit.html">NGINX Unit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="topics/deployment/manually-with-asgi-server.html">Manually with ASGI server</a></li>
+<li class="toctree-l3"><a class="reference internal" href="topics/deployment/docker.html">Docker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="topics/deployment/supervisor.html">Supervisor (Linux)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/index.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/todo-app/index.html">Developing a basic TODO application</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/todo-app/0-application-basics.html">Application basics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/todo-app/1-accessing-the-list.html">Accessing the list</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/todo-app/2-interacting-with-the-list.html">Making the list interactive</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/todo-app/3-assembling-the-app.html">Recap and assembling the final application</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/sqlalchemy/index.html">Improving the TODO app with SQLAlchemy</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/sqlalchemy/0-introduction.html">Introduction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/sqlalchemy/1-provide-session-with-di.html">Providing the session with DI</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/sqlalchemy/2-serialization-plugin.html">Using the serialization plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/sqlalchemy/3-init-plugin.html">Using the init plugin</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/sqlalchemy/4-final-touches-and-recap.html">Final touches and recap</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/dto-tutorial/index.html">Data Transfer Object Tutorial</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/dto-tutorial/01-simple-dto-exclude.html">Our first DTO</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/dto-tutorial/02-nested-exclude.html">Excluding from nested models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/dto-tutorial/03-nested-collection-exclude.html">Excluding from collections of nested models</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/dto-tutorial/04-max-nested-depth.html">Max nested depth</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/dto-tutorial/05-renaming-fields.html">Renaming fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/dto-tutorial/06-receiving-data.html">Receiving data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/dto-tutorial/07-read-only-fields.html">Read only fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/dto-tutorial/08-dto-data.html">Accessing the data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/dto-tutorial/09-updating.html">Updating instances</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/dto-tutorial/10-layered-dto-declarations.html">Declaring DTOs on app layers</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials/repository-tutorial/index.html">SQLAlchemy Repository Tutorial</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/repository-tutorial/01-modeling-and-features.html">Introduction to Database Modeling and Repository Features</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/repository-tutorial/01-modeling-and-features.html#modeling">Modeling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/repository-tutorial/01-modeling-and-features.html#full-code">Full Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/repository-tutorial/02-repository-introduction.html">Interacting with repositories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/repository-tutorial/02-repository-introduction.html#working-with-bulk-data-operations">Working with Bulk Data Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/repository-tutorial/02-repository-introduction.html#full-code">Full Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/repository-tutorial/03-repository-controller.html">Working with Controllers and Repositories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/repository-tutorial/03-repository-controller.html#full-code">Full Code</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/repository-tutorial/04-repository-other.html">Adding Additional Features to the Repository</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/repository-tutorial/04-repository-other.html#slug-fields">Slug Fields</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tutorials/repository-tutorial/04-repository-other.html#full-code">Full Code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="contribution-guide.html">Contribution Guide</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/search?q=user%3Alitestar-org+state%3Aopen+label%3A%22good+first+issue%22+++no%3Aassignee+&amp;type=issues=">Available Issues</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/litestar-org/.github?tab=coc-ov-file#readme">Code of Conduct</a></li>
+</ul>
+
+        </div>
+      </div>
+      
+    </div>
+  </aside>
+  <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
+  <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
+    <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
+      <i class="i-icon close"></i>
+    </button>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4">
+  <div class="localtoc">
+    <h3>On this page</h3>
+    <ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#minimal-example">Minimal Example</a></li>
+<li><a class="reference internal" href="#expanded-example">Expanded Example</a></li>
+<li><a class="reference internal" href="#philosophy">Philosophy</a></li>
+<li><a class="reference internal" href="#feature-comparison-with-similar-frameworks">Feature comparison with similar frameworks</a></li>
+<li><a class="reference internal" href="#example-applications">Example Applications</a></li>
+</ul>
+
+  </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
+  data-type="github" data-user="litestar-org" data-repo="litestar">
+  <span class="w-8 flex items-center justify-around shrink-0 text-3xl">
+    <i class="i-icon github"></i>
+  </span>
+  <span class="flex-grow px-2">
+    <span>litestar-org/litestar</span>
+    <span class="flex text-sm repo-stats-count">
+      <span class="flex items-center pr-3">
+        <i class="i-icon star"></i>
+        <strong class="js-repo-stars ml-1">0</strong>
+      </span>
+      <span class="flex items-center">
+        <i class="i-icon git-fork"></i>
+        <strong class="js-repo-forks ml-1">0</strong>
+      </span>
+    </span>
+  </span>
+</a><div class="edit-this-page">
+  <a href="https://github.com/litestar-org/litestar/blob/master/docs/getting-started.rst">Edit this page</a>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div>
+    </div>
+  </aside>
+  <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
+    <div class="sy-breadcrumbs" role="navigation">
+  <div class="sy-breadcrumbs-inner flex items-center">
+    <div class="md:hidden mr-3">
+      <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
+        <i class="i-icon menu"></i>
+      </button>
+    </div>
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList">
+      
+      
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a itemprop="item" href="index.html"><span itemprop="name">Litestar</span></a>
+        <span>/</span>
+        <meta itemprop="position" content="1" />
+      </li>
+      
+      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <strong itemprop="name">Getting Started</strong>
+        <meta itemprop="position" content="2" />
+      </li>
+      
+      
+    </ol>
+    <div class="xl:hidden ml-1">
+      <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
+        aria-expanded="false">
+        <i class="i-icon outdent"></i>
+      </button>
+    </div>
+  </div>
+</div>
+    <div class="flex flex-col break-words justify-between">
+      <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
+        <article class="yue" role="main">
+          <section id="getting-started">
+<h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this heading">¶</a></h1>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">pip<span class="w"> </span>install<span class="w"> </span>litestar
+</span></pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p><code class="docutils literal notranslate"><span class="pre">litestar[standard]</span></code> includes commonly used extras like <code class="docutils literal notranslate"><span class="pre">uvicorn</span></code> and <code class="docutils literal notranslate"><span class="pre">jinja2</span></code> (for templating).</p>
+</div>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-star" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25zm0 2.445L6.615 5.5a.75.75 0 01-.564.41l-3.097.45 2.24 2.184a.75.75 0 01.216.664l-.528 3.084 2.769-1.456a.75.75 0 01.698 0l2.77 1.456-.53-3.084a.75.75 0 01.216-.664l2.24-2.183-3.096-.45a.75.75 0 01-.564-.41L8 2.694v.001z"></path></svg></span>Extras<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<dl>
+<dt><a class="reference external" href="https://docs.pydantic.dev/latest/">Pydantic</a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[pydantic]</span></code></p>
+</dd>
+<dt><a class="reference external" href="https://www.attrs.org">Attrs</a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[attrs]</span></code></p>
+</dd>
+<dt><a class="reference internal" href="usage/middleware/builtin-middleware.html#brotli"><span class="std std-ref">Brotli Compression Middleware</span></a>:</dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[brotli]</span></code></p>
+</dd>
+<dt><a class="reference internal" href="usage/middleware/builtin-middleware.html#client-side-sessions"><span class="std std-ref">Cookie Based Sessions</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[cryptography]</span></code></p>
+</dd>
+<dt><a class="reference internal" href="usage/security/jwt.html"><span class="doc">JWT</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[jwt]</span></code></p>
+</dd>
+<dt><a class="reference internal" href="usage/stores.html"><span class="doc">RedisStore</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[redis]</span></code></p>
+</dd>
+<dt><a class="reference internal" href="usage/logging.html#using-picologging"><span class="std std-ref">Picologging</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[picologging]</span></code></p>
+</dd>
+<dt><a class="reference internal" href="usage/logging.html#using-structlog"><span class="std std-ref">StructLog</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[structlog]</span></code></p>
+</dd>
+<dt><a class="reference internal" href="usage/metrics/prometheus.html"><span class="doc">Prometheus Instrumentation</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[prometheus]</span></code></p>
+</dd>
+<dt><a class="reference internal" href="usage/metrics/open-telemetry.html"><span class="doc">Open Telemetry Instrumentation</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[opentelemetry]</span></code></p>
+</dd>
+<dt><a class="reference internal" href="usage/databases/sqlalchemy/index.html"><span class="doc">SQLAlchemy</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[sqlalchemy]</span></code></p>
+</dd>
+<dt><a class="reference internal" href="usage/cli.html"><span class="doc">CLI</span></a></dt><dd><div class="deprecated">
+<p class="sd-card-text"><span class="versionmodified deprecated">Deprecated since version 2.1.1: </span>The <code class="docutils literal notranslate"><span class="pre">litestar</span></code> base installation now includes the CLI dependencies and this group is no longer required
+to use the CLI.
+If you need the optional CLI dependencies, install the <code class="docutils literal notranslate"><span class="pre">standard</span></code> group instead.
+<strong>Will be removed in 3.0</strong></p>
+</div>
+<p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[cli]</span></code></p>
+</dd>
+<dt><a class="reference internal" href="usage/templating.html"><span class="doc">Jinja Templating</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[jinja]</span></code></p>
+</dd>
+<dt><a class="reference internal" href="usage/templating.html"><span class="doc">Mako Templating</span></a></dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[mako]</span></code></p>
+</dd>
+<dt>Standard Installation (includes Uvicorn and Jinja2 templating):</dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[standard]</span></code></p>
+</dd>
+<dt>All Extras:</dt><dd><p class="sd-card-text"><code class="code docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[full]</span></code></p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p class="sd-card-text">The full extras is not recommended because it will add a lot of unnecessary extras.</p>
+</div>
+</div>
+</details></section>
+<section id="minimal-example">
+<span id="id1"></span><h2>Minimal Example<a class="headerlink" href="#minimal-example" title="Permalink to this heading">¶</a></h2>
+<p>At a minimum, make sure you have installed <code class="docutils literal notranslate"><span class="pre">litestar[standard]</span></code>, which includes uvicorn.</p>
+<p>First, create a file named <code class="docutils literal notranslate"><span class="pre">app.py</span></code> with the following contents:</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">This is a caption</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="2">
+</span><span data-line="3">
+</span><span data-line="4"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="5"><span class="k">async</span> <span class="k">def</span> <span class="nf">index</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="6">    <span class="k">return</span> <span class="s2">&quot;Hello, world!&quot;</span>
+</span><span data-line="7">
+</span><span data-line="8">
+</span><span data-line="9"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/books/{book_id:int}&quot;</span><span class="p">)</span>
+</span><span data-line="10"><span class="k">async</span> <span class="k">def</span> <span class="nf">get_book</span><span class="p">(</span><span class="n">book_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+</span><span data-line="11">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;book_id&quot;</span><span class="p">:</span> <span class="n">book_id</span><span class="p">}</span>
+</span><span data-line="12">
+</span><span data-line="13">
+</span><span data-line="14"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">index</span><span class="p">,</span> <span class="n">get_book</span><span class="p">])</span>
+</span></pre></div>
+</div>
+</div>
+<p>Then, run the following command:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">litestar<span class="w"> </span>run
+</span><span data-line="2"><span class="c1"># Or you can run Uvicorn directly:</span>
+</span><span data-line="3">uvicorn<span class="w"> </span>app:app<span class="w"> </span>--reload
+</span></pre></div>
+</div>
+<p>You can now visit <code class="docutils literal notranslate"><span class="pre">http://localhost:8000/</span></code> and <code class="docutils literal notranslate"><span class="pre">http://localhost:8000/books/1</span></code> in your browser and
+you should see the responses of your two endpoints:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span data-line="1">&quot;Hello, world!&quot;
+</span></pre></div>
+</div>
+<p>and</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">{</span><span class="nt">&quot;book_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">}</span>
+</span></pre></div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>You can also check out the automatically generated OpenAPI-based documentation at:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">http://localhost:8000/schema</span></code> (for <a class="reference external" href="https://redocly.com/redoc">ReDoc</a>),</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">http://localhost:8000/schema/swagger</span></code> (for <a class="reference external" href="https://swagger.io/">Swagger UI</a>),</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">http://localhost:8000/schema/elements</span></code> (for <a class="reference external" href="https://stoplight.io/open-source/elements/">Stoplight Elements</a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">http://localhost:8000/schema/rapidoc</span></code> (for <a class="reference external" href="https://rapidocweb.com/">RapiDoc</a>)</p></li>
+</ul>
+</div>
+<p>You can check out a more in-depth tutorial in the <a class="reference internal" href="tutorials/todo-app/index.html"><span class="doc">Developing a basic TODO application</span></a> section!</p>
+</section>
+<section id="expanded-example">
+<h2>Expanded Example<a class="headerlink" href="#expanded-example" title="Permalink to this heading">¶</a></h2>
+<p><strong>Define your data model</strong> using pydantic or any library based on it (for example ormar, beanie, SQLModel):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">UUID4</span>
+</span><span data-line="2">
+</span><span data-line="3">
+</span><span data-line="4"><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+</span><span data-line="5">    <span class="n">first_name</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="6">    <span class="n">last_name</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="7">    <span class="nb">id</span><span class="p">:</span> <span class="n">UUID4</span>
+</span></pre></div>
+</div>
+<p>You can also use dataclasses (standard library and Pydantic),
+<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">typing.TypedDict</span></code></a>, or <a class="reference external" href="https://jcristharif.com/msgspec/api.html#msgspec.Struct" title="(in msgspec)"><code class="xref py py-class docutils literal notranslate"><span class="pre">msgspec.Struct</span></code></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">DataclassDTO</span>
+</span><span data-line="5">
+</span><span data-line="6">
+</span><span data-line="7"><span class="nd">@dataclass</span>
+</span><span data-line="8"><span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
+</span><span data-line="9">    <span class="n">first_name</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="10">    <span class="n">last_name</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="11">    <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span>
+</span><span data-line="12">
+</span><span data-line="13">
+</span><span data-line="14"><span class="k">class</span> <span class="nc">PartialUserDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">User</span><span class="p">]):</span>
+</span><span data-line="15">    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">},</span> <span class="n">partial</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></pre></div>
+</div>
+<p><strong>Define a Controller for your data model:</strong></p>
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-0">
+Python 3.8+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">put</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">delete</span>
+</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DTOData</span>
+</span><span data-line="5"><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">UUID4</span>
+</span><span data-line="6">
+</span><span data-line="7"><span class="kn">from</span> <span class="nn">my_app.models</span> <span class="kn">import</span> <span class="n">User</span><span class="p">,</span> <span class="n">PartialUserDTO</span>
+</span><span data-line="8">
+</span><span data-line="9">
+</span><span data-line="10"><span class="k">class</span> <span class="nc">UserController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
+</span><span data-line="11">    <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/users&quot;</span>
+</span><span data-line="12">
+</span><span data-line="13">    <span class="nd">@post</span><span class="p">()</span>
+</span><span data-line="14">    <span class="k">async</span> <span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="15">
+</span><span data-line="16">    <span class="nd">@get</span><span class="p">()</span>
+</span><span data-line="17">    <span class="k">async</span> <span class="k">def</span> <span class="nf">list_users</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span> <span class="o">...</span>
+</span><span data-line="18">
+</span><span data-line="19">    <span class="nd">@patch</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/{user_id:uuid}&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">PartialUserDTO</span><span class="p">)</span>
+</span><span data-line="20">    <span class="k">async</span> <span class="k">def</span> <span class="nf">partial_update_user</span><span class="p">(</span>
+</span><span data-line="21">        <span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">DTOData</span><span class="p">[</span><span class="n">User</span><span class="p">]</span>
+</span><span data-line="22">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="23">
+</span><span data-line="24">    <span class="nd">@put</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/{user_id:uuid}&quot;</span><span class="p">)</span>
+</span><span data-line="25">    <span class="k">async</span> <span class="k">def</span> <span class="nf">update_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="26">
+</span><span data-line="27">    <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/{user_id:uuid}&quot;</span><span class="p">)</span>
+</span><span data-line="28">    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="29">
+</span><span data-line="30">    <span class="nd">@delete</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/{user_id:uuid}&quot;</span><span class="p">)</span>
+</span><span data-line="31">    <span class="k">async</span> <span class="k">def</span> <span class="nf">delete_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+</span></pre></div>
+</div>
+</div>
+<input checked="checked" id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-1">
+Python 3.10+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">put</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">delete</span>
+</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DTOData</span>
+</span><span data-line="3"><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">UUID4</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="kn">from</span> <span class="nn">my_app.models</span> <span class="kn">import</span> <span class="n">User</span><span class="p">,</span> <span class="n">PartialUserDTO</span>
+</span><span data-line="6">
+</span><span data-line="7">
+</span><span data-line="8"><span class="k">class</span> <span class="nc">UserController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
+</span><span data-line="9">    <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/users&quot;</span>
+</span><span data-line="10">
+</span><span data-line="11">    <span class="nd">@post</span><span class="p">()</span>
+</span><span data-line="12">    <span class="k">async</span> <span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="13">
+</span><span data-line="14">    <span class="nd">@get</span><span class="p">()</span>
+</span><span data-line="15">    <span class="k">async</span> <span class="k">def</span> <span class="nf">list_users</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span> <span class="o">...</span>
+</span><span data-line="16">
+</span><span data-line="17">    <span class="nd">@patch</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/{user_id:uuid}&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">PartialUserDTO</span><span class="p">)</span>
+</span><span data-line="18">    <span class="k">async</span> <span class="k">def</span> <span class="nf">partial_update_user</span><span class="p">(</span>
+</span><span data-line="19">        <span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">DTOData</span><span class="p">[</span><span class="n">User</span><span class="p">]</span>
+</span><span data-line="20">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="21">
+</span><span data-line="22">    <span class="nd">@put</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/{user_id:uuid}&quot;</span><span class="p">)</span>
+</span><span data-line="23">    <span class="k">async</span> <span class="k">def</span> <span class="nf">update_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="24">
+</span><span data-line="25">    <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/{user_id:uuid}&quot;</span><span class="p">)</span>
+</span><span data-line="26">    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="27">
+</span><span data-line="28">    <span class="nd">@delete</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/{user_id:uuid}&quot;</span><span class="p">)</span>
+</span><span data-line="29">    <span class="k">async</span> <span class="k">def</span> <span class="nf">delete_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID4</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+</span></pre></div>
+</div>
+</div>
+</div>
+<p>When instantiating your app, import your <em>controller</em> into your application’s
+entry-point and pass it to Litestar:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span> <span class="nn">my_app.controllers.user</span> <span class="kn">import</span> <span class="n">UserController</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">UserController</span><span class="p">])</span>
+</span></pre></div>
+</div>
+<p>To <strong>run your application</strong>, use an ASGI server such as <a class="reference external" href="https://www.uvicorn.org/">uvicorn</a> :</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">uvicorn<span class="w"> </span>my_app.main:app<span class="w"> </span>--reload
+</span></pre></div>
+</div>
+</section>
+<section id="philosophy">
+<h2>Philosophy<a class="headerlink" href="#philosophy" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p>Litestar is a community-driven project. This means not a single author,
+but rather a core team of maintainers is leading the project, supported by a community
+of contributors. Litestar currently has 5 maintainers and is being very actively developed.</p></li>
+<li><p>Litestar draws inspiration from <a class="reference external" href="https://nestjs.com/">NestJS</a> - a contemporary TypeScript framework - which places
+opinions and patterns at its core.</p></li>
+<li><p>While still allowing for <strong>function-based endpoints</strong>, Litestar seeks to build on Python’s powerful and versatile
+OOP, by placing <strong>class-based controllers</strong> at its core.</p></li>
+<li><p>Litestar is <strong>not</strong> a microframework. Unlike frameworks such as FastAPI, Starlette, or Flask, Litestar includes a lot
+of functionalities out of the box needed for a typical modern web application, such as ORM integration,
+client- and server-side sessions, caching, OpenTelemetry integration, and many more. It’s not aiming to be “the next
+Django” (for example, it will never feature its own ORM), but its scope is not micro either.</p></li>
+</ul>
+</section>
+<section id="feature-comparison-with-similar-frameworks">
+<h2>Feature comparison with similar frameworks<a class="headerlink" href="#feature-comparison-with-similar-frameworks" title="Permalink to this heading">¶</a></h2>
+<div class="table-wrapper colwidths-given docutils container" id="id3">
+<table class="docutils align-default" id="id3">
+<caption><span class="caption-text">Litestar vs. other frameworks</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 5.0%" />
+<col style="width: 35.0%" />
+<col style="width: 15.0%" />
+<col style="width: 15.0%" />
+<col style="width: 15.0%" />
+<col style="width: 15.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Feature</p></th>
+<th class="head"><p>Litestar</p></th>
+<th class="head"><p>FastAPI</p></th>
+<th class="head"><p>Starlette</p></th>
+<th class="head"><p>Sanic</p></th>
+<th class="head"><p>Quart</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>OpenAPI</p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>Automatic API documentation</p></td>
+<td><p>Swagger, ReDoc, Stoplight Elements</p></td>
+<td><p>Swagger, ReDoc</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>Data validation</p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>Dependency Injection</p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>Class based routing</p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
+<td><p>Extension</p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
+</tr>
+<tr class="row-odd"><td><p>ORM integration</p></td>
+<td><p>SQLAlchemy, Tortoise, Piccolo</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Extension</p></td>
+</tr>
+<tr class="row-even"><td><p>Templating</p></td>
+<td><p>Jinja, Mako</p></td>
+<td><p>Jinja</p></td>
+<td><p>Jinja</p></td>
+<td><p>Jinja</p></td>
+<td><p>Jinja</p></td>
+</tr>
+<tr class="row-odd"><td><p>MessagePack</p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>CORS</p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
+<td><p>Extension</p></td>
+</tr>
+<tr class="row-odd"><td><p>CSRF</p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>Rate-limiting</p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Extension</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+</tr>
+<tr class="row-odd"><td><p>JWT</p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>Sessions</p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
+<td><p>Client-side</p></td>
+<td><p>Client-side</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><p>Client-side</p></td>
+</tr>
+<tr class="row-odd"><td><p>Authentication</p></td>
+<td><p>JWT / Session based</p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+</tr>
+<tr class="row-even"><td><p>Caching</p></td>
+<td><p><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-check" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"></path></svg></p></td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+<td><ul class="simple">
+<li></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="example-applications">
+<h2>Example Applications<a class="headerlink" href="#example-applications" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/litestar-org/litestar-pg-redis-docker">litestar-pg-redis-docker</a> : In addition to Litestar, this
+demonstrates a pattern of application modularity, SQLAlchemy 2.0 ORM, Redis cache connectivity, and more. Like all
+Litestar projects, this application is open to contributions, big and small.</p></li>
+<li><p><a class="reference external" href="https://github.com/litestar-org/litestar-fullstack">litestar-fullstack</a> : A fully-capable, production-ready fullstack
+Litestar web application configured with best practices. It includes SQLAlchemy 2.0, ReactJS, <a class="reference external" href="https://vitejs.dev/">Vite</a>,
+<a class="reference external" href="https://saq-py.readthedocs.io/en/latest/">SAQ job queue</a>, <code class="docutils literal notranslate"><span class="pre">Jinja</span></code> templates and more.
+<a class="reference external" href="https://litestar-org.github.io/litestar-fullstack/latest/">Read more</a>.</p></li>
+<li><p><a class="reference external" href="https://github.com/litestar-org/litestar-hello-world">litestar-hello-world</a>: A bare-minimum application setup.
+Great for testing and POC work.</p></li>
+</ul>
+</section>
+</section>
+
+        </article>
+        <button class="back-to-top" type="button">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+    <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+  </svg>
+  <span>Back to top</span>
+</button>
+        
+        <div class="navigation flex print:hidden">
+  <div class="navigation-prev">
+    <a href="index.html">
+      <i class="i-icon chevron"></i>
+      <div class="page-info">
+        <span>Previous</span>
+        
+        <div class="title">Home</div>
+        
+      </div>
+    </a>
+  </div>
+  <div class="navigation-next">
+    <a href="usage/index.html">
+      <div class="page-info">
+        <span>Next</span>
+        <div class="title">Usage</div>
+      </div>
+      <i class="i-icon chevron"></i>
+    </a>
+  </div>
+</div>
+        
+      </div>
+    </div>
+  </main>
+</div>
+<footer class="sy-foot">
+  <div class="sy-foot-inner sy-container mx-auto">
+    
+    <div class="sy-foot-reserved md:flex justify-between items-center">
+      <div class="sy-foot-copyright"><p>2024, Litestar Organization</p>
+        
+        <p>
+          Made with
+          
+          <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+          
+          <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+        </p>
+      </div>
+      <div class="sy-foot-socials">
+          <a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)"><i class="i-icon x-twitter"></i></a>
+          <a href="https://discord.gg/litestar-919193495116337154" aria-label="Discord"><i class="i-icon discord"></i></a>
+          <a href="https://www.reddit.com/r/LitestarAPI" aria-label="Reddit"><i class="i-icon reddit"></i></a>
+      </div>
+    </div>
+  </div>
+</footer></div>
+      <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=c19e757c"></script>
+      <script src="_static/doctools.js?v=888ff710"></script>
+      <script src="_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="_static/copybutton.js?v=f281be69"></script>
+      <script src="_static/litestar-theme.js?v=ab2dcc9e"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="_static/togglebutton.js?v=4a39c7ea"></script>
+      <script src="_static/design-tabs.js?v=36754332"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script src="_static/shibuya.js?v=9aab5f5b"></script>
+      <script src="_static/versioning.js?v=bc681eff"></script>
+    
+</body>
+</html>

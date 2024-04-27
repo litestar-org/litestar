@@ -1,0 +1,42 @@
+.sy-head {
+  position: static;
+  border-bottom: 1px solid var(--sy-c-divider);
+}
+
+.sy-head-inner {
+  padding: 0;
+}
+
+.sy-breadcrumbs {
+  display: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  page-break-inside: avoid;
+  page-break-after: avoid;
+}
+
+.code-block-caption,
+pre, code {
+  page-break-inside: avoid;
+  white-space: pre-wrap;
+
+  -webkit-print-color-adjust: exact;
+}
+
+.yue a.headerlink {
+  display: none;
+}
+
+.highlight .linenos {
+  box-shadow: none;
+}
+
+.admonition,
+.sd-sphinx-override {
+  -webkit-print-color-adjust: exact;
+}
+
+.sd-card {
+  page-break-inside: avoid;
+}
