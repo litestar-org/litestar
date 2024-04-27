@@ -437,8 +437,6 @@ def delayed_setup(app: Sphinx) -> None:
 
 
 def setup(app: Sphinx) -> dict[str, bool]:
-    app.connect("builder-inited", delayed_setup, priority=0)  # type: ignore
-
+    app.connect("builder-inited", delayed_setup, priority=0)# type: ignore
     app.setup_extension("litestar_sphinx_theme")
-
     return {"parallel_read_safe": True, "parallel_write_safe": True}
