@@ -2229,6 +2229,8 @@ document.write(`
 </li>
         <li><a href="reference/exceptions.html#litestar.exceptions.MissingDependencyException.__init__">(litestar.exceptions.MissingDependencyException method)</a>
 </li>
+        <li><a href="reference/exceptions.html#litestar.exceptions.responses.ExceptionResponseContent.__init__">(litestar.exceptions.responses.ExceptionResponseContent method)</a>
+</li>
         <li><a href="reference/exceptions.html#litestar.exceptions.TemplateNotFoundException.__init__">(litestar.exceptions.TemplateNotFoundException method)</a>
 </li>
         <li><a href="reference/exceptions.html#litestar.exceptions.WebSocketDisconnect.__init__">(litestar.exceptions.WebSocketDisconnect method)</a>
@@ -4126,6 +4128,8 @@ document.write(`
 </li>
       <li><a href="reference/middleware/compression.html#litestar.middleware.compression.CompressionMiddleware.create_compression_send_wrapper">create_compression_send_wrapper() (litestar.middleware.compression.CompressionMiddleware method)</a>
 </li>
+      <li><a href="reference/exceptions.html#litestar.exceptions.responses.create_debug_response">create_debug_response() (in module litestar.exceptions.responses)</a>
+</li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin.create_dto_for_type">create_dto_for_type() (litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin method)</a>
 
       <ul>
@@ -4139,6 +4143,8 @@ document.write(`
       <li><a href="reference/response/file.html#litestar.response.file.create_etag_for_file">create_etag_for_file() (in module litestar.response.file)</a>
 </li>
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.create_examples">create_examples (litestar.openapi.OpenAPIConfig attribute)</a>
+</li>
+      <li><a href="reference/exceptions.html#litestar.exceptions.responses.create_exception_response">create_exception_response() (in module litestar.exceptions.responses)</a>
 </li>
       <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.create_for_field_definition">create_for_field_definition() (litestar.dto.base_dto.AbstractDTO class method)</a>
 </li>
@@ -4679,6 +4685,8 @@ document.write(`
 </li>
         <li><a href="reference/exceptions.html#litestar.exceptions.MissingDependencyException.params.detail">(litestar.exceptions.MissingDependencyException parameter)</a>
 </li>
+        <li><a href="reference/exceptions.html#litestar.exceptions.responses.ExceptionResponseContent.detail">(litestar.exceptions.responses.ExceptionResponseContent attribute)</a>
+</li>
         <li><a href="reference/exceptions.html#litestar.exceptions.WebSocketDisconnect.params.detail">(litestar.exceptions.WebSocketDisconnect parameter)</a>
 </li>
         <li><a href="reference/exceptions.html#litestar.exceptions.WebSocketException.params.detail">(litestar.exceptions.WebSocketException parameter)</a>
@@ -5138,6 +5146,12 @@ document.write(`
         <li><a href="reference/params.html#litestar.params.Parameter.params.examples">(litestar.params.Parameter parameter)</a>
 </li>
       </ul></li>
+      <li><a href="reference/exceptions.html#litestar.exceptions.responses.create_debug_response.params.exc">exc (litestar.exceptions.responses.create_debug_response parameter)</a>
+
+      <ul>
+        <li><a href="reference/exceptions.html#litestar.exceptions.responses.create_exception_response.params.exc">(litestar.exceptions.responses.create_exception_response parameter)</a>
+</li>
+      </ul></li>
       <li><a href="reference/types.html#litestar.types.Logger.exception">exception() (litestar.types.Logger method)</a>
 </li>
       <li><a href="reference/app.html#litestar.app.Litestar.params.exception_handlers">exception_handlers (litestar.app.Litestar parameter)</a>
@@ -5197,6 +5211,8 @@ document.write(`
       <li><a href="reference/types.html#litestar.types.ExceptionHandler">ExceptionHandler (in module litestar.types)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.ExceptionHandlersMap">ExceptionHandlersMap (in module litestar.types)</a>
+</li>
+      <li><a href="reference/exceptions.html#litestar.exceptions.responses.ExceptionResponseContent">ExceptionResponseContent (class in litestar.exceptions.responses)</a>
 </li>
       <li><a href="reference/config.html#litestar.config.allowed_hosts.AllowedHostsConfig.exclude">exclude (litestar.config.allowed_hosts.AllowedHostsConfig attribute)</a>
 
@@ -5458,6 +5474,8 @@ document.write(`
 
       <ul>
         <li><a href="reference/exceptions.html#litestar.exceptions.HTTPException.params.extra">(litestar.exceptions.HTTPException parameter)</a>
+</li>
+        <li><a href="reference/exceptions.html#litestar.exceptions.responses.ExceptionResponseContent.extra">(litestar.exceptions.responses.ExceptionResponseContent attribute)</a>
 </li>
         <li><a href="reference/typing.html#litestar.typing.FieldDefinition.extra">(litestar.typing.FieldDefinition attribute)</a>
 </li>
@@ -6202,6 +6220,8 @@ document.write(`
         <li><a href="reference/exceptions.html#litestar.exceptions.HTTPException.headers">(litestar.exceptions.HTTPException attribute)</a>
 </li>
         <li><a href="reference/exceptions.html#litestar.exceptions.HTTPException.params.headers">(litestar.exceptions.HTTPException parameter)</a>
+</li>
+        <li><a href="reference/exceptions.html#litestar.exceptions.responses.ExceptionResponseContent.headers">(litestar.exceptions.responses.ExceptionResponseContent attribute)</a>
 </li>
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Components.headers">(litestar.openapi.spec.Components attribute)</a>
 </li>
@@ -7486,8 +7506,6 @@ document.write(`
         <li><a href="reference/datastructures/secret_values.html#module-litestar.datastructures.secret_values">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     litestar.di
 
@@ -7495,6 +7513,8 @@ document.write(`
         <li><a href="reference/di.html#module-litestar.di">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     litestar.dto.base_dto
 
@@ -7563,6 +7583,13 @@ document.write(`
 
       <ul>
         <li><a href="reference/exceptions.html#module-litestar.exceptions">module</a>
+</li>
+      </ul></li>
+      <li>
+    litestar.exceptions.responses
+
+      <ul>
+        <li><a href="reference/exceptions.html#module-litestar.exceptions.responses">module</a>
 </li>
       </ul></li>
       <li>
@@ -8061,6 +8088,8 @@ document.write(`
       <li><a href="reference/datastructures/index.html#litestar.datastructures.Accept.accepts.params.media_type">media_type (litestar.datastructures.Accept.accepts parameter)</a>
 
       <ul>
+        <li><a href="reference/exceptions.html#litestar.exceptions.responses.ExceptionResponseContent.media_type">(litestar.exceptions.responses.ExceptionResponseContent attribute)</a>
+</li>
         <li><a href="reference/handlers.html#litestar.handlers.delete.params.media_type">(litestar.handlers.delete parameter)</a>
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.get.params.media_type">(litestar.handlers.get parameter)</a>
@@ -8441,6 +8470,8 @@ document.write(`
         <li><a href="reference/events.html#module-litestar.events">litestar.events</a>
 </li>
         <li><a href="reference/exceptions.html#module-litestar.exceptions">litestar.exceptions</a>
+</li>
+        <li><a href="reference/exceptions.html#module-litestar.exceptions.responses">litestar.exceptions.responses</a>
 </li>
         <li><a href="reference/handlers.html#module-litestar.handlers">litestar.handlers</a>
 </li>
@@ -9930,6 +9961,10 @@ document.write(`
 </li>
         <li><a href="reference/data_extractors.html#litestar.data_extractors.ConnectionDataExtractor.extract_method.params.request">(litestar.data_extractors.ConnectionDataExtractor.extract_method parameter)</a>
 </li>
+        <li><a href="reference/exceptions.html#litestar.exceptions.responses.create_debug_response.params.request">(litestar.exceptions.responses.create_debug_response parameter)</a>
+</li>
+        <li><a href="reference/exceptions.html#litestar.exceptions.responses.create_exception_response.params.request">(litestar.exceptions.responses.create_exception_response parameter)</a>
+</li>
         <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.to_response.params.request">(litestar.handlers.HTTPRouteHandler.to_response parameter)</a>
 </li>
         <li><a href="reference/middleware/logging.html#litestar.middleware.logging.LoggingMiddleware.extract_request_data.params.request">(litestar.middleware.logging.LoggingMiddleware.extract_request_data parameter)</a>
@@ -10057,6 +10092,8 @@ document.write(`
 </li>
       <li><a href="reference/testing.html#litestar.testing.RequestFactory">RequestFactory (class in litestar.testing)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.ResponseHeader.required">required (litestar.datastructures.ResponseHeader attribute)</a>
 
       <ul>
@@ -10073,8 +10110,6 @@ document.write(`
         <li><a href="reference/params.html#litestar.params.ParameterKwarg.required">(litestar.params.ParameterKwarg attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.resolve_after_response">resolve_after_response() (litestar.handlers.HTTPRouteHandler method)</a>
 </li>
       <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.resolve_before_request">resolve_before_request() (litestar.handlers.HTTPRouteHandler method)</a>
@@ -11073,14 +11108,14 @@ document.write(`
 </li>
       <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.set_cached_history">set_cached_history() (litestar.middleware.rate_limit.RateLimitMiddleware method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/response/base.html#litestar.response.base.Response.set_cookie">set_cookie() (litestar.response.base.Response method)</a>
 
       <ul>
         <li><a href="reference/response/index.html#litestar.response.Response.set_cookie">(litestar.response.Response method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/response/base.html#litestar.response.base.Response.set_etag">set_etag() (litestar.response.base.Response method)</a>
 
       <ul>
@@ -11335,6 +11370,8 @@ document.write(`
         <li><a href="reference/exceptions.html#litestar.exceptions.NotFoundException.status_code">(litestar.exceptions.NotFoundException attribute)</a>
 </li>
         <li><a href="reference/exceptions.html#litestar.exceptions.PermissionDeniedException.status_code">(litestar.exceptions.PermissionDeniedException attribute)</a>
+</li>
+        <li><a href="reference/exceptions.html#litestar.exceptions.responses.ExceptionResponseContent.status_code">(litestar.exceptions.responses.ExceptionResponseContent attribute)</a>
 </li>
         <li><a href="reference/exceptions.html#litestar.exceptions.ServiceUnavailableException.status_code">(litestar.exceptions.ServiceUnavailableException attribute)</a>
 </li>
@@ -11893,8 +11930,12 @@ document.write(`
         <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema">(litestar.plugins.OpenAPISchemaPluginProtocol method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.to_response">to_response() (litestar.handlers.HTTPRouteHandler method)</a>
+      <li><a href="reference/exceptions.html#litestar.exceptions.responses.ExceptionResponseContent.to_response">to_response() (litestar.exceptions.responses.ExceptionResponseContent method)</a>
+
+      <ul>
+        <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.to_response">(litestar.handlers.HTTPRouteHandler method)</a>
 </li>
+      </ul></li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.BaseSchemaObject.to_schema">to_schema() (litestar.openapi.spec.BaseSchemaObject method)</a>
 </li>
   </ul></td>
