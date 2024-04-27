@@ -217,7 +217,9 @@ filterwarnings = [
   "ignore:`general_plain_validator_function`:DeprecationWarning::",
   "ignore: 'RichMultiCommand':DeprecationWarning::", # this is coming from rich_click itself, nothing we can do about # that for now
   "ignore: Dropping max_length:litestar.exceptions.LitestarWarning:litestar.contrib.piccolo",
-  "ignore: Python Debugger on exception enabled:litestar.exceptions.LitestarWarning:"
+  "ignore: Python Debugger on exception enabled:litestar.exceptions.LitestarWarning:",
+  "ignore: datetime.datetime.utcnow:DeprecationWarning:time_machine",
+  "ignore: datetime.datetime.utcnow:DeprecationWarning:jose",
 ]
 markers = [
   "sqlalchemy_integration: SQLAlchemy integration tests",
