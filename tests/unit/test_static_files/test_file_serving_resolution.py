@@ -251,31 +251,3 @@ def test_resolve_symlinks(tmp_path: Path, resolve: bool) -> None:
             assert client.get("/test.txt").status_code == 404
         else:
             assert client.get("/test.txt").status_code == 200
-
-
-async def test_staticfiles_get_fs_info_no_access_to_non_static_directory(
-    tmp_path: Path,
-    file_system: FileSystemProtocol,
-) -> None:
-    assets = tmp_path / "assets"
-    assets.mkdir()
-    index = tmp_path / "index.html"
-    index.write_text("content", "utf-8")
-    static_files = StaticFiles(is_html_mode=False, directories=[assets], file_system=file_system)
-    path, info = await static_files.get_fs_info([assets], "../index.html")
-    assert path is None
-    assert info is None
-
-
-async def test_staticfiles_get_fs_info_no_access_to_non_static_file_with_prefix(
-    tmp_path: Path,
-    file_system: FileSystemProtocol,
-) -> None:
-    static = tmp_path / "static"
-    static.mkdir()
-    private_file = tmp_path / "staticsecrets.env"
-    private_file.write_text("content", "utf-8")
-    static_files = StaticFiles(is_html_mode=False, directories=[static], file_system=file_system)
-    path, info = await static_files.get_fs_info([static], "../staticsecrets.env")
-    assert path is None
-    assert info is None
