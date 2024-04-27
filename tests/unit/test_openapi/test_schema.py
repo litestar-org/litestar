@@ -1,6 +1,6 @@
 import sys
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from enum import Enum, auto
 from typing import (  # type: ignore[attr-defined]
     TYPE_CHECKING,
@@ -317,12 +317,14 @@ def test_annotated_types() -> None:
     assert schema.properties["constrained_int"].exclusive_maximum == 10  # type: ignore[index, union-attr]
     assert schema.properties["constrained_float"].minimum == 1  # type: ignore[index, union-attr]
     assert schema.properties["constrained_float"].maximum == 10  # type: ignore[index, union-attr]
-    assert datetime.utcfromtimestamp(schema.properties["constrained_date"].exclusive_minimum) == datetime.fromordinal(  # type: ignore[arg-type, index, union-attr]
-        historical_date.toordinal()
-    )
-    assert datetime.utcfromtimestamp(schema.properties["constrained_date"].exclusive_maximum) == datetime.fromordinal(  # type: ignore[arg-type, index, union-attr]
-        today.toordinal()
-    )
+    assert datetime.fromtimestamp(
+        schema.properties["constrained_date"].exclusive_minimum,  # type: ignore[arg-type, index, union-attr]
+        tz=timezone.utc,
+    ) == datetime.fromordinal(historical_date.toordinal()).replace(tzinfo=timezone.utc)
+    assert datetime.fromtimestamp(
+        schema.properties["constrained_date"].exclusive_maximum,  # type: ignore[arg-type, index, union-attr]
+        tz=timezone.utc,
+    ) == datetime.fromordinal(today.toordinal()).replace(tzinfo=timezone.utc)
     assert schema.properties["constrained_lower_case"].description == "must be in lower case"  # type: ignore[index]
     assert schema.properties["constrained_upper_case"].description == "must be in upper case"  # type: ignore[index]
     assert schema.properties["constrained_is_ascii"].pattern == "[[:ascii:]]"  # type: ignore[index, union-attr]
@@ -592,16 +594,24 @@ def test_routes_with_different_path_param_types_get_merged() -> None:
 
 def test_unconsumed_path_parameters_are_documented() -> None:
     # https://github.com/litestar-org/litestar/issues/3290
-    @get("/{param:str}")
-    async def handler() -> None:
+    # https://github.com/litestar-org/litestar/issues/3369
+
+    async def dd(param3: Annotated[str, Parameter(description="123")]) -> str:
+        return param3
+
+    async def d(dep_dep: str, param2: Annotated[str, Parameter(description="abc")]) -> str:
+        return f"{dep_dep}_{param2}"
+
+    @get("/{param1:str}/{param2:str}/{param3:str}", dependencies={"dep": d, "dep_dep": dd})
+    async def handler(dep: str) -> None:
         pass
 
     app = Litestar([handler])
-    params = app.openapi_schema.paths["/{param}"].get.parameters  # type: ignore[index, union-attr]
+    params = app.openapi_schema.paths["/{param1}/{param2}/{param3}"].get.parameters  # type: ignore[index, union-attr]
     assert params
-    assert len(params) == 1
-    param = params[0]
-    assert isinstance(param, OpenAPIParameter)
-    assert param.name == "param"
-    assert param.required is True
-    assert param.param_in is ParamType.PATH
+    assert len(params) == 3
+    for i, param in enumerate(sorted(params, key=lambda p: p.name), 1):  # pyright: ignore
+        assert isinstance(param, OpenAPIParameter)
+        assert param.name == f"param{i}"
+        assert param.required is True
+        assert param.param_in is ParamType.PATH

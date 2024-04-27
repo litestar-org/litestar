@@ -1,4 +1,4 @@
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal
 from types import ModuleType
 from typing import Any, Callable, Pattern, Type, Union, cast
@@ -257,17 +257,29 @@ def test_create_date_constrained_field_schema_pydantic_v1(annotation: Any) -> No
     schema = create_date_constrained_field_schema(field_definition.annotation, field_definition.kwarg_definition)
     assert schema.type == OpenAPIType.STRING
     assert schema.format == OpenAPIFormat.DATE
-    assert (datetime.utcfromtimestamp(schema.exclusive_minimum) if schema.exclusive_minimum else None) == (
-        datetime.fromordinal(annotation.gt.toordinal()) if annotation.gt is not None else None
+    assert (
+        datetime.fromtimestamp(schema.exclusive_minimum, tz=timezone.utc) if schema.exclusive_minimum else None
+    ) == (
+        datetime.fromordinal(annotation.gt.toordinal()).replace(tzinfo=timezone.utc)
+        if annotation.gt is not None
+        else None
     )
-    assert (datetime.utcfromtimestamp(schema.minimum) if schema.minimum else None) == (
-        datetime.fromordinal(annotation.ge.toordinal()) if annotation.ge is not None else None
+    assert (datetime.fromtimestamp(schema.minimum, tz=timezone.utc) if schema.minimum else None) == (
+        datetime.fromordinal(annotation.ge.toordinal()).replace(tzinfo=timezone.utc)
+        if annotation.ge is not None
+        else None
     )
-    assert (datetime.utcfromtimestamp(schema.exclusive_maximum) if schema.exclusive_maximum else None) == (
-        datetime.fromordinal(annotation.lt.toordinal()) if annotation.lt is not None else None
+    assert (
+        datetime.fromtimestamp(schema.exclusive_maximum, tz=timezone.utc) if schema.exclusive_maximum else None
+    ) == (
+        datetime.fromordinal(annotation.lt.toordinal()).replace(tzinfo=timezone.utc)
+        if annotation.lt is not None
+        else None
     )
-    assert (datetime.utcfromtimestamp(schema.maximum) if schema.maximum else None) == (
-        datetime.fromordinal(annotation.le.toordinal()) if annotation.le is not None else None
+    assert (datetime.fromtimestamp(schema.maximum, tz=timezone.utc) if schema.maximum else None) == (
+        datetime.fromordinal(annotation.le.toordinal()).replace(tzinfo=timezone.utc)
+        if annotation.le is not None
+        else None
     )
 
 
@@ -280,26 +292,42 @@ def test_create_date_constrained_field_schema_pydantic_v2(annotation: Any) -> No
     assert schema.type == OpenAPIType.STRING
     assert schema.format == OpenAPIFormat.DATE
     assert any(
-        (datetime.fromordinal(getattr(m, "gt", None).toordinal()) if getattr(m, "gt", None) is not None else None)  # type: ignore[union-attr]
-        == (datetime.utcfromtimestamp(schema.exclusive_minimum) if schema.exclusive_minimum else None)
+        (
+            datetime.fromordinal(getattr(m, "gt", None).toordinal()).replace(tzinfo=timezone.utc)  # type: ignore[union-attr]
+            if getattr(m, "gt", None) is not None
+            else None
+        )
+        == (datetime.fromtimestamp(schema.exclusive_minimum, tz=timezone.utc) if schema.exclusive_minimum else None)
         for m in field_definition.metadata
         if m
     )
     assert any(
-        (datetime.fromordinal(getattr(m, "ge", None).toordinal()) if getattr(m, "ge", None) is not None else None)  # type: ignore[union-attr]
-        == (datetime.utcfromtimestamp(schema.minimum) if schema.minimum else None)
+        (
+            datetime.fromordinal(getattr(m, "ge", None).toordinal()).replace(tzinfo=timezone.utc)  # type: ignore[union-attr]
+            if getattr(m, "ge", None) is not None
+            else None
+        )
+        == (datetime.fromtimestamp(schema.minimum, tz=timezone.utc) if schema.minimum else None)
         for m in field_definition.metadata
         if m
     )
     assert any(
-        (datetime.fromordinal(getattr(m, "lt", None).toordinal()) if getattr(m, "lt", None) is not None else None)  # type: ignore[union-attr]
-        == (datetime.utcfromtimestamp(schema.exclusive_maximum) if schema.exclusive_maximum else None)
+        (
+            datetime.fromordinal(getattr(m, "lt", None).toordinal()).replace(tzinfo=timezone.utc)  # type: ignore[union-attr]
+            if getattr(m, "lt", None) is not None
+            else None
+        )
+        == (datetime.fromtimestamp(schema.exclusive_maximum, tz=timezone.utc) if schema.exclusive_maximum else None)
         for m in field_definition.metadata
         if m
     )
     assert any(
-        (datetime.fromordinal(getattr(m, "le", None).toordinal()) if getattr(m, "le", None) is not None else None)  # type: ignore[union-attr]
-        == (datetime.utcfromtimestamp(schema.maximum) if schema.maximum else None)
+        (
+            datetime.fromordinal(getattr(m, "le", None).toordinal()).replace(tzinfo=timezone.utc)  # type: ignore[union-attr]
+            if getattr(m, "le", None) is not None
+            else None
+        )
+        == (datetime.fromtimestamp(schema.maximum, tz=timezone.utc) if schema.maximum else None)
         for m in field_definition.metadata
         if m
     )

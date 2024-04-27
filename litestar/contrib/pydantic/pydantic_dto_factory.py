@@ -6,7 +6,7 @@ from warnings import warn
 
 from typing_extensions import Annotated, TypeAlias, override
 
-from litestar.contrib.pydantic.utils import is_pydantic_undefined
+from litestar.contrib.pydantic.utils import is_pydantic_undefined, is_pydantic_v2
 from litestar.dto.base_dto import AbstractDTO
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.dto.field import DTO_FIELD_META_KEY, extract_dto_field
@@ -25,6 +25,10 @@ except ImportError as e:
 
 try:
     import pydantic as pydantic_v2
+
+    if not is_pydantic_v2(pydantic_v2):
+        raise ImportError
+
     from pydantic import ValidationError as ValidationErrorV2
     from pydantic import v1 as pydantic_v1
     from pydantic.v1 import ValidationError as ValidationErrorV1

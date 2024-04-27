@@ -7,13 +7,13 @@ repos:
       - id: conventional-pre-commit
         stages: [commit-msg]
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v4.6.0
     hooks:
       - id: check-ast
       - id: check-case-conflict
       - id: check-toml
       - id: debug-statements
-        exclude: "litestar/middleware/exceptions/middleware.py"
+        exclude: "litestar/middleware/_internal/exceptions/middleware.py"
       - id: end-of-file-fixer
       - id: mixed-line-ending
       - id: trailing-whitespace
