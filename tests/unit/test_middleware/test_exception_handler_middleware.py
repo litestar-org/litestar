@@ -47,7 +47,7 @@ def app() -> Litestar:
 
 @pytest.fixture()
 def middleware() -> ExceptionHandlerMiddleware:
-    return ExceptionHandlerMiddleware(dummy_app, None)
+    return ExceptionHandlerMiddleware(dummy_app)
 
 
 @pytest.fixture()
