@@ -515,11 +515,10 @@ class BaseRouteHandler:
                     f"If you wish to override a provider, it must have the same key."
                 )
 
-    def on_registration(self, app: Litestar, route: BaseRoute) -> None:
+    def on_registration(self, route: BaseRoute) -> None:
         """Called once per handler when the app object is instantiated.
 
         Args:
-            app: The :class:`Litestar<.app.Litestar>` app object.
             route: The route this handler is being registered on
 
         Returns:
