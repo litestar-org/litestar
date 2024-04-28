@@ -1,3 +1,6 @@
+from litestar import get
+
+
 class Foo:
     pass
 

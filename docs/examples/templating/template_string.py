@@ -1,3 +1,7 @@
+from litestar import get
+from litestar.response import Template
+
+
 @get()
 async def example() -> Template:
     template_string = "{{ hello }}"

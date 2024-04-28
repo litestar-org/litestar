@@ -1,8 +1,9 @@
+from pydantic import UUID4, BaseModel
+
 from litestar.contrib.pydantic import PydanticDTO
 from litestar.controller import Controller
 from litestar.dto import DTOConfig, DTOData
-from litestar.handlers import get, post, patch, delete
-from pydantic import BaseModel, UUID4
+from litestar.handlers import delete, get, patch, post
 
 
 class UserOrder(BaseModel):
@@ -24,9 +25,7 @@ class UserOrderController(Controller):
     async def retrieve_user_order(self, order_id: UUID4) -> UserOrder: ...
 
     @patch(path="/{order_id:uuid}", dto=PartialUserOrderDTO)
-    async def update_user_order(
-            self, order_id: UUID4, data: DTOData[PartialUserOrderDTO]
-    ) -> UserOrder: ...
+    async def update_user_order(self, order_id: UUID4, data: DTOData[PartialUserOrderDTO]) -> UserOrder: ...
 
     @delete(path="/{order_id:uuid}")
     async def delete_user_order(self, order_id: UUID4) -> None: ...

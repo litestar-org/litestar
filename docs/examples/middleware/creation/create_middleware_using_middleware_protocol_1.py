@@ -1,5 +1,6 @@
-from typing import Protocol, Any
-from litestar.types import ASGIApp, Scope, Receive, Send
+from typing import Any, Protocol
+
+from litestar.types import ASGIApp, Receive, Scope, Send
 
 
 class MiddlewareProtocol(Protocol):

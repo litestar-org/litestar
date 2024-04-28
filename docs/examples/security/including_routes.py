@@ -1,4 +1,3 @@
-...
 session_auth = SessionAuth[User, ServerSideSessionBackend](
     retrieve_user_handler=retrieve_user_handler,
     # we must pass a config for a session backend.
@@ -8,4 +7,3 @@ session_auth = SessionAuth[User, ServerSideSessionBackend](
     # We exclude the documentation URLs, signup and login.
     exclude=[r"^(?!.*\/secured$).*$"],
 )
-...

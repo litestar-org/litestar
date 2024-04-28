@@ -1,3 +1,7 @@
+from litestar import post
+from litestar.events import listener
+
+
 @listener("user_deleted")
 async def send_farewell_email_handler(email: str) -> None:
     await send_farewell_email(email)

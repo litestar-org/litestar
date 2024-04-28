@@ -1,4 +1,4 @@
-from litestar import Litestar, Request, get
+from litestar import Request, get
 
 
 def key_builder(request: Request) -> str:

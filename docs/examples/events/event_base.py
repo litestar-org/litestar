@@ -1,10 +1,9 @@
 from dataclasses import dataclass
 
-from litestar import Request, post
-from litestar.events import listener
-from litestar import Litestar
-
 from db import user_repository
+
+from litestar import Litestar, Request, post
+from litestar.events import listener
 from utils.email import send_welcome_mail
 
 
@@ -33,6 +32,4 @@ async def create_user_handler(data: UserDTO, request: Request) -> None:
     request.app.emit("user_created", email=data.email)
 
 
-app = Litestar(
-    route_handlers=[create_user_handler], listeners=[send_welcome_email_handler]
-)
+app = Litestar(route_handlers=[create_user_handler], listeners=[send_welcome_email_handler])

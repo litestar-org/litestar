@@ -1,4 +1,4 @@
-from litestar import Litestar, Request, Response
+from litestar import Request, Response
 
 
 class CustomException(Exception): ...

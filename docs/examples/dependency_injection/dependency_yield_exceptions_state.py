@@ -1,5 +1,6 @@
-from litestar.testing import TestClient
 from dependencies import STATE, app
+
+from litestar.testing import TestClient
 
 with TestClient(app=app) as client:
     response = client.get("/John")

@@ -1,3 +1,6 @@
+from litestar import get
+
+
 @get("/stream")
 async def stream(self) -> ServerSentEvent:
     async def gen() -> AsyncGenerator[str, None]:

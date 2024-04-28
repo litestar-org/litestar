@@ -1,4 +1,5 @@
 from random import randint
+
 from litestar import get
 from litestar.di import Provide
 

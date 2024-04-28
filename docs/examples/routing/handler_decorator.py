@@ -1,8 +1,8 @@
-from litestar import delete, get, patch, post, put, head
-from litestar.dto import DTOConfig, DTOData
-from litestar.contrib.pydantic import PydanticDTO
-
 from pydantic import BaseModel
+
+from litestar import delete, get, head, patch, post, put
+from litestar.contrib.pydantic import PydanticDTO
+from litestar.dto import DTOConfig, DTOData
 
 
 class Resource(BaseModel): ...
@@ -33,9 +33,7 @@ async def update_resource(data: Resource, pk: int) -> Resource: ...
 
 
 @patch(path="/resources/{pk:int}", dto=PartialResourceDTO)
-async def partially_update_resource(
-        data: DTOData[PartialResourceDTO], pk: int
-) -> Resource: ...
+async def partially_update_resource(data: DTOData[PartialResourceDTO], pk: int) -> Resource: ...
 
 
 @delete(path="/resources/{pk:int}")

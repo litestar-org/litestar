@@ -1,3 +1,6 @@
+from litestar import Litestar
+
+
 async def some_dependency() -> str: ...
 
 

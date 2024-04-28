@@ -1,5 +1,4 @@
-from litestar import Litestar
-from litestar import post
+from litestar import Litestar, post
 from litestar.static_files import StaticFilesConfig
 
 

@@ -1,7 +1,6 @@
 import msgspec
 
 from litestar import get
-from litestar.testing import create_test_client
 
 
 class StructA(msgspec.Struct):

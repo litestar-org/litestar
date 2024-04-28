@@ -1,7 +1,8 @@
 from typing import Annotated
 
 import msgspec
-from litestar import post, Litestar
+
+from litestar import post
 from litestar.dto import MsgspecDTO
 
 

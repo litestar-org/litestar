@@ -1,3 +1,6 @@
+from litestar import get
+
+
 async def hello_world() -> str:
     return "Hello, world!"
 

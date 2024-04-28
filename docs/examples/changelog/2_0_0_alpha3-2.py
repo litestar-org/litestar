@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from starlite import Starlite, get
+from starlite import get
 
 
 @get("/")

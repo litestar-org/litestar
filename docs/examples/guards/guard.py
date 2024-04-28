@@ -1,6 +1,7 @@
 from enum import Enum
 
-from pydantic import BaseModel, UUID4
+from pydantic import UUID4, BaseModel
+
 from litestar import post
 from litestar.connection import ASGIConnection
 from litestar.exceptions import NotAuthorizedException

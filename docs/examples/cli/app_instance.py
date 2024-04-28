@@ -1,4 +1,5 @@
 import click
+
 from litestar import Litestar
 
 

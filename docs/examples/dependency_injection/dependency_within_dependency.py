@@ -1,6 +1,7 @@
+from random import randint
+
 from litestar import Litestar, get
 from litestar.di import Provide
-from random import randint
 
 
 def first_dependency() -> int:

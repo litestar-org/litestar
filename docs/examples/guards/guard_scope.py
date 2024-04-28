@@ -1,4 +1,4 @@
-from litestar import Controller, Router, Litestar
+from litestar import Controller, Litestar, Router
 from litestar.connection import ASGIConnection
 from litestar.handlers.base import BaseRouteHandler
 
@@ -10,8 +10,6 @@ def my_guard(connection: ASGIConnection, handler: BaseRouteHandler) -> None: ...
 class UserController(Controller):
     path = "/user"
     guards = [my_guard]
-
-    ...
 
 
 # router

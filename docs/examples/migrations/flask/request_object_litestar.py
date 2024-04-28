@@ -1,4 +1,4 @@
-from litestar import Litestar, get, Request
+from litestar import Request, get
 
 
 @get("/")

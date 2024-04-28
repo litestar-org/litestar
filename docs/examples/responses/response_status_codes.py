@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+
 from litestar import get
 from litestar.status_codes import HTTP_202_ACCEPTED
 

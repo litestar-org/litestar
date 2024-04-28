@@ -1,4 +1,4 @@
-from litestar import get, Response
+from litestar import Response, get
 
 
 @get("/users", dto=UserDTO, sync_to_thread=False)

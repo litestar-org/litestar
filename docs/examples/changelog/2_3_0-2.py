@@ -1,6 +1,8 @@
+from typing import Generic, Optional, TypeVar
+
 from msgspec import Struct
-from litestar import Litestar, get, Response
-from typing import TypeVar, Generic, Optional
+
+from litestar import Response, get
 
 T = TypeVar("T")
 

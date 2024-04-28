@@ -1,9 +1,9 @@
-from typing import TYPE_CHECKING
 from time import time
+from typing import TYPE_CHECKING
 
+from litestar.datastructures import MutableScopeHeaders
 from litestar.enums import ScopeType
 from litestar.middleware import AbstractMiddleware
-from litestar.datastructures import MutableScopeHeaders
 
 if TYPE_CHECKING:
     from litestar.types import Message, Receive, Scope, Send

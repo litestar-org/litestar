@@ -1,7 +1,5 @@
 await backend.subscribe(["foo", "bar"])  # subscribe to two channels
-await backend.publish(
-    b"something", ["foo"]
-)  # publish a message to a channel we're subscribed to
+await backend.publish(b"something", ["foo"])  # publish a message to a channel we're subscribed to
 
 # start the stream after publishing. Depending on the backend
 # the previously published message might be in the stream

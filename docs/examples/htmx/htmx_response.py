@@ -1,12 +1,13 @@
+from litestar import get
+from litestar.contrib.htmx.request import HTMXRequest
 from litestar.contrib.htmx.response import HTMXTemplate
 from litestar.response import Template
 
 
 @get(path="/form")
 def get_form(
-        request: HTMXRequest,
+    request: HTMXRequest,
 ) -> Template:  # Return type is Template and not HTMXTemplate.
-    ...
     return HTMXTemplate(
         template_name="partial.html",
         context=context,

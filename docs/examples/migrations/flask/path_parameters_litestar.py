@@ -1,5 +1,6 @@
-from litestar import Litestar, get
 from pathlib import Path
+
+from litestar import Litestar, get
 
 
 @get("/user/{username:str}")

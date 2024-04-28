@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, APIRouter
+from fastapi import APIRouter, Depends, FastAPI
 
 
 async def route_dependency() -> bool: ...
@@ -20,8 +20,8 @@ app.include_router(router)
 
 @app.get("/")
 async def handler(
-        val_route: bool = Depends(route_dependency),
-        val_router: int = Depends(router_dependency),
-        val_nested: str = Depends(nested_dependency),
-        val_app: int = Depends(app_dependency),
+    val_route: bool = Depends(route_dependency),
+    val_router: int = Depends(router_dependency),
+    val_nested: str = Depends(nested_dependency),
+    val_app: int = Depends(app_dependency),
 ) -> None: ...

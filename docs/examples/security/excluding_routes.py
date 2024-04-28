@@ -7,4 +7,3 @@ session_auth = SessionAuth[User, ServerSideSessionBackend](
     # We exclude the documentation URLs, signup and login.
     exclude=["/login", "/signup", "/schema"],
 )
-...

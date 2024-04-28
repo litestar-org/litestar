@@ -16,6 +16,6 @@ class MyController(Controller):
     # on the route handler
     @get(path="/handler", dependencies={"some_dependency": Provide(bool_fn)})
     def my_route_handler(
-            self,
-            some_dependency: bool,
+        self,
+        some_dependency: bool,
     ) -> None: ...

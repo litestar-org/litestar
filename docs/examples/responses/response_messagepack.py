@@ -1,5 +1,6 @@
 from typing import Dict
-from litestar import get, MediaType
+
+from litestar import MediaType, get
 
 
 @get(path="/health-check", media_type=MediaType.MESSAGEPACK)

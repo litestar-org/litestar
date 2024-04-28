@@ -1,3 +1,1 @@
-app = Litestar(
-    static_files_config=[StaticFilesConfig(path="/static", directories=["some_dir"])]
-)
+app = Litestar(static_files_config=[StaticFilesConfig(path="/static", directories=["some_dir"])])

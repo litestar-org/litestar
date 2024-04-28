@@ -1,7 +1,7 @@
+from my_app.main import app
+
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import AsyncTestClient
-
-from my_app.main import app
 
 
 async def test_health_check():

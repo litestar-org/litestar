@@ -1,3 +1,6 @@
+from litestar import get
+from litestar.contrib.htmx.response import HXLocation
+
 @get("/about")
 def handler() -> HXLocation:
     ...

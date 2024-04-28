@@ -1,4 +1,4 @@
-from litestar import Router, Controller, get
+from litestar import Controller, Router, get
 
 
 class MyController(Controller):

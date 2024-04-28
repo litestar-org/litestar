@@ -1,6 +1,7 @@
-from litestar import get
-from pydantic.v1 import BaseModel as BaseModelV1
 from pydantic import BaseModel
+from pydantic.v1 import BaseModel as BaseModelV1
+
+from litestar import get
 
 
 class V1Foo(BaseModelV1):
