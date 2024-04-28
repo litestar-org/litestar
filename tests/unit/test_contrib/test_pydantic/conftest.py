@@ -5,7 +5,17 @@ import pytest
 from pydantic import v1 as pydantic_v1
 from pytest import FixtureRequest
 
+from litestar.contrib.pydantic.pydantic_init_plugin import (  # type: ignore[attr-defined]
+    _KWARG_META_EXTRACTORS,
+    ConstrainedFieldMetaExtractor,
+)
+
 from . import PydanticVersion
+
+
+@pytest.fixture(autouse=True, scope="session")
+def ensure_metadata_extractor_is_added() -> None:
+    _KWARG_META_EXTRACTORS.add(ConstrainedFieldMetaExtractor)
 
 
 @pytest.fixture(params=["v1", "v2"])
