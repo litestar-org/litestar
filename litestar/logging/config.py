@@ -2,13 +2,14 @@ from __future__ import annotations
 
 import sys
 from abc import ABC, abstractmethod
-from dataclasses import asdict, dataclass, field, fields
+from dataclasses import dataclass, field, fields
 from importlib.util import find_spec
 from logging import INFO
 from typing import TYPE_CHECKING, Any, Callable, Literal, cast
 
 from litestar.exceptions import ImproperlyConfiguredException, MissingDependencyException
 from litestar.serialization.msgspec_hooks import _msgspec_json_encoder
+from litestar.utils.dataclass import simple_asdict
 from litestar.utils.deprecation import deprecated
 
 __all__ = ("BaseLoggingConfig", "LoggingConfig", "StructLoggingConfig")
@@ -313,7 +314,9 @@ def stdlib_json_serializer(value: EventDict, **_: Any) -> str:  # pragma: no cov
     return _msgspec_json_encoder.encode(value).decode("utf-8")
 
 
-def default_structlog_processors(as_json: bool = True) -> list[Processor]:  # pyright: ignore
+def default_structlog_processors(
+    as_json: bool = True, json_serializer: Callable[[Any], Any] = default_json_serializer
+) -> list[Processor]:  # pyright: ignore
     """Set the default processors for structlog.
 
     Returns:
@@ -329,7 +332,7 @@ def default_structlog_processors(as_json: bool = True) -> list[Processor]:  # py
                 structlog.processors.add_log_level,
                 structlog.processors.format_exc_info,
                 structlog.processors.TimeStamper(fmt="iso"),
-                structlog.processors.JSONRenderer(serializer=default_json_serializer),
+                structlog.processors.JSONRenderer(serializer=json_serializer),
             ]
         return [
             structlog.contextvars.merge_contextvars,
@@ -465,7 +468,7 @@ class StructLoggingConfig(BaseLoggingConfig):
         structlog.configure(
             **{
                 k: v
-                for k, v in asdict(self).items()
+                for k, v in simple_asdict(self).items()
                 if k
                 not in (
                     "standard_lib_logging_config",
