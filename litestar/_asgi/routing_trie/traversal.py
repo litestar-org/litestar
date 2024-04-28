@@ -142,8 +142,12 @@ def parse_path_to_route(
             remaining_path = path[match.end() :]
             # since we allow regular handlers under static paths, we must validate that the request does not match
             # any such handler.
-            children = [sub_route for sub_route in mount_node.children or [] if sub_route != mount_path]
-            if not children or all(sub_route not in path for sub_route in children):  # type: ignore[operator]
+            children = (
+                normalize_path(sub_route)
+                for sub_route in mount_node.children or []
+                if sub_route != mount_path and isinstance(sub_route, str)
+            )
+            if not any(remaining_path.startswith(f"{sub_route}/") for sub_route in children):
                 asgi_app, handler = parse_node_handlers(node=mount_node, method=method)
                 remaining_path = remaining_path or "/"
                 if not mount_node.is_static:
