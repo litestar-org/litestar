@@ -5,7 +5,7 @@ import contextlib
 import re
 import time
 from base64 import b64decode, b64encode
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, fields
 from os import urandom
 from typing import TYPE_CHECKING, Any, Final, Literal, Mapping
 
@@ -38,8 +38,8 @@ if TYPE_CHECKING:
 NONCE_SIZE = 12
 CHUNK_SIZE = 4096 - 64
 AAD = b"additional_authenticated_data="
-SET_COOKIE_INCLUDE = {k for k in Cookie.__dict__ if k not in ("key", "secret")}
-CLEAR_COOKIE_INCLUDE = {k for k in Cookie.__dict__ if k not in ("key", "secret", "max_age")}
+SET_COOKIE_INCLUDE = {f.name for f in fields(Cookie) if f.name not in {"key", "secret"}}
+CLEAR_COOKIE_INCLUDE = {f.name for f in fields(Cookie) if f.name not in {"key", "secret", "max_age"}}
 
 
 class ClientSideSessionBackend(BaseSessionBackend["CookieBackendConfig"]):
