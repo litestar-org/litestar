@@ -1625,37 +1625,59 @@ defined in the ownership chain, closest to the handler in question.</p>
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id4">
 <div class="code-block-caption"><span class="caption-text">Controller defined DTOs</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
 <span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">uuid4</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">delete</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">put</span>
+<span class="kn">from</span> <span class="nn">litestar.app</span> <span class="kn">import</span> <span class="n">Litestar</span>
+<span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DataclassDTO</span>
+<span class="kn">from</span> <span class="nn">litestar.dto.config</span> <span class="kn">import</span> <span class="n">DTOConfig</span>
 
-<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">User</span><span class="p">,</span> <span class="n">UserDTO</span><span class="p">,</span> <span class="n">UserReturnDTO</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">email</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">uuid4</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">UserWriteDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">User</span><span class="p">]):</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">})</span>
+
+
+<span class="k">class</span> <span class="nc">UserReadDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">User</span><span class="p">]):</span> <span class="o">...</span>
 
 
 <span class="k">class</span> <span class="nc">UserController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
-    <span class="n">dto</span> <span class="o">=</span> <span class="n">UserDTO</span>
-    <span class="n">return_dto</span> <span class="o">=</span> <span class="n">UserReturnDTO</span>
+    <span class="n">dto</span> <span class="o">=</span> <span class="n">UserWriteDTO</span>
+    <span class="n">return_dto</span> <span class="o">=</span> <span class="n">UserReadDTO</span>
 
-    <span class="nd">@post</span><span class="p">()</span>
+    <span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">data</span>
 
-    <span class="nd">@get</span><span class="p">()</span>
+    <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">get_users</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">User</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">uuid4</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Litestar User&quot;</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">User</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Mr Sunglass&quot;</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="s2">&quot;mr.sunglass@example.com&quot;</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">30</span><span class="p">)]</span>
 
-    <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{user_id:uuid}&quot;</span><span class="p">)</span>
+    <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{user_id:uuid}&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">User</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">user_id</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Litestar User&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">User</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">user_id</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Mr Sunglass&quot;</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="s2">&quot;mr.sunglass@example.com&quot;</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
 
-    <span class="nd">@put</span><span class="p">(</span><span class="s2">&quot;/{user_id:uuid}&quot;</span><span class="p">)</span>
+    <span class="nd">@put</span><span class="p">(</span><span class="s2">&quot;/{user_id:uuid}&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">update_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">data</span>
 
-    <span class="nd">@delete</span><span class="p">(</span><span class="s2">&quot;/{user_id:uuid}&quot;</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="nd">@delete</span><span class="p">(</span><span class="s2">&quot;/{user_id:uuid}&quot;</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">delete_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">UserController</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1665,36 +1687,58 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 Python 3.10+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id5">
 <div class="code-block-caption"><span class="caption-text">Controller defined DTOs</span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">uuid4</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">uuid4</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">delete</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">put</span>
+<span class="kn">from</span> <span class="nn">litestar.app</span> <span class="kn">import</span> <span class="n">Litestar</span>
+<span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DataclassDTO</span>
+<span class="kn">from</span> <span class="nn">litestar.dto.config</span> <span class="kn">import</span> <span class="n">DTOConfig</span>
 
-<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">User</span><span class="p">,</span> <span class="n">UserDTO</span><span class="p">,</span> <span class="n">UserReturnDTO</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">email</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">uuid4</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">UserWriteDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">User</span><span class="p">]):</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">})</span>
+
+
+<span class="k">class</span> <span class="nc">UserReadDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">User</span><span class="p">]):</span> <span class="o">...</span>
 
 
 <span class="k">class</span> <span class="nc">UserController</span><span class="p">(</span><span class="n">Controller</span><span class="p">):</span>
-    <span class="n">dto</span> <span class="o">=</span> <span class="n">UserDTO</span>
-    <span class="n">return_dto</span> <span class="o">=</span> <span class="n">UserReturnDTO</span>
+    <span class="n">dto</span> <span class="o">=</span> <span class="n">UserWriteDTO</span>
+    <span class="n">return_dto</span> <span class="o">=</span> <span class="n">UserReadDTO</span>
 
-    <span class="nd">@post</span><span class="p">()</span>
+    <span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">data</span>
 
-    <span class="nd">@get</span><span class="p">()</span>
+    <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">get_users</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">User</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">uuid4</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Litestar User&quot;</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">User</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Mr Sunglass&quot;</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="s2">&quot;mr.sunglass@example.com&quot;</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">30</span><span class="p">)]</span>
 
-    <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{user_id:uuid}&quot;</span><span class="p">)</span>
+    <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/{user_id:uuid}&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">User</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">user_id</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Litestar User&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">User</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">user_id</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Mr Sunglass&quot;</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="s2">&quot;mr.sunglass@example.com&quot;</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
 
-    <span class="nd">@put</span><span class="p">(</span><span class="s2">&quot;/{user_id:uuid}&quot;</span><span class="p">)</span>
+    <span class="nd">@put</span><span class="p">(</span><span class="s2">&quot;/{user_id:uuid}&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">update_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">data</span>
 
-    <span class="nd">@delete</span><span class="p">(</span><span class="s2">&quot;/{user_id:uuid}&quot;</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+    <span class="nd">@delete</span><span class="p">(</span><span class="s2">&quot;/{user_id:uuid}&quot;</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">delete_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="n">UUID</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">UserController</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
