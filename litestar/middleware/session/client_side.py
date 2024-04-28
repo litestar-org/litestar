@@ -123,6 +123,8 @@ class ClientSideSessionBackend(BaseSessionBackend["CookieBackendConfig"]):
     def get_cookie_key_set(self, connection: ASGIConnection) -> set[str]:
         """Return a set of cookie-keys from the connection if they match the session-cookie pattern.
 
+        .. versionadded:: 2.8.3
+
         Args:
             connection: An ASGIConnection instance
 
