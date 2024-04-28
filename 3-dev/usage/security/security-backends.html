@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Security Backends - Litestar Framework</title>
-    <link rel="shortcut icon" href="../../_static/favicon.svg"/><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Guards" href="guards.html" /><link rel="prev" title="AbstractAuthenticationMiddleware" href="abstract-authentication-middleware.html" />
+    <link rel="shortcut icon" href="../../_static/favicon.svg"/><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Guards" href="guards.html" /><link rel="prev" title="Implementing Custom Authentication" href="abstract-authentication-middleware.html" />
 
   <script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
@@ -254,7 +254,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../responses.html">Responses</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">Security</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="abstract-authentication-middleware.html">AbstractAuthenticationMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="abstract-authentication-middleware.html">Implementing Custom Authentication</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Security Backends</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guards.html">Guards</a></li>
 <li class="toctree-l3"><a class="reference internal" href="excluding-and-including-endpoints.html">Excluding and including endpoints</a></li>
@@ -492,7 +492,7 @@
   <div class="localtoc">
     <h3>On this page</h3>
     <ul>
-<li><a class="reference internal" href="#abstractsecurityconfig">AbstractSecurityConfig</a></li>
+<li><a class="reference internal" href="#abstractsecurityconfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractSecurityConfig</span></code></a></li>
 <li><a class="reference internal" href="#session-auth-backend">Session Auth Backend</a></li>
 <li><a class="reference internal" href="#jwt-auth">JWT Auth</a></li>
 </ul>
@@ -571,23 +571,27 @@
           <section id="security-backends">
 <h1>Security Backends<a class="headerlink" href="#security-backends" title="Permalink to this heading">¶</a></h1>
 <section id="abstractsecurityconfig">
-<h2>AbstractSecurityConfig<a class="headerlink" href="#abstractsecurityconfig" title="Permalink to this heading">¶</a></h2>
-<p><a class="reference internal" href="../../reference/security/index.html"><span class="doc">security</span></a> includes an <a class="reference internal" href="../../reference/security/index.html#litestar.security.AbstractSecurityConfig" title="litestar.security.base.AbstractSecurityConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractSecurityConfig</span></code></a> class
-that serves as a basis for all the security backends offered by Litestar, and is also meant to be used as a basis for
-custom security backends created by users.</p>
+<h2><a class="reference internal" href="../../reference/security/index.html#litestar.security.AbstractSecurityConfig" title="litestar.security.base.AbstractSecurityConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractSecurityConfig</span></code></a><a class="headerlink" href="#abstractsecurityconfig" title="Permalink to this heading">¶</a></h2>
+<p><a class="reference internal" href="../../reference/security/index.html"><span class="doc">litestar.security</span></a> includes an <a class="reference internal" href="../../reference/security/index.html#litestar.security.AbstractSecurityConfig" title="litestar.security.base.AbstractSecurityConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractSecurityConfig</span></code></a>
+class that serves as a basis for all the security backends offered by Litestar, and is also meant to be used as a
+basis for custom security backends created by users which you can read more about here:
+<a class="reference internal" href="abstract-authentication-middleware.html"><span class="doc">Implementing Custom Authentication</span></a></p>
 </section>
 <section id="session-auth-backend">
 <h2>Session Auth Backend<a class="headerlink" href="#session-auth-backend" title="Permalink to this heading">¶</a></h2>
 <p>Litestar offers a builtin session auth backend that can be used out of the box with any of the
 <a class="reference internal" href="../middleware/builtin-middleware.html#session-middleware"><span class="std std-ref">session backends</span></a> supported by the Litestar session
 middleware.</p>
-<div class="sd-tab-set docutils">
-<input id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-0">
-Python 3.8+</label><div class="sd-tab-content docutils">
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Click to see an example of using the session auth backend<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text">Using Session Auth</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span>
 </span><span data-line="2"><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">uuid4</span>
 </span><span data-line="3">
 </span><span data-line="4"><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">EmailStr</span><span class="p">,</span> <span class="n">SecretStr</span>
@@ -726,156 +730,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-1">
-Python 3.10+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">Using Session Auth</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">uuid4</span>
-</span><span data-line="3">
-</span><span data-line="4"><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">EmailStr</span><span class="p">,</span> <span class="n">SecretStr</span>
-</span><span data-line="5">
-</span><span data-line="6"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="7"><span class="kn">from</span> <span class="nn">litestar.connection</span> <span class="kn">import</span> <span class="n">ASGIConnection</span>
-</span><span data-line="8"><span class="kn">from</span> <span class="nn">litestar.exceptions</span> <span class="kn">import</span> <span class="n">NotAuthorizedException</span>
-</span><span data-line="9"><span class="kn">from</span> <span class="nn">litestar.middleware.session.server_side</span> <span class="kn">import</span> <span class="n">ServerSideSessionBackend</span><span class="p">,</span> <span class="n">ServerSideSessionConfig</span>
-</span><span data-line="10"><span class="kn">from</span> <span class="nn">litestar.openapi.config</span> <span class="kn">import</span> <span class="n">OpenAPIConfig</span>
-</span><span data-line="11"><span class="kn">from</span> <span class="nn">litestar.security.session_auth</span> <span class="kn">import</span> <span class="n">SessionAuth</span>
-</span><span data-line="12"><span class="kn">from</span> <span class="nn">litestar.stores.memory</span> <span class="kn">import</span> <span class="n">MemoryStore</span>
-</span><span data-line="13">
-</span><span data-line="14">
-</span><span data-line="15"><span class="c1"># Let&#39;s assume we have a User model that is a pydantic model.</span>
-</span><span data-line="16"><span class="c1"># This though is not required - we need some sort of user class -</span>
-</span><span data-line="17"><span class="c1"># but it can be any arbitrary value, e.g. an SQLAlchemy model,</span>
-</span><span data-line="18"><span class="c1"># a representation of a MongoDB  etc.</span>
-</span><span data-line="19"><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-</span><span data-line="20">    <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span>
-</span><span data-line="21">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="22">    <span class="n">email</span><span class="p">:</span> <span class="n">EmailStr</span>
-</span><span data-line="23">
-</span><span data-line="24">
-</span><span data-line="25"><span class="c1"># we also have pydantic types for two different</span>
-</span><span data-line="26"><span class="c1"># kinds of POST request bodies: one for creating</span>
-</span><span data-line="27"><span class="c1"># a user, e.g. &quot;sign-up&quot;, and the other for logging</span>
-</span><span data-line="28"><span class="c1"># an existing user in.</span>
-</span><span data-line="29"><span class="k">class</span> <span class="nc">UserCreatePayload</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-</span><span data-line="30">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="31">    <span class="n">email</span><span class="p">:</span> <span class="n">EmailStr</span>
-</span><span data-line="32">    <span class="n">password</span><span class="p">:</span> <span class="n">SecretStr</span>
-</span><span data-line="33">
-</span><span data-line="34">
-</span><span data-line="35"><span class="k">class</span> <span class="nc">UserLoginPayload</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-</span><span data-line="36">    <span class="n">email</span><span class="p">:</span> <span class="n">EmailStr</span>
-</span><span data-line="37">    <span class="n">password</span><span class="p">:</span> <span class="n">SecretStr</span>
-</span><span data-line="38">
-</span><span data-line="39">
-</span><span data-line="40"><span class="n">MOCK_DB</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">User</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span data-line="41"><span class="n">memory_store</span> <span class="o">=</span> <span class="n">MemoryStore</span><span class="p">()</span>
-</span><span data-line="42">
-</span><span data-line="43">
-</span><span data-line="44"><span class="c1"># The SessionAuth class requires a handler callable</span>
-</span><span data-line="45"><span class="c1"># that takes the session dictionary, and returns the</span>
-</span><span data-line="46"><span class="c1"># &#39;User&#39; instance correlating to it.</span>
-</span><span data-line="47"><span class="c1">#</span>
-</span><span data-line="48"><span class="c1"># The session dictionary itself is a value the user decides</span>
-</span><span data-line="49"><span class="c1"># upon. So for example, it might be a simple dictionary</span>
-</span><span data-line="50"><span class="c1"># that holds a user id, for example: { &quot;id&quot;: &quot;abcd123&quot; }</span>
-</span><span data-line="51"><span class="c1">#</span>
-</span><span data-line="52"><span class="c1"># Note: The callable can be either sync or async - both will work.</span>
-</span><span data-line="53"><span class="k">async</span> <span class="k">def</span> <span class="nf">retrieve_user_handler</span><span class="p">(</span>
-</span><span data-line="54">    <span class="n">session</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="n">connection</span><span class="p">:</span> <span class="s2">&quot;ASGIConnection[Any, Any, Any, Any]&quot;</span>
-</span><span data-line="55"><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="56">    <span class="k">return</span> <span class="n">MOCK_DB</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="n">user_id</span> <span class="o">:=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;user_id&quot;</span><span class="p">))</span> <span class="k">else</span> <span class="kc">None</span>
-</span><span data-line="57">
-</span><span data-line="58">
-</span><span data-line="59"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/login&quot;</span><span class="p">)</span>
-</span><span data-line="60"><span class="k">async</span> <span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">UserLoginPayload</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request[Any, Any, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
-</span><span data-line="61">    <span class="c1"># we received log-in data via post.</span>
-</span><span data-line="62">    <span class="c1"># our login handler should retrieve from persistence (a db etc.)</span>
-</span><span data-line="63">    <span class="c1"># the user data and verify that the login details</span>
-</span><span data-line="64">    <span class="c1"># are correct. If we are using passwords, we should check that</span>
-</span><span data-line="65">    <span class="c1"># the password hashes match etc. We will simply assume that we</span>
-</span><span data-line="66">    <span class="c1"># have done all of that we now have a user value:</span>
-</span><span data-line="67">    <span class="n">user_id</span> <span class="o">=</span> <span class="k">await</span> <span class="n">memory_store</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">)</span>
-</span><span data-line="68">
-</span><span data-line="69">    <span class="k">if</span> <span class="ow">not</span> <span class="n">user_id</span><span class="p">:</span>
-</span><span data-line="70">        <span class="k">raise</span> <span class="n">NotAuthorizedException</span>
-</span><span data-line="71">    <span class="n">user_id</span> <span class="o">=</span> <span class="n">user_id</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
-</span><span data-line="72">
-</span><span data-line="73">    <span class="c1"># once verified we can create a session.</span>
-</span><span data-line="74">    <span class="c1"># to do this we simply need to call the Litestar</span>
-</span><span data-line="75">    <span class="c1"># &#39;Request.set_session&#39; method, which accepts either dictionaries</span>
-</span><span data-line="76">    <span class="c1"># or pydantic models. In our case, we can simply record a</span>
-</span><span data-line="77">    <span class="c1"># simple dictionary with the user ID value:</span>
-</span><span data-line="78">    <span class="n">request</span><span class="o">.</span><span class="n">set_session</span><span class="p">({</span><span class="s2">&quot;user_id&quot;</span><span class="p">:</span> <span class="n">user_id</span><span class="p">})</span>
-</span><span data-line="79">
-</span><span data-line="80">    <span class="c1"># you can do whatever we want here. In this case, we will simply return the user data:</span>
-</span><span data-line="81">    <span class="k">return</span> <span class="n">MOCK_DB</span><span class="p">[</span><span class="n">user_id</span><span class="p">]</span>
-</span><span data-line="82">
-</span><span data-line="83">
-</span><span data-line="84"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/signup&quot;</span><span class="p">)</span>
-</span><span data-line="85"><span class="k">async</span> <span class="k">def</span> <span class="nf">signup</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">UserCreatePayload</span><span class="p">,</span> <span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
-</span><span data-line="86">    <span class="c1"># this is similar to the login handler, except here we should</span>
-</span><span data-line="87">    <span class="c1"># insert into persistence - after doing whatever extra</span>
-</span><span data-line="88">    <span class="c1"># validation we might require. We will assume that this is done,</span>
-</span><span data-line="89">    <span class="c1"># and we now have a user instance with an assigned ID value:</span>
-</span><span data-line="90">    <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">uuid4</span><span class="p">())</span>
-</span><span data-line="91">
-</span><span data-line="92">    <span class="k">await</span> <span class="n">memory_store</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
-</span><span data-line="93">    <span class="n">MOCK_DB</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)]</span> <span class="o">=</span> <span class="n">user</span>
-</span><span data-line="94">    <span class="c1"># we are creating a session the same as we do in the</span>
-</span><span data-line="95">    <span class="c1"># &#39;login_handler&#39; above:</span>
-</span><span data-line="96">    <span class="n">request</span><span class="o">.</span><span class="n">set_session</span><span class="p">({</span><span class="s2">&quot;user_id&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)})</span>
-</span><span data-line="97">
-</span><span data-line="98">    <span class="c1"># and again, you can add whatever logic is required here, we</span>
-</span><span data-line="99">    <span class="c1"># will simply return the user:</span>
-</span><span data-line="100">    <span class="k">return</span> <span class="n">user</span>
-</span><span data-line="101">
-</span><span data-line="102">
-</span><span data-line="103"><span class="c1"># the endpoint below requires the user to be already authenticated</span>
-</span><span data-line="104"><span class="c1"># to be able to access it.</span>
-</span><span data-line="105"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/user&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="106"><span class="k">def</span> <span class="nf">get_user</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="nb">dict</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;user_id&quot;</span><span class="p">],</span> <span class="nb">str</span><span class="p">],</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-</span><span data-line="107">    <span class="c1"># because this route requires authentication, we can access</span>
-</span><span data-line="108">    <span class="c1"># `request.user`, which is the authenticated user returned</span>
-</span><span data-line="109">    <span class="c1"># by the &#39;retrieve_user_handler&#39; function we passed to SessionAuth.</span>
-</span><span data-line="110">    <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span>
-</span><span data-line="111">
-</span><span data-line="112">
-</span><span data-line="113"><span class="c1"># We add the session security schema to the OpenAPI config.</span>
-</span><span data-line="114"><span class="n">openapi_config</span> <span class="o">=</span> <span class="n">OpenAPIConfig</span><span class="p">(</span>
-</span><span data-line="115">    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;My API&quot;</span><span class="p">,</span>
-</span><span data-line="116">    <span class="n">version</span><span class="o">=</span><span class="s2">&quot;1.0.0&quot;</span><span class="p">,</span>
-</span><span data-line="117"><span class="p">)</span>
-</span><span data-line="118">
-</span><span data-line="119"><span class="n">session_auth</span> <span class="o">=</span> <span class="n">SessionAuth</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">ServerSideSessionBackend</span><span class="p">](</span>
-</span><span data-line="120">    <span class="n">retrieve_user_handler</span><span class="o">=</span><span class="n">retrieve_user_handler</span><span class="p">,</span>
-</span><span data-line="121">    <span class="c1"># we must pass a config for a session backend.</span>
-</span><span data-line="122">    <span class="c1"># all session backends are supported</span>
-</span><span data-line="123">    <span class="n">session_backend_config</span><span class="o">=</span><span class="n">ServerSideSessionConfig</span><span class="p">(),</span>
-</span><span data-line="124">    <span class="c1"># exclude any URLs that should not have authentication.</span>
-</span><span data-line="125">    <span class="c1"># We exclude the documentation URLs, signup and login.</span>
-</span><span data-line="126">    <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;/login&quot;</span><span class="p">,</span> <span class="s2">&quot;/signup&quot;</span><span class="p">,</span> <span class="s2">&quot;/schema&quot;</span><span class="p">],</span>
-</span><span data-line="127"><span class="p">)</span>
-</span><span data-line="128">
-</span><span data-line="129">
-</span><span data-line="130"><span class="c1"># We initialize the app instance, passing to it the &#39;session_auth.on_app_init&#39; and the &#39;openapi_config&#39;.</span>
-</span><span data-line="131"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-</span><span data-line="132">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">login</span><span class="p">,</span> <span class="n">signup</span><span class="p">,</span> <span class="n">get_user</span><span class="p">],</span>
-</span><span data-line="133">    <span class="n">on_app_init</span><span class="o">=</span><span class="p">[</span><span class="n">session_auth</span><span class="o">.</span><span class="n">on_app_init</span><span class="p">],</span>
-</span><span data-line="134">    <span class="n">openapi_config</span><span class="o">=</span><span class="n">openapi_config</span><span class="p">,</span>
-</span><span data-line="135"><span class="p">)</span>
-</span></pre></div>
-</div>
-</div>
-</div>
-</div>
-</section>
+</details></section>
 <section id="jwt-auth">
 <h2>JWT Auth<a class="headerlink" href="#jwt-auth" title="Permalink to this heading">¶</a></h2>
 <p>Litestar includes several JWT security backends. Check out the
-<a class="reference internal" href="jwt.html"><span class="doc">jwt documentation</span></a> for more details.</p>
+<a class="reference internal" href="jwt.html"><span class="doc">JWT documentation</span></a> for more details.</p>
 </section>
 </section>
 
@@ -894,7 +753,7 @@ Python 3.10+</label><div class="sd-tab-content docutils">
       <div class="page-info">
         <span>Previous</span>
         
-        <div class="title">AbstractAuthenticationMiddleware</div>
+        <div class="title">Implementing Custom Authentication</div>
         
       </div>
     </a>

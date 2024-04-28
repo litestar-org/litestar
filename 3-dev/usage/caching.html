@@ -254,7 +254,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="responses.html">Responses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="security/index.html">Security</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="security/abstract-authentication-middleware.html">AbstractAuthenticationMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="security/abstract-authentication-middleware.html">Implementing Custom Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="security/security-backends.html">Security Backends</a></li>
 <li class="toctree-l3"><a class="reference internal" href="security/guards.html">Guards</a></li>
 <li class="toctree-l3"><a class="reference internal" href="security/excluding-and-including-endpoints.html">Excluding and including endpoints</a></li>
@@ -578,30 +578,40 @@ expected. Litestar comes with a simple mechanism for caching:</p>
 </span><span data-line="5"><span class="k">def</span> <span class="nf">my_cached_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
 </span></pre></div>
 </div>
-<p>By setting <code class="docutils literal notranslate"><span class="pre">cache=True</span></code> in the route handler, caching for the route handler will be enabled for the
-<a class="reference internal" href="../reference/config.html#litestar.config.response_cache.ResponseCacheConfig.default_expiration" title="litestar.config.response_cache.ResponseCacheConfig.default_expiration"><code class="xref py py-attr docutils literal notranslate"><span class="pre">ResponseCacheConfig.default_expiration</span></code></a>.</p>
+<p>By setting <a class="reference internal" href="../reference/handlers.html#litestar.handlers.HTTPRouteHandler.params.cache" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">cache</span></code></a> to <code class="docutils literal notranslate"><span class="pre">True</span></code>, the response from the handler
+will be cached. If no <code class="docutils literal notranslate"><span class="pre">cache_key_builder</span></code> is set in the route handler, caching for the route handler will be
+enabled for the <a class="reference internal" href="../reference/config.html#litestar.config.response_cache.ResponseCacheConfig.default_expiration" title="litestar.config.response_cache.ResponseCacheConfig.default_expiration"><code class="xref py py-attr docutils literal notranslate"><span class="pre">default_expiration</span></code></a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>If the default <code class="docutils literal notranslate"><span class="pre">default_expiration</span></code> is set to <code class="docutils literal notranslate"><span class="pre">None</span></code>, setting up the route handler with <code class="docutils literal notranslate"><span class="pre">cache=True</span></code> will keep
-the response in cache indefinitely.</p>
+<p>If the default <a class="reference internal" href="../reference/config.html#litestar.config.response_cache.ResponseCacheConfig.params.default_expiration" title="litestar.config.response_cache.ResponseCacheConfig"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">default_expiration</span></code></a> is set to
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, setting up the route handler with <a class="reference internal" href="../reference/handlers.html#litestar.handlers.HTTPRouteHandler.params.cache" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">cache</span></code></a> set to <code class="docutils literal notranslate"><span class="pre">True</span></code>
+will keep the response in cache indefinitely.</p>
 </div>
 <p>Alternatively you can specify the number of seconds to cache the responses from the given handler like so:</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">Caching the response for 120 seconds by setting the <a class="reference internal" href="../reference/handlers.html#litestar.handlers.HTTPRouteHandler.params.cache" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">cache</span></code></a>
+parameter to the number of seconds to cache the response.</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
 </span><span data-line="2">
 </span><span data-line="3">
-</span><span data-line="4"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/cached-path&quot;</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>  <span class="c1"># seconds</span>
-</span><span data-line="5"><span class="k">def</span> <span class="nf">my_cached_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="4"><span class="hll"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/cached-path&quot;</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>  <span class="c1"># seconds</span>
+</span></span><span data-line="5"><span class="k">def</span> <span class="nf">my_cached_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
 </span></pre></div>
 </div>
-<p>If you want the response to be cached indefinitely, you can pass the <a class="reference internal" href="../reference/config.html#litestar.config.response_cache.CACHE_FOREVER" title="litestar.config.response_cache.CACHE_FOREVER"><code class="xref py py-class docutils literal notranslate"><span class="pre">config.response_cache.CACHE_FOREVER</span></code></a>
+</div>
+<p>If you want the response to be cached indefinitely, you can pass the <a class="reference internal" href="../reference/config.html#litestar.config.response_cache.CACHE_FOREVER" title="litestar.config.response_cache.CACHE_FOREVER"><code class="xref py py-class docutils literal notranslate"><span class="pre">CACHE_FOREVER</span></code></a>
 sentinel instead:</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Caching the response indefinitely by setting the <a class="reference internal" href="../reference/handlers.html#litestar.handlers.HTTPRouteHandler.params.cache" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">cache</span></code></a>
+parameter to <a class="reference internal" href="../reference/config.html#litestar.config.response_cache.CACHE_FOREVER" title="litestar.config.response_cache.CACHE_FOREVER"><code class="xref py py-class docutils literal notranslate"><span class="pre">CACHE_FOREVER</span></code></a>.</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
 </span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.config.response_cache</span> <span class="kn">import</span> <span class="n">CACHE_FOREVER</span>
 </span><span data-line="3">
 </span><span data-line="4">
-</span><span data-line="5"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/cached-path&quot;</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="n">CACHE_FOREVER</span><span class="p">)</span>  <span class="c1"># seconds</span>
+</span><span data-line="5"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/cached-path&quot;</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="n">CACHE_FOREVER</span><span class="p">)</span>
 </span><span data-line="6"><span class="k">def</span> <span class="nf">my_cached_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
 </span></pre></div>
+</div>
 </div>
 </section>
 <section id="configuration">
@@ -612,6 +622,8 @@ sentinel instead:</p>
 <h3>Changing where data is stored<a class="headerlink" href="#changing-where-data-is-stored" title="Permalink to this heading">¶</a></h3>
 <p>By default, caching will use the <a class="reference internal" href="../reference/stores/memory.html#litestar.stores.memory.MemoryStore" title="litestar.stores.memory.MemoryStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryStore</span></code></a>, but it can be configured with
 any <a class="reference internal" href="../reference/stores/base.html#litestar.stores.base.Store" title="litestar.stores.base.Store"><code class="xref py py-class docutils literal notranslate"><span class="pre">Store</span></code></a>, for example <a class="reference internal" href="../reference/stores/redis.html#litestar.stores.redis.RedisStore" title="litestar.stores.redis.RedisStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">RedisStore</span></code></a>:</p>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">Using Redis as the cache store.</span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar.config.cache</span> <span class="kn">import</span> <span class="n">ResponseCacheConfig</span>
 </span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.stores.redis</span> <span class="kn">import</span> <span class="n">RedisStore</span>
 </span><span data-line="3">
@@ -620,11 +632,14 @@ any <a class="reference internal" href="../reference/stores/base.html#litestar.s
 </span><span data-line="6"><span class="n">cache_config</span> <span class="o">=</span> <span class="n">ResponseCacheConfig</span><span class="p">(</span><span class="n">store</span><span class="o">=</span><span class="n">redis_store</span><span class="p">)</span>
 </span></pre></div>
 </div>
+</div>
 </section>
 <section id="specifying-a-cache-key-builder">
 <h3>Specifying a cache key builder<a class="headerlink" href="#specifying-a-cache-key-builder" title="Permalink to this heading">¶</a></h3>
 <p>Litestar uses the request’s path + sorted query parameters as the cache key. This can be adjusted by providing a
 “key builder” function, either at application or route handler level.</p>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">Using a custom cache key builder.</span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span>
 </span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.config.cache</span> <span class="kn">import</span> <span class="n">ResponseCacheConfig</span>
 </span><span data-line="3">
@@ -636,6 +651,9 @@ any <a class="reference internal" href="../reference/stores/base.html#litestar.s
 </span><span data-line="9"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([],</span> <span class="n">cache_config</span><span class="o">=</span><span class="n">ResponseCacheConfig</span><span class="p">(</span><span class="n">key_builder</span><span class="o">=</span><span class="n">key_builder</span><span class="p">))</span>
 </span></pre></div>
 </div>
+</div>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Using a custom cache key builder for a specific route handler.</span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
 </span><span data-line="2">
 </span><span data-line="3">
@@ -646,6 +664,7 @@ any <a class="reference internal" href="../reference/stores/base.html#litestar.s
 </span><span data-line="8"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/cached-path&quot;</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache_key_builder</span><span class="o">=</span><span class="n">key_builder</span><span class="p">)</span>
 </span><span data-line="9"><span class="k">def</span> <span class="nf">cached_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
 </span></pre></div>
+</div>
 </div>
 </section>
 </section>

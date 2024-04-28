@@ -254,7 +254,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../responses.html">Responses</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="index.html">Security</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="abstract-authentication-middleware.html">AbstractAuthenticationMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="abstract-authentication-middleware.html">Implementing Custom Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="security-backends.html">Security Backends</a></li>
 <li class="toctree-l3"><a class="reference internal" href="guards.html">Guards</a></li>
 <li class="toctree-l3"><a class="reference internal" href="excluding-and-including-endpoints.html">Excluding and including endpoints</a></li>
@@ -492,9 +492,9 @@
   <div class="localtoc">
     <h3>On this page</h3>
     <ul>
-<li><a class="reference internal" href="#jwt-auth-backend">JWT Auth Backend</a></li>
-<li><a class="reference internal" href="#jwt-cookie-auth-backend">JWT Cookie Auth Backend</a></li>
-<li><a class="reference internal" href="#oauth2-bearer-password-flow">OAuth2 Bearer Password Flow</a></li>
+<li><a class="reference internal" href="#jwt-auth-backend"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWT</span> <span class="pre">Auth</span></code> Backend</a></li>
+<li><a class="reference internal" href="#jwt-cookie-auth-backend"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWT</span> <span class="pre">Cookie</span> <span class="pre">Auth</span></code> Backend</a></li>
+<li><a class="reference internal" href="#oauth2-bearer-password-flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">OAuth2</span> <span class="pre">Bearer</span></code> Password Flow</a></li>
 </ul>
 
   </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
@@ -570,20 +570,30 @@
         <article class="yue" role="main">
           <section id="jwt-security-backends">
 <h1>JWT Security Backends<a class="headerlink" href="#jwt-security-backends" title="Permalink to this heading">¶</a></h1>
-<p>Litestar offers optional JWT based security backends. To use these make sure to install the <code class="docutils literal notranslate"><span class="pre">python-jose</span></code>
-and <code class="docutils literal notranslate"><span class="pre">cryptography</span></code> packages, or simply install Litestar with the jwt extra: <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[jwt]</span></code>.</p>
-<section id="jwt-auth-backend">
-<h2>JWT Auth Backend<a class="headerlink" href="#jwt-auth-backend" title="Permalink to this heading">¶</a></h2>
-<p>This is the base JWT Auth backend. You can read about its particular API in
-the <a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.JWTAuth" title="litestar.security.jwt.JWTAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">API</span> <span class="pre">Reference</span></code></a>. It sends the JWT token using a header - and it expects requests to
-send the JWT token using the same header key.</p>
-<div class="sd-tab-set docutils">
-<input id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-0">
-Python 3.8+</label><div class="sd-tab-content docutils">
+<p>Litestar offers optional JWT based security backends. To use these make sure to install the
+<a class="reference external" href="https://github.com/mpdavis/python-jose">python-jose</a> and <a class="reference external" href="https://github.com/pyca/cryptography">cryptography</a>
+packages, or simply install Litestar with the <code class="docutils literal notranslate"><span class="pre">jwt</span></code>
+<a class="reference external" href="https://packaging.python.org/en/latest/specifications/dependency-specifiers/#extras">extra</a>:</p>
 <div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text">Using JWT Auth</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">environ</span>
+<div class="code-block-caption"><span class="caption-text">Install Litestar with JWT extra</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">pip<span class="w"> </span>install<span class="w"> </span>litestar<span class="o">[</span>jwt<span class="o">]</span>
+</span></pre></div>
+</div>
+</div>
+<section id="jwt-auth-backend">
+<h2><a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.JWTAuth" title="litestar.security.jwt.JWTAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWT</span> <span class="pre">Auth</span></code></a> Backend<a class="headerlink" href="#jwt-auth-backend" title="Permalink to this heading">¶</a></h2>
+<p>This is the base JWT Auth backend. You can read about its particular API in the <a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.JWTAuth" title="litestar.security.jwt.JWTAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWTAuth</span></code></a>.
+It sends the JWT token using a header - and it expects requests to send the JWT token using the same header key.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Click to see the code<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Using JWT Auth</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">environ</span>
 </span><span data-line="2"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
 </span><span data-line="3"><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
 </span><span data-line="4">
@@ -663,104 +673,21 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-1">
-Python 3.10+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">Using JWT Auth</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">environ</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
-</span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">EmailStr</span>
-</span><span data-line="6">
-</span><span data-line="7"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="8"><span class="kn">from</span> <span class="nn">litestar.connection</span> <span class="kn">import</span> <span class="n">ASGIConnection</span>
-</span><span data-line="9"><span class="kn">from</span> <span class="nn">litestar.openapi.config</span> <span class="kn">import</span> <span class="n">OpenAPIConfig</span>
-</span><span data-line="10"><span class="kn">from</span> <span class="nn">litestar.security.jwt</span> <span class="kn">import</span> <span class="n">JWTAuth</span><span class="p">,</span> <span class="n">Token</span>
-</span><span data-line="11">
-</span><span data-line="12">
-</span><span data-line="13"><span class="c1"># Let&#39;s assume we have a User model that is a pydantic model.</span>
-</span><span data-line="14"><span class="c1"># This though is not required - we need some sort of user class -</span>
-</span><span data-line="15"><span class="c1"># but it can be any arbitrary value, e.g. an SQLAlchemy model, a representation of a MongoDB  etc.</span>
-</span><span data-line="16"><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-</span><span data-line="17">    <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span>
-</span><span data-line="18">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="19">    <span class="n">email</span><span class="p">:</span> <span class="n">EmailStr</span>
-</span><span data-line="20">
-</span><span data-line="21">
-</span><span data-line="22"><span class="n">MOCK_DB</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">User</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span data-line="23">
-</span><span data-line="24">
-</span><span data-line="25"><span class="c1"># JWTAuth requires a retrieve handler callable that receives the JWT token model and the ASGI connection</span>
-</span><span data-line="26"><span class="c1"># and returns the &#39;User&#39; instance correlating to it.</span>
-</span><span data-line="27"><span class="c1">#</span>
-</span><span data-line="28"><span class="c1"># Notes:</span>
-</span><span data-line="29"><span class="c1"># - &#39;User&#39; can be any arbitrary value you decide upon.</span>
-</span><span data-line="30"><span class="c1"># - The callable can be either sync or async - both will work.</span>
-</span><span data-line="31"><span class="k">async</span> <span class="k">def</span> <span class="nf">retrieve_user_handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">Token</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="s2">&quot;ASGIConnection[Any, Any, Any, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="32">    <span class="c1"># logic here to retrieve the user instance</span>
-</span><span data-line="33">    <span class="k">return</span> <span class="n">MOCK_DB</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">token</span><span class="o">.</span><span class="n">sub</span><span class="p">)</span>
-</span><span data-line="34">
-</span><span data-line="35">
-</span><span data-line="36"><span class="n">jwt_auth</span> <span class="o">=</span> <span class="n">JWTAuth</span><span class="p">[</span><span class="n">User</span><span class="p">](</span>
-</span><span data-line="37">    <span class="n">retrieve_user_handler</span><span class="o">=</span><span class="n">retrieve_user_handler</span><span class="p">,</span>
-</span><span data-line="38">    <span class="n">token_secret</span><span class="o">=</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;JWT_SECRET&quot;</span><span class="p">,</span> <span class="s2">&quot;abcd123&quot;</span><span class="p">),</span>
-</span><span data-line="39">    <span class="c1"># we are specifying which endpoints should be excluded from authentication. In this case the login endpoint</span>
-</span><span data-line="40">    <span class="c1"># and our openAPI docs.</span>
-</span><span data-line="41">    <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;/login&quot;</span><span class="p">,</span> <span class="s2">&quot;/schema&quot;</span><span class="p">],</span>
-</span><span data-line="42"><span class="p">)</span>
-</span><span data-line="43">
-</span><span data-line="44">
-</span><span data-line="45"><span class="c1"># Given an instance of &#39;JWTAuth&#39; we can create a login handler function:</span>
-</span><span data-line="46"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/login&quot;</span><span class="p">)</span>
-</span><span data-line="47"><span class="k">async</span> <span class="k">def</span> <span class="nf">login_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Response</span><span class="p">[</span><span class="n">User</span><span class="p">]:</span>
-</span><span data-line="48">    <span class="n">MOCK_DB</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">)]</span> <span class="o">=</span> <span class="n">data</span>
-</span><span data-line="49">    <span class="c1"># you can do whatever you want to update the response instance here</span>
-</span><span data-line="50">    <span class="c1"># e.g. response.set_cookie(...)</span>
-</span><span data-line="51">    <span class="k">return</span> <span class="n">jwt_auth</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">identifier</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">),</span> <span class="n">token_extras</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;email&quot;</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">email</span><span class="p">},</span> <span class="n">response_body</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
-</span><span data-line="52">
-</span><span data-line="53">
-</span><span data-line="54"><span class="c1"># We also have some other routes, for example:</span>
-</span><span data-line="55"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/some-path&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="56"><span class="k">def</span> <span class="nf">some_route_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request[User, Token, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-</span><span data-line="57">    <span class="c1"># request.user is set to the instance of user returned by the middleware</span>
-</span><span data-line="58">    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">User</span><span class="p">)</span>
-</span><span data-line="59">    <span class="c1"># request.auth is the instance of &#39;litestar_jwt.Token&#39; created from the data encoded in the auth header</span>
-</span><span data-line="60">    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">auth</span><span class="p">,</span> <span class="n">Token</span><span class="p">)</span>
-</span><span data-line="61">    <span class="c1"># do stuff ...</span>
-</span><span data-line="62">
-</span><span data-line="63">
-</span><span data-line="64"><span class="c1"># We create our OpenAPIConfig as usual - the JWT security scheme will be injected into it.</span>
-</span><span data-line="65"><span class="n">openapi_config</span> <span class="o">=</span> <span class="n">OpenAPIConfig</span><span class="p">(</span>
-</span><span data-line="66">    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;My API&quot;</span><span class="p">,</span>
-</span><span data-line="67">    <span class="n">version</span><span class="o">=</span><span class="s2">&quot;1.0.0&quot;</span><span class="p">,</span>
-</span><span data-line="68"><span class="p">)</span>
-</span><span data-line="69">
-</span><span data-line="70"><span class="c1"># We initialize the app instance and pass the jwt_auth &#39;on_app_init&#39; handler to the constructor.</span>
-</span><span data-line="71"><span class="c1"># The hook handler will inject the JWT middleware and openapi configuration into the app.</span>
-</span><span data-line="72"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-</span><span data-line="73">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">login_handler</span><span class="p">,</span> <span class="n">some_route_handler</span><span class="p">],</span>
-</span><span data-line="74">    <span class="n">on_app_init</span><span class="o">=</span><span class="p">[</span><span class="n">jwt_auth</span><span class="o">.</span><span class="n">on_app_init</span><span class="p">],</span>
-</span><span data-line="75">    <span class="n">openapi_config</span><span class="o">=</span><span class="n">openapi_config</span><span class="p">,</span>
-</span><span data-line="76"><span class="p">)</span>
-</span></pre></div>
-</div>
-</div>
-</div>
-</div>
-</section>
+</details></section>
 <section id="jwt-cookie-auth-backend">
-<h2>JWT Cookie Auth Backend<a class="headerlink" href="#jwt-cookie-auth-backend" title="Permalink to this heading">¶</a></h2>
-<p>This backend inherits from the <a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.JWTAuth" title="litestar.security.jwt.JWTAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWTAuth</span></code></a> backend, with the difference being that instead
-of using a header for the JWT Token, it uses a cookie.</p>
-<div class="sd-tab-set docutils">
-<input id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-2">
-Python 3.8+</label><div class="sd-tab-content docutils">
+<h2><a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.JWTCookieAuth" title="litestar.security.jwt.JWTCookieAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWT</span> <span class="pre">Cookie</span> <span class="pre">Auth</span></code></a> Backend<a class="headerlink" href="#jwt-cookie-auth-backend" title="Permalink to this heading">¶</a></h2>
+<p>This backend inherits from the <a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.JWTAuth" title="litestar.security.jwt.JWTAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWTAuth</span></code></a> backend, with the difference being
+that instead of using a header for the JWT Token, it uses a cookie.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Click to see the code<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
 <div class="literal-block-wrapper docutils container" id="id3">
 <div class="code-block-caption"><span class="caption-text">Using JWT Cookie Auth</span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">environ</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">environ</span>
 </span><span data-line="2"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
 </span><span data-line="3"><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
 </span><span data-line="4">
@@ -840,104 +767,22 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-3">
-Python 3.10+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id4">
-<div class="code-block-caption"><span class="caption-text">Using JWT Cookie Auth</span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">environ</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
-</span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">EmailStr</span>
-</span><span data-line="6">
-</span><span data-line="7"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="8"><span class="kn">from</span> <span class="nn">litestar.connection</span> <span class="kn">import</span> <span class="n">ASGIConnection</span>
-</span><span data-line="9"><span class="kn">from</span> <span class="nn">litestar.openapi.config</span> <span class="kn">import</span> <span class="n">OpenAPIConfig</span>
-</span><span data-line="10"><span class="kn">from</span> <span class="nn">litestar.security.jwt</span> <span class="kn">import</span> <span class="n">JWTCookieAuth</span><span class="p">,</span> <span class="n">Token</span>
-</span><span data-line="11">
-</span><span data-line="12">
-</span><span data-line="13"><span class="c1"># Let&#39;s assume we have a User model that is a pydantic model.</span>
-</span><span data-line="14"><span class="c1"># This though is not required - we need some sort of user class -</span>
-</span><span data-line="15"><span class="c1"># but it can be any arbitrary value, e.g. an SQLAlchemy model, a representation of a MongoDB  etc.</span>
-</span><span data-line="16"><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-</span><span data-line="17">    <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span>
-</span><span data-line="18">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="19">    <span class="n">email</span><span class="p">:</span> <span class="n">EmailStr</span>
-</span><span data-line="20">
-</span><span data-line="21">
-</span><span data-line="22"><span class="n">MOCK_DB</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">User</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span data-line="23">
-</span><span data-line="24">
-</span><span data-line="25"><span class="c1"># JWTCookieAuth requires a retrieve handler callable that receives the JWT token model and the ASGI connection</span>
-</span><span data-line="26"><span class="c1"># and returns the &#39;User&#39; instance correlating to it.</span>
-</span><span data-line="27"><span class="c1">#</span>
-</span><span data-line="28"><span class="c1"># Notes:</span>
-</span><span data-line="29"><span class="c1"># - &#39;User&#39; can be any arbitrary value you decide upon.</span>
-</span><span data-line="30"><span class="c1"># - The callable can be either sync or async - both will work.</span>
-</span><span data-line="31"><span class="k">async</span> <span class="k">def</span> <span class="nf">retrieve_user_handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="s2">&quot;Token&quot;</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="s2">&quot;ASGIConnection[Any, Any, Any, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="32">    <span class="c1"># logic here to retrieve the user instance</span>
-</span><span data-line="33">    <span class="k">return</span> <span class="n">MOCK_DB</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">token</span><span class="o">.</span><span class="n">sub</span><span class="p">)</span>
-</span><span data-line="34">
-</span><span data-line="35">
-</span><span data-line="36"><span class="n">jwt_cookie_auth</span> <span class="o">=</span> <span class="n">JWTCookieAuth</span><span class="p">[</span><span class="n">User</span><span class="p">](</span>
-</span><span data-line="37">    <span class="n">retrieve_user_handler</span><span class="o">=</span><span class="n">retrieve_user_handler</span><span class="p">,</span>
-</span><span data-line="38">    <span class="n">token_secret</span><span class="o">=</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;JWT_SECRET&quot;</span><span class="p">,</span> <span class="s2">&quot;abcd123&quot;</span><span class="p">),</span>
-</span><span data-line="39">    <span class="c1"># we are specifying which endpoints should be excluded from authentication. In this case the login endpoint</span>
-</span><span data-line="40">    <span class="c1"># and our openAPI docs.</span>
-</span><span data-line="41">    <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;/login&quot;</span><span class="p">,</span> <span class="s2">&quot;/schema&quot;</span><span class="p">],</span>
-</span><span data-line="42">    <span class="c1"># Tip: We can optionally supply cookie options to the configuration.  Here is an example of enabling the secure cookie option</span>
-</span><span data-line="43">    <span class="c1"># secure=True,</span>
-</span><span data-line="44"><span class="p">)</span>
-</span><span data-line="45">
-</span><span data-line="46">
-</span><span data-line="47"><span class="c1"># Given an instance of &#39;JWTCookieAuth&#39; we can create a login handler function:</span>
-</span><span data-line="48"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/login&quot;</span><span class="p">)</span>
-</span><span data-line="49"><span class="k">async</span> <span class="k">def</span> <span class="nf">login_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="s2">&quot;User&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Response[User]&quot;</span><span class="p">:</span>
-</span><span data-line="50">    <span class="n">MOCK_DB</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">)]</span> <span class="o">=</span> <span class="n">data</span>
-</span><span data-line="51">    <span class="k">return</span> <span class="n">jwt_cookie_auth</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">identifier</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">),</span> <span class="n">response_body</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
-</span><span data-line="52">
-</span><span data-line="53">
-</span><span data-line="54"><span class="c1"># We also have some other routes, for example:</span>
-</span><span data-line="55"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/some-path&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="56"><span class="k">def</span> <span class="nf">some_route_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request[User, Token, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-</span><span data-line="57">    <span class="c1"># request.user is set to the instance of user returned by the middleware</span>
-</span><span data-line="58">    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">User</span><span class="p">)</span>
-</span><span data-line="59">    <span class="c1"># request.auth is the instance of &#39;litestar_jwt.Token&#39; created from the data encoded in the auth header</span>
-</span><span data-line="60">    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">auth</span><span class="p">,</span> <span class="n">Token</span><span class="p">)</span>
-</span><span data-line="61">    <span class="c1"># do stuff ...</span>
-</span><span data-line="62">
-</span><span data-line="63">
-</span><span data-line="64"><span class="c1"># We create our OpenAPIConfig as usual - the JWT security scheme will be injected into it.</span>
-</span><span data-line="65"><span class="n">openapi_config</span> <span class="o">=</span> <span class="n">OpenAPIConfig</span><span class="p">(</span>
-</span><span data-line="66">    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;My API&quot;</span><span class="p">,</span>
-</span><span data-line="67">    <span class="n">version</span><span class="o">=</span><span class="s2">&quot;1.0.0&quot;</span><span class="p">,</span>
-</span><span data-line="68"><span class="p">)</span>
-</span><span data-line="69">
-</span><span data-line="70"><span class="c1"># We initialize the app instance and pass the jwt_cookie_auth &#39;on_app_init&#39; handler to the constructor.</span>
-</span><span data-line="71"><span class="c1"># The hook handler will inject the JWT middleware and openapi configuration into the app.</span>
-</span><span data-line="72"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-</span><span data-line="73">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">login_handler</span><span class="p">,</span> <span class="n">some_route_handler</span><span class="p">],</span>
-</span><span data-line="74">    <span class="n">on_app_init</span><span class="o">=</span><span class="p">[</span><span class="n">jwt_cookie_auth</span><span class="o">.</span><span class="n">on_app_init</span><span class="p">],</span>
-</span><span data-line="75">    <span class="n">openapi_config</span><span class="o">=</span><span class="n">openapi_config</span><span class="p">,</span>
-</span><span data-line="76"><span class="p">)</span>
-</span></pre></div>
-</div>
-</div>
-</div>
-</div>
-</section>
+</details></section>
 <section id="oauth2-bearer-password-flow">
-<h2>OAuth2 Bearer Password Flow<a class="headerlink" href="#oauth2-bearer-password-flow" title="Permalink to this heading">¶</a></h2>
-<p>This backend inherits from the <a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.JWTCookieAuth" title="litestar.security.jwt.JWTCookieAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWTCookieAuth</span></code></a> backend. It works similarly to
-the <code class="docutils literal notranslate"><span class="pre">JWTCookieAuth</span></code> backend, but is meant to be used for OAUTH2 Bearer password flows.</p>
-<div class="sd-tab-set docutils">
-<input id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-4">
-Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">Using OAUTH2 Bearer Password</span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">environ</span>
+<h2><a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.OAuth2PasswordBearerAuth" title="litestar.security.jwt.auth.OAuth2PasswordBearerAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">OAuth2</span> <span class="pre">Bearer</span></code></a> Password Flow<a class="headerlink" href="#oauth2-bearer-password-flow" title="Permalink to this heading">¶</a></h2>
+<p>The <a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.OAuth2PasswordBearerAuth" title="litestar.security.jwt.auth.OAuth2PasswordBearerAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">OAuth2PasswordBearerAuth</span></code></a> backend inherits from the <a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.JWTCookieAuth" title="litestar.security.jwt.JWTCookieAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWTCookieAuth</span></code></a>
+backend. It works similarly to the <a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.JWTCookieAuth" title="litestar.security.jwt.JWTCookieAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWTCookieAuth</span></code></a> backend, but is meant to be used for
+OAuth 2.0 Bearer password flows.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+Click to see the code<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">Using OAUTH2 Bearer Password</span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">environ</span>
 </span><span data-line="2"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span>
 </span><span data-line="3"><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
 </span><span data-line="4">
@@ -1030,106 +875,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-5">
-Python 3.10+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">Using OAUTH2 Bearer Password</span><a class="headerlink" href="#id6" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">environ</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
-</span><span data-line="3"><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
-</span><span data-line="4">
-</span><span data-line="5"><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">EmailStr</span>
-</span><span data-line="6">
-</span><span data-line="7"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="8"><span class="kn">from</span> <span class="nn">litestar.connection</span> <span class="kn">import</span> <span class="n">ASGIConnection</span>
-</span><span data-line="9"><span class="kn">from</span> <span class="nn">litestar.openapi.config</span> <span class="kn">import</span> <span class="n">OpenAPIConfig</span>
-</span><span data-line="10"><span class="kn">from</span> <span class="nn">litestar.security.jwt</span> <span class="kn">import</span> <span class="n">OAuth2Login</span><span class="p">,</span> <span class="n">OAuth2PasswordBearerAuth</span><span class="p">,</span> <span class="n">Token</span>
-</span><span data-line="11">
-</span><span data-line="12">
-</span><span data-line="13"><span class="c1"># Let&#39;s assume we have a User model that is a pydantic model.</span>
-</span><span data-line="14"><span class="c1"># This though is not required - we need some sort of user class -</span>
-</span><span data-line="15"><span class="c1"># but it can be any arbitrary value, e.g. an SQLAlchemy model, a representation of a MongoDB  etc.</span>
-</span><span data-line="16"><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-</span><span data-line="17">    <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span>
-</span><span data-line="18">    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="19">    <span class="n">email</span><span class="p">:</span> <span class="n">EmailStr</span>
-</span><span data-line="20">
-</span><span data-line="21">
-</span><span data-line="22"><span class="n">MOCK_DB</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">User</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-</span><span data-line="23">
-</span><span data-line="24">
-</span><span data-line="25"><span class="c1"># OAuth2PasswordBearerAuth requires a retrieve handler callable that receives the JWT token model and the ASGI connection</span>
-</span><span data-line="26"><span class="c1"># and returns the &#39;User&#39; instance correlating to it.</span>
-</span><span data-line="27"><span class="c1">#</span>
-</span><span data-line="28"><span class="c1"># Notes:</span>
-</span><span data-line="29"><span class="c1"># - &#39;User&#39; can be any arbitrary value you decide upon.</span>
-</span><span data-line="30"><span class="c1"># - The callable can be either sync or async - both will work.</span>
-</span><span data-line="31"><span class="k">async</span> <span class="k">def</span> <span class="nf">retrieve_user_handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="s2">&quot;Token&quot;</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="s2">&quot;ASGIConnection[Any, Any, Any, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="32">    <span class="c1"># logic here to retrieve the user instance</span>
-</span><span data-line="33">    <span class="k">return</span> <span class="n">MOCK_DB</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">token</span><span class="o">.</span><span class="n">sub</span><span class="p">)</span>
-</span><span data-line="34">
-</span><span data-line="35">
-</span><span data-line="36"><span class="n">oauth2_auth</span> <span class="o">=</span> <span class="n">OAuth2PasswordBearerAuth</span><span class="p">[</span><span class="n">User</span><span class="p">](</span>
-</span><span data-line="37">    <span class="n">retrieve_user_handler</span><span class="o">=</span><span class="n">retrieve_user_handler</span><span class="p">,</span>
-</span><span data-line="38">    <span class="n">token_secret</span><span class="o">=</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;JWT_SECRET&quot;</span><span class="p">,</span> <span class="s2">&quot;abcd123&quot;</span><span class="p">),</span>
-</span><span data-line="39">    <span class="c1"># we are specifying the URL for retrieving a JWT access token</span>
-</span><span data-line="40">    <span class="n">token_url</span><span class="o">=</span><span class="s2">&quot;/login&quot;</span><span class="p">,</span>
-</span><span data-line="41">    <span class="c1"># we are specifying which endpoints should be excluded from authentication. In this case the login endpoint</span>
-</span><span data-line="42">    <span class="c1"># and our openAPI docs.</span>
-</span><span data-line="43">    <span class="n">exclude</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;/login&quot;</span><span class="p">,</span> <span class="s2">&quot;/schema&quot;</span><span class="p">],</span>
-</span><span data-line="44"><span class="p">)</span>
-</span><span data-line="45">
-</span><span data-line="46">
-</span><span data-line="47"><span class="c1"># Given an instance of &#39;OAuth2PasswordBearerAuth&#39; we can create a login handler function:</span>
-</span><span data-line="48"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/login&quot;</span><span class="p">)</span>
-</span><span data-line="49"><span class="k">async</span> <span class="k">def</span> <span class="nf">login_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request[Any, Any, Any]&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="s2">&quot;User&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Response[OAuth2Login]&quot;</span><span class="p">:</span>
-</span><span data-line="50">    <span class="n">MOCK_DB</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">)]</span> <span class="o">=</span> <span class="n">data</span>
-</span><span data-line="51">    <span class="c1"># if we do not define a response body, the login process will return a standard OAuth2 login response.  Note the `Response[OAuth2Login]` return type.</span>
-</span><span data-line="52">
-</span><span data-line="53">    <span class="c1"># you can do whatever you want to update the response instance here</span>
-</span><span data-line="54">    <span class="c1"># e.g. response.set_cookie(...)</span>
-</span><span data-line="55">    <span class="k">return</span> <span class="n">oauth2_auth</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">identifier</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">))</span>
-</span><span data-line="56">
-</span><span data-line="57">
-</span><span data-line="58"><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/login_custom&quot;</span><span class="p">)</span>
-</span><span data-line="59"><span class="k">async</span> <span class="k">def</span> <span class="nf">login_custom_response_handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="s2">&quot;User&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Response[User]&quot;</span><span class="p">:</span>
-</span><span data-line="60">    <span class="n">MOCK_DB</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">)]</span> <span class="o">=</span> <span class="n">data</span>
-</span><span data-line="61">
-</span><span data-line="62">    <span class="c1"># you can do whatever you want to update the response instance here</span>
-</span><span data-line="63">    <span class="c1"># e.g. response.set_cookie(...)</span>
-</span><span data-line="64">    <span class="k">return</span> <span class="n">oauth2_auth</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">identifier</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">id</span><span class="p">),</span> <span class="n">response_body</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
-</span><span data-line="65">
-</span><span data-line="66">
-</span><span data-line="67"><span class="c1"># We also have some other routes, for example:</span>
-</span><span data-line="68"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/some-path&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="69"><span class="k">def</span> <span class="nf">some_route_handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="s2">&quot;Request[User, Token, Any]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
-</span><span data-line="70">    <span class="c1"># request.user is set to the instance of user returned by the middleware</span>
-</span><span data-line="71">    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="p">,</span> <span class="n">User</span><span class="p">)</span>
-</span><span data-line="72">    <span class="c1"># request.auth is the instance of &#39;litestar_jwt.Token&#39; created from the data encoded in the auth header</span>
-</span><span data-line="73">    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">auth</span><span class="p">,</span> <span class="n">Token</span><span class="p">)</span>
-</span><span data-line="74">    <span class="c1"># do stuff ...</span>
-</span><span data-line="75">
-</span><span data-line="76">
-</span><span data-line="77"><span class="c1"># We create our OpenAPIConfig as usual - the JWT security scheme will be injected into it.</span>
-</span><span data-line="78"><span class="n">openapi_config</span> <span class="o">=</span> <span class="n">OpenAPIConfig</span><span class="p">(</span>
-</span><span data-line="79">    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;My API&quot;</span><span class="p">,</span>
-</span><span data-line="80">    <span class="n">version</span><span class="o">=</span><span class="s2">&quot;1.0.0&quot;</span><span class="p">,</span>
-</span><span data-line="81"><span class="p">)</span>
-</span><span data-line="82">
-</span><span data-line="83"><span class="c1"># We initialize the app instance and pass the oauth2_auth &#39;on_app_init&#39; handler to the constructor.</span>
-</span><span data-line="84"><span class="c1"># The hook handler will inject the JWT middleware and openapi configuration into the app.</span>
-</span><span data-line="85"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
-</span><span data-line="86">    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">login_handler</span><span class="p">,</span> <span class="n">some_route_handler</span><span class="p">],</span>
-</span><span data-line="87">    <span class="n">on_app_init</span><span class="o">=</span><span class="p">[</span><span class="n">oauth2_auth</span><span class="o">.</span><span class="n">on_app_init</span><span class="p">],</span>
-</span><span data-line="88">    <span class="n">openapi_config</span><span class="o">=</span><span class="n">openapi_config</span><span class="p">,</span>
-</span><span data-line="89"><span class="p">)</span>
-</span></pre></div>
-</div>
-</div>
-</div>
-</div>
-</section>
+</details></section>
 </section>
 
         </article>

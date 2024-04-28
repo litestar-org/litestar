@@ -254,7 +254,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/responses.html">Responses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../usage/security/index.html">Security</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../../usage/security/abstract-authentication-middleware.html">AbstractAuthenticationMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../usage/security/abstract-authentication-middleware.html">Implementing Custom Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../usage/security/security-backends.html">Security Backends</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../usage/security/guards.html">Guards</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../../usage/security/excluding-and-including-endpoints.html">Excluding and including endpoints</a></li>
@@ -497,6 +497,7 @@
 <li><a class="reference internal" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.dump_data"><code class="docutils literal notranslate"><span class="pre">ClientSideSessionBackend.dump_data()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.load_data"><code class="docutils literal notranslate"><span class="pre">ClientSideSessionBackend.load_data()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.get_cookie_keys"><code class="docutils literal notranslate"><span class="pre">ClientSideSessionBackend.get_cookie_keys()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.get_cookie_key_set"><code class="docutils literal notranslate"><span class="pre">ClientSideSessionBackend.get_cookie_key_set()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.store_in_message"><code class="docutils literal notranslate"><span class="pre">ClientSideSessionBackend.store_in_message()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.load_from_connection"><code class="docutils literal notranslate"><span class="pre">ClientSideSessionBackend.load_from_connection()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.get_session_id"><code class="docutils literal notranslate"><span class="pre">ClientSideSessionBackend.get_session_id()</span></code></a></li>
@@ -668,6 +669,23 @@ string that is encrypted using AES-CGM.</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A list of session-cookie keys</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.middleware.session.client_side.ClientSideSessionBackend.get_cookie_key_set">
+<span class="sig-name descname"><span class="pre">get_cookie_key_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../connection.html#litestar.connection.ASGIConnection" title="litestar.connection.ASGIConnection"><span class="pre">ASGIConnection</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.12)"><span class="pre">set</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.get_cookie_key_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a set of cookie-keys from the connection if they match the session-cookie pattern.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.8.3.</span></p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="target" id="litestar.middleware.session.client_side.ClientSideSessionBackend.get_cookie_key_set.params.connection"></span><strong>connection</strong><a class="paramlink headerlink reference internal" href="#litestar.middleware.session.client_side.ClientSideSessionBackend.get_cookie_key_set.params.connection">¶</a> – An ASGIConnection instance</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A set of session-cookie keys</p>
 </dd>
 </dl>
 </dd></dl>

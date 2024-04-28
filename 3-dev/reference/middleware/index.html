@@ -254,7 +254,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/responses.html">Responses</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/security/index.html">Security</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/security/abstract-authentication-middleware.html">AbstractAuthenticationMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/security/abstract-authentication-middleware.html">Implementing Custom Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/security/security-backends.html">Security Backends</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/security/guards.html">Guards</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/security/excluding-and-including-endpoints.html">Excluding and including endpoints</a></li>
@@ -707,7 +707,7 @@ closure.</p>
 <dt class="sig sig-object py" id="litestar.middleware.AuthenticationResult">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.middleware.</span></span><span class="sig-name descname"><span class="pre">AuthenticationResult</span></span><a class="headerlink" href="#litestar.middleware.AuthenticationResult" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>Pydantic model for authentication data.</p>
+<p>Dataclass for authentication result.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="litestar.middleware.AuthenticationResult.user">
 <span class="sig-name descname"><span class="pre">user</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a></em><a class="headerlink" href="#litestar.middleware.AuthenticationResult.user" title="Permalink to this definition">¶</a></dt>
