@@ -4,7 +4,7 @@ import pytest
 
 from litestar import get
 from litestar.config.cors import CORSConfig
-from litestar.middleware._internal import CORSMiddleware
+from litestar.middleware._internal.cors import CORSMiddleware
 from litestar.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND
 from litestar.testing import create_test_client
 from litestar.types.asgi_types import Method

@@ -1,6 +1,6 @@
 import sys
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from enum import Enum, auto
 from typing import (  # type: ignore[attr-defined]
     TYPE_CHECKING,
@@ -317,12 +317,14 @@ def test_annotated_types() -> None:
     assert schema.properties["constrained_int"].exclusive_maximum == 10  # type: ignore[index, union-attr]
     assert schema.properties["constrained_float"].minimum == 1  # type: ignore[index, union-attr]
     assert schema.properties["constrained_float"].maximum == 10  # type: ignore[index, union-attr]
-    assert datetime.utcfromtimestamp(schema.properties["constrained_date"].exclusive_minimum) == datetime.fromordinal(  # type: ignore[arg-type, index, union-attr]
-        historical_date.toordinal()
-    )
-    assert datetime.utcfromtimestamp(schema.properties["constrained_date"].exclusive_maximum) == datetime.fromordinal(  # type: ignore[arg-type, index, union-attr]
-        today.toordinal()
-    )
+    assert datetime.fromtimestamp(
+        schema.properties["constrained_date"].exclusive_minimum,  # type: ignore[arg-type, index, union-attr]
+        tz=timezone.utc,
+    ) == datetime.fromordinal(historical_date.toordinal()).replace(tzinfo=timezone.utc)
+    assert datetime.fromtimestamp(
+        schema.properties["constrained_date"].exclusive_maximum,  # type: ignore[arg-type, index, union-attr]
+        tz=timezone.utc,
+    ) == datetime.fromordinal(today.toordinal()).replace(tzinfo=timezone.utc)
     assert schema.properties["constrained_lower_case"].description == "must be in lower case"  # type: ignore[index]
     assert schema.properties["constrained_upper_case"].description == "must be in upper case"  # type: ignore[index]
     assert schema.properties["constrained_is_ascii"].pattern == "[[:ascii:]]"  # type: ignore[index, union-attr]

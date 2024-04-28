@@ -2,28 +2,26 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, cast
 
-__all__ = ("get_route_handlers", "wrap_in_exception_handler")
-
-
 if TYPE_CHECKING:
     from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
     from litestar.routes.base import BaseRoute
-    from litestar.types import ASGIApp, ExceptionHandlersMap, RouteHandlerType
+    from litestar.types import ASGIApp, RouteHandlerType
+
+__all__ = ("get_route_handlers", "wrap_in_exception_handler")
 
 
-def wrap_in_exception_handler(app: ASGIApp, exception_handlers: ExceptionHandlersMap) -> ASGIApp:
+def wrap_in_exception_handler(app: ASGIApp) -> ASGIApp:
     """Wrap the given ASGIApp in an instance of ExceptionHandlerMiddleware.
 
     Args:
         app: The ASGI app that is being wrapped.
-        exception_handlers: A mapping of exceptions to handler functions.
 
     Returns:
         A wrapped ASGIApp.
     """
-    from litestar.middleware.exceptions import ExceptionHandlerMiddleware
+    from litestar.middleware._internal.exceptions import ExceptionHandlerMiddleware
 
-    return ExceptionHandlerMiddleware(app=app, exception_handlers=exception_handlers, debug=None)
+    return ExceptionHandlerMiddleware(app=app, debug=None)
 
 
 def get_route_handlers(route: BaseRoute) -> list[RouteHandlerType]:

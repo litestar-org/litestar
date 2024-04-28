@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
 @dataclass
 class AuthenticationResult:
-    """Pydantic model for authentication data."""
+    """Dataclass for authentication result."""
 
     __slots__ = ("user", "auth")
 
