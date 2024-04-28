@@ -808,11 +808,11 @@ class HTTPRouteHandler(BaseRouteHandler):
         """Determine what kwargs are required for the given route handler's ``fn`` and calls it."""
         parsed_kwargs: dict[str, Any] = {}
         cleanup_group: DependencyCleanupGroup | None = None
-        parameter_model = self._get_kwargs_model_for_route(request.scope["path_params"].keys())
+        kwargs_models_model = self._get_kwargs_model_for_route(request.scope["path_params"].keys())
 
-        if parameter_model.has_kwargs and self.signature_model:
+        if kwargs_models_model.has_kwargs and self.signature_model:
             try:
-                kwargs = await parameter_model.to_kwargs(connection=request)
+                kwargs = await kwargs_models_model.to_kwargs(connection=request)
             except SerializationException as e:
                 raise ClientException(str(e)) from e
 
@@ -822,8 +822,8 @@ class HTTPRouteHandler(BaseRouteHandler):
                 if data is Empty:
                     del kwargs["data"]
 
-            if parameter_model.dependency_batches:
-                cleanup_group = await parameter_model.resolve_dependencies(request, kwargs)
+            if kwargs_models_model.dependency_batches:
+                cleanup_group = await kwargs_models_model.resolve_dependencies(request, kwargs)
 
             parsed_kwargs = self.signature_model.parse_values_from_connection_kwargs(
                 connection=request,
