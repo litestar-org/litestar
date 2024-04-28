@@ -79,7 +79,7 @@ async def test_to_response_async_await(anyio_backend: str) -> None:
         return data
 
     person_instance = DataclassPersonFactory.build()
-    handler._signature_model = SignatureModel.create(
+    handler._resolved_signature_model = SignatureModel.create(
         dependency_name_set=set(),
         fn=handler.fn,
         data_dto=None,
