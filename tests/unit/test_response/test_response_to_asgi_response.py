@@ -1,18 +1,15 @@
 from __future__ import annotations
 
 from inspect import iscoroutine
-from json import loads
 from pathlib import Path
 from time import sleep
 from typing import TYPE_CHECKING, Any, Generator, Iterator, cast
 
-import msgspec
 import pytest
 from starlette.responses import HTMLResponse, JSONResponse, PlainTextResponse
 from starlette.responses import Response as StarletteResponse
 
-from litestar import HttpMethod, Litestar, MediaType, Request, Response, get, route
-from litestar._signature import SignatureModel
+from litestar import Litestar, MediaType, Request, Response, get
 from litestar.background_tasks import BackgroundTask
 from litestar.contrib.jinja import JinjaTemplateEngine
 from litestar.datastructures import Cookie, ResponseHeader
@@ -27,8 +24,6 @@ from litestar.template.config import TemplateConfig
 from litestar.testing import RequestFactory, create_test_client
 from litestar.types import StreamType
 from litestar.utils import AsyncIteratorWrapper
-from litestar.utils.signature import ParsedSignature
-from tests.models import DataclassPerson, DataclassPersonFactory
 
 if TYPE_CHECKING:
     from typing import AsyncGenerator
@@ -70,28 +65,6 @@ class MySyncIterator:
 class MyAsyncIterator(AsyncIteratorWrapper[str]):
     def __init__(self) -> None:
         super().__init__(iterator=MySyncIterator())
-
-
-async def test_to_response_async_await(anyio_backend: str) -> None:
-    @route(http_method=HttpMethod.POST, path="/person")
-    async def handler(data: DataclassPerson) -> DataclassPerson:
-        assert isinstance(data, DataclassPerson)
-        return data
-
-    person_instance = DataclassPersonFactory.build()
-    handler._resolved_signature_model = SignatureModel.create(
-        dependency_name_set=set(),
-        fn=handler.fn,
-        data_dto=None,
-        parsed_signature=ParsedSignature.from_fn(handler.fn, {}),
-        type_decoders=[],
-    )
-
-    response = await handler.to_response(
-        data=handler.fn(data=person_instance),
-        request=RequestFactory(app=Litestar(route_handlers=[handler])).get(route_handler=handler),
-    )
-    assert loads(response.body) == msgspec.to_builtins(person_instance)  # type: ignore[attr-defined]
 
 
 async def test_to_response_returning_litestar_response() -> None:

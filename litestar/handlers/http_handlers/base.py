@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING, AnyStr, Iterable, Mapping, Sequence, TypedDict, cast
+from typing import TYPE_CHECKING, AnyStr, Awaitable, Callable, Iterable, Mapping, Sequence, TypedDict, cast
 
 from msgspec.msgpack import decode as _decode_msgpack_plain
 
@@ -61,7 +61,7 @@ from litestar.utils.scope.state import ScopeState
 from litestar.utils.warnings import warn_implicit_sync_to_thread, warn_sync_to_thread_with_async_callable
 
 if TYPE_CHECKING:
-    from typing import Any, Awaitable, Callable
+    from typing import Any
 
     from litestar._kwargs import KwargsModel
     from litestar._kwargs.cleanup import DependencyCleanupGroup
@@ -74,6 +74,7 @@ if TYPE_CHECKING:
     from litestar.routes import BaseRoute
     from litestar.types.callable_types import AsyncAnyCallable, OperationIDCreator
     from litestar.types.composite_types import TypeDecodersSequence
+    from litestar.typing import FieldDefinition
 
 __all__ = ("HTTPRouteHandler",)
 
@@ -128,6 +129,8 @@ class HTTPRouteHandler(BaseRouteHandler):
         "sync_to_thread",
         "tags",
         "template_name",
+        "_default_response_handler",
+        "_response_type_handler",
     )
 
     def __init__(
@@ -322,13 +325,14 @@ class HTTPRouteHandler(BaseRouteHandler):
         # memoized attributes, defaulted to Empty
         self._resolved_after_response: AsyncAnyCallable | None | EmptyType = Empty
         self._resolved_before_request: AsyncAnyCallable | None | EmptyType = Empty
-        self._response_handler_mapping: ResponseHandlerMap = {"default_handler": Empty, "response_type_handler": Empty}
         self._resolved_include_in_schema: bool | EmptyType = Empty
         self._resolved_response_class: type[Response] | EmptyType = Empty
         self._resolved_request_class: type[Request] | EmptyType = Empty
         self._resolved_security: list[SecurityRequirement] | EmptyType = Empty
         self._resolved_tags: list[str] | EmptyType = Empty
         self._kwargs_models: dict[tuple[str, ...], KwargsModel] = {}
+        self._default_response_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType = Empty
+        self._response_type_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType = Empty
         self._resolved_request_max_body_size: int | EmptyType | None = Empty
 
     def resolve_request_class(self) -> type[Request]:
@@ -518,88 +522,9 @@ class HTTPRouteHandler(BaseRouteHandler):
             )
         return max_body_size
 
-    def _get_response_handler(self, is_response_type_data: bool = False) -> Callable[..., Awaitable[ASGIApp]]:
-        """Resolve the response_handler function for the route handler.
-
-        This method is memoized so the computation occurs only once.
-
-        Args:
-            is_response_type_data: Whether to return a handler for 'Response' instances.
-
-        Returns:
-            Async Callable to handle an HTTP Request
-        """
-        if self._response_handler_mapping["default_handler"] is Empty:
-            after_request_handlers: list[AsyncAnyCallable] = [
-                layer.after_request  # type: ignore[misc]
-                for layer in self._ownership_layers
-                if layer.after_request
-            ]
-            after_request = cast(
-                "AfterRequestHookHandler | None",
-                after_request_handlers[-1] if after_request_handlers else None,
-            )
-
-            media_type = self.media_type.value if isinstance(self.media_type, Enum) else self.media_type
-            response_class = self.resolve_response_class()
-            headers = self.resolve_response_headers()
-            cookies = self.resolve_response_cookies()
-            type_encoders = self.resolve_type_encoders()
-
-            return_type = self.parsed_fn_signature.return_type
-            return_annotation = return_type.annotation
-
-            self._response_handler_mapping["response_type_handler"] = response_type_handler = create_response_handler(
-                after_request=after_request,
-                background=self.background,
-                cookies=cookies,
-                headers=headers,
-                media_type=media_type,
-                status_code=self.status_code,
-                type_encoders=type_encoders,
-            )
-
-            if return_type.is_subclass_of(Response):
-                self._response_handler_mapping["default_handler"] = response_type_handler
-            elif is_async_callable(return_annotation) or return_annotation is ASGIApp:
-                self._response_handler_mapping["default_handler"] = create_generic_asgi_response_handler(
-                    after_request=after_request
-                )
-            else:
-                self._response_handler_mapping["default_handler"] = create_data_handler(
-                    after_request=after_request,
-                    background=self.background,
-                    cookies=cookies,
-                    headers=headers,
-                    media_type=media_type,
-                    response_class=response_class,
-                    status_code=self.status_code,
-                    type_encoders=type_encoders,
-                )
-
-        return cast(
-            "Callable[[Any], Awaitable[ASGIApp]]",
-            self._response_handler_mapping["response_type_handler"]
-            if is_response_type_data
-            else self._response_handler_mapping["default_handler"],
-        )
-
-    async def to_response(self, data: Any, request: Request) -> ASGIApp:
-        """Return a :class:`Response <.response.Response>` from the handler by resolving and calling it.
-
-        Args:
-            data: Either an instance of a :class:`Response <.response.Response>`,
-                a Response instance or an arbitrary value.
-            request: A :class:`Request <.connection.Request>` instance
-
-        Returns:
-            A Response instance
-        """
-        if return_dto_type := self.resolve_return_dto():
-            data = return_dto_type(request).data_to_encodable_type(data)
-
-        response_handler = self._get_response_handler(is_response_type_data=isinstance(data, Response))
-        return await response_handler(data=data, request=request)
+    def _resolve_after_request(self) -> AfterRequestHookHandler | None:
+        after = [layer.after_request for layer in self._ownership_layers if layer.after_request]
+        return after[-1] if after else None  # type: ignore[return-value]
 
     def on_registration(self, app: Litestar, route: BaseRoute) -> None:
         super().on_registration(app, route=route)
@@ -607,6 +532,17 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.resolve_include_in_schema()
 
         self._get_kwargs_model_for_route(route.path_parameters)
+        self._default_response_handler, self._response_type_handler = self._create_response_handlers(
+            media_type=self.media_type,
+            response_class=self.resolve_response_class(),
+            cookies=self.resolve_response_cookies(),
+            headers=self.resolve_response_headers(),
+            type_encoders=self.resolve_type_encoders(),
+            return_type=self.parsed_fn_signature.return_type,
+            status_code=self.status_code,
+            background=self.background,
+            after_request=self._resolve_after_request(),
+        )
 
 
     def _get_kwargs_model_for_route(self, path_parameters: Iterable[str]) -> KwargsModel:
@@ -667,6 +603,47 @@ class HTTPRouteHandler(BaseRouteHandler):
                 "processed request data, use the 'data' parameter."
             )
 
+    @staticmethod
+    def _create_response_handlers(
+        *,
+        media_type: MediaType | str,
+        response_class: type[Response],
+        headers: frozenset[ResponseHeader],
+        cookies: frozenset[Cookie],
+        type_encoders: TypeEncodersMap,
+        return_type: FieldDefinition,
+        status_code: int,
+        background: BackgroundTask | BackgroundTasks | None,
+        after_request: AfterRequestHookHandler | None,
+    ) -> tuple[Callable[..., Awaitable[ASGIApp]], Callable[..., Awaitable[ASGIApp]]]:
+        media_type = media_type.value if isinstance(media_type, Enum) else media_type
+        return_annotation = return_type.annotation
+
+        response_type_handler = create_response_handler(
+            after_request=after_request,
+            background=background,
+            cookies=cookies,
+            headers=headers,
+            media_type=media_type,
+            status_code=status_code,
+            type_encoders=type_encoders,
+        )
+
+        if is_async_callable(return_annotation) or return_annotation is ASGIApp:
+            default_handler = create_generic_asgi_response_handler(after_request=after_request)
+        else:
+            default_handler = create_data_handler(
+                after_request=after_request,
+                background=background,
+                cookies=cookies,
+                headers=headers,
+                media_type=media_type,
+                response_class=response_class,
+                status_code=status_code,
+                type_encoders=type_encoders,
+            )
+
+        return default_handler, response_type_handler
 
     async def handle(self, connection: Request[Any, Any, Any]) -> None:
         """ASGI app that creates a :class:`~.connection.Request` from the passed in args, determines which handler function to call and then
@@ -711,18 +688,9 @@ class HTTPRouteHandler(BaseRouteHandler):
         Returns:
             An instance of Response or a compatible ASGIApp or a subclass of it
         """
-        if self.cache and (response := await self._get_cached_response(request=request)):
-            return response
+        if self.cache and (cached_response := await self._get_cached_response(request=request)):
+            return cached_response
 
-        return await self._call_handler_function(request=request)
-
-    async def _call_handler_function(self, request: Request) -> ASGIApp:
-        """Call the before request handlers, retrieve any data required for the route handler, and call the route
-        handler's ``to_response`` method.
-
-        This is wrapped in a try except block - and if an exception is raised,
-        it tries to pass it to an appropriate exception handler - if defined.
-        """
         response_data: Any = None
         cleanup_group: DependencyCleanupGroup | None = None
 
@@ -868,3 +836,24 @@ class HTTPRouteHandler(BaseRouteHandler):
                 await send(message)
 
         return cached_response
+
+    async def to_response(self, data: Any, request: Request) -> ASGIApp:
+        """Return a :class:`Response <.response.Response>` from the handler by resolving and calling it.
+
+        Args:
+            data: Either an instance of a :class:`Response <.response.Response>`,
+                a Response instance or an arbitrary value.
+            request: A :class:`Request <.connection.Request>` instance
+
+        Returns:
+            A Response instance
+        """
+        if return_dto_type := self.resolve_return_dto():
+            data = return_dto_type(request).data_to_encodable_type(data)
+
+        handler = cast(
+            Callable[..., Awaitable[ASGIApp]],
+            self._response_type_handler if isinstance(data, Response) else self._default_response_handler,
+        )
+
+        return await handler(data=data, request=request)

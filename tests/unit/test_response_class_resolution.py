@@ -36,27 +36,17 @@ def test_response_class_resolution_of_layers(
     expected: Type[Response],
 ) -> None:
     class MyController(Controller):
-        @get()
+        response_class = controller_response_class
+
+        @get(response_class=handler_response_class)
         def handler(self) -> None:
             pass
 
-    if controller_response_class:
-        MyController.response_class = ControllerResponse
+    router = Router(path="/", route_handlers=[MyController], response_class=router_response_class)
 
-    router = Router(path="/", route_handlers=[MyController])
-
-    if router_response_class:
-        router.response_class = router_response_class
-
-    app = Litestar(route_handlers=[router])
-
-    if app_response_class:
-        app.response_class = app_response_class
+    app = Litestar(route_handlers=[router], response_class=app_response_class)
 
     route_handler: HTTPRouteHandler = app.route_handler_method_map["/"][HttpMethod.GET]  # type: ignore[assignment]
-
-    if handler_response_class:
-        route_handler.response_class = handler_response_class
 
     response_class = route_handler.resolve_response_class()
     assert response_class is expected
