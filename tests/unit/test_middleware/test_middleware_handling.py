@@ -74,9 +74,8 @@ def test_custom_middleware_processing(middleware: Any) -> None:
             unpacked_middleware.append(cur)
             cur = cast("ASGIApp", cur.app)  # pyright: ignore
         unpacked_middleware.append(cur)
-        assert len(unpacked_middleware) == 4
 
-        middleware_instance = unpacked_middleware[1]
+        middleware_instance, *_ = unpacked_middleware
 
         assert isinstance(
             middleware_instance,

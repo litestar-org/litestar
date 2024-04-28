@@ -24,3 +24,24 @@ def value_or_default(value: ValueT | EmptyType, default: DefaultT) -> ValueT | D
         The value or default value.
     """
     return default if value is Empty else value
+
+
+class EmptyValueError(ValueError):
+    """Raised when an empty value is encountered."""
+
+
+def value_or_raise(value: ValueT | EmptyType) -> ValueT:
+    """Return `value` handling the case where it is empty.
+
+    Args:
+        value: The value to check.
+
+    Returns:
+        The value.
+
+    Raises:
+        EmptyValueError: If `value` is `Empty`.
+    """
+    if value is Empty:
+        raise EmptyValueError("Empty value encountered")
+    return value

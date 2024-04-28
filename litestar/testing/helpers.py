@@ -169,7 +169,7 @@ def create_test_client(
             this app. Can be overridden by route handlers.
         compression_config: Configures compression behaviour of the application, this enabled a builtin or user
             defined Compression middleware.
-        cors_config: If set, configures :class:`CORSMiddleware <.middleware.cors.CORSMiddleware>`.
+        cors_config: If set, configures CORS handling for the application.
         csrf_config: If set, configures :class:`CSRFMiddleware <.middleware.csrf.CSRFMiddleware>`.
         debug: If ``True``, app errors rendered as HTML with a stack trace.
         dependencies: A string keyed mapping of dependency :class:`Providers <.di.Provide>`.
@@ -430,7 +430,7 @@ def create_async_test_client(
             this app. Can be overridden by route handlers.
         compression_config: Configures compression behaviour of the application, this enabled a builtin or user
             defined Compression middleware.
-        cors_config: If set, configures :class:`CORSMiddleware <.middleware.cors.CORSMiddleware>`.
+        cors_config: If set, configures CORS handling for the application.
         csrf_config: If set, configures :class:`CSRFMiddleware <.middleware.csrf.CSRFMiddleware>`.
         debug: If ``True``, app errors rendered as HTML with a stack trace.
         dependencies: A string keyed mapping of dependency :class:`Providers <.di.Provide>`.
