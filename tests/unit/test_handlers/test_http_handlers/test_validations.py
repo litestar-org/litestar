@@ -47,9 +47,7 @@ async def test_function_validation() -> None:
 
         Litestar(route_handlers=[method_with_no_annotation])
 
-        method_with_no_annotation.on_registration(
-            Litestar(), HTTPRoute(path="/", route_handlers=[method_with_no_annotation])
-        )
+        method_with_no_annotation.on_registration(HTTPRoute(path="/", route_handlers=[method_with_no_annotation]))
 
     with pytest.raises(ImproperlyConfiguredException):
 
@@ -59,7 +57,7 @@ async def test_function_validation() -> None:
 
         Litestar(route_handlers=[method_with_no_content])
 
-        method_with_no_content.on_registration(Litestar(), HTTPRoute(path="/", route_handlers=[method_with_no_content]))
+        method_with_no_content.on_registration(HTTPRoute(path="/", route_handlers=[method_with_no_content]))
 
     with pytest.raises(ImproperlyConfiguredException):
 
@@ -69,9 +67,7 @@ async def test_function_validation() -> None:
 
         Litestar(route_handlers=[method_with_not_modified])
 
-        method_with_not_modified.on_registration(
-            Litestar(), HTTPRoute(path="/", route_handlers=[method_with_not_modified])
-        )
+        method_with_not_modified.on_registration(HTTPRoute(path="/", route_handlers=[method_with_not_modified]))
 
     with pytest.raises(ImproperlyConfiguredException):
 
@@ -82,7 +78,7 @@ async def test_function_validation() -> None:
         Litestar(route_handlers=[method_with_status_lower_than_200])
 
         method_with_status_lower_than_200.on_registration(
-            Litestar(), HTTPRoute(path="/", route_handlers=[method_with_status_lower_than_200])
+            HTTPRoute(path="/", route_handlers=[method_with_status_lower_than_200])
         )
 
     @get(path="/", status_code=HTTP_307_TEMPORARY_REDIRECT)
@@ -91,7 +87,7 @@ async def test_function_validation() -> None:
 
     Litestar(route_handlers=[redirect_method])
 
-    redirect_method.on_registration(Litestar(), HTTPRoute(path="/", route_handlers=[redirect_method]))
+    redirect_method.on_registration(HTTPRoute(path="/", route_handlers=[redirect_method]))
 
     @get(path="/")
     def file_method() -> File:
@@ -99,7 +95,7 @@ async def test_function_validation() -> None:
 
     Litestar(route_handlers=[file_method])
 
-    file_method.on_registration(Litestar(), HTTPRoute(path="/", route_handlers=[file_method]))
+    file_method.on_registration(HTTPRoute(path="/", route_handlers=[file_method]))
 
     assert not file_method.media_type
 
@@ -109,7 +105,7 @@ async def test_function_validation() -> None:
         def test_function_1(socket: WebSocket) -> None:
             return None
 
-        test_function_1.on_registration(Litestar(), HTTPRoute(path="/", route_handlers=[test_function_1]))
+        test_function_1.on_registration(HTTPRoute(path="/", route_handlers=[test_function_1]))
 
     with pytest.raises(ImproperlyConfiguredException):
 
@@ -119,7 +115,7 @@ async def test_function_validation() -> None:
 
         Litestar(route_handlers=[test_function_2])
 
-        test_function_2.on_registration(Litestar(), HTTPRoute(path="/", route_handlers=[test_function_2]))
+        test_function_2.on_registration(HTTPRoute(path="/", route_handlers=[test_function_2]))
 
 
 @pytest.mark.parametrize(

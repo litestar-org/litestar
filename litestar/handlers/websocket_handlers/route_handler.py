@@ -12,7 +12,6 @@ from litestar.utils.predicates import is_async_callable
 if TYPE_CHECKING:
     from litestar._kwargs import KwargsModel
     from litestar._kwargs.cleanup import DependencyCleanupGroup
-    from litestar.app import Litestar
     from litestar.routes import BaseRoute
     from litestar.types import Dependencies, EmptyType, ExceptionHandler, Guard, Middleware
 
@@ -105,8 +104,8 @@ class WebsocketRouteHandler(BaseRouteHandler):
         if not is_async_callable(self.fn):
             raise ImproperlyConfiguredException(f"{self}: WebSocket handler functions must be asynchronous")
 
-    def on_registration(self, app: Litestar, route: BaseRoute) -> None:
-        super().on_registration(app=app, route=route)
+    def on_registration(self, route: BaseRoute) -> None:
+        super().on_registration(route=route)
         self._kwargs_model = self._create_kwargs_model(path_parameters=route.path_parameters)
 
     async def handle(self, connection: WebSocket[Any, Any, Any]) -> None:

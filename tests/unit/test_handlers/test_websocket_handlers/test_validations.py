@@ -2,7 +2,7 @@ from typing import Any
 
 import pytest
 
-from litestar import Litestar, WebSocket, websocket
+from litestar import WebSocket, websocket
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.routes import WebSocketRoute
 from litestar.testing import create_test_client
@@ -14,7 +14,7 @@ def test_raises_when_socket_arg_is_missing() -> None:
 
     with pytest.raises(ImproperlyConfiguredException):
         handler = websocket(path="/")(fn_without_socket_arg)  # type: ignore[arg-type]
-        handler.on_registration(Litestar(), WebSocketRoute(path="/", route_handler=handler))
+        handler.on_registration(WebSocketRoute(path="/", route_handler=handler))
 
 
 def test_raises_for_return_annotation() -> None:
@@ -23,7 +23,7 @@ def test_raises_for_return_annotation() -> None:
 
     with pytest.raises(ImproperlyConfiguredException):
         handler = websocket(path="/")(fn_with_return_annotation)
-        handler.on_registration(Litestar(), WebSocketRoute(path="/", route_handler=handler))
+        handler.on_registration(WebSocketRoute(path="/", route_handler=handler))
 
 
 def test_raises_when_no_function() -> None:
@@ -39,9 +39,7 @@ def test_raises_when_sync_handler_user() -> None:
         @websocket(path="/")  # type: ignore[arg-type]
         def sync_websocket_handler(socket: WebSocket) -> None: ...
 
-        sync_websocket_handler.on_registration(
-            Litestar(), WebSocketRoute(path="/", route_handler=sync_websocket_handler)
-        )
+        sync_websocket_handler.on_registration(WebSocketRoute(path="/", route_handler=sync_websocket_handler))
 
 
 def test_raises_when_data_kwarg_is_used() -> None:
@@ -51,7 +49,7 @@ def test_raises_when_data_kwarg_is_used() -> None:
         async def websocket_handler_with_data_kwarg(socket: WebSocket, data: Any) -> None: ...
 
         websocket_handler_with_data_kwarg.on_registration(
-            Litestar(), WebSocketRoute(path="/", route_handler=websocket_handler_with_data_kwarg)
+            WebSocketRoute(path="/", route_handler=websocket_handler_with_data_kwarg)
         )
 
 
@@ -62,7 +60,7 @@ def test_raises_when_request_kwarg_is_used() -> None:
         async def websocket_handler_with_request_kwarg(socket: WebSocket, request: Any) -> None: ...
 
         websocket_handler_with_request_kwarg.on_registration(
-            Litestar(), WebSocketRoute(path="/", route_handler=websocket_handler_with_request_kwarg)
+            WebSocketRoute(path="/", route_handler=websocket_handler_with_request_kwarg)
         )
 
 
@@ -73,5 +71,5 @@ def test_raises_when_body_kwarg_is_used() -> None:
         async def websocket_handler_with_request_kwarg(socket: WebSocket, body: bytes) -> None: ...
 
         websocket_handler_with_request_kwarg.on_registration(
-            Litestar(), WebSocketRoute(path="/", route_handler=websocket_handler_with_request_kwarg)
+            WebSocketRoute(path="/", route_handler=websocket_handler_with_request_kwarg)
         )

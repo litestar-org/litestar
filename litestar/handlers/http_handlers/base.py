@@ -65,7 +65,6 @@ if TYPE_CHECKING:
 
     from litestar._kwargs import KwargsModel
     from litestar._kwargs.cleanup import DependencyCleanupGroup
-    from litestar.app import Litestar
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
     from litestar.config.response_cache import CACHE_FOREVER
     from litestar.dto import AbstractDTO
@@ -526,8 +525,8 @@ class HTTPRouteHandler(BaseRouteHandler):
         after = [layer.after_request for layer in self._ownership_layers if layer.after_request]
         return after[-1] if after else None  # type: ignore[return-value]
 
-    def on_registration(self, app: Litestar, route: BaseRoute) -> None:
-        super().on_registration(app, route=route)
+    def on_registration(self, route: BaseRoute) -> None:
+        super().on_registration(route=route)
         self._resolve_after_response()
         self.resolve_include_in_schema()
 

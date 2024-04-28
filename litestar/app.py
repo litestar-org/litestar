@@ -673,7 +673,7 @@ class Litestar(Router):
             route_handlers = get_route_handlers(route)
 
             for route_handler in route_handlers:
-                route_handler.on_registration(self, route=route)
+                route_handler.on_registration(route=route)
 
             for plugin in self.plugins.receive_route:
                 plugin.receive_route(route)
