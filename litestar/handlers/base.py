@@ -59,7 +59,7 @@ class BaseRouteHandler:
         "_resolved_signature_namespace",
         "_resolved_type_decoders",
         "_resolved_type_encoders",
-        "_signature_model",
+        "_resolved_signature_model",
         "dependencies",
         "dto",
         "exception_handlers",
@@ -134,7 +134,7 @@ class BaseRouteHandler:
         self._resolved_signature_namespace: dict[str, Any] | EmptyType = Empty
         self._resolved_type_decoders: TypeDecodersSequence | EmptyType = Empty
         self._resolved_type_encoders: TypeEncodersMap | EmptyType = Empty
-        self._signature_model: type[SignatureModel] | EmptyType = Empty
+        self._resolved_signature_model: type[SignatureModel] | EmptyType = Empty
 
         self.dependencies = dependencies
         self.dto = dto
@@ -162,7 +162,7 @@ class BaseRouteHandler:
     @property
     def handler_id(self) -> str:
         """A unique identifier used for generation of DTOs."""
-        return f"{self!s}::{sum(id(layer) for layer in self.ownership_layers)}"
+        return f"{self!s}::{sum(id(layer) for layer in self._ownership_layers)}"
 
     @property
     def default_deserializer(self) -> Callable[[Any, Any], Any]:
@@ -185,22 +185,22 @@ class BaseRouteHandler:
         return partial(default_serializer, type_encoders=self.resolve_type_encoders())
 
     @property
-    def signature_model(self) -> type[SignatureModel]:
+    def _signature_model(self) -> type[SignatureModel]:
         """Get the signature model for the route handler.
 
         Returns:
             A signature model for the route handler.
 
         """
-        if self._signature_model is Empty:
-            self._signature_model = SignatureModel.create(
-                dependency_name_set=self.dependency_name_set,
+        if self._resolved_signature_model is Empty:
+            self._resolved_signature_model = SignatureModel.create(
+                dependency_name_set=self._dependency_name_set,
                 fn=cast("AnyCallable", self.fn),
                 parsed_signature=self.parsed_fn_signature,
                 data_dto=self.resolve_data_dto(),
                 type_decoders=self.resolve_type_decoders(),
             )
-        return self._signature_model
+        return self._resolved_signature_model
 
     @property
     def parsed_fn_signature(self) -> ParsedSignature:
@@ -213,7 +213,7 @@ class BaseRouteHandler:
         """
         if self._parsed_fn_signature is Empty:
             self._parsed_fn_signature = ParsedSignature.from_fn(
-                unwrap_partial(self.fn), self.resolve_signature_namespace()
+                unwrap_partial(self.fn), self._resolve_signature_namespace()
             )
 
         return self._parsed_fn_signature
@@ -243,13 +243,13 @@ class BaseRouteHandler:
         return get_name(unwrap_partial(self.fn))
 
     @property
-    def dependency_name_set(self) -> set[str]:
+    def _dependency_name_set(self) -> set[str]:
         """Set of all dependency names provided in the handler's ownership layers."""
-        layered_dependencies = (layer.dependencies or {} for layer in self.ownership_layers)
+        layered_dependencies = (layer.dependencies or {} for layer in self._ownership_layers)
         return {name for layer in layered_dependencies for name in layer}  # pyright: ignore
 
     @property
-    def ownership_layers(self) -> list[Self | Controller | Router]:
+    def _ownership_layers(self) -> list[Self | Controller | Router]:
         """Return the handler layers from the app down to the route handler.
 
         ``app -> ... -> route handler``
@@ -265,7 +265,7 @@ class BaseRouteHandler:
 
     @property
     def app(self) -> Litestar:
-        return cast("Litestar", self.ownership_layers[0])
+        return cast("Litestar", self._ownership_layers[0])
 
     def resolve_type_encoders(self) -> TypeEncodersMap:
         """Return a merged type_encoders mapping.
@@ -278,7 +278,7 @@ class BaseRouteHandler:
         if self._resolved_type_encoders is Empty:
             self._resolved_type_encoders = {}
 
-            for layer in self.ownership_layers:
+            for layer in self._ownership_layers:
                 if type_encoders := getattr(layer, "type_encoders", None):
                     self._resolved_type_encoders.update(type_encoders)
         return cast("TypeEncodersMap", self._resolved_type_encoders)
@@ -294,7 +294,7 @@ class BaseRouteHandler:
         if self._resolved_type_decoders is Empty:
             self._resolved_type_decoders = []
 
-            for layer in self.ownership_layers:
+            for layer in self._ownership_layers:
                 if type_decoders := getattr(layer, "type_decoders", None):
                     self._resolved_type_decoders.extend(list(type_decoders))
         return cast("TypeDecodersSequence", self._resolved_type_decoders)
@@ -304,7 +304,7 @@ class BaseRouteHandler:
         if self._resolved_layered_parameters is Empty:
             parameter_kwargs: dict[str, ParameterKwarg] = {}
 
-            for layer in self.ownership_layers:
+            for layer in self._ownership_layers:
                 parameter_kwargs.update(getattr(layer, "parameters", {}) or {})
 
             self._resolved_layered_parameters = {
@@ -314,12 +314,12 @@ class BaseRouteHandler:
 
         return self._resolved_layered_parameters
 
-    def resolve_guards(self) -> list[Guard]:
+    def _resolve_guards(self) -> list[Guard]:
         """Return all guards in the handlers scope, starting from highest to current layer."""
         if self._resolved_guards is Empty:
             self._resolved_guards = []
 
-            for layer in self.ownership_layers:
+            for layer in self._ownership_layers:
                 self._resolved_guards.extend(layer.guards or [])  # pyright: ignore
 
             self._resolved_guards = cast(
@@ -331,7 +331,7 @@ class BaseRouteHandler:
     def _get_plugin_registry(self) -> PluginRegistry | None:
         from litestar.app import Litestar
 
-        root_owner = self.ownership_layers[0]
+        root_owner = self._ownership_layers[0]
         if isinstance(root_owner, Litestar):
             return root_owner.plugins
         return None
@@ -341,7 +341,7 @@ class BaseRouteHandler:
         plugin_registry = self._get_plugin_registry()
         if self._resolved_dependencies is Empty:
             self._resolved_dependencies = {}
-            for layer in self.ownership_layers:
+            for layer in self._ownership_layers:
                 for key, provider in (layer.dependencies or {}).items():
                     self._resolved_dependencies[key] = self._resolve_dependency(
                         key=key, provider=provider, plugin_registry=plugin_registry
@@ -370,11 +370,11 @@ class BaseRouteHandler:
                 signature, init_type_hints = plugin.get_typed_init(dependency)
                 provider.parsed_fn_signature = ParsedSignature.from_signature(signature, init_type_hints)
             else:
-                provider.parsed_fn_signature = ParsedSignature.from_fn(dependency, self.resolve_signature_namespace())
+                provider.parsed_fn_signature = ParsedSignature.from_fn(dependency, self._resolve_signature_namespace())
 
         if not getattr(provider, "signature_model", None):
             provider.signature_model = SignatureModel.create(
-                dependency_name_set=self.dependency_name_set,
+                dependency_name_set=self._dependency_name_set,
                 fn=provider.dependency,
                 parsed_signature=provider.parsed_fn_signature,
                 data_dto=self.resolve_data_dto(),
@@ -389,7 +389,7 @@ class BaseRouteHandler:
         reversed.
         """
         resolved_middleware: list[Middleware] = []
-        for layer in self.ownership_layers:
+        for layer in self._ownership_layers:
             resolved_middleware.extend(layer.middleware or [])  # pyright: ignore
         return list(reversed(resolved_middleware))
 
@@ -399,11 +399,11 @@ class BaseRouteHandler:
         This method is memoized so the computation occurs only once.
         """
         resolved_exception_handlers: dict[int | type[Exception], ExceptionHandler] = {}
-        for layer in self.ownership_layers:
+        for layer in self._ownership_layers:
             resolved_exception_handlers.update(layer.exception_handlers or {})  # pyright: ignore
         return resolved_exception_handlers
 
-    def resolve_opts(self) -> None:
+    def _resolve_opts(self) -> None:
         """Build the route handler opt dictionary by going from top to bottom.
 
         When merging keys from multiple layers, if the same key is defined by multiple layers, the value from the
@@ -411,12 +411,12 @@ class BaseRouteHandler:
         """
 
         opt: dict[str, Any] = {}
-        for layer in self.ownership_layers:
+        for layer in self._ownership_layers:
             opt.update(layer.opt or {})  # pyright: ignore
 
         self.opt = opt
 
-    def resolve_signature_namespace(self) -> dict[str, Any]:
+    def _resolve_signature_namespace(self) -> dict[str, Any]:
         """Build the route handler signature namespace dictionary by going from top to bottom.
 
         When merging keys from multiple layers, if the same key is defined by multiple layers, the value from the
@@ -424,7 +424,7 @@ class BaseRouteHandler:
         """
         if self._resolved_signature_namespace is Empty:
             ns: dict[str, Any] = {}
-            for layer in self.ownership_layers:
+            for layer in self._ownership_layers:
                 merge_signature_namespaces(
                     signature_namespace=ns, additional_signature_namespace=layer.signature_namespace
                 )
@@ -442,7 +442,7 @@ class BaseRouteHandler:
         if self._resolved_data_dto is Empty:
             if data_dtos := cast(
                 "list[type[AbstractDTO] | None]",
-                [layer.dto for layer in self.ownership_layers if layer.dto is not Empty],
+                [layer.dto for layer in self._ownership_layers if layer.dto is not Empty],
             ):
                 data_dto: type[AbstractDTO] | None = data_dtos[-1]
             elif self.parsed_data_field and (
@@ -477,7 +477,7 @@ class BaseRouteHandler:
         if self._resolved_return_dto is Empty:
             if return_dtos := cast(
                 "list[type[AbstractDTO] | None]",
-                [layer.return_dto for layer in self.ownership_layers if layer.return_dto is not Empty],
+                [layer.return_dto for layer in self._ownership_layers if layer.return_dto is not Empty],
             ):
                 return_dto: type[AbstractDTO] | None = return_dtos[-1]
             elif plugins_for_return_type := [
@@ -502,7 +502,7 @@ class BaseRouteHandler:
 
     async def authorize_connection(self, connection: ASGIConnection) -> None:
         """Ensure the connection is authorized by running all the route guards in scope."""
-        for guard in self.resolve_guards():
+        for guard in self._resolve_guards():
             await guard(connection, copy(self))  # type: ignore[misc]
 
     @staticmethod
@@ -527,9 +527,9 @@ class BaseRouteHandler:
         """
         self._validate_handler_function()
         self.resolve_dependencies()
-        self.resolve_guards()
+        self._resolve_guards()
         self.resolve_middleware()
-        self.resolve_opts()
+        self._resolve_opts()
         self.resolve_data_dto()
         self.resolve_return_dto()
 
@@ -565,7 +565,7 @@ class BaseRouteHandler:
         from litestar._kwargs import KwargsModel
 
         return KwargsModel.create_for_signature_model(
-            signature_model=self.signature_model,
+            signature_model=self._signature_model,
             parsed_signature=self.parsed_fn_signature,
             dependencies=self.resolve_dependencies(),
             path_parameters=set(path_parameters),

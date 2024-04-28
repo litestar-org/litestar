@@ -10,11 +10,9 @@ from typing import (
     Dict,
     Mapping,
     Optional,
-    cast,
     overload,
 )
 
-from litestar._signature import SignatureModel
 from litestar.connection import WebSocket
 from litestar.exceptions import ImproperlyConfiguredException, WebSocketDisconnect
 from litestar.types import (
@@ -230,7 +228,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         )
 
     def _prepare_fn(self, fn: AnyCallable) -> ListenerHandler:
-        parsed_signature = ParsedSignature.from_fn(fn, self.resolve_signature_namespace())
+        parsed_signature = ParsedSignature.from_fn(fn, self._resolve_signature_namespace())
 
         if "data" not in parsed_signature.parameters:
             raise ImproperlyConfiguredException("Websocket listeners must accept a 'data' parameter")
@@ -246,13 +244,13 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         self._parsed_fn_signature = ParsedSignature.from_signature(
             create_handler_signature(parsed_signature.original_signature),
             fn_type_hints={
-                **get_fn_type_hints(fn, namespace=self.resolve_signature_namespace()),
-                **get_fn_type_hints(ListenerHandler.__call__, namespace=self.resolve_signature_namespace()),
+                **get_fn_type_hints(fn, namespace=self._resolve_signature_namespace()),
+                **get_fn_type_hints(ListenerHandler.__call__, namespace=self._resolve_signature_namespace()),
             },
         )
 
         return ListenerHandler(
-            listener=self, fn=fn, parsed_signature=parsed_signature, namespace=self.resolve_signature_namespace()
+            listener=self, fn=fn, parsed_signature=parsed_signature, namespace=self._resolve_signature_namespace()
         )
 
     def _validate_handler_function(self) -> None:

@@ -342,7 +342,7 @@ class HTTPRouteHandler(BaseRouteHandler):
 
         if self._resolved_request_class is Empty:
             self._resolved_request_class = next(
-                (layer.request_class for layer in reversed(self.ownership_layers) if layer.request_class is not None),
+                (layer.request_class for layer in reversed(self._ownership_layers) if layer.request_class is not None),
                 Request,
             )
 
@@ -358,7 +358,11 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
         if self._resolved_response_class is Empty:
             self._resolved_response_class = next(
-                (layer.response_class for layer in reversed(self.ownership_layers) if layer.response_class is not None),
+                (
+                    layer.response_class
+                    for layer in reversed(self._ownership_layers)
+                    if layer.response_class is not None
+                ),
                 Response,
             )
 
@@ -372,7 +376,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
         resolved_response_headers: dict[str, ResponseHeader] = {}
 
-        for layer in self.ownership_layers:
+        for layer in self._ownership_layers:
             if layer_response_headers := layer.response_headers:
                 if isinstance(layer_response_headers, Mapping):
                     # this can't happen unless you manually set response_headers on an instance, which would result in a
@@ -399,7 +403,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             A list of :class:`Cookie <.datastructures.Cookie>` instances.
         """
         response_cookies: set[Cookie] = set()
-        for layer in reversed(self.ownership_layers):
+        for layer in reversed(self._ownership_layers):
             if layer_response_cookies := layer.response_cookies:
                 if isinstance(layer_response_cookies, Mapping):
                     # this can't happen unless you manually set response_cookies on an instance, which would result in a
@@ -411,7 +415,7 @@ class HTTPRouteHandler(BaseRouteHandler):
                     response_cookies.update(cast("set[Cookie]", layer_response_cookies))
         return frozenset(response_cookies)
 
-    def resolve_before_request(self) -> AsyncAnyCallable | None:
+    def _resolve_before_request(self) -> AsyncAnyCallable | None:
         """Resolve the before_handler handler by starting from the route handler and moving up.
 
         If a handler is found it is returned, otherwise None is set.
@@ -421,11 +425,11 @@ class HTTPRouteHandler(BaseRouteHandler):
             An optional :class:`before request lifecycle hook handler <.types.BeforeRequestHookHandler>`
         """
         if self._resolved_before_request is Empty:
-            before_request_handlers = [layer.before_request for layer in self.ownership_layers if layer.before_request]
+            before_request_handlers = [layer.before_request for layer in self._ownership_layers if layer.before_request]
             self._resolved_before_request = before_request_handlers[-1] if before_request_handlers else None
         return cast("AsyncAnyCallable | None", self._resolved_before_request)
 
-    def resolve_after_response(self) -> AsyncAnyCallable | None:
+    def _resolve_after_response(self) -> AsyncAnyCallable | None:
         """Resolve the after_response handler by starting from the route handler and moving up.
 
         If a handler is found it is returned, otherwise None is set.
@@ -437,7 +441,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         if self._resolved_after_response is Empty:
             after_response_handlers: list[AsyncAnyCallable] = [
                 layer.after_response  # type: ignore[misc]
-                for layer in self.ownership_layers
+                for layer in self._ownership_layers
                 if layer.after_response
             ]
             self._resolved_after_response = after_response_handlers[-1] if after_response_handlers else None
@@ -455,7 +459,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
         if self._resolved_include_in_schema is Empty:
             include_in_schemas = [
-                i.include_in_schema for i in self.ownership_layers if isinstance(i.include_in_schema, bool)
+                i.include_in_schema for i in self._ownership_layers if isinstance(i.include_in_schema, bool)
             ]
             self._resolved_include_in_schema = include_in_schemas[-1] if include_in_schemas else True
 
@@ -472,7 +476,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
         if self._resolved_security is Empty:
             self._resolved_security = []
-            for layer in self.ownership_layers:
+            for layer in self._ownership_layers:
                 if isinstance(layer.security, Sequence):
                     self._resolved_security.extend(layer.security)
 
@@ -488,7 +492,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
         if self._resolved_tags is Empty:
             tag_set = set()
-            for layer in self.ownership_layers:
+            for layer in self._ownership_layers:
                 for tag in layer.tags or []:
                     tag_set.add(tag)
             self._resolved_tags = sorted(tag_set)
@@ -502,7 +506,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         max_body_size = self._resolved_request_max_body_size = next(  # pyright: ignore
             (
                 max_body_size
-                for layer in reversed(self.ownership_layers)
+                for layer in reversed(self._ownership_layers)
                 if (max_body_size := layer.request_max_body_size) is not Empty
             ),
             Empty,
@@ -514,7 +518,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             )
         return max_body_size
 
-    def get_response_handler(self, is_response_type_data: bool = False) -> Callable[..., Awaitable[ASGIApp]]:
+    def _get_response_handler(self, is_response_type_data: bool = False) -> Callable[..., Awaitable[ASGIApp]]:
         """Resolve the response_handler function for the route handler.
 
         This method is memoized so the computation occurs only once.
@@ -528,7 +532,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         if self._response_handler_mapping["default_handler"] is Empty:
             after_request_handlers: list[AsyncAnyCallable] = [
                 layer.after_request  # type: ignore[misc]
-                for layer in self.ownership_layers
+                for layer in self._ownership_layers
                 if layer.after_request
             ]
             after_request = cast(
@@ -594,12 +598,12 @@ class HTTPRouteHandler(BaseRouteHandler):
         if return_dto_type := self.resolve_return_dto():
             data = return_dto_type(request).data_to_encodable_type(data)
 
-        response_handler = self.get_response_handler(is_response_type_data=isinstance(data, Response))
+        response_handler = self._get_response_handler(is_response_type_data=isinstance(data, Response))
         return await response_handler(data=data, request=request)
 
     def on_registration(self, app: Litestar, route: BaseRoute) -> None:
         super().on_registration(app, route=route)
-        self.resolve_after_response()
+        self._resolve_after_response()
         self.resolve_include_in_schema()
 
         self._get_kwargs_model_for_route(route.path_parameters)
@@ -677,7 +681,7 @@ class HTTPRouteHandler(BaseRouteHandler):
                 None
         """
 
-        if self.resolve_guards():
+        if self._resolve_guards():
             await self.authorize_connection(connection=connection)
 
         try:
@@ -685,7 +689,7 @@ class HTTPRouteHandler(BaseRouteHandler):
 
             await response(connection.scope, connection.receive, connection.send)
 
-            if after_response_handler := self.resolve_after_response():
+            if after_response_handler := self._resolve_after_response():
                 await after_response_handler(connection)
         finally:
             if (form_data := ScopeState.from_scope(connection.scope).form) is not Empty:
@@ -722,7 +726,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         response_data: Any = None
         cleanup_group: DependencyCleanupGroup | None = None
 
-        if before_request_handler := self.resolve_before_request():
+        if before_request_handler := self._resolve_before_request():
             response_data = await before_request_handler(request)
 
         if not response_data:
@@ -810,22 +814,19 @@ class HTTPRouteHandler(BaseRouteHandler):
         cleanup_group: DependencyCleanupGroup | None = None
         kwargs_models_model = self._get_kwargs_model_for_route(request.scope["path_params"].keys())
 
-        if kwargs_models_model.has_kwargs and self.signature_model:
+        if kwargs_models_model.has_kwargs and self._signature_model:
             try:
                 kwargs = await kwargs_models_model.to_kwargs(connection=request)
             except SerializationException as e:
                 raise ClientException(str(e)) from e
 
-            if "data" in kwargs:
-                data = kwargs["data"]
-
-                if data is Empty:
-                    del kwargs["data"]
+            if "data" in kwargs and kwargs["data"] is Empty:
+                del kwargs["data"]
 
             if kwargs_models_model.dependency_batches:
                 cleanup_group = await kwargs_models_model.resolve_dependencies(request, kwargs)
 
-            parsed_kwargs = self.signature_model.parse_values_from_connection_kwargs(
+            parsed_kwargs = self._signature_model.parse_values_from_connection_kwargs(
                 connection=request,
                 kwargs=kwargs,
             )
