@@ -119,8 +119,8 @@ class WebsocketRouteHandler(BaseRouteHandler):
             None
         """
 
-        handler_parameter_model = self._kwargs_model
-        if handler_parameter_model is Empty:
+        handler_kwargs_model = self._kwargs_model
+        if handler_kwargs_model is Empty:
             raise ImproperlyConfiguredException("handler parameter model not defined")
 
         if self.resolve_guards():
@@ -129,11 +129,11 @@ class WebsocketRouteHandler(BaseRouteHandler):
         parsed_kwargs: dict[str, Any] = {}
         cleanup_group: DependencyCleanupGroup | None = None
 
-        if handler_parameter_model.has_kwargs and self.signature_model:
-            parsed_kwargs = await handler_parameter_model.to_kwargs(connection=connection)
+        if handler_kwargs_model.has_kwargs and self.signature_model:
+            parsed_kwargs = await handler_kwargs_model.to_kwargs(connection=connection)
 
-            if handler_parameter_model.dependency_batches:
-                cleanup_group = await handler_parameter_model.resolve_dependencies(connection, parsed_kwargs)
+            if handler_kwargs_model.dependency_batches:
+                cleanup_group = await handler_kwargs_model.resolve_dependencies(connection, parsed_kwargs)
 
             parsed_kwargs = self.signature_model.parse_values_from_connection_kwargs(
                 connection=connection, **parsed_kwargs
