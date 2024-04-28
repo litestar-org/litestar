@@ -259,23 +259,6 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         """Validate the route handler function once it's set by inspecting its return annotations."""
         # validation occurs in the call method
 
-    @property
-    def signature_model(self) -> type[SignatureModel]:
-        """Get the signature model for the route handler.
-
-        Returns:
-            A signature model for the route handler.
-
-        """
-        if self._signature_model is Empty:
-            self._signature_model = SignatureModel.create(
-                dependency_name_set=self.dependency_name_set,
-                fn=cast("AnyCallable", self.fn),
-                parsed_signature=self.parsed_fn_signature,
-                type_decoders=self.resolve_type_decoders(),
-            )
-        return self._signature_model
-
     @asynccontextmanager
     async def default_connection_lifespan(
         self,
