@@ -557,6 +557,7 @@ see [the contribution guide](CONTRIBUTING.rst).
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/sherbang"><img src="https://avatars.githubusercontent.com/u/275015?v=4?s=100" width="100px;" alt="sherbang"/><br /><sub><b>sherbang</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=sherbang" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/carlsmedstad"><img src="https://avatars.githubusercontent.com/u/6952324?v=4?s=100" width="100px;" alt="Carl Smedstad"/><br /><sub><b>Carl Smedstad</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=carlsmedstad" title="Tests">⚠️</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/maintain0404"><img src="https://avatars.githubusercontent.com/u/50428534?v=4?s=100" width="100px;" alt="Taein Min"/><br /><sub><b>Taein Min</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=maintain0404" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/wallseat"><img src="https://avatars.githubusercontent.com/u/26143672?v=4?s=100" width="100px;" alt="Stanislav Lyu."/><br /><sub><b>Stanislav Lyu.</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/issues?q=author%3Awallseat" title="Bug reports">🐛</a></td>
     </tr>
   </tbody>
 </table>
