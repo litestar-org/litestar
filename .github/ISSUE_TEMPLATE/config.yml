@@ -1,4 +1,4 @@
-blank_lines_enabled: true
+blank_issues_enabled: false
 contact_links:
   - name: Litestar Documentation
     url: https://docs.litestar.dev/
