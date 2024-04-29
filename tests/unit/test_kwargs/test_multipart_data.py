@@ -394,10 +394,15 @@ def test_image_upload() -> None:
         assert response.status_code == HTTP_201_CREATED
 
 
+@pytest.mark.parametrize("optional", [True, False])
 @pytest.mark.parametrize("file_count", (1, 2))
-def test_upload_multiple_files(file_count: int) -> None:
-    @post("/")
-    async def handler(data: List[UploadFile] = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
+def test_upload_multiple_files(file_count: int, optional: bool) -> None:
+    annotation = List[UploadFile]
+    if optional:
+        annotation = Optional[annotation]  # type: ignore[misc, assignment]
+
+    @post("/", signature_namespace={"annotation": annotation})
+    async def handler(data: annotation = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:  # pyright: ignore[reportGeneralTypeIssues]
         assert len(data) == file_count
 
         for file in data:
@@ -415,13 +420,20 @@ class Files:
     file_list: List[UploadFile]
 
 
-@pytest.mark.parametrize("file_count", (1, 2))
-def test_upload_multiple_files_in_model(file_count: int) -> None:
-    @post("/")
-    async def handler(data: Files = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
-        assert len(data.file_list) == file_count
+# https://github.com/litestar-org/litestar/issues/3407
+@dataclass
+class OptionalFiles:
+    file_list: Optional[List[UploadFile]]
 
-        for file in data.file_list:
+
+@pytest.mark.parametrize("file_model", (Files, OptionalFiles))
+@pytest.mark.parametrize("file_count", (1, 2))
+def test_upload_multiple_files_in_model(file_count: int, file_model: type[Files | OptionalFiles]) -> None:
+    @post("/", signature_namespace={"file_model": file_model})
+    async def handler(data: file_model = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:  # type: ignore[valid-type]
+        assert len(data.file_list) == file_count  # type: ignore[attr-defined]
+
+        for file in data.file_list:  # type: ignore[attr-defined]
             assert await file.read() == b"1"
 
     with create_test_client([handler]) as client:
