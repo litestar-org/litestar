@@ -1,15 +1,26 @@
 """Plugin for creating and retrieving flash messages."""
 
-from dataclasses import dataclass
-from typing import Any, Mapping
+from __future__ import annotations
 
-from litestar.config.app import AppConfig
-from litestar.connection import ASGIConnection
-from litestar.contrib.minijinja import MiniJinjaTemplateEngine
+from contextlib import suppress
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Any, Mapping
+
+import litestar.exceptions
+from litestar import Request
+from litestar.exceptions import MissingDependencyException
+from litestar.middleware import DefineMiddleware
+from litestar.middleware.session import SessionMiddleware
 from litestar.plugins import InitPluginProtocol
-from litestar.template import TemplateConfig
+from litestar.security.session_auth.middleware import MiddlewareWrapper
 from litestar.template.base import _get_request_from_context
-from litestar.utils.scope.state import ScopeState
+from litestar.utils.predicates import is_class_and_subclass
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from litestar.config.app import AppConfig
+    from litestar.template import TemplateConfig
 
 
 @dataclass
@@ -39,37 +50,31 @@ class FlashPlugin(InitPluginProtocol):
         Returns:
             The application configuration with the message callable registered.
         """
-        if isinstance(self.config.template_config.engine_instance, MiniJinjaTemplateEngine):
-            from litestar.contrib.minijinja import _transform_state
-
-            self.config.template_config.engine_instance.register_template_callable(
-                "get_flashes", _transform_state(get_flashes)
-            )
+        for mw in app_config.middleware:
+            if isinstance(mw, DefineMiddleware) and is_class_and_subclass(
+                mw.middleware, (MiddlewareWrapper, SessionMiddleware)
+            ):
+                break
         else:
-            self.config.template_config.engine_instance.register_template_callable("get_flashes", get_flashes)
+            raise litestar.exceptions.ImproperlyConfiguredException("Flash messages require a session middleware.")
+        template_callable: Callable[[Any], Any] = get_flashes
+        with suppress(MissingDependencyException):
+            from litestar.contrib.minijinja import MiniJinjaTemplateEngine, _transform_state
+
+            if isinstance(self.config.template_config.engine_instance, MiniJinjaTemplateEngine):
+                template_callable = _transform_state(get_flashes)
+
+        self.config.template_config.engine_instance.register_template_callable("get_flashes", template_callable)  # pyright: ignore[reportGeneralTypeIssues]
         return app_config
 
 
-def flash(connection: ASGIConnection, message: str, category: str) -> None:
-    """Add a flash message to the request scope.
-
-    Args:
-        connection: The connection instance.
-        message: The message to flash.
-        category: The category of the message.
-    """
-    scope_state = ScopeState.from_scope(connection.scope)
-    scope_state.flash_messages.append({"message": message, "category": category})
+def flash(
+    request: Request,
+    message: Any,
+    category: str,
+) -> None:
+    request.session.setdefault("_messages", []).append({"message": message, "category": category})
 
 
 def get_flashes(context: Mapping[str, Any]) -> Any:
-    """Get flash messages from the request scope, if any.
-
-    Args:
-        context: The context dictionary.
-
-    Returns:
-        The flash messages, if any.
-    """
-    scope_state = ScopeState.from_scope(_get_request_from_context(context).scope)
-    return scope_state.flash_messages
+    return _get_request_from_context(context).session.pop("_messages", [])
