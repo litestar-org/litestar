@@ -1,4 +1,5 @@
 from litestar import get
+from litestar.params import Parameter
 
 
 @get("/")
