@@ -52,11 +52,11 @@ jobs:
 
       - name: Test
         if: ${{ !inputs.coverage }}
-        run: pdm run pytest docs/examples tests -n auto --dist=loadgroup
+        run: pdm run pytest docs/examples tests -n auto
 
       - name: Test with coverage
         if: inputs.coverage
-        run: pdm run pytest docs/examples tests -n auto --dist=loadgroup --cov
+        run: pdm run pytest docs/examples tests -n auto --cov
 
       - name: Rename coverage file
         if: inputs.coverage
