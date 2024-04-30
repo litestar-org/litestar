@@ -1,5 +1,5 @@
 from asyncio import sleep
-from typing import AsyncGenerator
+from typing import Any, AsyncGenerator
 
 from litestar import Litestar, get
 from litestar.response import ServerSentEvent, ServerSentEventMessage
