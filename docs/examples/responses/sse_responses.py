@@ -5,7 +5,7 @@ from litestar import Litestar, get
 from litestar.response import ServerSentEvent, ServerSentEventMessage
 
 
-async def my_generator() -> AsyncGenerator[ServerSentEventMessage, None]:
+async def my_generator() -> AsyncGenerator[Any, None]:
     count = 0
     while count < 10:
         await sleep(0.01)
