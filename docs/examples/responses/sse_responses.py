@@ -1,11 +1,12 @@
 from asyncio import sleep
-from typing import Any, AsyncGenerator
+from typing import AsyncGenerator
 
 from litestar import Litestar, get
 from litestar.response import ServerSentEvent, ServerSentEventMessage
+from litestar.types import SSEData
 
 
-async def my_generator() -> AsyncGenerator[Any, None]:
+async def my_generator() -> AsyncGenerator[SSEData, None]:
     count = 0
     while count < 10:
         await sleep(0.01)
