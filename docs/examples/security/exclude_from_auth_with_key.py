@@ -1,6 +1,8 @@
 from typing import Any
 
 from litestar import get
+from litestar.middleware.session.server_side import ServerSideSessionBackend, ServerSideSessionConfig
+from litestar.security.session_auth import SessionAuth
 
 
 @get("/secured")

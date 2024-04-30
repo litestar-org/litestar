@@ -21,5 +21,5 @@ class DeleteUserDTO:
 
 @post("/users")
 async def delete_user_handler(data: UserDTO, request: Request) -> None:
-    await user_repository.delete({"email": email})
+    await user_repository.delete({"email": data.email})
     request.app.emit("user_deleted", email=data.email, reason="deleted")

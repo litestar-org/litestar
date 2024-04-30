@@ -1,3 +1,17 @@
+from uuid import UUID
+
+from pydantic import BaseModel, EmailStr
+
+from litestar.middleware.session.server_side import ServerSideSessionBackend, ServerSideSessionConfig
+from litestar.security.session_auth import SessionAuth
+
+
+class User(BaseModel):
+    id: UUID
+    name: str
+    email: EmailStr
+
+
 session_auth = SessionAuth[User, ServerSideSessionBackend](
     retrieve_user_handler=retrieve_user_handler,
     # we must pass a config for a session backend.
