@@ -2723,15 +2723,28 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">AsyncGenerator</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">litestar.response</span> <span class="kn">import</span> <span class="n">ServerSentEvent</span>
+<span class="kn">from</span> <span class="nn">litestar.response</span> <span class="kn">import</span> <span class="n">ServerSentEvent</span><span class="p">,</span> <span class="n">ServerSentEventMessage</span>
+<span class="kn">from</span> <span class="nn">litestar.types</span> <span class="kn">import</span> <span class="n">SSEData</span>
 
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">my_generator</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">my_generator</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="n">SSEData</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
     <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">while</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">:</span>
         <span class="k">await</span> <span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
         <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="c1"># In the generator you can yield integers, strings, bytes, dictionaries, or ServerSentEventMessage objects</span>
+        <span class="c1"># dicts can have the following keys: data, event, id, retry, comment</span>
+
+        <span class="c1"># here we yield an integer</span>
+        <span class="k">yield</span> <span class="n">count</span>
+        <span class="c1"># here a string</span>
         <span class="k">yield</span> <span class="nb">str</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
+        <span class="c1"># here bytes</span>
+        <span class="k">yield</span> <span class="nb">str</span><span class="p">(</span><span class="n">count</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="c1"># here a dictionary</span>
+        <span class="k">yield</span> <span class="p">{</span><span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">count</span><span class="p">,</span> <span class="s2">&quot;event&quot;</span><span class="p">:</span> <span class="s2">&quot;event2&quot;</span><span class="p">,</span> <span class="s2">&quot;retry&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">}</span>
+        <span class="c1"># here a ServerSentEventMessage object</span>
+        <span class="k">yield</span> <span class="n">ServerSentEventMessage</span><span class="p">(</span><span class="n">event</span><span class="o">=</span><span class="s2">&quot;something-with-comment&quot;</span><span class="p">,</span> <span class="n">retry</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s2">&quot;some comment&quot;</span><span class="p">)</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/count&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -2750,15 +2763,28 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">AsyncGenerator</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">litestar.response</span> <span class="kn">import</span> <span class="n">ServerSentEvent</span>
+<span class="kn">from</span> <span class="nn">litestar.response</span> <span class="kn">import</span> <span class="n">ServerSentEvent</span><span class="p">,</span> <span class="n">ServerSentEventMessage</span>
+<span class="kn">from</span> <span class="nn">litestar.types</span> <span class="kn">import</span> <span class="n">SSEData</span>
 
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">my_generator</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">bytes</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">my_generator</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="n">SSEData</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
     <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">while</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">:</span>
         <span class="k">await</span> <span class="n">sleep</span><span class="p">(</span><span class="mf">0.01</span><span class="p">)</span>
         <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="c1"># In the generator you can yield integers, strings, bytes, dictionaries, or ServerSentEventMessage objects</span>
+        <span class="c1"># dicts can have the following keys: data, event, id, retry, comment</span>
+
+        <span class="c1"># here we yield an integer</span>
+        <span class="k">yield</span> <span class="n">count</span>
+        <span class="c1"># here a string</span>
         <span class="k">yield</span> <span class="nb">str</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
+        <span class="c1"># here bytes</span>
+        <span class="k">yield</span> <span class="nb">str</span><span class="p">(</span><span class="n">count</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="c1"># here a dictionary</span>
+        <span class="k">yield</span> <span class="p">{</span><span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">count</span><span class="p">,</span> <span class="s2">&quot;event&quot;</span><span class="p">:</span> <span class="s2">&quot;event2&quot;</span><span class="p">,</span> <span class="s2">&quot;retry&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">}</span>
+        <span class="c1"># here a ServerSentEventMessage object</span>
+        <span class="k">yield</span> <span class="n">ServerSentEventMessage</span><span class="p">(</span><span class="n">event</span><span class="o">=</span><span class="s2">&quot;something-with-comment&quot;</span><span class="p">,</span> <span class="n">retry</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="s2">&quot;some comment&quot;</span><span class="p">)</span>
 
 
 <span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/count&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
