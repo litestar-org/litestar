@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 from dataclasses import dataclass
 from uuid import UUID, uuid4
 
@@ -8,24 +6,25 @@ from litestar.dto import DataclassDTO, DTOConfig, DTOData
 
 
 @dataclass
-class Person:
-    id: UUID
+class User:
     name: str
+    email: str
     age: int
+    id: UUID
 
 
-class WriteDTO(DataclassDTO[Person]):
+class UserWriteDTO(DataclassDTO[User]):
     """Don't allow client to set the id."""
 
     config = DTOConfig(exclude={"id"})
 
 
-@post("/person", dto=WriteDTO, return_dto=None, sync_to_thread=False)
-def create_person(data: DTOData[Person]) -> Person:
-    """Create a person."""
+@post("/users", dto=UserWriteDTO, return_dto=None, sync_to_thread=False)
+def create_user(data: DTOData[User]) -> User:
+    """Create an user."""
     return data.create_instance(id=uuid4())
 
 
-app = Litestar(route_handlers=[create_person])
+app = Litestar(route_handlers=[create_user])
 
-# run: /person -H "Content-Type: application/json" -d '{"name":"Peter","age":41}'
+# run: /users -H "Content-Type: application/json" -d '{"name":"Peter", "email": "peter@example.com", "age":41}'
