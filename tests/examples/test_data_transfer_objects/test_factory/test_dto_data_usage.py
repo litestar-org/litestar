@@ -1,13 +1,11 @@
-from __future__ import annotations
-
 from unittest.mock import ANY
-
-from docs.examples.data_transfer_objects.factory.dto_data_usage import app
 
 from litestar.testing import TestClient
 
 
 def test_create_user(user_data) -> None:
+    from docs.examples.data_transfer_objects.factory.dto_data_usage import app
+
     with TestClient(app) as client:
         response = client.post("/users", json=user_data)
 
