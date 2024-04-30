@@ -1,7 +1,10 @@
+import pytest
+
 from litestar.status_codes import HTTP_201_CREATED
 from litestar.testing.client import TestClient
 
 
+@pytest.mark.xdist_group(name="doc-examples")
 def test_create_underscored_value() -> None:
     from docs.examples.data_transfer_objects.factory.leading_underscore_private import app
 

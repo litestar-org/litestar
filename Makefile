@@ -114,7 +114,7 @@ lint: pre-commit type-check slots-check				## Run all linting
 .PHONY: coverage
 coverage:  											## Run the tests and generate coverage report
 	@echo "=> Running tests with coverage"
-	@$(PDM) run pytest tests --cov -n auto
+	@$(PDM) run pytest tests --cov -n auto --dist=loadgroup
 	@$(PDM) run coverage html
 	@$(PDM) run coverage xml
 	@echo "=> Coverage report generated"
