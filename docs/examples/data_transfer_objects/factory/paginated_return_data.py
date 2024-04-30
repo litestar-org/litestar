@@ -1,13 +1,15 @@
 from datetime import datetime
 
-from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import DeclarativeBase, Mapped
 
 from litestar import Litestar, get
+from litestar.contrib.sqlalchemy.base import CommonTableAttributes, UUIDPrimaryKey
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
 from litestar.dto import DTOConfig
 from litestar.pagination import ClassicPagination
 
-from .my_lib import Base
+
+class Base(CommonTableAttributes, UUIDPrimaryKey, DeclarativeBase): ...
 
 
 class User(Base):
