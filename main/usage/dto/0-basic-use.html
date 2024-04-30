@@ -1600,14 +1600,30 @@ decoding and encoding request and response data. If this behavior is undesirable
 setting the <code class="docutils literal notranslate"><span class="pre">return_dto</span></code> to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 <div class="literal-block-wrapper docutils container" id="id3">
 <div class="code-block-caption"><span class="caption-text">Disable implicit <code class="docutils literal notranslate"><span class="pre">return_dto</span></code> behavior</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">post</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">uuid4</span>
 
-<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">User</span><span class="p">,</span> <span class="n">UserDTO</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+<span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DataclassDTO</span>
 
 
-<span class="nd">@post</span><span class="p">(</span><span class="n">dto</span><span class="o">=</span><span class="n">UserDTO</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">email</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">uuid4</span><span class="p">)</span>
+
+
+<span class="n">UserDTO</span> <span class="o">=</span> <span class="n">DataclassDTO</span><span class="p">[</span><span class="n">User</span><span class="p">]</span>
+
+
+<span class="nd">@post</span><span class="p">(</span><span class="n">dto</span><span class="o">=</span><span class="n">UserDTO</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">create_user</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>

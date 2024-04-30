@@ -176,7 +176,7 @@ handler.
 
 .. literalinclude:: /examples/data_transfer_objects/factory/dto_data_problem_statement.py
     :language: python
-    :emphasize-lines: 18,19,20,21,27
+    :emphasize-lines: 19,20,21,22,28
     :linenos:
 
 Notice that we get a ``500`` response from the handler - this is because the DTO has attempted to convert the request
