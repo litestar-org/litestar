@@ -203,12 +203,12 @@ class _Thing:
             version=self._new_release_version,
         )
 
-    async def create_draft_release(self, body: str) -> str:
+    async def create_draft_release(self, body: str, release_branch: str) -> str:
         res = await self._api_client.post(
             "/releases",
             json={
                 "tag_name": self._new_release_tag,
-                "target_commitish": "main",
+                "target_commitish": release_branch,
                 "name": self._new_release_tag,
                 "draft": True,
                 "body": body,
@@ -432,7 +432,7 @@ def cli(
 
     if create_draft_release:
         click.secho("Creating draft release", fg="blue")
-        release_url = loop.run_until_complete(thing.create_draft_release(body=gh_release_notes))
+        release_url = loop.run_until_complete(thing.create_draft_release(body=gh_release_notes, release_branch=branch))
         click.echo(f"Draft release available at: {release_url}")
     else:
         click.echo(gh_release_notes)
