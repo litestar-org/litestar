@@ -59,12 +59,8 @@
   },
   "forwardPorts": [8000],
   "postCreateCommand": [
-    "poetry",
+    "pdm",
     "install",
-    "--extras",
-    "full",
-    "--with",
-    "docs,lint",
   ],
   "remoteUser": "vscode",
 }
