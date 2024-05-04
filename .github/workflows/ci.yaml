@@ -54,10 +54,10 @@ jobs:
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
       - name: Run mypy
         if: matrix.python-version == '3.8'
-        run: mypy starlite tests
+        run: poetry run mypy starlite tests
       - name: Run pyright
         if: matrix.python-version == '3.8'
-        run: pyright starlite tests
+        run: poetry run pyright starlite tests
       - name: Test
         if: matrix.python-version != '3.11'
         run: poetry run pytest
