@@ -8,7 +8,7 @@ from starlite.status_codes import HTTP_201_CREATED
 
 async def initialize_beanie() -> None:
     client = AsyncMongoMockClient()
-    await init_beanie(document_models=[Widget], database=client.get_database(name="db"))
+    await init_beanie(document_models=[Widget], database=client.get_database(name="db"))  # pyright: ignore
 
 
 class Widget(Document):
