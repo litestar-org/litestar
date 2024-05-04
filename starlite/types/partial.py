@@ -31,7 +31,8 @@ except ImportError:  # pragma: no cover
     from typing import _GenericAlias as GenericAlias  # type: ignore
 
 if TYPE_CHECKING:
-    from typing import TypeAlias, Union  # noqa: F401  # nopycln: import  # pyright: ignore
+    from typing import Union  # noqa: F401  # nopycln: import  # pyright: ignore
+    from typing_extensions import TypeAlias
 
     from starlite.types.builtin_types import DataclassClass, TypedDictClass
 

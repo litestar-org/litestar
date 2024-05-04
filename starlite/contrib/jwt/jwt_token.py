@@ -121,6 +121,6 @@ class Token(BaseModel):
             :class:`ImproperlyConfiguredException <starlite.exceptions.ImproperlyConfiguredException>`: If encoding fails.
         """
         try:
-            return cast("str", jwt.encode(claims=self.dict(exclude_none=True), key=secret, algorithm=algorithm))
+            return jwt.encode(claims=self.dict(exclude_none=True), key=secret, algorithm=algorithm)
         except (JWTError, JWSError) as e:
             raise ImproperlyConfiguredException("Failed to encode token") from e

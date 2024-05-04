@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 import brotli
 import pytest
-from fsspec.implementations.local import LocalFileSystem
+from fsspec.implementations.local import LocalFileSystem  # type: ignore[import]
 
 from starlite import MediaType, get
 from starlite.config import StaticFilesConfig

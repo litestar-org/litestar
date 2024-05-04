@@ -34,5 +34,5 @@ def test_config_validation_deep_copy() -> None:
 
     Starlite(
         route_handlers=[],
-        cache_config=CacheConfig(backend=redis.from_url("redis://localhost:6379/1")),  # pyright: ignore
+        cache_config=CacheConfig(backend=redis.from_url("redis://localhost:6379/1")),  # type: ignore
     )

@@ -6,10 +6,10 @@ T = TypeVar("T")
 D = TypeVar("D")
 
 try:
-    async_next = anext  # pyright: ignore
+    async_next = anext  # type: ignore
 except NameError:  # pragma: no cover
 
-    async def async_next(gen: AsyncGenerator[T, Any], default: Union[D, EmptyType] = Empty) -> Union[T, D]:  # type: ignore[misc]
+    async def async_next(gen: AsyncGenerator[T, Any], default: Union[D, EmptyType] = Empty) -> Union[T, D]:
         """Backwards compatibility shim for Python<3.10."""
         try:
             return await gen.__anext__()  # pylint: disable=C2801
