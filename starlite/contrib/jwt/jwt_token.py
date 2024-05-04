@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import Dict, Optional, Union, cast
+from typing import Dict, Optional, Union
 
 from jose import JWSError, JWTError, jwt
 from pydantic import (

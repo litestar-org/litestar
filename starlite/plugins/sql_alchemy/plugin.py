@@ -292,7 +292,9 @@ class SQLAlchemyPlugin(PluginProtocol[DeclarativeMeta]):
             postgresql.INTERVAL: lambda x: timedelta,
             postgresql.JSON: lambda x: Union[dict, list],
             postgresql.JSONB: lambda x: Union[dict, list],
-            postgresql.MACADDR: lambda x: constr(regex=r"^([A-F0-9]{2}:){5}[A-F0-9]{2}$"),
+            postgresql.MACADDR: lambda x: constr(  # pylint: disable=unexpected-keyword-arg
+                regex=r"^([A-F0-9]{2}:){5}[A-F0-9]{2}$"
+            ),
             postgresql.MONEY: lambda x: Decimal,
             postgresql.NUMRANGE: lambda x: Tuple[Union[int, float], Union[int, float]],
             postgresql.TIME: lambda x: time,

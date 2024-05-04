@@ -8,12 +8,12 @@ from starlite.middleware.authentication import (
 )
 from starlite.middleware.session.base import SessionMiddleware
 from starlite.types import Empty, Scopes
-from starlite.utils import AsyncCallable
 
 if TYPE_CHECKING:
     from starlite.connection import ASGIConnection
     from starlite.security.session_auth.auth import SessionAuth
     from starlite.types import ASGIApp, Receive, Scope, Send
+    from starlite.utils import AsyncCallable
 
 
 class MiddlewareWrapper:

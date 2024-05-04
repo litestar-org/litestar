@@ -105,7 +105,9 @@ class BaseBackendConfig(BaseModel):
         Returns:
             An instance of DefineMiddleware including ``self`` as the config kwarg value.
         """
-        return DefineMiddleware(SessionMiddleware, backend=self._backend_class(config=self))
+        return DefineMiddleware(
+            SessionMiddleware, backend=self._backend_class(config=self)  # pylint: disable=not-callable
+        )
 
 
 class ServerSideSessionConfig(BaseBackendConfig):
