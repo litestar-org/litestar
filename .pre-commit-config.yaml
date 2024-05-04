@@ -118,45 +118,6 @@ repos:
             uvicorn,
             jsbeautifier,
           ]
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: "v1.4.1"
-    hooks:
-      - id: mypy
-        exclude: "test_apps|docs|tools"
-        additional_dependencies:
-          [
-            aiomcache,
-            beanie,
-            click,
-            fast-query-parsers,
-            fsspec,
-            httpx,
-            msgspec,
-            multidict,
-            opentelemetry-instrumentation-asgi,
-            opentelemetry-sdk,
-            piccolo,
-            picologging,
-            pydantic,
-            pydantic_factories,
-            pydantic_openapi_schema,
-            pytest,
-            pytest-mock,
-            python-dotenv,
-            python-jose,
-            rich,
-            sqlalchemy<2.0.0,
-            sqlalchemy2-stubs,
-            starlette,
-            structlog,
-            tortoise-orm,
-            types-beautifulsoup4,
-            types-freezegun,
-            types-pyyaml,
-            types-redis,
-            uvicorn,
-            jsbeautifier,
-          ]
   - repo: local
     hooks:
       - id: sphinx-lint

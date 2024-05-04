@@ -52,6 +52,8 @@ jobs:
         run: poetry install --no-interaction
       - name: Set pythonpath
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
+      - name: Run mypy
+        run: mypy starlite tests
       - name: Run pyright
         run: pyright starlite tests
       - name: Test

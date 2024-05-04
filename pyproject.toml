@@ -49,7 +49,7 @@ packages = [
 [tool.poetry.dependencies]
 python = ">=3.8,<4.0"
 aiomcache = { version = "*", optional = true }
-anyio = ">=3"
+anyio = ">=3,<4"
 brotli = { version = "*", optional = true }
 click = {version = "*", optional = true}
 cryptography = { version = "*", optional = true }
@@ -113,6 +113,19 @@ tortoise-orm = ">=0.17.0"
 trio = "*"
 uvicorn = "*"
 pyright = "1.1.317"
+mypy = "1.4.1"
+types-deprecated = "^1.2.9.20240311"
+types-pyyaml = "^6.0.12.20240311"
+types-pygments = "^2.17.0.20240310"
+types-cffi = "^1.16.0.20240331"
+types-colorama = "^0.4.15.20240311"
+types-pyopenssl = "^24.1.0.20240425"
+types-python-jose = "^3.3.4.20240106"
+types-pytz = "^2024.1.0.20240417"
+types-requests = "^2.31.0.20240406"
+types-setuptools = "^69.5.0.20240423"
+sqlalchemy2-stubs = "^0.0.2a38"
+types-beautifulsoup4 = "^4.12.0.20240504"
 
 [tool.poetry.group.docs]
 optional = true
