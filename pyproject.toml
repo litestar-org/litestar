@@ -72,8 +72,7 @@ redis = { version = "*", optional = true, extras = ["hiredis"] }
 rich = {version = ">=13.0.0", optional = true}
 structlog = { version = "*", optional = true }
 typing-extensions = "*"
-pytest = "<8"
-tortoise-orm = "<0.20.0"
+
 
 [tool.poetry.group.dev.dependencies]
 aiomcache = "*"
@@ -97,7 +96,6 @@ opentelemetry-sdk = "*"
 piccolo = "*"
 picologging = "*"
 pre-commit = "*"
-pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
 pytest-lazy-fixture = "^0.6.3"
@@ -109,8 +107,7 @@ rich = "*"
 sqlalchemy = "<2.0.0"
 starlette = "<0.35.0"
 structlog = "*"
-tortoise-orm = ">=0.17.0"
-trio = "*"
+trio = "<0.24.0"
 uvicorn = "*"
 pyright = "1.1.317"
 mypy = "1.4.1"
@@ -126,6 +123,8 @@ types-requests = "^2.31.0.20240406"
 types-setuptools = "^69.5.0.20240423"
 sqlalchemy2-stubs = "^0.0.2a38"
 types-beautifulsoup4 = "^4.12.0.20240504"
+pytest = "<8"
+tortoise-orm = ">=0.17.0,<0.20.0"
 
 [tool.poetry.group.docs]
 optional = true

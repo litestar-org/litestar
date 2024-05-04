@@ -3488,17 +3488,17 @@ psycopg = ["psycopg[binary,pool] (==3.0.12)"]
 
 [[package]]
 name = "trio"
-version = "0.25.0"
+version = "0.23.2"
 description = "A friendly Python library for async concurrency and I/O"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "trio-0.25.0-py3-none-any.whl", hash = "sha256:e6458efe29cc543e557a91e614e2b51710eba2961669329ce9c862d50c6e8e81"},
-    {file = "trio-0.25.0.tar.gz", hash = "sha256:9b41f5993ad2c0e5f62d0acca320ec657fdb6b2a2c22b8c7aed6caf154475c4e"},
+    {file = "trio-0.23.2-py3-none-any.whl", hash = "sha256:5a0b566fa5d50cf231cfd6b08f3b03aa4179ff004b8f3144059587039e2b26d3"},
+    {file = "trio-0.23.2.tar.gz", hash = "sha256:da1d35b9a2b17eb32cae2e763b16551f9aa6703634735024e32f325c9285069e"},
 ]
 
 [package.dependencies]
-attrs = ">=23.2.0"
+attrs = ">=20.1.0"
 cffi = {version = ">=1.14", markers = "os_name == \"nt\" and implementation_name != \"pypy\""}
 exceptiongroup = {version = "*", markers = "python_version < \"3.11\""}
 idna = "*"
@@ -3855,7 +3855,7 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 brotli = ["brotli"]
 cli = ["click", "jsbeautifier", "rich"]
 cryptography = ["cryptography"]
-full = ["aiomcache", "brotli", "click", "cryptography", "jinja2", "opentelemetry-instrumentation-asgi", "picologging", "python-jose", "redis", "rich", "structlog", "tortoise-orm"]
+full = ["aiomcache", "brotli", "click", "cryptography", "jinja2", "opentelemetry-instrumentation-asgi", "picologging", "python-jose", "redis", "rich", "structlog"]
 jinja = ["jinja2"]
 jwt = ["cryptography", "python-jose"]
 memcached = ["aiomcache"]
@@ -3864,9 +3864,9 @@ picologging = ["picologging"]
 redis = ["redis"]
 standard = ["click", "jinja2", "jsbeautifier", "picologging", "rich"]
 structlog = ["structlog"]
-tortoise-orm = ["tortoise-orm"]
+tortoise-orm = []
 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
-content-hash = "29350caff43775973ec71450ca235c22e1010dc51fa50577ea44855d0495d867"
+content-hash = "ab3fb6b4ce48f4817488919e91fffcd8a25ff4190df4ce0e44ac7ad594eda57b"
