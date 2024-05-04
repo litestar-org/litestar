@@ -164,7 +164,7 @@ class AsyncSQLAlchemyBackend(BaseSQLAlchemyBackend[AsyncSASession]):
 
             if not session_obj:
                 session_obj = self._model(session_id=session_id)  # type: ignore[call-arg]
-                sa_session.add(session_obj)
+                sa_session.add(session_obj)  # pyright: ignore
             session_obj.data = data
             self._update_session_expiry(session_obj)
             await sa_session.commit()

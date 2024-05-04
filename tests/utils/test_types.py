@@ -9,12 +9,12 @@ from tests import Person, Pet
 
 if version_info >= (3, 10):
     py_310_plus_annotation = [
-        (tuple[Person, ...], True),
-        (list[Person], True),
-        (deque[Person], True),
-        (tuple[Pet, ...], False),
-        (list[Pet], False),
-        (deque[Pet], False),
+        (tuple[Person, ...], True),  # pyright: ignore
+        (list[Person], True),  # pyright: ignore
+        (deque[Person], True),  # pyright: ignore
+        (tuple[Pet, ...], False),  # pyright: ignore
+        (list[Pet], False),  # pyright: ignore
+        (deque[Pet], False),  # pyright: ignore
     ]
 else:
     py_310_plus_annotation = []

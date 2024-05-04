@@ -86,7 +86,7 @@ class UploadFile:
             None.
         """
         if self.rolled_to_disk:
-            return await run_sync(self.file.seek, offset)
+            return await run_sync(self.file.seek, offset)  # pyright: ignore
         return self.file.seek(offset)
 
     async def close(self) -> None:

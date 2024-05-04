@@ -59,7 +59,7 @@ class Sub(C):
     ),
 )
 def test_is_class_and_subclass(args: tuple, expected: bool) -> None:
-    assert is_class_and_subclass(*args) is expected
+    assert is_class_and_subclass(*args) is expected  # pyright: ignore
 
 
 @pytest.mark.parametrize(

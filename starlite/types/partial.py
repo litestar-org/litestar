@@ -31,7 +31,7 @@ except ImportError:  # pragma: no cover
     from typing import _GenericAlias as GenericAlias  # type: ignore
 
 if TYPE_CHECKING:
-    from typing import TypeAlias, Union  # noqa: F401  # nopycln: import
+    from typing import TypeAlias, Union  # noqa: F401  # nopycln: import  # pyright: ignore
 
     from starlite.types.builtin_types import DataclassClass, TypedDictClass
 
@@ -50,7 +50,7 @@ class Partial(Generic[T]):
     and nested fields - are optional.
     """
 
-    _models: Dict[SupportedTypes, SupportedTypes] = {}
+    _models: Dict[SupportedTypes, SupportedTypes] = {}  # pyright: ignore
 
     def __class_getitem__(cls, item: Type[T]) -> Type[T]:
         """Take a pydantic model class, :class:`TypedDict <typing.TypedDict>` or a dataclass and return an all optional
@@ -132,5 +132,5 @@ class Partial(Generic[T]):
         cls._models[item] = TypedDict(type_name, type_hints, total=False)  # type:ignore
 
     @staticmethod
-    def _create_partial_type_name(item: SupportedTypes) -> str:
+    def _create_partial_type_name(item: SupportedTypes) -> str:  # pyright: ignore
         return f"Partial{item.__name__}"

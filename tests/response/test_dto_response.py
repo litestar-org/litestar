@@ -101,7 +101,7 @@ def test_dto_response_with_the_sqla_plugin() -> None:
     ) -> ReadUserDTO:  # type: ignore
         """Create a new user and return it."""
         user: User = data.to_model_instance()  # type: ignore
-        async_session.add(user)
+        async_session.add(user)  # pyright: ignore
         await async_session.commit()
         return user
 
