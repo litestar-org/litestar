@@ -1,20 +1,22 @@
 [tool.poetry]
 name = "starlite"
-version = "1.51.14"
+version = "1.51.15"
 description = "Performant, light and flexible ASGI API Framework"
 authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
 maintainers = [
-    "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
-    "Cody Fincher <cody.fincher@gmail.com>",
-    "Janek Nouvertné <provinzkraut@posteo.de>",
-    "Jacob Coffee <jacob@z7x.org>",
+    "Cody Fincher <cody@litestar.dev>",
+    "Janek Nouvertné <provinzkraut@litestar.dev",
+    "Jacob Coffee <jacob@litestar.dev",
+    "Peter Schutt <peter@litestar.dev>",
+    "Visakh Unnikrishnan <guacs@litestar.dev>",
+    "Alc <alc@litestar.dev>"
 ]
 license = "MIT"
 readme = "README.md"
 homepage = "https://litestar.dev"
 repository = "https://github.com/litestar-org/litestar"
 documentation = "https://docs.litestar.dev/1/"
-keywords = ["api", "rest", "http", "asgi", "pydantic", "starlite", "framework", "websocket"]
+keywords = ["http", "asgi", "starlite", "framework", "websocket"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Web Environment",
@@ -70,6 +72,8 @@ redis = { version = "*", optional = true, extras = ["hiredis"] }
 rich = {version = ">=13.0.0", optional = true}
 structlog = { version = "*", optional = true }
 typing-extensions = "*"
+pytest = "<8"
+tortoise-orm = "<0.20.0"
 
 [tool.poetry.group.dev.dependencies]
 aiomcache = "*"
@@ -103,7 +107,7 @@ python-jose = "*"
 redis = "*"
 rich = "*"
 sqlalchemy = "<2.0.0"
-starlette = "*"
+starlette = "<0.35.0"
 structlog = "*"
 tortoise-orm = ">=0.17.0"
 trio = "*"
