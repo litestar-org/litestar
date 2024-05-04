@@ -606,8 +606,7 @@ Error handling
 
 
             @app.errorhandler(HTTPException)
-            def handle_exception(e):
-                ...
+            def handle_exception(e): ...
 
 
 
@@ -619,8 +618,7 @@ Error handling
             from starlite import Starlite, HTTPException, Request, Response
 
 
-            def handle_exception(request: Request, exception: Exception) -> Response:
-                ...
+            def handle_exception(request: Request, exception: Exception) -> Response: ...
 
 
             app = Starlite([], exception_handlers={HTTPException: handle_exception})

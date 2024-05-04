@@ -37,8 +37,7 @@ key word:
 
 
    @get(path="/some-path")
-   def my_route_handler() -> None:
-       ...
+   def my_route_handler() -> None: ...
 
 It can also be passed as an argument without the key-word:
 
@@ -48,8 +47,7 @@ It can also be passed as an argument without the key-word:
 
 
    @get("/some-path")
-   def my_route_handler() -> None:
-       ...
+   def my_route_handler() -> None: ...
 
 And the value for this argument can be either a string path, as in the above examples, or a list of string paths:
 
@@ -59,8 +57,7 @@ And the value for this argument can be either a string path, as in the above exa
 
 
    @get(["/some-path", "/some-other-path"])
-   def my_route_handler() -> None:
-       ...
+   def my_route_handler() -> None: ...
 
 This is particularly useful when you want to have optional :ref:`path parameters <usage/parameters:Path Parameters>`:
 
@@ -72,8 +69,7 @@ This is particularly useful when you want to have optional :ref:`path parameters
    @get(
        ["/some-path", "/some-path/{some_id:int}"],
    )
-   def my_route_handler(some_id: int = 1) -> None:
-       ...
+   def my_route_handler(some_id: int = 1) -> None: ...
 
 Handler function kwargs
 -----------------------
@@ -116,8 +112,7 @@ For example:
        headers: Headers,
        query: Dict[str, Any],
        cookies: Dict[str, Any],
-   ) -> None:
-       ...
+   ) -> None: ...
 
 .. tip::
 
@@ -153,8 +148,7 @@ is aliased as the decorator called :func:`route <starlite.handlers.route>`:
 
 
    @route(path="/some-path", http_method=[HttpMethod.GET, HttpMethod.POST])
-   def my_endpoint() -> None:
-       ...
+   def my_endpoint() -> None: ...
 
 As mentioned above, ``route`` does is merely an alias for ``HTTPRouteHandler``\ , thus the below code is equivalent to the one
 above:
@@ -165,8 +159,7 @@ above:
 
 
    @HTTPRouteHandler(path="/some-path", http_method=[HttpMethod.GET, HttpMethod.POST])
-   def my_endpoint() -> None:
-       ...
+   def my_endpoint() -> None: ...
 
 HTTP route handlers kwargs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -198,43 +191,35 @@ These are used exactly like ``route`` with the sole exception that you cannot co
    from pydantic import BaseModel
 
 
-   class Resource(BaseModel):
-       ...
+   class Resource(BaseModel): ...
 
 
    @get(path="/resources")
-   def list_resources() -> list[Resource]:
-       ...
+   def list_resources() -> list[Resource]: ...
 
 
    @post(path="/resources")
-   def create_resource(data: Resource) -> Resource:
-       ...
+   def create_resource(data: Resource) -> Resource: ...
 
 
    @get(path="/resources/{pk:int}")
-   def retrieve_resource(pk: int) -> Resource:
-       ...
+   def retrieve_resource(pk: int) -> Resource: ...
 
 
    @head(path="/resources/{pk:int}")
-   def retrieve_resource_head(pk: int) -> None:
-       ...
+   def retrieve_resource_head(pk: int) -> None: ...
 
 
    @put(path="/resources/{pk:int}")
-   def update_resource(data: Resource, pk: int) -> Resource:
-       ...
+   def update_resource(data: Resource, pk: int) -> Resource: ...
 
 
    @patch(path="/resources/{pk:int}")
-   def partially_update_resource(data: Partial[Resource], pk: int) -> Resource:
-       ...
+   def partially_update_resource(data: Partial[Resource], pk: int) -> Resource: ...
 
 
    @delete(path="/resources/{pk:int}")
-   def delete_resource(pk: int) -> None:
-       ...
+   def delete_resource(pk: int) -> None: ...
 
 Although these decorators are merely subclasses of :class:`HTTPRouteHandler <starlite.handlers.http.HTTPRouteHandler>`
 that pre-set the ``http_method``\ , using *get*\ , *patch*\ , *put*\ , *delete* or *post* instead of *route* makes the
@@ -457,8 +442,7 @@ keywords arguments passed to the function.
        ["/some-path", "/some-path/{id:int}", "/some-path/{id:int}/{val:str}"],
        name="handler_name",
    )
-   def handler(id: int = 1, val: str = "default") -> None:
-       ...
+   def handler(id: int = 1, val: str = "default") -> None: ...
 
 
    @get("/path-info")
@@ -497,8 +481,7 @@ All route handler decorators accept a key called ``opt`` which accepts a diction
 
 
    @get("/", opt={"my_key": "some-value"})
-   def handler() -> None:
-       ...
+   def handler() -> None: ...
 
 This dictionary can be accessed by a :doc:`route guard </usage/security/guards>`, or by accessing the ``route_handler``
 property on a :class:`request <starlite.connection.request.Request>`, or using the
@@ -516,8 +499,7 @@ as a key in the opt dictionary:
 
 
    @get("/", my_key="some-value")
-   def handler() -> None:
-       ...
+   def handler() -> None: ...
 
 
    assert handler.opt["my_key"] == "some-value"

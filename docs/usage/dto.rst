@@ -247,5 +247,4 @@ The created ``PartialCompanyDTO`` is equivalent to the following declaration:
        @patch(path="/{order_id:uuid}")
        async def update_user_order(
            self, order_id: UUID4, data: Partial[UserOrder]
-       ) -> UserOrder:
-           ...
+       ) -> UserOrder: ...

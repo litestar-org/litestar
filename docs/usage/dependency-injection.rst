@@ -9,20 +9,16 @@ the application:
    from starlite import Controller, Router, Starlite, Provide, get
 
 
-   def bool_fn() -> bool:
-       ...
+   def bool_fn() -> bool: ...
 
 
-   def dict_fn() -> dict:
-       ...
+   def dict_fn() -> dict: ...
 
 
-   def list_fn() -> list:
-       ...
+   def list_fn() -> list: ...
 
 
-   def int_fn() -> int:
-       ...
+   def int_fn() -> int: ...
 
 
    class MyController(Controller):
@@ -38,8 +34,7 @@ the application:
            router_dependency: dict,
            controller_dependency: list,
            local_dependency: int,
-       ) -> None:
-           ...
+       ) -> None: ...
 
        # on the router
 
@@ -185,8 +180,7 @@ can :ref:`inject into route handlers <usage/route-handlers:handler function kwar
        name: str
 
 
-   async def retrieve_db_user(user_id: UUID4) -> User:
-       ...
+   async def retrieve_db_user(user_id: UUID4) -> User: ...
 
 
    class UserController(Controller):
@@ -194,8 +188,7 @@ can :ref:`inject into route handlers <usage/route-handlers:handler function kwar
        dependencies = {"user": Provide(retrieve_db_user)}
 
        @patch(path="/{user_id:uuid}")
-       async def update_user(self, data: Partial[User], user: User) -> User:
-           ...
+       async def update_user(self, data: Partial[User], user: User) -> User: ...
 
 In the above example we have a ``User`` model that we are persisting into a db. The model is fetched using the helper
 method ``retrieve_db_user`` which receives a ``user_id`` kwarg and retrieves the corresponding ``User`` instance.
@@ -216,12 +209,10 @@ very simple:
    from starlite import Controller, Provide, get
 
 
-   def bool_fn() -> bool:
-       ...
+   def bool_fn() -> bool: ...
 
 
-   def dict_fn() -> dict:
-       ...
+   def dict_fn() -> dict: ...
 
 
    class MyController(Controller):
@@ -234,8 +225,7 @@ very simple:
        def my_route_handler(
            self,
            some_dependency: bool,
-       ) -> None:
-           ...
+       ) -> None: ...
 
 The lower scoped route handler function declares a dependency with the same key as the one declared on the higher scoped
 controller. The lower scoped dependency therefore overrides the higher scoped one.
@@ -265,8 +255,7 @@ To inject a callable you must wrap it in ``Provide``:
            )
        },
    )
-   def my_handler(my_dep: int) -> None:
-       ...
+   def my_handler(my_dep: int) -> None: ...
 
 
 .. attention::
