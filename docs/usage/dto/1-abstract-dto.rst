@@ -369,7 +369,7 @@ Litestar offers paginated response wrapper types, and DTO Factory types can hand
     :language: python
     :lines: 9-11,26-40
 
-.. dropdown:: Full code
+.. dropdown:: Full Code (click to expand)
 
     .. literalinclude:: /examples/data_transfer_objects/factory/paginated_return_data.py
         :language: python
