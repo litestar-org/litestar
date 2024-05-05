@@ -5,6 +5,9 @@ on:
 jobs:
   publish-release:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+    environment: release
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
