@@ -3,7 +3,7 @@ from pathlib import Path
 
 from click import Path as ClickPath
 from click import group, option
-from jsbeautifier import Beautifier
+from jsbeautifier import Beautifier  # type: ignore
 from yaml import dump as dump_yaml
 
 from starlite import Starlite

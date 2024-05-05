@@ -3,7 +3,7 @@ from stat import S_IRWXO
 from typing import TYPE_CHECKING
 
 import pytest
-from fsspec.implementations.local import LocalFileSystem
+from fsspec.implementations.local import LocalFileSystem  # type: ignore[import]
 
 from starlite import InternalServerException, NotAuthorizedException
 from starlite.utils.file import BaseLocalFileSystem, FileSystemAdapter

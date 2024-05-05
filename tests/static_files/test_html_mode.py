@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
 import pytest
-from fsspec.implementations.local import LocalFileSystem
+from fsspec.implementations.local import LocalFileSystem  # type: ignore[import]
 
 from starlite.config import StaticFilesConfig
 from starlite.status_codes import HTTP_200_OK, HTTP_404_NOT_FOUND

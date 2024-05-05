@@ -1,8 +1,21 @@
+# pylint: disable=wrong-import-position
 import re
-from typing import Any, Dict, Literal, Optional, Set, Union, cast, overload
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    Literal,
+    Optional,
+    Set,
+    Union,
+    cast,
+    overload,
+)
 
 from pydantic_openapi_schema.v3_1_0 import Schema
-from typing_extensions import TypeGuard
+
+if TYPE_CHECKING:
+    from typing_extensions import TypeGuard
 
 from starlite.openapi.enums import OpenAPIType
 from starlite.openapi.typescript_converter.types import (

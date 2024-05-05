@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from typing import Dict, Optional, Union, cast
+from typing import Dict, Optional, Union
 
 from jose import JWSError, JWTError, jwt
 from pydantic import (
@@ -121,6 +121,6 @@ class Token(BaseModel):
             :class:`ImproperlyConfiguredException <starlite.exceptions.ImproperlyConfiguredException>`: If encoding fails.
         """
         try:
-            return cast("str", jwt.encode(claims=self.dict(exclude_none=True), key=secret, algorithm=algorithm))
+            return jwt.encode(claims=self.dict(exclude_none=True), key=secret, algorithm=algorithm)
         except (JWTError, JWSError) as e:
             raise ImproperlyConfiguredException("Failed to encode token") from e

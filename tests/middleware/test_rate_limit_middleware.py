@@ -44,7 +44,7 @@ async def test_rate_limiting(unit: DurationUnit) -> None:
         assert response.headers.get(config.rate_limit_remaining_header_key) == "0"
         assert response.headers.get(config.rate_limit_reset_header_key) == str(int(time()) - cache_object.reset)
 
-        frozen_time.tick(DURATION_VALUES[unit] - 1)  # type: ignore[arg-type]
+        frozen_time.tick(DURATION_VALUES[unit] - 1)
 
         response = client.get("/")
         assert response.status_code == HTTP_429_TOO_MANY_REQUESTS
@@ -53,7 +53,7 @@ async def test_rate_limiting(unit: DurationUnit) -> None:
         assert response.headers.get(config.rate_limit_remaining_header_key) == "0"
         assert response.headers.get(config.rate_limit_reset_header_key) == str(int(time()) - cache_object.reset)
 
-        frozen_time.tick(1)  # type: ignore[arg-type]
+        frozen_time.tick(1)
 
         response = client.get("/")
         assert response.status_code == HTTP_200_OK

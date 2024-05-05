@@ -207,8 +207,7 @@ different levels of the application, and then selective use or overwrite them.
 from starlite import Starlite, Provide, get
 
 
-async def my_dependency() -> str:
-    ...
+async def my_dependency() -> str: ...
 
 
 @get("/")
@@ -252,8 +251,7 @@ async def is_authorized(connection: ASGIConnection, handler: BaseRouteHandler) -
 
 
 @get("/", guards=[is_authorized])
-async def index() -> None:
-    ...
+async def index() -> None: ...
 
 
 app = Starlite([index])

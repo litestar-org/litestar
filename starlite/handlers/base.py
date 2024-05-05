@@ -27,7 +27,6 @@ from starlite.types import (
     Middleware,
     ParametersMap,
 )
-from starlite.types.composite_types import MaybePartial
 from starlite.utils import AsyncCallable, Ref, get_name, normalize_path
 from starlite.utils.helpers import unwrap_partial
 
@@ -39,6 +38,8 @@ if TYPE_CHECKING:
     from starlite.router import Router
     from starlite.signature import SignatureModel
     from starlite.types import AnyCallable
+    from starlite.types.composite_types import MaybePartial
+
 
 T = TypeVar("T", bound="BaseRouteHandler")
 

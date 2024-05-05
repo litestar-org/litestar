@@ -26,8 +26,7 @@ following methods specified by the:
    from pydantic import BaseModel
 
 
-   class MyClass:
-       ...
+   class MyClass: ...
 
 
    class MyPlugin(PluginProtocol[MyClass]):
@@ -85,8 +84,7 @@ If you wish to register middlewares, guards, dependencies and so forth on the ap
 
 
    @get("/some-path")
-   def my_handler() -> None:
-       ...
+   def my_handler() -> None: ...
 
 
    class MyPlugin(PluginProtocol[Any]):

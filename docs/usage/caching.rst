@@ -109,8 +109,7 @@ expected. Starlite comes with a simple mechanism for caching:
 
 
    @get("/cached-path", cache=True)
-   def my_cached_handler() -> str:
-       ...
+   def my_cached_handler() -> str: ...
 
 By setting ``cache=True`` in the route handler, caching for the route handler will be enabled for the default duration,
 which is 60 seconds unless modified.
@@ -123,8 +122,7 @@ Alternatively you can specify the number of seconds to cache the responses from 
 
 
    @get("/cached-path", cache=120)  # seconds
-   def my_cached_handler() -> str:
-       ...
+   def my_cached_handler() -> str: ...
 
 
 Specifying a cache key builder
@@ -143,8 +141,7 @@ the route handler if you want to generate different cache keys:
 
 
    @get("/cached-path", cache=True, cache_key_builder=my_custom_key_builder)
-   def my_cached_handler() -> str:
-       ...
+   def my_cached_handler() -> str: ...
 
 You can also specify the default cache key builder to use for the entire application (see below).
 

@@ -245,5 +245,4 @@ This can be achieved by adding the special ``app`` parameter to your CLI functio
 
 
    @click.command()
-   def my_command(app: Starlite) -> None:
-       ...
+   def my_command(app: Starlite) -> None: ...

@@ -5,12 +5,12 @@ from starlite import (
     AuthenticationResult,
     NotAuthorizedException,
 )
-from starlite.connection import ASGIConnection
 from starlite.contrib.jwt.jwt_token import Token
 
 if TYPE_CHECKING:
     from typing import Any
 
+    from starlite.connection import ASGIConnection
     from starlite.types import ASGIApp, Scopes
     from starlite.utils import AsyncCallable
 

@@ -1,6 +1,6 @@
 import pytest
 from beanie import Document, Indexed, init_beanie
-from mongomock_motor import AsyncMongoMockClient
+from mongomock_motor import AsyncMongoMockClient  # type: ignore[import]
 
 from starlite import create_test_client, post
 from starlite.status_codes import HTTP_201_CREATED
@@ -8,7 +8,7 @@ from starlite.status_codes import HTTP_201_CREATED
 
 async def initialize_beanie() -> None:
     client = AsyncMongoMockClient()
-    await init_beanie(document_models=[Widget], database=client.get_database(name="db"))  # type: ignore[arg-type]
+    await init_beanie(document_models=[Widget], database=client.get_database(name="db"))  # pyright: ignore
 
 
 class Widget(Document):

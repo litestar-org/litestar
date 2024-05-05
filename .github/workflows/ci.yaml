@@ -52,6 +52,12 @@ jobs:
         run: poetry install --no-interaction
       - name: Set pythonpath
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
+      - name: Run mypy
+        if: matrix.python-version == '3.8'
+        run: poetry run mypy starlite tests
+      - name: Run pyright
+        if: matrix.python-version == '3.8'
+        run: poetry run pyright starlite tests
       - name: Test
         if: matrix.python-version != '3.11'
         run: poetry run pytest
@@ -63,48 +69,6 @@ jobs:
         with:
           name: coverage-xml
           path: coverage.xml
-  sonar:
-    needs:
-      - test
-      - validate
-    if: github.event.pull_request.head.repo.fork == false
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v3
-      - name: Download Artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: coverage-xml
-      - name: Fix coverage file for sonarcloud
-        run: sed -i "s/home\/runner\/work\/starlite\/starlite/github\/workspace/g" coverage.xml
-      - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  snyk:
-    needs:
-      - test
-      - validate
-    if: github.event.pull_request.head.repo.fork == false
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@master
-      - name: Run Snyk Monitor
-        if: ${{ github.ref == 'refs/heads/main' }}
-        uses: snyk/actions/python-3.8@master
-        with:
-          command: monitor
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      - name: Run Snyk Test
-        if: ${{ github.ref != 'refs/heads/main' }}
-        uses: snyk/actions/python-3.8@master
-        with:
-          command: test
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
   codeql:
     needs:
       - test

@@ -235,8 +235,7 @@ Starlite also supports returning ASGI applications directly, as you would respon
 
    @get("/")
    def handler() -> ASGIApp:
-       async def my_asgi_app(scope: Scope, receive: Receive, send: Send) -> None:
-           ...
+       async def my_asgi_app(scope: Scope, receive: Receive, send: Send) -> None: ...
 
        return my_asgi_app
 

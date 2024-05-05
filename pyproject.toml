@@ -1,20 +1,22 @@
 [tool.poetry]
 name = "starlite"
-version = "1.51.14"
+version = "1.51.15"
 description = "Performant, light and flexible ASGI API Framework"
 authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
 maintainers = [
-    "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
-    "Cody Fincher <cody.fincher@gmail.com>",
-    "Janek Nouvertné <provinzkraut@posteo.de>",
-    "Jacob Coffee <jacob@z7x.org>",
+    "Cody Fincher <cody@litestar.dev>",
+    "Janek Nouvertné <provinzkraut@litestar.dev",
+    "Jacob Coffee <jacob@litestar.dev",
+    "Peter Schutt <peter@litestar.dev>",
+    "Visakh Unnikrishnan <guacs@litestar.dev>",
+    "Alc <alc@litestar.dev>"
 ]
 license = "MIT"
 readme = "README.md"
 homepage = "https://litestar.dev"
 repository = "https://github.com/litestar-org/litestar"
 documentation = "https://docs.litestar.dev/1/"
-keywords = ["api", "rest", "http", "asgi", "pydantic", "starlite", "framework", "websocket"]
+keywords = ["http", "asgi", "starlite", "framework", "websocket"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Environment :: Web Environment",
@@ -47,7 +49,7 @@ packages = [
 [tool.poetry.dependencies]
 python = ">=3.8,<4.0"
 aiomcache = { version = "*", optional = true }
-anyio = ">=3"
+anyio = ">=3,<4"
 brotli = { version = "*", optional = true }
 click = {version = "*", optional = true}
 cryptography = { version = "*", optional = true }
@@ -71,6 +73,7 @@ rich = {version = ">=13.0.0", optional = true}
 structlog = { version = "*", optional = true }
 typing-extensions = "*"
 
+
 [tool.poetry.group.dev.dependencies]
 aiomcache = "*"
 aiosqlite = "*"
@@ -93,7 +96,6 @@ opentelemetry-sdk = "*"
 piccolo = "*"
 picologging = "*"
 pre-commit = "*"
-pytest = "*"
 pytest-asyncio = "*"
 pytest-cov = "*"
 pytest-lazy-fixture = "^0.6.3"
@@ -103,11 +105,26 @@ python-jose = "*"
 redis = "*"
 rich = "*"
 sqlalchemy = "<2.0.0"
-starlette = "*"
+starlette = "<0.35.0"
 structlog = "*"
-tortoise-orm = ">=0.17.0"
-trio = "*"
+trio = "<0.24.0"
 uvicorn = "*"
+pyright = "1.1.317"
+mypy = "1.4.1"
+types-deprecated = "^1.2.9.20240311"
+types-pyyaml = "^6.0.12.20240311"
+types-pygments = "^2.17.0.20240310"
+types-cffi = "^1.16.0.20240331"
+types-colorama = "^0.4.15.20240311"
+types-pyopenssl = "^24.1.0.20240425"
+types-python-jose = "^3.3.4.20240106"
+types-pytz = "^2024.1.0.20240417"
+types-requests = "^2.31.0.20240406"
+types-setuptools = "^69.5.0.20240423"
+sqlalchemy2-stubs = "^0.0.2a38"
+types-beautifulsoup4 = "^4.12.0.20240504"
+pytest = "<8"
+tortoise-orm = ">=0.17.0,<0.20.0"
 
 [tool.poetry.group.docs]
 optional = true

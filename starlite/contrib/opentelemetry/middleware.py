@@ -50,4 +50,4 @@ class OpenTelemetryInstrumentationMiddleware(AbstractMiddleware):
         Returns:
             None
         """
-        await self.open_telemetry_middleware(scope, receive, send)
+        await self.open_telemetry_middleware(scope, receive, send)  # type: ignore[arg-type]

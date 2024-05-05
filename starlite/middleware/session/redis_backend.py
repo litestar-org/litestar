@@ -33,7 +33,7 @@ class RedisBackend(ServerSideBackend["RedisBackendConfig"]):
             The session data, if existing, otherwise ``None``.
         """
 
-        return await self.redis.get(self._id_to_storage_key(session_id))
+        return await self.redis.get(self._id_to_storage_key(session_id))  # type: ignore[no-any-return]
 
     async def set(self, session_id: str, data: bytes) -> None:
         """Store ``data`` in redis under ``<prefix>:<session_id>``
