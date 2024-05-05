@@ -1,18 +1,15 @@
 from datetime import datetime
 
-from sqlalchemy.orm import DeclarativeBase, Mapped
+from sqlalchemy.orm import Mapped
 
 from litestar import Litestar, get
-from litestar.contrib.sqlalchemy.base import CommonTableAttributes, UUIDPrimaryKey
+from litestar.contrib.sqlalchemy.base import UUIDBase
 from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
 from litestar.dto import DTOConfig
 from litestar.pagination import ClassicPagination
 
 
-class Base(CommonTableAttributes, UUIDPrimaryKey, DeclarativeBase): ...
-
-
-class User(Base):
+class User(UUIDBase):
     name: Mapped[str]
     password: Mapped[str]
     created_at: Mapped[datetime]
