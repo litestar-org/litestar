@@ -78,8 +78,8 @@ def _pr_number_from_commit(comp: Comp) -> int:
     message_head = comp.commit.message.split("\n\n")[0]
     match = re.search(r"\(#(\d+)\)$", message_head)
     if not match:
-        raise ValueError(f"Could not find PR number for commit {message_head!r}")
-    return int(match[1])
+        print(f"Could not find PR number in {message_head}")  # noqa: T201
+    return int(match[1]) if match else None
 
 
 class _Thing:
@@ -152,7 +152,7 @@ class _Thing:
         res = await self._api_client.get(f"/compare/{self._base}...{self._release_branch}")
         res.raise_for_status()
         compares = msgspec.convert(res.json()["commits"], list[Comp])
-        pr_numbers = [_pr_number_from_commit(c) for c in compares]
+        pr_numbers = list(filter(None, (_pr_number_from_commit(c) for c in compares)))
         pulls = await asyncio.gather(*map(self._get_pr_info_for_pr, pr_numbers))
 
         prs = defaultdict(list)
