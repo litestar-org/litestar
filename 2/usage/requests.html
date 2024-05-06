@@ -504,7 +504,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://discord.gg/litestar-919193495116337154"
+    <a href="https://discord.gg/litestar"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Discord Help Forum
         <span class="absolute inset-0"></span>
@@ -1058,7 +1058,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://discord.gg/litestar-919193495116337154"
+    <a href="https://discord.gg/litestar"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Discord Help Forum
         <span class="absolute inset-0"></span>
@@ -1254,7 +1254,7 @@ document.write(`
 </li>
 <li class="toctree-l2"><a class="reference internal" href="responses.html">Responses</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="security/index.html">Security</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="security/abstract-authentication-middleware.html">AbstractAuthenticationMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="security/abstract-authentication-middleware.html">Implementing Custom Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="security/security-backends.html">Security Backends</a></li>
 <li class="toctree-l3"><a class="reference internal" href="security/guards.html">Guards</a></li>
 <li class="toctree-l3"><a class="reference internal" href="security/excluding-and-including-endpoints.html">Excluding and including endpoints</a></li>
@@ -2348,7 +2348,7 @@ Example of a custom request at the application level<div class="sd-summary-down 
         <span class="bp">self</span><span class="o">.</span><span class="n">kitten_name</span> <span class="o">=</span> <span class="n">KITTEN_NAMES_MAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">scope</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">],</span> <span class="s2">&quot;Mittens&quot;</span><span class="p">)</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/kitten-name&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/kitten-name&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">get_kitten_name</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">CustomRequest</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get kitten name based on the HTTP method.&quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">kitten_name</span>

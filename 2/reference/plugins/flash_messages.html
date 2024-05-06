@@ -504,7 +504,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://discord.gg/litestar-919193495116337154"
+    <a href="https://discord.gg/litestar"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Discord Help Forum
         <span class="absolute inset-0"></span>
@@ -1058,7 +1058,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://discord.gg/litestar-919193495116337154"
+    <a href="https://discord.gg/litestar"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Discord Help Forum
         <span class="absolute inset-0"></span>
@@ -1254,7 +1254,7 @@ document.write(`
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/responses.html">Responses</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/security/index.html">Security</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../../usage/security/abstract-authentication-middleware.html">AbstractAuthenticationMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/security/abstract-authentication-middleware.html">Implementing Custom Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/security/security-backends.html">Security Backends</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/security/guards.html">Guards</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/security/excluding-and-including-endpoints.html">Excluding and including endpoints</a></li>
@@ -1542,7 +1542,7 @@ document.write(`
 <p>Configuration for Flash messages.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.plugins.flash.FlashConfig.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">template_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../template.html#litestar.template.TemplateConfig" title="litestar.template.config.TemplateConfig"><span class="pre">TemplateConfig</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.plugins.flash.FlashConfig.__init__" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">template_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../template.html#litestar.template.TemplateConfig" title="litestar.template.TemplateConfig"><span class="pre">TemplateConfig</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.plugins.flash.FlashConfig.__init__" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1577,35 +1577,6 @@ document.write(`
 </dl>
 </dd></dl>
 
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="litestar.plugins.flash.flash">
-<span class="sig-prename descclassname"><span class="pre">litestar.plugins.flash.</span></span><span class="sig-name descname"><span class="pre">flash</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">connection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../connection.html#litestar.connection.ASGIConnection" title="litestar.connection.base.ASGIConnection"><span class="pre">ASGIConnection</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.plugins.flash.flash" title="Permalink to this definition">#</a></dt>
-<dd><p>Add a flash message to the request scope.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="litestar.plugins.flash.flash.params.connection"></span><strong>connection</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.flash.flash.params.connection">¶</a> – The connection instance.</p></li>
-<li><p><span class="target" id="litestar.plugins.flash.flash.params.message"></span><strong>message</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.flash.flash.params.message">¶</a> – The message to flash.</p></li>
-<li><p><span class="target" id="litestar.plugins.flash.flash.params.category"></span><strong>category</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.flash.flash.params.category">¶</a> – The category of the message.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="litestar.plugins.flash.get_flashes">
-<span class="sig-prename descclassname"><span class="pre">litestar.plugins.flash.</span></span><span class="sig-name descname"><span class="pre">get_flashes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.12)"><span class="pre">Mapping</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a></span></span><a class="headerlink" href="#litestar.plugins.flash.get_flashes" title="Permalink to this definition">#</a></dt>
-<dd><p>Get flash messages from the request scope, if any.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="target" id="litestar.plugins.flash.get_flashes.params.context"></span><strong>context</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.flash.get_flashes.params.context">¶</a> – The context dictionary.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The flash messages, if any.</p>
-</dd>
-</dl>
 </dd></dl>
 
 </section>
@@ -1663,8 +1634,6 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.flash.FlashPlugin.on_app_init"><code class="docutils literal notranslate"><span class="pre">FlashPlugin.on_app_init()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.flash.flash"><code class="docutils literal notranslate"><span class="pre">flash()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.flash.get_flashes"><code class="docutils literal notranslate"><span class="pre">get_flashes()</span></code></a></li>
 </ul>
   </nav></div>
 

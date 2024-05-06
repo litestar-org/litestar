@@ -7,12 +7,6 @@ to make working with models easier.
 
 .. tip:: The full code for this tutorial can be found below in the :ref:`Full Code <01-repo-full-code>` section.
 
-.. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py
-    :language: python
-    :caption: app.py
-    :lines: 9,18,19,20
-    :linenos:
-
 Modeling
 --------
 
@@ -20,6 +14,12 @@ We'll begin by modelling the entities and relationships between authors and book
 We'll start by creating the ``Author`` table, utilizing the
 :class:`UUIDBase <advanced_alchemy.base.UUIDBase>` class. To keep things
 simple, our first model will encompass only three fields: ``id``, ``name``, and ``dob``.
+
+.. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py
+    :language: python
+    :caption: app.py
+    :lines: 9,11,18,19,20
+    :linenos:
 
 The book entity is not considered a "strong" entity and therefore always requires an
 author to be created.  We need to configure our SQLAlchemy classes so that it is aware
@@ -31,7 +31,7 @@ key constraints when using the ``author_id`` field in each ``Book`` record.
 .. literalinclude:: /examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py
     :language: python
     :caption: app.py
-    :lines: 9,21,27,28,29,30
+    :lines: 9,11,18,19,20,21,22,27,28,29,30
     :linenos:
 
 By using the audit model, we can automatically record the time a record was created and

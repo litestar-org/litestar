@@ -3,6 +3,103 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.8.3
+    :date: 2024-05-06
+
+    .. change:: Fix improper limitation of a pathname to a restricted directory
+        :type: bugfix
+
+        Fix a path traversal vulnerability disclosed in https://github.com/litestar-org/litestar/security/advisories/GHSA-83pv-qr33-2vcf
+
+    .. change:: Remove use of asserts for control flow.
+        :type: bugfix
+        :pr: 3359
+        :issue: 3354
+
+        #3347 introduced a new pattern to differentiate between Pydantic v1 and v2 installs, however it relies on using `assert` which is an issue as can optimised away.
+
+        This PR changes the approach to manually throw an `ImportError` instead.
+
+    .. change:: schema for generic wrapped return types with DTO
+        :type: bugfix
+        :pr: 3371
+        :issue: 2929
+
+        Fix schema generated for DTOs where the supported type is wrapped in a generic outer type.
+
+    .. change:: Ambiguous default warning for no signature default
+        :type: bugfix
+        :pr: 3378
+        :issue: 3372
+
+        We now only issue a single warning for the case where a default value is supplied via `Parameter()` and not via a regular signature default.
+
+    .. change:: Path param consumed by dependency treated as unconsumed
+        :type: bugfix
+        :pr: 3380
+        :issue: 3369
+
+        Consider parameters defined in handler dependencies in order to determine if a path parameter has been consumed for openapi generation purposes.
+
+        Fixes an issue where path parameters not consumed by the handler, but consumed by dependencies would cause an `ImproperlyConfiguredException`.
+
+    .. change:: Solve a caching issue in `CacheControlHeader`
+        :type: bugfix
+        :pr: 3383
+
+        Fixes an issue causing return of invalid values from cache.
+
+    .. change:: "name" and "in" should not be included in openapi headers
+        :type: bugfix
+        :pr: 3417
+        :issue: 3416
+
+        Exclude the "name" and "in" fields from openapi schema generated for headers.
+
+    .. change:: top-level import of optional package
+        :type: bugfix
+        :pr: 3418
+        :issue: 3415
+
+        Fix import from `contrib.minijinja` without handling for case where dependency is not installed.
+
+    .. change:: regular handler under mounted app
+        :type: bugfix
+        :pr: 3430
+        :issue: 3429
+
+        Fix an issue where a regular handler under a mounted asgi app would prevent a request from routing through the
+        mounted application if the request path contained the path of the regular handler as a substring.
+
+    .. change:: logging to file with structlog
+        :type: bugfix
+        :pr: 3425
+
+        PR fixes issue with converting `StructLoggingConfig` to dict during call to `configure()` when the config object
+        has a custom logger factory that references a `TextIO` object, which cannot be pickled.
+
+    .. change:: clear session cookie if new session gt CHUNK_SIZE
+        :type: bugfix
+        :pr: 3446
+        :issue: 3441
+
+        Fix an issue where the connection session cookie is not cleared if the response session is stored across
+        multiple cookies.
+
+    .. change:: flash messages were not displayed on Redirect
+        :type: bugfix
+        :pr: 3420
+        :issue: 3325
+
+        Fixes issue where flash messages were not displayed on redirect.
+
+    .. change:: Validation of optional sequence in multipart data with one value
+        :type: bugfix
+        :pr: 3408
+        :issue: 3407
+
+        A `Sequence[UploadFile] | None` would not pass validation when a single value was provided for a structured type, e.g. dataclass.
+
 .. changelog:: 2.8.2
     :date: 2024-04-09
 

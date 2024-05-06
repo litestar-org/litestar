@@ -503,7 +503,7 @@
             </div>
             <div class="flex-auto">
                 
-    <a href="https://discord.gg/litestar-919193495116337154"
+    <a href="https://discord.gg/litestar"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Discord Help Forum
         <span class="absolute inset-0"></span>
@@ -1053,7 +1053,7 @@ document.write(`
             </div>
             <div class="flex-auto">
                 
-    <a href="https://discord.gg/litestar-919193495116337154"
+    <a href="https://discord.gg/litestar"
        class="block font-semibold text-gray-900 dark:text-gray-200 hover:text-litestar-gold dark:hover:text-litestar-gold !no-underline select-none cursor-pointer">
         Discord Help Forum
         <span class="absolute inset-0"></span>
@@ -1249,7 +1249,7 @@ document.write(`
 </li>
 <li class="toctree-l2"><a class="reference internal" href="usage/responses.html">Responses</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="usage/security/index.html">Security</a><input class="toctree-checkbox" id="toctree-checkbox-10" name="toctree-checkbox-10" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-10"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="usage/security/abstract-authentication-middleware.html">AbstractAuthenticationMiddleware</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/security/abstract-authentication-middleware.html">Implementing Custom Authentication</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage/security/security-backends.html">Security Backends</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage/security/guards.html">Guards</a></li>
 <li class="toctree-l3"><a class="reference internal" href="usage/security/excluding-and-including-endpoints.html">Excluding and including endpoints</a></li>
@@ -3514,8 +3514,6 @@ document.write(`
       </ul></li>
       <li><a href="reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsStreamBackend.params.cap_streams_approximate">cap_streams_approximate (litestar.channels.backends.redis.RedisChannelsStreamBackend parameter)</a>
 </li>
-      <li><a href="reference/plugins/flash_messages.html#litestar.plugins.flash.flash.params.category">category (litestar.plugins.flash.flash parameter)</a>
-</li>
       <li><a href="reference/channels/backends/memory.html#litestar.channels.backends.memory.MemoryChannelsBackend.publish.params.channels">channels (litestar.channels.backends.memory.MemoryChannelsBackend.publish parameter)</a>
 
       <ul>
@@ -3751,6 +3749,8 @@ document.write(`
 </li>
         <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.SessionMiddleware.create_send_wrapper.params.connection">(litestar.middleware.session.base.SessionMiddleware.create_send_wrapper parameter)</a>
 </li>
+        <li><a href="reference/middleware/session/client_side.html#litestar.middleware.session.client_side.ClientSideSessionBackend.get_cookie_key_set.params.connection">(litestar.middleware.session.client_side.ClientSideSessionBackend.get_cookie_key_set parameter)</a>
+</li>
         <li><a href="reference/middleware/session/client_side.html#litestar.middleware.session.client_side.ClientSideSessionBackend.get_cookie_keys.params.connection">(litestar.middleware.session.client_side.ClientSideSessionBackend.get_cookie_keys parameter)</a>
 </li>
         <li><a href="reference/middleware/session/client_side.html#litestar.middleware.session.client_side.ClientSideSessionBackend.get_session_id.params.connection">(litestar.middleware.session.client_side.ClientSideSessionBackend.get_session_id parameter)</a>
@@ -3764,8 +3764,6 @@ document.write(`
         <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionBackend.load_from_connection.params.connection">(litestar.middleware.session.server_side.ServerSideSessionBackend.load_from_connection parameter)</a>
 </li>
         <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionBackend.store_in_message.params.connection">(litestar.middleware.session.server_side.ServerSideSessionBackend.store_in_message parameter)</a>
-</li>
-        <li><a href="reference/plugins/flash_messages.html#litestar.plugins.flash.flash.params.connection">(litestar.plugins.flash.flash parameter)</a>
 </li>
         <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTAuthenticationMiddleware.authenticate_request.params.connection">(litestar.security.jwt.JWTAuthenticationMiddleware.authenticate_request parameter)</a>
 </li>
@@ -3924,8 +3922,6 @@ document.write(`
 
       <ul>
         <li><a href="reference/contrib/mako.html#litestar.contrib.mako.MakoTemplateEngine.render_string.params.context">(litestar.contrib.mako.MakoTemplateEngine.render_string parameter)</a>
-</li>
-        <li><a href="reference/plugins/flash_messages.html#litestar.plugins.flash.get_flashes.params.context">(litestar.plugins.flash.get_flashes parameter)</a>
 </li>
         <li><a href="reference/response/index.html#litestar.response.Template.params.context">(litestar.response.Template parameter)</a>
 </li>
@@ -5563,6 +5559,8 @@ document.write(`
 </li>
         <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.create_for_field_definition.params.field_definition">(litestar.dto.base_dto.AbstractDTO.create_for_field_definition parameter)</a>
 </li>
+        <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.create_openapi_schema.params.field_definition">(litestar.dto.base_dto.AbstractDTO.create_openapi_schema parameter)</a>
+</li>
         <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.detect_nested_field.params.field_definition">(litestar.dto.base_dto.AbstractDTO.detect_nested_field parameter)</a>
 </li>
         <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.get_dto_config_from_annotated_type.params.field_definition">(litestar.dto.base_dto.AbstractDTO.get_dto_config_from_annotated_type parameter)</a>
@@ -5687,8 +5685,6 @@ document.write(`
 </li>
       </ul></li>
       <li><a href="reference/logging/config.html#litestar.logging.config.LoggingConfig.filters">filters (litestar.logging.config.LoggingConfig attribute)</a>
-</li>
-      <li><a href="reference/plugins/flash_messages.html#litestar.plugins.flash.flash">flash() (in module litestar.plugins.flash)</a>
 </li>
       <li><a href="reference/plugins/flash_messages.html#litestar.plugins.flash.FlashConfig">FlashConfig (class in litestar.plugins.flash)</a>
 </li>
@@ -5872,13 +5868,13 @@ document.write(`
       </ul></li>
       <li><a href="reference/concurrency.html#litestar.concurrency.get_asyncio_executor">get_asyncio_executor() (in module litestar.concurrency)</a>
 </li>
+      <li><a href="reference/middleware/session/client_side.html#litestar.middleware.session.client_side.ClientSideSessionBackend.get_cookie_key_set">get_cookie_key_set() (litestar.middleware.session.client_side.ClientSideSessionBackend method)</a>
+</li>
       <li><a href="reference/middleware/session/client_side.html#litestar.middleware.session.client_side.ClientSideSessionBackend.get_cookie_keys">get_cookie_keys() (litestar.middleware.session.client_side.ClientSideSessionBackend method)</a>
 </li>
       <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.get_dto_config_from_annotated_type">get_dto_config_from_annotated_type() (litestar.dto.base_dto.AbstractDTO static method)</a>
 </li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.get_engine">get_engine() (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig method)</a>
-</li>
-      <li><a href="reference/plugins/flash_messages.html#litestar.plugins.flash.get_flashes">get_flashes() (in module litestar.plugins.flash)</a>
 </li>
       <li><a href="reference/static_files.html#litestar.static_files.StaticFiles.get_fs_info">get_fs_info() (litestar.static_files.StaticFiles method)</a>
 </li>
@@ -6099,6 +6095,8 @@ document.write(`
       <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.create_for_field_definition.params.handler_id">handler_id (litestar.dto.base_dto.AbstractDTO.create_for_field_definition parameter)</a>
 
       <ul>
+        <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.create_openapi_schema.params.handler_id">(litestar.dto.base_dto.AbstractDTO.create_openapi_schema parameter)</a>
+</li>
         <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.handler_id">(litestar.handlers.BaseRouteHandler property)</a>
 </li>
       </ul></li>
@@ -6298,14 +6296,14 @@ document.write(`
 </li>
       <li><a href="reference/datastructures.html#litestar.datastructures.URL.hostname">hostname (litestar.datastructures.URL attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/static_files.html#litestar.static_files.create_static_files_router.params.html_mode">html_mode (litestar.static_files.create_static_files_router parameter)</a>
 
       <ul>
         <li><a href="reference/static_files.html#litestar.static_files.StaticFilesConfig.html_mode">(litestar.static_files.StaticFilesConfig attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.request.HTMXDetails">HTMXDetails (class in litestar.contrib.htmx.request)</a>
 </li>
       <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.request.HTMXRequest">HTMXRequest (class in litestar.contrib.htmx.request)</a>
@@ -8115,8 +8113,6 @@ document.write(`
         <li><a href="reference/middleware/session/client_side.html#litestar.middleware.session.client_side.ClientSideSessionBackend.store_in_message.params.message">(litestar.middleware.session.client_side.ClientSideSessionBackend.store_in_message parameter)</a>
 </li>
         <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionBackend.store_in_message.params.message">(litestar.middleware.session.server_side.ServerSideSessionBackend.store_in_message parameter)</a>
-</li>
-        <li><a href="reference/plugins/flash_messages.html#litestar.plugins.flash.flash.params.message">(litestar.plugins.flash.flash parameter)</a>
 </li>
       </ul></li>
       <li><a href="reference/data_extractors.html#litestar.data_extractors.ResponseDataExtractor.__call__.params.messages">messages (litestar.data_extractors.ResponseDataExtractor.__call__ parameter)</a>
@@ -10510,6 +10506,8 @@ document.write(`
       <ul>
         <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticSchemaPlugin.to_openapi_schema.params.schema_creator">(litestar.contrib.pydantic.PydanticSchemaPlugin.to_openapi_schema parameter)</a>
 </li>
+        <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.create_openapi_schema.params.schema_creator">(litestar.dto.base_dto.AbstractDTO.create_openapi_schema parameter)</a>
+</li>
         <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema.params.schema_creator">(litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema parameter)</a>
 </li>
       </ul></li>
@@ -11026,14 +11024,14 @@ document.write(`
         <li><a href="reference/response/index.html#litestar.response.Response.set_cookie">(litestar.response.Response method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/response/base.html#litestar.response.base.Response.set_etag">set_etag() (litestar.response.base.Response method)</a>
 
       <ul>
         <li><a href="reference/response/index.html#litestar.response.Response.set_etag">(litestar.response.Response method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/response/base.html#litestar.response.base.Response.set_header">set_header() (litestar.response.base.Response method)</a>
 
       <ul>
