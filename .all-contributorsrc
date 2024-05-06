@@ -626,7 +626,8 @@
       "contributions": [
         "doc",
         "code",
-        "test"
+        "test",
+        "infra"
       ]
     },
     {
