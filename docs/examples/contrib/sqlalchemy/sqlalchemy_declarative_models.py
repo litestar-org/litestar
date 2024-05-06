@@ -1,9 +1,9 @@
+import uuid
 from datetime import date
 from typing import TYPE_CHECKING
 from uuid import UUID
-import uuid
 
-from sqlalchemy import ForeignKey, select, func
+from sqlalchemy import ForeignKey, func, select
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from litestar import Litestar, get
@@ -47,8 +47,8 @@ async def on_startup() -> None:
         count = await session.execute(statement)
         if 0 == count.scalar():
             author_id = uuid.uuid4()
-            session.add(Author(name="Stephen King",dob=date(1954,9,21),id=author_id ))
-            session.add(Book(title="It",author_id=author_id))
+            session.add(Author(name="Stephen King", dob=date(1954,9,21), id=author_id ))
+            session.add(Book(title="It", author_id=author_id))
             await session.commit()
 
 
