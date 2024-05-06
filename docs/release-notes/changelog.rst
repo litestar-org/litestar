@@ -1,7 +1,7 @@
 1.x Changelog
 =============
 
-1.51.15
+1.51.16
 -------
 
 * Fix a security issue ([CVE-2024-32982](https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2024-32982) where static files could allow users the ability to escape the configured static files directory
