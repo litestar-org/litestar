@@ -1,5 +1,6 @@
 import gzip
 import mimetypes
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import brotli
@@ -8,6 +9,7 @@ from fsspec.implementations.local import LocalFileSystem  # type: ignore[import]
 
 from starlite import MediaType, get
 from starlite.config import StaticFilesConfig
+from starlite.static_files import StaticFiles
 from starlite.status_codes import HTTP_200_OK
 from starlite.testing import create_test_client
 from starlite.utils.file import BaseLocalFileSystem
@@ -194,3 +196,14 @@ def test_static_files_content_disposition(tmpdir: "Path", send_as_attachment: bo
         response = client.get("/static/static_part/static/test.txt")
         assert response.status_code == HTTP_200_OK
         assert response.headers["content-disposition"].startswith(disposition)
+
+
+async def test_staticfiles_get_fs_info_no_access_to_non_static_directory(tmp_path: Path,) -> None:
+    assets = tmp_path / "assets"
+    assets.mkdir()
+    index = tmp_path / "index.html"
+    index.write_text("content", "utf-8")
+    static_files = StaticFiles(is_html_mode=False, directories=["static"], file_system=BaseLocalFileSystem())
+    path, info = await static_files.get_fs_info([assets], "../index.html")
+    assert path is None
+    assert info is None

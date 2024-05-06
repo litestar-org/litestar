@@ -2,14 +2,21 @@
 name = "starlite"
 version = "1.51.15"
 description = "Performant, light and flexible ASGI API Framework"
-authors = ["Na'aman Hirschfeld <nhirschfeld@gmail.com>"]
+authors = [
+  "Janek Nouvertné <provinzkraut@posteo.de>",
+  "Cody Fincher <cody.fincher@gmail.com>",
+  "Peter Schutt <peter.github@proton.me>",
+  "Jacob Coffee <jacob@z7x.org>",
+  "Na'aman Hirschfeld <nhirschfeld@gmail.com>",
+]
 maintainers = [
-    "Cody Fincher <cody@litestar.dev>",
-    "Janek Nouvertné <provinzkraut@litestar.dev",
-    "Jacob Coffee <jacob@litestar.dev",
-    "Peter Schutt <peter@litestar.dev>",
-    "Visakh Unnikrishnan <guacs@litestar.dev>",
-    "Alc <alc@litestar.dev>"
+  "Litestar Developers <hello@litestar.dev>",
+  "Cody Fincher <cody@litestar.dev>",
+  "Jacob Coffee <jacob@litestar.dev>",
+  "Janek Nouvertné <provinzkraut@litestar.dev>",
+  "Peter Schutt <peter@litestar.dev>",
+  "Visakh Unnikrishnan <guacs@litestar.dev>",
+  "Alc <alc@litestar.dev>"
 ]
 license = "MIT"
 readme = "README.md"

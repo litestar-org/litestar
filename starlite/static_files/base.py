@@ -1,4 +1,4 @@
-from os.path import commonpath, join
+import os.path
 from typing import TYPE_CHECKING, Literal, Sequence, Tuple, Union
 
 from starlite.enums import ScopeType
@@ -35,7 +35,7 @@ class StaticFiles:
              ``attachment`` or ``inline``
         """
         self.adapter = FileSystemAdapter(file_system)
-        self.directories = directories
+        self.directories = [os.path.normpath(d) for d in directories]
         self.is_html_mode = is_html_mode
         self.send_as_attachment = send_as_attachment
 
@@ -54,9 +54,11 @@ class StaticFiles:
         """
         for directory in directories:
             try:
-                joined_path = join(directory, file_path)  # noqa: PL118
-                file_info = await self.adapter.info(joined_path)
-                if file_info and commonpath([str(directory), file_info["name"], joined_path]) == str(directory):
+                joined_path = os.path.join(directory, file_path)
+                normalized_file_path = os.path.normpath(joined_path)
+                if os.path.commonpath([directory, normalized_file_path]) == str(directory) and (
+                    file_info := await self.adapter.info(joined_path)
+                ):
                     return joined_path, file_info
             except FileNotFoundError:
                 continue
@@ -78,7 +80,7 @@ class StaticFiles:
 
         split_path = scope["path"].split("/")
         filename = split_path[-1]
-        joined_path = join(*split_path)  # noqa: PL118
+        joined_path = os.path.join(*split_path)  # noqa: PL118
         resolved_path, fs_info = await self.get_fs_info(directories=self.directories, file_path=joined_path)
         content_disposition_type: Literal["inline", "attachment"] = (
             "attachment" if self.send_as_attachment else "inline"
@@ -87,7 +89,7 @@ class StaticFiles:
         if self.is_html_mode and fs_info and fs_info["type"] == "directory":
             filename = "index.html"
             resolved_path, fs_info = await self.get_fs_info(
-                directories=self.directories, file_path=join(resolved_path or joined_path, filename)
+                directories=self.directories, file_path=os.path.join(resolved_path or joined_path, filename)
             )
 
         if fs_info and fs_info["type"] == "file":
