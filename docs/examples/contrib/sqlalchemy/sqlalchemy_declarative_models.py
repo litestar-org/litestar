@@ -1,13 +1,14 @@
 from datetime import date
 from typing import TYPE_CHECKING
 from uuid import UUID
+import uuid
 
-from sqlalchemy import ForeignKey, select
+from sqlalchemy import ForeignKey, select, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from litestar import Litestar, get
 from litestar.contrib.sqlalchemy.base import UUIDAuditBase, UUIDBase
-from litestar.contrib.sqlalchemy.plugins import AsyncSessionConfig, SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
+from litestar.contrib.sqlalchemy.plugins import AsyncSessionConfig, SQLAlchemyAsyncConfig, SQLAlchemyPlugin
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
@@ -34,13 +35,21 @@ session_config = AsyncSessionConfig(expire_on_commit=False)
 sqlalchemy_config = SQLAlchemyAsyncConfig(
     connection_string="sqlite+aiosqlite:///test.sqlite", session_config=session_config
 )  # Create 'async_session' dependency.
-sqlalchemy_plugin = SQLAlchemyInitPlugin(config=sqlalchemy_config)
+sqlalchemy_plugin = SQLAlchemyPlugin(config=sqlalchemy_config)
 
 
 async def on_startup() -> None:
-    """Initializes the database."""
+    """Initializes the database and add some dummy data."""
     async with sqlalchemy_config.get_engine().begin() as conn:
         await conn.run_sync(UUIDBase.metadata.create_all)
+    async with sqlalchemy_config.get_session() as session:
+        statement = select(func.count()).select_from(Author)
+        count = await session.execute(statement)
+        if 0 == count.scalar():
+            author_id = uuid.uuid4()
+            session.add(Author(name="Stephen King",dob=date(1954,9,21),id=author_id ))
+            session.add(Book(title="It",author_id=author_id))
+            await session.commit()
 
 
 @get(path="/authors")
@@ -52,5 +61,5 @@ async def get_authors(db_session: "AsyncSession", db_engine: "AsyncEngine") -> l
 app = Litestar(
     route_handlers=[get_authors],
     on_startup=[on_startup],
-    plugins=[SQLAlchemyInitPlugin(config=sqlalchemy_config)],
+    plugins=[SQLAlchemyPlugin(config=sqlalchemy_config)],
 )
