@@ -286,7 +286,8 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
         else:
             # pydantic v1 requires some workarounds here
             model_annotations = {
-                k: f.outer_type_ if f.required else Optional[f.outer_type_] for k, f in model.__fields__.items()
+                k: f.outer_type_ if f.required or f.default else Optional[f.outer_type_]
+                for k, f in model.__fields__.items()
             }
 
         if is_generic_model:
