@@ -43,314 +43,18 @@ The autodiscovery follows these lookup locations in order:
 
 Within these locations, Litestar CLI looks for:
 
-1. An :term:`object` named ``app`` that is an instance of :class:`Litestar <.app.Litestar>`
-2. An :term:`object` named ``application`` that is an instance of :class:`Litestar <.app.Litestar>`
-3. Any :term:`object` that is an instance of :class:`Litestar <.app.Litestar>`
+1. An :term:`object` named ``app`` that is an instance of :class:`~.app.Litestar`
+2. An object named ``application`` that is an instance of :class:`~.app.Litestar`
+3. Any object that is an instance of :class:`~.app.Litestar`
 4. A :term:`callable` named ``create_app``
-5. A :term:`callable` annotated to return an instance of :class:`Litestar <.app.Litestar>`
-
-Commands
---------
-
-``litestar``
-^^^^^^^^^^^^
-
-The main entrypoint to the Litestar CLI is the ``litestar`` command.
-
-If you do not pass the ``--app`` flag, the application will be automatically discovered, as explained in
-`Autodiscovery`_.
-
-Options
-~~~~~~~
-
-+---------------+---------------------------+-----------------------------------------------------------------+
-| Flag          | Environment variable      | Description                                                     |
-+===============+===========================+=================================================================+
-| ``--app``     | ``LITESTAR_APP``          | ``<modulename>.<submodule>:<app instance>``                     |
-+---------------+---------------------------+-----------------------------------------------------------------+
-| ``--app-dir`` | N/A                       | Look for the app in the specified directory by adding it to the |
-|               |                           | ``PYTHONPATH``. Defaults to the current working directory.      |
-+---------------+---------------------------+-----------------------------------------------------------------+
-
-``version``
-^^^^^^^^^^^
-
-Prints the currently installed version of Litestar.
-
-Options
-~~~~~~~
-
-+-------------------------+------------------------------------+
-| Name                    | Description                        |
-+=========================+====================================+
-| ``-s``\ , ``--short``   | Include only ``MAJOR.MINOR.PATCH`` |
-+-------------------------+------------------------------------+
-
-
-``run``
-^^^^^^^
-
-The ``run`` command executes a Litestar application using |uvicorn|_.
-
-.. code-block:: shell
-    :caption: Run the application
-
-    litestar run
-
-.. caution:: This feature is intended for development purposes only and should not be used to
-    deploy production applications.
-
-.. versionchanged:: 2.8.0
-    CLI options take precedence over environment variables!
-
-.. _cli-run-options:
-
-Options
-~~~~~~~
-
-+-------------------------------------------+----------------------------------------------+--------------------------------------------------------------------------------------------+
-| Flag                                      | Environment variable                         | Description                                                                                |
-+===========================================+==============================================+============================================================================================+
-| ``-r``\ , ``--reload``                    | ``LITESTAR_RELOAD``                          | Reload the application when files in its directory are changed                             |
-+-------------------------------------------+----------------------------------------------+--------------------------------------------------------------------------------------------+
-| ``-R``\ , ``--reload-dir``                | ``LITESTAR_RELOAD_DIRS``                     | Specify directories to watch for reload.                                                   |
-+-------------------------------------------+----------------------------------------------+--------------------------------------------------------------------------------------------+
-| ``-I``\ , ``--reload-include``            | ``LITESTAR_RELOAD_INCLUDES``                 | Specify glob patterns for files to include when watching for reload.                       |
-+-------------------------------------------+----------------------------------------------+--------------------------------------------------------------------------------------------+
-| ``-E``\ , ``--reload-exclude``            | ``LITESTAR_RELOAD_EXCLUDES``                 | Specify glob patterns for files to exclude when watching for reload.                       |
-+-------------------------------------------+----------------------------------------------+--------------------------------------------------------------------------------------------+
-| ``-p``\ , ``--port``                      | ``LITESTAR_PORT``                            | Bind the server to this port ``[default: 8000]``                                           |
-+-------------------------------------------+----------------------------------------------+--------------------------------------------------------------------------------------------+
-| ``--wc``\ , ``--web-concurrency``         | ``LITESTAR_WEB_CONCURRENCY``                 | .. versionchanged:: 2.8                                                                    |
-|                                           | ``WEB_CONCURRENCY``                          |    ``LITESTAR_WEB_CONCURRENCY`` is supported and takes precedence over ``WEB_CONCURRENCY`` |
-|                                           |                                              |                                                                                            |
-|                                           |                                              | The number of concurrent web workers to start ``[default: 1]``                             |
-+-------------------------------------------+----------------------------------------------+--------------------------------------------------------------------------------------------+
-| ``-H``\ , ``--host``                      | ``LITESTAR_HOST``                            | Bind the server to this host ``[default: 127.0.0.1]``                                      |
-+-------------------------------------------+----------------------------------------------+--------------------------------------------------------------------------------------------+
-| ``--fd``\ , ``--file-descriptor``         | ``LITESTAR_FILE_DESCRIPTOR``                 | Bind to a socket from this file descriptor.                                                |
-+-------------------------------------------+----------------------------------------------+--------------------------------------------------------------------------------------------+
-| ``--uds``\ , ``--unix-domain-socket``     | ``LITESTAR_UNIX_DOMAIN_SOCKET``              | Bind to a UNIX domain socket.                                                              |
-+-------------------------------------------+----------------------------------------------+--------------------------------------------------------------------------------------------+
-| ``-d``\ , ``--debug``                     | ``LITESTAR_DEBUG``                           | Run the application in debug mode                                                          |
-+-------------------------------------------+----------------------------------------------+--------------------------------------------------------------------------------------------+
-| ``--pdb``\ , ``--use_pdb``                | ``LITESTAR_PDB``                             | Drop into a :doc:`Python Debugger <python:library/pdb>` when an exception occurs           |
-+-------------------------------------------+----------------------------------------------+--------------------------------------------------------------------------------------------+
-| ``--ssl-certfile``                        | ``LITESTAR_SSL_CERT_PATH``                   | Path to a SSL certificate file                                                             |
-+-------------------------------------------+----------------------------------------------+--------------------------------------------------------------------------------------------+
-| ``--ssl-keyfile``                         | ``LITESTAR_SSL_KEY_PATH``                    | Path to the private key to the SSL certificate                                             |
-+-------------------------------------------+----------------------------------------------+--------------------------------------------------------------------------------------------+
-| ``--create-self-signed-cert``             | ``LITESTAR_CREATE_SELF_SIGNED_CERT``         | If the SSL certificate and key are not found, generate a self-signed certificate           |
-+-------------------------------------------+----------------------------------------------+--------------------------------------------------------------------------------------------+
-
-``--reload-dir``
-++++++++++++++++
-
-The ``--reload-dir`` flag allows you to specify directories to watch for changes.
-If you specify this flag, the ``--reload`` flag is implied.
-
-You can specify multiple directories by passing the flag multiple times:
-
-.. code-block:: shell
-    :caption: Specifying multiple directories
-
-    litestar run --reload-dir=. --reload-dir=../other-library/src
-
-To set multiple directories via an environment variable, use a comma-separated list:
-
-.. code-block:: shell
-    :caption: Setting multiple directories via an environment variable
-
-    LITESTAR_RELOAD_DIRS=.,../other-library/src
-
-``--reload-include``
-++++++++++++++++++++
-
-The ``--reload-include`` flag allows you to specify glob patterns to include when watching for file changes.
-If you specify this flag, the ``--reload`` flag is implied.
-Furthermore, ``.py`` files are included implicitly by default.
-
-You can specify multiple glob patterns by passing the flag multiple times:
-
-.. code-block:: shell
-    :caption: Specifying multiple glob patterns
-
-    litestar run --reload-include="*.rst" --reload-include="*.yml"
-
-To set multiple directories via an environment variable, use a comma-separated list:
-
-.. code-block:: shell
-    :caption: Setting multiple directories via an environment variable
-
-    LITESTAR_RELOAD_INCLUDES=*.rst,*.yml
-
-``--reload-exclude``
-++++++++++++++++++++
-
-The ``--reload-exclude`` flag allows you to specify glob patterns to exclude when watching for file changes.
-If you specify this flag, the ``--reload`` flag is implied.
-
-You can specify multiple glob patterns by passing the flag multiple times:
-
-.. code-block:: shell
-    :caption: Specifying multiple glob patterns
-
-    litestar run --reload-exclude="*.py" --reload-exclude="*.yml"
-
-To set multiple directories via an environment variable, use a comma-separated list:
-
-.. code-block:: shell
-    :caption: Setting multiple directories via an environment variable
-
-    LITESTAR_RELOAD_EXCLUDES=*.py,*.yml
-
-SSL
-+++
-
-You can pass paths to an SSL certificate and it is private key to run the server using the HTTPS protocol:
-
-.. code-block:: shell
-
-   litestar run --ssl-certfile=certs/cert.pem --ssl-keyfile=certs/key.pem
-
-Both flags must be provided and both files must exist. These are then passed to |uvicorn|_.
-You can also use the  ``--create-self-signed-cert`` flag:
-
-.. code-block:: shell
-    :caption: Generating a self-signed certificate
-
-    litestar run --ssl-certfile=certs/cert.pem --ssl-keyfile=certs/key.pem --create-self-signed-cert
-
-This way, if the given files do not exist, a self-signed certificate and a passwordless key will be generated.
-If the files are found, they will be reused.
-
-``info``
-^^^^^^^^
-
-The ``info`` command displays useful information about the selected application and its configuration.
-
-.. code-block:: shell
-    :caption: Display information about the application
-
-    litestar info
-
-.. image:: /images/cli/litestar_info.png
-   :alt: litestar info
-
-``routes``
-^^^^^^^^^^
-
-The ``routes`` command displays a tree view of the routing table.
-
-.. code-block:: shell
-    :caption: Display the routing table
-
-    litestar routes
-
-Options
-~~~~~~~
-
-+-----------------+--------------------------------------------------------------------------------------------------+
-| Flag            | Description                                                                                      |
-+=================+==================================================================================================+
-| ``--schema``    | Include default auto generated openAPI schema routes                                             |
-+-----------------+--------------------------------------------------------------------------------------------------+
-| ``--exclude``   | Exclude endpoints from query with given regex patterns.                                          |
-|                 | Multiple excludes allowed. e.g., ``litestar routes  --schema --exclude=routes/.* --exclude=[]``  |
-+-----------------+--------------------------------------------------------------------------------------------------+
-
-.. image:: /images/cli/litestar_routes.png
-   :alt: litestar info
-
-``sessions``
-^^^^^^^^^^^^
-
-This command and its subcommands provide management utilities for server-side session backends.
-
-``delete``
-~~~~~~~~~~
-
-The ``delete`` subcommand deletes a specific session from the backend.
-
-.. code-block:: shell
-
-      litestar sessions delete cc3debc7-1ab6-4dc8-a220-91934a473717
-
-``clear``
-~~~~~~~~~
-
-The ``clear`` subcommand is used to remove all sessions from the backend.
-
-.. code-block:: shell
-
-   litestar sessions clear
-
-``openapi``
-^^^^^^^^^^^
-
-This command provides utilities to generate OpenAPI schemas and TypeScript types.
-
-``schema``
-~~~~~~~~~~
-
-The ``schema`` subcommand generates OpenAPI specifications from the Litestar application and serializes them as either
-JSON or YAML. The serialization format depends on the filename, which is by default ``openapi_schema.json``. You can
-specify a different filename using the ``--output`` flag. For example:
-
-.. code-block:: shell
-    :caption: Generate OpenAPI specifications
-
-    litestar schema openapi --output my-specs.yml
-
-``typescript``
-~~~~~~~~~~~~~~
-
-The ``typescript`` subcommand generates TypeScript definitions from the Litestar application's OpenAPI specifications.
-For example:
-
-.. code-block:: shell
-    :caption: Generate TypeScript definitions
-
-    litestar schema typescript
-
-By default, this command outputs a file called ``api-specs.ts``. You can change this using the ``--output`` option:
-
-.. code-block:: shell
-    :caption: Specifying an output file
-
-    litestar schema typescript --output my-types.ts
-
-You can also specify the top-level TypeScript namespace that will be created, which is ``API`` by default:
-
-.. code-block:: typescript
-    :caption: The default namespace
-
-    export namespace API {
-       // ...
-    }
-
-To do this, use the `--namespace` option:
-
-.. code-block:: shell
-    :caption: Specifying a namespace via ``--namespace``
-
-    litestar schema typescript --namespace MyNamespace
-
-This will result in:
-
-.. code-block:: typescript
-    :caption: The specified namespace
-
-    export namespace MyNamespace {
-       // ...
-    }
+5. A callable annotated to return an instance of :class:`~.app.Litestar`
 
 Extending the CLI
 -----------------
 
 Litestar's CLI is built with `click <https://click.palletsprojects.com/>`_ and can be extended by making use of
 `entry points <https://packaging.python.org/en/latest/specifications/entry-points/>`_,
-or by creating a plugin that conforms to the :class:`~litestar.plugins.CLIPluginProtocol`.
+or by creating a plugin that conforms to the :class:`~.plugins.CLIPluginProtocol`.
 
 Using entry points
 ^^^^^^^^^^^^^^^^^^
@@ -399,8 +103,8 @@ entries should point to a :class:`click.Command` or :class:`click.Group`:
 Using a plugin
 ^^^^^^^^^^^^^^
 
-A plugin extending the CLI can be created using the :class:`~litestar.plugins.CLIPluginProtocol`.
-Its :meth:`~litestar.plugins.CLIPluginProtocol.on_cli_init` will be called during the initialization of the CLI,
+A plugin extending the CLI can be created using the :class:`~.plugins.CLIPluginProtocol`.
+Its :meth:`~.plugins.CLIPluginProtocol.on_cli_init` will be called during the initialization of the CLI,
 and receive the root :class:`click.Group` as its first argument, which can then be used to add or override commands:
 
 .. code-block:: python
@@ -440,4 +144,12 @@ You can achieve this by adding the special ``app`` parameter to your CLI functio
 CLI Reference
 -------------
 
-For more information, visit the :doc:`Litestar CLI Click API Reference </reference/cli>`.
+The most up-to-date reference for the Litestar CLI can be found by running:
+
+.. code-block:: shell
+    :caption: Display the CLI help
+
+    litestar --help
+
+You can also visit the :doc:`Litestar CLI Click API Reference </reference/cli>` for that same
+information.
