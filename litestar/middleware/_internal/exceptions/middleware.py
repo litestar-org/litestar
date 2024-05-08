@@ -158,7 +158,7 @@ class ExceptionHandlerMiddleware:
             await self.app(scope, receive, capture_response_started)
         except Exception as e:  # noqa: BLE001
             if scope_state.response_started:
-                raise
+                raise LitestarException("Exception caught after response started") from e
 
             litestar_app = scope["app"]
 
