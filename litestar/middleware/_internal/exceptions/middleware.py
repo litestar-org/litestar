@@ -29,6 +29,7 @@ if TYPE_CHECKING:
         ExceptionHandler,
         ExceptionHandlersMap,
         Logger,
+        Message,
         Receive,
         Scope,
         Send,
@@ -146,9 +147,19 @@ class ExceptionHandlerMiddleware:
         Returns:
             None
         """
+        scope_state = ScopeState.from_scope(scope)
+
+        async def capture_response_started(event: Message) -> None:
+            if event["type"] == "http.response.start":
+                scope_state.response_started = True
+            await send(event)
+
         try:
-            await self.app(scope, receive, send)
+            await self.app(scope, receive, capture_response_started)
         except Exception as e:  # noqa: BLE001
+            if scope_state.response_started:
+                raise LitestarException("Exception caught after response started") from e
+
             litestar_app = scope["app"]
 
             if litestar_app.logging_config and (logger := litestar_app.logger):
