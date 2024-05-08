@@ -1,5 +1,5 @@
 import asyncio
-from pathlib import Path, PosixPath
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, List, cast
 
 import pytest
@@ -146,6 +146,6 @@ def test_config_validation_of_path_prevents_directory_traversal(tmpdir: "Path") 
     coroutine = static_files_handler.get_fs_info(directories=static_files_handler.directories, file_path=string_path)
     resolved_path, fs_info = asyncio.run(coroutine)
 
-    expected_resolved_path = PosixPath(str(tmpdir / "test.txt"))
+    expected_resolved_path = tmpdir / "test.txt"
     assert resolved_path == expected_resolved_path  # Because the resolved path is inside the static directory
     assert fs_info is not None  # Because the file exists, so there is info
