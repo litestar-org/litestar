@@ -191,8 +191,8 @@ class LoggingMiddleware(AbstractMiddleware):
         connection_state = ScopeState.from_scope(scope)
         extracted_data = self.response_extractor(
             messages=(
-                connection_state.log_context.pop(HTTP_RESPONSE_START),
-                connection_state.log_context.pop(HTTP_RESPONSE_BODY),
+                connection_state.log_context[HTTP_RESPONSE_START],
+                connection_state.log_context[HTTP_RESPONSE_BODY],
             ),
         )
         response_body_compressed = value_or_default(connection_state.response_compressed, False)
