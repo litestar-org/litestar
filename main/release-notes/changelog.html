@@ -1530,6 +1530,84 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.8.3">
+<h2>2.8.3<a class="headerlink" href="#2.8.3" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2024-05-06<section id="2.8.3-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.8.3-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Fix improper limitation of a pathname to a restricted directory<a class="headerlink reference internal" href="#2.8.3-fix improper limitation of a pathname to a restricted directory" id="2.8.3-fix improper limitation of a pathname to a restricted directory">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a path traversal vulnerability disclosed in <a class="github reference external" href="https://github.com/litestar-org/litestar/security/advisories/GHSA-83pv-qr33-2vcf">litestar-org/litestar</a></p>
+<p>References: </p>
+</div>
+</dd>
+<dt>Remove use of asserts for control flow.<a class="headerlink reference internal" href="#2.8.3-remove use of asserts for control flow." id="2.8.3-remove use of asserts for control flow.">#</a></dt><dd><div class="changelog-change docutils container">
+<p>#3347 introduced a new pattern to differentiate between Pydantic v1 and v2 installs, however it relies on using <cite>assert</cite> which is an issue as can optimised away.</p>
+<p>This PR changes the approach to manually throw an <cite>ImportError</cite> instead.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3354">litestar-org/litestar#3354</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3359">litestar-org/litestar#3359</a></span></p>
+</div>
+</dd>
+<dt>schema for generic wrapped return types with DTO<a class="headerlink reference internal" href="#2.8.3-schema for generic wrapped return types with dto" id="2.8.3-schema for generic wrapped return types with dto">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix schema generated for DTOs where the supported type is wrapped in a generic outer type.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2929">litestar-org/litestar#2929</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3371">litestar-org/litestar#3371</a></span></p>
+</div>
+</dd>
+<dt>Ambiguous default warning for no signature default<a class="headerlink reference internal" href="#2.8.3-ambiguous default warning for no signature default" id="2.8.3-ambiguous default warning for no signature default">#</a></dt><dd><div class="changelog-change docutils container">
+<p>We now only issue a single warning for the case where a default value is supplied via <cite>Parameter()</cite> and not via a regular signature default.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3372">litestar-org/litestar#3372</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3378">litestar-org/litestar#3378</a></span></p>
+</div>
+</dd>
+<dt>Path param consumed by dependency treated as unconsumed<a class="headerlink reference internal" href="#2.8.3-path param consumed by dependency treated as unconsumed" id="2.8.3-path param consumed by dependency treated as unconsumed">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Consider parameters defined in handler dependencies in order to determine if a path parameter has been consumed for openapi generation purposes.</p>
+<p>Fixes an issue where path parameters not consumed by the handler, but consumed by dependencies would cause an <cite>ImproperlyConfiguredException</cite>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3369">litestar-org/litestar#3369</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3380">litestar-org/litestar#3380</a></span></p>
+</div>
+</dd>
+<dt>Solve a caching issue in <cite>CacheControlHeader</cite><a class="headerlink reference internal" href="#2.8.3-solve a caching issue in" id="2.8.3-solve a caching issue in">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fixes an issue causing return of invalid values from cache.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3383">litestar-org/litestar#3383</a></span></p>
+</div>
+</dd>
+<dt>“name” and “in” should not be included in openapi headers<a class="headerlink reference internal" href="#2.8.3-&quot;name&quot; and &quot;in&quot; should not be included in openapi headers" id="2.8.3-&quot;name&quot; and &quot;in&quot; should not be included in openapi headers">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Exclude the “name” and “in” fields from openapi schema generated for headers.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3416">litestar-org/litestar#3416</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3417">litestar-org/litestar#3417</a></span></p>
+</div>
+</dd>
+<dt>top-level import of optional package<a class="headerlink reference internal" href="#2.8.3-top-level import of optional package" id="2.8.3-top-level import of optional package">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix import from <cite>contrib.minijinja</cite> without handling for case where dependency is not installed.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3415">litestar-org/litestar#3415</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3418">litestar-org/litestar#3418</a></span></p>
+</div>
+</dd>
+<dt>regular handler under mounted app<a class="headerlink reference internal" href="#2.8.3-regular handler under mounted app" id="2.8.3-regular handler under mounted app">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix an issue where a regular handler under a mounted asgi app would prevent a request from routing through the
+mounted application if the request path contained the path of the regular handler as a substring.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3429">litestar-org/litestar#3429</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3430">litestar-org/litestar#3430</a></span></p>
+</div>
+</dd>
+<dt>logging to file with structlog<a class="headerlink reference internal" href="#2.8.3-logging to file with structlog" id="2.8.3-logging to file with structlog">#</a></dt><dd><div class="changelog-change docutils container">
+<p>PR fixes issue with converting <cite>StructLoggingConfig</cite> to dict during call to <cite>configure()</cite> when the config object
+has a custom logger factory that references a <cite>TextIO</cite> object, which cannot be pickled.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3425">litestar-org/litestar#3425</a></span></p>
+</div>
+</dd>
+<dt>clear session cookie if new session gt CHUNK_SIZE<a class="headerlink reference internal" href="#2.8.3-clear session cookie if new session gt chunk_size" id="2.8.3-clear session cookie if new session gt chunk_size">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix an issue where the connection session cookie is not cleared if the response session is stored across
+multiple cookies.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3441">litestar-org/litestar#3441</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3446">litestar-org/litestar#3446</a></span></p>
+</div>
+</dd>
+<dt>flash messages were not displayed on Redirect<a class="headerlink reference internal" href="#2.8.3-flash messages were not displayed on redirect" id="2.8.3-flash messages were not displayed on redirect">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fixes issue where flash messages were not displayed on redirect.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3325">litestar-org/litestar#3325</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3420">litestar-org/litestar#3420</a></span></p>
+</div>
+</dd>
+<dt>Validation of optional sequence in multipart data with one value<a class="headerlink reference internal" href="#2.8.3-validation of optional sequence in multipart data with one value" id="2.8.3-validation of optional sequence in multipart data with one value">#</a></dt><dd><div class="changelog-change docutils container">
+<p>A <cite>Sequence[UploadFile] | None</cite> would not pass validation when a single value was provided for a structured type, e.g. dataclass.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3407">litestar-org/litestar#3407</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3408">litestar-org/litestar#3408</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.8.2">
 <h2>2.8.2<a class="headerlink" href="#2.8.2" title="Permalink to this heading">#</a></h2>
 <strong>Released: </strong>2024-04-09<section id="2.8.2-bugfix">
@@ -5771,6 +5849,10 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.8.3">2.8.3</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.8.3-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.8.2">2.8.2</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.8.2-bugfix">Bugfixes</a></li>
 </ul>
