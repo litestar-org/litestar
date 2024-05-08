@@ -191,8 +191,10 @@ class LoggingMiddleware(AbstractMiddleware):
         connection_state = ScopeState.from_scope(scope)
         extracted_data = self.response_extractor(
             messages=(
+                # NOTE: we don't pop the start message from the logging context in case
+                #   there are multiple body messages to be logged
                 connection_state.log_context[HTTP_RESPONSE_START],
-                connection_state.log_context[HTTP_RESPONSE_BODY],
+                connection_state.log_context.pop(HTTP_RESPONSE_BODY),
             ),
         )
         response_body_compressed = value_or_default(connection_state.response_compressed, False)
@@ -224,6 +226,10 @@ class LoggingMiddleware(AbstractMiddleware):
             elif message["type"] == HTTP_RESPONSE_BODY:
                 connection_state.log_context[HTTP_RESPONSE_BODY] = message
                 self.log_response(scope=scope)
+
+                if not message["more_body"]:
+                    connection_state.log_context.clear()
+
             await send(message)
 
         return send_wrapper
