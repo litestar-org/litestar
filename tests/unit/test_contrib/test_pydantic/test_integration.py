@@ -1,4 +1,5 @@
 from typing import Any, Dict, List
+from unittest.mock import ANY
 
 import pydantic as pydantic_v2
 import pytest
@@ -135,7 +136,7 @@ def test_serialize_raw_errors_v2() -> None:
                 "msg": "Value error, user id must be greater than 0",
                 "input": -1,
                 "ctx": {"error": "ValueError"},
-                "url": "https://errors.pydantic.dev/2.6/v/value_error",
+                "url": ANY,
             }
         ]
 
