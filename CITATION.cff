@@ -3,12 +3,12 @@ title: Litestar
 message: 'If you use this software, please cite it as below.'
 type: software
 authors:
-  - Janek Nouvertné
-  - Peter Schutt
-  - Cody Fincher
-  - Visakh Unnikrishnan
-  - Jacob Coffee
-  - Na'aman Hirschfeld
+  - given-names: Janek Nouvertné
+  - given-names: Peter Schutt
+  - given-names: Cody Fincher
+  - given-names: Visakh Unnikrishnan
+  - given-names: Jacob Coffee
+  - given-names: Na'aman Hirschfeld
 repository-code: 'https://github.com/litestar-org/litestar'
 url: 'https://docs.litestar.dev/latest/'
 abstract: >-
