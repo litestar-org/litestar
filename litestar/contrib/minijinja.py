@@ -105,7 +105,6 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
             directory: Direct path or list of directory paths from which to serve templates.
             engine_instance: A Minijinja Environment instance.
         """
-        super().__init__(directory, engine_instance)
         if directory and engine_instance:
             raise ImproperlyConfiguredException(
                 "You must provide either a directory or a minijinja Environment instance."

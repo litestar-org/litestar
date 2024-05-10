@@ -252,8 +252,8 @@ def _inject_args(func: Callable[P, T]) -> Callable[P, T]:
 
 def _wrap_commands(commands: Iterable[Command]) -> None:
     for command in commands:
-        if isinstance(command, Group):
-            _wrap_commands(command.commands.values())
+        if hasattr(command, "commands"):
+            _wrap_commands(command.commands.values())  # pyright: ignore[reportGeneralTypeIssues]
         elif command.callback:
             command.callback = _inject_args(command.callback)
 

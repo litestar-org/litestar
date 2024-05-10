@@ -7,7 +7,11 @@ from importlib.util import find_spec
 # Ensure `rich_click` patching occurs before we do any imports from `click`.
 if find_spec("rich_click") is not None:  # pragma: no cover
     import rich_click as click
-    from rich_click.cli import patch as rich_click_patch
+
+    try:
+        from rich_click.patch import patch as rich_click_patch
+    except ImportError:
+        from rich_click.cli import patch as rich_click_patch
 
     rich_click_patch()
     click.rich_click.USE_RICH_MARKUP = True

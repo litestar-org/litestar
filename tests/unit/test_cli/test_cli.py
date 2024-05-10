@@ -89,4 +89,4 @@ def test_register_commands_from_entrypoint(mocker: "MockerFixture", runner: "Cli
     result = runner.invoke(cli_command, f"--app={app_file.stem}:app custom-group custom-command")
 
     assert result.exit_code == 0
-    mock_command_callback.assert_called_once_with()
+    mock_command_callback.assert_called_once()
