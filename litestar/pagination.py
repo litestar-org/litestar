@@ -3,9 +3,11 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from importlib.util import find_spec
 from typing import Generic, List, Optional, TypeVar
 from uuid import UUID
 
+_ADVANCED_ALCHEMY_INSTALLED = find_spec("advanced_alchemy")
 __all__ = (
     "AbstractAsyncClassicPaginator",
     "AbstractAsyncCursorPaginator",
@@ -39,13 +41,18 @@ class ClassicPagination(Generic[T]):
     """Total number of pages."""
 
 
-try:
+_aa_is_below_expected_version: bool = False
+if _ADVANCED_ALCHEMY_INSTALLED:
     # AA requires it's own `OffsetPagination` class in versions greater that 0.9.0
     # If we find it, use it.
-    from advanced_alchemy.service.pagination import (  # pyright: ignore[reportMissingImports]
-        OffsetPagination,  # pyright: ignore[reportGeneralTypeIssues]
-    )
-except ImportError:
+    try:
+        from advanced_alchemy.service.pagination import (  # pyright: ignore[reportMissingImports]
+            OffsetPagination,  # pyright: ignore[reportGeneralTypeIssues]
+        )
+    except ImportError:
+        _aa_is_below_expected_version = True
+
+if not _ADVANCED_ALCHEMY_INSTALLED or _aa_is_below_expected_version:
 
     @dataclass
     class OffsetPagination(Generic[T]):  # type: ignore[no-redef]

@@ -120,7 +120,8 @@ ignore_package_warnings = [
   "pre-commit",
   "pydata-sphinx-*",
   "slotscheck",
-  "autobahn","accessible-pygments"
+  "autobahn",
+  "accessible-pygments"
 ]
 
 [tool.pdm.dev-dependencies]
