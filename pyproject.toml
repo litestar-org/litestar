@@ -1,10 +1,10 @@
 [project]
 authors = [
-  {name = "Cody Fincher", email = "cody.fincher@gmail.com"},
-  {name = "Jacob Coffee", email = "jacob@z7x.org"},
-  {name = "Janek Nouvertné", email = "provinzkraut@posteo.de"},
+  {name = "Cody Fincher", email = "cody@litestar.dev"},
+  {name = "Jacob Coffee", email = "jacob@litestar.dev"},
+  {name = "Janek Nouvertné", email = "janek@litestar.dev"},
   {name = "Na'aman Hirschfeld", email = "nhirschfeld@gmail.com"},
-  {name = "Peter Schutt", email = "peter.github@proton.me"},
+  {name = "Peter Schutt", email = "peter@litestar.dev"},
 ]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
@@ -52,7 +52,7 @@ maintainers = [
   {name = "Litestar Developers", email = "hello@litestar.dev"},
   {name = "Cody Fincher", email = "cody@litestar.dev"},
   {name = "Jacob Coffee", email = "jacob@litestar.dev"},
-  {name = "Janek Nouvertné", email = "provinzkraut@litestar.dev"},
+  {name = "Janek Nouvertné", email = "janek@litestar.dev"},
   {name = "Peter Schutt", email = "peter@litestar.dev"},
   {name = "Visakh Unnikrishnan", email = "guacs@litestar.dev"},
   {name = "Alc", email = "alc@litestar.dev"}
