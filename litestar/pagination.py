@@ -3,11 +3,9 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from importlib.util import find_spec
 from typing import Generic, List, Optional, TypeVar
 from uuid import UUID
 
-_ADVANCED_ALCHEMY_INSTALLED = find_spec("advanced_alchemy")
 __all__ = (
     "AbstractAsyncClassicPaginator",
     "AbstractAsyncCursorPaginator",
@@ -21,17 +19,33 @@ __all__ = (
 )
 
 
+T = TypeVar("T")
 C = TypeVar("C", int, str, UUID)
+
+
+@dataclass
+class ClassicPagination(Generic[T]):
+    """Container for data returned using limit/offset pagination."""
+
+    __slots__ = ("items", "page_size", "current_page", "total_pages")
+
+    items: List[T]
+    """List of data being sent as part of the response."""
+    page_size: int
+    """Number of items per page."""
+    current_page: int
+    """Current page number."""
+    total_pages: int
+    """Total number of pages."""
+
 
 # AA requires it's own `OffsetPagination` class in versions greater that 0.9.0
 # If we find it, use it.
 try:
-    from advanced_alchemy.service.pagination import (  # pyright: ignore[reportMissingImports]
+    from advanced_alchemy.extensions.litestar.service.pagination import (  # pyright: ignore[reportMissingImports]
         OffsetPagination,  # pyright: ignore[reportGeneralTypeIssues]
-        T,
     )
 except ImportError:
-    T = TypeVar("T")  # type: ignore
 
     @dataclass
     class OffsetPagination(Generic[T]):  # type: ignore[no-redef]
@@ -50,22 +64,6 @@ except ImportError:
         """
         total: int
         """Total number of items."""
-
-
-@dataclass
-class ClassicPagination(Generic[T]):
-    """Container for data returned using limit/offset pagination."""
-
-    __slots__ = ("items", "page_size", "current_page", "total_pages")
-
-    items: List[T]
-    """List of data being sent as part of the response."""
-    page_size: int
-    """Number of items per page."""
-    current_page: int
-    """Current page number."""
-    total_pages: int
-    """Total number of pages."""
 
 
 @dataclass
