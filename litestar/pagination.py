@@ -43,7 +43,7 @@ try:
     # AA requires it's own `OffsetPagination` class in versions greater that 0.9.0
     # If we find it, use it.
     from advanced_alchemy.service.pagination import (  # pyright: ignore[reportMissingImports]
-        OffsetPagination,
+        OffsetPagination,  # pyright: ignore[reportGeneralTypeIssues]
     )
 except ImportError:
 
