@@ -21,38 +21,17 @@ __all__ = (
 )
 
 
-T = TypeVar("T")
 C = TypeVar("C", int, str, UUID)
 
-
-@dataclass
-class ClassicPagination(Generic[T]):
-    """Container for data returned using limit/offset pagination."""
-
-    __slots__ = ("items", "page_size", "current_page", "total_pages")
-
-    items: List[T]
-    """List of data being sent as part of the response."""
-    page_size: int
-    """Number of items per page."""
-    current_page: int
-    """Current page number."""
-    total_pages: int
-    """Total number of pages."""
-
-
-_aa_is_below_expected_version: bool = False
-if _ADVANCED_ALCHEMY_INSTALLED:
-    # AA requires it's own `OffsetPagination` class in versions greater that 0.9.0
-    # If we find it, use it.
-    try:
-        from advanced_alchemy.service.pagination import (  # pyright: ignore[reportMissingImports]
-            OffsetPagination,  # pyright: ignore[reportGeneralTypeIssues]
-        )
-    except ImportError:
-        _aa_is_below_expected_version = True
-
-if not _ADVANCED_ALCHEMY_INSTALLED or _aa_is_below_expected_version:
+# AA requires it's own `OffsetPagination` class in versions greater that 0.9.0
+# If we find it, use it.
+try:
+    from advanced_alchemy.service.pagination import (  # pyright: ignore[reportMissingImports]
+        OffsetPagination,  # pyright: ignore[reportGeneralTypeIssues]
+        T,
+    )
+except ImportError:
+    T = TypeVar("T")  # type: ignore
 
     @dataclass
     class OffsetPagination(Generic[T]):  # type: ignore[no-redef]
@@ -71,6 +50,22 @@ if not _ADVANCED_ALCHEMY_INSTALLED or _aa_is_below_expected_version:
         """
         total: int
         """Total number of items."""
+
+
+@dataclass
+class ClassicPagination(Generic[T]):
+    """Container for data returned using limit/offset pagination."""
+
+    __slots__ = ("items", "page_size", "current_page", "total_pages")
+
+    items: List[T]
+    """List of data being sent as part of the response."""
+    page_size: int
+    """Number of items per page."""
+    current_page: int
+    """Current page number."""
+    total_pages: int
+    """Total number of pages."""
 
 
 @dataclass
