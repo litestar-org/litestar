@@ -43,7 +43,7 @@ class ClassicPagination(Generic[T]):
 # If we find it, use it.
 try:
     from advanced_alchemy.service import (
-        OffsetPagination,  # type: ignore[import-not-found] # pyright: ignore[reportMissingImports,reportGeneralTypeIssues]
+        OffsetPagination,  # pyright: ignore[reportMissingImports,reportGeneralTypeIssues]
     )
 except ImportError:
 
