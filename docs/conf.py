@@ -171,6 +171,7 @@ nitpick_ignore = [
     (PY_CLASS, "advanced_alchemy.extensions.litestar.config.SQLAlchemySyncConfig"),
     (PY_CLASS, "advanced_alchemy.extensions.litestar.config.SQLAlchemyAsyncConfig"),
     (PY_METH, "advanced_alchemy.extensions.litestar.plugins.SQLAlchemySerializationPlugin.create_dto_for_type"),
+    (PY_CLASS, "advanced_alchemy.base.BasicAttributes"),
     (PY_CLASS, "advanced_alchemy.config.AsyncSessionConfig"),
     (PY_CLASS, "advanced_alchemy.config.SyncSessionConfig"),
     (PY_CLASS, "advanced_alchemy.types.JsonB"),
