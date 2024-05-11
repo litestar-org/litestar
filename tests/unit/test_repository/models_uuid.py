@@ -7,7 +7,7 @@ from typing import List
 from uuid import UUID
 
 from advanced_alchemy.base import UUIDAuditBase, UUIDBase
-from advanced_alchemy.repository import SQLAlchemyAsyncRepository, SQLAlchemySyncRepository, base
+from advanced_alchemy.repository import SQLAlchemyAsyncRepository, SQLAlchemySyncRepository
 from sqlalchemy import Column, FetchedValue, ForeignKey, String, Table, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
