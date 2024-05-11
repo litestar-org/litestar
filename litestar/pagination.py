@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import Generic, List, Optional, TypeVar
 from uuid import UUID
 
+
 __all__ = (
     "AbstractAsyncClassicPaginator",
     "AbstractAsyncCursorPaginator",
@@ -39,23 +40,31 @@ class ClassicPagination(Generic[T]):
     """Total number of pages."""
 
 
-@dataclass
-class OffsetPagination(Generic[T]):
-    """Container for data returned using limit/offset pagination."""
+try:
+    # AA requires it's own `OffsetPagination` class in versions greater that 0.9.0
+    # If we find it, use it.
+    from advanced_alchemy.service.pagination import (  # pyright: ignore[reportMissingImports]
+        OffsetPagination,
+    )
+except ImportError:
 
-    __slots__ = ("items", "limit", "offset", "total")
+    @dataclass
+    class OffsetPagination(Generic[T]):  # type: ignore[no-redef]
+        """Container for data returned using limit/offset pagination."""
 
-    items: List[T]
-    """List of data being sent as part of the response."""
-    limit: int
-    """Maximal number of items to send."""
-    offset: int
-    """Offset from the beginning of the query.
+        __slots__ = ("items", "limit", "offset", "total")
 
-    Identical to an index.
-    """
-    total: int
-    """Total number of items."""
+        items: List[T]
+        """List of data being sent as part of the response."""
+        limit: int
+        """Maximal number of items to send."""
+        offset: int
+        """Offset from the beginning of the query.
+
+        Identical to an index.
+        """
+        total: int
+        """Total number of items."""
 
 
 @dataclass
