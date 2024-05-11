@@ -6,7 +6,6 @@ from dataclasses import dataclass
 from typing import Generic, List, Optional, TypeVar
 from uuid import UUID
 
-
 __all__ = (
     "AbstractAsyncClassicPaginator",
     "AbstractAsyncCursorPaginator",
