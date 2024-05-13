@@ -44,7 +44,7 @@ async def on_startup() -> None:
         count = await session.execute(statement)
         if not count.scalar():
             author_id = uuid.uuid4()
-            session.add(Author(name="Stephen King", dob=date(1954,9,21), id=author_id ))
+            session.add(Author(name="Stephen King", dob=date(1954, 9, 21), id=author_id))
             session.add(Book(title="It", author_id=author_id))
             await session.commit()
 
