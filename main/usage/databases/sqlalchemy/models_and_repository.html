@@ -1575,16 +1575,16 @@ an optional version with audit columns.</p></li>
 repository, you must first define your models using one of the included built-in <code class="docutils literal notranslate"><span class="pre">DeclarativeBase</span></code> ORM base
 implementations:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../../../reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.UUIDBase" title="advanced_alchemy.base.UUIDBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUIDBase</span></code></a></p></li>
-<li><p><a class="reference internal" href="../../../reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.UUIDAuditBase" title="advanced_alchemy.base.UUIDAuditBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUIDAuditBase</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.UUIDBase" title="advanced_alchemy.base.UUIDBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUIDBase</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.UUIDAuditBase" title="advanced_alchemy.base.UUIDAuditBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUIDAuditBase</span></code></a></p></li>
 </ul>
 <p>Both include a <code class="docutils literal notranslate"><span class="pre">UUID</span></code> based primary key
 and <code class="docutils literal notranslate"><span class="pre">UUIDAuditBase</span></code> includes an <code class="docutils literal notranslate"><span class="pre">updated_at</span></code> and <code class="docutils literal notranslate"><span class="pre">created_at</span></code> timestamp column.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">UUID</span></code> will be a native <code class="docutils literal notranslate"><span class="pre">UUID</span></code>/<code class="docutils literal notranslate"><span class="pre">GUID</span></code> type on databases that support it such as Postgres.  For other engines without
 a native UUID data type, the UUID is stored as a 16-byte <code class="docutils literal notranslate"><span class="pre">BYTES</span></code> or <code class="docutils literal notranslate"><span class="pre">RAW</span></code> field.</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../../../reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.BigIntBase" title="advanced_alchemy.base.BigIntBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">BigIntBase</span></code></a></p></li>
-<li><p><a class="reference internal" href="../../../reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.BigIntAuditBase" title="advanced_alchemy.base.BigIntAuditBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">BigIntAuditBase</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.BigIntBase" title="advanced_alchemy.base.BigIntBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">BigIntBase</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../../reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.BigIntAuditBase" title="advanced_alchemy.base.BigIntAuditBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">BigIntAuditBase</span></code></a></p></li>
 </ul>
 <p>Both include a <code class="docutils literal notranslate"><span class="pre">BigInteger</span></code> based primary key
 and <code class="docutils literal notranslate"><span class="pre">BigIntAuditBase</span></code> includes an <code class="docutils literal notranslate"><span class="pre">updated_at</span></code> and <code class="docutils literal notranslate"><span class="pre">created_at</span></code> timestamp column.</p>
