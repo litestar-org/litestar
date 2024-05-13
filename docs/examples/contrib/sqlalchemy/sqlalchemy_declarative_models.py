@@ -38,7 +38,7 @@ sqlalchemy_config = SQLAlchemyAsyncConfig(
 
 
 async def on_startup() -> None:
-    """Initializes the database and add some dummy data."""
+    """Initializes the database and adds some dummy data."""
     async with sqlalchemy_config.get_engine().begin() as conn:
         await conn.run_sync(UUIDBase.metadata.create_all)
     async with sqlalchemy_config.get_session() as session:
