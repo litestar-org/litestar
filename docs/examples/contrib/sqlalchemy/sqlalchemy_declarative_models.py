@@ -44,7 +44,7 @@ async def on_startup() -> None:
     async with sqlalchemy_config.get_session() as session:
         statement = select(func.count()).select_from(Author)
         count = await session.execute(statement)
-        if 0 == count.scalar():
+        if not count.scalar():
             author_id = uuid.uuid4()
             session.add(Author(name="Stephen King", dob=date(1954,9,21), id=author_id ))
             session.add(Book(title="It", author_id=author_id))
