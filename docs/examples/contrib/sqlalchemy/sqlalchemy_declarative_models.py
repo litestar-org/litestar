@@ -59,6 +59,5 @@ async def get_authors(db_session: "AsyncSession", db_engine: "AsyncEngine") -> l
 
 app = Litestar(
     route_handlers=[get_authors],
-    on_startup=[on_startup],
     plugins=[SQLAlchemyPlugin(config=sqlalchemy_config)],
 )
