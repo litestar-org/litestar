@@ -20,7 +20,7 @@ def __getattr__(attr_name: str) -> object:
             version="2.8.4",
             kind="import",
             removal_in="3.0",
-            info=f"importing {attr_name} from 'llitestar.plugins.sqlalchemy' is deprecated, please"
+            info=f"importing {attr_name} from 'litestar.plugins.sqlalchemy' is deprecated, please"
             f"import it from 'litestar.plugins.sqlalchemy.base.{attr_name}' instead",
         )
         value = globals()[attr_name] = getattr(aa.base, attr_name)
