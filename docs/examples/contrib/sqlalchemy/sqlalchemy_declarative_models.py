@@ -38,9 +38,7 @@ sqlalchemy_config = SQLAlchemyAsyncConfig(
 
 
 async def on_startup() -> None:
-    """Initializes the database and adds some dummy data."""
-    async with sqlalchemy_config.get_engine().begin() as conn:
-        await conn.run_sync(UUIDBase.metadata.create_all)
+    """Adds some dummy data if no data is present."""
     async with sqlalchemy_config.get_session() as session:
         statement = select(func.count()).select_from(Author)
         count = await session.execute(statement)
@@ -59,5 +57,6 @@ async def get_authors(db_session: "AsyncSession", db_engine: "AsyncEngine") -> l
 
 app = Litestar(
     route_handlers=[get_authors],
+    on_startup=[on_startup],
     plugins=[SQLAlchemyPlugin(config=sqlalchemy_config)],
 )
