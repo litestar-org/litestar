@@ -1,4 +1,6 @@
-from __future__ import annotations # Required for forward class references, see https://peps.python.org/pep-0484/#forward-references
+from __future__ import (
+    annotations,  # Required for forward class references, see https://peps.python.org/pep-0484/#forward-references
+)
 
 import uuid
 from datetime import date
@@ -14,6 +16,7 @@ from litestar.contrib.sqlalchemy.plugins import AsyncSessionConfig, SQLAlchemyAs
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
+
 
 # the SQLAlchemy base includes a declarative model for you to use in your models.
 # The `Base` class includes a `UUID` based primary key (`id`)
