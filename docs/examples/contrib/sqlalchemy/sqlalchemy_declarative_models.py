@@ -1,6 +1,4 @@
-from __future__ import (
-    annotations,  # Required for forward class references, see https://peps.python.org/pep-0484/#forward-references
-)
+from __future__ import annotations
 
 import uuid
 from datetime import date
@@ -54,7 +52,7 @@ async def on_startup() -> None:
 
 
 @get(path="/authors")
-async def get_authors(db_session: "AsyncSession", db_engine: "AsyncEngine") -> list[Author]:
+async def get_authors(db_session: AsyncSession, db_engine: AsyncEngine) -> list[Author]:
     """Interact with SQLAlchemy engine and session."""
     return list(await db_session.scalars(select(Author)))
 
