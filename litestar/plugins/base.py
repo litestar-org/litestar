@@ -121,9 +121,6 @@ class CLIPlugin(CLIPluginProtocol):
 
     __slots__ = ()
 
-    def on_cli_init(self, cli: Group) -> None:
-        return super().on_cli_init(cli)
-
     @contextmanager
     def server_lifespan(self, app: Litestar) -> Iterator[None]:
         yield

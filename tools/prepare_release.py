@@ -78,8 +78,8 @@ def _pr_number_from_commit(comp: Comp) -> int:
     message_head = comp.commit.message.split("\n\n")[0]
     match = re.search(r"\(#(\d+)\)$", message_head)
     if not match:
-        raise ValueError(f"Could not find PR number for commit {message_head!r}")
-    return int(match[1])
+        print(f"Could not find PR number in {message_head}")  # noqa: T201
+    return int(match[1]) if match else None
 
 
 class _Thing:
@@ -152,7 +152,7 @@ class _Thing:
         res = await self._api_client.get(f"/compare/{self._base}...{self._release_branch}")
         res.raise_for_status()
         compares = msgspec.convert(res.json()["commits"], list[Comp])
-        pr_numbers = [_pr_number_from_commit(c) for c in compares]
+        pr_numbers = list(filter(None, (_pr_number_from_commit(c) for c in compares)))
         pulls = await asyncio.gather(*map(self._get_pr_info_for_pr, pr_numbers))
 
         prs = defaultdict(list)
@@ -203,12 +203,12 @@ class _Thing:
             version=self._new_release_version,
         )
 
-    async def create_draft_release(self, body: str) -> str:
+    async def create_draft_release(self, body: str, release_branch: str) -> str:
         res = await self._api_client.post(
             "/releases",
             json={
                 "tag_name": self._new_release_tag,
-                "target_commitish": "main",
+                "target_commitish": release_branch,
                 "name": self._new_release_tag,
                 "draft": True,
                 "body": body,
@@ -432,7 +432,7 @@ def cli(
 
     if create_draft_release:
         click.secho("Creating draft release", fg="blue")
-        release_url = loop.run_until_complete(thing.create_draft_release(body=gh_release_notes))
+        release_url = loop.run_until_complete(thing.create_draft_release(body=gh_release_notes, release_branch=branch))
         click.echo(f"Draft release available at: {release_url}")
     else:
         click.echo(gh_release_notes)

@@ -9,7 +9,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from structlog.testing import capture_logs
 
 from litestar import Litestar, MediaType, Request, Response, get
-from litestar.exceptions import HTTPException, InternalServerException, ValidationException
+from litestar.exceptions import HTTPException, InternalServerException, LitestarException, ValidationException
 from litestar.exceptions.responses._debug_response import get_symbol_name
 from litestar.logging.config import LoggingConfig, StructLoggingConfig
 from litestar.middleware._internal.exceptions.middleware import (
@@ -20,7 +20,7 @@ from litestar.middleware._internal.exceptions.middleware import (
 from litestar.status_codes import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import TestClient, create_test_client
 from litestar.types import ExceptionHandlersMap
-from litestar.types.asgi_types import HTTPScope
+from litestar.types.asgi_types import HTTPReceiveMessage, HTTPScope, Message, Receive, Scope, Send
 from litestar.utils.scope.state import ScopeState
 from tests.helpers import cleanup_logging_impl
 
@@ -400,3 +400,29 @@ def test_serialize_custom_types(media_type: MediaType) -> None:
     with create_test_client([handler], type_encoders={Foo: lambda f: f.value}) as client:
         res = client.get("/")
         assert res.json()["extra"] == {"foo": "bar"}
+
+
+async def test_exception_handler_middleware_response_already_started(scope: HTTPScope) -> None:
+    assert not ScopeState.from_scope(scope).response_started
+
+    async def mock_receive() -> HTTPReceiveMessage:  # type: ignore[empty-body]
+        pass
+
+    mock = MagicMock()
+
+    async def mock_send(message: Message) -> None:
+        mock(message)
+
+    start_message: Message = {"type": "http.response.start", "status": 200, "headers": []}
+
+    async def asgi_app(scope: Scope, receive: Receive, send: Send) -> None:
+        await send(start_message)
+        raise RuntimeError("Test exception")
+
+    mw = ExceptionHandlerMiddleware(asgi_app, None)
+
+    with pytest.raises(LitestarException):
+        await mw(scope, mock_receive, mock_send)
+
+    mock.assert_called_once_with(start_message)
+    assert ScopeState.from_scope(scope).response_started
