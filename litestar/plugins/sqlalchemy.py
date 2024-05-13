@@ -17,7 +17,7 @@ def __getattr__(attr_name: str) -> object:
     }:
         warn_deprecation(
             deprecated_name=f"litestar.plugins.sqlalchemy.{attr_name}",
-            version="2.8.4",
+            version="2.9.0",
             kind="import",
             removal_in="3.0",
             info=f"importing {attr_name} from 'litestar.plugins.sqlalchemy' is deprecated, please"
