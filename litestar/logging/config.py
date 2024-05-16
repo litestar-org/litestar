@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Any, Callable, Literal, cast
 from litestar.exceptions import ImproperlyConfiguredException, MissingDependencyException
 from litestar.serialization.msgspec_hooks import _msgspec_json_encoder
 from litestar.utils.dataclass import simple_asdict
-from litestar.utils.deprecation import deprecated
+from litestar.utils.deprecation import deprecated, warn_deprecation
 
 __all__ = ("BaseLoggingConfig", "LoggingConfig", "StructLoggingConfig")
 
@@ -90,34 +90,45 @@ def _get_default_handlers() -> dict[str, dict[str, Any]]:
 
 
 def _default_exception_logging_handler_factory(
-    is_struct_logger: bool, traceback_line_limit: int
+    is_struct_logger: bool,
+    traceback_line_limit: int,
 ) -> ExceptionLoggingHandler:
     """Create an exception logging handler function.
 
     Args:
         is_struct_logger: Whether the logger is a structlog instance.
         traceback_line_limit: Maximal number of lines to log from the
-            traceback.
+            traceback. This parameter is deprecated and ignored.
 
     Returns:
         An exception logging handler.
     """
 
-    def _default_exception_logging_handler(logger: Logger, scope: Scope, tb: list[str]) -> None:
-        # we limit the length of the stack trace to 20 lines.
-        first_line = tb.pop(0)
+    if traceback_line_limit != -1:
+        warn_deprecation(
+            version="2.9.0",
+            deprecated_name="traceback_line_limit",
+            kind="parameter",
+            info="The value is ignored. Use a custom 'exception_logging_handler' instead.",
+            removal_in="3.0",
+        )
 
-        if is_struct_logger:
+    if is_struct_logger:
+
+        def _default_exception_logging_handler(logger: Logger, scope: Scope, tb: list[str]) -> None:
             logger.exception(
-                "Uncaught Exception",
+                "Uncaught exception",
                 connection_type=scope["type"],
                 path=scope["path"],
-                traceback="".join(tb[-traceback_line_limit:]),
             )
-        else:
-            stack_trace = first_line + "".join(tb[-traceback_line_limit:])
+
+    else:
+
+        def _default_exception_logging_handler(logger: Logger, scope: Scope, tb: list[str]) -> None:
             logger.exception(
-                "exception raised on %s connection to route %s\n\n%s", scope["type"], scope["path"], stack_trace
+                "Uncaught exception (connection_type=%s, path=%s):",
+                scope["type"],
+                scope["path"],
             )
 
     return _default_exception_logging_handler
@@ -131,7 +142,11 @@ class BaseLoggingConfig(ABC):
     log_exceptions: Literal["always", "debug", "never"]
     """Should exceptions be logged, defaults to log exceptions when ``app.debug == True``'"""
     traceback_line_limit: int
-    """Max number of lines to print for exception traceback"""
+    """Max number of lines to print for exception traceback.
+
+    .. deprecated:: 2.9.0
+        This parameter is deprecated and ignored. It will be removed in a future release.
+    """
     exception_logging_handler: ExceptionLoggingHandler | None
     """Handler function for logging exceptions."""
 
@@ -205,8 +220,12 @@ class LoggingConfig(BaseLoggingConfig):
     """Should the root logger be configured, defaults to True for ease of configuration."""
     log_exceptions: Literal["always", "debug", "never"] = field(default="debug")
     """Should exceptions be logged, defaults to log exceptions when 'app.debug == True'"""
-    traceback_line_limit: int = field(default=20)
-    """Max number of lines to print for exception traceback"""
+    traceback_line_limit: int = field(default=-1)
+    """Max number of lines to print for exception traceback.
+
+    .. deprecated:: 2.9.0
+        This parameter is deprecated and ignored. It will be removed in a future release.
+    """
     exception_logging_handler: ExceptionLoggingHandler | None = field(default=None)
     """Handler function for logging exceptions."""
 
@@ -421,8 +440,12 @@ class StructLoggingConfig(BaseLoggingConfig):
     """Whether to cache the logger configuration and reuse."""
     log_exceptions: Literal["always", "debug", "never"] = field(default="debug")
     """Should exceptions be logged, defaults to log exceptions when 'app.debug == True'"""
-    traceback_line_limit: int = field(default=20)
-    """Max number of lines to print for exception traceback"""
+    traceback_line_limit: int = field(default=-1)
+    """Max number of lines to print for exception traceback.
+
+    .. deprecated:: 2.9.0
+        This parameter is deprecated and ignored. It will be removed in a future release.
+    """
     exception_logging_handler: ExceptionLoggingHandler | None = field(default=None)
     """Handler function for logging exceptions."""
     pretty_print_tty: bool = field(default=True)
