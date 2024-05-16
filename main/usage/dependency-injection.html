@@ -1584,6 +1584,14 @@ the application:</p>
 </pre></div>
 </div>
 <p>The above example illustrates how dependencies are declared on the different layers of the application.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Litestar needs the injected types at runtime which might clash with linter rules’ recommendation to use <code class="docutils literal notranslate"><span class="pre">TYPE_CHECKING</span></code>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="routing/handlers.html#signature-namespace"><span class="std std-ref">Signature namespace</span></a></p>
+</div>
+</div>
 <p>Dependencies can be either callables - sync or async functions, methods, or class instances that implement the
 <a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#object.__call__" title="(in Python v3.12)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">object.__call__()</span></code></a> method, or classes. These are in turn wrapped inside an instance of the
 <a class="reference internal" href="../reference/di.html#litestar.di.Provide" title="litestar.di.Provide"><code class="xref py py-class docutils literal notranslate"><span class="pre">Provide</span></code></a> class.</p>
