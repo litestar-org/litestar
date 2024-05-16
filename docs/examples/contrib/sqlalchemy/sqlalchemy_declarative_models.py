@@ -52,7 +52,7 @@ async def on_startup() -> None:
 @get(path="/authors")
 async def get_authors(db_session: AsyncSession, db_engine: AsyncEngine) -> List[Author]:
     """Interact with SQLAlchemy engine and session."""
-    return List(await db_session.scalars(select(Author)))
+    return list(await db_session.scalars(select(Author)))
 
 
 app = Litestar(
