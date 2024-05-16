@@ -1734,6 +1734,15 @@
       "contributions": [
         "test"
       ]
+    },
+    {
+      "login": "0xE111",
+      "name": "Alex",
+      "avatar_url": "https://avatars.githubusercontent.com/u/11032969?v=4",
+      "profile": "https://pogrom.dev",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
