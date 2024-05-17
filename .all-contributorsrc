@@ -1744,6 +1744,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "JorenSix",
+      "name": "Joren Six",
+      "avatar_url": "https://avatars.githubusercontent.com/u/60453?v=4",
+      "profile": "http://0110.be",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
