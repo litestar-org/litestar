@@ -561,6 +561,9 @@ see [the contribution guide](CONTRIBUTING.rst).
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/tibor-reiss"><img src="https://avatars.githubusercontent.com/u/75096465?v=4?s=100" width="100px;" alt="Tibor Reiss"/><br /><sub><b>Tibor Reiss</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=tibor-reiss" title="Tests">⚠️</a> <a href="https://github.com/litestar-org/litestar/commits?author=tibor-reiss" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://pogrom.dev"><img src="https://avatars.githubusercontent.com/u/11032969?v=4?s=100" width="100px;" alt="Alex"/><br /><sub><b>Alex</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/issues?q=author%3A0xE111" title="Bug reports">🐛</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="http://0110.be"><img src="https://avatars.githubusercontent.com/u/60453?v=4?s=100" width="100px;" alt="Joren Six"/><br /><sub><b>Joren Six</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=JorenSix" title="Documentation">📖</a></td>
+    </tr>
   </tbody>
 </table>
 
