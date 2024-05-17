@@ -23,6 +23,7 @@ from litestar.typing import FieldDefinition
 from litestar.utils import ensure_async_callable, get_name, normalize_path
 from litestar.utils.helpers import unwrap_partial
 from litestar.utils.signature import ParsedSignature, add_types_to_signature_namespace
+from litestar.utils.warnings import warn_return_dto_type_mismatch
 
 if TYPE_CHECKING:
     from typing_extensions import Self
@@ -500,12 +501,16 @@ class BaseRouteHandler:
             else:
                 return_dto = self.resolve_data_dto()
 
-            if return_dto and return_dto.is_supported_model_type_field(self.parsed_return_field):
-                return_dto.create_for_field_definition(
-                    field_definition=self.parsed_return_field,
-                    handler_id=self.handler_id,
-                )
-                self._resolved_return_dto = return_dto
+            if return_dto:
+                if return_dto.is_supported_model_type_field(self.parsed_return_field):
+                    return_dto.create_for_field_definition(
+                        field_definition=self.parsed_return_field,
+                        handler_id=self.handler_id,
+                    )
+                    self._resolved_return_dto = return_dto
+                else:
+                    warn_return_dto_type_mismatch(return_dto, self.parsed_return_field.raw)
+                    self._resolved_return_dto = None
             else:
                 self._resolved_return_dto = None
 

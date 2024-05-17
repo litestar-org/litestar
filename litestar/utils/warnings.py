@@ -1,8 +1,11 @@
 import os
 import warnings
+from typing import Type
 
+from litestar.dto import AbstractDTO
 from litestar.exceptions import LitestarWarning
 from litestar.types import AnyCallable, AnyGenerator
+from litestar.typing import FieldDefinition
 
 
 def warn_implicit_sync_to_thread(source: AnyCallable, stacklevel: int = 2) -> None:
@@ -49,3 +52,17 @@ def warn_sync_to_thread_with_generator(source: AnyGenerator, stacklevel: int = 2
 
 def warn_pdb_on_exception(stacklevel: int = 2) -> None:
     warnings.warn("Python Debugger on exception enabled", category=LitestarWarning, stacklevel=stacklevel)
+
+
+def warn_return_dto_type_mismatch(
+    return_dto: Type[AbstractDTO],
+    return_field: FieldDefinition,
+    stacklevel: int = 3,
+) -> None:
+    warnings.warn(
+        f"Types for returned dto ({return_dto}) and returned field ({return_field}) "
+        "do not match which might result in returning unfiltered data. Verify that type "
+        "annotations are correct.",
+        category=LitestarWarning,
+        stacklevel=stacklevel,
+    )
