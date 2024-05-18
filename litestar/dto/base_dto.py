@@ -217,10 +217,13 @@ class AbstractDTO(Generic[T]):
             # generated transfer model type in the type arguments.
             transfer_model = backend.transfer_model_type
             generic_args = tuple(transfer_model if a is cls.model_type else a for a in field_definition.args)
-            return schema_creator.for_field_definition(
-                FieldDefinition.from_annotation(field_definition.origin[generic_args])
-            )
-        return schema_creator.for_field_definition(FieldDefinition.from_annotation(backend.annotation))
+            annotation = field_definition.safe_generic_origin[generic_args]
+        else:
+            annotation = backend.annotation
+
+        return schema_creator.for_field_definition(
+            FieldDefinition.from_annotation(annotation, kwarg_definition=field_definition.kwarg_definition)
+        )
 
     @classmethod
     def resolve_generic_wrapper_type(
