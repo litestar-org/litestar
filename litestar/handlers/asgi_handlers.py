@@ -44,8 +44,8 @@ class ASGIRouteHandler(BaseRouteHandler):
 
         Args:
             path: A path fragment for the route handler function or a list of path fragments. If not given defaults to
-                ``/``
-            fn: The handler function
+                ``/``.
+            fn: The handler function.
             
                 .. versionadded:: 3.0
             exception_handlers: A mapping of status codes and/or exception types to handler functions.

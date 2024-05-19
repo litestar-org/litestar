@@ -46,6 +46,8 @@ class WebsocketRouteHandler(BaseRouteHandler):
             path: A path fragment for the route handler function or a sequence of path fragments. If not given defaults
                 to ``/``
             fn: The handler function
+
+                .. versionadded:: 3.0
             dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
             guards: A sequence of :class:`Guard <.types.Guard>` callables.
