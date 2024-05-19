@@ -151,3 +151,29 @@ The semantic ``HTTPRouteHandler`` classes have been removed in favour of functio
 decorators. ``route``, ``get``, ``post``, ``patch``, ``put``, ``head`` and ``delete``
 are now all decorator functions returning :class:`~.handlers.HTTPRouteHandler`
 instances.
+
+As a result, customizing the decorators directly is not possible anymore. Instead, to
+use a route handler decorator with a custom route handler class, the ``handler_class``
+parameter to the decorator function can be used:
+
+Before:
+.. code-block:: python
+
+    class my_get_handler(get):
+        ... # custom handler
+
+    @my_get_handler()
+    async def handler() -> Any:
+        ...
+
+After:
+
+.. code-block:: python
+
+    class MyHTTPRouteHandler(HTTPRouteHandler):
+        ... # custom handler
+
+
+    @get(handler_class=MyHTTPRouteHandler)
+    async def handler() -> Any:
+        ...

@@ -100,6 +100,7 @@ def route(
     tags: Sequence[str] | None = None,
     type_decoders: TypeDecodersSequence | None = None,
     type_encoders: TypeEncodersMap | None = None,
+    handler_class: type[HTTPRouteHandler] = HTTPRouteHandler,
     **kwargs: Any,
 ) -> Callable[[AnyCallable], HTTPRouteHandler]:
     """Create an :class:`HTTPRouteHandler`
@@ -172,11 +173,13 @@ def route(
         type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
             hook for deserialization.
         type_encoders: A mapping of types to callables that transform them into types supported for serialization.
+        handler_class: Route handler class instantiated by the decorator
+
         **kwargs: Any additional kwarg - will be set in the opt dictionary.
     """
 
     def decorator(fn: AnyCallable) -> HTTPRouteHandler:
-        return HTTPRouteHandler(
+        return handler_class(
             fn=fn,
             http_method=http_method,
             after_request=after_request,
@@ -268,6 +271,7 @@ def get(
     tags: Sequence[str] | None = None,
     type_decoders: TypeDecodersSequence | None = None,
     type_encoders: TypeEncodersMap | None = None,
+    handler_class: type[HTTPRouteHandler] = HTTPRouteHandler,
     **kwargs: Any,
 ) -> Callable[[AnyCallable], HTTPRouteHandler]:
     """Create an :class:`HTTPRouteHandler` with a ``GET`` method
@@ -337,11 +341,13 @@ def get(
         type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
             hook for deserialization.
         type_encoders: A mapping of types to callables that transform them into types supported for serialization.
+        handler_class: Route handler class instantiated by the decorator
+
         **kwargs: Any additional kwarg - will be set in the opt dictionary.
     """
 
     def decorator(fn: AnyCallable) -> HTTPRouteHandler:
-        return HTTPRouteHandler(
+        return handler_class(
             fn=fn,
             after_request=after_request,
             after_response=after_response,
@@ -433,6 +439,7 @@ def head(
     tags: Sequence[str] | None = None,
     type_decoders: TypeDecodersSequence | None = None,
     type_encoders: TypeEncodersMap | None = None,
+    handler_class: type[HTTPRouteHandler] = HTTPRouteHandler,
     **kwargs: Any,
 ) -> Callable[[AnyCallable], HTTPRouteHandler]:
     """Create an :class:`HTTPRouteHandler` with a ``HEAD`` method
@@ -506,11 +513,13 @@ def head(
         type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
             hook for deserialization.
         type_encoders: A mapping of types to callables that transform them into types supported for serialization.
+        handler_class: Route handler class instantiated by the decorator
+
         **kwargs: Any additional kwarg - will be set in the opt dictionary.
     """
 
     def decorator(fn: AnyCallable) -> HTTPRouteHandler:
-        return HTTPRouteHandler(
+        return handler_class(
             fn=fn,
             after_request=after_request,
             after_response=after_response,
@@ -602,6 +611,7 @@ def patch(
     tags: Sequence[str] | None = None,
     type_decoders: TypeDecodersSequence | None = None,
     type_encoders: TypeEncodersMap | None = None,
+    handler_class: type[HTTPRouteHandler] = HTTPRouteHandler,
     **kwargs: Any,
 ) -> Callable[[AnyCallable], HTTPRouteHandler]:
     """Create an :class:`HTTPRouteHandler` with a ``PATCH`` method
@@ -671,11 +681,13 @@ def patch(
         type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
             hook for deserialization.
         type_encoders: A mapping of types to callables that transform them into types supported for serialization.
+        handler_class: Route handler class instantiated by the decorator
+
         **kwargs: Any additional kwarg - will be set in the opt dictionary.
     """
 
     def decorator(fn: AnyCallable) -> HTTPRouteHandler:
-        return HTTPRouteHandler(
+        return handler_class(
             fn=fn,
             after_request=after_request,
             after_response=after_response,
@@ -767,6 +779,7 @@ def post(
     tags: Sequence[str] | None = None,
     type_decoders: TypeDecodersSequence | None = None,
     type_encoders: TypeEncodersMap | None = None,
+    handler_class: type[HTTPRouteHandler] = HTTPRouteHandler,
     **kwargs: Any,
 ) -> Callable[[AnyCallable], HTTPRouteHandler]:
     """Create an :class:`HTTPRouteHandler` with a ``POST`` method
@@ -836,11 +849,13 @@ def post(
         type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
             hook for deserialization.
         type_encoders: A mapping of types to callables that transform them into types supported for serialization.
+        handler_class: Route handler class instantiated by the decorator
+
         **kwargs: Any additional kwarg - will be set in the opt dictionary.
     """
 
     def decorator(fn: AnyCallable) -> HTTPRouteHandler:
-        return HTTPRouteHandler(
+        return handler_class(
             fn=fn,
             after_request=after_request,
             after_response=after_response,
@@ -932,6 +947,7 @@ def put(
     tags: Sequence[str] | None = None,
     type_decoders: TypeDecodersSequence | None = None,
     type_encoders: TypeEncodersMap | None = None,
+    handler_class: type[HTTPRouteHandler] = HTTPRouteHandler,
     **kwargs: Any,
 ) -> Callable[[AnyCallable], HTTPRouteHandler]:
     """Create an :class:`HTTPRouteHandler` with a ``PUT`` method
@@ -1001,11 +1017,13 @@ def put(
         type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
             hook for deserialization.
         type_encoders: A mapping of types to callables that transform them into types supported for serialization.
+        handler_class: Route handler class instantiated by the decorator
+
         **kwargs: Any additional kwarg - will be set in the opt dictionary.
     """
 
     def decorator(fn: AnyCallable) -> HTTPRouteHandler:
-        return HTTPRouteHandler(
+        return handler_class(
             fn=fn,
             after_request=after_request,
             after_response=after_response,
@@ -1097,6 +1115,7 @@ def delete(
     tags: Sequence[str] | None = None,
     type_decoders: TypeDecodersSequence | None = None,
     type_encoders: TypeEncodersMap | None = None,
+    handler_class: type[HTTPRouteHandler] = HTTPRouteHandler,
     **kwargs: Any,
 ) -> Callable[[AnyCallable], HTTPRouteHandler]:
     """Create an :class:`HTTPRouteHandler` with a ``DELETE`` method
@@ -1166,11 +1185,12 @@ def delete(
         type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
             hook for deserialization.
         type_encoders: A mapping of types to callables that transform them into types supported for serialization.
+        handler_class: Route handler class instantiated by the decorator
         **kwargs: Any additional kwarg - will be set in the opt dictionary.
     """
 
     def decorator(fn: AnyCallable) -> HTTPRouteHandler:
-        return HTTPRouteHandler(
+        return handler_class(
             fn=fn,
             after_request=after_request,
             after_response=after_response,

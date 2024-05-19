@@ -161,10 +161,11 @@ def websocket(
     opt: dict[str, Any] | None = None,
     signature_namespace: Mapping[str, Any] | None = None,
     websocket_class: type[WebSocket] | None = None,
+    handler_class: type[WebsocketRouteHandler] = WebsocketRouteHandler,
     **kwargs: Any,
 ) -> Callable[[AsyncAnyCallable], WebsocketRouteHandler]:
     def decorator(fn: AsyncAnyCallable) -> WebsocketRouteHandler:
-        return WebsocketRouteHandler(
+        return handler_class(
             path=path,
             fn=fn,
             dependencies=dependencies,

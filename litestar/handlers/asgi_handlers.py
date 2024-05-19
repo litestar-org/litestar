@@ -115,6 +115,7 @@ def asgi(
     opt: Mapping[str, Any] | None = None,
     is_mount: bool = False,
     signature_namespace: Mapping[str, Any] | None = None,
+    handler_class: type[ASGIRouteHandler] = ASGIRouteHandler,
     **kwargs: Any,
 ) -> Callable[[AsyncAnyCallable], ASGIRouteHandler]:
     """ASGI Route Handler decorator.
@@ -136,11 +137,12 @@ def asgi(
             accept any arbitrary paths that begin with the defined prefixed path. For example, a mount with the path
             ``/some-path/`` will accept requests for ``/some-path/`` and any sub path under this, e.g.
             ``/some-path/sub-path/`` etc.
+        handler_class: Route handler class instantiated by the decorator
         **kwargs: Any additional kwarg - will be set in the opt dictionary.
     """
 
     def decorator(fn: AsyncAnyCallable) -> ASGIRouteHandler:
-        return ASGIRouteHandler(
+        return handler_class(
             fn=fn,
             path=path,
             exception_handlers=exception_handlers,
