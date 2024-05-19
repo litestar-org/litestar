@@ -46,6 +46,8 @@ class ASGIRouteHandler(BaseRouteHandler):
             path: A path fragment for the route handler function or a list of path fragments. If not given defaults to
                 ``/``
             fn: The handler function
+            
+                .. versionadded:: 3.0
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
             guards: A sequence of :class:`Guard <.types.Guard>` callables.
             name: A string identifying the route handler.
