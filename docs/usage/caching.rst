@@ -66,7 +66,7 @@ any :class:`~.stores.base.Store`, for example :class:`~.stores.redis.RedisStore`
 .. code-block:: python
     :caption: Using Redis as the cache store.
 
-    from litestar.config.cache import ResponseCacheConfig
+    from litestar.config.response_cache import ResponseCacheConfig
     from litestar.stores.redis import RedisStore
 
     redis_store = RedisStore(url="redis://localhost/", port=6379, db=0)
@@ -84,14 +84,14 @@ Litestar uses the request's path + sorted query parameters as the cache key. Thi
     :caption: Using a custom cache key builder.
 
     from litestar import Litestar, Request
-    from litestar.config.cache import ResponseCacheConfig
+    from litestar.config.response_cache import ResponseCacheConfig
 
 
     def key_builder(request: Request) -> str:
         return request.url.path + request.headers.get("my-header", "")
 
 
-    app = Litestar([], cache_config=ResponseCacheConfig(key_builder=key_builder))
+    app = Litestar([], response_cache_config=ResponseCacheConfig(key_builder=key_builder))
 
 .. code-block:: python
     :caption: Using a custom cache key builder for a specific route handler.
