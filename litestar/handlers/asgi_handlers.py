@@ -46,7 +46,7 @@ class ASGIRouteHandler(BaseRouteHandler):
             path: A path fragment for the route handler function or a list of path fragments. If not given defaults to
                 ``/``.
             fn: The handler function.
-            
+
                 .. versionadded:: 3.0
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
             guards: A sequence of :class:`Guard <.types.Guard>` callables.
@@ -117,6 +117,28 @@ def asgi(
     signature_namespace: Mapping[str, Any] | None = None,
     **kwargs: Any,
 ) -> Callable[[AsyncAnyCallable], ASGIRouteHandler]:
+    """ASGI Route Handler decorator.
+
+    Use this decorator to decorate ASGI applications.
+
+    Args:
+        path: A path fragment for the route handler function or a sequence of path fragments. If not given defaults
+            to ``/``
+        exception_handlers: A mapping of status codes and/or exception types to handler functions.
+        guards: A sequence of :class:`Guard <.types.Guard>` callables.
+        name: A string identifying the route handler.
+        opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
+            wherever you have access to :class:`Request <.connection.Request>` or
+            :class:`ASGI Scope <.types.Scope>`.
+        signature_namespace: A mapping of names to types for use in forward reference resolution during signature
+            modelling.
+        is_mount: A boolean dictating whether the handler's paths should be regarded as mount paths. Mount path
+            accept any arbitrary paths that begin with the defined prefixed path. For example, a mount with the path
+            ``/some-path/`` will accept requests for ``/some-path/`` and any sub path under this, e.g.
+            ``/some-path/sub-path/`` etc.
+        **kwargs: Any additional kwarg - will be set in the opt dictionary.
+    """
+
     def decorator(fn: AsyncAnyCallable) -> ASGIRouteHandler:
         return ASGIRouteHandler(
             fn=fn,

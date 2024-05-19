@@ -53,7 +53,7 @@ from litestar.types import (
 )
 from litestar.types.builtin_types import NoneType
 from litestar.utils import ensure_async_callable
-from litestar.utils.predicates import is_async_callable, is_class_and_subclass
+from litestar.utils.predicates import is_async_callable
 from litestar.utils.scope.state import ScopeState
 from litestar.utils.warnings import warn_implicit_sync_to_thread, warn_sync_to_thread_with_async_callable
 
@@ -264,7 +264,6 @@ class HTTPRouteHandler(BaseRouteHandler):
                 warn_implicit_sync_to_thread(fn, stacklevel=3)
         elif sync_to_thread is not None:
             warn_sync_to_thread_with_async_callable(fn, stacklevel=3)
-
 
         if has_sync_callable and sync_to_thread:
             fn = ensure_async_callable(fn)
@@ -622,7 +621,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         if self.http_methods == {HttpMethod.HEAD} and not self.parsed_fn_signature.return_type.is_subclass_of(
             (NoneType, File, ASGIFileResponse)
         ):
-                raise ImproperlyConfiguredException("A response to a head request should not have a body")
+            raise ImproperlyConfiguredException("A response to a head request should not have a body")
 
     async def handle(self, connection: Request[Any, Any, Any]) -> None:
         """ASGI app that creates a :class:`~.connection.Request` from the passed in args, determines which handler function to call and then
