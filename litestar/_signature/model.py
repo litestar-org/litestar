@@ -38,7 +38,7 @@ from litestar.enums import ParamType, ScopeType
 from litestar.exceptions import InternalServerException, ValidationException
 from litestar.params import KwargDefinition, ParameterKwarg
 from litestar.typing import FieldDefinition  # noqa
-from litestar.utils import is_class_and_subclass
+from litestar.utils import get_origin_or_inner_type, is_class_and_subclass
 from litestar.utils.dataclass import simple_asdict
 
 if TYPE_CHECKING:
@@ -85,8 +85,15 @@ def _deserializer(target_type: Any, value: Any, default_deserializer: Callable[[
     if isinstance(value, DTOData):
         return value
 
-    if isinstance(value, target_type):
-        return value
+    try:
+        if isinstance(value, target_type):
+            return value
+    except TypeError as exc:
+        if (origin := get_origin_or_inner_type(target_type)) is not None:
+            if isinstance(value, origin):
+                return value
+        else:
+            raise exc
 
     if decoder := getattr(target_type, "_decoder", None):
         return decoder(target_type, value)
