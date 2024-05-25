@@ -11,14 +11,14 @@
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(sessionStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=aecf457f" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/shibuya.css?v=aa21bc99" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/shibuya.css?v=bb1fd5f2" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx_paramlinks.css" />
     <link media="print" rel="stylesheet" type="text/css" href="../../../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../../../_static/style.css?v=10936375" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/litestar-sphinx-theme.css?v=9fce248e" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/litestar-sphinx-theme.css?v=9989272a" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -30,21 +30,21 @@
 </style>
     <meta property="og:type" content="website"/><meta property="og:title" content="plugins"/>
 <meta name="twitter:card" content="summary"/>
-<meta property="og:image" content="_static/logo-light.svg"/>
+<meta property="og:image" content="_static/logo-light.png"/>
   </head>
 <body><div class="document"><div class="announcement">
     <div class="announcement-inner">
       <p>You are viewing the <bold>v3-development</bold> version of the documentation. Click here to go to the latest version.</p>
       <button class="announcement-close" aria-label="Close announcement">
-        <i class="i-icon close"></i>
+        <i class="i-lucide close"></i>
       </button>
     </div>
   </div><div class="sy-head">
   <div class="sy-head-blur"></div>
   <div class="sy-head-inner sy-container mx-auto">
     <a class="sy-head-brand mr-4" href="/">
-      <img class="light-logo" src="../../../_static/logo-light.svg" alt="Litestar" height="28" />
-      <img class="dark-logo" src="../../../_static/logo-dark.svg" alt="Litestar" height="28" />
+      <img class="light-logo" src="../../../_static/logo-light.png" alt="Litestar" height="28" />
+      <img class="dark-logo" src="../../../_static/logo-dark.png" alt="Litestar" height="28" />
       <strong>Litestar</strong>
     </a>
     <div class="sy-head-links" id="NavLinks">
@@ -53,7 +53,7 @@
 <ul><li class="link"><a href="../../../index.html">Home</a></li>
       <li class="link"><button type="button">
             <span>Community</span>
-            <i class="i-icon chevron"></i>
+            <i class="i-lucide chevron-down"></i>
           </button>
         <ul>
           <li><a href="../../../contribution-guide.html">
@@ -69,7 +69,7 @@
       </li>
       <li class="link"><button type="button">
             <span>About</span>
-            <i class="i-icon chevron"></i>
+            <i class="i-lucide chevron-down"></i>
           </button>
         <ul>
           <li><a href="https://litestar.dev/about/organization">
@@ -82,7 +82,7 @@
       </li>
       <li class="link"><button type="button">
             <span>Release notes</span>
-            <i class="i-icon chevron"></i>
+            <i class="i-lucide chevron-down"></i>
           </button>
         <ul>
           <li><a href="../../../release-notes/whats-new-3.html">
@@ -98,7 +98,7 @@
       </li>
       <li class="link"><button type="button">
             <span>Help</span>
-            <i class="i-icon chevron"></i>
+            <i class="i-lucide chevron-down"></i>
           </button>
         <ul>
           <li><a href="https://discord.gg/litestar">
@@ -128,26 +128,29 @@
     <button type="button" aria-label="Versions">
       <span class="md:hidden">Versions</span>
       <span class="hidden md:inline">latest</span>
-      <i class="i-icon chevron"></i>
+      <i class="i-lucide chevron-down"></i>
     </button>
     <div class="nav-versions-choices">
       <ul><li><a href="/latest">latest</a></li><li><a href="/main">development</a></li><li><a href="/3-dev">v3</a></li><li><a href="/2">v2</a></li><li><a href="/1">v1</a></li></ul></div>
   </div>
         
-        <div class="sy-head-social flex items-center">
-            <a class="flex items-center" href="https://discord.gg/litestar-919193495116337154" aria-label="Discord">
-              <i class="i-icon discord"></i>
-            </a>
-        </div>
+        <div class="sy-head-socials flex items-center">
+  <a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)">
+    <i class="i-simpleicons x-twitter"></i>
+  </a>
+    <a href="https://discord.gg/litestar" aria-label="Discord">
+      <i class="i-simpleicons discord"></i>
+    </a>
+</div>
       </div>
     </div>
     <div class="sy-head-actions flex items-center shrink-0 print:hidden">
       <button class="js-theme theme-switch flex items-center"
-        data-aria-auto="Switch to light color mode"
-        data-aria-light="Switch to dark color mode"
-        data-aria-dark="Switch to auto color mode">
-        <i class="i-icon theme-icon"></i>
-      </button>
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button>
       <button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="NavLinks" aria-expanded="false">
         <div class="hamburger">
           <span class="hamburger_1"></span>
@@ -178,7 +181,7 @@
   </ul>
 </div>
 
-        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../../getting-started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../usage/index.html">Usage</a><ul>
@@ -407,7 +410,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../../benchmarks.html">Benchmarks</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Guides</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../migration/index.html">Migrating to Litestar</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../migration/flask.html">From Flask</a></li>
@@ -471,7 +474,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Contributing</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../contribution-guide.html">Contribution Guide</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/search?q=user%3Alitestar-org+state%3Aopen+label%3A%22good+first+issue%22+++no%3Aassignee+&amp;type=issues=">Available Issues</a></li>
@@ -486,7 +489,7 @@
   <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
   <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
     <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
-      <i class="i-icon close"></i>
+      <i class="i-lucide close"></i>
     </button>
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4">
   <div class="localtoc">
@@ -586,17 +589,17 @@
   </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
   data-type="github" data-user="litestar-org" data-repo="litestar">
   <span class="w-8 flex items-center justify-around shrink-0 text-3xl">
-    <i class="i-icon github"></i>
+    <i class="i-simpleicons github"></i>
   </span>
   <span class="flex-grow px-2">
     <span>litestar-org/litestar</span>
     <span class="flex text-sm repo-stats-count">
       <span class="flex items-center pr-3">
-        <i class="i-icon star"></i>
+        <i class="i-lucide star"></i>
         <strong class="js-repo-stars ml-1">0</strong>
       </span>
       <span class="flex items-center">
-        <i class="i-icon git-fork"></i>
+        <i class="i-lucide git-fork"></i>
         <strong class="js-repo-forks ml-1">0</strong>
       </span>
     </span>
@@ -612,7 +615,7 @@
   <div class="sy-breadcrumbs-inner flex items-center">
     <div class="md:hidden mr-3">
       <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
-        <i class="i-icon menu"></i>
+        <i class="i-lucide menu"></i>
       </button>
     </div>
     <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList">
@@ -652,7 +655,7 @@
     <div class="xl:hidden ml-1">
       <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
         aria-expanded="false">
-        <i class="i-icon outdent"></i>
+        <i class="i-lucide outdent"></i>
       </button>
     </div>
   </div>
@@ -1072,7 +1075,7 @@ class.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.contrib.sqlalchemy.plugins.</span></span><span class="sig-name descname"><span class="pre">SQLAlchemyAsyncConfig</span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../../plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig" title="advanced_alchemy.extensions.litestar.plugins.init.config.asyncio.SQLAlchemyAsyncConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyAsyncConfig</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">_CreateEngineMixin</span></code>[<a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/extensions/asyncio.html#sqlalchemy.ext.asyncio.AsyncEngine" title="(in SQLAlchemy v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncEngine</span></code></a>]</p>
+<dd><p>Bases: <a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/plugins/init/config/asyncio.html#advanced_alchemy.extensions.litestar.plugins.init.config.asyncio.SQLAlchemyAsyncConfig" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyAsyncConfig</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">_CreateEngineMixin</span></code>[<a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/extensions/asyncio.html#sqlalchemy.ext.asyncio.AsyncEngine" title="(in SQLAlchemy v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AsyncEngine</span></code></a>]</p>
 </dd></dl>
 
 <dl class="py class">
@@ -1141,7 +1144,7 @@ class.</p>
 <p>A plugin that provides SQLAlchemy integration.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig" title="advanced_alchemy.extensions.litestar.plugins.init.config.asyncio.SQLAlchemyAsyncConfig"><span class="pre">SQLAlchemyAsyncConfig</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="../../plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig" title="advanced_alchemy.extensions.litestar.plugins.init.config.sync.SQLAlchemySyncConfig"><span class="pre">SQLAlchemySyncConfig</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin.__init__" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/plugins/init/config/asyncio.html#advanced_alchemy.extensions.litestar.plugins.init.config.asyncio.SQLAlchemyAsyncConfig" title="(in advanced_alchemy)"><span class="pre">SQLAlchemyAsyncConfig</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/plugins/init/config/sync.html#advanced_alchemy.extensions.litestar.plugins.init.config.sync.SQLAlchemySyncConfig" title="(in advanced_alchemy)"><span class="pre">SQLAlchemySyncConfig</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">SQLAlchemyPlugin</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1188,7 +1191,7 @@ class.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin.create_dto_for_type">
-<span class="sig-name descname"><span class="pre">create_dto_for_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_definition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><span class="pre">FieldDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.12)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO" title="litestar.plugins.sqlalchemy.SQLAlchemyDTO"><span class="pre">SQLAlchemyDTO</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin.create_dto_for_type" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">create_dto_for_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_definition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><span class="pre">FieldDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.12)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">SQLAlchemyDTO</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin.create_dto_for_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a parsed type, create a DTO class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1205,7 +1208,7 @@ class.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.contrib.sqlalchemy.plugins.</span></span><span class="sig-name descname"><span class="pre">SQLAlchemySyncConfig</span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../../plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig" title="advanced_alchemy.extensions.litestar.plugins.init.config.sync.SQLAlchemySyncConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemySyncConfig</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">_CreateEngineMixin</span></code>[<a class="reference external" href="https://docs.sqlalchemy.org/en/20/core/connections.html#sqlalchemy.engine.Engine" title="(in SQLAlchemy v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Engine</span></code></a>]</p>
+<dd><p>Bases: <a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/plugins/init/config/sync.html#advanced_alchemy.extensions.litestar.plugins.init.config.sync.SQLAlchemySyncConfig" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemySyncConfig</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">_CreateEngineMixin</span></code>[<a class="reference external" href="https://docs.sqlalchemy.org/en/20/core/connections.html#sqlalchemy.engine.Engine" title="(in SQLAlchemy v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Engine</span></code></a>]</p>
 </dd></dl>
 
 <dl class="py class">
@@ -1227,7 +1230,7 @@ class.</p>
         <div class="navigation flex print:hidden">
   <div class="navigation-prev">
     <a href="index.html">
-      <i class="i-icon chevron"></i>
+      <i class="i-lucide chevron-left"></i>
       <div class="page-info">
         <span>Previous</span>
         
@@ -1242,7 +1245,7 @@ class.</p>
         <span>Next</span>
         <div class="title">repository</div>
       </div>
-      <i class="i-icon chevron"></i>
+      <i class="i-lucide chevron-right"></i>
     </a>
   </div>
 </div>
@@ -1256,20 +1259,20 @@ class.</p>
     
     <div class="sy-foot-reserved md:flex justify-between items-center">
       <div class="sy-foot-copyright"><p>2024, Litestar Organization</p>
-        
-        <p>
-          Made with
-          
-          <a href="https://www.sphinx-doc.org/">Sphinx</a> and
-          
-          <a href="https://shibuya.lepture.com">Shibuya theme</a>.
-        </p>
-      </div>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
       <div class="sy-foot-socials">
-          <a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)"><i class="i-icon x-twitter"></i></a>
-          <a href="https://discord.gg/litestar-919193495116337154" aria-label="Discord"><i class="i-icon discord"></i></a>
-          <a href="https://www.reddit.com/r/LitestarAPI" aria-label="Reddit"><i class="i-icon reddit"></i></a>
-      </div>
+  <a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)"><i class="i-simpleicons x-twitter"></i></a>
+  <a href="https://discord.gg/litestar" aria-label="Discord"><i class="i-simpleicons discord"></i></a>
+  <a href="https://www.reddit.com/r/LitestarAPI" aria-label="Reddit"><i class="i-simpleicons reddit"></i></a>
+</div>
     </div>
   </div>
 </footer></div>
@@ -1285,7 +1288,7 @@ class.</p>
       <script src="../../../_static/togglebutton.js?v=4a39c7ea"></script>
       <script src="../../../_static/design-tabs.js?v=36754332"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../../../_static/shibuya.js?v=9aab5f5b"></script>
+      <script src="../../../_static/shibuya.js?v=5f0e4c24"></script>
       <script src="../../../_static/versioning.js?v=bc681eff"></script>
     
 </body>

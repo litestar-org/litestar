@@ -11,14 +11,14 @@
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(sessionStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=aecf457f" />
-    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=aa21bc99" />
+    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=bb1fd5f2" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx_paramlinks.css" />
     <link media="print" rel="stylesheet" type="text/css" href="../../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../../_static/style.css?v=10936375" />
-    <link rel="stylesheet" type="text/css" href="../../_static/litestar-sphinx-theme.css?v=9fce248e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/litestar-sphinx-theme.css?v=9989272a" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -30,21 +30,21 @@
 </style>
     <meta property="og:type" content="website"/><meta property="og:title" content="AbstractDTO"/>
 <meta name="twitter:card" content="summary"/>
-<meta property="og:image" content="_static/logo-light.svg"/>
+<meta property="og:image" content="_static/logo-light.png"/>
   </head>
 <body><div class="document"><div class="announcement">
     <div class="announcement-inner">
       <p>You are viewing the <bold>v3-development</bold> version of the documentation. Click here to go to the latest version.</p>
       <button class="announcement-close" aria-label="Close announcement">
-        <i class="i-icon close"></i>
+        <i class="i-lucide close"></i>
       </button>
     </div>
   </div><div class="sy-head">
   <div class="sy-head-blur"></div>
   <div class="sy-head-inner sy-container mx-auto">
     <a class="sy-head-brand mr-4" href="/">
-      <img class="light-logo" src="../../_static/logo-light.svg" alt="Litestar" height="28" />
-      <img class="dark-logo" src="../../_static/logo-dark.svg" alt="Litestar" height="28" />
+      <img class="light-logo" src="../../_static/logo-light.png" alt="Litestar" height="28" />
+      <img class="dark-logo" src="../../_static/logo-dark.png" alt="Litestar" height="28" />
       <strong>Litestar</strong>
     </a>
     <div class="sy-head-links" id="NavLinks">
@@ -53,7 +53,7 @@
 <ul><li class="link"><a href="../../index.html">Home</a></li>
       <li class="link"><button type="button">
             <span>Community</span>
-            <i class="i-icon chevron"></i>
+            <i class="i-lucide chevron-down"></i>
           </button>
         <ul>
           <li><a href="../../contribution-guide.html">
@@ -69,7 +69,7 @@
       </li>
       <li class="link"><button type="button">
             <span>About</span>
-            <i class="i-icon chevron"></i>
+            <i class="i-lucide chevron-down"></i>
           </button>
         <ul>
           <li><a href="https://litestar.dev/about/organization">
@@ -82,7 +82,7 @@
       </li>
       <li class="link"><button type="button">
             <span>Release notes</span>
-            <i class="i-icon chevron"></i>
+            <i class="i-lucide chevron-down"></i>
           </button>
         <ul>
           <li><a href="../../release-notes/whats-new-3.html">
@@ -98,7 +98,7 @@
       </li>
       <li class="link"><button type="button">
             <span>Help</span>
-            <i class="i-icon chevron"></i>
+            <i class="i-lucide chevron-down"></i>
           </button>
         <ul>
           <li><a href="https://discord.gg/litestar">
@@ -128,26 +128,29 @@
     <button type="button" aria-label="Versions">
       <span class="md:hidden">Versions</span>
       <span class="hidden md:inline">latest</span>
-      <i class="i-icon chevron"></i>
+      <i class="i-lucide chevron-down"></i>
     </button>
     <div class="nav-versions-choices">
       <ul><li><a href="/latest">latest</a></li><li><a href="/main">development</a></li><li><a href="/3-dev">v3</a></li><li><a href="/2">v2</a></li><li><a href="/1">v1</a></li></ul></div>
   </div>
         
-        <div class="sy-head-social flex items-center">
-            <a class="flex items-center" href="https://discord.gg/litestar-919193495116337154" aria-label="Discord">
-              <i class="i-icon discord"></i>
-            </a>
-        </div>
+        <div class="sy-head-socials flex items-center">
+  <a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)">
+    <i class="i-simpleicons x-twitter"></i>
+  </a>
+    <a href="https://discord.gg/litestar" aria-label="Discord">
+      <i class="i-simpleicons discord"></i>
+    </a>
+</div>
       </div>
     </div>
     <div class="sy-head-actions flex items-center shrink-0 print:hidden">
       <button class="js-theme theme-switch flex items-center"
-        data-aria-auto="Switch to light color mode"
-        data-aria-light="Switch to dark color mode"
-        data-aria-dark="Switch to auto color mode">
-        <i class="i-icon theme-icon"></i>
-      </button>
+data-aria-auto="Switch to light color mode"
+data-aria-light="Switch to dark color mode"
+data-aria-dark="Switch to auto color mode">
+<i class="i-lucide theme-icon"></i>
+</button>
       <button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="NavLinks" aria-expanded="false">
         <div class="hamburger">
           <span class="hamburger_1"></span>
@@ -178,7 +181,7 @@
   </ul>
 </div>
 
-        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../getting-started.html">Getting Started</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">Usage</a><ul class="current">
@@ -407,7 +410,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../benchmarks.html">Benchmarks</a></li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Guides</span></p>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Guides</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../migration/index.html">Migrating to Litestar</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../migration/flask.html">From Flask</a></li>
@@ -471,7 +474,7 @@
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
+<p class="caption" role="heading" aria-level="3"><span class="caption-text">Contributing</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../contribution-guide.html">Contribution Guide</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/search?q=user%3Alitestar-org+state%3Aopen+label%3A%22good+first+issue%22+++no%3Aassignee+&amp;type=issues=">Available Issues</a></li>
@@ -486,7 +489,7 @@
   <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
   <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
     <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
-      <i class="i-icon close"></i>
+      <i class="i-lucide close"></i>
     </button>
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4">
   <div class="localtoc">
@@ -512,17 +515,17 @@
   </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
   data-type="github" data-user="litestar-org" data-repo="litestar">
   <span class="w-8 flex items-center justify-around shrink-0 text-3xl">
-    <i class="i-icon github"></i>
+    <i class="i-simpleicons github"></i>
   </span>
   <span class="flex-grow px-2">
     <span>litestar-org/litestar</span>
     <span class="flex text-sm repo-stats-count">
       <span class="flex items-center pr-3">
-        <i class="i-icon star"></i>
+        <i class="i-lucide star"></i>
         <strong class="js-repo-stars ml-1">0</strong>
       </span>
       <span class="flex items-center">
-        <i class="i-icon git-fork"></i>
+        <i class="i-lucide git-fork"></i>
         <strong class="js-repo-forks ml-1">0</strong>
       </span>
     </span>
@@ -538,7 +541,7 @@
   <div class="sy-breadcrumbs-inner flex items-center">
     <div class="md:hidden mr-3">
       <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
-        <i class="i-icon menu"></i>
+        <i class="i-lucide menu"></i>
       </button>
     </div>
     <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList">
@@ -572,7 +575,7 @@
     <div class="xl:hidden ml-1">
       <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
         aria-expanded="false">
-        <i class="i-icon outdent"></i>
+        <i class="i-lucide outdent"></i>
       </button>
     </div>
   </div>
@@ -591,7 +594,7 @@ and from raw bytes.</p>
 <li><p><a class="reference internal" href="../../reference/dto/dataclass_dto.html#litestar.dto.dataclass_dto.DataclassDTO" title="litestar.dto.dataclass_dto.DataclassDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataclassDTO</span></code></a></p></li>
 <li><p><a class="reference internal" href="../../reference/dto/msgspec_dto.html#litestar.dto.msgspec_dto.MsgspecDTO" title="litestar.dto.msgspec_dto.MsgspecDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">MsgspecDTO</span></code></a></p></li>
 <li><p><a class="reference internal" href="../../reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticDTO" title="litestar.contrib.pydantic.PydanticDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">PydanticDTO</span></code></a></p></li>
-<li><p><a class="reference internal" href="../../reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO" title="advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span></code></a></p></li>
 </ul>
 <section id="using-dto-factories">
 <h2>Using DTO Factories<a class="headerlink" href="#using-dto-factories" title="Permalink to this heading">¶</a></h2>
@@ -630,13 +633,13 @@ a DTO for use with a SQLAlchemy model:</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;2d43d2ff-8107-43a8-9405-a1726a6c7da5&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;7764b0fc-9e73-4aa6-a717-24b0cac28761&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
 <p>Here we see that a SQLAlchemy model is used as both the <code class="docutils literal notranslate"><span class="pre">data</span></code> and return annotation for the handler, and while
 Litestar does not natively support encoding/decoding to/from SQLAlchemy models, through
-<a class="reference internal" href="../../reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO" title="advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span></code></a> we can do this.</p>
+<a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span></code></a> we can do this.</p>
 <p>However, we do have some issues with the above example. Firstly, the user’s password has been returned to them in the
 response from the handler. Secondly, the user is able to set the <code class="docutils literal notranslate"><span class="pre">created_at</span></code> field on the model, which should only
 ever be set once, and defined internally.</p>
@@ -687,7 +690,7 @@ configuration.</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;8652ccad-2fb6-460d-b686-07e5e4e9b9d8&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;238653f4-9ed4-4f3a-ad1d-a69e18c3f694&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -1017,7 +1020,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;54fec538-66a8-4166-96ec-c83f62102047&quot;</span>,<span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;0238b601-88e6-4a23-9444-20d59cda133f&quot;</span>,<span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -1109,7 +1112,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;firstName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;createdAt&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;createdAt&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;45dcdc6b-65e3-45ea-a632-54c0050a5a7b&quot;</span>,<span class="s2">&quot;firstName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;createdAt&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;18b6dc12-5af0-47b0-b052-8e043d4d6e1c&quot;</span>,<span class="s2">&quot;firstName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -1300,42 +1303,43 @@ required fields, <code class="docutils literal notranslate"><span class="pre">id
 handler.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 </span><span data-line="2"><span class="linenos"> 2</span>
-</span><span data-line="3"><span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-</span><span data-line="4"><span class="linenos"> 4</span><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
+</span><span data-line="3"><span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+</span><span data-line="4"><span class="linenos"> 4</span><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">uuid4</span>
 </span><span data-line="5"><span class="linenos"> 5</span>
 </span><span data-line="6"><span class="linenos"> 6</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
 </span><span data-line="7"><span class="linenos"> 7</span><span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DataclassDTO</span><span class="p">,</span> <span class="n">DTOConfig</span>
 </span><span data-line="8"><span class="linenos"> 8</span>
 </span><span data-line="9"><span class="linenos"> 9</span>
 </span><span data-line="10"><span class="linenos">10</span><span class="nd">@dataclass</span>
-</span><span data-line="11"><span class="linenos">11</span><span class="k">class</span> <span class="nc">Person</span><span class="p">:</span>
-</span><span data-line="12"><span class="linenos">12</span>    <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span>
-</span><span data-line="13"><span class="linenos">13</span>    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="11"><span class="linenos">11</span><span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
+</span><span data-line="12"><span class="linenos">12</span>    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="13"><span class="linenos">13</span>    <span class="n">email</span><span class="p">:</span> <span class="nb">str</span>
 </span><span data-line="14"><span class="linenos">14</span>    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
-</span><span data-line="15"><span class="linenos">15</span>
+</span><span data-line="15"><span class="linenos">15</span>    <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">uuid4</span><span class="p">)</span>
 </span><span data-line="16"><span class="linenos">16</span>
-</span><span data-line="17"><span class="linenos">17</span><span class="k">class</span> <span class="nc">WriteDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Person</span><span class="p">]):</span>
-</span><span data-line="18"><span class="hll"><span class="linenos">18</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Don&#39;t allow client to set the id.&quot;&quot;&quot;</span>
-</span></span><span data-line="19"><span class="hll"><span class="linenos">19</span>
-</span></span><span data-line="20"><span class="hll"><span class="linenos">20</span>    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">})</span>
-</span></span><span data-line="21"><span class="hll"><span class="linenos">21</span>
-</span></span><span data-line="22"><span class="linenos">22</span>
-</span><span data-line="23"><span class="linenos">23</span><span class="c1"># We need a dto for the handler to parse the request data per the configuration, however,</span>
-</span><span data-line="24"><span class="linenos">24</span><span class="c1"># we don&#39;t need a return DTO as we are returning a dataclass, and Litestar already knows</span>
-</span><span data-line="25"><span class="linenos">25</span><span class="c1"># how to serialize dataclasses.</span>
-</span><span data-line="26"><span class="linenos">26</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/person&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">WriteDTO</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="27"><span class="hll"><span class="linenos">27</span><span class="k">def</span> <span class="nf">create_person</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">Person</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Person</span><span class="p">:</span>
-</span></span><span data-line="28"><span class="linenos">28</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a person.&quot;&quot;&quot;</span>
-</span><span data-line="29"><span class="linenos">29</span>    <span class="k">return</span> <span class="n">data</span>
-</span><span data-line="30"><span class="linenos">30</span>
+</span><span data-line="17"><span class="linenos">17</span>
+</span><span data-line="18"><span class="linenos">18</span><span class="k">class</span> <span class="nc">UserWriteDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">User</span><span class="p">]):</span>
+</span><span data-line="19"><span class="hll"><span class="linenos">19</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Don&#39;t allow client to set the id.&quot;&quot;&quot;</span>
+</span></span><span data-line="20"><span class="hll"><span class="linenos">20</span>
+</span></span><span data-line="21"><span class="hll"><span class="linenos">21</span>    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">})</span>
+</span></span><span data-line="22"><span class="hll"><span class="linenos">22</span>
+</span></span><span data-line="23"><span class="linenos">23</span>
+</span><span data-line="24"><span class="linenos">24</span><span class="c1"># We need a dto for the handler to parse the request data per the configuration, however,</span>
+</span><span data-line="25"><span class="linenos">25</span><span class="c1"># we don&#39;t need a return DTO as we are returning a dataclass, and Litestar already knows</span>
+</span><span data-line="26"><span class="linenos">26</span><span class="c1"># how to serialize dataclasses.</span>
+</span><span data-line="27"><span class="linenos">27</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">UserWriteDTO</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="28"><span class="hll"><span class="linenos">28</span><span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+</span></span><span data-line="29"><span class="linenos">29</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an user.&quot;&quot;&quot;</span>
+</span><span data-line="30"><span class="linenos">30</span>    <span class="k">return</span> <span class="n">data</span>
 </span><span data-line="31"><span class="linenos">31</span>
-</span><span data-line="32"><span class="linenos">32</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">create_person</span><span class="p">])</span>
+</span><span data-line="32"><span class="linenos">32</span>
+</span><span data-line="33"><span class="linenos">33</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">create_user</span><span class="p">])</span>
 </span></pre></div>
 </div>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/person<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;age&quot;</span>:41<span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;status_code&quot;</span>:500,<span class="s2">&quot;detail&quot;</span>:<span class="s2">&quot;Internal Server Error&quot;</span><span class="o">}</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;email&quot;</span>:<span class="w"> </span><span class="s2">&quot;peter@example.com&quot;</span>,<span class="w"> </span><span class="s2">&quot;age&quot;</span>:41<span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;email&quot;</span>:<span class="s2">&quot;peter@example.com&quot;</span>,<span class="s2">&quot;age&quot;</span>:41,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;339a5ff2-fb86-4b0c-8522-214652cad441&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -1347,41 +1351,40 @@ variability in the data that we accept from clients, for example,
 <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/PATCH">PATCH</a> requests.</p>
 <p>This is where the <a class="reference internal" href="../../reference/dto/data_structures.html#litestar.dto.data_structures.DTOData" title="litestar.dto.data_structures.DTOData"><code class="xref py py-class docutils literal notranslate"><span class="pre">DTOData</span></code></a> class comes in. It is a generic class that accepts the
 type of the data that it will contain, and provides useful methods for interacting with that data.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
-</span><span data-line="2"><span class="linenos"> 2</span>
-</span><span data-line="3"><span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-</span><span data-line="4"><span class="linenos"> 4</span><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">uuid4</span>
-</span><span data-line="5"><span class="linenos"> 5</span>
-</span><span data-line="6"><span class="linenos"> 6</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-</span><span data-line="7"><span class="hll"><span class="linenos"> 7</span><span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DataclassDTO</span><span class="p">,</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">DTOData</span>
-</span></span><span data-line="8"><span class="linenos"> 8</span>
-</span><span data-line="9"><span class="linenos"> 9</span>
-</span><span data-line="10"><span class="linenos">10</span><span class="nd">@dataclass</span>
-</span><span data-line="11"><span class="linenos">11</span><span class="k">class</span> <span class="nc">Person</span><span class="p">:</span>
-</span><span data-line="12"><span class="linenos">12</span>    <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span>
-</span><span data-line="13"><span class="linenos">13</span>    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="14"><span class="linenos">14</span>    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+</span><span data-line="2"><span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span><span class="p">,</span> <span class="n">uuid4</span>
+</span><span data-line="3"><span class="linenos"> 3</span>
+</span><span data-line="4"><span class="linenos"> 4</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+</span><span data-line="5"><span class="linenos"> 5</span><span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DataclassDTO</span><span class="p">,</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">DTOData</span>
+</span><span data-line="6"><span class="linenos"> 6</span>
+</span><span data-line="7"><span class="hll"><span class="linenos"> 7</span>
+</span></span><span data-line="8"><span class="linenos"> 8</span><span class="nd">@dataclass</span>
+</span><span data-line="9"><span class="linenos"> 9</span><span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
+</span><span data-line="10"><span class="linenos">10</span>    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="11"><span class="linenos">11</span>    <span class="n">email</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="12"><span class="linenos">12</span>    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
+</span><span data-line="13"><span class="linenos">13</span>    <span class="nb">id</span><span class="p">:</span> <span class="n">UUID</span>
+</span><span data-line="14"><span class="linenos">14</span>
 </span><span data-line="15"><span class="linenos">15</span>
-</span><span data-line="16"><span class="linenos">16</span>
-</span><span data-line="17"><span class="linenos">17</span><span class="k">class</span> <span class="nc">WriteDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Person</span><span class="p">]):</span>
-</span><span data-line="18"><span class="linenos">18</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Don&#39;t allow client to set the id.&quot;&quot;&quot;</span>
-</span><span data-line="19"><span class="linenos">19</span>
-</span><span data-line="20"><span class="linenos">20</span>    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">})</span>
+</span><span data-line="16"><span class="linenos">16</span><span class="k">class</span> <span class="nc">UserWriteDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">User</span><span class="p">]):</span>
+</span><span data-line="17"><span class="linenos">17</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Don&#39;t allow client to set the id.&quot;&quot;&quot;</span>
+</span><span data-line="18"><span class="linenos">18</span>
+</span><span data-line="19"><span class="linenos">19</span>    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">})</span>
+</span><span data-line="20"><span class="linenos">20</span>
 </span><span data-line="21"><span class="linenos">21</span>
-</span><span data-line="22"><span class="linenos">22</span>
-</span><span data-line="23"><span class="linenos">23</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/person&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">WriteDTO</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-</span><span data-line="24"><span class="linenos">24</span><span class="k">def</span> <span class="nf">create_person</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">DTOData</span><span class="p">[</span><span class="n">Person</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Person</span><span class="p">:</span>
-</span><span data-line="25"><span class="hll"><span class="linenos">25</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create a person.&quot;&quot;&quot;</span>
-</span></span><span data-line="26"><span class="linenos">26</span>    <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">create_instance</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">uuid4</span><span class="p">())</span>
+</span><span data-line="22"><span class="linenos">22</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">UserWriteDTO</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</span><span data-line="23"><span class="linenos">23</span><span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">DTOData</span><span class="p">[</span><span class="n">User</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+</span><span data-line="24"><span class="linenos">24</span><span class="w">    </span><span class="sd">&quot;&quot;&quot;Create an user.&quot;&quot;&quot;</span>
+</span><span data-line="25"><span class="hll"><span class="linenos">25</span>    <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">create_instance</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">uuid4</span><span class="p">())</span>
+</span></span><span data-line="26"><span class="linenos">26</span>
 </span><span data-line="27"><span class="hll"><span class="linenos">27</span>
-</span></span><span data-line="28"><span class="linenos">28</span>
-</span><span data-line="29"><span class="linenos">29</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">create_person</span><span class="p">])</span>
+</span></span><span data-line="28"><span class="linenos">28</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">create_user</span><span class="p">])</span>
 </span></pre></div>
 </div>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/person<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;age&quot;</span>:41<span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;809efdfa-85d1-4a17-867c-7f4bdbc5d09d&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;age&quot;</span>:41<span class="o">}</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="w"> </span><span class="s2">&quot;email&quot;</span>:<span class="w"> </span><span class="s2">&quot;peter@example.com&quot;</span>,<span class="w"> </span><span class="s2">&quot;age&quot;</span>:41<span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;email&quot;</span>:<span class="s2">&quot;peter@example.com&quot;</span>,<span class="s2">&quot;age&quot;</span>:41,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;0d5b36d0-1f4a-4ebc-9074-8467ea1a6280&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -1521,8 +1524,8 @@ parsed from client data, and will not be serialized into return data.</p>
 </span><span data-line="6"><span class="linenos"> 6</span>
 </span><span data-line="7"><span class="linenos"> 7</span><span class="nd">@dataclass</span>
 </span><span data-line="8"><span class="linenos"> 8</span><span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
-</span><span data-line="9"><span class="linenos"> 9</span>    <span class="n">bar</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="10"><span class="linenos">10</span>    <span class="n">_baz</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Mars&quot;</span>
+</span><span data-line="9"><span class="linenos"> 9</span>    <span class="n">this_will</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="10"><span class="linenos">10</span>    <span class="n">_this_will</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Mars&quot;</span>
 </span><span data-line="11"><span class="linenos">11</span>
 </span><span data-line="12"><span class="linenos">12</span>
 </span><span data-line="13"><span class="linenos">13</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Foo</span><span class="p">],</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -1535,8 +1538,8 @@ parsed from client data, and will not be serialized into return data.</p>
 </div>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;bar&quot;</span>:<span class="s2">&quot;Hello&quot;</span>,<span class="s2">&quot;_baz&quot;</span>:<span class="s2">&quot;World!&quot;</span><span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;bar&quot;</span>:<span class="s2">&quot;Hello&quot;</span><span class="o">}</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;bar&quot;</span>:<span class="s2">&quot;stay&quot;</span>,<span class="s2">&quot;_baz&quot;</span>:<span class="s2">&quot;go_away!&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;status_code&quot;</span>:400,<span class="s2">&quot;detail&quot;</span>:<span class="s2">&quot;Object missing required field `this_will`&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -1551,8 +1554,8 @@ parsed from client data, and will not be serialized into return data.</p>
 </span><span data-line="6"><span class="linenos"> 6</span>
 </span><span data-line="7"><span class="linenos"> 7</span><span class="nd">@dataclass</span>
 </span><span data-line="8"><span class="linenos"> 8</span><span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
-</span><span data-line="9"><span class="linenos"> 9</span>    <span class="n">bar</span><span class="p">:</span> <span class="nb">str</span>
-</span><span data-line="10"><span class="linenos">10</span>    <span class="n">_baz</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Mars&quot;</span>
+</span><span data-line="9"><span class="linenos"> 9</span>    <span class="n">this_will</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="10"><span class="linenos">10</span>    <span class="n">_this_will</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;not_go_away!&quot;</span>
 </span><span data-line="11"><span class="linenos">11</span>
 </span><span data-line="12"><span class="linenos">12</span>
 </span><span data-line="13"><span class="linenos">13</span><span class="k">class</span> <span class="nc">DTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Foo</span><span class="p">]):</span>
@@ -1569,8 +1572,8 @@ parsed from client data, and will not be serialized into return data.</p>
 </div>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;bar&quot;</span>:<span class="s2">&quot;Hello&quot;</span>,<span class="s2">&quot;_baz&quot;</span>:<span class="s2">&quot;World!&quot;</span><span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;bar&quot;</span>:<span class="s2">&quot;Hello&quot;</span>,<span class="s2">&quot;_baz&quot;</span>:<span class="s2">&quot;World!&quot;</span><span class="o">}</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;this_will&quot;</span>:<span class="s2">&quot;stay&quot;</span>,<span class="s2">&quot;_this_will&quot;</span>:<span class="s2">&quot;not_go_away!&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;this_will&quot;</span>:<span class="s2">&quot;stay&quot;</span>,<span class="s2">&quot;_this_will&quot;</span>:<span class="s2">&quot;not_go_away!&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -1944,7 +1947,7 @@ response received by the client. In this case, we add a custom header.</p>
         <div class="navigation flex print:hidden">
   <div class="navigation-prev">
     <a href="0-basic-use.html">
-      <i class="i-icon chevron"></i>
+      <i class="i-lucide chevron-left"></i>
       <div class="page-info">
         <span>Previous</span>
         
@@ -1959,7 +1962,7 @@ response received by the client. In this case, we add a custom header.</p>
         <span>Next</span>
         <div class="title">Implementing Custom DTO Classes</div>
       </div>
-      <i class="i-icon chevron"></i>
+      <i class="i-lucide chevron-right"></i>
     </a>
   </div>
 </div>
@@ -1973,20 +1976,20 @@ response received by the client. In this case, we add a custom header.</p>
     
     <div class="sy-foot-reserved md:flex justify-between items-center">
       <div class="sy-foot-copyright"><p>2024, Litestar Organization</p>
-        
-        <p>
-          Made with
-          
-          <a href="https://www.sphinx-doc.org/">Sphinx</a> and
-          
-          <a href="https://shibuya.lepture.com">Shibuya theme</a>.
-        </p>
-      </div>
+  
+  <p>
+    Made with
+    
+    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+    
+    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+  </p>
+</div>
       <div class="sy-foot-socials">
-          <a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)"><i class="i-icon x-twitter"></i></a>
-          <a href="https://discord.gg/litestar-919193495116337154" aria-label="Discord"><i class="i-icon discord"></i></a>
-          <a href="https://www.reddit.com/r/LitestarAPI" aria-label="Reddit"><i class="i-icon reddit"></i></a>
-      </div>
+  <a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)"><i class="i-simpleicons x-twitter"></i></a>
+  <a href="https://discord.gg/litestar" aria-label="Discord"><i class="i-simpleicons discord"></i></a>
+  <a href="https://www.reddit.com/r/LitestarAPI" aria-label="Reddit"><i class="i-simpleicons reddit"></i></a>
+</div>
     </div>
   </div>
 </footer></div>
@@ -2002,7 +2005,7 @@ response received by the client. In this case, we add a custom header.</p>
       <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
       <script src="../../_static/design-tabs.js?v=36754332"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../../_static/shibuya.js?v=9aab5f5b"></script>
+      <script src="../../_static/shibuya.js?v=5f0e4c24"></script>
       <script src="../../_static/versioning.js?v=bc681eff"></script>
     
 </body>
