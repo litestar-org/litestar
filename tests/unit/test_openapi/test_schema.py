@@ -2,7 +2,7 @@ import sys
 from dataclasses import dataclass
 from datetime import date, datetime, timezone
 from enum import Enum, auto
-from typing import (  # type: ignore[attr-defined]
+from typing import (
     TYPE_CHECKING,
     Any,
     Dict,
