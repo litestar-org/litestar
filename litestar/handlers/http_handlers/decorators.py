@@ -3,6 +3,27 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Callable, Mapping, Sequence
 
 from litestar.enums import HttpMethod, MediaType
+from litestar.handlers.http_handlers.base import HTTPRouteHandler
+from litestar.openapi.spec import Operation, SecurityRequirement
+from litestar.types import (
+    AfterRequestHookHandler,
+    AfterResponseHookHandler,
+    AnyCallable,
+    BeforeRequestHookHandler,
+    CacheKeyBuilder,
+    Dependencies,
+    Empty,
+    EmptyType,
+    ExceptionHandlersMap,
+    Guard,
+    Method,
+    Middleware,
+    OperationIDCreator,
+    ResponseCookies,
+    ResponseHeaders,
+    TypeDecodersSequence,
+    TypeEncodersMap,
+)
 from litestar.exceptions import HTTPException
 from litestar.handlers.http_handlers.base import HTTPRouteHandler
 from litestar.openapi.spec import Operation, SecurityRequirement
@@ -54,7 +75,7 @@ if TYPE_CHECKING:
     )
     from litestar.types.callable_types import AnyCallable, OperationIDCreator
 
-__all__ = ("delete", "get", "head", "patch", "post", "put")
+__all__ = ("get", "head", "post", "put", "patch", "delete", "route")
 
 
 def route(
