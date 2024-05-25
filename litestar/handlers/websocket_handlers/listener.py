@@ -523,6 +523,7 @@ def websocket_listener(
         websocket_class: A custom subclass of :class:`WebSocket <.connection.WebSocket>` to be used as route handler's
             default websocket class.
     """
+
     def decorator(fn: AnyCallable) -> WebsocketListenerRouteHandler:
         return WebsocketListenerRouteHandler(
             fn=fn,
