@@ -280,7 +280,7 @@ class Router:
     @classmethod
     def get_route_handler_map(
         cls,
-        value: Controller | RouteHandlerType | Router,
+        value: RouteHandlerType | Router,
     ) -> dict[str, RouteHandlerMapItem]:
         """Map route handlers to HTTP methods."""
         if isinstance(value, Router):

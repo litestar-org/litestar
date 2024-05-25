@@ -1,4 +1,3 @@
-from typing import TYPE_CHECKING
 from unittest.mock import MagicMock, call
 
 import pytest
@@ -20,7 +19,7 @@ def test_after_response_resolution(layer: str, sync: bool) -> None:
 
     else:
 
-        async def handler(_: Request) -> None:
+        async def handler(_: Request) -> None:  # type: ignore[misc]
             mock(layer)
 
     class MyController(Controller):
