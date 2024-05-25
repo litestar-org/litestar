@@ -120,7 +120,7 @@ def test_validation_error_exception_key() -> None:
 
     model = SignatureModel.create(
         dependency_name_set=set(),
-        fn=handler,
+        fn=handler,  # type: ignore[arg-type]
         data_dto=None,
         parsed_signature=ParsedSignature.from_fn(handler.fn, {}),
         type_decoders=[],

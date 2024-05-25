@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Callable, List, Optional, Type
+from typing import Any, Callable, List, Optional
 
 import httpx
 import pytest
@@ -75,29 +75,27 @@ def test_path_parsing_with_ambiguous_paths() -> None:
 
 
 @pytest.mark.parametrize(
-    "decorator, test_path, decorator_path, delete_handler",
+    "test_path, decorator_path, delete_handler",
     [
-        (get, "", "/something", None),
-        (get, "/", "/something", None),
-        (get, "", "/", None),
-        (get, "/", "/", None),
-        (get, "", "", None),
-        (get, "/", "", None),
-        (get, "", "/something", root_delete_handler),
-        (get, "/", "/something", root_delete_handler),
-        (get, "", "/", root_delete_handler),
-        (get, "/", "/", root_delete_handler),
-        (get, "", "", root_delete_handler),
-        (get, "/", "", root_delete_handler),
+        ("", "/something", None),
+        ("/", "/something", None),
+        ("", "/", None),
+        ("/", "/", None),
+        ("", "", None),
+        ("/", "", None),
+        ("", "/something", root_delete_handler),
+        ("/", "/something", root_delete_handler),
+        ("", "/", root_delete_handler),
+        ("/", "/", root_delete_handler),
+        ("", "", root_delete_handler),
+        ("/", "", root_delete_handler),
     ],
 )
-def test_root_route_handler(
-    decorator: Type[get], test_path: str, decorator_path: str, delete_handler: Optional[Callable]
-) -> None:
+def test_root_route_handler(test_path: str, decorator_path: str, delete_handler: Optional[Callable]) -> None:
     class MyController(Controller):
         path = test_path
 
-        @decorator(path=decorator_path)
+        @get(path=decorator_path)
         def test_method(self) -> str:
             return "hello"
 

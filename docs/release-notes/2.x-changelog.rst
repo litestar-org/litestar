@@ -3057,7 +3057,7 @@
         :pr: 1647
 
         Dependencies can now be used in the
-        :class:`~litestar.handlers.websocket_listener` hooks
+        :func:`~litestar.handlers.websocket_listener` hooks
         ``on_accept``, ``on_disconnect`` and the ``connection_lifespan`` context
         manager. The ``socket`` parameter is therefore also not mandatory anymore in
         those callables.
@@ -3208,7 +3208,7 @@
         :issue: 1615
 
         A bug was fixed that would cause a type error when using a
-        :class:`websocket_listener <litestar.handlers.websocket_listener>`
+        :func:`websocket_listener <litestar.handlers.websocket_listener>`
         in a ``Controller``
 
     .. change:: Add ``connection_accept_handler`` to ``websocket_listener``
@@ -3217,7 +3217,7 @@
         :issue: 1571
 
         Add a new ``connection_accept_handler`` parameter to
-        :class:`websocket_listener <litestar.handlers.websocket_listener>`,
+        :func:`websocket_listener <litestar.handlers.websocket_listener>`,
         which can be used to customize how a connection is accepted, for example to
         add headers or subprotocols
 
@@ -3305,7 +3305,7 @@
         appropriate event hooks - to use a context manager.
 
         The ``connection_lifespan`` argument was added to the
-        :class:`WebSocketListener <litestar.handlers.websocket_listener>`, which accepts
+        :func:`WebSocketListener <litestar.handlers.websocket_listener>`, which accepts
         an asynchronous context manager, which can be used to handle the lifespan of
         the socket.
 
@@ -3419,7 +3419,7 @@
         :pr: 1518
 
         Support for DTOs has been added to :class:`WebSocketListener <litestar.handlers.WebsocketListener>` and
-        :class:`WebSocketListener <litestar.handlers.websocket_listener>`. A ``dto`` and ``return_dto`` parameter has
+        :func:`WebSocketListener <litestar.handlers.websocket_listener>`. A ``dto`` and ``return_dto`` parameter has
         been added, providing the same functionality as their route handler counterparts.
 
     .. change:: DTO based serialization plugin

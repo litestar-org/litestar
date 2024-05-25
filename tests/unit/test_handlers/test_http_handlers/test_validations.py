@@ -21,19 +21,19 @@ from tests.models import DataclassPerson
 def test_route_handler_validation_http_method() -> None:
     # doesn't raise for http methods
     for value in (*list(HttpMethod), *[x.upper() for x in list(HttpMethod)]):
-        assert route(http_method=value)  # type: ignore[arg-type, truthy-bool]
+        assert route(http_method=value)  # type: ignore[arg-type, truthy-function]
 
     # raises for invalid values
     with pytest.raises(ValidationException):
-        HTTPRouteHandler(http_method="deleze")  # type: ignore[arg-type]
+        HTTPRouteHandler(http_method="deleze", fn=lambda: None)  # type: ignore[arg-type]
 
     # also when passing an empty list
     with pytest.raises(ImproperlyConfiguredException):
-        route(http_method=[], status_code=HTTP_200_OK)
+        HTTPRouteHandler(http_method=[], status_code=HTTP_200_OK, fn=lambda: None)
 
     # also when passing malformed tokens
     with pytest.raises(ValidationException):
-        route(http_method=[HttpMethod.GET, "poft"], status_code=HTTP_200_OK)  # type: ignore[list-item]
+        HTTPRouteHandler(http_method=[HttpMethod.GET, "poft"], status_code=HTTP_200_OK, fn=lambda: None)  # type: ignore[list-item]
 
 
 async def test_function_validation() -> None:
