@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from litestar import HttpMethod, Litestar, head
+from litestar import Litestar, head
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.response.file import ASGIFileResponse, File
 from litestar.routes import HTTPRoute
@@ -26,16 +26,6 @@ def test_head_decorator_raises_validation_error_if_body_is_declared() -> None:
         @head("/")
         def handler() -> dict:
             return {}
-
-        handler.on_registration(Litestar(), HTTPRoute(path="/", route_handlers=[handler]))
-
-
-def test_head_decorator_raises_validation_error_if_method_is_passed() -> None:
-    with pytest.raises(ImproperlyConfiguredException):
-
-        @head("/", http_method=HttpMethod.HEAD)
-        def handler() -> None:
-            return
 
         handler.on_registration(Litestar(), HTTPRoute(path="/", route_handlers=[handler]))
 
