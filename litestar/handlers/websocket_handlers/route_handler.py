@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Mapping
+from typing import TYPE_CHECKING, Any, Callable, Mapping
 
 from litestar.connection import WebSocket
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import BaseRouteHandler
-from litestar.types import Empty
+from litestar.types import AsyncAnyCallable, Empty
 from litestar.types.builtin_types import NoneType
 from litestar.utils.predicates import is_async_callable
 
@@ -18,17 +18,13 @@ if TYPE_CHECKING:
 
 
 class WebsocketRouteHandler(BaseRouteHandler):
-    """Websocket route handler decorator.
-
-    Use this decorator to decorate websocket handler functions.
-    """
-
     __slots__ = ("websocket_class", "_kwargs_model")
 
     def __init__(
         self,
         path: str | list[str] | None = None,
         *,
+        fn: AsyncAnyCallable,
         dependencies: Dependencies | None = None,
         exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
         guards: list[Guard] | None = None,
@@ -39,11 +35,14 @@ class WebsocketRouteHandler(BaseRouteHandler):
         websocket_class: type[WebSocket] | None = None,
         **kwargs: Any,
     ) -> None:
-        """Initialize ``WebsocketRouteHandler``
+        """Route handler for WebSocket routes.
 
         Args:
             path: A path fragment for the route handler function or a sequence of path fragments. If not given defaults
                 to ``/``
+            fn: The handler function
+
+                .. versionadded:: 3.0
             dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
             exception_handlers: A mapping of status codes and/or exception types to handler functions.
             guards: A sequence of :class:`Guard <.types.Guard>` callables.
@@ -53,7 +52,6 @@ class WebsocketRouteHandler(BaseRouteHandler):
                 wherever you have access to :class:`Request <.connection.Request>` or
                 :class:`ASGI Scope <.types.Scope>`.
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
-            type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
             websocket_class: A custom subclass of :class:`WebSocket <.connection.WebSocket>` to be used as route handler's
                 default websocket class.
@@ -62,6 +60,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
         self._kwargs_model: KwargsModel | EmptyType = Empty
 
         super().__init__(
+            fn=fn,
             path=path,
             dependencies=dependencies,
             exception_handlers=exception_handlers,
@@ -147,4 +146,53 @@ class WebsocketRouteHandler(BaseRouteHandler):
             await self.fn(**parsed_kwargs)
 
 
-websocket = WebsocketRouteHandler
+def websocket(
+    path: str | list[str] | None = None,
+    *,
+    dependencies: Dependencies | None = None,
+    exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
+    guards: list[Guard] | None = None,
+    middleware: list[Middleware] | None = None,
+    name: str | None = None,
+    opt: dict[str, Any] | None = None,
+    signature_namespace: Mapping[str, Any] | None = None,
+    websocket_class: type[WebSocket] | None = None,
+    handler_class: type[WebsocketRouteHandler] = WebsocketRouteHandler,
+    **kwargs: Any,
+) -> Callable[[AsyncAnyCallable], WebsocketRouteHandler]:
+    """Create a :class:`WebsocketRouteHandler`.
+
+    Args:
+        path: A path fragment for the route handler function or a sequence of path fragments. If not given defaults
+            to ``/``
+        dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
+        exception_handlers: A mapping of status codes and/or exception types to handler functions.
+        guards: A sequence of :class:`Guard <.types.Guard>` callables.
+        middleware: A sequence of :class:`Middleware <.types.Middleware>`.
+        name: A string identifying the route handler.
+        opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
+            wherever you have access to :class:`Request <.connection.Request>` or
+            :class:`ASGI Scope <.types.Scope>`.
+        signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
+        websocket_class: A custom subclass of :class:`WebSocket <.connection.WebSocket>` to be used as route handler's
+            default websocket class.
+        handler_class: Route handler class instantiated by the decorator
+        **kwargs: Any additional kwarg - will be set in the opt dictionary.
+    """
+
+    def decorator(fn: AsyncAnyCallable) -> WebsocketRouteHandler:
+        return handler_class(
+            path=path,
+            fn=fn,
+            dependencies=dependencies,
+            exception_handlers=exception_handlers,
+            guards=guards,
+            middleware=middleware,
+            name=name,
+            opt=opt,
+            signature_namespace=signature_namespace,
+            websocket_class=websocket_class,
+            **kwargs,
+        )
+
+    return decorator

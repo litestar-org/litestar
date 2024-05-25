@@ -8,7 +8,7 @@ exceptions, and parsing incoming and serializing outgoing data. In addition to t
 low-level :class:`WebSocket route handler <.handlers.websocket>`, Litestar offers two
 high level interfaces:
 
-- :class:`websocket_listener <.handlers.websocket_listener>`
+- :func:`websocket_listener <.handlers.websocket_listener>`
 - :class:`WebSocketListener <.handlers.WebsocketListener>`
 
 
@@ -38,7 +38,7 @@ type of data which should be received, and it will be converted accordingly.
 
 .. note::
     Contrary to WebSocket route handlers, functions decorated with
-    :class:`websocket_listener <.handlers.websocket_listener>` don't have to be
+    :func:`websocket_listener <.handlers.websocket_listener>` don't have to be
     asynchronous.
 
 

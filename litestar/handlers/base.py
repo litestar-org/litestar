@@ -48,7 +48,6 @@ class BaseRouteHandler:
     """
 
     __slots__ = (
-        "_fn",
         "_parsed_data_field",
         "_parsed_fn_signature",
         "_parsed_return_field",
@@ -64,6 +63,7 @@ class BaseRouteHandler:
         "dependencies",
         "dto",
         "exception_handlers",
+        "fn",
         "guards",
         "middleware",
         "name",
@@ -80,6 +80,7 @@ class BaseRouteHandler:
         self,
         path: str | Sequence[str] | None = None,
         *,
+        fn: AsyncAnyCallable,
         dependencies: Dependencies | None = None,
         dto: type[AbstractDTO] | None | EmptyType = Empty,
         exception_handlers: ExceptionHandlersMap | None = None,
@@ -99,6 +100,9 @@ class BaseRouteHandler:
         Args:
             path: A path fragment for the route handler function or a sequence of path fragments. If not given defaults
                 to ``/``
+            fn: The handler function
+
+                .. versionadded:: 3.0
             dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
             dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
                 validation of request data.
@@ -150,11 +154,10 @@ class BaseRouteHandler:
         self.paths = (
             {normalize_path(p) for p in path} if path and isinstance(path, list) else {normalize_path(path or "/")}  # type: ignore[arg-type]
         )
+        self.fn = self._prepare_fn(fn)
 
-    def __call__(self, fn: AsyncAnyCallable) -> Self:
-        """Replace a function with itself."""
-        self._fn = fn
-        return self
+    def _prepare_fn(self, fn: AsyncAnyCallable) -> AsyncAnyCallable:
+        return fn
 
     @property
     def handler_id(self) -> str:
@@ -198,20 +201,6 @@ class BaseRouteHandler:
                 type_decoders=self.resolve_type_decoders(),
             )
         return self._signature_model
-
-    @property
-    def fn(self) -> AsyncAnyCallable:
-        """Get the handler function.
-
-        Raises:
-            ImproperlyConfiguredException: if handler fn is not set.
-
-        Returns:
-            Handler function
-        """
-        if not hasattr(self, "_fn"):
-            raise ImproperlyConfiguredException("No callable has been registered for this handler")
-        return self._fn
 
     @property
     def parsed_fn_signature(self) -> ParsedSignature:
@@ -433,14 +422,14 @@ class BaseRouteHandler:
         When merging keys from multiple layers, if the same key is defined by multiple layers, the value from the
         layer closest to the response handler will take precedence.
         """
-        if self._resolved_layered_parameters is Empty:
+        if self._resolved_signature_namespace is Empty:
             ns: dict[str, Any] = {}
             for layer in self.ownership_layers:
                 merge_signature_namespaces(
                     signature_namespace=ns, additional_signature_namespace=layer.signature_namespace
                 )
             self._resolved_signature_namespace = ns
-        return cast("dict[str, Any]", self._resolved_signature_namespace)
+        return self._resolved_signature_namespace
 
     def resolve_data_dto(self) -> type[AbstractDTO] | None:
         """Resolve the data_dto by starting from the route handler and moving up.

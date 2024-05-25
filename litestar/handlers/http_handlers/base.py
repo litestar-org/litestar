@@ -27,7 +27,8 @@ from litestar.handlers.http_handlers._utils import (
     normalize_http_method,
 )
 from litestar.openapi.spec import Operation
-from litestar.response import Response
+from litestar.response import File, Response
+from litestar.response.file import ASGIFileResponse
 from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED
 from litestar.types import (
     AfterRequestHookHandler,
@@ -50,6 +51,7 @@ from litestar.types import (
     Send,
     TypeEncodersMap,
 )
+from litestar.types.builtin_types import NoneType
 from litestar.utils import ensure_async_callable
 from litestar.utils.predicates import is_async_callable
 from litestar.utils.scope.state import ScopeState
@@ -71,7 +73,7 @@ if TYPE_CHECKING:
     from litestar.types.callable_types import AsyncAnyCallable, OperationIDCreator
     from litestar.types.composite_types import TypeDecodersSequence
 
-__all__ = ("HTTPRouteHandler", "route")
+__all__ = ("HTTPRouteHandler",)
 
 
 class ResponseHandlerMap(TypedDict):
@@ -80,11 +82,6 @@ class ResponseHandlerMap(TypedDict):
 
 
 class HTTPRouteHandler(BaseRouteHandler):
-    """HTTP Route Decorator.
-
-    Use this decorator to decorate an HTTP handler with multiple methods.
-    """
-
     __slots__ = (
         "_kwargs_models",
         "_resolved_after_response",
@@ -130,12 +127,11 @@ class HTTPRouteHandler(BaseRouteHandler):
         "template_name",
     )
 
-    has_sync_callable: bool
-
     def __init__(
         self,
         path: str | Sequence[str] | None = None,
         *,
+        fn: AnyCallable,
         after_request: AfterRequestHookHandler | None = None,
         after_response: AfterResponseHookHandler | None = None,
         background: BackgroundTask | BackgroundTasks | None = None,
@@ -180,11 +176,12 @@ class HTTPRouteHandler(BaseRouteHandler):
         type_encoders: TypeEncodersMap | None = None,
         **kwargs: Any,
     ) -> None:
-        """Initialize ``HTTPRouteHandler``.
+        """Route handler for HTTP routes.
 
         Args:
             path: A path fragment for the route handler function or a sequence of path fragments.
                 If not given defaults to ``/``
+            fn: The handler function
             after_request: A sync or async function executed before a :class:`Request <.connection.Request>` is passed
                 to any route handler. If this function returns a value, the request will not reach the route handler,
                 and instead this value will be used.
@@ -261,7 +258,18 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.http_methods = normalize_http_method(http_methods=http_method)
         self.status_code = status_code or get_default_status_code(http_methods=self.http_methods)
 
+        if has_sync_callable := not is_async_callable(fn):
+            if sync_to_thread is None:
+                warn_implicit_sync_to_thread(fn, stacklevel=3)
+        elif sync_to_thread is not None:
+            warn_sync_to_thread_with_async_callable(fn, stacklevel=3)
+
+        if has_sync_callable and sync_to_thread:
+            fn = ensure_async_callable(fn)
+            has_sync_callable = False
+
         super().__init__(
+            fn=fn,
             path=path,
             dependencies=dependencies,
             dto=dto,
@@ -292,7 +300,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.response_headers: Sequence[ResponseHeader] | None = narrow_response_headers(response_headers)
         self.request_max_body_size = request_max_body_size
 
-        self.sync_to_thread = sync_to_thread
+        self.has_sync_callable = has_sync_callable
         # OpenAPI related attributes
         self.content_encoding = content_encoding
         self.content_media_type = content_media_type
@@ -318,17 +326,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         self._resolved_tags: list[str] | EmptyType = Empty
         self._kwargs_models: dict[tuple[str, ...], KwargsModel] = {}
         self._resolved_request_max_body_size: int | EmptyType | None = Empty
-
-    def __call__(self, fn: AnyCallable) -> HTTPRouteHandler:
-        """Replace a function with itself."""
-        if not is_async_callable(fn):
-            if self.sync_to_thread is None:
-                warn_implicit_sync_to_thread(fn, stacklevel=3)
-        elif self.sync_to_thread is not None:
-            warn_sync_to_thread_with_async_callable(fn, stacklevel=3)
-
-        super().__call__(fn)
-        return self
 
     def resolve_request_class(self) -> type[Request]:
         """Return the closest custom Request class in the owner graph or the default Request class.
@@ -600,11 +597,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         super().on_registration(app, route=route)
         self.resolve_after_response()
         self.resolve_include_in_schema()
-        self.has_sync_callable = not is_async_callable(self.fn)
-
-        if self.has_sync_callable and self.sync_to_thread:
-            self._fn = ensure_async_callable(self.fn)
-            self.has_sync_callable = False
 
         self._get_kwargs_model_for_route(route.path_parameters)
 
@@ -646,12 +638,18 @@ class HTTPRouteHandler(BaseRouteHandler):
         if "data" in self.parsed_fn_signature.parameters and "GET" in self.http_methods:
             raise ImproperlyConfiguredException("'data' kwarg is unsupported for 'GET' request handlers")
 
+        if self.http_methods == {HttpMethod.HEAD} and not self.parsed_fn_signature.return_type.is_subclass_of(
+            (NoneType, File, ASGIFileResponse)
+        ):
+            raise ImproperlyConfiguredException("A response to a head request should not have a body")
+
         if (body_param := self.parsed_fn_signature.parameters.get("body")) and not body_param.is_subclass_of(bytes):
             raise ImproperlyConfiguredException(
                 f"Invalid type annotation for 'body' parameter in route handler {self}. 'body' will always receive the "
                 f"raw request body as bytes but was annotated with '{body_param.raw!r}'. If you want to receive "
                 "processed request data, use the 'data' parameter."
             )
+
 
     async def handle(self, connection: Request[Any, Any, Any]) -> None:
         """ASGI app that creates a :class:`~.connection.Request` from the passed in args, determines which handler function to call and then
@@ -789,6 +787,3 @@ class HTTPRouteHandler(BaseRouteHandler):
                 await send(message)
 
         return cached_response
-
-
-route = HTTPRouteHandler
