@@ -14,7 +14,7 @@ from litestar.connection import Request
 from litestar.enums import HttpMethod, ParamType, RequestEncodingType, ScopeType
 from litestar.handlers.http_handlers import get
 from litestar.serialization import decode_json, default_serializer, encode_json
-from litestar.types import DataContainerType, HTTPScope, RouteHandlerType
+from litestar.types import DataContainerType, HTTPHandlerDecorator, HTTPScope, RouteHandlerType
 from litestar.types.asgi_types import ASGIVersion
 from litestar.utils import get_serializer_from_scope
 from litestar.utils.scope.state import ScopeState
@@ -25,7 +25,7 @@ if TYPE_CHECKING:
     from litestar.datastructures.cookie import Cookie
     from litestar.handlers.http_handlers import HTTPRouteHandler
 
-_decorator_http_method_map: dict[HttpMethod, type[HTTPRouteHandler]] = {
+_decorator_http_method_map: dict[HttpMethod, HTTPHandlerDecorator] = {
     HttpMethod.GET: get,
     HttpMethod.POST: post,
     HttpMethod.DELETE: delete,
