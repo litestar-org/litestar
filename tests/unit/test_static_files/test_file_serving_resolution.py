@@ -9,7 +9,8 @@ import brotli
 import pytest
 
 from litestar import MediaType, get
-from litestar.static_files import create_static_files_router
+from litestar.file_system import FileSystemAdapter
+from litestar.static_files import _get_fs_info, create_static_files_router
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 
@@ -251,3 +252,29 @@ def test_resolve_symlinks(tmp_path: Path, resolve: bool) -> None:
             assert client.get("/test.txt").status_code == 404
         else:
             assert client.get("/test.txt").status_code == 200
+
+
+async def test_staticfiles_get_fs_info_no_access_to_non_static_directory(
+    tmp_path: Path,
+    file_system: FileSystemProtocol,
+) -> None:
+    assets = tmp_path / "assets"
+    assets.mkdir()
+    index = tmp_path / "index.html"
+    index.write_text("content", "utf-8")
+    path, info = await _get_fs_info([assets], "../index.html", adapter=FileSystemAdapter(file_system))
+    assert path is None
+    assert info is None
+
+
+async def test_staticfiles_get_fs_info_no_access_to_non_static_file_with_prefix(
+    tmp_path: Path,
+    file_system: FileSystemProtocol,
+) -> None:
+    static = tmp_path / "static"
+    static.mkdir()
+    private_file = tmp_path / "staticsecrets.env"
+    private_file.write_text("content", "utf-8")
+    path, info = await _get_fs_info([static], "../staticsecrets.env", adapter=FileSystemAdapter(file_system))
+    assert path is None
+    assert info is None
