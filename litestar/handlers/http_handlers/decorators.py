@@ -75,7 +75,7 @@ if TYPE_CHECKING:
     )
     from litestar.types.callable_types import AnyCallable, OperationIDCreator
 
-__all__ = ("delete", "get", "head", "patch", "post", "put")
+__all__ = ("get", "head", "post", "put", "patch", "delete", "route")
 
 
 def route(
