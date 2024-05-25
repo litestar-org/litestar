@@ -11,6 +11,7 @@ from litestar.datastructures import State
 from litestar.di import Provide
 from litestar.dto import DataclassDTO, dto_field
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.handlers import WebsocketListenerRouteHandler
 from litestar.handlers.websocket_handlers import WebsocketListener, websocket_listener
 from litestar.routes import WebSocketRoute
 from litestar.testing import create_test_client
@@ -28,21 +29,21 @@ def listener_class(mock: MagicMock) -> Type[WebsocketListener]:
 
 
 @pytest.fixture
-def sync_listener_callable(mock: MagicMock) -> websocket_listener:
+def sync_listener_callable(mock: MagicMock) -> WebsocketListenerRouteHandler:
     def listener(data: str) -> str:
         mock(data)
         return data
 
-    return websocket_listener("/")(listener)
+    return WebsocketListenerRouteHandler("/", fn=listener)
 
 
 @pytest.fixture
-def async_listener_callable(mock: MagicMock) -> websocket_listener:
+def async_listener_callable(mock: MagicMock) -> WebsocketListenerRouteHandler:
     async def listener(data: str) -> str:
         mock(data)
         return data
 
-    return websocket_listener("/")(listener)
+    return WebsocketListenerRouteHandler("/", fn=listener)
 
 
 @pytest.mark.parametrize(
@@ -53,7 +54,9 @@ def async_listener_callable(mock: MagicMock) -> websocket_listener:
         lf("listener_class"),
     ],
 )
-def test_basic_listener(mock: MagicMock, listener: Union[websocket_listener, Type[WebsocketListener]]) -> None:
+def test_basic_listener(
+    mock: MagicMock, listener: Union[WebsocketListenerRouteHandler, Type[WebsocketListener]]
+) -> None:
     client = create_test_client([listener])
     with client.websocket_connect("/") as ws:
         ws.send_text("foo")
