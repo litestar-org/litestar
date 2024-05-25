@@ -130,8 +130,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         "template_name",
     )
 
-    has_sync_callable: bool
-
     def __init__(
         self,
         path: str | Sequence[str] | None = None,
