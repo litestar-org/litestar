@@ -11,14 +11,14 @@
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(sessionStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=aecf457f" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=bb1fd5f2" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=aa21bc99" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx_paramlinks.css" />
     <link media="print" rel="stylesheet" type="text/css" href="../_static/print.css?v=20ff2c19" />
     <link rel="stylesheet" type="text/css" href="../_static/style.css?v=10936375" />
-    <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css?v=9989272a" />
+    <link rel="stylesheet" type="text/css" href="../_static/litestar-sphinx-theme.css?v=9fce248e" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -30,21 +30,21 @@
 </style>
     <meta property="og:type" content="website"/><meta property="og:title" content="routes"/>
 <meta name="twitter:card" content="summary"/>
-<meta property="og:image" content="_static/logo-light.png"/>
+<meta property="og:image" content="_static/logo-light.svg"/>
   </head>
 <body><div class="document"><div class="announcement">
     <div class="announcement-inner">
       <p>You are viewing the <bold>v3-development</bold> version of the documentation. Click here to go to the latest version.</p>
       <button class="announcement-close" aria-label="Close announcement">
-        <i class="i-lucide close"></i>
+        <i class="i-icon close"></i>
       </button>
     </div>
   </div><div class="sy-head">
   <div class="sy-head-blur"></div>
   <div class="sy-head-inner sy-container mx-auto">
     <a class="sy-head-brand mr-4" href="/">
-      <img class="light-logo" src="../_static/logo-light.png" alt="Litestar" height="28" />
-      <img class="dark-logo" src="../_static/logo-dark.png" alt="Litestar" height="28" />
+      <img class="light-logo" src="../_static/logo-light.svg" alt="Litestar" height="28" />
+      <img class="dark-logo" src="../_static/logo-dark.svg" alt="Litestar" height="28" />
       <strong>Litestar</strong>
     </a>
     <div class="sy-head-links" id="NavLinks">
@@ -53,7 +53,7 @@
 <ul><li class="link"><a href="../index.html">Home</a></li>
       <li class="link"><button type="button">
             <span>Community</span>
-            <i class="i-lucide chevron-down"></i>
+            <i class="i-icon chevron"></i>
           </button>
         <ul>
           <li><a href="../contribution-guide.html">
@@ -69,7 +69,7 @@
       </li>
       <li class="link"><button type="button">
             <span>About</span>
-            <i class="i-lucide chevron-down"></i>
+            <i class="i-icon chevron"></i>
           </button>
         <ul>
           <li><a href="https://litestar.dev/about/organization">
@@ -82,7 +82,7 @@
       </li>
       <li class="link"><button type="button">
             <span>Release notes</span>
-            <i class="i-lucide chevron-down"></i>
+            <i class="i-icon chevron"></i>
           </button>
         <ul>
           <li><a href="../release-notes/whats-new-3.html">
@@ -98,7 +98,7 @@
       </li>
       <li class="link"><button type="button">
             <span>Help</span>
-            <i class="i-lucide chevron-down"></i>
+            <i class="i-icon chevron"></i>
           </button>
         <ul>
           <li><a href="https://discord.gg/litestar">
@@ -128,29 +128,26 @@
     <button type="button" aria-label="Versions">
       <span class="md:hidden">Versions</span>
       <span class="hidden md:inline">latest</span>
-      <i class="i-lucide chevron-down"></i>
+      <i class="i-icon chevron"></i>
     </button>
     <div class="nav-versions-choices">
       <ul><li><a href="/latest">latest</a></li><li><a href="/main">development</a></li><li><a href="/3-dev">v3</a></li><li><a href="/2">v2</a></li><li><a href="/1">v1</a></li></ul></div>
   </div>
         
-        <div class="sy-head-socials flex items-center">
-  <a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)">
-    <i class="i-simpleicons x-twitter"></i>
-  </a>
-    <a href="https://discord.gg/litestar" aria-label="Discord">
-      <i class="i-simpleicons discord"></i>
-    </a>
-</div>
+        <div class="sy-head-social flex items-center">
+            <a class="flex items-center" href="https://discord.gg/litestar-919193495116337154" aria-label="Discord">
+              <i class="i-icon discord"></i>
+            </a>
+        </div>
       </div>
     </div>
     <div class="sy-head-actions flex items-center shrink-0 print:hidden">
       <button class="js-theme theme-switch flex items-center"
-data-aria-auto="Switch to light color mode"
-data-aria-light="Switch to dark color mode"
-data-aria-dark="Switch to auto color mode">
-<i class="i-lucide theme-icon"></i>
-</button>
+        data-aria-auto="Switch to light color mode"
+        data-aria-light="Switch to dark color mode"
+        data-aria-dark="Switch to auto color mode">
+        <i class="i-icon theme-icon"></i>
+      </button>
       <button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="NavLinks" aria-expanded="false">
         <div class="hamburger">
           <span class="hamburger_1"></span>
@@ -181,7 +178,7 @@ data-aria-dark="Switch to auto color mode">
   </ul>
 </div>
 
-        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Documentation</span></p>
+        <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../usage/index.html">Usage</a><ul>
@@ -410,7 +407,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../benchmarks.html">Benchmarks</a></li>
 </ul>
-<p class="caption" role="heading" aria-level="3"><span class="caption-text">Guides</span></p>
+<p class="caption" role="heading"><span class="caption-text">Guides</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../migration/index.html">Migrating to Litestar</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../migration/flask.html">From Flask</a></li>
@@ -474,7 +471,7 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </li>
 </ul>
-<p class="caption" role="heading" aria-level="3"><span class="caption-text">Contributing</span></p>
+<p class="caption" role="heading"><span class="caption-text">Contributing</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../contribution-guide.html">Contribution Guide</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/search?q=user%3Alitestar-org+state%3Aopen+label%3A%22good+first+issue%22+++no%3Aassignee+&amp;type=issues=">Available Issues</a></li>
@@ -489,7 +486,7 @@ data-aria-dark="Switch to auto color mode">
   <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
   <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
     <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
-      <i class="i-lucide close"></i>
+      <i class="i-icon close"></i>
     </button>
     <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4">
   <div class="localtoc">
@@ -521,17 +518,17 @@ data-aria-dark="Switch to auto color mode">
   </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
   data-type="github" data-user="litestar-org" data-repo="litestar">
   <span class="w-8 flex items-center justify-around shrink-0 text-3xl">
-    <i class="i-simpleicons github"></i>
+    <i class="i-icon github"></i>
   </span>
   <span class="flex-grow px-2">
     <span>litestar-org/litestar</span>
     <span class="flex text-sm repo-stats-count">
       <span class="flex items-center pr-3">
-        <i class="i-lucide star"></i>
+        <i class="i-icon star"></i>
         <strong class="js-repo-stars ml-1">0</strong>
       </span>
       <span class="flex items-center">
-        <i class="i-lucide git-fork"></i>
+        <i class="i-icon git-fork"></i>
         <strong class="js-repo-forks ml-1">0</strong>
       </span>
     </span>
@@ -547,7 +544,7 @@ data-aria-dark="Switch to auto color mode">
   <div class="sy-breadcrumbs-inner flex items-center">
     <div class="md:hidden mr-3">
       <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
-        <i class="i-lucide menu"></i>
+        <i class="i-icon menu"></i>
       </button>
     </div>
     <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList">
@@ -575,7 +572,7 @@ data-aria-dark="Switch to auto color mode">
     <div class="xl:hidden ml-1">
       <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
         aria-expanded="false">
-        <i class="i-lucide outdent"></i>
+        <i class="i-icon outdent"></i>
       </button>
     </div>
   </div>
@@ -760,7 +757,7 @@ http- methods and route handlers.</p>
         <div class="navigation flex print:hidden">
   <div class="navigation-prev">
     <a href="router.html">
-      <i class="i-lucide chevron-left"></i>
+      <i class="i-icon chevron"></i>
       <div class="page-info">
         <span>Previous</span>
         
@@ -775,7 +772,7 @@ http- methods and route handlers.</p>
         <span>Next</span>
         <div class="title">security</div>
       </div>
-      <i class="i-lucide chevron-right"></i>
+      <i class="i-icon chevron"></i>
     </a>
   </div>
 </div>
@@ -789,20 +786,20 @@ http- methods and route handlers.</p>
     
     <div class="sy-foot-reserved md:flex justify-between items-center">
       <div class="sy-foot-copyright"><p>2024, Litestar Organization</p>
-  
-  <p>
-    Made with
-    
-    <a href="https://www.sphinx-doc.org/">Sphinx</a> and
-    
-    <a href="https://shibuya.lepture.com">Shibuya theme</a>.
-  </p>
-</div>
+        
+        <p>
+          Made with
+          
+          <a href="https://www.sphinx-doc.org/">Sphinx</a> and
+          
+          <a href="https://shibuya.lepture.com">Shibuya theme</a>.
+        </p>
+      </div>
       <div class="sy-foot-socials">
-  <a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)"><i class="i-simpleicons x-twitter"></i></a>
-  <a href="https://discord.gg/litestar" aria-label="Discord"><i class="i-simpleicons discord"></i></a>
-  <a href="https://www.reddit.com/r/LitestarAPI" aria-label="Reddit"><i class="i-simpleicons reddit"></i></a>
-</div>
+          <a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)"><i class="i-icon x-twitter"></i></a>
+          <a href="https://discord.gg/litestar-919193495116337154" aria-label="Discord"><i class="i-icon discord"></i></a>
+          <a href="https://www.reddit.com/r/LitestarAPI" aria-label="Reddit"><i class="i-icon reddit"></i></a>
+      </div>
     </div>
   </div>
 </footer></div>
@@ -818,7 +815,7 @@ http- methods and route handlers.</p>
       <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
       <script src="../_static/design-tabs.js?v=36754332"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../_static/shibuya.js?v=5f0e4c24"></script>
+      <script src="../_static/shibuya.js?v=9aab5f5b"></script>
       <script src="../_static/versioning.js?v=bc681eff"></script>
     
 </body>
