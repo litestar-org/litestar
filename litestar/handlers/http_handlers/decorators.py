@@ -3,6 +3,27 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Callable, Mapping, Sequence
 
 from litestar.enums import HttpMethod, MediaType
+from litestar.handlers.http_handlers.base import HTTPRouteHandler
+from litestar.openapi.spec import Operation, SecurityRequirement
+from litestar.types import (
+    AfterRequestHookHandler,
+    AfterResponseHookHandler,
+    AnyCallable,
+    BeforeRequestHookHandler,
+    CacheKeyBuilder,
+    Dependencies,
+    Empty,
+    EmptyType,
+    ExceptionHandlersMap,
+    Guard,
+    Method,
+    Middleware,
+    OperationIDCreator,
+    ResponseCookies,
+    ResponseHeaders,
+    TypeDecodersSequence,
+    TypeEncodersMap,
+)
 from litestar.exceptions import HTTPException
 from litestar.handlers.http_handlers.base import HTTPRouteHandler
 from litestar.openapi.spec import Operation, SecurityRequirement
@@ -589,8 +610,7 @@ def patch(
     name: str | None = None,
     opt: Mapping[str, Any] | None = None,
     request_class: type[Request] | None = None,
-    request_max_body_size: int | None | EmptyType = Empty,
-    response_class: type[Response] | None = None,
+    request_max_body_size: int | None | EmptyType = Empty,response_class: type[Response] | None = None,
     response_cookies: ResponseCookies | None = None,
     response_headers: ResponseHeaders | None = None,
     return_dto: type[AbstractDTO] | None | EmptyType = Empty,
@@ -614,7 +634,7 @@ def patch(
     type_decoders: TypeDecodersSequence | None = None,
     type_encoders: TypeEncodersMap | None = None,
     handler_class: type[HTTPRouteHandler] = HTTPRouteHandler,
-    **kwargs: Any,
+    handler_class: type[HTTPRouteHandler] = HTTPRouteHandler,**kwargs: Any,
 ) -> Callable[[AnyCallable], HTTPRouteHandler]:
     """Create an :class:`HTTPRouteHandler` with a ``PATCH`` method.
 
@@ -653,8 +673,7 @@ def patch(
         request_class: A custom subclass of :class:`Request <.connection.Request>` to be used as route handler's
             default request.
         request_max_body_size: Maximum allowed size of the request body in bytes. If this size is exceeded,
-                a '413 - Request Entity Too Large' error response is returned.
-        response_class: A custom subclass of :class:`Response <.response.Response>` to be used as route handler's
+                a '413 - Request Entity Too Large' error response is returned.response_class: A custom subclass of :class:`Response <.response.Response>` to be used as route handler's
             default response.
         response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>` instances.
         response_headers: A string keyed mapping of :class:`ResponseHeader <.datastructures.ResponseHeader>`
@@ -761,8 +780,7 @@ def post(
     name: str | None = None,
     opt: Mapping[str, Any] | None = None,
     request_class: type[Request] | None = None,
-    request_max_body_size: int | None | EmptyType = Empty,
-    response_class: type[Response] | None = None,
+    request_max_body_size: int | None | EmptyType = Empty,response_class: type[Response] | None = None,
     response_cookies: ResponseCookies | None = None,
     response_headers: ResponseHeaders | None = None,
     return_dto: type[AbstractDTO] | None | EmptyType = Empty,
@@ -786,7 +804,7 @@ def post(
     type_decoders: TypeDecodersSequence | None = None,
     type_encoders: TypeEncodersMap | None = None,
     handler_class: type[HTTPRouteHandler] = HTTPRouteHandler,
-    **kwargs: Any,
+    handler_class: type[HTTPRouteHandler] = HTTPRouteHandler,**kwargs: Any,
 ) -> Callable[[AnyCallable], HTTPRouteHandler]:
     """Create an :class:`HTTPRouteHandler` with a ``POST`` method.
 
@@ -825,8 +843,7 @@ def post(
         request_class: A custom subclass of :class:`Request <.connection.Request>` to be used as route handler's
             default request.
         request_max_body_size: Maximum allowed size of the request body in bytes. If this size is exceeded,
-                a '413 - Request Entity Too Large' error response is returned.
-        response_class: A custom subclass of :class:`Response <.response.Response>` to be used as route handler's
+                a '413 - Request Entity Too Large' error response is returned.response_class: A custom subclass of :class:`Response <.response.Response>` to be used as route handler's
             default response.
         response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>` instances.
         response_headers: A string keyed mapping of :class:`ResponseHeader <.datastructures.ResponseHeader>`
@@ -933,8 +950,7 @@ def put(
     name: str | None = None,
     opt: Mapping[str, Any] | None = None,
     request_class: type[Request] | None = None,
-    request_max_body_size: int | None | EmptyType = Empty,
-    response_class: type[Response] | None = None,
+    request_max_body_size: int | None | EmptyType = Empty,response_class: type[Response] | None = None,
     response_cookies: ResponseCookies | None = None,
     response_headers: ResponseHeaders | None = None,
     return_dto: type[AbstractDTO] | None | EmptyType = Empty,
@@ -958,7 +974,7 @@ def put(
     type_decoders: TypeDecodersSequence | None = None,
     type_encoders: TypeEncodersMap | None = None,
     handler_class: type[HTTPRouteHandler] = HTTPRouteHandler,
-    **kwargs: Any,
+    handler_class: type[HTTPRouteHandler] = HTTPRouteHandler,**kwargs: Any,
 ) -> Callable[[AnyCallable], HTTPRouteHandler]:
     """Create an :class:`HTTPRouteHandler` with a ``PUT`` method.
 
@@ -997,8 +1013,7 @@ def put(
         request_class: A custom subclass of :class:`Request <.connection.Request>` to be used as route handler's
             default request.
         request_max_body_size: Maximum allowed size of the request body in bytes. If this size is exceeded,
-                a '413 - Request Entity Too Large' error response is returned.
-        response_class: A custom subclass of :class:`Response <.response.Response>` to be used as route handler's
+                a '413 - Request Entity Too Large' error response is returned.response_class: A custom subclass of :class:`Response <.response.Response>` to be used as route handler's
             default response.
         response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>` instances.
         response_headers: A string keyed mapping of :class:`ResponseHeader <.datastructures.ResponseHeader>`

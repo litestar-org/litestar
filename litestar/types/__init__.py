@@ -97,6 +97,7 @@ __all__ = (
     "DataContainerType",
     "DataclassProtocol",
     "Dependencies",
+    "HTTPHandlerDecorator",
     "Empty",
     "EmptyType",
     "ExceptionHandler",

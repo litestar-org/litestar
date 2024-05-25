@@ -608,14 +608,6 @@ class HTTPRouteHandler(BaseRouteHandler):
             model = self._kwargs_models[key] = self._create_kwargs_model(path_parameters)
         return model
 
-        self._get_kwargs_model_for_route(route.path_parameters)
-
-    def _get_kwargs_model_for_route(self, path_parameters: Iterable[str]) -> KwargsModel:
-        key = tuple(path_parameters)
-        if (model := self._kwargs_models.get(key)) is None:
-            model = self._kwargs_models[key] = self._create_kwargs_model(path_parameters)
-        return model
-
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once it is set by inspecting its return annotations."""
         super()._validate_handler_function()
@@ -667,6 +659,7 @@ class HTTPRouteHandler(BaseRouteHandler):
                 f"raw request body as bytes but was annotated with '{body_param.raw!r}'. If you want to receive "
                 "processed request data, use the 'data' parameter."
             )
+
 
     async def handle(self, connection: Request[Any, Any, Any]) -> None:
         """ASGI app that creates a :class:`~.connection.Request` from the passed in args, determines which handler function to call and then
