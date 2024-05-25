@@ -3619,7 +3619,7 @@ asynchronous callable, as this will have no effect.</p>
 </dd>
 <dt>WebSockets: Dependencies in listener hooks<a class="headerlink reference internal" href="#2.0.0alpha7-websockets: dependencies in listener hooks" id="2.0.0alpha7-websockets: dependencies in listener hooks">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Dependencies can now be used in the
-<a class="reference internal" href="../reference/handlers.html#litestar.handlers.websocket_listener" title="litestar.handlers.websocket_listener"><code class="xref py py-class docutils literal notranslate"><span class="pre">websocket_listener</span></code></a> hooks
+<a class="reference internal" href="../reference/handlers.html#litestar.handlers.websocket_listener" title="litestar.handlers.websocket_listener"><code class="xref py py-func docutils literal notranslate"><span class="pre">websocket_listener()</span></code></a> hooks
 <code class="docutils literal notranslate"><span class="pre">on_accept</span></code>, <code class="docutils literal notranslate"><span class="pre">on_disconnect</span></code> and the <code class="docutils literal notranslate"><span class="pre">connection_lifespan</span></code> context
 manager. The <code class="docutils literal notranslate"><span class="pre">socket</span></code> parameter is therefore also not mandatory anymore in
 those callables.</p>
@@ -3741,7 +3741,7 @@ return annotation, an <a class="reference internal" href="../reference/exception
 <dl>
 <dt>Add <code class="docutils literal notranslate"><span class="pre">connection_accept_handler</span></code> to <code class="docutils literal notranslate"><span class="pre">websocket_listener</span></code><a class="headerlink reference internal" href="#2.0.0alpha6-add" id="2.0.0alpha6-add">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Add a new <code class="docutils literal notranslate"><span class="pre">connection_accept_handler</span></code> parameter to
-<a class="reference internal" href="../reference/handlers.html#litestar.handlers.websocket_listener" title="litestar.handlers.websocket_listener"><code class="xref py py-class docutils literal notranslate"><span class="pre">websocket_listener</span></code></a>,
+<a class="reference internal" href="../reference/handlers.html#litestar.handlers.websocket_listener" title="litestar.handlers.websocket_listener"><code class="xref py py-func docutils literal notranslate"><span class="pre">websocket_listener</span></code></a>,
 which can be used to customize how a connection is accepted, for example to
 add headers or subprotocols</p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/1571">https://github.com/litestar-org/litestar/issues/1571</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/1572">https://github.com/litestar-org/litestar/pull/1572</a></span></p>
@@ -3818,7 +3818,7 @@ e.g., <code class="docutils literal notranslate"><span class="pre">&quot;a.b&quo
 <p>Changes the way a socket’s lifespan - accepting the connection and calling the
 appropriate event hooks - to use a context manager.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">connection_lifespan</span></code> argument was added to the
-<a class="reference internal" href="../reference/handlers.html#litestar.handlers.websocket_listener" title="litestar.handlers.websocket_listener"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketListener</span></code></a>, which accepts
+<a class="reference internal" href="../reference/handlers.html#litestar.handlers.websocket_listener" title="litestar.handlers.websocket_listener"><code class="xref py py-func docutils literal notranslate"><span class="pre">WebSocketListener</span></code></a>, which accepts
 an asynchronous context manager, which can be used to handle the lifespan of
 the socket.</p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/1625">https://github.com/litestar-org/litestar/pull/1625</a></span></p>
@@ -3845,7 +3845,7 @@ via WebSockets.</p>
 </dd>
 <dt>Fix: Using <code class="docutils literal notranslate"><span class="pre">websocket_listener</span></code> in controller causes <code class="docutils literal notranslate"><span class="pre">TypeError</span></code><a class="headerlink reference internal" href="#2.0.0alpha6-fix: using" id="2.0.0alpha6-fix: using">#</a></dt><dd><div class="changelog-change docutils container">
 <p>A bug was fixed that would cause a type error when using a
-<a class="reference internal" href="../reference/handlers.html#litestar.handlers.websocket_listener" title="litestar.handlers.websocket_listener"><code class="xref py py-class docutils literal notranslate"><span class="pre">websocket_listener</span></code></a>
+<a class="reference internal" href="../reference/handlers.html#litestar.handlers.websocket_listener" title="litestar.handlers.websocket_listener"><code class="xref py py-func docutils literal notranslate"><span class="pre">websocket_listener</span></code></a>
 in a <code class="docutils literal notranslate"><span class="pre">Controller</span></code></p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/issues/1615">https://github.com/litestar-org/litestar/issues/1615</a></span>, <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/1627">https://github.com/litestar-org/litestar/pull/1627</a></span></p>
 </div>
@@ -3921,7 +3921,7 @@ msgspec backends to facilitate (de)serialization and validation.</p>
 </dd>
 <dt>WebSockets: Support DTOs in listeners<a class="headerlink reference internal" href="#2.0.0alpha5-websockets: support dtos in listeners" id="2.0.0alpha5-websockets: support dtos in listeners">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Support for DTOs has been added to <a class="reference internal" href="../reference/handlers.html#litestar.handlers.WebsocketListener" title="litestar.handlers.WebsocketListener"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketListener</span></code></a> and
-<a class="reference internal" href="../reference/handlers.html#litestar.handlers.websocket_listener" title="litestar.handlers.websocket_listener"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketListener</span></code></a>. A <code class="docutils literal notranslate"><span class="pre">dto</span></code> and <code class="docutils literal notranslate"><span class="pre">return_dto</span></code> parameter has
+<a class="reference internal" href="../reference/handlers.html#litestar.handlers.websocket_listener" title="litestar.handlers.websocket_listener"><code class="xref py py-func docutils literal notranslate"><span class="pre">WebSocketListener</span></code></a>. A <code class="docutils literal notranslate"><span class="pre">dto</span></code> and <code class="docutils literal notranslate"><span class="pre">return_dto</span></code> parameter has
 been added, providing the same functionality as their route handler counterparts.</p>
 <p>References: <span><a class="reference external" href="https://github.com/litestar-org/litestar/pull/1518">https://github.com/litestar-org/litestar/pull/1518</a></span></p>
 </div>

@@ -507,6 +507,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#deprecated-app-parameter-for-response-to-asgi-response-has-been-removed">Deprecated <code class="docutils literal notranslate"><span class="pre">app</span></code> parameter for <code class="docutils literal notranslate"><span class="pre">Response.to_asgi_response</span></code> has been removed</a></li>
 <li><a class="reference internal" href="#deprecated-scope-state-utilities-removed">Deprecated scope state utilities removed</a></li>
 <li><a class="reference internal" href="#deprecated-utility-function-is-sync-or-async-generator-removed">Deprecated utility function <code class="docutils literal notranslate"><span class="pre">is_sync_or_async_generator</span></code> removed</a></li>
+<li><a class="reference internal" href="#removal-of-semantic-http-route-handler-classes">Removal of semantic HTTP route handler classes</a></li>
 </ul>
 
   </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
@@ -691,6 +692,35 @@ using a namespace that is unique to your application and unlikely to conflict wi
 </span><span data-line="2">
 </span><span data-line="3"><span class="k">def</span> <span class="nf">is_sync_or_async_generator</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 </span><span data-line="4">    <span class="k">return</span> <span class="n">isgeneratorfunction</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="ow">or</span> <span class="n">isasyncgenfunction</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+</span></pre></div>
+</div>
+</section>
+<section id="removal-of-semantic-http-route-handler-classes">
+<h2>Removal of semantic HTTP route handler classes<a class="headerlink" href="#removal-of-semantic-http-route-handler-classes" title="Permalink to this heading">¶</a></h2>
+<p>The semantic <code class="docutils literal notranslate"><span class="pre">HTTPRouteHandler</span></code> classes have been removed in favour of functional
+decorators. <code class="docutils literal notranslate"><span class="pre">route</span></code>, <code class="docutils literal notranslate"><span class="pre">get</span></code>, <code class="docutils literal notranslate"><span class="pre">post</span></code>, <code class="docutils literal notranslate"><span class="pre">patch</span></code>, <code class="docutils literal notranslate"><span class="pre">put</span></code>, <code class="docutils literal notranslate"><span class="pre">head</span></code> and <code class="docutils literal notranslate"><span class="pre">delete</span></code>
+are now all decorator functions returning <a class="reference internal" href="../reference/handlers.html#litestar.handlers.HTTPRouteHandler" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPRouteHandler</span></code></a>
+instances.</p>
+<p>As a result, customizing the decorators directly is not possible anymore. Instead, to
+use a route handler decorator with a custom route handler class, the <code class="docutils literal notranslate"><span class="pre">handler_class</span></code>
+parameter to the decorator function can be used:</p>
+<p>Before:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span> <span class="nc">my_get_handler</span><span class="p">(</span><span class="n">get</span><span class="p">):</span>
+</span><span data-line="2">    <span class="o">...</span> <span class="c1"># custom handler</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="nd">@my_get_handler</span><span class="p">()</span>
+</span><span data-line="5"><span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span data-line="6">    <span class="o">...</span>
+</span></pre></div>
+</div>
+<p>After:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="k">class</span> <span class="nc">MyHTTPRouteHandler</span><span class="p">(</span><span class="n">HTTPRouteHandler</span><span class="p">):</span>
+</span><span data-line="2">    <span class="o">...</span> <span class="c1"># custom handler</span>
+</span><span data-line="3">
+</span><span data-line="4">
+</span><span data-line="5"><span class="nd">@get</span><span class="p">(</span><span class="n">handler_class</span><span class="o">=</span><span class="n">MyHTTPRouteHandler</span><span class="p">)</span>
+</span><span data-line="6"><span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span data-line="7">    <span class="o">...</span>
 </span></pre></div>
 </div>
 </section>

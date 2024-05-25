@@ -504,7 +504,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li><a class="reference internal" href="#websocket-route-handlers">Websocket route handlers</a></li>
 <li><a class="reference internal" href="#asgi-route-handlers">ASGI route handlers</a><ul>
-<li><a class="reference internal" href="#limitations-of-asgi-route-handlers">Limitations of ASGI route handlers</a></li>
+<li><a class="reference internal" href="#asgi-route-handler-considerations">ASGI route handler considerations</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#route-handler-indexing">Route handler indexing</a></li>
@@ -592,7 +592,7 @@ data-aria-dark="Switch to auto color mode">
 handler <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.12)"><span class="xref std std-term">decorators</span></a> exported from Litestar.</p>
 <p>For example:</p>
 <div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">Defining a route handler by decorating a function with the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.get" title="litestar.handlers.get"><code class="xref py py-class docutils literal notranslate"><span class="pre">&#64;get()</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.12)"><span class="xref std std-term">decorator</span></a></span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Defining a route handler by decorating a function with the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.get" title="litestar.handlers.get"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;get()</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.12)"><span class="xref std std-term">decorator</span></a></span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
 </span><span data-line="2">
 </span><span data-line="3">
@@ -768,11 +768,10 @@ application boot-up process.</p>
 </section>
 <section id="http-route-handlers">
 <h2>HTTP route handlers<a class="headerlink" href="#http-route-handlers" title="Permalink to this heading">¶</a></h2>
-<p>The most commonly used route handlers are those that handle HTTP requests and responses.
-These route handlers all inherit from the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.HTTPRouteHandler" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPRouteHandler</span></code></a> class, which is aliased as the
-<a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.12)"><span class="xref std std-term">decorator</span></a> called <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.route" title="litestar.handlers.route"><code class="xref py py-func docutils literal notranslate"><span class="pre">route()</span></code></a>:</p>
+<p>The <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.HTTPRouteHandler" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPRouteHandler</span></code></a> is used to handle HTTP requests, and can be
+created with the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.route" title="litestar.handlers.route"><code class="xref py py-func docutils literal notranslate"><span class="pre">route()</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.12)"><span class="xref std std-term">decorator</span></a>:</p>
 <div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">Defining a route handler by decorating a function with the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.route" title="litestar.handlers.route"><code class="xref py py-class docutils literal notranslate"><span class="pre">&#64;route()</span></code></a>
+<div class="code-block-caption"><span class="caption-text">Defining a route handler by decorating a function with the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.route" title="litestar.handlers.route"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;route()</span></code></a>
 <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.12)"><span class="xref std std-term">decorator</span></a></span><a class="headerlink" href="#id9" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">HttpMethod</span><span class="p">,</span> <span class="n">route</span>
 </span><span data-line="2">
@@ -782,17 +781,21 @@ These route handlers all inherit from the <a class="reference internal" href="..
 </span></pre></div>
 </div>
 </div>
-<p>As mentioned above, <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.route" title="litestar.handlers.route"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;route()</span></code></a> is merely an alias for <code class="docutils literal notranslate"><span class="pre">HTTPRouteHandler</span></code>,
-thus the below code is equivalent to the one above:</p>
+<p>The same can be achieved without a decorator, by using <code class="docutils literal notranslate"><span class="pre">HTTPRouteHandler</span></code> directly:</p>
 <div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text">Defining a route handler by decorating a function with the
-<a class="reference internal" href="../../reference/handlers.html#litestar.handlers.HTTPRouteHandler" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPRouteHandler</span></code></a> class</span><a class="headerlink" href="#id10" title="Permalink to this code">¶</a></div>
+<div class="code-block-caption"><span class="caption-text">Defining a route handler creating an instance of
+<a class="reference internal" href="../../reference/handlers.html#litestar.handlers.HTTPRouteHandler" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPRouteHandler</span></code></a></span><a class="headerlink" href="#id10" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">HttpMethod</span>
 </span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.handlers.http_handlers</span> <span class="kn">import</span> <span class="n">HTTPRouteHandler</span>
 </span><span data-line="3">
 </span><span data-line="4">
-</span><span data-line="5"><span class="nd">@HTTPRouteHandler</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/some-path&quot;</span><span class="p">,</span> <span class="n">http_method</span><span class="o">=</span><span class="p">[</span><span class="n">HttpMethod</span><span class="o">.</span><span class="n">GET</span><span class="p">,</span> <span class="n">HttpMethod</span><span class="o">.</span><span class="n">POST</span><span class="p">])</span>
-</span><span data-line="6"><span class="k">async</span> <span class="k">def</span> <span class="nf">my_endpoint</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="5"><span class="k">async</span> <span class="k">def</span> <span class="nf">my_endpoint</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="6">
+</span><span data-line="7"><span class="n">handler</span> <span class="o">=</span> <span class="n">HTTPRouteHandler</span><span class="p">(</span>
+</span><span data-line="8">    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/some-path&quot;</span><span class="p">,</span>
+</span><span data-line="9">    <span class="n">http_method</span><span class="o">=</span><span class="p">[</span><span class="n">HttpMethod</span><span class="o">.</span><span class="n">GET</span><span class="p">,</span> <span class="n">HttpMethod</span><span class="o">.</span><span class="n">POST</span><span class="p">],</span>
+</span><span data-line="10">    <span class="n">fn</span><span class="o">=</span><span class="n">my_endpoint</span>
+</span><span data-line="11"><span class="p">)</span>
 </span></pre></div>
 </div>
 </div>
@@ -809,8 +812,8 @@ which correlates with their name:</p>
 <li><p><a class="reference internal" href="../../reference/handlers.html#litestar.handlers.post" title="litestar.handlers.post"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;post()</span></code></a></p></li>
 <li><p><a class="reference internal" href="../../reference/handlers.html#litestar.handlers.put" title="litestar.handlers.put"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;put()</span></code></a></p></li>
 </ul>
-<p>These are used exactly like <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.route" title="litestar.handlers.route"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;route()</span></code></a> with the sole exception that you cannot configure the
-<a class="reference internal" href="../../reference/handlers.html#litestar.handlers.HTTPRouteHandler.params.http_method" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">http_method</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">kwarg</span></a>:</p>
+<p>These are used exactly like <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.route" title="litestar.handlers.route"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;route()</span></code></a> with the sole exception that you don’t need to configure
+the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.HTTPRouteHandler.params.http_method" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">http_method</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">kwarg</span></a>:</p>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header">
 Click to see the predefined route handlers<div class="sd-summary-down docutils">
@@ -866,11 +869,7 @@ Click to see the predefined route handlers<div class="sd-summary-down docutils">
 </div>
 </div>
 </div>
-</details><p>Although these <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.12)"><span class="xref std std-term">decorators</span></a> are merely subclasses of <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.HTTPRouteHandler" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPRouteHandler</span></code></a> that pre-set
-the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.HTTPRouteHandler.params.http_method" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">http_method</span></code></a>, using <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.get" title="litestar.handlers.get"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;get()</span></code></a>,
-<a class="reference internal" href="../../reference/handlers.html#litestar.handlers.patch" title="litestar.handlers.patch"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;patch()</span></code></a>, <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.put" title="litestar.handlers.put"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;put()</span></code></a>, <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.delete" title="litestar.handlers.delete"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;delete()</span></code></a>, or
-<a class="reference internal" href="../../reference/handlers.html#litestar.handlers.post" title="litestar.handlers.post"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;post()</span></code></a> instead of <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.route" title="litestar.handlers.route"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;route()</span></code></a> makes the code clearer and simpler.</p>
-<p>Furthermore, in the OpenAPI specification each unique combination of HTTP verb (e.g. <code class="docutils literal notranslate"><span class="pre">GET</span></code>, <code class="docutils literal notranslate"><span class="pre">POST</span></code>, etc.) and path
+</details><p>Furthermore, in the OpenAPI specification each unique combination of HTTP verb (e.g. <code class="docutils literal notranslate"><span class="pre">GET</span></code>, <code class="docutils literal notranslate"><span class="pre">POST</span></code>, etc.) and path
 is regarded as a distinct <a class="reference external" href="https://spec.openapis.org/oas/latest.html#operation-object">operation</a>, and each
 operation should be distinguished by a unique <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.HTTPRouteHandler.params.operation_id" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">operation_id</span></code></a> and optimally
 also have a <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.HTTPRouteHandler.params.summary" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">summary</span></code></a> and
@@ -902,19 +901,22 @@ and dealing with keeping it open, exceptions, client disconnects, and content ne
 </span></pre></div>
 </div>
 </div>
-<p>The <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.WebsocketRouteHandler" title="litestar.handlers.WebsocketRouteHandler"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;websocket()</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.12)"><span class="xref std std-term">decorator</span></a> is an alias of the
-<a class="reference internal" href="../../reference/handlers.html#litestar.handlers.WebsocketRouteHandler" title="litestar.handlers.WebsocketRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebsocketRouteHandler</span></code></a> class. Thus, the below code is equivalent to the one above:</p>
+<p>The <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.WebsocketRouteHandler" title="litestar.handlers.WebsocketRouteHandler"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;websocket()</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.12)"><span class="xref std std-term">decorator</span></a> can be used to create an instance of
+<a class="reference internal" href="../../reference/handlers.html#litestar.handlers.WebsocketRouteHandler" title="litestar.handlers.WebsocketRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebsocketRouteHandler</span></code></a>. Therefore, the below code is equivalent to the one above:</p>
 <div class="literal-block-wrapper docutils container" id="id13">
 <div class="code-block-caption"><span class="caption-text">Using the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.WebsocketRouteHandler" title="litestar.handlers.WebsocketRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebsocketRouteHandler</span></code></a> class directly</span><a class="headerlink" href="#id13" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">WebSocket</span>
 </span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.handlers.websocket_handlers</span> <span class="kn">import</span> <span class="n">WebsocketRouteHandler</span>
 </span><span data-line="3">
-</span><span data-line="4">
-</span><span data-line="5"><span class="nd">@WebsocketRouteHandler</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/socket&quot;</span><span class="p">)</span>
-</span><span data-line="6"><span class="k">async</span> <span class="k">def</span> <span class="nf">my_websocket_handler</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="7">   <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
-</span><span data-line="8">   <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">send_json</span><span class="p">({</span><span class="o">...</span><span class="p">})</span>
-</span><span data-line="9">   <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span data-line="4"><span class="k">async</span> <span class="k">def</span> <span class="nf">my_websocket_handler</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="5">   <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+</span><span data-line="6">   <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">send_json</span><span class="p">({</span><span class="o">...</span><span class="p">})</span>
+</span><span data-line="7">   <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span><span data-line="8">
+</span><span data-line="9"><span class="n">my_websocket_handler</span> <span class="o">=</span> <span class="n">WebsocketRouteHandler</span><span class="p">(</span>
+</span><span data-line="10">    <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/socket&quot;</span><span class="p">,</span>
+</span><span data-line="11">    <span class="n">fn</span><span class="o">=</span><span class="n">my_websocket_handler</span><span class="p">,</span>
+</span><span data-line="12"><span class="p">)</span>
 </span></pre></div>
 </div>
 </div>
@@ -959,8 +961,8 @@ will be raised.</p>
 </span></pre></div>
 </div>
 </div>
-<p>Like other route handlers, the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.asgi" title="litestar.handlers.asgi"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;asgi()</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.12)"><span class="xref std std-term">decorator</span></a> is an alias of the
-<a class="reference internal" href="../../reference/handlers.html#litestar.handlers.ASGIRouteHandler" title="litestar.handlers.ASGIRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIRouteHandler</span></code></a> class. Thus, the code below is equivalent to the one above:</p>
+<p><a class="reference internal" href="../../reference/handlers.html#litestar.handlers.asgi" title="litestar.handlers.asgi"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;asgi()</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.12)"><span class="xref std std-term">decorator</span></a> can be used to create an instance of
+<a class="reference internal" href="../../reference/handlers.html#litestar.handlers.ASGIRouteHandler" title="litestar.handlers.ASGIRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIRouteHandler</span></code></a>. Therefore, the code below is equivalent to the one above:</p>
 <div class="literal-block-wrapper docutils container" id="id15">
 <div class="code-block-caption"><span class="caption-text">Using the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.ASGIRouteHandler" title="litestar.handlers.ASGIRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIRouteHandler</span></code></a> class directly</span><a class="headerlink" href="#id15" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Response</span>
@@ -968,23 +970,23 @@ will be raised.</p>
 </span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_400_BAD_REQUEST</span>
 </span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.types</span> <span class="kn">import</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Send</span>
 </span><span data-line="5">
-</span><span data-line="6">
-</span><span data-line="7"><span class="nd">@ASGIRouteHandler</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/my-asgi-app&quot;</span><span class="p">)</span>
-</span><span data-line="8"><span class="k">async</span> <span class="k">def</span> <span class="nf">my_asgi_app</span><span class="p">(</span><span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span data-line="9">   <span class="k">if</span> <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http&quot;</span><span class="p">:</span>
-</span><span data-line="10">       <span class="k">if</span> <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;GET&quot;</span><span class="p">:</span>
-</span><span data-line="11">           <span class="n">response</span> <span class="o">=</span> <span class="n">Response</span><span class="p">({</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">})</span>
-</span><span data-line="12">           <span class="k">await</span> <span class="n">response</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="o">=</span><span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="o">=</span><span class="n">send</span><span class="p">)</span>
-</span><span data-line="13">       <span class="k">return</span>
-</span><span data-line="14">   <span class="n">response</span> <span class="o">=</span> <span class="n">Response</span><span class="p">(</span>
-</span><span data-line="15">       <span class="p">{</span><span class="s2">&quot;detail&quot;</span><span class="p">:</span> <span class="s2">&quot;unsupported request&quot;</span><span class="p">},</span> <span class="n">status_code</span><span class="o">=</span><span class="n">HTTP_400_BAD_REQUEST</span>
-</span><span data-line="16">   <span class="p">)</span>
-</span><span data-line="17">   <span class="k">await</span> <span class="n">response</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="o">=</span><span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="o">=</span><span class="n">send</span><span class="p">)</span>
+</span><span data-line="6"><span class="k">async</span> <span class="k">def</span> <span class="nf">my_asgi_app</span><span class="p">(</span><span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="7">   <span class="k">if</span> <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;http&quot;</span><span class="p">:</span>
+</span><span data-line="8">       <span class="k">if</span> <span class="n">scope</span><span class="p">[</span><span class="s2">&quot;method&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;GET&quot;</span><span class="p">:</span>
+</span><span data-line="9">           <span class="n">response</span> <span class="o">=</span> <span class="n">Response</span><span class="p">({</span><span class="s2">&quot;hello&quot;</span><span class="p">:</span> <span class="s2">&quot;world&quot;</span><span class="p">})</span>
+</span><span data-line="10">           <span class="k">await</span> <span class="n">response</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="o">=</span><span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="o">=</span><span class="n">send</span><span class="p">)</span>
+</span><span data-line="11">       <span class="k">return</span>
+</span><span data-line="12">   <span class="n">response</span> <span class="o">=</span> <span class="n">Response</span><span class="p">(</span>
+</span><span data-line="13">       <span class="p">{</span><span class="s2">&quot;detail&quot;</span><span class="p">:</span> <span class="s2">&quot;unsupported request&quot;</span><span class="p">},</span> <span class="n">status_code</span><span class="o">=</span><span class="n">HTTP_400_BAD_REQUEST</span>
+</span><span data-line="14">   <span class="p">)</span>
+</span><span data-line="15">   <span class="k">await</span> <span class="n">response</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="o">=</span><span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="o">=</span><span class="n">send</span><span class="p">)</span>
+</span><span data-line="16">
+</span><span data-line="17"><span class="n">my_asgi_app</span> <span class="o">=</span> <span class="n">ASGIRouteHandler</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/my-asgi-app&quot;</span><span class="p">,</span> <span class="n">fn</span><span class="o">=</span><span class="n">my_asgi_app</span><span class="p">)</span>
 </span></pre></div>
 </div>
 </div>
-<section id="limitations-of-asgi-route-handlers">
-<h3>Limitations of ASGI route handlers<a class="headerlink" href="#limitations-of-asgi-route-handlers" title="Permalink to this heading">¶</a></h3>
+<section id="asgi-route-handler-considerations">
+<h3>ASGI route handler considerations<a class="headerlink" href="#asgi-route-handler-considerations" title="Permalink to this heading">¶</a></h3>
 <p>In difference to the other route handlers, the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.asgi" title="litestar.handlers.asgi"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;asgi()</span></code></a> route handler accepts only three
 <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">kwargs</span></a> that <strong>must</strong> be defined:</p>
 <ul class="simple">

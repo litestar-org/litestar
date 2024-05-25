@@ -582,7 +582,7 @@ exceptions, and parsing incoming and serializing outgoing data. In addition to t
 low-level <a class="reference internal" href="../reference/handlers.html#litestar.handlers.websocket" title="litestar.handlers.websocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocket</span> <span class="pre">route</span> <span class="pre">handler</span></code></a>, Litestar offers two
 high level interfaces:</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="../reference/handlers.html#litestar.handlers.websocket_listener" title="litestar.handlers.websocket_listener"><code class="xref py py-class docutils literal notranslate"><span class="pre">websocket_listener</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/handlers.html#litestar.handlers.websocket_listener" title="litestar.handlers.websocket_listener"><code class="xref py py-func docutils literal notranslate"><span class="pre">websocket_listener</span></code></a></p></li>
 <li><p><a class="reference internal" href="../reference/handlers.html#litestar.handlers.WebsocketListener" title="litestar.handlers.WebsocketListener"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketListener</span></code></a></p></li>
 </ul>
 <p>These treat a WebSocket handler like any other route handler: as a callable that takes
@@ -607,7 +607,7 @@ type of data which should be received, and it will be converted accordingly.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Contrary to WebSocket route handlers, functions decorated with
-<a class="reference internal" href="../reference/handlers.html#litestar.handlers.websocket_listener" title="litestar.handlers.websocket_listener"><code class="xref py py-class docutils literal notranslate"><span class="pre">websocket_listener</span></code></a> don’t have to be
+<a class="reference internal" href="../reference/handlers.html#litestar.handlers.websocket_listener" title="litestar.handlers.websocket_listener"><code class="xref py py-func docutils literal notranslate"><span class="pre">websocket_listener</span></code></a> don’t have to be
 asynchronous.</p>
 </div>
 <section id="receiving-data">
