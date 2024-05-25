@@ -88,7 +88,7 @@ class FileStore(NamespacedStore):
             ``None``
         """
 
-        await self.path.mkdir(exist_ok=True)
+        await self.path.mkdir(exist_ok=True, parents=True)
         path = self._path_from_key(key)
         if isinstance(value, str):
             value = value.encode("utf-8")
