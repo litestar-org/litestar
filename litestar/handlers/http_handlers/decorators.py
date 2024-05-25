@@ -52,6 +52,7 @@ class _SubclassWarningMixin:
             "Semantic HTTP route handler classes are deprecated and will be replaced by"
             "functional decorators in Litestar 3.0.",
             category=DeprecationWarning,
+            stacklevel=2,
         )
 
 
