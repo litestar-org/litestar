@@ -84,7 +84,7 @@ def create_static_files_router(
     if file_system is None:
         file_system = BaseLocalFileSystem()
 
-    directories = [os.path.normpath(Path(p).resolve() if resolve_symlinks else Path(p)) for p in directories]
+    directories = tuple(os.path.normpath(Path(p).resolve() if resolve_symlinks else Path(p)) for p in directories)
 
     _validate_config(path=path, directories=directories, file_system=file_system)
     path = normalize_path(path)
@@ -240,7 +240,7 @@ async def _get_fs_info(
     return None, None
 
 
-def _validate_config(path: str, directories: list[PathType], file_system: Any) -> None:
+def _validate_config(path: str, directories: tuple[PathType, ...], file_system: Any) -> None:
     if not path:
         raise ImproperlyConfiguredException("path must be a non-zero length string")
 
