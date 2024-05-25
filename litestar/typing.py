@@ -4,6 +4,7 @@ import warnings
 from collections import abc, deque
 from copy import deepcopy
 from dataclasses import dataclass, is_dataclass, replace
+from enum import Enum
 from inspect import Parameter, Signature
 from typing import (
     Any,
@@ -431,6 +432,10 @@ class FieldDefinition:
         """Whether the type is TypedDict or not."""
 
         return is_typeddict(self.origin or self.annotation)
+
+    @property
+    def is_enum(self) -> bool:
+        return self.is_subclass_of(Enum)
 
     @property
     def type_(self) -> Any:

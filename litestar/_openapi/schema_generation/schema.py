@@ -4,7 +4,7 @@ from collections import deque
 from copy import copy
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
-from enum import Enum, EnumMeta
+from enum import Enum
 from ipaddress import IPv4Address, IPv4Interface, IPv4Network, IPv6Address, IPv6Interface, IPv6Network
 from pathlib import Path
 from typing import (
@@ -41,9 +41,7 @@ from litestar._openapi.schema_generation.constrained_fields import (
 )
 from litestar._openapi.schema_generation.utils import (
     _get_normalized_schema_key,
-    _should_create_enum_schema,
     _should_create_literal_schema,
-    _type_or_first_not_none_inner_type,
     get_json_schema_formatted_examples,
 )
 from litestar.datastructures import SecretBytes, SecretString, UploadFile
@@ -181,22 +179,6 @@ def _get_type_schema_name(field_definition: FieldDefinition) -> str:
     return name
 
 
-def create_enum_schema(annotation: EnumMeta, include_null: bool = False) -> Schema:
-    """Create a schema instance for an enum.
-
-    Args:
-        annotation: An enum.
-        include_null: Whether to include null as a possible value.
-
-    Returns:
-        A schema instance.
-    """
-    enum_values: list[str | int | None] = [v.value for v in annotation]  # type: ignore[var-annotated]
-    if include_null and None not in enum_values:
-        enum_values.append(None)
-    return Schema(type=_types_in_list(enum_values), enum=enum_values)
-
-
 def _iter_flat_literal_args(annotation: Any) -> Iterable[Any]:
     """Iterate over the flattened arguments of a Literal.
 
@@ -327,18 +309,20 @@ class SchemaCreator:
 
         if plugin_for_annotation := self.get_plugin_for(field_definition):
             result = self.for_plugin(field_definition, plugin_for_annotation)
-        elif _should_create_enum_schema(field_definition):
-            annotation = _type_or_first_not_none_inner_type(field_definition)
-            result = create_enum_schema(annotation, include_null=field_definition.is_optional)
         elif _should_create_literal_schema(field_definition):
             annotation = (
                 make_non_optional_union(field_definition.annotation)
                 if field_definition.is_optional
                 else field_definition.annotation
             )
-            result = create_literal_schema(annotation, include_null=field_definition.is_optional)
+            result = create_literal_schema(
+                annotation,
+                include_null=field_definition.is_optional,
+            )
         elif field_definition.is_optional:
             result = self.for_optional_field(field_definition)
+        elif field_definition.is_enum:
+            result = self.for_enum_field(field_definition)
         elif field_definition.is_union:
             result = self.for_union_field(field_definition)
         elif field_definition.is_type_var:
@@ -549,6 +533,38 @@ class SchemaCreator:
                 )
             )
         return schema
+
+    def for_enum_field(
+        self,
+        field_definition: FieldDefinition,
+    ) -> Schema | Reference:
+        """Create a schema instance for an enum.
+
+        Args:
+            field_definition: A signature field instance.
+
+        Returns:
+            A schema or reference instance.
+        """
+        enum_type: None | OpenAPIType | list[OpenAPIType] = None
+        if issubclass(field_definition.annotation, str):  # StrEnum
+            enum_type = OpenAPIType.STRING
+        elif issubclass(field_definition.annotation, int):  # IntEnum
+            enum_type = OpenAPIType.INTEGER
+
+        enum_values: list[Any] = [v.value for v in field_definition.annotation]  # pyright: ignore
+        if enum_type is None:
+            enum_type = _types_in_list(enum_values)
+
+        key = _get_normalized_schema_key(field_definition.annotation)
+
+        schema = self.schema_registry.get_schema_for_key(key)
+        schema.type = enum_type
+        schema.enum = enum_values
+        schema.title = get_name(field_definition.annotation)
+        schema.description = field_definition.annotation.__doc__
+
+        return self.schema_registry.get_reference_for_key(key) or schema
 
     def process_schema_result(self, field: FieldDefinition, schema: Schema) -> Schema | Reference:
         if field.kwarg_definition and field.is_const and field.has_default and schema.const is None:

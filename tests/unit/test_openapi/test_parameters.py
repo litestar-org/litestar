@@ -14,12 +14,13 @@ from litestar.enums import ParamType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import HTTPRouteHandler
 from litestar.openapi import OpenAPIConfig
-from litestar.openapi.spec import Example, OpenAPI, Schema
+from litestar.openapi.spec import Example, OpenAPI, Reference, Schema
 from litestar.openapi.spec.enums import OpenAPIType
 from litestar.params import Dependency, Parameter
 from litestar.routes import BaseRoute
 from litestar.testing import create_test_client
 from litestar.utils import find_index
+from tests.unit.test_openapi.utils import Gender
 
 if TYPE_CHECKING:
     from litestar.openapi.spec.parameter import Parameter as OpenAPIParameter
@@ -104,22 +105,14 @@ def test_create_parameters(person_controller: Type[Controller]) -> None:
     assert gender.schema == Schema(
         one_of=[
             Schema(type=OpenAPIType.NULL),
-            Schema(
-                type=OpenAPIType.STRING,
-                enum=["M", "F", "O", "A"],
-                examples=["M"],
-            ),
+            Reference(ref="#/components/schemas/tests_unit_test_openapi_utils_Gender"),
             Schema(
                 type=OpenAPIType.ARRAY,
-                items=Schema(
-                    type=OpenAPIType.STRING,
-                    enum=["M", "F", "O", "A"],
-                    examples=["F"],
-                ),
-                examples=[["A"]],
+                items=Reference(ref="#/components/schemas/tests_unit_test_openapi_utils_Gender"),
+                examples=[[Gender.MALE]],
             ),
         ],
-        examples=["M", ["M", "O"]],
+        examples=[Gender.MALE, [Gender.MALE, Gender.OTHER]],
     )
     assert not gender.required
 

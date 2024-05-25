@@ -45,7 +45,7 @@ def create_person_controller() -> Type[Controller]:
             from_date: Optional[Union[int, datetime, date]] = None,
             to_date: Optional[Union[int, datetime, date]] = None,
             gender: Optional[Union[Gender, List[Gender]]] = Parameter(
-                examples=[Example(value="M"), Example(value=["M", "O"])]
+                examples=[Example(value=Gender.MALE), Example(value=[Gender.MALE, Gender.OTHER])]
             ),
             # header parameter
             secret_header: str = Parameter(header="secret"),
