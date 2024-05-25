@@ -82,11 +82,6 @@ class ResponseHandlerMap(TypedDict):
 
 
 class HTTPRouteHandler(BaseRouteHandler):
-    """HTTP Route Decorator.
-
-    Use this decorator to decorate an HTTP handler with multiple methods.
-    """
-
     __slots__ = (
         "_resolved_after_response",
         "_resolved_before_request",
@@ -178,7 +173,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         type_encoders: TypeEncodersMap | None = None,
         **kwargs: Any,
     ) -> None:
-        """Initialize ``HTTPRouteHandler``.
+        """Route handler for HTTP routes.
 
         Args:
             path: A path fragment for the route handler function or a sequence of path fragments.

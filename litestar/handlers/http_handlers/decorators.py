@@ -103,7 +103,7 @@ def route(
     handler_class: type[HTTPRouteHandler] = HTTPRouteHandler,
     **kwargs: Any,
 ) -> Callable[[AnyCallable], HTTPRouteHandler]:
-    """Create an :class:`HTTPRouteHandler`
+    """Create an :class:`HTTPRouteHandler`.
 
     Args:
         path: A path fragment for the route handler function or a sequence of path fragments.
@@ -274,7 +274,7 @@ def get(
     handler_class: type[HTTPRouteHandler] = HTTPRouteHandler,
     **kwargs: Any,
 ) -> Callable[[AnyCallable], HTTPRouteHandler]:
-    """Create an :class:`HTTPRouteHandler` with a ``GET`` method
+    """Create an :class:`HTTPRouteHandler` with a ``GET`` method.
 
     Args:
         path: A path fragment for the route handler function or a sequence of path fragments.
@@ -442,7 +442,7 @@ def head(
     handler_class: type[HTTPRouteHandler] = HTTPRouteHandler,
     **kwargs: Any,
 ) -> Callable[[AnyCallable], HTTPRouteHandler]:
-    """Create an :class:`HTTPRouteHandler` with a ``HEAD`` method
+    """Create an :class:`HTTPRouteHandler` with a ``HEAD`` method.
 
     Notes:
         - A response to a head request cannot include a body.
@@ -614,7 +614,7 @@ def patch(
     handler_class: type[HTTPRouteHandler] = HTTPRouteHandler,
     **kwargs: Any,
 ) -> Callable[[AnyCallable], HTTPRouteHandler]:
-    """Create an :class:`HTTPRouteHandler` with a ``PATCH`` method
+    """Create an :class:`HTTPRouteHandler` with a ``PATCH`` method.
 
     Args:
         path: A path fragment for the route handler function or a sequence of path fragments.
@@ -782,7 +782,7 @@ def post(
     handler_class: type[HTTPRouteHandler] = HTTPRouteHandler,
     **kwargs: Any,
 ) -> Callable[[AnyCallable], HTTPRouteHandler]:
-    """Create an :class:`HTTPRouteHandler` with a ``POST`` method
+    """Create an :class:`HTTPRouteHandler` with a ``POST`` method.
 
     Args:
         path: A path fragment for the route handler function or a sequence of path fragments.
@@ -950,7 +950,7 @@ def put(
     handler_class: type[HTTPRouteHandler] = HTTPRouteHandler,
     **kwargs: Any,
 ) -> Callable[[AnyCallable], HTTPRouteHandler]:
-    """Create an :class:`HTTPRouteHandler` with a ``PUT`` method
+    """Create an :class:`HTTPRouteHandler` with a ``PUT`` method.
 
     Args:
         path: A path fragment for the route handler function or a sequence of path fragments.
@@ -1118,7 +1118,7 @@ def delete(
     handler_class: type[HTTPRouteHandler] = HTTPRouteHandler,
     **kwargs: Any,
 ) -> Callable[[AnyCallable], HTTPRouteHandler]:
-    """Create an :class:`HTTPRouteHandler` with a ``DELETE`` method
+    """Create an :class:`HTTPRouteHandler` with a ``DELETE`` method.
 
     Args:
         path: A path fragment for the route handler function or a sequence of path fragments.

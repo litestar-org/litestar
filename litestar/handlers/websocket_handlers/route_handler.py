@@ -172,9 +172,10 @@ def websocket(
             wherever you have access to :class:`Request <.connection.Request>` or
             :class:`ASGI Scope <.types.Scope>`.
         signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
-        **kwargs: Any additional kwarg - will be set in the opt dictionary.
         websocket_class: A custom subclass of :class:`WebSocket <.connection.WebSocket>` to be used as route handler's
             default websocket class.
+        handler_class: Route handler class instantiated by the decorator
+        **kwargs: Any additional kwarg - will be set in the opt dictionary.
     """
 
     def decorator(fn: AsyncAnyCallable) -> WebsocketRouteHandler:

@@ -20,11 +20,6 @@ if TYPE_CHECKING:
 
 
 class ASGIRouteHandler(BaseRouteHandler):
-    """ASGI Route Handler decorator.
-
-    Use this decorator to decorate ASGI applications.
-    """
-
     __slots__ = ("is_mount",)
 
     def __init__(
@@ -40,7 +35,7 @@ class ASGIRouteHandler(BaseRouteHandler):
         signature_namespace: Mapping[str, Any] | None = None,
         **kwargs: Any,
     ) -> None:
-        """Initialize ``ASGIRouteHandler``.
+        """Route handler for ASGI routes.
 
         Args:
             path: A path fragment for the route handler function or a list of path fragments. If not given defaults to
@@ -118,9 +113,7 @@ def asgi(
     handler_class: type[ASGIRouteHandler] = ASGIRouteHandler,
     **kwargs: Any,
 ) -> Callable[[AsyncAnyCallable], ASGIRouteHandler]:
-    """ASGI Route Handler decorator.
-
-    Use this decorator to decorate ASGI applications.
+    """Create an :class:`ASGIRouteHandler`.
 
     Args:
         path: A path fragment for the route handler function or a sequence of path fragments. If not given defaults
