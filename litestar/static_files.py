@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from os.path import commonpath
 from pathlib import Path, PurePath
 from typing import TYPE_CHECKING, Any, Literal, Mapping, Sequence
@@ -83,7 +84,7 @@ def create_static_files_router(
     if file_system is None:
         file_system = BaseLocalFileSystem()
 
-    directories = list(directories)
+    directories = tuple(os.path.normpath(Path(p).resolve() if resolve_symlinks else Path(p)) for p in directories)
 
     _validate_config(path=path, directories=directories, file_system=file_system)
     path = normalize_path(path)
@@ -225,19 +226,26 @@ async def _get_fs_info(
         try:
             joined_path = Path(directory, file_path)
             file_info = await adapter.info(joined_path)
-            if file_info and commonpath([str(directory), file_info["name"], joined_path]) == str(directory):
+            normalized_file_path = os.path.normpath(joined_path)
+            directory_path = str(directory)
+            if (
+                file_info
+                and commonpath([directory_path, file_info["name"], joined_path]) == directory_path
+                and os.path.commonpath([directory, normalized_file_path]) == directory_path
+                and (file_info := await adapter.info(joined_path))
+            ):
                 return joined_path, file_info
         except FileNotFoundError:
             continue
     return None, None
 
 
-def _validate_config(path: str, directories: list[PathType], file_system: Any) -> None:
+def _validate_config(path: str, directories: tuple[PathType, ...], file_system: Any) -> None:
     if not path:
-        raise ImproperlyConfiguredException("path must be a non-zero length string,")
+        raise ImproperlyConfiguredException("path must be a non-zero length string")
 
     if not directories or not any(bool(d) for d in directories):
-        raise ImproperlyConfiguredException("directories must include at least one path.")
+        raise ImproperlyConfiguredException("directories must include at least one path")
 
     if "{" in path:
         raise ImproperlyConfiguredException("path parameters are not supported for static files")
