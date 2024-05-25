@@ -142,3 +142,39 @@ If you were relying on this utility, you can define it yourself as follows:
 
     def is_sync_or_async_generator(obj: Any) -> bool:
         return isgeneratorfunction(obj) or isasyncgenfunction(obj)
+
+
+Removal of semantic HTTP route handler classes
+-----------------------------------------------
+
+The semantic ``HTTPRouteHandler`` classes have been removed in favour of functional
+decorators. ``route``, ``get``, ``post``, ``patch``, ``put``, ``head`` and ``delete``
+are now all decorator functions returning :class:`~.handlers.HTTPRouteHandler`
+instances.
+
+As a result, customizing the decorators directly is not possible anymore. Instead, to
+use a route handler decorator with a custom route handler class, the ``handler_class``
+parameter to the decorator function can be used:
+
+Before:
+
+.. code-block:: python
+
+    class my_get_handler(get):
+        ... # custom handler
+
+    @my_get_handler()
+    async def handler() -> Any:
+        ...
+
+After:
+
+.. code-block:: python
+
+    class MyHTTPRouteHandler(HTTPRouteHandler):
+        ... # custom handler
+
+
+    @get(handler_class=MyHTTPRouteHandler)
+    async def handler() -> Any:
+        ...

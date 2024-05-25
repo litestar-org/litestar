@@ -33,8 +33,5 @@ def create_options_handler(path: str, allow_methods: Iterable[Method]) -> HTTPRo
         )
 
     return HTTPRouteHandler(
-        path=path,
-        http_method=[HttpMethod.OPTIONS],
-        include_in_schema=False,
-        sync_to_thread=False,
-    )(options_handler)
+        path=path, http_method=[HttpMethod.OPTIONS], include_in_schema=False, sync_to_thread=False, fn=options_handler
+    )

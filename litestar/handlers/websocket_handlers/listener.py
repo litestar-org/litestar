@@ -42,8 +42,6 @@ from .route_handler import WebsocketRouteHandler
 if TYPE_CHECKING:
     from typing import Coroutine
 
-    from typing_extensions import Self
-
     from litestar import Router
     from litestar.dto import AbstractDTO
     from litestar.types.asgi_types import WebSocketMode
@@ -74,6 +72,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         self,
         path: str | list[str] | None = None,
         *,
+        fn: AnyCallable,
         connection_lifespan: Callable[..., AbstractAsyncContextManager[Any]] | None = None,
         dependencies: Dependencies | None = None,
         dto: type[AbstractDTO] | None | EmptyType = Empty,
@@ -97,6 +96,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         self,
         path: str | list[str] | None = None,
         *,
+        fn: AnyCallable,
         connection_accept_handler: Callable[[WebSocket], Coroutine[Any, Any, None]] = WebSocket.accept,
         dependencies: Dependencies | None = None,
         dto: type[AbstractDTO] | None | EmptyType = Empty,
@@ -121,6 +121,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         self,
         path: str | list[str] | None = None,
         *,
+        fn: AnyCallable,
         connection_accept_handler: Callable[[WebSocket], Coroutine[Any, Any, None]] = WebSocket.accept,
         connection_lifespan: Callable[..., AbstractAsyncContextManager[Any]] | None = None,
         dependencies: Dependencies | None = None,
@@ -146,6 +147,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         Args:
             path: A path fragment for the route handler function or a sequence of path fragments. If not given defaults
                 to ``/``
+            fn: The handler function
             connection_accept_handler: A callable that accepts a :class:`WebSocket <.connection.WebSocket>` instance
                 and returns a coroutine that when awaited, will accept the connection. Defaults to ``WebSocket.accept``.
             connection_lifespan: An asynchronous context manager, handling the lifespan of the connection. By default,
@@ -210,6 +212,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
             listener_dependencies["on_disconnect_dependencies"] = create_stub_dependency(self.on_disconnect)
 
         super().__init__(
+            fn=fn,
             path=path,
             dependencies=listener_dependencies,
             exception_handlers=exception_handlers,
@@ -226,7 +229,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
             **kwargs,
         )
 
-    def __call__(self, fn: AnyCallable) -> Self:
+    def _prepare_fn(self, fn: AnyCallable) -> ListenerHandler:
         parsed_signature = ParsedSignature.from_fn(fn, self.resolve_signature_namespace())
 
         if "data" not in parsed_signature.parameters:
@@ -248,10 +251,8 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
             },
         )
 
-        return super().__call__(
-            ListenerHandler(
-                listener=self, fn=fn, parsed_signature=parsed_signature, namespace=self.resolve_signature_namespace()
-            )
+        return ListenerHandler(
+            listener=self, fn=fn, parsed_signature=parsed_signature, namespace=self.resolve_signature_namespace()
         )
 
     def _validate_handler_function(self) -> None:
@@ -317,9 +318,6 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         if self._send_handler is Empty:
             self._send_handler = create_handle_send(self)
         return self._send_handler
-
-
-websocket_listener = WebsocketListenerRouteHandler
 
 
 class WebsocketListener(ABC):
@@ -397,7 +395,8 @@ class WebsocketListener(ABC):
             type_decoders=self.type_decoders,
             type_encoders=self.type_encoders,
             websocket_class=self.websocket_class,
-        )(self.on_receive)
+            fn=self.on_receive,
+        )
         handler.owner = self._owner
         return handler
 
@@ -423,3 +422,140 @@ class WebsocketListener(ABC):
         according to handler configuration.
         """
         raise NotImplementedError
+
+
+@overload
+def websocket_listener(
+    path: str | list[str] | None = None,
+    *,
+    connection_lifespan: Callable[..., AbstractAsyncContextManager[Any]] | None = None,
+    dependencies: Dependencies | None = None,
+    dto: type[AbstractDTO] | None | EmptyType = Empty,
+    exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
+    guards: list[Guard] | None = None,
+    middleware: list[Middleware] | None = None,
+    receive_mode: WebSocketMode = "text",
+    send_mode: WebSocketMode = "text",
+    name: str | None = None,
+    opt: dict[str, Any] | None = None,
+    return_dto: type[AbstractDTO] | None | EmptyType = Empty,
+    signature_namespace: Mapping[str, Any] | None = None,
+    type_decoders: TypeDecodersSequence | None = None,
+    type_encoders: TypeEncodersMap | None = None,
+    websocket_class: type[WebSocket] | None = None,
+    **kwargs: Any,
+) -> Callable[[AnyCallable], WebsocketListenerRouteHandler]: ...
+
+
+@overload
+def websocket_listener(
+    path: str | list[str] | None = None,
+    *,
+    connection_accept_handler: Callable[[WebSocket], Coroutine[Any, Any, None]] = WebSocket.accept,
+    dependencies: Dependencies | None = None,
+    dto: type[AbstractDTO] | None | EmptyType = Empty,
+    exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
+    guards: list[Guard] | None = None,
+    middleware: list[Middleware] | None = None,
+    receive_mode: WebSocketMode = "text",
+    send_mode: WebSocketMode = "text",
+    name: str | None = None,
+    on_accept: AnyCallable | None = None,
+    on_disconnect: AnyCallable | None = None,
+    opt: dict[str, Any] | None = None,
+    return_dto: type[AbstractDTO] | None | EmptyType = Empty,
+    signature_namespace: Mapping[str, Any] | None = None,
+    type_decoders: TypeDecodersSequence | None = None,
+    type_encoders: TypeEncodersMap | None = None,
+    websocket_class: type[WebSocket] | None = None,
+    **kwargs: Any,
+) -> Callable[[AnyCallable], WebsocketListenerRouteHandler]: ...
+
+
+def websocket_listener(
+    path: str | list[str] | None = None,
+    *,
+    connection_accept_handler: Callable[[WebSocket], Coroutine[Any, Any, None]] = WebSocket.accept,
+    connection_lifespan: Callable[..., AbstractAsyncContextManager[Any]] | None = None,
+    dependencies: Dependencies | None = None,
+    dto: type[AbstractDTO] | None | EmptyType = Empty,
+    exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
+    guards: list[Guard] | None = None,
+    middleware: list[Middleware] | None = None,
+    receive_mode: WebSocketMode = "text",
+    send_mode: WebSocketMode = "text",
+    name: str | None = None,
+    on_accept: AnyCallable | None = None,
+    on_disconnect: AnyCallable | None = None,
+    opt: dict[str, Any] | None = None,
+    return_dto: type[AbstractDTO] | None | EmptyType = Empty,
+    signature_namespace: Mapping[str, Any] | None = None,
+    type_decoders: TypeDecodersSequence | None = None,
+    type_encoders: TypeEncodersMap | None = None,
+    websocket_class: type[WebSocket] | None = None,
+    **kwargs: Any,
+) -> Callable[[AnyCallable], WebsocketListenerRouteHandler]:
+    """Create a :class:`WebsocketListenerRouteHandler`.
+
+    Args:
+        path: A path fragment for the route handler function or a sequence of path fragments. If not given defaults
+            to ``/``
+        connection_accept_handler: A callable that accepts a :class:`WebSocket <.connection.WebSocket>` instance
+            and returns a coroutine that when awaited, will accept the connection. Defaults to ``WebSocket.accept``.
+        connection_lifespan: An asynchronous context manager, handling the lifespan of the connection. By default,
+            it calls the ``connection_accept_handler``, ``on_connect`` and ``on_disconnect``. Can request any
+            dependencies, for example the :class:`WebSocket <.connection.WebSocket>` connection
+        dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
+        dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
+            validation of request data.
+        exception_handlers: A mapping of status codes and/or exception types to handler functions.
+        guards: A sequence of :class:`Guard <.types.Guard>` callables.
+        middleware: A sequence of :class:`Middleware <.types.Middleware>`.
+        receive_mode: Websocket mode to receive data in, either `text` or `binary`.
+        send_mode: Websocket mode to receive data in, either `text` or `binary`.
+        name: A string identifying the route handler.
+        on_accept: Callback invoked after a connection has been accepted. Can request any dependencies, for example
+            the :class:`WebSocket <.connection.WebSocket>` connection
+        on_disconnect: Callback invoked after a connection has been closed. Can request any dependencies, for
+            example the :class:`WebSocket <.connection.WebSocket>` connection
+        opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
+            wherever you have access to :class:`Request <.connection.Request>` or
+            :class:`ASGI Scope <.types.Scope>`.
+        return_dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for serializing
+            outbound response data.
+        signature_namespace: A mapping of names to types for use in forward reference resolution during signature
+            modelling.
+        type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
+            hook for deserialization.
+        type_encoders: A mapping of types to callables that transform them into types supported for serialization.
+        **kwargs: Any additional kwarg - will be set in the opt dictionary.
+        websocket_class: A custom subclass of :class:`WebSocket <.connection.WebSocket>` to be used as route handler's
+            default websocket class.
+    """
+
+    def decorator(fn: AnyCallable) -> WebsocketListenerRouteHandler:
+        return WebsocketListenerRouteHandler(
+            fn=fn,
+            path=path,
+            connection_accept_handler=connection_accept_handler,
+            connection_lifespan=connection_lifespan,
+            dependencies=dependencies,
+            dto=dto,
+            exception_handlers=exception_handlers,
+            guard=guards,
+            middleware=middleware,
+            receive_mode=receive_mode,
+            send_mode=send_mode,
+            name=name,
+            on_accept=on_accept,
+            on_disconnect=on_disconnect,
+            opt=opt,
+            return_dto=return_dto,
+            signature_namespace=signature_namespace,
+            type_decoders=type_decoders,
+            type_encoders=type_encoders,
+            websocket_class=websocket_class,
+            **kwargs,
+        )
+
+    return decorator
