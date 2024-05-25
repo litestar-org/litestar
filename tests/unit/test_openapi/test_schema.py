@@ -13,8 +13,7 @@ from typing import (  # type: ignore[attr-defined]
     Tuple,
     TypedDict,
     TypeVar,
-    Union,
-    _GenericAlias,  # pyright: ignore
+    Union,  # pyright: ignore
 )
 
 import annotated_types
@@ -29,7 +28,7 @@ from litestar._openapi.schema_generation.schema import (
     KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP,
     SchemaCreator,
 )
-from litestar._openapi.schema_generation.utils import _get_normalized_schema_key, _type_or_first_not_none_inner_type
+from litestar._openapi.schema_generation.utils import _get_normalized_schema_key
 from litestar.app import DEFAULT_OPENAPI_CONFIG, Litestar
 from litestar.di import Provide
 from litestar.enums import ParamType
@@ -40,7 +39,6 @@ from litestar.openapi.spec.schema import Schema
 from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
 from litestar.params import KwargDefinition, Parameter, ParameterKwarg
 from litestar.testing import create_test_client
-from litestar.types.builtin_types import NoneType
 from litestar.typing import FieldDefinition
 from litestar.utils.helpers import get_name
 from tests.helpers import get_schema_for_field_definition
@@ -479,24 +477,6 @@ def test_optional_literal() -> None:
     assert schema.type is not None
     assert set(schema.type) == {OpenAPIType.INTEGER, OpenAPIType.NULL}
     assert schema.enum == [1, None]
-
-
-@pytest.mark.parametrize(
-    ("in_type", "out_type"),
-    [
-        (FieldDefinition.from_annotation(Optional[int]), int),
-        (FieldDefinition.from_annotation(Union[None, int]), int),
-        (FieldDefinition.from_annotation(int), int),
-        # hack to create a union of NoneType, NoneType to hit a branch for coverage
-        (FieldDefinition.from_annotation(_GenericAlias(Union, (NoneType, NoneType))), ValueError),
-    ],
-)
-def test_type_or_first_not_none_inner_type_utility(in_type: Any, out_type: Any) -> None:
-    if out_type is ValueError:
-        with pytest.raises(out_type):
-            _type_or_first_not_none_inner_type(in_type)
-    else:
-        assert _type_or_first_not_none_inner_type(in_type) == out_type
 
 
 def test_not_generating_examples_property() -> None:
