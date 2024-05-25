@@ -486,6 +486,43 @@ def websocket_listener(
     websocket_class: type[WebSocket] | None = None,
     **kwargs: Any,
 ) -> Callable[[AnyCallable], WebsocketListenerRouteHandler]:
+    """Create a :class:`WebsocketListenerRouteHandler`.
+
+    Args:
+        path: A path fragment for the route handler function or a sequence of path fragments. If not given defaults
+            to ``/``
+        connection_accept_handler: A callable that accepts a :class:`WebSocket <.connection.WebSocket>` instance
+            and returns a coroutine that when awaited, will accept the connection. Defaults to ``WebSocket.accept``.
+        connection_lifespan: An asynchronous context manager, handling the lifespan of the connection. By default,
+            it calls the ``connection_accept_handler``, ``on_connect`` and ``on_disconnect``. Can request any
+            dependencies, for example the :class:`WebSocket <.connection.WebSocket>` connection
+        dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
+        dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
+            validation of request data.
+        exception_handlers: A mapping of status codes and/or exception types to handler functions.
+        guards: A sequence of :class:`Guard <.types.Guard>` callables.
+        middleware: A sequence of :class:`Middleware <.types.Middleware>`.
+        receive_mode: Websocket mode to receive data in, either `text` or `binary`.
+        send_mode: Websocket mode to receive data in, either `text` or `binary`.
+        name: A string identifying the route handler.
+        on_accept: Callback invoked after a connection has been accepted. Can request any dependencies, for example
+            the :class:`WebSocket <.connection.WebSocket>` connection
+        on_disconnect: Callback invoked after a connection has been closed. Can request any dependencies, for
+            example the :class:`WebSocket <.connection.WebSocket>` connection
+        opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
+            wherever you have access to :class:`Request <.connection.Request>` or
+            :class:`ASGI Scope <.types.Scope>`.
+        return_dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for serializing
+            outbound response data.
+        signature_namespace: A mapping of names to types for use in forward reference resolution during signature
+            modelling.
+        type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
+            hook for deserialization.
+        type_encoders: A mapping of types to callables that transform them into types supported for serialization.
+        **kwargs: Any additional kwarg - will be set in the opt dictionary.
+        websocket_class: A custom subclass of :class:`WebSocket <.connection.WebSocket>` to be used as route handler's
+            default websocket class.
+    """
     def decorator(fn: AnyCallable) -> WebsocketListenerRouteHandler:
         return WebsocketListenerRouteHandler(
             fn=fn,

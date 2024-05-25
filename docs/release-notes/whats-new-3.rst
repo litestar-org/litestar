@@ -157,6 +157,7 @@ use a route handler decorator with a custom route handler class, the ``handler_c
 parameter to the decorator function can be used:
 
 Before:
+
 .. code-block:: python
 
     class my_get_handler(get):
