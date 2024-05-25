@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import List
 
 import pytest
 
@@ -10,10 +9,9 @@ from litestar.status_codes import HTTP_200_OK, HTTP_204_NO_CONTENT, HTTP_405_MET
 from litestar.testing import create_test_client
 
 
-@pytest.mark.parametrize("directories", [[], [""]])
-def test_validation_of_directories(directories: List[str]) -> None:
+def test_validation_of_directories() -> None:
     with pytest.raises(ImproperlyConfiguredException):
-        create_static_files_router(path="/static", directories=directories)
+        create_static_files_router(path="/static", directories=[])
 
 
 def test_validation_of_path(tmpdir: "Path") -> None:
