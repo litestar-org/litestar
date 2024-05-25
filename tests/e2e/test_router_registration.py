@@ -14,7 +14,9 @@ from litestar import (
     put,
     websocket,
 )
-from litestar import route as route_decorator
+from litestar import (
+    route as route_decorator,
+)
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.routes import HTTPRoute
 
