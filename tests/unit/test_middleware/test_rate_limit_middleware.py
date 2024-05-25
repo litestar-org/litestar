@@ -212,7 +212,7 @@ async def test_rate_limiting_works_with_mounted_apps(tmpdir: "Path") -> None:
     path1 = tmpdir / "test.css"
     path1.write_text("styles content", "utf-8")
 
-    asgi_handler = ASGIRouteHandler("/asgi", is_mount=True)(ASGIResponse(body="something"))
+    asgi_handler = ASGIRouteHandler("/asgi", is_mount=True, fn=ASGIResponse(body="something"))
 
     rate_limit_config = RateLimitConfig(rate_limit=("minute", 1), exclude=[r"^/src.*$"])
     with create_test_client([handler, asgi_handler], middleware=[rate_limit_config.middleware]) as client:
