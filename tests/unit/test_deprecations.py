@@ -2,8 +2,6 @@ import importlib
 
 import pytest
 
-from litestar.types.asgi_types import ASGIApp
-
 
 @pytest.mark.parametrize(
     "import_path, import_name",
