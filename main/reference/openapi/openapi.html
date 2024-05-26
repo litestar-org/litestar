@@ -1720,6 +1720,14 @@ response, bypassing the route handler.</p>
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.openapi.OpenAPIController.cache_control">
+<span class="sig-name descname"><span class="pre">cache_control</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../datastructures/index.html#litestar.datastructures.CacheControlHeader" title="litestar.datastructures.CacheControlHeader"><span class="pre">CacheControlHeader</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></em><a class="headerlink" href="#litestar.openapi.OpenAPIController.cache_control" title="Permalink to this definition">#</a></dt>
+<dd><p>A <a class="reference internal" href="../datastructures/index.html#litestar.datastructures.CacheControlHeader" title="litestar.datastructures.CacheControlHeader"><code class="xref py py-class docutils literal notranslate"><span class="pre">CacheControlHeader</span></code></a> header to add to route handlers of this
+controller.</p>
+<p>Can be overridden by route handlers.</p>
+</dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="litestar.openapi.OpenAPIController.dependencies">
 <span class="sig-name descname"><span class="pre">dependencies</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../types.html#litestar.types.Dependencies" title="litestar.types.Dependencies"><span class="pre">Dependencies</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></em><a class="headerlink" href="#litestar.openapi.OpenAPIController.dependencies" title="Permalink to this definition">#</a></dt>
 <dd><p>A string keyed dictionary of dependency <a class="reference internal" href="../di.html#litestar.di.Provide" title="litestar.di.Provide"><code class="xref py py-class docutils literal notranslate"><span class="pre">Provider</span></code></a> instances.</p>
@@ -1812,6 +1820,13 @@ handlers under the controller.</p>
 <dt class="sig sig-object py" id="litestar.openapi.OpenAPIController.signature_namespace">
 <span class="sig-name descname"><span class="pre">signature_namespace</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#litestar.openapi.OpenAPIController.signature_namespace" title="Permalink to this definition">#</a></dt>
 <dd><p>A mapping of names to types for use in forward reference resolution during signature modeling.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.openapi.OpenAPIController.signature_types">
+<span class="sig-name descname"><span class="pre">signature_types</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#litestar.openapi.OpenAPIController.signature_types" title="Permalink to this definition">#</a></dt>
+<dd><p>A sequence of types for use in forward reference resolution during signature modeling.</p>
+<p>These types will be added to the signature namespace using their <code class="docutils literal notranslate"><span class="pre">__name__</span></code> attribute.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -2246,6 +2261,7 @@ serve the documentation endpoints. For example, you can add middleware or guards
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.OpenAPIController.after_request"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.after_request</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.OpenAPIController.after_response"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.after_response</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.OpenAPIController.before_request"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.before_request</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.OpenAPIController.cache_control"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.cache_control</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.OpenAPIController.dependencies"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.dependencies</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.OpenAPIController.etag"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.etag</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.OpenAPIController.exception_handlers"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.exception_handlers</span></code></a></li>
@@ -2261,6 +2277,7 @@ serve the documentation endpoints. For example, you can add middleware or guards
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.OpenAPIController.response_headers"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.response_headers</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.OpenAPIController.security"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.security</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.OpenAPIController.signature_namespace"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.signature_namespace</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.OpenAPIController.signature_types"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.signature_types</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.OpenAPIController.tags"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.tags</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.OpenAPIController.type_encoders"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.type_encoders</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.OpenAPIController.type_decoders"><code class="docutils literal notranslate"><span class="pre">OpenAPIController.type_decoders</span></code></a></li>
