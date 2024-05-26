@@ -14,7 +14,7 @@ def test_after_response_resolution(layer: str, sync: bool) -> None:
 
     if sync:
 
-        def handler(_: Request) -> None:
+        def handler(_: Request) -> None:  # pyright: ignore
             mock(layer)
 
     else:
