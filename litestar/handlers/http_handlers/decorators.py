@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import warnings
 from typing import TYPE_CHECKING, Any, Callable, Mapping, Sequence
 
 from litestar.enums import HttpMethod, MediaType
