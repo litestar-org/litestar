@@ -42,7 +42,7 @@ class FileStore(NamespacedStore):
 
     async def __aenter__(self) -> None:
         if self._create_folders:
-            await sync_to_thread(self.path.mkdir, exist_ok=True, parents=True)
+            await self.path.mkdir(exist_ok=True, parents=True)
         return
 
     def with_namespace(self, namespace: str) -> FileStore:
