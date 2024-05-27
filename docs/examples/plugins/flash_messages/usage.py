@@ -1,7 +1,9 @@
 from litestar import Litestar, Request, get
 from litestar.contrib.jinja import JinjaTemplateEngine
+from litestar.middleware.session.server_side import ServerSideSessionConfig
 from litestar.plugins.flash import FlashConfig, FlashPlugin, flash
 from litestar.response import Template
+from litestar.stores.memory import MemoryStore
 from litestar.template.config import TemplateConfig
 
 template_config = TemplateConfig(engine=JinjaTemplateEngine, directory="templates")
@@ -23,4 +25,10 @@ async def index(request: Request) -> Template:
     )
 
 
-app = Litestar(plugins=[flash_plugin], route_handlers=[index], template_config=template_config)
+app = Litestar(
+    plugins=[flash_plugin],
+    route_handlers=[index],
+    template_config=template_config,
+    middleware=[ServerSideSessionConfig().middleware],
+    stores={"sessions": MemoryStore()},
+)
