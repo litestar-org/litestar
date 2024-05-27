@@ -28,15 +28,22 @@ def _safe_file_name(name: str) -> str:
 class FileStore(NamespacedStore):
     """File based, thread and process safe, asynchronous key/value store."""
 
-    __slots__ = {"path": "file path"}
+    __slots__ = {"path": "file path", "_create_folders": "flag to create folders of path"}
 
-    def __init__(self, path: PathLike[str]) -> None:
+    def __init__(self, path: PathLike[str], *, create_folders: bool = False) -> None:
         """Initialize ``FileStorage``.
 
         Args:
             path: Path to store data under
+            create_folders: bool, if ``True``, create the folders in ``path`` if they don't exist
         """
         self.path = Path(path)
+        self._create_folders = create_folders
+
+    async def __aenter__(self) -> None:
+        if self._create_folders:
+            await sync_to_thread(self.path.mkdir, exist_ok=True, parents=True)
+        return
 
     def with_namespace(self, namespace: str) -> FileStore:
         """Return a new instance of :class:`FileStore`, using  a sub-path of the current store's path."""
@@ -88,7 +95,7 @@ class FileStore(NamespacedStore):
             ``None``
         """
 
-        await self.path.mkdir(exist_ok=True, parents=True)
+        await self.path.mkdir(exist_ok=True)
         path = self._path_from_key(key)
         if isinstance(value, str):
             value = value.encode("utf-8")

@@ -92,6 +92,11 @@ def file_store(tmp_path: Path) -> FileStore:
     return FileStore(path=tmp_path)
 
 
+@pytest.fixture()
+def file_store_create_folders(tmp_path: Path) -> FileStore:
+    return FileStore(path=tmp_path.joinpath("subdir"), create_folders=True)
+
+
 @pytest.fixture(
     params=[pytest.param("redis_store", marks=pytest.mark.xdist_group("redis")), "memory_store", "file_store"]
 )
