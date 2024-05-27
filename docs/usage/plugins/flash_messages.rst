@@ -57,7 +57,7 @@ Breakdown
 +++++++++
 
 #. Here we import the requires classes and functions from the Litestar package and related plugins.
-#. Flash messages requires a valid session configuration, so we create a basic ``MemoryStore`` store and enabled the ``ServerSideSession`` middleware.
+#. Flash messages requires a valid session configuration, so we create and enable the ``ServerSideSession`` middleware.
 #. We then create our ``TemplateConfig`` and ``FlashConfig`` instances, each setting up the configuration for
    the template engine and flash messages, respectively.
 #. A single route handler named ``index`` is defined using the ``@get()`` decorator.
