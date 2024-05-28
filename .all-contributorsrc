@@ -1725,6 +1725,36 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "tibor-reiss",
+      "name": "Tibor Reiss",
+      "avatar_url": "https://avatars.githubusercontent.com/u/75096465?v=4",
+      "profile": "https://github.com/tibor-reiss",
+      "contributions": [
+        "test",
+        "doc",
+        "code"
+      ]
+    },
+    {
+      "login": "0xE111",
+      "name": "Alex",
+      "avatar_url": "https://avatars.githubusercontent.com/u/11032969?v=4",
+      "profile": "https://pogrom.dev",
+      "contributions": [
+        "bug",
+        "code"
+      ]
+    },
+    {
+      "login": "JorenSix",
+      "name": "Joren Six",
+      "avatar_url": "https://avatars.githubusercontent.com/u/60453?v=4",
+      "profile": "http://0110.be",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,

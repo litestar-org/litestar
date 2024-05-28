@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import Generic, List, Optional, TypeVar
 
 import pytest
 from attr import define
@@ -289,3 +289,17 @@ def test_parse_values_from_connection_kwargs_with_multiple_errors() -> None:
         {"message": "Expected `int` >= 6", "key": "a", "source": ParamType.QUERY},
         {"message": "Expected `int` <= 4", "key": "b", "source": ParamType.QUERY},
     ]
+
+
+def test_validate_subscribed_generics() -> None:
+    T = TypeVar("T")
+
+    class Foo(Generic[T]):
+        pass
+
+    @get("/")
+    async def something(foo: Foo[str] = Foo()) -> None:
+        return None
+
+    with create_test_client([something]) as client:
+        assert client.get("/").status_code == 200

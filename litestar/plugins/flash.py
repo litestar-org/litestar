@@ -20,6 +20,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from litestar.config.app import AppConfig
+    from litestar.connection.base import AuthT, StateT, UserT
     from litestar.template import TemplateConfig
 
 
@@ -69,7 +70,7 @@ class FlashPlugin(InitPluginProtocol):
 
 
 def flash(
-    request: Request,
+    request: Request[UserT, AuthT, StateT],
     message: Any,
     category: str,
 ) -> None:
