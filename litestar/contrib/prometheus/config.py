@@ -51,7 +51,7 @@ class PrometheusConfig:
     """The middleware class to use.
     """
     group_path: bool = field(default=False)
-    """Whether to group paths in the metrics ot avoid cardinality explosion.
+    """Whether to group paths in the metrics to avoid cardinality explosion.
     """
 
     @property
