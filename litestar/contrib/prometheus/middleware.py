@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import time
 from functools import wraps
-import re
 from typing import TYPE_CHECKING, Any, Callable, ClassVar, cast
 
 from litestar.connection.request import Request
