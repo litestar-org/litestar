@@ -27,8 +27,6 @@ from litestar.handlers.http_handlers._utils import (
     normalize_http_method, cleanup_temporary_files,
 )
 from litestar.openapi.spec import Operation
-from litestar.response import File, Response
-from litestar.response.file import ASGIFileResponse
 from litestar.response import Response, File
 from litestar.response.file import ASGIFileResponse
 from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED
@@ -55,6 +53,8 @@ from litestar.types import (
 )
 from litestar.types.builtin_types import NoneType
 from litestar.utils import ensure_async_callable
+from litestar.utils import join_paths
+from litestar.utils.empty import value_or_default
 from litestar.utils.predicates import is_async_callable
 from litestar.utils.predicates import is_class_and_subclass
 from litestar.utils.scope.state import ScopeState
@@ -63,6 +63,7 @@ from litestar.utils.warnings import warn_implicit_sync_to_thread, warn_sync_to_t
 if TYPE_CHECKING:
     from typing import Any
 
+    from litestar import Controller, Router
     from litestar._kwargs import KwargsModel
     from litestar._kwargs.cleanup import DependencyCleanupGroup
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
@@ -130,6 +131,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         "template_name",
         "_default_response_handler",
         "_response_type_handler",
+        "_sync_to_thread",
     )
 
     def __init__(
@@ -262,6 +264,7 @@ class HTTPRouteHandler(BaseRouteHandler):
 
         self.http_methods = normalize_http_method(http_methods=http_method)
         self.status_code = status_code or get_default_status_code(http_methods=self.http_methods)
+        self._sync_to_thread = sync_to_thread
 
         if not is_async_callable(fn):
             if sync_to_thread is None:
@@ -274,6 +277,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         if has_sync_callable and sync_to_thread:
             fn = ensure_async_callable(fn)
             has_sync_callable = False
+        self.has_sync_callable = has_sync_callable
 
         super().__init__(
             fn=fn,
@@ -333,6 +337,114 @@ class HTTPRouteHandler(BaseRouteHandler):
         self._default_response_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType = Empty
         self._response_type_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType = Empty
         self._resolved_request_max_body_size: int | EmptyType | None = Empty
+
+    # def _merge_background(
+    #     self, other_background: BackgroundTask | BackgroundTasks | None
+    # ) -> BackgroundTask | BackgroundTasks | None:
+    #     if not self.background:
+    #         return other_background
+    #     if not other_background:
+    #         return self.background
+    #
+    #     tasks = []
+    #     run_in_taskgroup = False
+    #     if isinstance(other_background, BackgroundTasks):
+    #         run_in_taskgroup = other_background.run_in_task_group
+    #         tasks.extend(other_background.tasks)
+    #     else:
+    #         tasks.append(other_background)
+    #
+    #     if isinstance(self.background, BackgroundTasks):
+    #         run_in_taskgroup = self.background
+    #         tasks.extend(self.background.tasks)
+    #     else:
+    #         tasks.append(self.background)
+    #
+    #     return BackgroundTasks(tasks, run_in_task_group=run_in_taskgroup)
+
+    def _merge_response_cookies(self, other: ResponseCookies | None) -> frozenset[Cookie] | None:
+        response_cookies = set()
+        for cookies in [self.response_cookies, other]:
+            if not cookies:
+                continue
+            if isinstance(cookies, Mapping):
+                response_cookies.update({Cookie(key=key, value=value) for key, value in cookies.items()})
+            else:
+                response_cookies.update(cookies)
+        return frozenset(response_cookies)
+
+    def _merge_response_headers(self, other: Controller | Router) -> frozenset[ResponseHeader] | None:
+        resolved_response_headers: dict[str, ResponseHeader] = {}
+
+        for layer in [other, self]:
+            if layer_response_headers := layer.response_headers:
+                if isinstance(layer_response_headers, Mapping):
+                    # this can't happen unless you manually set response_headers on an instance, which would result in a
+                    # type-checking error on everything but the controller. We cover this case nevertheless
+                    resolved_response_headers.update(
+                        {name: ResponseHeader(name=name, value=value) for name, value in layer_response_headers.items()}
+                    )
+                elif layer_response_headers:
+                    resolved_response_headers.update({h.name: h for h in layer_response_headers})
+            for extra_header in ("cache_control", "etag"):
+                if header_model := getattr(layer, extra_header, None):
+                    resolved_response_headers[header_model.HEADER_NAME] = ResponseHeader(
+                        name=header_model.HEADER_NAME,
+                        value=header_model.to_header(),
+                        documentation_only=header_model.documentation_only,
+                    )
+
+        return frozenset(resolved_response_headers.values())
+
+    def merge(self, other: Controller | Router) -> HTTPRouteHandler:
+        return HTTPRouteHandler(
+            # base attributes
+            path=[join_paths([other.path, p]) for p in self.paths],
+            fn=self.fn,
+            dependencies={**(other.dependencies or {}), **self.dependencies},
+            dto=value_or_default(self.dto, other.dto),
+            return_dto=value_or_default(self.return_dto, other.return_dto),
+            exception_handlers={**(other.exception_handlers or {}), **self.exception_handlers},
+            guards=[*(other.guards or []), *self.guards],
+            middleware=[*self.middleware, *(other.middleware or ())],
+            name=self.name,
+            opt={**(other.opt or {}), **(self.opt or {})},
+            signature_namespace={**other.signature_namespace, **self.signature_namespace},
+            signature_types=getattr(other, "signature_types", None),
+            type_decoders=(*(other.type_decoders or ()), *self.type_decoders),
+            type_encoders={**(other.type_encoders or {}), **self.type_encoders},
+            # http handler specific
+            after_response=self.after_response or other.after_response,
+            after_request=self.after_request or other.after_request,
+            background=self.background,
+            http_method=self.http_methods,
+            cache=self.cache,
+            cache_control=self.cache_control or other.cache_control,
+            cache_key_builder=self.cache_key_builder,
+            etag=self.etag or other.etag,
+            media_type=self.media_type,
+            request_class=self.request_class or other.request_class,
+            response_class=self.response_class or other.response_class,
+            response_cookies=self._merge_response_cookies(other.response_cookies),
+            response_headers=self._merge_response_headers(other),
+            status_code=self.status_code,
+            # OpenAPI related attributes
+            content_encoding=self.content_encoding,
+            content_media_type=self.content_media_type,
+            deprecated=self.deprecated,
+            description=self.description,
+            include_in_schema=self.include_in_schema,
+            operation_class=self.operation_class,
+            operation_id=self.operation_id,
+            raises=self.raises,
+            response_description=self.response_description,
+            response=self.responses,
+            security=[*(other.security or []), *(self.security or [])],
+            summary=self.summary,
+            tags=[*(other.tags or []), *(self.tags or [])],
+            sync_to_thread=False if self.has_sync_callable else None,
+            # sync_to_thread=self._sync_to_thread,
+        )
 
     def resolve_request_class(self) -> type[Request]:
         """Return the closest custom Request class in the owner graph or the default Request class.

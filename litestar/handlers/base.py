@@ -20,7 +20,8 @@ from litestar.types import (
     TypeEncodersMap,
 )
 from litestar.typing import FieldDefinition
-from litestar.utils import ensure_async_callable, get_name, normalize_path
+from litestar.utils import ensure_async_callable, get_name, join_paths, normalize_path
+from litestar.utils.empty import value_or_default
 from litestar.utils.helpers import unwrap_partial
 from litestar.utils.signature import ParsedSignature, add_types_to_signature_namespace, merge_signature_namespaces
 
@@ -74,6 +75,7 @@ class BaseRouteHandler:
         "signature_namespace",
         "type_decoders",
         "type_encoders",
+        "_app"
     )
 
     def __init__(
@@ -136,11 +138,11 @@ class BaseRouteHandler:
         self._resolved_type_encoders: TypeEncodersMap | EmptyType = Empty
         self._resolved_signature_model: type[SignatureModel] | EmptyType = Empty
 
-        self.dependencies = dependencies
+        self.dependencies = dependencies or {}
         self.dto = dto
-        self.exception_handlers = exception_handlers
-        self.guards = guards
-        self.middleware = middleware
+        self.exception_handlers = exception_handlers or {}
+        self.guards = guards or ()
+        self.middleware = middleware or ()
         self.name = name
         self.opt = dict(opt or {})
         self.opt.update(**kwargs)
@@ -149,12 +151,31 @@ class BaseRouteHandler:
         self.signature_namespace = add_types_to_signature_namespace(
             signature_types or [], dict(signature_namespace or {})
         )
-        self.type_decoders = type_decoders
-        self.type_encoders = type_encoders
+        self.type_decoders = type_decoders or ()
+        self.type_encoders = type_encoders or {}
         self.paths = (
             {normalize_path(p) for p in path} if path and isinstance(path, list) else {normalize_path(path or "/")}  # type: ignore[arg-type]
         )
         self.fn = self._prepare_fn(fn)
+        self._app: Litestar | None = None
+
+    def merge(self, other: Controller | Router) -> Self:
+        return BaseRouteHandler(
+            path=[join_paths([other.path, p]) for p in self.paths],
+            fn=self.fn,
+            dependencies={**(other.dependencies or {}), **self.dependencies},
+            dto=value_or_default(self.dto, other.dto),
+            return_dto=value_or_default(self.return_dto, other.return_dto),
+            exception_handlers={**(other.exception_handlers or {}), **self.exception_handlers},
+            guards=[*(other.guards or []), *self.guards],
+            middleware=[*self.middleware, *(other.middleware or ())],
+            name=self.name,
+            opt={**other.opt, **self.opt},
+            signature_namespace={**other.signature_namespace, **self.signature_namespace},
+            signature_types=other.signature_types,
+            type_decoders=(*(other.type_decoders or ()), *self.type_decoders),
+            type_encoders={**(other.type_encoders or {}), **self.type_encoders},
+        )
 
     def _prepare_fn(self, fn: AsyncAnyCallable) -> AsyncAnyCallable:
         return fn
@@ -265,7 +286,9 @@ class BaseRouteHandler:
 
     @property
     def app(self) -> Litestar:
-        return cast("Litestar", self._ownership_layers[0])
+        if self._app is None:
+            raise ValueError("no app")
+        return self._app
 
     def resolve_type_encoders(self) -> TypeEncodersMap:
         """Return a merged type_encoders mapping.
@@ -329,11 +352,8 @@ class BaseRouteHandler:
         return self._resolved_guards
 
     def _get_plugin_registry(self) -> PluginRegistry | None:
-        from litestar.app import Litestar
-
-        root_owner = self._ownership_layers[0]
-        if isinstance(root_owner, Litestar):
-            return root_owner.plugins
+        if self._app:
+            return self._app.plugins
         return None
 
     def resolve_dependencies(self) -> dict[str, Provide]:

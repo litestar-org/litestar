@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, Mapping, Sequence, cast
 
 from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
 from litestar.controller import Controller
+from litestar.datastructures import Cookie, ResponseHeader
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers.asgi_handlers import ASGIRouteHandler
 from litestar.handlers.http_handlers import HTTPRouteHandler
@@ -14,6 +15,7 @@ from litestar.handlers.websocket_handlers import WebsocketListener, WebsocketRou
 from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from litestar.types.empty import Empty
 from litestar.utils import find_index, is_class_and_subclass, join_paths, normalize_path, unique
+from litestar.utils.empty import value_or_default
 from litestar.utils.signature import add_types_to_signature_namespace
 from litestar.utils.sync import ensure_async_callable
 
@@ -81,6 +83,7 @@ class Router:
         "type_decoders",
         "type_encoders",
         "websocket_class",
+        "_route_handlers",
     )
 
     def __init__(
@@ -204,8 +207,31 @@ class Router:
         self.websocket_class = websocket_class
         self.request_max_body_size = request_max_body_size
 
-        for route_handler in route_handlers or []:
-            self.register(value=route_handler)
+        self._route_handlers = self._merge_handlers(route_handlers)
+
+    def _reduce_handlers(self, route_handlers: Sequence[ControllerRouterHandler]) -> list[RouteHandlerType]:
+        reduced_handlers = []
+        handlers_to = list(route_handlers)
+        while handlers_to:
+            handler = self._validate_registration_value(handlers_to.pop(0))
+            if isinstance(handler, Router):
+                handlers_to.extend(handler._route_handlers)
+            else:
+                reduced_handlers.append(handler)
+
+        return reduced_handlers
+
+    def _merge_handlers(self, handlers: Sequence[ControllerRouterHandler]) -> list[RouteHandlerType]:
+        from litestar.handlers import BaseRouteHandler
+
+        merged = []
+        for handler in handlers:
+            handler = self._validate_registration_value(handler)
+            if isinstance(handler, BaseRouteHandler):
+                merged.append(handler.merge(self))
+                continue
+            merged.extend(self._merge_handlers(handler._route_handlers))
+        return merged
 
     def register(self, value: ControllerRouterHandler) -> list[BaseRoute]:
         """Register a Controller, Route instance or RouteHandler on the router.
@@ -218,12 +244,14 @@ class Router:
         Returns:
             Collection of handlers added to the router.
         """
-        validated_value = self._validate_registration_value(value)
+        self._route_handlers.extend(self._merge_handlers([value]))
+        # validated_value = self._validate_registration_value(value)
+        validated_value = value
 
         routes: list[BaseRoute] = []
 
-        for route_path, handlers_map in self.get_route_handler_map(value=validated_value).items():
-            path = join_paths([self.path, route_path])
+        for path, handlers_map in self.get_route_handler_map(value=validated_value).items():
+            # path = join_paths([self.path, route_path])
             if http_handlers := unique(
                 [handler for handler in handlers_map.values() if isinstance(handler, HTTPRouteHandler)]
             ):

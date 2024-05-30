@@ -479,7 +479,7 @@ class Litestar(Router):
 
         self.asgi_router = ASGIRouter(app=self)
 
-        for route_handler in config.route_handlers:
+        for route_handler in self._reduce_handlers(config.route_handlers):
             self.register(route_handler)
 
         if self.logging_config:
@@ -668,11 +668,13 @@ class Litestar(Router):
             None
         """
         routes = super().register(value=value)
+        value._app = self
 
         for route in routes:
             route_handlers = get_route_handlers(route)
 
             for route_handler in route_handlers:
+                route_handler._app = self
                 route_handler.on_registration(route=route)
 
             for plugin in self.plugins.receive_route:
