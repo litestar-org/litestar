@@ -35,7 +35,10 @@ class FileStore(NamespacedStore):
 
         Args:
             path: Path to store data under
-            create_folders: bool, if ``True``, create the folders in ``path`` if they don't exist
+            create_folders: Create the folders in ``path`` if they don't exist
+                Default: ``False``
+
+                .. versionadded:: 2.9.0
         """
         self.path = Path(path)
         self._create_folders = create_folders
