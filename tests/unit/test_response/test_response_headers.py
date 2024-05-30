@@ -137,7 +137,7 @@ def test_explicit_response_headers(
             "app": app_header,
         }.items():
             response = client.get(path)
-            assert response.headers[expected_value.HEADER_NAME] == expected_value.to_header()
+            assert response.headers[expected_value.HEADER_NAME] == expected_value.to_header(), path
 
 
 @pytest.mark.parametrize(

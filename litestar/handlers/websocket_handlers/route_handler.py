@@ -7,9 +7,12 @@ from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import BaseRouteHandler
 from litestar.types import Empty
 from litestar.types.builtin_types import NoneType
+from litestar.utils import join_paths
+from litestar.utils.empty import value_or_default
 from litestar.utils.predicates import is_async_callable
 
 if TYPE_CHECKING:
+    from litestar import Controller, Router
     from litestar._kwargs import KwargsModel
     from litestar._kwargs.cleanup import DependencyCleanupGroup
     from litestar.routes import BaseRoute
@@ -70,6 +73,25 @@ class WebsocketRouteHandler(BaseRouteHandler):
             opt=opt,
             signature_namespace=signature_namespace,
             **kwargs,
+        )
+
+    def merge(self, other: Controller | Router) -> WebsocketRouteHandler:
+        return WebsocketRouteHandler(
+            path=[join_paths([other.path, p]) for p in self.paths],
+            fn=self.fn,
+            dependencies={**(other.dependencies or {}), **self.dependencies},
+            dto=value_or_default(self.dto, other.dto),
+            return_dto=value_or_default(self.return_dto, other.return_dto),
+            exception_handlers={**(other.exception_handlers or {}), **self.exception_handlers},
+            guards=[*(other.guards or []), *self.guards],
+            middleware=[*self.middleware, *(other.middleware or ())],
+            name=self.name,
+            opt={**(other.opt or {}), **(self.opt or {})},
+            signature_namespace={**other.signature_namespace, **self.signature_namespace},
+            signature_types=getattr(other, "signature_types", None),
+            type_decoders=(*(other.type_decoders or ()), *self.type_decoders),
+            type_encoders={**(other.type_encoders or {}), **self.type_encoders},
+            websocket_class=self.websocket_class
         )
 
     def resolve_websocket_class(self) -> type[WebSocket]:

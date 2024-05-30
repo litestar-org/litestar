@@ -24,7 +24,6 @@ if TYPE_CHECKING:
     from litestar.dto import AbstractDTO
     from litestar.openapi.spec import SecurityRequirement
     from litestar.response import Response
-    from litestar.router import Router
     from litestar.types import (
         AfterRequestHookHandler,
         AfterResponseHookHandler,
@@ -36,9 +35,11 @@ if TYPE_CHECKING:
         ParametersMap,
         ResponseCookies,
         TypeEncodersMap,
+        ControllerRouterHandler,
     )
     from litestar.types.composite_types import ResponseHeaders, TypeDecodersSequence
     from litestar.types.empty import EmptyType
+    from litestar.router import Router
 
 
 class Controller:
@@ -217,7 +218,7 @@ class Controller:
         from litestar.router import Router
 
         router = Router(
-            path=self.path,
+            path="/",  # paths have already been merged inside Controller.get_route_handlers
             route_handlers=self.get_route_handlers(),  # type: ignore[arg-type]
             after_request=self.after_request,
             after_response=self.after_response,
@@ -258,16 +259,18 @@ class Controller:
 
         route_handlers: list[BaseRouteHandler] = []
         controller_names = set(dir(Controller))
-        self_handlers = [
+        self_handlers: list[BaseRouteHandler] = [
             getattr(self, name)
             for name in dir(self)
             if name not in controller_names and isinstance(getattr(self, name), BaseRouteHandler)
         ]
         self_handlers.sort(key=attrgetter("handler_id"))
         for self_handler in self_handlers:
-            route_handler = deepcopy(self_handler)
+            # route_handler = deepcopy(self_handler)
             # at the point we get a reference to the handler function, it's unbound, so
             # we replace it with a regular bound method here
+            route_handler = self_handler.merge(self)
+            # route_handler = self_handler
             route_handler.fn = types.MethodType(route_handler.fn, self)
             route_handler.owner = self
             route_handlers.append(route_handler)
