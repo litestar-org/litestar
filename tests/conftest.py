@@ -93,8 +93,8 @@ def file_store(tmp_path: Path) -> FileStore:
 
 
 @pytest.fixture()
-def file_store_create_folders(tmp_path: Path) -> FileStore:
-    return FileStore(path=tmp_path.joinpath("subdir"), create_folders=True)
+def file_store_create_directories(tmp_path: Path) -> FileStore:
+    return FileStore(path=tmp_path.joinpath("subdir"), create_directories=True)
 
 
 @pytest.fixture(

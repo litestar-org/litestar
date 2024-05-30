@@ -28,21 +28,24 @@ def _safe_file_name(name: str) -> str:
 class FileStore(NamespacedStore):
     """File based, thread and process safe, asynchronous key/value store."""
 
-    __slots__ = {"path": "file path", "_create_folders": "flag to create folders of path"}
+    __slots__ = {"path": "file path", "create_directories": "flag to create directories of path"}
 
-    def __init__(self, path: PathLike[str], *, create_folders: bool = False) -> None:
+    def __init__(self, path: PathLike[str], *, create_directories: bool = False) -> None:
         """Initialize ``FileStorage``.
 
         Args:
             path: Path to store data under
-            create_folders: bool, if ``True``, create the folders in ``path`` if they don't exist
+            create_directories: Create the directories in ``path`` if they don't exist
+                Default: ``False``
+
+                .. versionadded:: 2.9.0
         """
         self.path = Path(path)
-        self._create_folders = create_folders
+        self.create_directories = create_directories
 
     async def __aenter__(self) -> None:
-        if self._create_folders:
-            await sync_to_thread(self.path.mkdir, exist_ok=True, parents=True)
+        if self.create_directories:
+            await self.path.mkdir(exist_ok=True, parents=True)
         return
 
     def with_namespace(self, namespace: str) -> FileStore:
