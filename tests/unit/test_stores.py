@@ -252,7 +252,8 @@ async def test_file_init_directory(file_store: FileStore) -> None:
 
 async def test_file_init_subdirectory(file_store_create_directories: FileStore) -> None:
     file_store = file_store_create_directories
-    await file_store.set("foo", b"bar")
+    async with file_store:
+        await file_store.set("foo", b"bar")
 
 
 async def test_file_path(file_store: FileStore) -> None:

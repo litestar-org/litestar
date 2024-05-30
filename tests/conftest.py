@@ -4,6 +4,7 @@ import importlib.util
 import logging
 import os
 import random
+import shutil
 import string
 import sys
 from datetime import datetime
@@ -94,6 +95,7 @@ def file_store(tmp_path: Path) -> FileStore:
 
 @pytest.fixture()
 def file_store_create_directories(tmp_path: Path) -> FileStore:
+    shutil.rmtree(tmp_path, ignore_errors=True)  # in case the path was already created by different tests - we clean it
     return FileStore(path=tmp_path.joinpath("subdir"), create_directories=True)
 
 
