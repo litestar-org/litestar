@@ -219,3 +219,16 @@ def test_customizing_handler(handlers: Any, expected_handler_class: Any, monkeyp
     else:
         formatter = root_logger_handler.formatter
     assert formatter._fmt == log_format
+
+
+@pytest.mark.parametrize(
+    "traceback_line_limit, expected_warning_deprecation_called",
+    [
+        [-1, False],
+        [20, True],
+    ],
+)
+def test_traceback_line_limit_deprecation(traceback_line_limit: int, expected_warning_deprecation_called: bool) -> None:
+    with patch("litestar.logging.config.warn_deprecation") as mock_warning_deprecation:
+        LoggingConfig(traceback_line_limit=traceback_line_limit)
+        assert mock_warning_deprecation.called is expected_warning_deprecation_called
