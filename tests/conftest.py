@@ -99,6 +99,12 @@ def file_store_create_directories(tmp_path: Path) -> FileStore:
     return FileStore(path=tmp_path.joinpath("subdir"), create_directories=True)
 
 
+@pytest.fixture()
+def file_store_create_directories_flag_false(tmp_path: Path) -> FileStore:
+    shutil.rmtree(tmp_path, ignore_errors=True)  # in case the path was already created by different tests - we clean it
+    return FileStore(path=tmp_path.joinpath("subdir"), create_directories=False)
+
+
 @pytest.fixture(
     params=[pytest.param("redis_store", marks=pytest.mark.xdist_group("redis")), "memory_store", "file_store"]
 )
