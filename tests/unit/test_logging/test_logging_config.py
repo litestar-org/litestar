@@ -1,6 +1,7 @@
 import logging
 import sys
 import time
+from importlib.util import find_spec
 from logging.handlers import QueueHandler
 from queue import Queue
 from types import ModuleType
@@ -13,13 +14,18 @@ from _pytest.logging import LogCaptureHandler, _LiveLoggingNullHandler
 
 from litestar import Request, get
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.logging.config import LoggingConfig, _get_default_handlers, default_handlers, default_picologging_handlers
+from litestar.logging.config import (
+    LoggingConfig,
+    _get_default_handlers,
+    default_handlers,
+    default_picologging_handlers,
+)
 from litestar.logging.picologging import QueueListenerHandler as PicologgingQueueListenerHandler
 from litestar.logging.standard import LoggingQueueListener
 from litestar.logging.standard import QueueListenerHandler as StandardQueueListenerHandler
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
-from tests.helpers import cleanup_logging_impl, getHandlerByName
+from tests.helpers import cleanup_logging_impl
 
 if TYPE_CHECKING:
     from _pytest.capture import CaptureFixture
@@ -31,8 +37,17 @@ def cleanup_logging() -> Generator:
         yield
 
 
+def test__get_default_handlers() -> None:
+    assert find_spec("picologging")  # picologging should be installed in the test environment, simply checking that
+    assert _get_default_handlers() == default_picologging_handlers
+
+    with patch("litestar.logging.config.find_spec") as find_spec_mock:
+        find_spec_mock.return_value = None
+        assert _get_default_handlers() == default_handlers
+
+
 @pytest.mark.parametrize(
-    "dict_config_callable, handlers, expected_called",
+    "dict_config_callable, default_handlers, expected_called",
     [
         ["logging.config.dictConfig", default_handlers, True],
         ["logging.config.dictConfig", default_picologging_handlers, False],
@@ -41,10 +56,12 @@ def cleanup_logging() -> Generator:
     ],
 )
 def test_correct_dict_config_called(
-    dict_config_callable: str, handlers: Dict[str, Dict[str, Any]], expected_called: bool
+    dict_config_callable: str,
+    default_handlers: Dict[str, Dict[str, Any]],
+    expected_called: bool,
 ) -> None:
     with patch(dict_config_callable) as dict_config_mock:
-        log_config = LoggingConfig(handlers=handlers)
+        log_config = LoggingConfig(handlers=default_handlers)
         log_config.configure()
         if expected_called:
             assert dict_config_mock.called
@@ -200,19 +217,27 @@ def test_connection_logger(handlers: Any, expected_handler_class: Any) -> None:
         assert response.json()["isinstance"]
 
 
-def test_validation() -> None:
-    logging_config = LoggingConfig(
-        formatters={},
-        handlers={},
-        loggers={},
-    )
-    # FIXME: broken - assert len(logging_config.formatters) == 1
-    # FIXME: broken - assert "standard" in logging_config.formatters
-    assert len(logging_config.handlers) == 1
-    assert logging_config.handlers["queue_listener"] == _get_default_handlers()["queue_listener"]
-    assert len(logging_config.loggers) == 1
-    assert "litestar" in logging_config.loggers
+@pytest.mark.parametrize("logging_module", [logging, picologging])
+def test_validation(logging_module: ModuleType) -> None:
+    with patch("litestar.logging.config.find_spec") as find_spec_mock:
+        find_spec_mock.return_value = None if logging_module is logging else True
+        logging_config = LoggingConfig(
+            formatters={},
+            handlers={},
+            loggers={},
+        )
+        default_handlers = _get_default_handlers()
+
+    assert logging_config.formatters["standard"]
+    assert len(logging_config.formatters) == 1
+
+    assert logging_config.handlers["queue_listener"] == default_handlers["queue_listener"]
+    assert logging_config.handlers["console"] == default_handlers["console"]
+    assert len(logging_config.handlers) == 2
+
+    assert logging_config.loggers["litestar"]
     assert logging_config.loggers["litestar"]["handlers"] == ["queue_listener"]
+    assert len(logging_config.loggers) == 1
 
 
 @pytest.mark.parametrize(
@@ -320,16 +345,11 @@ def test_customizing_handler(
         assert type(root_logger_handler) is expected_root_logger_handler_class
 
         if type(root_logger_handler) is QueueHandler:
-            assert getHandlerByName("console") is not None
             formatter = root_logger_handler.listener.handlers[0].formatter  # type: ignore[attr-defined]
         else:
-            assert getHandlerByName("console") is None
             formatter = root_logger_handler.formatter
         assert formatter._fmt == log_format
     else:
-        # queue_listener handler shouldn't be configured (we only checks the `logging` module)
-        # FIXME broken - assert getHandlerByName("queue_listener") is None
-
         # Root logger shouldn't be configured but pytest adds some handlers (for the standard `logging` module)
         for handler in root_logger.handlers:  # type: ignore[attr-defined]
             assert isinstance(handler, (_LiveLoggingNullHandler, LogCaptureHandler))
@@ -351,6 +371,28 @@ def test_customizing_handler(
 
     assert_logger(get_logger("litestar"))
     assert_logger(get_logger("test_logger"))
+
+
+def test_excluded_fields() -> None:
+    # according to https://docs.python.org/3/library/logging.config.html#dictionary-schema-details
+    allowed_fields = {
+        "version",
+        "formatters",
+        "filters",
+        "handlers",
+        "loggers",
+        "root",
+        "incremental",
+        "disable_existing_loggers",
+    }
+    with patch("litestar.logging.config.find_spec") as find_spec_mock:
+        find_spec_mock.return_value = None
+
+        with patch("logging.config.dictConfig") as dict_config_mock:
+            LoggingConfig().configure()
+            assert dict_config_mock.called
+            for key in dict_config_mock.call_args.args[0].keys():
+                assert key in allowed_fields
 
 
 @pytest.mark.parametrize(
