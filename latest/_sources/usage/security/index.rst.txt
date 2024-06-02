@@ -14,3 +14,4 @@ authentication and authorization.
     guards
     excluding-and-including-endpoints
     jwt
+    secret-datastructures

@@ -52,15 +52,14 @@ example here let us say it is a `SQLAlchemy <https://docs.sqlalchemy.org/>`_ mod
 
     import uuid
 
-    from sqlalchemy import Column
     from sqlalchemy.dialects.postgresql import UUID
-    from sqlalchemy.orm import declarative_base
+    from sqlalchemy.orm import declarative_base, mapped_column, Mapped
 
     Base = declarative_base()
 
 
     class User(Base):
-        id: uuid.UUID | None = Column(
+        id: Mapped[uuid.UUID | None] = mapped_column(
             UUID(as_uuid=True), default=uuid.uuid4, primary_key=True
         )
         # ... other fields follow, but we only require id for this example
