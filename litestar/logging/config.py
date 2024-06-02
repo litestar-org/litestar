@@ -200,7 +200,11 @@ class LoggingConfig(BaseLoggingConfig):
     Filter instance.
     """
     propagate: bool = field(default=True)
-    """If messages must propagate to handlers higher up the logger hierarchy from this logger."""
+    """If messages must propagate to handlers higher up the logger hierarchy from this logger.
+
+    .. deprecated:: 2.10.0
+        This parameter is deprecated. It will be removed in a future release. Use `propagate` at the logger level.
+    """
     formatters: dict[str, dict[str, Any]] = field(default_factory=_get_default_formatters)
     """A dict in which each key is a formatter and each value is a dict describing how to configure the corresponding
     Formatter instance. A `standard` formatter is provided.
