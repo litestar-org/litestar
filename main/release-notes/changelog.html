@@ -1530,6 +1530,256 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.9.0">
+<h2>2.9.0<a class="headerlink" href="#2.9.0" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2024-06-02<section id="2.9.0-feature">
+<h3>Features<a class="headerlink" href="#2.9.0-feature" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Add async <code class="docutils literal notranslate"><span class="pre">websocket_connect</span></code> to <code class="docutils literal notranslate"><span class="pre">AsyncTestClient</span></code><a class="headerlink reference internal" href="#2.9.0-add async" id="2.9.0-add async">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Add async <code class="docutils literal notranslate"><span class="pre">websocket_connect</span></code> to <code class="docutils literal notranslate"><span class="pre">AsyncTestClient</span></code></p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3133">litestar-org/litestar#3133</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3328">litestar-org/litestar#3328</a></span></p>
+</div>
+</dd>
+<dt>add <code class="docutils literal notranslate"><span class="pre">SecretString</span></code> and <code class="docutils literal notranslate"><span class="pre">SecretBytes</span></code> datastructures<a class="headerlink reference internal" href="#2.9.0-add" id="2.9.0-add">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Implement <code class="docutils literal notranslate"><span class="pre">SecretString</span></code> and <code class="docutils literal notranslate"><span class="pre">SecretBytes</span></code> data structures to hide sensitive
+data in tracebacks, etc.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/1312,">litestar-org/litestar#1312,</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3248">litestar-org/litestar#3248</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3322">litestar-org/litestar#3322</a></span></p>
+</div>
+</dd>
+<dt>Deprecate subclassing route handler decorators<a class="headerlink reference internal" href="#2.9.0-deprecate subclassing route handler decorators" id="2.9.0-deprecate subclassing route handler decorators">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Deprecation for the 2.x release line of the semantic route handler classes
+removed in #3436.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3439">litestar-org/litestar#3439</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+<section id="2.9.0-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.9.0-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>asgi lifespan msg after lifespan context exception<a class="headerlink reference internal" href="#2.9.0-asgi lifespan msg after lifespan context exception" id="2.9.0-asgi lifespan msg after lifespan context exception">#</a></dt><dd><div class="changelog-change docutils container">
+<p>An exception raised within an asgi lifespan context manager would result in a “lifespan.startup.failed” message
+being sent after we’ve already sent a “lifespan.startup.complete” message. This would cause uvicorn to raise a
+<code class="docutils literal notranslate"><span class="pre">STATE_TRANSITION_ERROR</span></code> assertion error due to their check for that condition , if asgi lifespan is
+forced (i.e., with <code class="docutils literal notranslate"><span class="pre">$</span> <span class="pre">uvicorn</span> <span class="pre">test_apps.test_app:app</span> <span class="pre">--lifespan</span> <span class="pre">on</span></code>).</p>
+<p>E.g.,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">During</span> <span class="n">handling</span> <span class="n">of</span> <span class="n">the</span> <span class="n">above</span> <span class="n">exception</span><span class="p">,</span> <span class="n">another</span> <span class="n">exception</span> <span class="n">occurred</span><span class="p">:</span>
+
+<span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s2">&quot;/home/peter/.local/share/pdm/venvs/litestar-dj-FOhMr-3.8/lib/python3.8/site-packages/uvicorn/lifespan/on.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">86</span><span class="p">,</span> <span class="ow">in</span> <span class="n">main</span>
+    <span class="k">await</span> <span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">receive</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">)</span>
+  <span class="n">File</span> <span class="s2">&quot;/home/peter/.local/share/pdm/venvs/litestar-dj-FOhMr-3.8/lib/python3.8/site-packages/uvicorn/middleware/proxy_headers.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">69</span><span class="p">,</span> <span class="ow">in</span> <span class="fm">__call__</span>
+    <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
+  <span class="n">File</span> <span class="s2">&quot;/home/peter/PycharmProjects/litestar/litestar/app.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">568</span><span class="p">,</span> <span class="ow">in</span> <span class="fm">__call__</span>
+    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">asgi_router</span><span class="o">.</span><span class="n">lifespan</span><span class="p">(</span><span class="n">receive</span><span class="o">=</span><span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="o">=</span><span class="n">send</span><span class="p">)</span>  <span class="c1"># type: ignore[arg-type]</span>
+  <span class="n">File</span> <span class="s2">&quot;/home/peter/PycharmProjects/litestar/litestar/_asgi/asgi_router.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">180</span><span class="p">,</span> <span class="ow">in</span> <span class="n">lifespan</span>
+    <span class="k">await</span> <span class="n">send</span><span class="p">(</span><span class="n">failure_message</span><span class="p">)</span>
+  <span class="n">File</span> <span class="s2">&quot;/home/peter/.local/share/pdm/venvs/litestar-dj-FOhMr-3.8/lib/python3.8/site-packages/uvicorn/lifespan/on.py&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">116</span><span class="p">,</span> <span class="ow">in</span> <span class="n">send</span>
+    <span class="k">assert</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">startup_event</span><span class="o">.</span><span class="n">is_set</span><span class="p">(),</span> <span class="n">STATE_TRANSITION_ERROR</span>
+<span class="ne">AssertionError</span><span class="p">:</span> <span class="n">Got</span> <span class="n">invalid</span> <span class="n">state</span> <span class="n">transition</span> <span class="n">on</span> <span class="n">lifespan</span> <span class="n">protocol</span><span class="o">.</span>
+</pre></div>
+</div>
+<p>This PR modifies <code class="docutils literal notranslate"><span class="pre">ASGIRouter.lifespan()</span></code> so that it sends a shutdown failure message if we’ve already confirmed startup.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3315">litestar-org/litestar#3315</a></span></p>
+</div>
+</dd>
+<dt>bug when pydantic==1.10 is installed<a class="headerlink reference internal" href="#2.9.0-bug when pydantic==1.10 is installed" id="2.9.0-bug when pydantic==1.10 is installed">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug introduced in #3296 where it failed to take into account that the <code class="docutils literal notranslate"><span class="pre">pydantic_v2</span></code> variable could be
+<code class="docutils literal notranslate"><span class="pre">Empty</span></code>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3334">litestar-org/litestar#3334</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3335">litestar-org/litestar#3335</a></span></p>
+</div>
+</dd>
+<dt>OpenAPI router and controller on same app.<a class="headerlink reference internal" href="#2.9.0-openapi router and controller on same app." id="2.9.0-openapi router and controller on same app.">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fixes an :exc`ImproperlyConfiguredException` where an app that explicitly registers an <code class="docutils literal notranslate"><span class="pre">OpenAPIController</span></code> on
+the application, and implicitly uses the OpenAPI router via the <cite>OpenAPIConfig</cite> object. This was caused by the
+two different handlers being given the same name as defined in <code class="docutils literal notranslate"><span class="pre">litestar.constants</span></code>.</p>
+<p>PR adds a distinct name for use by the handler that serves <code class="docutils literal notranslate"><span class="pre">openapi.json</span></code> on the controller.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3337">litestar-org/litestar#3337</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3338">litestar-org/litestar#3338</a></span></p>
+</div>
+</dd>
+<dt>pydantic v2 import tests for pydantic v1.10.15<a class="headerlink reference internal" href="#2.9.0-pydantic v2 import tests for pydantic v1.10.15" id="2.9.0-pydantic v2 import tests for pydantic v1.10.15">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fixes bug with Pydantic V1 environment test where the test was run against v2. Adds assertion for version to the test.</p>
+<p>Fixes a bug exposed by above that relied on pydantic not having <code class="docutils literal notranslate"><span class="pre">v1</span></code> in the package namespace if <code class="docutils literal notranslate"><span class="pre">v1</span></code> is
+installed. This doesn’t hold true after pydantic’s <code class="docutils literal notranslate"><span class="pre">1.10.15</span></code> release.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3348">litestar-org/litestar#3348</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3347">litestar-org/litestar#3347</a></span></p>
+</div>
+</dd>
+<dt>schema for generic wrapped return types with DTO<a class="headerlink reference internal" href="#2.9.0-schema for generic wrapped return types with dto" id="2.9.0-schema for generic wrapped return types with dto">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix schema generated for DTOs where the supported type is wrapped in a generic outer type.</p>
+<p>Prior behavior of using the <code class="docutils literal notranslate"><span class="pre">backend.annotation</span></code> as the basis for generating the openapi schema for the
+represented type is not applicable for the case where the DTO supported type is wrapped in a generic outer
+object. In that case <code class="docutils literal notranslate"><span class="pre">backend.annotation</span></code> only represents the type of the attribute on the generic type that
+holds the DTO supported type annotation.</p>
+<p>This change detects the case where we unwrap an outer generic type, and rebuilds the generic annotation in a
+manner appropriate for schema generation, before generating the schema for the annotation. It does this by
+substituting the DTOs transfer model for the original model in the original annotations type arguments.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/2929">litestar-org/litestar#2929</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3371">litestar-org/litestar#3371</a></span></p>
+</div>
+</dd>
+<dt>Ambiguous default warning for no signature default<a class="headerlink reference internal" href="#2.9.0-ambiguous default warning for no signature default" id="2.9.0-ambiguous default warning for no signature default">#</a></dt><dd><div class="changelog-change docutils container">
+<p>We now only issue a single warning for the case where a default value is supplied via <code class="docutils literal notranslate"><span class="pre">Parameter()</span></code> and not
+via a regular signature default.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3372">litestar-org/litestar#3372</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3378">litestar-org/litestar#3378</a></span></p>
+</div>
+</dd>
+<dt>Path param consumed by dependency treated as unconsumed<a class="headerlink reference internal" href="#2.9.0-path param consumed by dependency treated as unconsumed" id="2.9.0-path param consumed by dependency treated as unconsumed">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Consider parameters defined in handler dependencies in order to determine if a path parameter has been consumed
+for openapi generation purposes.</p>
+<p>Fixes an issue where path parameters not consumed by the handler, but consumed by dependencies would cause an
+:exc`ImproperlyConfiguredException`.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3369">litestar-org/litestar#3369</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3380">litestar-org/litestar#3380</a></span></p>
+</div>
+</dd>
+<dt>“name” and “in” should not be included in openapi headers<a class="headerlink reference internal" href="#2.9.0-&quot;name&quot; and &quot;in&quot; should not be included in openapi headers" id="2.9.0-&quot;name&quot; and &quot;in&quot; should not be included in openapi headers">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Exclude the “name” and “in” fields from openapi schema generated for headers.</p>
+<p>Add <code class="docutils literal notranslate"><span class="pre">BaseSchemaObject._iter_fields()</span></code>  method that allows schema types to
+define the fields that should be included in their openapi schema representation
+and override that method for <code class="docutils literal notranslate"><span class="pre">OpenAPIHeader</span></code>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3416">litestar-org/litestar#3416</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3417">litestar-org/litestar#3417</a></span></p>
+</div>
+</dd>
+<dt>top-level import of optional package<a class="headerlink reference internal" href="#2.9.0-top-level import of optional package" id="2.9.0-top-level import of optional package">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix import from <code class="docutils literal notranslate"><span class="pre">contrib.minijinja</span></code> without handling for case where dependency is not installed.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3415">litestar-org/litestar#3415</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3418">litestar-org/litestar#3418</a></span></p>
+</div>
+</dd>
+<dt>regular handler under mounted app<a class="headerlink reference internal" href="#2.9.0-regular handler under mounted app" id="2.9.0-regular handler under mounted app">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix an issue where a regular handler under a mounted asgi app would prevent a
+request from routing through the mounted application if the request path
+contained the path of the regular handler as a substring.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3429">litestar-org/litestar#3429</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3430">litestar-org/litestar#3430</a></span></p>
+</div>
+</dd>
+<dt>logging to file with structlog<a class="headerlink reference internal" href="#2.9.0-logging to file with structlog" id="2.9.0-logging to file with structlog">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix and issue with converting <code class="docutils literal notranslate"><span class="pre">StructLoggingConfig</span></code> to dict during call to
+<code class="docutils literal notranslate"><span class="pre">configure()</span></code> when the config object has a custom logger factory that
+references a <code class="docutils literal notranslate"><span class="pre">TextIO</span></code> object, which cannot be pickled.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3425">litestar-org/litestar#3425</a></span></p>
+</div>
+</dd>
+<dt>clear session cookie if new session exceeds <code class="docutils literal notranslate"><span class="pre">CHUNK_SIZE</span></code><a class="headerlink reference internal" href="#2.9.0-clear session cookie if new session exceeds" id="2.9.0-clear session cookie if new session exceeds">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix an issue where the connection session cookie is not cleared if the response
+session is stored across multiple cookies.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3441">litestar-org/litestar#3441</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3446">litestar-org/litestar#3446</a></span></p>
+</div>
+</dd>
+<dt>flash messages were not displayed on Redirect<a class="headerlink reference internal" href="#2.9.0-flash messages were not displayed on redirect" id="2.9.0-flash messages were not displayed on redirect">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix an issue where flashed messages were not shown after a redirect</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3325">litestar-org/litestar#3325</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3420">litestar-org/litestar#3420</a></span></p>
+</div>
+</dd>
+<dt>Validation of optional sequence in multipart data with one value<a class="headerlink reference internal" href="#2.9.0-validation of optional sequence in multipart data with one value" id="2.9.0-validation of optional sequence in multipart data with one value">#</a></dt><dd><div class="changelog-change docutils container">
+<p>A <code class="docutils literal notranslate"><span class="pre">Sequence[UploadFile]</span> <span class="pre">|</span> <span class="pre">None</span></code> would not pass validation when a single value
+was provided for a structured type, e.g. dataclass.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3407">litestar-org/litestar#3407</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3408">litestar-org/litestar#3408</a></span></p>
+</div>
+</dd>
+<dt>field not optional if default value<a class="headerlink reference internal" href="#2.9.0-field not optional if default value" id="2.9.0-field not optional if default value">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix issue where a pydantic v1 field annotation is wrapped with <code class="docutils literal notranslate"><span class="pre">Optional</span></code> if
+it is marked not required, but has a default value.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3471">litestar-org/litestar#3471</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3476">litestar-org/litestar#3476</a></span></p>
+</div>
+</dd>
+<dt>prevent starting multiple responses<a class="headerlink reference internal" href="#2.9.0-prevent starting multiple responses" id="2.9.0-prevent starting multiple responses">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Prevent the app’s exception handler middleware from starting a response after
+one has already started.</p>
+<p>When something in the middleware stack raises an exception after a
+“http.response.start” message has already been sent, we end up with long
+exception chains that obfuscate the original exception.</p>
+<p>This change implements tracking of when a response has started, and if so, we
+immediately raise the exception instead of sending it through the usual exception
+handling code path.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3479">litestar-org/litestar#3479</a></span></p>
+</div>
+</dd>
+<dt>logging middleware with multi-body response<a class="headerlink reference internal" href="#2.9.0-logging middleware with multi-body response" id="2.9.0-logging middleware with multi-body response">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Prevent logging middleware from failing with a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#KeyError" title="(in Python v3.12)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">KeyError</span></code></a> when a response
+sends multiple “http.response.body” messages.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3477">litestar-org/litestar#3477</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3478">litestar-org/litestar#3478</a></span></p>
+</div>
+</dd>
+<dt>handle dto type nested in mapping<a class="headerlink reference internal" href="#2.9.0-handle dto type nested in mapping" id="2.9.0-handle dto type nested in mapping">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Added handling for transferring data from a transfer model, to a DTO supported
+instance when the DTO supported type is nested in a mapping.</p>
+<p>I.e, handles this case:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">NestedDC</span><span class="p">:</span>
+    <span class="n">a</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">b</span><span class="p">:</span> <span class="nb">str</span>
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">DC</span><span class="p">:</span>
+    <span class="n">nested_mapping</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">NestedDC</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3463">litestar-org/litestar#3463</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3486">litestar-org/litestar#3486</a></span></p>
+</div>
+</dd>
+<dt>examples omitted in schema produced by dto<a class="headerlink reference internal" href="#2.9.0-examples omitted in schema produced by dto" id="2.9.0-examples omitted in schema produced by dto">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fixes issue where a <code class="docutils literal notranslate"><span class="pre">BodyKwarg</span></code> instance provided as metadata to a data type
+annotation was ignored for OpenAPI schema generation when the data type is
+managed by a DTO.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3505">litestar-org/litestar#3505</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3510">litestar-org/litestar#3510</a></span></p>
+</div>
+</dd>
+<dt>fix handling validation of subscribed generics<a class="headerlink reference internal" href="#2.9.0-fix handling validation of subscribed generics" id="2.9.0-fix handling validation of subscribed generics">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug that would lead to a <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#TypeError" title="(in Python v3.12)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">TypeError</span></code></a> when subscribed generics were
+used in a route handler signature and subject to validation.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">create_test_client</span>
+
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Foo</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+    <span class="k">pass</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">provide_foo</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Foo</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="n">Foo</span><span class="p">()</span>
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="n">provide_foo</span><span class="p">})</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">something</span><span class="p">(</span><span class="n">foo</span><span class="p">:</span> <span class="n">Foo</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">return</span> <span class="kc">None</span>
+
+<span class="k">with</span> <span class="n">create_test_client</span><span class="p">([</span><span class="n">something</span><span class="p">])</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+    <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3519">litestar-org/litestar#3519</a></span></p>
+</div>
+</dd>
+<dt>exclude static file from schema<a class="headerlink reference internal" href="#2.9.0-exclude static file from schema" id="2.9.0-exclude static file from schema">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Exclude static file routes created with <code class="docutils literal notranslate"><span class="pre">create_static_files_router</span></code> from the OpenAPI schema by default</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3374">litestar-org/litestar#3374</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3509">litestar-org/litestar#3509</a></span></p>
+</div>
+</dd>
+<dt>use re.match instead of re.search for mounted app path (#3501)<a class="headerlink reference internal" href="#2.9.0-use re.match instead of re.search for mounted app path (#3501)" id="2.9.0-use re.match instead of re.search for mounted app path (#3501)">#</a></dt><dd><div class="changelog-change docutils container">
+<p>When mounting an app, path resolution uses <code class="docutils literal notranslate"><span class="pre">re.search</span></code> instead or <code class="docutils literal notranslate"><span class="pre">re.match</span></code>,
+thus mounted app matches any path which contains mount path.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3501">litestar-org/litestar#3501</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3511">litestar-org/litestar#3511</a></span></p>
+</div>
+</dd>
+<dt>do not log exceptions twice, deprecate <code class="docutils literal notranslate"><span class="pre">traceback_line_limit</span></code> and fix <code class="docutils literal notranslate"><span class="pre">pretty_print_tty</span></code><a class="headerlink reference internal" href="#2.9.0-do not log exceptions twice, deprecate" id="2.9.0-do not log exceptions twice, deprecate">#</a></dt><dd><div class="changelog-change docutils container">
+<ul class="simple">
+<li><p>The wording of the log message, when logging an exception, has been updated.</p></li>
+<li><p>For structlog, the <code class="docutils literal notranslate"><span class="pre">traceback</span></code> field in the log message (which contained a
+truncated stacktrace) has been removed. The <code class="docutils literal notranslate"><span class="pre">exception</span></code> field is still around and contains the full stacktrace.</p></li>
+<li><p>The option <code class="docutils literal notranslate"><span class="pre">traceback_line_limit</span></code> has been deprecated. The value is now ignored, the full stacktrace will be logged.</p></li>
+</ul>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3228">litestar-org/litestar#3228</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3507">litestar-org/litestar#3507</a></span></p>
+</div>
+</dd>
+<dt>YAML schema dump<a class="headerlink reference internal" href="#2.9.0-yaml schema dump" id="2.9.0-yaml schema dump">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix an issue in the OpenAPI YAML schema dump logic of <code class="docutils literal notranslate"><span class="pre">OpenAPIController</span></code>
+where the endpoint for the OpenAPI YAML schema file returns an empty response
+if a request has been made to the OpenAPI JSON schema previously due to an
+incorrect variable check.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3537">litestar-org/litestar#3537</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.8.3">
 <h2>2.8.3<a class="headerlink" href="#2.8.3" title="Permalink to this heading">#</a></h2>
 <strong>Released: </strong>2024-05-06<section id="2.8.3-bugfix">
@@ -5849,6 +6099,11 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.9.0">2.9.0</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.9.0-feature">Features</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.9.0-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.8.3">2.8.3</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.8.3-bugfix">Bugfixes</a></li>
 </ul>
