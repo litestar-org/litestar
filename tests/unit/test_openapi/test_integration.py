@@ -112,6 +112,23 @@ def test_openapi_json_not_allowed(person_controller: type[Controller], pet_contr
         assert response.status_code == HTTP_404_NOT_FOUND
 
 
+@pytest.mark.parametrize(
+    "schema_paths",
+    [
+        ("/schema/openapi.json", "/schema/openapi.yaml"),
+        ("/schema/openapi.yaml", "/schema/openapi.json"),
+    ],
+)
+def test_openapi_controller_internal_schema_conversion(schema_paths: list[str]) -> None:
+    openapi_config = OpenAPIConfig("Example API", "1.0.0", openapi_controller=OpenAPIController)
+
+    with create_test_client([], openapi_config=openapi_config) as client:
+        for schema_path in schema_paths:
+            response = client.get(schema_path)
+            assert response.status_code == HTTP_200_OK
+            assert "Example API" in response.text
+
+
 def test_openapi_custom_path(openapi_controller: type[OpenAPIController] | None) -> None:
     openapi_config = OpenAPIConfig(
         title="my title", version="1.0.0", path="/custom_schema_path", openapi_controller=openapi_controller
