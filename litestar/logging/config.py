@@ -196,26 +196,34 @@ class LoggingConfig(BaseLoggingConfig):
     disable_existing_loggers: bool = field(default=False)
     """Whether any existing non-root loggers are to be disabled."""
     filters: dict[str, dict[str, Any]] | None = field(default=None)
-    """A dict in which each key is a filter id and each value is a dict describing how to configure the corresponding
-    Filter instance.
+    """A dict in which each key is a filter id and each value is a dict describing how to configure the
+    corresponding Filter_ instance.
+
+    .. _Filter: https://docs.python.org/3/library/logging.html#filter-objects
     """
     propagate: bool = field(default=True)
     """If messages must propagate to handlers higher up the logger hierarchy from this logger.
 
     .. deprecated:: 2.10.0
-        This parameter is deprecated. It will be removed in a future release. Use `propagate` at the logger level.
+        This parameter is deprecated. It will be removed in a future release. Use ``propagate`` at the logger level.
     """
     formatters: dict[str, dict[str, Any]] = field(default_factory=_get_default_formatters)
-    """A dict in which each key is a formatter and each value is a dict describing how to configure the corresponding
-    Formatter instance. A `standard` formatter is provided.
+    """A dict in which each key is a formatter and each value is a dict describing how to configure the
+    corresponding Formatter_ instance. A ``standard`` formatter is provided.
+
+    .. _Formatter: https://docs.python.org/3/library/logging.html#formatter-objects
     """
     handlers: dict[str, dict[str, Any]] = field(default_factory=_get_default_handlers)
-    """A dict in which each key is a handler id and each value is a dict describing how to configure the corresponding
-    Handler instance. Two handlers are provided, `console` and `queue_listener`.
+    """A dict in which each key is a handler id and each value is a dict describing how to configure the
+    corresponding Handler_ instance. Two handlers are provided, ``console`` and ``queue_listener``.
+
+    .. _Handler: https://docs.python.org/3/library/logging.html#handler-objects
     """
     loggers: dict[str, dict[str, Any]] = field(default_factory=_get_default_loggers)
-    """A dict in which each key is a logger name and each value is a dict describing how to configure the corresponding
-    Logger instance. A 'litestar' logger is mandatory and will be configured as required.
+    """A dict in which each key is a logger name and each value is a dict describing how to configure the
+    corresponding Logger_ instance. A ``litestar`` logger is mandatory and will be configured as required.
+
+    .. _Logger: https://docs.python.org/3/library/logging.html#logger-objects
     """
     root: dict[str, dict[str, Any] | list[Any] | str] = field(
         default_factory=lambda: {
