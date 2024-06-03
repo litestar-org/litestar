@@ -95,8 +95,8 @@ def file_store(tmp_path: Path) -> FileStore:
 
 @pytest.fixture()
 def file_store_create_directories(tmp_path: Path) -> FileStore:
-    shutil.rmtree(tmp_path, ignore_errors=True)  # in case the path was already created by different tests - we clean it
-    return FileStore(path=tmp_path.joinpath("subdir"), create_directories=True)
+    path = tmp_path / "subdir1" / "subdir2"
+    return FileStore(path=path, create_directories=True)
 
 
 @pytest.fixture()
