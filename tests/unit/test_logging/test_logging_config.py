@@ -115,7 +115,7 @@ def test_dictconfig_on_startup(dict_config_callable: str, dict_config_not_called
         [
             picologging,
             PicologgingQueueListenerHandler,
-            picologging.handlers.QueueListener,
+            picologging.handlers.QueueListener,  # pyright: ignore[reportGeneralTypeIssues]
         ],
     ],
 )
@@ -152,7 +152,7 @@ def test_default_queue_listener_handler(
     logger = get_logger("test_logger")
     assert type(logger) is logging_module.Logger
 
-    handler = logger.handlers[0]
+    handler = logger.handlers[0]  # pyright: ignore[reportGeneralTypeIssues]
     assert type(handler) is expected_handler_class
     assert type(handler.queue) is Queue
 
@@ -251,10 +251,11 @@ def test_root_logger(logging_module: ModuleType, handlers: Any, expected_handler
     logging_config = LoggingConfig(handlers=handlers)
     get_logger = logging_config.configure()
     root_logger = get_logger()
-    assert root_logger.name == "root"
+    assert root_logger.name == "root"  # type: ignore[attr-defined]
     assert isinstance(root_logger, logging_module.Logger)
-    assert root_logger.handlers[0].name == "queue_listener"
-    assert isinstance(root_logger.handlers[0], expected_handler_class)
+    root_logger_handler = root_logger.handlers[0]  # pyright: ignore[reportGeneralTypeIssues]
+    assert root_logger_handler.name == "queue_listener"
+    assert isinstance(root_logger_handler, expected_handler_class)
 
 
 @pytest.mark.parametrize(
@@ -271,7 +272,7 @@ def test_root_logger_no_config(logging_module: ModuleType, handlers: Any) -> Non
 
     assert isinstance(root_logger, logging_module.Logger)
 
-    handlers = root_logger.handlers
+    handlers = root_logger.handlers  # pyright: ignore[reportGeneralTypeIssues]
     if logging_module == logging:
         # pytest automatically configures some handlers
         for handler in handlers:
@@ -338,9 +339,9 @@ def test_customizing_handler(
 
     if configure_root_logger is True:
         assert isinstance(root_logger, logging_module.Logger)
-        assert root_logger.level == logging_module.INFO
+        assert root_logger.level == logging_module.INFO  # pyright: ignore[reportGeneralTypeIssues]
 
-        root_logger_handler = root_logger.handlers[0]  # type: ignore[attr-defined]
+        root_logger_handler = root_logger.handlers[0]  # pyright: ignore[reportGeneralTypeIssues]
         assert root_logger_handler.name == "queue_listener"
         assert type(root_logger_handler) is expected_root_logger_handler_class
 
