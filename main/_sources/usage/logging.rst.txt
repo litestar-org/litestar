@@ -18,7 +18,7 @@ Application and request level loggers can be configured using the :class:`~lites
 
 
    logging_config = LoggingConfig(
-       root={"level": logging.getLevelName(logging.INFO), "handlers": ["console"]},
+       root={"level": "INFO", "handlers": ["queue_listener"]},
        formatters={
            "standard": {"format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"}
        },
