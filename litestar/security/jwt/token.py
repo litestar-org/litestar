@@ -5,7 +5,8 @@ from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any
 
-from jose import JWSError, JWTError, jwt
+import jwt
+from jwt import InvalidTokenError, PyJWTError
 
 from litestar.exceptions import ImproperlyConfiguredException, NotAuthorizedException
 
@@ -86,7 +87,10 @@ class Token:
             NotAuthorizedException: If the token is invalid.
         """
         try:
-            payload = jwt.decode(token=encoded_token, key=secret, algorithms=[algorithm], options={"verify_aud": False})
+            payload = jwt.decode(jwt=encoded_token,
+                key=secret,
+                algorithms=[algorithm],
+                options={"verify_aud": False})
             exp = datetime.fromtimestamp(payload.pop("exp"), tz=timezone.utc)
             iat = datetime.fromtimestamp(payload.pop("iat"), tz=timezone.utc)
             field_names = {f.name for f in dataclasses.fields(Token)}
@@ -95,7 +99,7 @@ class Token:
             for key in extra_fields:
                 extras[key] = payload.pop(key)
             return cls(exp=exp, iat=iat, **payload, extras=extras)
-        except (KeyError, JWTError, ImproperlyConfiguredException) as e:
+        except (KeyError, PyJWTError, ImproperlyConfiguredException) as e:
             raise NotAuthorizedException("Invalid token") from e
 
     def encode(self, secret: str, algorithm: str) -> str:
@@ -113,7 +117,8 @@ class Token:
         """
         try:
             return jwt.encode(
-                claims={k: v for k, v in asdict(self).items() if v is not None}, key=secret, algorithm=algorithm
-            )
-        except (JWTError, JWSError) as e:
+                payload={k: v for k, v in asdict(self).items() if v is not None},
+                key=secret,
+                algorithm=algorithm)
+        except (PyJWTError, InvalidTokenError) as e:
             raise ImproperlyConfiguredException("Failed to encode token") from e
