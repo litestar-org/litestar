@@ -90,13 +90,19 @@ def get_logger_placeholder(_: str | None = None) -> NoReturn:
     )
 
 
-def _get_default_handlers() -> dict[str, dict[str, Any]]:
+def _get_default_logging_module() -> str:
+    if find_spec("picologging"):
+        return "picologging"
+    return "logging"
+
+
+def _get_default_handlers(logging_module: str) -> dict[str, dict[str, Any]]:
     """Return the default logging handlers for the config.
 
     Returns:
         A dictionary of logging handlers
     """
-    if find_spec("picologging"):
+    if logging_module == "picologging":
         return default_picologging_handlers
     return default_handlers
 
@@ -179,12 +185,11 @@ class BaseLoggingConfig(ABC):
 
 @dataclass
 class LoggingConfig(BaseLoggingConfig):
-    """Configuration class for standard logging.
+    """Configuration class for standard logging."""
 
-    Notes:
-        - If 'picologging' is installed it will be used by default.
-    """
-
+    logging_module: str = field(default_factory=_get_default_logging_module)
+    """Logging module. ``logging`` and ``picologging`` are supported. ``picologging`` will be used by default if
+    installed."""
     version: Literal[1] = field(default=1)
     """The only valid value at present is 1."""
     incremental: bool = field(default=False)
@@ -213,7 +218,7 @@ class LoggingConfig(BaseLoggingConfig):
 
     .. _Formatter: https://docs.python.org/3/library/logging.html#formatter-objects
     """
-    handlers: dict[str, dict[str, Any]] = field(default_factory=_get_default_handlers)
+    handlers: dict[str, dict[str, Any]] = field(default_factory=dict)
     """A dict in which each key is a handler id and each value is a dict describing how to configure the
     corresponding Handler_ instance. Two handlers are provided, ``console`` and ``queue_listener``.
 
@@ -253,10 +258,10 @@ class LoggingConfig(BaseLoggingConfig):
             self.formatters["standard"] = _get_default_formatters()["standard"]
 
         if "console" not in self.handlers:
-            self.handlers["console"] = _get_default_handlers()["console"]
+            self.handlers["console"] = _get_default_handlers(self.logging_module)["console"]
 
         if "queue_listener" not in self.handlers:
-            self.handlers["queue_listener"] = _get_default_handlers()["queue_listener"]
+            self.handlers["queue_listener"] = _get_default_handlers(self.logging_module)["queue_listener"]
 
         if "litestar" not in self.loggers:
             self.loggers["litestar"] = _get_default_loggers()["litestar"]
@@ -274,6 +279,7 @@ class LoggingConfig(BaseLoggingConfig):
         """
 
         excluded_fields: set[str] = {
+            "logging_module",
             "configure_root_logger",
             "exception_logging_handler",
             "log_exceptions",
@@ -284,7 +290,7 @@ class LoggingConfig(BaseLoggingConfig):
         if not self.configure_root_logger:
             excluded_fields.add("root")
 
-        if "picologging" in " ".join([handler["class"] for handler in self.handlers.values()]):
+        if self.logging_module == "picologging":
             try:
                 from picologging import config, getLogger
             except ImportError as e:
