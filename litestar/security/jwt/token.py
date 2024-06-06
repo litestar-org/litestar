@@ -87,10 +87,7 @@ class Token:
             NotAuthorizedException: If the token is invalid.
         """
         try:
-            payload = jwt.decode(jwt=encoded_token,
-                key=secret,
-                algorithms=[algorithm],
-                options={"verify_aud": False})
+            payload = jwt.decode(jwt=encoded_token, key=secret, algorithms=[algorithm], options={"verify_aud": False})
             exp = datetime.fromtimestamp(payload.pop("exp"), tz=timezone.utc)
             iat = datetime.fromtimestamp(payload.pop("iat"), tz=timezone.utc)
             field_names = {f.name for f in dataclasses.fields(Token)}
@@ -117,8 +114,7 @@ class Token:
         """
         try:
             return jwt.encode(
-                payload={k: v for k, v in asdict(self).items() if v is not None},
-                key=secret,
-                algorithm=algorithm)
+                payload={k: v for k, v in asdict(self).items() if v is not None}, key=secret, algorithm=algorithm
+            )
         except (PyJWTError, InvalidTokenError) as e:
             raise ImproperlyConfiguredException("Failed to encode token") from e
