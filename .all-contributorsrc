@@ -1764,6 +1764,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "PossiblePanda",
+      "name": "PossiblePanda",
+      "avatar_url": "https://avatars.githubusercontent.com/u/85448494?v=4",
+      "profile": "https://possiblepanda.me",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
