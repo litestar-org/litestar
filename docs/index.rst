@@ -334,7 +334,7 @@ Example Applications
   `Read more <https://litestar-org.github.io/litestar-fullstack/latest/>`_.
 * `litestar-hello-world <https://github.com/litestar-org/litestar-hello-world>`_: A bare-minimum application setup.
   Great for testing and POC work.
-
+* `litestar-dishka-FastStream <https://github.com/Sehat1137/litestar-dishka-faststream>`_: A simple template built on the principles of clean architecture using Litestar, SqlAlchemy, Pydantic, dishka, FastStream
 
 .. toctree::
     :titlesonly:
