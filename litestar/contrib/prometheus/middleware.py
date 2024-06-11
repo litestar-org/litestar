@@ -125,12 +125,12 @@ class PrometheusMiddleware(AbstractMiddleware):
                 for path_part in path_parts:
                     path_parameter_value = str(path_parameter_value)
                     if path_part == path_parameter_value:
-                        path += f"/[{path_parameter}]"
+                        path += f"/{{{path_parameter}}}"
                     else:
                         path += f"/{path_part}"
         return {
             "method": request.method if request.scope["type"] == ScopeType.HTTP else request.scope["type"],
-            "path": request.url.path,
+            "path": path,
             "status_code": 200,
             "app_name": self._config.app_name,
         }
