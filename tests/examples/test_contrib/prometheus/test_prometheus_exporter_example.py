@@ -31,7 +31,7 @@ def test_prometheus_exporter_example(group_path: bool, expected_path: str) -> No
 
     clear_collectors()
 
-    @get("/test/{name: str}")
+    @get("test/{name: str}")
     def home(name: str) -> Dict[str, Any]:
         return {"hello": name}
 

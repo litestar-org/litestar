@@ -117,9 +117,7 @@ class PrometheusMiddleware(AbstractMiddleware):
 
         path = request.url.path
         if self._config.group_path:
-            path_parts = path.split("/")
-            if path_parts[0] == "":
-                path_parts = path_parts[1:]
+            path_parts = path.split("/")[1:]
             path = ""
             for path_parameter, path_parameter_value in request.scope.get("path_params", {}).items():
                 for path_part in path_parts:
