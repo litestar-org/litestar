@@ -1773,6 +1773,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "evstratbg",
+      "name": "evstrat",
+      "avatar_url": "https://avatars.githubusercontent.com/u/10176401?v=4",
+      "profile": "https://github.com/evstratbg",
+      "contributions": [
+        "infra"
+      ]
     }
   ],
   "contributorsPerLine": 7,
