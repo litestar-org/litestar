@@ -566,6 +566,7 @@ see [the contribution guide](CONTRIBUTING.rst).
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/jderrien"><img src="https://avatars.githubusercontent.com/u/145396?v=4?s=100" width="100px;" alt="jderrien"/><br /><sub><b>jderrien</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=jderrien" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://possiblepanda.me"><img src="https://avatars.githubusercontent.com/u/85448494?v=4?s=100" width="100px;" alt="PossiblePanda"/><br /><sub><b>PossiblePanda</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=PossiblePanda" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/evstratbg"><img src="https://avatars.githubusercontent.com/u/10176401?v=4?s=100" width="100px;" alt="evstrat"/><br /><sub><b>evstrat</b></sub></a><br /><a href="#infra-evstratbg" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://speakerdeck.com/eltociear"><img src="https://avatars.githubusercontent.com/u/22633385?v=4?s=100" width="100px;" alt="Ikko Eltociear Ashimine"/><br /><sub><b>Ikko Eltociear Ashimine</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=eltociear" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>
