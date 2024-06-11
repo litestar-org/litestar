@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any, Iterable, cast
 
 from litestar.enums import MediaType
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.exceptions.http_exceptions import TemplateRenderingException
 from litestar.response.base import ASGIResponse, Response
 from litestar.status_codes import HTTP_200_OK
 from litestar.utils.deprecation import warn_deprecation
@@ -142,11 +143,19 @@ class Template(Response[bytes]):
         context = self.create_template_context(request)
 
         if self.template_str is not None:
-            body = template_engine.render_string(self.template_str, context)
+            try:
+                body = template_engine.render_string(self.template_str, context)
+            except Exception as e:
+                raise TemplateRenderingException from e
         else:
             # cast to str b/c we know that either template_name cannot be None if template_str is None
             template = template_engine.get_template(cast("str", self.template_name))
-            body = template.render(**context).encode(self.encoding)
+            try:
+                body = template.render(**context).encode(self.encoding)
+            except Exception as e:
+                raise TemplateRenderingException(
+                    template_name=self.template_name,
+                ) from e
 
         return ASGIResponse(
             background=self.background or background,

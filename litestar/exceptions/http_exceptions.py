@@ -152,3 +152,15 @@ class TemplateNotFoundException(InternalServerException):
             template_name (str): Name of template that could not be found.
         """
         super().__init__(*args, detail=f"Template {template_name} not found.")
+
+
+class TemplateRenderingException(InternalServerException):
+    def __init__(self, *args: Any, template_name: str | None = None) -> None:
+        """Args:
+        *args (Any): Passed through to ``super().__init__()`` - should not include ``detail``.
+        template_name (str): Name of template that failed to render. None in case of a template string.
+        """
+        if template_name is None:
+            super().__init__(*args, detail="Failed to render a template string")
+        else:
+            super().__init__(*args, detail=f"Template {template_name} failed to render.")
