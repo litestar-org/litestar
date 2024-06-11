@@ -1,6 +1,6 @@
 from typing import Any, Dict
-import pytest
 
+import pytest
 from prometheus_client import REGISTRY
 
 from litestar import get
@@ -18,15 +18,13 @@ def clear_collectors() -> None:
 
 
 @pytest.mark.parametrize(
-    "group_path, expected_path", [
+    "group_path, expected_path",
+    [
         (True, "/test/{name}"),
         (False, "/test/litestar"),
-    ]
+    ],
 )
-def test_prometheus_exporter_example(
-        group_path: bool,
-        expected_path: str
-) -> None:
+def test_prometheus_exporter_example(group_path: bool, expected_path: str) -> None:
     from docs.examples.contrib.prometheus.using_prometheus_exporter import create_app
 
     app = create_app(group_path=group_path)
