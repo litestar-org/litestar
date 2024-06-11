@@ -37,7 +37,6 @@ class ExceptionResponseContent:
         Returns:
             A response instance.
         """
-        from litestar.response import Response
 
         content: Any = {k: v for k, v in asdict(self).items() if k not in ("headers", "media_type") and v is not None}
         type_encoders = _debug_response._get_type_encoders_for_request(request) if request is not None else None

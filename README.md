@@ -563,6 +563,8 @@ see [the contribution guide](CONTRIBUTING.rst).
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="http://0110.be"><img src="https://avatars.githubusercontent.com/u/60453?v=4?s=100" width="100px;" alt="Joren Six"/><br /><sub><b>Joren Six</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=JorenSix" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/jderrien"><img src="https://avatars.githubusercontent.com/u/145396?v=4?s=100" width="100px;" alt="jderrien"/><br /><sub><b>jderrien</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=jderrien" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://possiblepanda.me"><img src="https://avatars.githubusercontent.com/u/85448494?v=4?s=100" width="100px;" alt="PossiblePanda"/><br /><sub><b>PossiblePanda</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=PossiblePanda" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>

@@ -172,7 +172,7 @@ class OpenAPIController(Controller):
         from yaml import dump as dump_yaml
 
         if self.should_serve_endpoint(request):
-            if not self._dumped_json_schema:
+            if not self._dumped_yaml_schema:
                 schema_json = decode_json(self._get_schema_as_json(request))
                 schema_yaml = dump_yaml(schema_json, default_flow_style=False)
                 self._dumped_yaml_schema = schema_yaml.encode("utf-8")
