@@ -1782,6 +1782,15 @@
       "contributions": [
         "infra"
       ]
+    },
+    {
+      "login": "eltociear",
+      "name": "Ikko Eltociear Ashimine",
+      "avatar_url": "https://avatars.githubusercontent.com/u/22633385?v=4",
+      "profile": "https://speakerdeck.com/eltociear",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
