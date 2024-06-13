@@ -49,7 +49,7 @@ MSG_SEMANTIC_ROUTE_HANDLER_WITH_HTTP = "semantic route handlers cannot define ht
 class _SubclassWarningMixin:
     def __init_subclass__(cls, **kwargs: Any) -> None:
         warnings.warn(
-            "Semantic HTTP route handler classes are deprecated and will be replaced by"
+            "Semantic HTTP route handler classes are deprecated and will be replaced by "
             "functional decorators in Litestar 3.0.",
             category=DeprecationWarning,
             stacklevel=2,
