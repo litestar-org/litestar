@@ -187,7 +187,7 @@ class BaseTestClient(Generic[T]):
         )
 
     def _prepare_ws_connect_request(  # type: ignore[misc]
-        self: BaseClient,
+        self: BaseClient,  # pyright: ignore
         url: str,
         subprotocols: Sequence[str] | None = None,
         params: QueryParamTypes | None = None,
