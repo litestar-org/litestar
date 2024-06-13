@@ -92,7 +92,18 @@ def test_websocket_url() -> None:
         await socket.close()
 
     with create_test_client(handler).websocket_connect("/123?a=abc") as ws:
-        assert ws.receive_json() == {"url": "ws://testserver/123?a=abc"}
+        assert ws.receive_json() == {"url": "ws://testserver.local/123?a=abc"}
+
+
+def test_websocket_url_respects_custom_base_url() -> None:
+    @websocket("/123")
+    async def handler(socket: WebSocket) -> None:
+        await socket.accept()
+        await socket.send_json({"url": str(socket.url)})
+        await socket.close()
+
+    with create_test_client(handler, base_url="http://example.org").websocket_connect("/123?a=abc") as ws:
+        assert ws.receive_json() == {"url": "ws://example.org/123?a=abc"}
 
 
 def test_websocket_binary_json() -> None:
@@ -133,7 +144,7 @@ def test_websocket_headers() -> None:
             "accept": "*/*",
             "accept-encoding": "gzip, deflate, br",
             "connection": "upgrade",
-            "host": "testserver",
+            "host": "testserver.local",
             "user-agent": "testclient",
             "sec-websocket-key": "testserver==",
             "sec-websocket-version": "13",
