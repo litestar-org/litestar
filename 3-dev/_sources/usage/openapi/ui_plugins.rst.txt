@@ -87,7 +87,7 @@ All plugins support:
 Most plugins support the following additional options:
 
 - ``version``: The version of the UIs JS and (in some cases) CSS bundle to use. We use the ``version`` to construct the
-  URL to retrieve the the bundle from ``unpkg``, e.g., ``https://unpkg.com/rapidoc@<version>/dist/rapidoc-min.js``
+  URL to retrieve the bundle from ``unpkg``, e.g., ``https://unpkg.com/rapidoc@<version>/dist/rapidoc-min.js``
 - ``js_url``: The URL to the JS bundle. If provided, this will override the ``version`` option.
 - ``css_url``: The URL to the CSS bundle. If provided, this will override the ``version`` option.
 

@@ -310,7 +310,7 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/controller.html">controller</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../reference/concurrency.html">cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/concurrency.html">concurrency</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/data_extractors.html">data_extractors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/datastructures/index.html">datastructures</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/datastructures/secret_values.html">secret_values</a></li>
@@ -584,15 +584,16 @@ this package, you should first install the required dependencies:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
 </span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.contrib.prometheus</span> <span class="kn">import</span> <span class="n">PrometheusConfig</span><span class="p">,</span> <span class="n">PrometheusController</span>
 </span><span data-line="3">
-</span><span data-line="4"><span class="c1"># Default app name and prefix is litestar.</span>
-</span><span data-line="5"><span class="n">prometheus_config</span> <span class="o">=</span> <span class="n">PrometheusConfig</span><span class="p">()</span>
-</span><span data-line="6">
-</span><span data-line="7">
-</span><span data-line="8"><span class="c1"># By default the metrics are available in prometheus format and the path is set to &#39;/metrics&#39;.</span>
-</span><span data-line="9"><span class="c1"># If you want to change the path and format you can do it by subclassing the PrometheusController class.</span>
-</span><span data-line="10">
-</span><span data-line="11"><span class="c1"># Creating the litestar app instance with our custom PrometheusConfig and PrometheusController.</span>
-</span><span data-line="12"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">PrometheusController</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">prometheus_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="k">def</span> <span class="nf">create_app</span><span class="p">(</span><span class="n">group_path</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+</span><span data-line="6">    <span class="c1"># Default app name and prefix is litestar.</span>
+</span><span data-line="7">    <span class="n">prometheus_config</span> <span class="o">=</span> <span class="n">PrometheusConfig</span><span class="p">(</span><span class="n">group_path</span><span class="o">=</span><span class="n">group_path</span><span class="p">)</span>
+</span><span data-line="8">
+</span><span data-line="9">    <span class="c1"># By default the metrics are available in prometheus format and the path is set to &#39;/metrics&#39;.</span>
+</span><span data-line="10">    <span class="c1"># If you want to change the path and format you can do it by subclassing the PrometheusController class.</span>
+</span><span data-line="11">
+</span><span data-line="12">    <span class="c1"># Creating the litestar app instance with our custom PrometheusConfig and PrometheusController.</span>
+</span><span data-line="13">    <span class="k">return</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">PrometheusController</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">prometheus_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
 </span></pre></div>
 </div>
 </div>

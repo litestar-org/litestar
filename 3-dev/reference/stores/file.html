@@ -310,7 +310,7 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../controller.html">controller</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../concurrency.html">cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../concurrency.html">concurrency</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../data_extractors.html">data_extractors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../datastructures/index.html">datastructures</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../datastructures/secret_values.html">secret_values</a></li>
@@ -498,6 +498,7 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#litestar.stores.file.FileStore"><code class="docutils literal notranslate"><span class="pre">FileStore</span></code></a><ul>
 <li><a class="reference internal" href="#litestar.stores.file.FileStore.__init__"><code class="docutils literal notranslate"><span class="pre">FileStore.__init__()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.stores.file.FileStore.path"><code class="docutils literal notranslate"><span class="pre">FileStore.path</span></code></a></li>
+<li><a class="reference internal" href="#litestar.stores.file.FileStore.create_directories"><code class="docutils literal notranslate"><span class="pre">FileStore.create_directories</span></code></a></li>
 <li><a class="reference internal" href="#litestar.stores.file.FileStore.with_namespace"><code class="docutils literal notranslate"><span class="pre">FileStore.with_namespace()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.stores.file.FileStore.set"><code class="docutils literal notranslate"><span class="pre">FileStore.set()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.stores.file.FileStore.get"><code class="docutils literal notranslate"><span class="pre">FileStore.get()</span></code></a></li>
@@ -590,11 +591,19 @@ data-aria-dark="Switch to auto color mode">
 <p>File based, thread and process safe, asynchronous key/value store.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.stores.file.FileStore.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PathLike</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.stores.file.FileStore.__init__" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PathLike</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_directories</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.stores.file.FileStore.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize <code class="docutils literal notranslate"><span class="pre">FileStorage</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="target" id="litestar.stores.file.FileStore.params.path"></span><strong>path</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.file.FileStore.params.path">¶</a> – Path to store data under</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="litestar.stores.file.FileStore.params.path"></span><strong>path</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.file.FileStore.params.path">¶</a> – Path to store data under</p></li>
+<li><p><span class="target" id="litestar.stores.file.FileStore.params.create_directories"></span><strong>create_directories</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.file.FileStore.params.create_directories">¶</a> – <p>Create the directories in <code class="docutils literal notranslate"><span class="pre">path</span></code> if they don’t exist
+Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 2.9.0.</span></p>
+</div>
+</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -603,6 +612,12 @@ data-aria-dark="Switch to auto color mode">
 <dt class="sig sig-object py" id="litestar.stores.file.FileStore.path">
 <span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#litestar.stores.file.FileStore.path" title="Permalink to this definition">¶</a></dt>
 <dd><p>file path</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.stores.file.FileStore.create_directories">
+<span class="sig-name descname"><span class="pre">create_directories</span></span><a class="headerlink" href="#litestar.stores.file.FileStore.create_directories" title="Permalink to this definition">¶</a></dt>
+<dd><p>flag to create directories in path</p>
 </dd></dl>
 
 <dl class="py method">

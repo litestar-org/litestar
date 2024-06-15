@@ -310,7 +310,7 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/controller.html">controller</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../reference/concurrency.html">cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../reference/concurrency.html">concurrency</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/data_extractors.html">data_extractors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/datastructures/index.html">datastructures</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/datastructures/secret_values.html">secret_values</a></li>
@@ -576,9 +576,9 @@ data-aria-dark="Switch to auto color mode">
 expected. Litestar comes with a simple mechanism for caching:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
 </span><span data-line="2">
-</span><span data-line="3">
-</span><span data-line="4"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/cached-path&quot;</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span data-line="5"><span class="k">def</span> <span class="nf">my_cached_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="3"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/cached&quot;</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span data-line="4"><span class="k">async</span> <span class="k">def</span> <span class="nf">my_cached_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="5">    <span class="k">return</span> <span class="s2">&quot;cached&quot;</span>
 </span></pre></div>
 </div>
 <p>By setting <a class="reference internal" href="../reference/handlers.html#litestar.handlers.HTTPRouteHandler.params.cache" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">cache</span></code></a> to <code class="docutils literal notranslate"><span class="pre">True</span></code>, the response from the handler
@@ -596,9 +596,9 @@ will keep the response in cache indefinitely.</p>
 parameter to the number of seconds to cache the response.</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
 </span><span data-line="2">
-</span><span data-line="3">
-</span><span data-line="4"><span class="hll"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/cached-path&quot;</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>  <span class="c1"># seconds</span>
-</span></span><span data-line="5"><span class="k">def</span> <span class="nf">my_cached_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="3"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/cached-seconds&quot;</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>  <span class="c1"># seconds</span>
+</span><span data-line="4"><span class="hll"><span class="k">async</span> <span class="k">def</span> <span class="nf">my_cached_handler_seconds</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span></span><span data-line="5">    <span class="k">return</span> <span class="s2">&quot;cached for 120 seconds&quot;</span>
 </span></pre></div>
 </div>
 </div>
@@ -608,11 +608,11 @@ sentinel instead:</p>
 <div class="code-block-caption"><span class="caption-text">Caching the response indefinitely by setting the <a class="reference internal" href="../reference/handlers.html#litestar.handlers.HTTPRouteHandler.params.cache" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">cache</span></code></a>
 parameter to <a class="reference internal" href="../reference/config.html#litestar.config.response_cache.CACHE_FOREVER" title="litestar.config.response_cache.CACHE_FOREVER"><code class="xref py py-class docutils literal notranslate"><span class="pre">CACHE_FOREVER</span></code></a>.</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.config.response_cache</span> <span class="kn">import</span> <span class="n">CACHE_FOREVER</span>
+</span><span data-line="2">
 </span><span data-line="3">
-</span><span data-line="4">
-</span><span data-line="5"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/cached-path&quot;</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="n">CACHE_FOREVER</span><span class="p">)</span>
-</span><span data-line="6"><span class="k">def</span> <span class="nf">my_cached_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="4"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/cached-forever&quot;</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="n">CACHE_FOREVER</span><span class="p">)</span>
+</span><span data-line="5"><span class="hll"><span class="k">async</span> <span class="k">def</span> <span class="nf">my_cached_handler_forever</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span></span><span data-line="6">    <span class="k">return</span> <span class="s2">&quot;cached forever&quot;</span>
 </span></pre></div>
 </div>
 </div>
@@ -627,12 +627,26 @@ parameter to <a class="reference internal" href="../reference/config.html#litest
 any <a class="reference internal" href="../reference/stores/base.html#litestar.stores.base.Store" title="litestar.stores.base.Store"><code class="xref py py-class docutils literal notranslate"><span class="pre">Store</span></code></a>, for example <a class="reference internal" href="../reference/stores/redis.html#litestar.stores.redis.RedisStore" title="litestar.stores.redis.RedisStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">RedisStore</span></code></a>:</p>
 <div class="literal-block-wrapper docutils container" id="id3">
 <div class="code-block-caption"><span class="caption-text">Using Redis as the cache store.</span><a class="headerlink" href="#id3" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar.config.cache</span> <span class="kn">import</span> <span class="n">ResponseCacheConfig</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.stores.redis</span> <span class="kn">import</span> <span class="n">RedisStore</span>
-</span><span data-line="3">
-</span><span data-line="4"><span class="n">redis_store</span> <span class="o">=</span> <span class="n">RedisStore</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;redis://localhost/&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">6379</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-</span><span data-line="5">
-</span><span data-line="6"><span class="n">cache_config</span> <span class="o">=</span> <span class="n">ResponseCacheConfig</span><span class="p">(</span><span class="n">store</span><span class="o">=</span><span class="n">redis_store</span><span class="p">)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">asyncio</span>
+</span><span data-line="2">
+</span><span data-line="3"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.config.response_cache</span> <span class="kn">import</span> <span class="n">ResponseCacheConfig</span>
+</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar.stores.redis</span> <span class="kn">import</span> <span class="n">RedisStore</span>
+</span><span data-line="6">
+</span><span data-line="7">
+</span><span data-line="8"><span class="nd">@get</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</span><span data-line="9"><span class="k">async</span> <span class="k">def</span> <span class="nf">something</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="10">    <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span><span data-line="11">    <span class="k">return</span> <span class="s2">&quot;something&quot;</span>
+</span><span data-line="12">
+</span><span data-line="13">
+</span><span data-line="14"><span class="n">redis_store</span> <span class="o">=</span> <span class="n">RedisStore</span><span class="o">.</span><span class="n">with_client</span><span class="p">(</span><span class="n">url</span><span class="o">=</span><span class="s2">&quot;redis://localhost/&quot;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">6379</span><span class="p">,</span> <span class="n">db</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</span><span data-line="15"><span class="n">cache_config</span> <span class="o">=</span> <span class="n">ResponseCacheConfig</span><span class="p">(</span><span class="n">store</span><span class="o">=</span><span class="s2">&quot;redis_backed_store&quot;</span><span class="p">)</span>
+</span><span data-line="16"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+</span><span data-line="17">    <span class="p">[</span><span class="n">something</span><span class="p">],</span>
+</span><span data-line="18">    <span class="n">stores</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;redis_backed_store&quot;</span><span class="p">:</span> <span class="n">redis_store</span><span class="p">},</span>
+</span><span data-line="19">    <span class="n">response_cache_config</span><span class="o">=</span><span class="n">cache_config</span><span class="p">,</span>
+</span><span data-line="20"><span class="p">)</span>
 </span></pre></div>
 </div>
 </div>
@@ -644,20 +658,20 @@ any <a class="reference internal" href="../reference/stores/base.html#litestar.s
 <div class="literal-block-wrapper docutils container" id="id4">
 <div class="code-block-caption"><span class="caption-text">Using a custom cache key builder.</span><a class="headerlink" href="#id4" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span>
-</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.config.cache</span> <span class="kn">import</span> <span class="n">ResponseCacheConfig</span>
+</span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.config.response_cache</span> <span class="kn">import</span> <span class="n">ResponseCacheConfig</span>
 </span><span data-line="3">
 </span><span data-line="4">
 </span><span data-line="5"><span class="k">def</span> <span class="nf">key_builder</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 </span><span data-line="6">    <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">path</span> <span class="o">+</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;my-header&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
 </span><span data-line="7">
 </span><span data-line="8">
-</span><span data-line="9"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([],</span> <span class="n">cache_config</span><span class="o">=</span><span class="n">ResponseCacheConfig</span><span class="p">(</span><span class="n">key_builder</span><span class="o">=</span><span class="n">key_builder</span><span class="p">))</span>
+</span><span data-line="9"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([],</span> <span class="n">response_cache_config</span><span class="o">=</span><span class="n">ResponseCacheConfig</span><span class="p">(</span><span class="n">key_builder</span><span class="o">=</span><span class="n">key_builder</span><span class="p">))</span>
 </span></pre></div>
 </div>
 </div>
 <div class="literal-block-wrapper docutils container" id="id5">
 <div class="code-block-caption"><span class="caption-text">Using a custom cache key builder for a specific route handler.</span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
 </span><span data-line="2">
 </span><span data-line="3">
 </span><span data-line="4"><span class="k">def</span> <span class="nf">key_builder</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -665,7 +679,11 @@ any <a class="reference internal" href="../reference/stores/base.html#litestar.s
 </span><span data-line="6">
 </span><span data-line="7">
 </span><span data-line="8"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/cached-path&quot;</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache_key_builder</span><span class="o">=</span><span class="n">key_builder</span><span class="p">)</span>
-</span><span data-line="9"><span class="k">def</span> <span class="nf">cached_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
+</span><span data-line="9"><span class="k">async</span> <span class="k">def</span> <span class="nf">cached_handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+</span><span data-line="10">    <span class="k">return</span> <span class="s2">&quot;cached&quot;</span>
+</span><span data-line="11">
+</span><span data-line="12">
+</span><span data-line="13"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">cached_handler</span><span class="p">])</span>
 </span></pre></div>
 </div>
 </div>
