@@ -508,6 +508,8 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#deprecated-scope-state-utilities-removed">Deprecated scope state utilities removed</a></li>
 <li><a class="reference internal" href="#deprecated-utility-function-is-sync-or-async-generator-removed">Deprecated utility function <code class="docutils literal notranslate"><span class="pre">is_sync_or_async_generator</span></code> removed</a></li>
 <li><a class="reference internal" href="#removal-of-semantic-http-route-handler-classes">Removal of semantic HTTP route handler classes</a></li>
+<li><a class="reference internal" href="#id1">Deprecated <code class="docutils literal notranslate"><span class="pre">app</span></code> parameter for <code class="docutils literal notranslate"><span class="pre">Response.to_asgi_response</span></code> has been removed</a></li>
+<li><a class="reference internal" href="#removal-of-deprecated-litestar-middleware-exceptions-module-and-exceptionhandlermiddleware">Removal of deprecated <code class="docutils literal notranslate"><span class="pre">litestar.middleware.exceptions</span></code> module and <code class="docutils literal notranslate"><span class="pre">ExceptionHandlerMiddleware</span></code></a></li>
 </ul>
 
   </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
@@ -723,6 +725,18 @@ parameter to the decorator function can be used:</p>
 </span><span data-line="7">    <span class="o">...</span>
 </span></pre></div>
 </div>
+</section>
+<section id="id1">
+<h2>Deprecated <code class="docutils literal notranslate"><span class="pre">app</span></code> parameter for <code class="docutils literal notranslate"><span class="pre">Response.to_asgi_response</span></code> has been removed<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
+<p>The parameter <code class="docutils literal notranslate"><span class="pre">app</span></code> for <a class="reference internal" href="../reference/response/index.html#litestar.response.Response.to_asgi_response" title="litestar.response.Response.to_asgi_response"><code class="xref py py-meth docutils literal notranslate"><span class="pre">to_asgi_response()</span></code></a> has been removed.
+If you need access to the app instance inside a custom <code class="docutils literal notranslate"><span class="pre">to_asgi_response</span></code> method,
+replace the usages of <code class="docutils literal notranslate"><span class="pre">app</span></code> with <code class="docutils literal notranslate"><span class="pre">request.app</span></code>.</p>
+</section>
+<section id="removal-of-deprecated-litestar-middleware-exceptions-module-and-exceptionhandlermiddleware">
+<h2>Removal of deprecated <code class="docutils literal notranslate"><span class="pre">litestar.middleware.exceptions</span></code> module and <code class="docutils literal notranslate"><span class="pre">ExceptionHandlerMiddleware</span></code><a class="headerlink" href="#removal-of-deprecated-litestar-middleware-exceptions-module-and-exceptionhandlermiddleware" title="Permalink to this heading">¶</a></h2>
+<p>The deprecated <code class="docutils literal notranslate"><span class="pre">litestar.middleware.exceptions</span></code> module and the
+<code class="docutils literal notranslate"><span class="pre">ExceptionHandlerMiddleware</span></code> have been removed. Since <code class="docutils literal notranslate"><span class="pre">ExceptionHandlerMiddleware</span></code>
+has been applied automatically behind the scenes if necessary, no action is required.</p>
 </section>
 </section>
 
