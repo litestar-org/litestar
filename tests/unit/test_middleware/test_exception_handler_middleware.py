@@ -48,7 +48,7 @@ def app() -> Litestar:
 
 @pytest.fixture()
 def middleware() -> ExceptionHandlerMiddleware:
-    return ExceptionHandlerMiddleware(dummy_app, None)
+    return ExceptionHandlerMiddleware(dummy_app)
 
 
 @pytest.fixture()
@@ -416,7 +416,7 @@ async def test_exception_handler_middleware_response_already_started(scope: HTTP
         await send(start_message)
         raise RuntimeError("Test exception")
 
-    mw = ExceptionHandlerMiddleware(asgi_app, None)
+    mw = ExceptionHandlerMiddleware(asgi_app)
 
     with pytest.raises(LitestarException):
         await mw(scope, mock_receive, mock_send)
