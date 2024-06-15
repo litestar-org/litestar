@@ -85,21 +85,6 @@ def test_openapi_yaml_not_allowed(
         assert response.status_code == HTTP_404_NOT_FOUND
 
 
-def test_openapi_json_not_allowed(person_controller: type[Controller], pet_controller: type[Controller]) -> None:
-    # only tested with the OpenAPIController, b/c new router based approach always serves `openapi.json`.
-    openapi_config = OpenAPIConfig(
-        "Example API",
-        "1.0.0",
-    )
-
-    with create_test_client([person_controller, pet_controller], openapi_config=openapi_config) as client:
-        assert client.app.openapi_schema
-        openapi_schema = client.app.openapi_schema
-        assert openapi_schema.paths
-        response = client.get("/schema/openapi.json")
-        assert response.status_code == HTTP_404_NOT_FOUND
-
-
 @pytest.mark.parametrize(
     "schema_paths",
     [
@@ -108,7 +93,7 @@ def test_openapi_json_not_allowed(person_controller: type[Controller], pet_contr
     ],
 )
 def test_openapi_controller_internal_schema_conversion(schema_paths: list[str]) -> None:
-    openapi_config = OpenAPIConfig("Example API", "1.0.0")
+    openapi_config = OpenAPIConfig("Example API", "1.0.0", render_plugins=(YamlRenderPlugin(),))
 
     with create_test_client([], openapi_config=openapi_config) as client:
         for schema_path in schema_paths:
