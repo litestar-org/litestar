@@ -218,7 +218,7 @@ class Controller:
 
         router = Router(
             path=self.path,
-            route_handlers=self.get_route_handlers(),
+            route_handlers=self.get_route_handlers(),  # type: ignore[arg-type]
             after_request=self.after_request,
             after_response=self.after_response,
             before_request=self.before_request,
