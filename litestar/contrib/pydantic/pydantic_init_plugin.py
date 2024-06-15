@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from contextlib import suppress
+from functools import partial
 from typing import TYPE_CHECKING, Any, Callable, TypeVar, cast
 from uuid import UUID
 
@@ -46,9 +47,9 @@ def _dec_pydantic_v1(model_type: type[pydantic_v1.BaseModel], value: Any) -> pyd
         raise ExtendedMsgSpecValidationError(errors=cast("list[dict[str, Any]]", e.errors())) from e
 
 
-def _dec_pydantic_v2(model_type: type[pydantic_v2.BaseModel], value: Any) -> pydantic_v2.BaseModel:
+def _dec_pydantic_v2(model_type: type[pydantic_v2.BaseModel], value: Any, strict: bool) -> pydantic_v2.BaseModel:
     try:
-        return model_type.model_validate(value, strict=False)
+        return model_type.model_validate(value, strict=strict)
     except pydantic_v2.ValidationError as e:
         raise ExtendedMsgSpecValidationError(errors=cast("list[dict[str, Any]]", e.errors())) from e
 
@@ -123,10 +124,20 @@ class ConstrainedFieldMetaExtractor:
 
 
 class PydanticInitPlugin(InitPluginProtocol):
-    __slots__ = ("prefer_alias",)
+    __slots__ = ("prefer_alias", "validate_strict")
 
-    def __init__(self, prefer_alias: bool = False) -> None:
+    def __init__(
+        self,
+        prefer_alias: bool = False,
+        validate_strict: bool = False,
+    ) -> None:
+        """Pydantic Plugin to support serialization / validation of Pydantic types / models
+
+        :param prefer_alias: Whether to use the ``by_alias=True`` flag when serializing models
+        :param validate_strict: Whether to use ``strict=True`` when calling ``.model_validate`` on Pydantic 2.x models
+        """
         self.prefer_alias = prefer_alias
+        self.validate_strict = validate_strict
 
     @classmethod
     def encoders(cls, prefer_alias: bool = False) -> dict[Any, Callable[[Any], Any]]:
@@ -136,13 +147,13 @@ class PydanticInitPlugin(InitPluginProtocol):
         return encoders
 
     @classmethod
-    def decoders(cls) -> list[tuple[Callable[[Any], bool], Callable[[Any, Any], Any]]]:
+    def decoders(cls, validate_strict: bool = False) -> list[tuple[Callable[[Any], bool], Callable[[Any, Any], Any]]]:
         decoders: list[tuple[Callable[[Any], bool], Callable[[Any, Any], Any]]] = [
             (is_pydantic_v1_model_class, _dec_pydantic_v1)
         ]
 
         if pydantic_v2 is not None:  # pragma: no cover
-            decoders.append((is_pydantic_v2_model_class, _dec_pydantic_v2))
+            decoders.append((is_pydantic_v2_model_class, partial(_dec_pydantic_v2, strict=validate_strict)))
 
         decoders.append((_is_pydantic_v1_uuid, _dec_pydantic_uuid))
 
@@ -180,7 +191,10 @@ class PydanticInitPlugin(InitPluginProtocol):
 
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
         app_config.type_encoders = {**self.encoders(self.prefer_alias), **(app_config.type_encoders or {})}
-        app_config.type_decoders = [*self.decoders(), *(app_config.type_decoders or [])]
+        app_config.type_decoders = [
+            *self.decoders(validate_strict=self.validate_strict),
+            *(app_config.type_decoders or []),
+        ]
 
         _KWARG_META_EXTRACTORS.add(ConstrainedFieldMetaExtractor)
         return app_config

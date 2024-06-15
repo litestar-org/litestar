@@ -3,10 +3,12 @@ from unittest.mock import ANY
 
 import pydantic as pydantic_v2
 import pytest
+from pydantic import BaseModel, StrictBool
 from pydantic import v1 as pydantic_v1
 from typing_extensions import Annotated
 
 from litestar import post
+from litestar.contrib.pydantic import PydanticInitPlugin
 from litestar.contrib.pydantic.pydantic_dto_factory import PydanticDTO
 from litestar.enums import RequestEncodingType
 from litestar.params import Body, Parameter
@@ -305,3 +307,33 @@ def test_dto_with_non_instantiable_types(base_model: BaseModelType, type_: Any, 
         res = client.post("/", json={"foo": in_})
         assert res.status_code == 201
         assert res.json() == {"foo": in_}
+
+
+@pytest.mark.parametrize(
+    "validate_strict,expect_error",
+    [
+        (False, False),
+        (None, False),
+        (True, True),
+    ],
+)
+def test_v2_strict_validate(
+    validate_strict: bool,
+    expect_error: bool,
+) -> None:
+    # https://github.com/litestar-org/litestar/issues/3572
+
+    class Model(BaseModel):
+        test_bool: StrictBool
+
+    @post("/")
+    async def handler(data: Model) -> None:
+        return None
+
+    plugins = []
+    if validate_strict is not None:
+        plugins.append(PydanticInitPlugin(validate_strict=validate_strict))
+
+    with create_test_client([handler], plugins=plugins) as client:
+        res = client.post("/", json={"test_bool": "YES"})
+        assert res.status_code == 400 if expect_error else 201
