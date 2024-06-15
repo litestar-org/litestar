@@ -46,17 +46,16 @@ __all__ = ("get", "head", "post", "put", "patch", "delete")
 MSG_SEMANTIC_ROUTE_HANDLER_WITH_HTTP = "semantic route handlers cannot define http_method"
 
 
-class _SubclassWarningMixin:
-    def __init_subclass__(cls, **kwargs: Any) -> None:
-        warnings.warn(
-            "Semantic HTTP route handler classes are deprecated and will be replaced by "
-            "functional decorators in Litestar 3.0.",
-            category=DeprecationWarning,
-            stacklevel=2,
-        )
+def _subclass_warning() -> None:
+    warnings.warn(
+        "Semantic HTTP route handler classes are deprecated and will be replaced by "
+        "functional decorators in Litestar 3.0.",
+        category=DeprecationWarning,
+        stacklevel=2,
+    )
 
 
-class delete(HTTPRouteHandler, _SubclassWarningMixin):
+class delete(HTTPRouteHandler):
     """DELETE Route Decorator.
 
     Use this decorator to decorate an HTTP handler for DELETE requests.
@@ -227,8 +226,11 @@ class delete(HTTPRouteHandler, _SubclassWarningMixin):
             **kwargs,
         )
 
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        _subclass_warning()
 
-class get(HTTPRouteHandler, _SubclassWarningMixin):
+
+class get(HTTPRouteHandler):
     """GET Route Decorator.
 
     Use this decorator to decorate an HTTP handler for GET requests.
@@ -400,8 +402,11 @@ class get(HTTPRouteHandler, _SubclassWarningMixin):
             **kwargs,
         )
 
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        _subclass_warning()
 
-class head(HTTPRouteHandler, _SubclassWarningMixin):
+
+class head(HTTPRouteHandler):
     """HEAD Route Decorator.
 
     Use this decorator to decorate an HTTP handler for HEAD requests.
@@ -577,6 +582,9 @@ class head(HTTPRouteHandler, _SubclassWarningMixin):
             **kwargs,
         )
 
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        _subclass_warning()
+
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once it is set by inspecting its return annotations."""
         super()._validate_handler_function()
@@ -591,7 +599,7 @@ class head(HTTPRouteHandler, _SubclassWarningMixin):
             raise ImproperlyConfiguredException("A response to a head request should not have a body")
 
 
-class patch(HTTPRouteHandler, _SubclassWarningMixin):
+class patch(HTTPRouteHandler):
     """PATCH Route Decorator.
 
     Use this decorator to decorate an HTTP handler for PATCH requests.
@@ -762,8 +770,11 @@ class patch(HTTPRouteHandler, _SubclassWarningMixin):
             **kwargs,
         )
 
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        _subclass_warning()
 
-class post(HTTPRouteHandler, _SubclassWarningMixin):
+
+class post(HTTPRouteHandler):
     """POST Route Decorator.
 
     Use this decorator to decorate an HTTP handler for POST requests.
@@ -934,8 +945,11 @@ class post(HTTPRouteHandler, _SubclassWarningMixin):
             **kwargs,
         )
 
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        _subclass_warning()
 
-class put(HTTPRouteHandler, _SubclassWarningMixin):
+
+class put(HTTPRouteHandler):
     """PUT Route Decorator.
 
     Use this decorator to decorate an HTTP handler for PUT requests.
@@ -1105,3 +1119,6 @@ class put(HTTPRouteHandler, _SubclassWarningMixin):
             type_encoders=type_encoders,
             **kwargs,
         )
+
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        _subclass_warning()
