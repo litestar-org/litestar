@@ -255,6 +255,16 @@ class BaseRouteHandler:
         return get_name(unwrap_partial(self.fn))
 
     @property
+    def handler_fullname(self) -> str:
+        """Get the qualified name of the handler function.
+
+        Returns:
+            Qualified name of the handler function
+        """
+        handler_fn = unwrap_partial(self.fn)
+        return handler_fn.__module__ + "." + handler_fn.__qualname__
+
+    @property
     def dependency_name_set(self) -> set[str]:
         """Set of all dependency names provided in the handler's ownership layers."""
         layered_dependencies = (layer.dependencies or {} for layer in self.ownership_layers)
