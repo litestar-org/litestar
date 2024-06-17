@@ -86,7 +86,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
 
         if not self.parsed_fn_signature.return_type.is_subclass_of(NoneType):
             raise ImproperlyConfiguredException(
-                f"Websocket handler function '{self.handler_fullname}' should return 'None'"
+                f"{self.handler_fullname}: WebSocket handlers must return 'None'"
             )
 
         if "socket" not in self.parsed_fn_signature.parameters:
