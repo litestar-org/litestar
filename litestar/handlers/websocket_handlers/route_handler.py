@@ -97,7 +97,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
         for param in ("request", "body", "data"):
             if param in self.parsed_fn_signature.parameters:
                 raise ImproperlyConfiguredException(
-                    f"{self.handler_fullname}: the {param} kwarg is not supported with websocket handlers"
+                    f"{self.handler_fullname}: The {param} kwarg is not supported with websocket handlers"
                 )
 
         if not is_async_callable(self.fn):
