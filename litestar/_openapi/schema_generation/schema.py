@@ -325,7 +325,9 @@ class SchemaCreator:
 
         result: Schema | Reference
 
-        if plugin_for_annotation := self.get_plugin_for(field_definition):
+        if field_definition.is_new_type:
+            result = self.for_new_type(field_definition)
+        elif plugin_for_annotation := self.get_plugin_for(field_definition):
             result = self.for_plugin(field_definition, plugin_for_annotation)
         elif _should_create_enum_schema(field_definition):
             annotation = _type_or_first_not_none_inner_type(field_definition)
@@ -353,6 +355,15 @@ class SchemaCreator:
             result = create_schema_for_annotation(field_definition.annotation)
 
         return self.process_schema_result(field_definition, result) if isinstance(result, Schema) else result
+
+    def for_new_type(self, field_definition: FieldDefinition) -> Schema | Reference:
+        return self.for_field_definition(
+            FieldDefinition.from_kwarg(
+                annotation=field_definition.raw.__supertype__,
+                name=field_definition.name,
+                default=field_definition.default,
+            )
+        )
 
     @staticmethod
     def for_upload_file(field_definition: FieldDefinition) -> Schema:

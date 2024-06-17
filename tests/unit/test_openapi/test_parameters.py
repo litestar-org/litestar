@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING, Any, List, Optional, Type, cast
 from uuid import UUID
 
 import pytest
-from typing_extensions import Annotated
+from typing_extensions import Annotated, NewType
 
 from litestar import Controller, Litestar, Router, get
 from litestar._openapi.datastructures import OpenAPIContext
@@ -380,3 +380,27 @@ def test_uuid_path_description_generation() -> None:
         response = client.get("/schema/openapi.json")
         assert response.json()["paths"]["/str/{id}"]["get"]["parameters"][0]["description"] == "String ID"
         assert response.json()["paths"]["/uuid/{id}"]["get"]["parameters"][0]["description"] == "UUID ID"
+
+
+def test_unwrap_new_type() -> None:
+    FancyString = NewType("FancyString", str)
+
+    @get("/{path_param:str}")
+    async def handler(
+        param: FancyString,
+        optional_param: Optional[FancyString],
+        path_param: FancyString,
+    ) -> FancyString:
+        return FancyString("")
+
+    app = Litestar([handler])
+    assert app.openapi_schema.paths["/{path_param}"].get.parameters[0].schema.type == OpenAPIType.STRING  # type: ignore[index, union-attr]
+    assert app.openapi_schema.paths["/{path_param}"].get.parameters[1].schema.one_of == [  # type: ignore[index, union-attr]
+        Schema(type=OpenAPIType.NULL),
+        Schema(type=OpenAPIType.STRING),
+    ]
+    assert app.openapi_schema.paths["/{path_param}"].get.parameters[2].schema.type == OpenAPIType.STRING  # type: ignore[index, union-attr]
+    assert (
+        app.openapi_schema.paths["/{path_param}"].get.responses["200"].content["application/json"].schema.type  # type: ignore[index, union-attr]
+        == OpenAPIType.STRING
+    )
