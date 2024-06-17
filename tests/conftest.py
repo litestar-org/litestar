@@ -20,7 +20,6 @@ from redis.client import Redis
 from time_machine import travel
 
 from litestar.logging import LoggingConfig
-from litestar.logging.config import default_handlers as logging_default_handlers
 from litestar.middleware.session import SessionMiddleware
 from litestar.middleware.session.base import BaseSessionBackend
 from litestar.middleware.session.client_side import ClientSideSessionBackend, CookieBackendConfig
@@ -306,7 +305,7 @@ def get_logger() -> GetLogger:
     # due to the limitations of caplog we have to place this call here.
     # we also have to allow propagation.
     return LoggingConfig(
-        handlers=logging_default_handlers,
+        logging_module="logging",
         loggers={
             "litestar": {"level": "INFO", "handlers": ["queue_listener"], "propagate": True},
         },
