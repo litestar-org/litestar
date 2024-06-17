@@ -597,7 +597,7 @@ class head(HTTPRouteHandler):
             or is_class_and_subclass(return_annotation, ASGIFileResponse)
         ):
             raise ImproperlyConfiguredException(
-                f"A route handler function '{self.handler_fullname}' that handles HEAD request should not have a body"
+                f"{self.handler_fullname}: Handlers for 'HEAD' requests must not return a value. Either return 'None' or a response type without a body."
             )
 
 
