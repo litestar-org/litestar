@@ -1551,6 +1551,7 @@ document.write(`
     <span class="n">formatters</span><span class="o">=</span><span class="p">{</span>
         <span class="s2">&quot;standard&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> - </span><span class="si">%(name)s</span><span class="s2"> - </span><span class="si">%(levelname)s</span><span class="s2"> - </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">}</span>
     <span class="p">},</span>
+    <span class="n">log_exceptions</span><span class="o">=</span><span class="s2">&quot;always&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">my_router_handler</span><span class="p">],</span> <span class="n">logging_config</span><span class="o">=</span><span class="n">logging_config</span><span class="p">)</span>
@@ -1562,19 +1563,27 @@ document.write(`
 is keyed as <code class="docutils literal notranslate"><span class="pre">queue_listener</span></code> in the logging configuration. The above example is using this handler,
 which is optimal for async applications. Make sure to use it in your own loggers as in the above example.</p>
 </div>
-<section id="standard-library-logging-manual-configuration">
-<h2>Standard Library Logging (Manual Configuration)<a class="headerlink" href="#standard-library-logging-manual-configuration" title="Permalink to this heading">#</a></h2>
-<p><a class="reference external" href="https://docs.python.org/3/howto/logging.html">logging</a> is Python’s builtin standard logging library and can be integrated with <cite>LoggingConfig</cite> as the <cite>root</cite> logging. By using <cite>logging_config()()</cite> you can build a <cite>logger</cite> to be used around your project.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
-
-<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>Exceptions won’t be logged by default, except in debug mode. Make sure to use <code class="docutils literal notranslate"><span class="pre">log_exceptions=&quot;always&quot;</span></code> as in the
+example above to log exceptions if you need it.</p>
+</div>
+<section id="using-python-standard-library">
+<h2>Using Python standard library<a class="headerlink" href="#using-python-standard-library" title="Permalink to this heading">#</a></h2>
+<p><a class="reference external" href="https://docs.python.org/3/howto/logging.html">logging</a> is Python’s builtin standard logging library and can be
+configured through <code class="docutils literal notranslate"><span class="pre">LoggingConfig</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">LoggingConfig.configure()</span></code> method returns a reference to <code class="docutils literal notranslate"><span class="pre">logging.getLogger</span></code> which can be used to access a
+logger instance. Thus, the root logger can retrieved with <code class="docutils literal notranslate"><span class="pre">logging_config.configure()()</span></code> as shown in the example
+below:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
 <span class="kn">from</span> <span class="nn">litestar.logging</span> <span class="kn">import</span> <span class="n">LoggingConfig</span>
 
 <span class="n">logging_config</span> <span class="o">=</span> <span class="n">LoggingConfig</span><span class="p">(</span>
-    <span class="n">root</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;level&quot;</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLevelName</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">),</span> <span class="s2">&quot;handlers&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;console&quot;</span><span class="p">]},</span>
+    <span class="n">root</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;level&quot;</span><span class="p">:</span> <span class="s2">&quot;INFO&quot;</span><span class="p">,</span> <span class="s2">&quot;handlers&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;queue_listener&quot;</span><span class="p">]},</span>
     <span class="n">formatters</span><span class="o">=</span><span class="p">{</span>
         <span class="s2">&quot;standard&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> - </span><span class="si">%(name)s</span><span class="s2"> - </span><span class="si">%(levelname)s</span><span class="s2"> - </span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">}</span>
     <span class="p">},</span>
+    <span class="n">log_exceptions</span><span class="o">=</span><span class="s2">&quot;always&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging_config</span><span class="o">.</span><span class="n">configure</span><span class="p">()()</span>
@@ -1592,7 +1601,7 @@ which is optimal for async applications. Make sure to use it in your own loggers
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>The above example is the same as using logging without the litestar LoggingConfig.</p>
+<p>The above example is the same as using logging without the litestar <code class="docutils literal notranslate"><span class="pre">LoggingConfig</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
@@ -1632,8 +1641,8 @@ the part of the user. That is, if <code class="docutils literal notranslate"><sp
 </section>
 <section id="using-structlog">
 <h2>Using StructLog<a class="headerlink" href="#using-structlog" title="Permalink to this heading">#</a></h2>
-<p><a class="reference external" href="https://www.structlog.org/en/stable/">StructLog</a> is a powerful structured-logging library. Litestar ships with a dedicated
-logging plugin and config for using it:</p>
+<p><a class="reference external" href="https://www.structlog.org/en/stable/">StructLog</a> is a powerful structured-logging library. Litestar ships with a
+dedicated logging plugin and config for using it:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
 <span class="kn">from</span> <span class="nn">litestar.plugins.structlog</span> <span class="kn">import</span> <span class="n">StructlogPlugin</span>
 
@@ -1701,7 +1710,7 @@ logging plugin and config for using it:</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#standard-library-logging-manual-configuration">Standard Library Logging (Manual Configuration)</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-python-standard-library">Using Python standard library</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-picologging">Using Picologging</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-structlog">Using StructLog</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#subclass-logging-configs">Subclass Logging Configs</a></li>
