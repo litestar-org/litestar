@@ -91,7 +91,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
 
         if "socket" not in self.parsed_fn_signature.parameters:
             raise ImproperlyConfiguredException(
-                f"Websocket handler '{self.handler_fullname}' must set a 'socket' kwarg"
+                f"{self.handler_fullname}: WebSocket handlers must define a 'socket' parameter"
             )
 
         for param in ("request", "body", "data"):
