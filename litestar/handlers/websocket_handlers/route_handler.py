@@ -102,7 +102,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
 
         if not is_async_callable(self.fn):
             raise ImproperlyConfiguredException(
-                f"Function '{self.handler_fullname}' decorated with 'websocket' must be async functions"
+                f"{self.handler_fullname}: WebSocket handler functions must be asynchronous"
             )
 
 
