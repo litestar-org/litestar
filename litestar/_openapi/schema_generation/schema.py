@@ -63,6 +63,7 @@ from litestar.utils.predicates import (
 from litestar.utils.typing import (
     get_origin_or_inner_type,
     make_non_optional_union,
+    unwrap_new_type,
 )
 
 if TYPE_CHECKING:
@@ -359,7 +360,7 @@ class SchemaCreator:
     def for_new_type(self, field_definition: FieldDefinition) -> Schema | Reference:
         return self.for_field_definition(
             FieldDefinition.from_kwarg(
-                annotation=field_definition.raw.__supertype__,
+                annotation=unwrap_new_type(field_definition.raw),
                 name=field_definition.name,
                 default=field_definition.default,
             )

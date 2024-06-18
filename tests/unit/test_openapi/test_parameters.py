@@ -404,3 +404,17 @@ def test_unwrap_new_type() -> None:
         app.openapi_schema.paths["/{path_param}"].get.responses["200"].content["application/json"].schema.type  # type: ignore[index, union-attr]
         == OpenAPIType.STRING
     )
+
+
+def test_unwrap_nested_new_type() -> None:
+    FancyString = NewType("FancyString", str)
+    FancierString = NewType("FancierString", FancyString)
+
+    @get("/")
+    async def handler(
+        param: FancierString,
+    ) -> None:
+        return None
+
+    app = Litestar([handler])
+    assert app.openapi_schema.paths["/"].get.parameters[0].schema.type == OpenAPIType.STRING  # type: ignore[index, union-attr]
