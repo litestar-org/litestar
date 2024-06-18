@@ -596,7 +596,9 @@ class head(HTTPRouteHandler):
             or is_class_and_subclass(return_annotation, File)
             or is_class_and_subclass(return_annotation, ASGIFileResponse)
         ):
-            raise ImproperlyConfiguredException("A response to a head request should not have a body")
+            raise ImproperlyConfiguredException(
+                f"{self}: Handlers for 'HEAD' requests must not return a value. Either return 'None' or a response type without a body."
+            )
 
 
 class patch(HTTPRouteHandler):
