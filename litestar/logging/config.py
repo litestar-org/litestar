@@ -71,6 +71,18 @@ default_picologging_handlers: dict[str, dict[str, Any]] = {
 }
 
 
+def _get_default_formatters() -> dict[str, dict[str, Any]]:
+    return {
+        "standard": {"format": "%(levelname)s - %(asctime)s - %(name)s - %(module)s - %(message)s"},
+    }
+
+
+def _get_default_loggers() -> dict[str, dict[str, Any]]:
+    return {
+        "litestar": {"level": "INFO", "handlers": ["queue_listener"], "propagate": False},
+    }
+
+
 def get_logger_placeholder(_: str | None = None) -> NoReturn:
     """Raise: An :class:`ImproperlyConfiguredException <.exceptions.ImproperlyConfiguredException>`"""
     raise ImproperlyConfiguredException(
@@ -78,13 +90,19 @@ def get_logger_placeholder(_: str | None = None) -> NoReturn:
     )
 
 
-def _get_default_handlers() -> dict[str, dict[str, Any]]:
+def _get_default_logging_module() -> str:
+    if find_spec("picologging"):
+        return "picologging"
+    return "logging"
+
+
+def _get_default_handlers(logging_module: str) -> dict[str, dict[str, Any]]:
     """Return the default logging handlers for the config.
 
     Returns:
         A dictionary of logging handlers
     """
-    if find_spec("picologging"):
+    if logging_module == "picologging":
         return default_picologging_handlers
     return default_handlers
 
@@ -167,12 +185,11 @@ class BaseLoggingConfig(ABC):
 
 @dataclass
 class LoggingConfig(BaseLoggingConfig):
-    """Configuration class for standard logging.
+    """Configuration class for standard logging."""
 
-    Notes:
-        - If 'picologging' is installed it will be used by default.
-    """
-
+    logging_module: str = field(default_factory=_get_default_logging_module)
+    """Logging module. ``logging`` and ``picologging`` are supported. ``picologging`` will be used by default if
+    installed."""
     version: Literal[1] = field(default=1)
     """The only valid value at present is 1."""
     incremental: bool = field(default=False)
@@ -184,27 +201,34 @@ class LoggingConfig(BaseLoggingConfig):
     disable_existing_loggers: bool = field(default=False)
     """Whether any existing non-root loggers are to be disabled."""
     filters: dict[str, dict[str, Any]] | None = field(default=None)
-    """A dict in which each key is a filter id and each value is a dict describing how to configure the corresponding
-    Filter instance.
+    """A dict in which each key is a filter id and each value is a dict describing how to configure the
+    corresponding Filter_ instance.
+
+    .. _Filter: https://docs.python.org/3/library/logging.html#filter-objects
     """
     propagate: bool = field(default=True)
-    """If messages must propagate to handlers higher up the logger hierarchy from this logger."""
-    formatters: dict[str, dict[str, Any]] = field(
-        default_factory=lambda: {
-            "standard": {"format": "%(levelname)s - %(asctime)s - %(name)s - %(module)s - %(message)s"}
-        }
-    )
-    handlers: dict[str, dict[str, Any]] = field(default_factory=_get_default_handlers)
-    """A dict in which each key is a handler id and each value is a dict describing how to configure the corresponding
-    Handler instance.
+    """If messages must propagate to handlers higher up the logger hierarchy from this logger.
+
+    .. deprecated:: 2.10.0
+        This parameter is deprecated. It will be removed in a future release. Use ``propagate`` at the logger level.
     """
-    loggers: dict[str, dict[str, Any]] = field(
-        default_factory=lambda: {
-            "litestar": {"level": "INFO", "handlers": ["queue_listener"], "propagate": False},
-        }
-    )
-    """A dict in which each key is a logger name and each value is a dict describing how to configure the corresponding
-    Logger instance.
+    formatters: dict[str, dict[str, Any]] = field(default_factory=_get_default_formatters)
+    """A dict in which each key is a formatter and each value is a dict describing how to configure the
+    corresponding Formatter_ instance. A ``standard`` formatter is provided.
+
+    .. _Formatter: https://docs.python.org/3/library/logging.html#formatter-objects
+    """
+    handlers: dict[str, dict[str, Any]] = field(default_factory=dict)
+    """A dict in which each key is a handler id and each value is a dict describing how to configure the
+    corresponding Handler_ instance. Two handlers are provided, ``console`` and ``queue_listener``.
+
+    .. _Handler: https://docs.python.org/3/library/logging.html#handler-objects
+    """
+    loggers: dict[str, dict[str, Any]] = field(default_factory=_get_default_loggers)
+    """A dict in which each key is a logger name and each value is a dict describing how to configure the
+    corresponding Logger_ instance. A ``litestar`` logger is mandatory and will be configured as required.
+
+    .. _Logger: https://docs.python.org/3/library/logging.html#logger-objects
     """
     root: dict[str, dict[str, Any] | list[Any] | str] = field(
         default_factory=lambda: {
@@ -230,15 +254,17 @@ class LoggingConfig(BaseLoggingConfig):
     """Handler function for logging exceptions."""
 
     def __post_init__(self) -> None:
+        if "standard" not in self.formatters:
+            self.formatters["standard"] = _get_default_formatters()["standard"]
+
+        if "console" not in self.handlers:
+            self.handlers["console"] = _get_default_handlers(self.logging_module)["console"]
+
         if "queue_listener" not in self.handlers:
-            self.handlers["queue_listener"] = _get_default_handlers()["queue_listener"]
+            self.handlers["queue_listener"] = _get_default_handlers(self.logging_module)["queue_listener"]
 
         if "litestar" not in self.loggers:
-            self.loggers["litestar"] = {
-                "level": "INFO",
-                "handlers": ["queue_listener"],
-                "propagate": False,
-            }
+            self.loggers["litestar"] = _get_default_loggers()["litestar"]
 
         if self.log_exceptions != "never" and self.exception_logging_handler is None:
             self.exception_logging_handler = _default_exception_logging_handler_factory(
@@ -252,18 +278,27 @@ class LoggingConfig(BaseLoggingConfig):
             A 'logging.getLogger' like function.
         """
 
-        excluded_fields: tuple[str, ...]
-        if "picologging" in " ".join([handler["class"] for handler in self.handlers.values()]):
+        excluded_fields: set[str] = {
+            "logging_module",
+            "configure_root_logger",
+            "exception_logging_handler",
+            "log_exceptions",
+            "propagate",
+            "traceback_line_limit",
+        }
+
+        if not self.configure_root_logger:
+            excluded_fields.add("root")
+
+        if self.logging_module == "picologging":
             try:
                 from picologging import config, getLogger
             except ImportError as e:
                 raise MissingDependencyException("picologging") from e
 
-            excluded_fields = ("incremental", "configure_root_logger")
+            excluded_fields.add("incremental")
         else:
             from logging import config, getLogger  # type: ignore[no-redef, assignment]
-
-            excluded_fields = ("configure_root_logger",)
 
         values = {
             _field.name: getattr(self, _field.name)
@@ -271,8 +306,6 @@ class LoggingConfig(BaseLoggingConfig):
             if getattr(self, _field.name) is not None and _field.name not in excluded_fields
         }
 
-        if not self.configure_root_logger:
-            values.pop("root")
         config.dictConfig(values)
         return cast("Callable[[str], Logger]", getLogger)
 

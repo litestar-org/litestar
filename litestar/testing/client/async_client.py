@@ -2,11 +2,9 @@ from __future__ import annotations
 
 from contextlib import AsyncExitStack
 from typing import TYPE_CHECKING, Any, Generic, Mapping, Sequence, TypeVar
-from urllib.parse import urljoin
 
-from httpx import USE_CLIENT_DEFAULT, AsyncClient, Response
+from httpx import USE_CLIENT_DEFAULT, AsyncClient
 
-from litestar import HttpMethod
 from litestar.testing.client.base import BaseTestClient
 from litestar.testing.life_span_handler import LifeSpanHandler
 from litestar.testing.transport import ConnectionUpgradeExceptionError, TestClientTransport
@@ -19,11 +17,7 @@ if TYPE_CHECKING:
         CookieTypes,
         HeaderTypes,
         QueryParamTypes,
-        RequestContent,
-        RequestData,
-        RequestFiles,
         TimeoutTypes,
-        URLTypes,
     )
     from typing_extensions import Self
 
@@ -107,369 +101,6 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
     async def __aexit__(self, *args: Any) -> None:
         await self.exit_stack.aclose()
 
-    async def request(
-        self,
-        method: str,
-        url: URLTypes,
-        *,
-        content: RequestContent | None = None,
-        data: RequestData | None = None,
-        files: RequestFiles | None = None,
-        json: Any | None = None,
-        params: QueryParamTypes | None = None,
-        headers: HeaderTypes | None = None,
-        cookies: CookieTypes | None = None,
-        auth: AuthTypes | UseClientDefault | None = USE_CLIENT_DEFAULT,
-        follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
-        timeout: TimeoutTypes | UseClientDefault = USE_CLIENT_DEFAULT,
-        extensions: Mapping[str, Any] | None = None,
-    ) -> Response:
-        """Sends a request.
-
-        Args:
-            method: An HTTP method.
-            url: URL or path for the request.
-            content: Request content.
-            data: Form encoded data.
-            files: Multipart files to send.
-            json: JSON data to send.
-            params: Query parameters.
-            headers: Request headers.
-            cookies: Request cookies.
-            auth: Auth headers.
-            follow_redirects: Whether to follow redirects.
-            timeout: Request timeout.
-            extensions: Dictionary of ASGI extensions.
-
-        Returns:
-            An HTTPX Response.
-        """
-        return await AsyncClient.request(
-            self,
-            url=self.base_url.join(url),
-            method=method.value if isinstance(method, HttpMethod) else method,
-            content=content,
-            data=data,
-            files=files,
-            json=json,
-            params=params,
-            headers=headers,
-            cookies=cookies,
-            auth=auth,
-            follow_redirects=follow_redirects,
-            timeout=timeout,
-            extensions=None if extensions is None else dict(extensions),
-        )
-
-    async def get(  # type: ignore [override]
-        self,
-        url: URLTypes,
-        *,
-        params: QueryParamTypes | None = None,
-        headers: HeaderTypes | None = None,
-        cookies: CookieTypes | None = None,
-        auth: AuthTypes | UseClientDefault = USE_CLIENT_DEFAULT,
-        follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
-        timeout: TimeoutTypes | UseClientDefault = USE_CLIENT_DEFAULT,
-        extensions: Mapping[str, Any] | None = None,
-    ) -> Response:
-        """Sends a GET request.
-
-        Args:
-            url: URL or path for the request.
-            params: Query parameters.
-            headers: Request headers.
-            cookies: Request cookies.
-            auth: Auth headers.
-            follow_redirects: Whether to follow redirects.
-            timeout: Request timeout.
-            extensions: Dictionary of ASGI extensions.
-
-        Returns:
-            An HTTPX Response.
-        """
-        return await AsyncClient.get(
-            self,
-            url,
-            params=params,
-            headers=headers,
-            cookies=cookies,
-            auth=auth,
-            follow_redirects=follow_redirects,
-            timeout=timeout,
-            extensions=None if extensions is None else dict(extensions),
-        )
-
-    async def options(
-        self,
-        url: URLTypes,
-        *,
-        params: QueryParamTypes | None = None,
-        headers: HeaderTypes | None = None,
-        cookies: CookieTypes | None = None,
-        auth: AuthTypes | UseClientDefault = USE_CLIENT_DEFAULT,
-        follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
-        timeout: TimeoutTypes | UseClientDefault = USE_CLIENT_DEFAULT,
-        extensions: Mapping[str, Any] | None = None,
-    ) -> Response:
-        """Sends an OPTIONS request.
-
-        Args:
-            url: URL or path for the request.
-            params: Query parameters.
-            headers: Request headers.
-            cookies: Request cookies.
-            auth: Auth headers.
-            follow_redirects: Whether to follow redirects.
-            timeout: Request timeout.
-            extensions: Dictionary of ASGI extensions.
-
-        Returns:
-            An HTTPX Response.
-        """
-        return await AsyncClient.options(
-            self,
-            url,
-            params=params,
-            headers=headers,
-            cookies=cookies,
-            auth=auth,
-            follow_redirects=follow_redirects,
-            timeout=timeout,
-            extensions=None if extensions is None else dict(extensions),
-        )
-
-    async def head(
-        self,
-        url: URLTypes,
-        *,
-        params: QueryParamTypes | None = None,
-        headers: HeaderTypes | None = None,
-        cookies: CookieTypes | None = None,
-        auth: AuthTypes | UseClientDefault = USE_CLIENT_DEFAULT,
-        follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
-        timeout: TimeoutTypes | UseClientDefault = USE_CLIENT_DEFAULT,
-        extensions: Mapping[str, Any] | None = None,
-    ) -> Response:
-        """Sends a HEAD request.
-
-        Args:
-            url: URL or path for the request.
-            params: Query parameters.
-            headers: Request headers.
-            cookies: Request cookies.
-            auth: Auth headers.
-            follow_redirects: Whether to follow redirects.
-            timeout: Request timeout.
-            extensions: Dictionary of ASGI extensions.
-
-        Returns:
-            An HTTPX Response.
-        """
-        return await AsyncClient.head(
-            self,
-            url,
-            params=params,
-            headers=headers,
-            cookies=cookies,
-            auth=auth,
-            follow_redirects=follow_redirects,
-            timeout=timeout,
-            extensions=None if extensions is None else dict(extensions),
-        )
-
-    async def post(
-        self,
-        url: URLTypes,
-        *,
-        content: RequestContent | None = None,
-        data: RequestData | None = None,
-        files: RequestFiles | None = None,
-        json: Any | None = None,
-        params: QueryParamTypes | None = None,
-        headers: HeaderTypes | None = None,
-        cookies: CookieTypes | None = None,
-        auth: AuthTypes | UseClientDefault = USE_CLIENT_DEFAULT,
-        follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
-        timeout: TimeoutTypes | UseClientDefault = USE_CLIENT_DEFAULT,
-        extensions: Mapping[str, Any] | None = None,
-    ) -> Response:
-        """Sends a POST request.
-
-        Args:
-            url: URL or path for the request.
-            content: Request content.
-            data: Form encoded data.
-            files: Multipart files to send.
-            json: JSON data to send.
-            params: Query parameters.
-            headers: Request headers.
-            cookies: Request cookies.
-            auth: Auth headers.
-            follow_redirects: Whether to follow redirects.
-            timeout: Request timeout.
-            extensions: Dictionary of ASGI extensions.
-
-        Returns:
-            An HTTPX Response.
-        """
-        return await AsyncClient.post(
-            self,
-            url,
-            content=content,
-            data=data,
-            files=files,
-            json=json,
-            params=params,
-            headers=headers,
-            cookies=cookies,
-            auth=auth,
-            follow_redirects=follow_redirects,
-            timeout=timeout,
-            extensions=None if extensions is None else dict(extensions),
-        )
-
-    async def put(
-        self,
-        url: URLTypes,
-        *,
-        content: RequestContent | None = None,
-        data: RequestData | None = None,
-        files: RequestFiles | None = None,
-        json: Any | None = None,
-        params: QueryParamTypes | None = None,
-        headers: HeaderTypes | None = None,
-        cookies: CookieTypes | None = None,
-        auth: AuthTypes | UseClientDefault = USE_CLIENT_DEFAULT,
-        follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
-        timeout: TimeoutTypes | UseClientDefault = USE_CLIENT_DEFAULT,
-        extensions: Mapping[str, Any] | None = None,
-    ) -> Response:
-        """Sends a PUT request.
-
-        Args:
-            url: URL or path for the request.
-            content: Request content.
-            data: Form encoded data.
-            files: Multipart files to send.
-            json: JSON data to send.
-            params: Query parameters.
-            headers: Request headers.
-            cookies: Request cookies.
-            auth: Auth headers.
-            follow_redirects: Whether to follow redirects.
-            timeout: Request timeout.
-            extensions: Dictionary of ASGI extensions.
-
-        Returns:
-            An HTTPX Response.
-        """
-        return await AsyncClient.put(
-            self,
-            url,
-            content=content,
-            data=data,
-            files=files,
-            json=json,
-            params=params,
-            headers=headers,
-            cookies=cookies,
-            auth=auth,
-            follow_redirects=follow_redirects,
-            timeout=timeout,
-            extensions=None if extensions is None else dict(extensions),
-        )
-
-    async def patch(
-        self,
-        url: URLTypes,
-        *,
-        content: RequestContent | None = None,
-        data: RequestData | None = None,
-        files: RequestFiles | None = None,
-        json: Any | None = None,
-        params: QueryParamTypes | None = None,
-        headers: HeaderTypes | None = None,
-        cookies: CookieTypes | None = None,
-        auth: AuthTypes | UseClientDefault = USE_CLIENT_DEFAULT,
-        follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
-        timeout: TimeoutTypes | UseClientDefault = USE_CLIENT_DEFAULT,
-        extensions: Mapping[str, Any] | None = None,
-    ) -> Response:
-        """Sends a PATCH request.
-
-        Args:
-            url: URL or path for the request.
-            content: Request content.
-            data: Form encoded data.
-            files: Multipart files to send.
-            json: JSON data to send.
-            params: Query parameters.
-            headers: Request headers.
-            cookies: Request cookies.
-            auth: Auth headers.
-            follow_redirects: Whether to follow redirects.
-            timeout: Request timeout.
-            extensions: Dictionary of ASGI extensions.
-
-        Returns:
-            An HTTPX Response.
-        """
-        return await AsyncClient.patch(
-            self,
-            url,
-            content=content,
-            data=data,
-            files=files,
-            json=json,
-            params=params,
-            headers=headers,
-            cookies=cookies,
-            auth=auth,
-            follow_redirects=follow_redirects,
-            timeout=timeout,
-            extensions=None if extensions is None else dict(extensions),
-        )
-
-    async def delete(
-        self,
-        url: URLTypes,
-        *,
-        params: QueryParamTypes | None = None,
-        headers: HeaderTypes | None = None,
-        cookies: CookieTypes | None = None,
-        auth: AuthTypes | UseClientDefault = USE_CLIENT_DEFAULT,
-        follow_redirects: bool | UseClientDefault = USE_CLIENT_DEFAULT,
-        timeout: TimeoutTypes | UseClientDefault = USE_CLIENT_DEFAULT,
-        extensions: Mapping[str, Any] | None = None,
-    ) -> Response:
-        """Sends a DELETE request.
-
-        Args:
-            url: URL or path for the request.
-            params: Query parameters.
-            headers: Request headers.
-            cookies: Request cookies.
-            auth: Auth headers.
-            follow_redirects: Whether to follow redirects.
-            timeout: Request timeout.
-            extensions: Dictionary of ASGI extensions.
-
-        Returns:
-            An HTTPX Response.
-        """
-        return await AsyncClient.delete(
-            self,
-            url,
-            params=params,
-            headers=headers,
-            cookies=cookies,
-            auth=auth,
-            follow_redirects=follow_redirects,
-            timeout=timeout,
-            extensions=None if extensions is None else dict(extensions),
-        )
-
     async def websocket_connect(
         self,
         url: str,
@@ -498,25 +129,19 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
         Returns:
             A `WebSocketTestSession <litestar.testing.WebSocketTestSession>` instance.
         """
-        url = urljoin("ws://testserver", url)
-        default_headers: dict[str, str] = {}
-        default_headers.setdefault("connection", "upgrade")
-        default_headers.setdefault("sec-websocket-key", "testserver==")
-        default_headers.setdefault("sec-websocket-version", "13")
-        if subprotocols is not None:
-            default_headers.setdefault("sec-websocket-protocol", ", ".join(subprotocols))
         try:
-            await AsyncClient.request(
-                self,
-                "GET",
-                url,
-                headers={**dict(headers or {}), **default_headers},  # type: ignore[misc]
-                params=params,
-                cookies=cookies,
+            await self.send(
+                self._prepare_ws_connect_request(
+                    url=url,
+                    subprotocols=subprotocols,
+                    params=params,
+                    headers=headers,
+                    cookies=cookies,
+                    extensions=extensions,
+                    timeout=timeout,
+                ),
                 auth=auth,
                 follow_redirects=follow_redirects,
-                timeout=timeout,
-                extensions=None if extensions is None else dict(extensions),
             )
         except ConnectionUpgradeExceptionError as exc:
             return exc.session
