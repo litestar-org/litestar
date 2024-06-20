@@ -2,6 +2,7 @@ from inspect import getinnerframes
 from typing import TYPE_CHECKING, Any, Callable, Generator, Optional
 from unittest.mock import MagicMock
 
+import pydantic
 import pytest
 from pytest_mock import MockerFixture
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -144,6 +145,46 @@ def test_exception_handler_middleware_exception_handlers_mapping() -> None:
             Exception: exception_handler,
             StarletteHTTPException: _starlette_exception_handler,
         }
+
+
+def test_exception_handler_middleware_handler_response_type_encoding(
+    scope: HTTPScope, middleware: ExceptionHandlerMiddleware
+) -> None:
+    class ErrorMessage(pydantic.BaseModel):
+        message: str
+
+    @get("/")
+    def handler(_: Request) -> None:
+        raise Exception
+
+    def exception_handler(_: Request, _e: Exception) -> Response:
+        return Response(content=ErrorMessage(message="the error message"), status_code=HTTP_500_INTERNAL_SERVER_ERROR)
+
+    app = Litestar(route_handlers=[handler], exception_handlers={Exception: exception_handler}, openapi_config=None)
+
+    with TestClient(app) as client:
+        response = client.get("/")
+        assert response.json() == {"message": "the error message"}
+
+
+def test_exception_handler_middleware_handler_response_type_encoding_no_route_handler(
+    scope: HTTPScope, middleware: ExceptionHandlerMiddleware
+) -> None:
+    class ErrorMessage(pydantic.BaseModel):
+        message: str
+
+    @get("/")
+    def handler(_: Request) -> None:
+        raise Exception
+
+    def exception_handler(_: Request, _e: Exception) -> Response:
+        return Response(content=ErrorMessage(message="the error message"), status_code=HTTP_500_INTERNAL_SERVER_ERROR)
+
+    app = Litestar(route_handlers=[handler], exception_handlers={Exception: exception_handler}, openapi_config=None)
+
+    with TestClient(app) as client:
+        response = client.get("/not-found")
+        assert response.json() == {"message": "the error message"}
 
 
 def test_exception_handler_middleware_calls_app_level_after_exception_hook() -> None:
