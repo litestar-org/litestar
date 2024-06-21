@@ -3,6 +3,86 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.9.1
+    :date: 2024-06-21
+
+    .. change:: Add OPTIONS to the default safe methods for CSRFConfig
+        :type: bugfix
+        :pr: 3538
+
+        Add ``OPTIONS`` to the default safe methods for :class:`~litestar.config.csrf.CSRFConfig`
+
+
+    .. change:: Prometheus: Capture templated route name for metrics
+        :type: bugfix
+        :pr: 3533
+
+        Adding new extraction function for prometheus metrics to avoid high cardinality
+        issue in prometheus, eg having metrics ``GET /v1/users/{id}`` is preferable over
+        ``GET /v1/users/1``, ``GET /v1/users/2,GET /v1/users/3``
+
+        More info about prometheus high cardinality
+        https://grafana.com/blog/2022/02/15/what-are-cardinality-spikes-and-why-do-they-matter/
+
+    .. change:: Respect ``base_url`` in ``.websocket_connect``
+        :type: bugfix
+        :pr: 3567
+
+        Fix a bug that caused :meth:`~litestar.testing.TestClient.websocket_connect` /
+        :meth:`~litestar.testing.AsyncTestClient.websocket_connect` to not respect the
+        ``base_url`` set in the client's constructor, and instead would use the static
+        ``ws://testerver`` URL as a base.
+
+        Also removes most of the test client code as it was unneeded and in the way of
+        this fix :)
+
+        Explanation for the last part: All the extra code we had was just proxying
+        method calls to the ``httpx.Client`` / ``httpx.AsyncClient``, while altering the
+        base URL. Since we already set the base URL on the httpx Client's superclass
+        instance, which in turn does this merging internally, this step isn't needed at
+        all.
+
+    .. change:: Fix deprecation warning for subclassing route handler decorators
+        :type: bugfix
+        :pr: 3569
+        :issue: 3552
+
+        Fix an issue where there was a deprecation warning emitted by all route handler
+        decorators. This warning was introduced in ``2.9.0`` to warn about the upcoming
+        deprecation, but should have only applied to user subclasses of the handler
+        classes, and not the built-in ones (``get``, ``post``, etc.)
+
+    .. change:: CLI: Don't call ``rich_click.patch`` if ``rich_click`` is installed
+        :type: bugfix
+        :pr: 3570
+        :issue: 3534
+
+        Don't call ``rich_click.patch`` if ``rich_click`` is installed. As this
+        monkey patches click globally, it can introduce unwanted side effects. Instead,
+        use conditional imports to refer to the correct library.
+
+        External libraries will still be able to make use of ``rich_click`` implicitly
+        when it's installed by inheriting from ``LitestarGroup`` /
+        ``LitestarExtensionGroup``, which they will by default.
+
+
+    .. change:: Correctly handle ``typing.NewType``
+        :type: bugfix
+        :pr: 3580
+
+        When encountering a :class:`typing.NewType` during OpenAPI schema generation,
+        we currently treat it as an opaque type. This PR changes the behaviour such
+        that :class`typing.NewType`s are always unwrapped during schema generation.
+
+    .. change:: Encode response content object returned from an exception handler.
+        :type: bugfix
+        :pr: 3585
+
+        When an handler raises an exception and exception handler returns a Response
+        with a model (e.g. pydantic) object, ensure that object can be encoded as when
+        returning data from a regular handler.
+
+
 .. changelog:: 2.9.0
     :date: 2024-06-02
 
