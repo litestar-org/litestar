@@ -156,7 +156,7 @@ docs-serve: docs-clean 								## Serve the docs locally
 
 docs: docs-clean 									## Dump the existing built docs and rebuild them
 	@echo "=> Building documentation"
-	@$(PDM) run sphinx-build -M html docs docs/_build/ -E -a -j auto -W --keep-going
+	@$(PDM) run sphinx-build -M html docs docs/_build/ -E -a -j auto -W --keep-going -vv
 
 .PHONY: docs-linkcheck
 docs-linkcheck: 									## Run the link check on the docs
