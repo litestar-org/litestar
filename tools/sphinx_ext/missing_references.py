@@ -79,9 +79,10 @@ def on_warn_missing_reference(app: Sphinx, domain: str, node: Node) -> bool | No
     for pattern, targets in ignore_ref_rgs.items():
         if not pattern.match(source):
             continue
-        if isinstance(targets, set) and target in targets:
-            return True
-        if targets.match(target):
+        if isinstance(targets, set):
+            if target in targets:
+                return True
+        elif targets.match(target):
             return True
 
     return None
