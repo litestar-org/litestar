@@ -1530,6 +1530,75 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.9.1">
+<h2>2.9.1<a class="headerlink" href="#2.9.1" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2024-06-21<section id="2.9.1-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.9.1-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Add OPTIONS to the default safe methods for CSRFConfig<a class="headerlink reference internal" href="#2.9.1-add options to the default safe methods for csrfconfig" id="2.9.1-add options to the default safe methods for csrfconfig">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Add <code class="docutils literal notranslate"><span class="pre">OPTIONS</span></code> to the default safe methods for <a class="reference internal" href="../reference/config.html#litestar.config.csrf.CSRFConfig" title="litestar.config.csrf.CSRFConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CSRFConfig</span></code></a></p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3538">litestar-org/litestar#3538</a></span></p>
+</div>
+</dd>
+<dt>Prometheus: Capture templated route name for metrics<a class="headerlink reference internal" href="#2.9.1-prometheus: capture templated route name for metrics" id="2.9.1-prometheus: capture templated route name for metrics">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Adding new extraction function for prometheus metrics to avoid high cardinality
+issue in prometheus, eg having metrics <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/v1/users/{id}</span></code> is preferable over
+<code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/v1/users/1</span></code>, <code class="docutils literal notranslate"><span class="pre">GET</span> <span class="pre">/v1/users/2,GET</span> <span class="pre">/v1/users/3</span></code></p>
+<p>More info about prometheus high cardinality
+<a class="reference external" href="https://grafana.com/blog/2022/02/15/what-are-cardinality-spikes-and-why-do-they-matter/">https://grafana.com/blog/2022/02/15/what-are-cardinality-spikes-and-why-do-they-matter/</a></p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3533">litestar-org/litestar#3533</a></span></p>
+</div>
+</dd>
+<dt>Respect <code class="docutils literal notranslate"><span class="pre">base_url</span></code> in <code class="docutils literal notranslate"><span class="pre">.websocket_connect</span></code><a class="headerlink reference internal" href="#2.9.1-respect" id="2.9.1-respect">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug that caused <a class="reference internal" href="../reference/testing.html#litestar.testing.TestClient.websocket_connect" title="litestar.testing.TestClient.websocket_connect"><code class="xref py py-meth docutils literal notranslate"><span class="pre">websocket_connect()</span></code></a> /
+<a class="reference internal" href="../reference/testing.html#litestar.testing.AsyncTestClient.websocket_connect" title="litestar.testing.AsyncTestClient.websocket_connect"><code class="xref py py-meth docutils literal notranslate"><span class="pre">websocket_connect()</span></code></a> to not respect the
+<code class="docutils literal notranslate"><span class="pre">base_url</span></code> set in the client’s constructor, and instead would use the static
+<code class="docutils literal notranslate"><span class="pre">ws://testerver</span></code> URL as a base.</p>
+<p>Also removes most of the test client code as it was unneeded and in the way of
+this fix :)</p>
+<p>Explanation for the last part: All the extra code we had was just proxying
+method calls to the <code class="docutils literal notranslate"><span class="pre">httpx.Client</span></code> / <code class="docutils literal notranslate"><span class="pre">httpx.AsyncClient</span></code>, while altering the
+base URL. Since we already set the base URL on the httpx Client’s superclass
+instance, which in turn does this merging internally, this step isn’t needed at
+all.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3567">litestar-org/litestar#3567</a></span></p>
+</div>
+</dd>
+<dt>Fix deprecation warning for subclassing route handler decorators<a class="headerlink reference internal" href="#2.9.1-fix deprecation warning for subclassing route handler decorators" id="2.9.1-fix deprecation warning for subclassing route handler decorators">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix an issue where there was a deprecation warning emitted by all route handler
+decorators. This warning was introduced in <code class="docutils literal notranslate"><span class="pre">2.9.0</span></code> to warn about the upcoming
+deprecation, but should have only applied to user subclasses of the handler
+classes, and not the built-in ones (<code class="docutils literal notranslate"><span class="pre">get</span></code>, <code class="docutils literal notranslate"><span class="pre">post</span></code>, etc.)</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3552">litestar-org/litestar#3552</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3569">litestar-org/litestar#3569</a></span></p>
+</div>
+</dd>
+<dt>CLI: Don’t call <code class="docutils literal notranslate"><span class="pre">rich_click.patch</span></code> if <code class="docutils literal notranslate"><span class="pre">rich_click</span></code> is installed<a class="headerlink reference internal" href="#2.9.1-cli: don't call" id="2.9.1-cli: don't call">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Don’t call <code class="docutils literal notranslate"><span class="pre">rich_click.patch</span></code> if <code class="docutils literal notranslate"><span class="pre">rich_click</span></code> is installed. As this
+monkey patches click globally, it can introduce unwanted side effects. Instead,
+use conditional imports to refer to the correct library.</p>
+<p>External libraries will still be able to make use of <code class="docutils literal notranslate"><span class="pre">rich_click</span></code> implicitly
+when it’s installed by inheriting from <code class="docutils literal notranslate"><span class="pre">LitestarGroup</span></code> /
+<code class="docutils literal notranslate"><span class="pre">LitestarExtensionGroup</span></code>, which they will by default.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3534">litestar-org/litestar#3534</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3570">litestar-org/litestar#3570</a></span></p>
+</div>
+</dd>
+<dt>Correctly handle <code class="docutils literal notranslate"><span class="pre">typing.NewType</span></code><a class="headerlink reference internal" href="#2.9.1-correctly handle" id="2.9.1-correctly handle">#</a></dt><dd><div class="changelog-change docutils container">
+<p>When encountering a <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.NewType" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">typing.NewType</span></code></a> during OpenAPI schema generation,
+we currently treat it as an opaque type. This PR changes the behaviour such
+that :class`typing.NewType`s are always unwrapped during schema generation.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3580">litestar-org/litestar#3580</a></span></p>
+</div>
+</dd>
+<dt>Encode response content object returned from an exception handler.<a class="headerlink reference internal" href="#2.9.1-encode response content object returned from an exception handler." id="2.9.1-encode response content object returned from an exception handler.">#</a></dt><dd><div class="changelog-change docutils container">
+<p>When an handler raises an exception and exception handler returns a Response
+with a model (e.g. pydantic) object, ensure that object can be encoded as when
+returning data from a regular handler.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3585">litestar-org/litestar#3585</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.9.0">
 <h2>2.9.0<a class="headerlink" href="#2.9.0" title="Permalink to this heading">#</a></h2>
 <strong>Released: </strong>2024-06-02<section id="2.9.0-feature">
@@ -6099,6 +6168,10 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.9.1">2.9.1</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.9.1-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.9.0">2.9.0</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.9.0-feature">Features</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.9.0-bugfix">Bugfixes</a></li>

@@ -1,5 +1,5 @@
-concurrency
-===========
+cli
+===
 
 .. automodule:: litestar.concurrency
     :members:
