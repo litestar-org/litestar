@@ -1303,7 +1303,7 @@ document.write(`
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/controller.html">controller</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../reference/concurrency.html">cli</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../reference/concurrency.html">concurrency</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/data_extractors.html">data_extractors</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/datastructures/index.html">datastructures</a><input class="toctree-checkbox" id="toctree-checkbox-16" name="toctree-checkbox-16" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-16"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/datastructures/secret_values.html">secret_values</a></li>
@@ -1554,15 +1554,16 @@ this package, you should first install the required dependencies:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
 <span class="kn">from</span> <span class="nn">litestar.contrib.prometheus</span> <span class="kn">import</span> <span class="n">PrometheusConfig</span><span class="p">,</span> <span class="n">PrometheusController</span>
 
-<span class="c1"># Default app name and prefix is litestar.</span>
-<span class="n">prometheus_config</span> <span class="o">=</span> <span class="n">PrometheusConfig</span><span class="p">()</span>
 
+<span class="k">def</span> <span class="nf">create_app</span><span class="p">(</span><span class="n">group_path</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="c1"># Default app name and prefix is litestar.</span>
+    <span class="n">prometheus_config</span> <span class="o">=</span> <span class="n">PrometheusConfig</span><span class="p">(</span><span class="n">group_path</span><span class="o">=</span><span class="n">group_path</span><span class="p">)</span>
 
-<span class="c1"># By default the metrics are available in prometheus format and the path is set to &#39;/metrics&#39;.</span>
-<span class="c1"># If you want to change the path and format you can do it by subclassing the PrometheusController class.</span>
+    <span class="c1"># By default the metrics are available in prometheus format and the path is set to &#39;/metrics&#39;.</span>
+    <span class="c1"># If you want to change the path and format you can do it by subclassing the PrometheusController class.</span>
 
-<span class="c1"># Creating the litestar app instance with our custom PrometheusConfig and PrometheusController.</span>
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">PrometheusController</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">prometheus_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+    <span class="c1"># Creating the litestar app instance with our custom PrometheusConfig and PrometheusController.</span>
+    <span class="k">return</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">PrometheusController</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">prometheus_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
