@@ -236,7 +236,7 @@ ignore_missing_refs = {
     re.compile(r"litestar\.template\.(config|TemplateConfig).*"): re.compile(".*EngineType"),
     "litestar.concurrency.set_asyncio_executor": {"ThreadPoolExecutor"},
     "litestar.concurrency.get_asyncio_executor": {"ThreadPoolExecutor"},
-    re.compile(r"litestar\.channels\.backends\.asyncpg.*"): {"asyncpg.connection.Connection"},
+    re.compile(r"litestar\.channels\.backends\.asyncpg.*"): {"asyncpg.Connection"},
 }
 
 # Do not warn about broken links to the following:
