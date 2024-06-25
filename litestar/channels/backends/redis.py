@@ -143,7 +143,7 @@ class RedisChannelsPubSubBackend(RedisChannelsBackend):
 
             channel: str = message["channel"].decode()
             data: bytes = message["data"]
-            # redis handles the unsubscibes with a queue; Unsubscribing doesn't mean the
+            # redis handles the unsubscribes with a queue; Unsubscribing doesn't mean the
             # unsubscribe will happen immediately after requesting it, so we could
             # receive a message on a channel that, from a client's perspective, it's not
             # subscribed to anymore
