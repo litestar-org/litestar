@@ -137,10 +137,14 @@ class AppConfig:
     """An instance of :class:`BaseLoggingConfig <.logging.config.BaseLoggingConfig>` subclass."""
     middleware: list[Middleware] = field(default_factory=list)
     """A list of :class:`Middleware <.types.Middleware>`."""
+    before_shutdown: list[LifespanHook] = field(default_factory=list)
+    """A list of :class:`LifespanHook <.types.LifespanHook>` called first during the application shutdown."""
     on_shutdown: list[LifespanHook] = field(default_factory=list)
     """A list of :class:`LifespanHook <.types.LifespanHook>` called during application shutdown."""
     on_startup: list[LifespanHook] = field(default_factory=list)
     """A list of :class:`LifespanHook <.types.LifespanHook>` called during application startup."""
+    after_startup: list[LifespanHook] = field(default_factory=list)
+    """A list of :class:`LifespanHook <.types.LifespanHook>` called immediately after the ``on_startup`` hooks."""
     openapi_config: OpenAPIConfig | None = field(default=None)
     """Defaults to :data:`DEFAULT_OPENAPI_CONFIG <litestar.app.DEFAULT_OPENAPI_CONFIG>`"""
     opt: dict[str, Any] = field(default_factory=dict)

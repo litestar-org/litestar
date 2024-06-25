@@ -81,8 +81,10 @@ def create_test_client(
     middleware: Sequence[Middleware] | None = None,
     multipart_form_part_limit: int = 1000,
     on_app_init: Sequence[OnAppInitHandler] | None = None,
+    before_shutdown: Sequence[LifespanHook] | None = None,
     on_shutdown: Sequence[LifespanHook] | None = None,
     on_startup: Sequence[LifespanHook] | None = None,
+    after_startup: Sequence[LifespanHook] | None = None,
     openapi_config: OpenAPIConfig | None = DEFAULT_OPENAPI_CONFIG,
     opt: Mapping[str, Any] | None = None,
     parameters: ParametersMap | None = None,
@@ -192,10 +194,14 @@ def create_test_client(
             an instance of :class:`AppConfig <.config.app.AppConfig>` that will have been initially populated with
             the parameters passed to :class:`Litestar <litestar.app.Litestar>`, and must return an instance of same.
             If more than one handler is registered they are called in the order they are provided.
+        before_shutdown: A sequence of :class:`LifespanHook <.types.LifespanHook>` called first during application
+            shutdown.
         on_shutdown: A sequence of :class:`LifespanHook <.types.LifespanHook>` called during application
             shutdown.
         on_startup: A sequence of :class:`LifespanHook <litestar.types.LifespanHook>` called during
             application startup.
+        after_startup: A sequence of :class:`LifespanHook <litestar.types.LifespanHook>` called during
+            after application startup.
         openapi_config: Defaults to :attr:`DEFAULT_OPENAPI_CONFIG`
         opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
             wherever you have access to :class:`Request <litestar.connection.request.Request>` or
@@ -273,8 +279,10 @@ def create_test_client(
         middleware=middleware,
         multipart_form_part_limit=multipart_form_part_limit,
         on_app_init=on_app_init,
+        before_shutdown=before_shutdown,
         on_shutdown=on_shutdown,
         on_startup=on_startup,
+        after_startup=after_startup,
         openapi_config=openapi_config,
         opt=opt,
         parameters=parameters,
@@ -343,8 +351,10 @@ def create_async_test_client(
     middleware: Sequence[Middleware] | None = None,
     multipart_form_part_limit: int = 1000,
     on_app_init: Sequence[OnAppInitHandler] | None = None,
+    before_shutdown: Sequence[LifespanHook] | None = None,
     on_shutdown: Sequence[LifespanHook] | None = None,
     on_startup: Sequence[LifespanHook] | None = None,
+    after_startup: Sequence[LifespanHook] | None = None,
     openapi_config: OpenAPIConfig | None = DEFAULT_OPENAPI_CONFIG,
     opt: Mapping[str, Any] | None = None,
     parameters: ParametersMap | None = None,
@@ -453,10 +463,14 @@ def create_async_test_client(
             an instance of :class:`AppConfig <.config.app.AppConfig>` that will have been initially populated with
             the parameters passed to :class:`Litestar <litestar.app.Litestar>`, and must return an instance of same.
             If more than one handler is registered they are called in the order they are provided.
+        before_shutdown: A sequence of :class:`LifespanHook <.types.LifespanHook>` called first during application
+            shutdown.
         on_shutdown: A sequence of :class:`LifespanHook <.types.LifespanHook>` called during application
             shutdown.
         on_startup: A sequence of :class:`LifespanHook <litestar.types.LifespanHook>` called during
             application startup.
+        after_startup: A sequence of :class:`LifespanHook <litestar.types.LifespanHook>` called during
+            after application startup.
         openapi_config: Defaults to :attr:`DEFAULT_OPENAPI_CONFIG`
         opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
             wherever you have access to :class:`Request <litestar.connection.request.Request>` or
@@ -533,8 +547,10 @@ def create_async_test_client(
         middleware=middleware,
         multipart_form_part_limit=multipart_form_part_limit,
         on_app_init=on_app_init,
+        before_shutdown=before_shutdown,
         on_shutdown=on_shutdown,
         on_startup=on_startup,
+        after_startup=after_startup,
         openapi_config=openapi_config,
         opt=opt,
         parameters=parameters,

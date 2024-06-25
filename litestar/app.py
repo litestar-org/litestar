@@ -154,8 +154,10 @@ class Litestar(Router):
         "logger",
         "logging_config",
         "multipart_form_part_limit",
+        "before_shutdown",
         "on_shutdown",
         "on_startup",
+        "after_startup",
         "openapi_config",
         "response_cache_config",
         "route_map",
@@ -193,8 +195,10 @@ class Litestar(Router):
         middleware: Sequence[Middleware] | None = None,
         multipart_form_part_limit: int = 1000,
         on_app_init: Sequence[OnAppInitHandler] | None = None,
+        before_shutdown: Sequence[LifespanHook] | None = None,
         on_shutdown: Sequence[LifespanHook] | None = None,
         on_startup: Sequence[LifespanHook] | None = None,
+        after_startup: Sequence[LifespanHook] | None = None,
         openapi_config: OpenAPIConfig | None = DEFAULT_OPENAPI_CONFIG,
         opt: Mapping[str, Any] | None = None,
         parameters: ParametersMap | None = None,
@@ -268,10 +272,14 @@ class Litestar(Router):
                 an instance of :class:`AppConfig <.config.app.AppConfig>` that will have been initially populated with
                 the parameters passed to :class:`Litestar <litestar.app.Litestar>`, and must return an instance of same.
                 If more than one handler is registered they are called in the order they are provided.
+            before_shutdown: A sequence of :class:`LifespanHook <.types.LifespanHook>` called first during application
+                shutdown.
             on_shutdown: A sequence of :class:`LifespanHook <.types.LifespanHook>` called during application
                 shutdown.
             on_startup: A sequence of :class:`LifespanHook <litestar.types.LifespanHook>` called during
                 application startup.
+            after_startup: A sequence of :class:`LifespanHook <litestar.types.LifespanHook>` called during
+                after application startup.
             openapi_config: Defaults to :attr:`DEFAULT_OPENAPI_CONFIG`
             opt: A string keyed mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or
                 wherever you have access to :class:`Request <litestar.connection.request.Request>` or
@@ -351,8 +359,10 @@ class Litestar(Router):
             logging_config=logging_config,
             middleware=list(middleware or []),
             multipart_form_part_limit=multipart_form_part_limit,
+            before_shutdown=list(before_shutdown or []),
             on_shutdown=list(on_shutdown or []),
             on_startup=list(on_startup or []),
+            after_startup=list(after_startup or []),
             openapi_config=openapi_config,
             opt=dict(opt or {}),
             path=path or "",
@@ -422,8 +432,10 @@ class Litestar(Router):
         self.event_emitter = config.event_emitter_backend(listeners=config.listeners)
         self.logging_config = config.logging_config
         self.multipart_form_part_limit = config.multipart_form_part_limit
+        self.before_shutdown = config.before_shutdown
         self.on_shutdown = config.on_shutdown
         self.on_startup = config.on_startup
+        self.after_startup = config.after_startup
         self.openapi_config = config.openapi_config
         self.request_class: type[Request] = config.request_class or Request
         self.response_cache_config = config.response_cache_config
@@ -606,6 +618,9 @@ class Litestar(Router):
         custom lifespan managers.
         """
         async with AsyncExitStack() as exit_stack:
+            for hook in self.before_shutdown[::-1]:
+                exit_stack.push_async_callback(partial(self._call_lifespan_hook, hook))
+
             for hook in self.on_shutdown[::-1]:
                 exit_stack.push_async_callback(partial(self._call_lifespan_hook, hook))
 
@@ -619,6 +634,8 @@ class Litestar(Router):
             for hook in self.on_startup:
                 await self._call_lifespan_hook(hook)
 
+            for hook in self.after_startup:
+                await self._call_lifespan_hook(hook)
             yield
 
     @property
