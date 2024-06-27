@@ -1,4 +1,4 @@
-from typing import Any, Self, Type
+from typing import Any, Type
 
 from msgspec import Struct
 
@@ -23,7 +23,7 @@ class TenantUser:
         self.user_id = user_id
 
     @classmethod
-    def from_string(cls, s: str) -> Self:
+    def from_string(cls, s: str) -> "TenantUser":
         splits = s.split("_", maxsplit=1)
         if len(splits) < 2:
             raise ValueError(

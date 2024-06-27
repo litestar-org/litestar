@@ -14,5 +14,4 @@ def test_custom_type_encoding_decoding_works() -> None:
             },
         )
 
-        print(response.text)
         assert response.status_code == HTTP_201_CREATED
