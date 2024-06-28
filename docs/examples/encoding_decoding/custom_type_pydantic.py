@@ -1,6 +1,5 @@
-from typing import Annotated
-
 from pydantic import BaseModel, BeforeValidator, ConfigDict, PlainSerializer, WithJsonSchema
+from typing_extensions import Annotated
 
 from litestar import Litestar, post
 
