@@ -3,12 +3,11 @@ Custom types
 
 Data serialization / deserialization (encoding / decoding) and validation are important parts of any API framework.
 
-Among others, Litestar supports Python's built-in dataclasses, Pydantic, and msgspec for these tasks, defaulting to msgspec with JSON as the serialization protocol.
+In addition to being capable to encode / decode and validate many standard types, litestar supports Python's builtin dataclasses and libraries like Pydantic and msgspec.
 
 While msgspec supports `a lot of types <https://jcristharif.com/msgspec/supported-types.html>`_, sometimes you may need to employ a custom type. Msgspec provides an `extension mechanism <https://jcristharif.com/msgspec/extending.html#mapping-to-from-native-types>`_ where you provide encoding and decoding hook functions which translate your type in a type that msgspec knows.
 
-Litestar supports this mechanism via ``type_encoders`` and ``type_decoders`` :term:`parameters <parameter>` which can be defined on every layer. For example see the :doc:`litestar app reference </reference/app>`.
-
+However, sometimes you may need to employ a custom type. Litestar supports a mechanism where you provide encoding and decoding hook functions which translate your type in / to a type that it knows. You can provide them via the ``type_encoders`` and ``type_decoders`` :term:`parameters <parameter>` which can be defined on every layer. For example see the :doc:`litestar app reference </reference/app>`.
 
 .. admonition:: Layered architecture
 
@@ -23,3 +22,12 @@ Here is an example:
 
 .. literalinclude:: /examples/encoding_decoding/custom_type_encoding_decoding.py
    :caption: Tell Litestar how to encode and decode a custom type
+
+Custom Pydantic types
+---------------------
+
+If you use a custom Pydantic type you can use it directly:
+
+.. literalinclude:: /examples/encoding_decoding/custom_type_pydantic.py
+   :caption: Tell Litestar how to encode and decode a custom Pydantic type
+
