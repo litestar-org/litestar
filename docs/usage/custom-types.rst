@@ -1,9 +1,9 @@
 Custom types
-=============
+============
 
 Data serialization / deserialization (encoding / decoding) and validation are important parts of any API framework.
 
-Among others, litestar supports Python's builtin dataclasses, Pydantic and msgspec for these tasks, defaulting to msgspec with json as serialization protocol.
+Among others, Litestar supports Python's built-in dataclasses, Pydantic, and msgspec for these tasks, defaulting to msgspec with JSON as the serialization protocol.
 
 While msgspec supports `a lot of types <https://jcristharif.com/msgspec/supported-types.html>`_, sometimes you may need to employ a custom type. Msgspec provides an `extension mechanism <https://jcristharif.com/msgspec/extending.html#mapping-to-from-native-types>`_ where you provide encoding and decoding hook functions which translate your type in a type that msgspec knows.
 
