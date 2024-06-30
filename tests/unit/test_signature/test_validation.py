@@ -319,9 +319,11 @@ def test_separate_model_namespace() -> None:
         return "deserializer"
 
     @get("/deserializer", dependencies={"deserializer": provide_deserializer})
-    async def get_deserializer(deserializer: str) -> str:
-        return deserializer
+    async def get_deserializer(deserializer: int) -> str:
+        return deserializer  # type: ignore[return-value]
 
-    with create_test_client([get_connection, get_deserializer]) as client:
+    with create_test_client([get_connection, get_deserializer], raise_server_exceptions=True, debug=True) as client:
         assert client.get("/connection").text == "connection"
-        assert client.get("/deserializer").text == "deserializer"
+        res = client.get("/deserializer")
+        assert res.status_code == 500
+        assert "Expected `int`, got `str` - at `$.deserializer`" in res.text
