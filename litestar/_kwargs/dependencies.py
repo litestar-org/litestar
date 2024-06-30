@@ -58,7 +58,7 @@ async def resolve_dependency(
     """
     signature_model = dependency.provide.signature_model
     dependency_kwargs = (
-        signature_model.parse_values_from_connection_kwargs(connection=connection, **kwargs)
+        signature_model.parse_values_from_connection_kwargs(connection=connection, kwargs=kwargs)
         if signature_model._fields
         else {}
     )

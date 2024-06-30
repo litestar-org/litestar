@@ -28,7 +28,7 @@ def test_parses_values_from_connection_kwargs_raises() -> None:
         type_decoders=[],
     )
     with pytest.raises(ValidationException):
-        model.parse_values_from_connection_kwargs(connection=RequestFactory().get(), a="not an int")
+        model.parse_values_from_connection_kwargs(connection=RequestFactory().get(), kwargs={"a": "not an int"})
 
 
 def test_create_signature_validation() -> None:
@@ -128,7 +128,7 @@ def test_validation_error_exception_key() -> None:
 
     with pytest.raises(ValidationException) as exc_info:
         model.parse_values_from_connection_kwargs(
-            connection=RequestFactory().get(route_handler=handler), data={"child": {}, "other_child": {}}
+            connection=RequestFactory().get(route_handler=handler), kwargs={"data": {"child": {}, "other_child": {}}}
         )
 
     assert isinstance(exc_info.value.extra, list)
@@ -283,7 +283,7 @@ def test_parse_values_from_connection_kwargs_with_multiple_errors() -> None:
         type_decoders=[],
     )
     with pytest.raises(ValidationException) as exc:
-        model.parse_values_from_connection_kwargs(connection=RequestFactory().get(), a=0, b=9)
+        model.parse_values_from_connection_kwargs(connection=RequestFactory().get(), kwargs={"a": 0, "b": 9})
 
     assert exc.value.extra == [
         {"message": "Expected `int` >= 6", "key": "a", "source": ParamType.QUERY},
@@ -303,3 +303,25 @@ def test_validate_subscribed_generics() -> None:
 
     with create_test_client([something]) as client:
         assert client.get("/").status_code == 200
+
+
+def test_separate_model_namespace() -> None:
+    # h ttps://github.com/litestar-org/litestar/issues/3593
+
+    async def provide_connection() -> str:
+        return "connection"
+
+    @get("/connection", dependencies={"connection": provide_connection})
+    async def get_connection(connection: str) -> str:
+        return connection
+
+    async def provide_deserializer() -> str:
+        return "deserializer"
+
+    @get("/deserializer", dependencies={"deserializer": provide_deserializer})
+    async def get_deserializer(deserializer: str) -> str:
+        return deserializer
+
+    with create_test_client([get_connection, get_deserializer]) as client:
+        assert client.get("/connection").text == "connection"
+        assert client.get("/deserializer").text == "deserializer"
