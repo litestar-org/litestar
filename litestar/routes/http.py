@@ -189,7 +189,7 @@ class HTTPRoute(BaseRoute):
                 cleanup_group = await parameter_model.resolve_dependencies(request, kwargs)
 
             parsed_kwargs = route_handler.signature_model.parse_values_from_connection_kwargs(
-                connection=request, **kwargs
+                connection=request, kwargs=kwargs
             )
 
         if cleanup_group:

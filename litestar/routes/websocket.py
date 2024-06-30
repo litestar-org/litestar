@@ -75,7 +75,7 @@ class WebSocketRoute(BaseRoute):
                 cleanup_group = await self.handler_parameter_model.resolve_dependencies(websocket, parsed_kwargs)
 
             parsed_kwargs = self.route_handler.signature_model.parse_values_from_connection_kwargs(
-                connection=websocket, **parsed_kwargs
+                connection=websocket, kwargs=parsed_kwargs
             )
 
         if cleanup_group:

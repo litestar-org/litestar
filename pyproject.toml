@@ -310,6 +310,11 @@ exclude-classes = """
 """
 
 [tool.ruff]
+include = [
+  "{litestar,tests,docs,test_apps,tools}/**/*.{py,pyi}",
+  "pyproject.toml"
+]
+
 lint.select = [
   "A", # flake8-builtins
   "B", # flake8-bugbear
