@@ -306,7 +306,7 @@ def test_validate_subscribed_generics() -> None:
 
 
 def test_separate_model_namespace() -> None:
-    # h ttps://github.com/litestar-org/litestar/issues/3593
+    # https://github.com/litestar-org/litestar/issues/3593
 
     async def provide_connection() -> str:
         return "connection"
