@@ -85,17 +85,19 @@ class WebsocketRouteHandler(BaseRouteHandler):
         super()._validate_handler_function()
 
         if not self.parsed_fn_signature.return_type.is_subclass_of(NoneType):
-            raise ImproperlyConfiguredException("Websocket handler functions should return 'None'")
+            raise ImproperlyConfiguredException(f"{self}: WebSocket handlers must return 'None'")
 
         if "socket" not in self.parsed_fn_signature.parameters:
-            raise ImproperlyConfiguredException("Websocket handlers must set a 'socket' kwarg")
+            raise ImproperlyConfiguredException(f"{self}: WebSocket handlers must define a 'socket' parameter")
 
         for param in ("request", "body", "data"):
             if param in self.parsed_fn_signature.parameters:
-                raise ImproperlyConfiguredException(f"The {param} kwarg is not supported with websocket handlers")
+                raise ImproperlyConfiguredException(
+                    f"{self}: The {param} kwarg is not supported with websocket handlers"
+                )
 
         if not is_async_callable(self.fn):
-            raise ImproperlyConfiguredException("Functions decorated with 'websocket' must be async functions")
+            raise ImproperlyConfiguredException(f"{self}: WebSocket handler functions must be asynchronous")
 
 
 websocket = WebsocketRouteHandler

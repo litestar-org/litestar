@@ -23,6 +23,7 @@ if TYPE_CHECKING:
     from litestar import Response
     from litestar.app import Litestar
     from litestar.connection import Request
+    from litestar.handlers import BaseRouteHandler
     from litestar.logging import BaseLoggingConfig
     from litestar.types import (
         ASGIApp,
@@ -202,7 +203,11 @@ class ExceptionHandlerMiddleware:
         exception_handler = get_exception_handler(exception_handlers, exc) or self.default_http_exception_handler
         request: Request[Any, Any, Any] = litestar_app.request_class(scope=scope, receive=receive, send=send)
         response = exception_handler(request, exc)
-        await response.to_asgi_response(app=None, request=request)(scope=scope, receive=receive, send=send)
+        route_handler: BaseRouteHandler | None = scope.get("route_handler")
+        type_encoders = route_handler.resolve_type_encoders() if route_handler else litestar_app.type_encoders
+        await response.to_asgi_response(app=None, request=request, type_encoders=type_encoders)(
+            scope=scope, receive=receive, send=send
+        )
 
     @staticmethod
     async def handle_websocket_exception(send: Send, exc: Exception) -> None:

@@ -574,7 +574,7 @@ class HTTPRouteHandler(BaseRouteHandler):
 
         if return_type.annotation is Empty:
             raise ImproperlyConfiguredException(
-                "A return value of a route handler function should be type annotated. "
+                f"A return value of a route handler function {self} should be type annotated. "
                 "If your function doesn't return a value, annotate it as returning 'None'."
             )
 
