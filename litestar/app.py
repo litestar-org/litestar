@@ -772,7 +772,7 @@ class Litestar(Router):
                     component.type not in allow_str_instead or not isinstance(val, str)
                 ):
                     raise NoRouteMatchFoundException(
-                        f"Received type for path parameter {component.name} doesn't match declared type {component.type}"
+                        f"Received type {type(val)} for path parameter {component.name} doesn't match declared type {component.type}"
                     )
                 output.append(str(val))
             else:
