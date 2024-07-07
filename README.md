@@ -567,6 +567,7 @@ see [the contribution guide](CONTRIBUTING.rst).
       <td align="center" valign="top" width="14.28%"><a href="https://possiblepanda.me"><img src="https://avatars.githubusercontent.com/u/85448494?v=4?s=100" width="100px;" alt="PossiblePanda"/><br /><sub><b>PossiblePanda</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=PossiblePanda" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/evstratbg"><img src="https://avatars.githubusercontent.com/u/10176401?v=4?s=100" width="100px;" alt="evstrat"/><br /><sub><b>evstrat</b></sub></a><br /><a href="#infra-evstratbg" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://speakerdeck.com/eltociear"><img src="https://avatars.githubusercontent.com/u/22633385?v=4?s=100" width="100px;" alt="Ikko Eltociear Ashimine"/><br /><sub><b>Ikko Eltociear Ashimine</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=eltociear" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/taihim"><img src="https://avatars.githubusercontent.com/u/13764071?v=4?s=100" width="100px;" alt="Taimur Ibrahim"/><br /><sub><b>Taimur Ibrahim</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=taihim" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>
