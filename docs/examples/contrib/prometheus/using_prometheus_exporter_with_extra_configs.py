@@ -32,7 +32,7 @@ def custom_exemplar(request: Request[Any, Any, Any]) -> Dict[str, str]:
 
 
 # Creating the instance of PrometheusConfig with our own custom options.
-# The givenn options ara not necessary, you can use the default ones
+# The given options are not necessary, you can use the default ones
 # as well by just creating a raw instance PrometheusConfig()
 prometheus_config = PrometheusConfig(
     app_name="litestar-example",
