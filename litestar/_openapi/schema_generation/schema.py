@@ -360,7 +360,7 @@ class SchemaCreator:
     def for_new_type(self, field_definition: FieldDefinition) -> Schema | Reference:
         return self.for_field_definition(
             FieldDefinition.from_kwarg(
-                annotation=unwrap_new_type(field_definition.raw),
+                annotation=unwrap_new_type(field_definition.annotation),
                 name=field_definition.name,
                 default=field_definition.default,
             )

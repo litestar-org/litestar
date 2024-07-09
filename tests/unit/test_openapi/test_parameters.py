@@ -1,3 +1,4 @@
+import dataclasses
 from typing import TYPE_CHECKING, Any, List, Optional, Type, cast
 from uuid import UUID
 
@@ -418,3 +419,22 @@ def test_unwrap_nested_new_type() -> None:
 
     app = Litestar([handler])
     assert app.openapi_schema.paths["/"].get.parameters[0].schema.type == OpenAPIType.STRING  # type: ignore[index, union-attr]
+
+
+def test_unwrap_annotated_new_type() -> None:
+    FancyString = NewType("FancyString", str)
+
+    @dataclasses.dataclass
+    class TestModel:
+        param: Annotated[FancyString, "foo"]
+
+    @get("/")
+    async def handler(
+        param: TestModel,
+    ) -> None:
+        return None
+
+    app = Litestar([handler])
+
+    testmodel_schema_name = app.openapi_schema.paths["/"].get.parameters[0].schema.value  # type: ignore[index, union-attr]
+    assert app.openapi_schema.components.schemas[testmodel_schema_name].properties["param"].type == OpenAPIType.STRING  # type: ignore[index, union-attr]
