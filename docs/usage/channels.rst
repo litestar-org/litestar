@@ -438,7 +438,7 @@ route handlers.
 
 .. literalinclude:: /examples/channels/create_route_handlers.py
     :language: python
-    :caption: Setting ``create_route_handlers=True`` will create route handlers for all ``channels``
+    :caption: Setting ``create_ws_route_handlers=True`` will create route handlers for all ``channels``
 
 
 
