@@ -1800,6 +1800,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "l-armstrong",
+      "name": "l-armstrong",
+      "avatar_url": "https://avatars.githubusercontent.com/u/43922258?v=4",
+      "profile": "https://github.com/l-armstrong",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
