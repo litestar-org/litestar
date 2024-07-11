@@ -570,6 +570,9 @@ see [the contribution guide](CONTRIBUTING.rst).
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/taihim"><img src="https://avatars.githubusercontent.com/u/13764071?v=4?s=100" width="100px;" alt="Taimur Ibrahim"/><br /><sub><b>Taimur Ibrahim</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=taihim" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/l-armstrong"><img src="https://avatars.githubusercontent.com/u/43922258?v=4?s=100" width="100px;" alt="l-armstrong"/><br /><sub><b>l-armstrong</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=l-armstrong" title="Documentation">📖</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Anu-cool-007"><img src="https://avatars.githubusercontent.com/u/16525919?v=4?s=100" width="100px;" alt="Anuranjan Srivastava"/><br /><sub><b>Anuranjan Srivastava</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=Anu-cool-007" title="Code">💻</a></td>
+    </tr>
   </tbody>
 </table>
 
