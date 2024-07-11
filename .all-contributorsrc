@@ -1809,6 +1809,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "Anu-cool-007",
+      "name": "Anuranjan Srivastava",
+      "avatar_url": "https://avatars.githubusercontent.com/u/16525919?v=4",
+      "profile": "https://github.com/Anu-cool-007",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
