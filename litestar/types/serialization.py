@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Dict, Set
 
 if TYPE_CHECKING:
     from collections import deque
@@ -28,8 +28,13 @@ if TYPE_CHECKING:
 
     try:
         from pydantic import BaseModel
+        from pydantic.main import IncEx
+        from pydantic.typing import AbstractSetIntStr, MappingIntStrAny
     except ImportError:
         BaseModel = Any  # type: ignore[assignment, misc]
+        IncEx = Any  # type: ignore[misc]
+        AbstractSetIntStr = Any
+        MappingIntStrAny = Any
 
     try:
         from attrs import AttrsInstance
@@ -57,3 +62,5 @@ EncodableStdLibIPType: TypeAlias = (
 EncodableMsgSpecType: TypeAlias = "Ext | Raw | Struct"
 LitestarEncodableType: TypeAlias = "EncodableBuiltinType | EncodableBuiltinCollectionType | EncodableStdLibType | EncodableStdLibIPType | EncodableMsgSpecType | BaseModel | AttrsInstance"  # pyright: ignore
 DataContainerType: TypeAlias = "Struct | BaseModel | AttrsInstance | TypedDictClass | DataclassProtocol"  # pyright: ignore
+PydanticV2FieldsListType: TypeAlias = "Set[int] | Set[str] | Dict[int, Any] | Dict[str, Any]"
+PydanticV1FieldsListType: TypeAlias = "IncEx | AbstractSetIntStr | MappingIntStrAny"  # pyright: ignore
