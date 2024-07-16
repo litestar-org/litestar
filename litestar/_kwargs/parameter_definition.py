@@ -64,7 +64,7 @@ def create_parameter_definition(
         and default is None
         and not field_definition.is_optional
         and not field_definition.is_any,
-        is_sequence=field_definition.is_non_string_sequence,
+        is_sequence=field_definition.is_non_string_non_mapping_iterable,
     )
 
 

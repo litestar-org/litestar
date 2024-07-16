@@ -38,6 +38,7 @@ from litestar.utils.predicates import (
     is_generic,
     is_mapping,
     is_non_string_iterable,
+    is_non_string_non_mapping_iterable,
     is_non_string_sequence,
     is_undefined_sentinel,
 )
@@ -102,6 +103,36 @@ def test_is_class_and_subclass(args: Tuple[Any, Any], expected: bool) -> None:
 )
 def test_is_non_string_iterable(value: Any, expected: bool) -> None:
     assert is_non_string_iterable(value) is expected
+
+
+@pytest.mark.parametrize(
+    "value, expected",
+    (
+        (
+            (Tuple[int, ...], True),
+            (Tuple[int], True),
+            (List[str], True),
+            (Set[str], True),
+            (FrozenSet[str], True),
+            (Deque[str], True),
+            (Sequence[str], True),
+            (Iterable[str], True),
+            (list, True),
+            (tuple, True),
+            (deque, True),
+            (set, True),
+            (frozenset, True),
+            (str, False),
+            (bytes, False),
+            (dict, False),
+            (Dict[str, Any], False),
+            (Union[str, int], False),
+            (1, False),
+        )
+    ),
+)
+def test_is_non_string_non_mapping_iterable(value: Any, expected: bool) -> None:
+    assert is_non_string_non_mapping_iterable(value) is expected
 
 
 @pytest.mark.parametrize(

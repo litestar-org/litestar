@@ -30,6 +30,7 @@ from litestar.utils.predicates import (
     is_class_and_subclass,
     is_generic,
     is_non_string_iterable,
+    is_non_string_non_mapping_iterable,
     is_non_string_sequence,
     is_union,
 )
@@ -159,7 +160,7 @@ def _traverse_metadata(
 def _create_metadata_from_type(
     metadata: Sequence[Any], model: type[T], annotation: Any, extra: dict[str, Any] | None
 ) -> tuple[T | None, dict[str, Any]]:
-    is_sequence_container = is_non_string_sequence(annotation)
+    is_sequence_container = is_non_string_non_mapping_iterable(annotation)
     result = _traverse_metadata(metadata=metadata, is_sequence_container=is_sequence_container, extra=extra)
 
     constraints = {k: v for k, v in result.items() if k in dir(model)}
@@ -289,6 +290,17 @@ class FieldDefinition:
         if self.is_optional:
             annotation = make_non_optional_union(annotation)
         return is_non_string_sequence(annotation)
+
+    @property
+    def is_non_string_non_mapping_iterable(self) -> bool:
+        """Check if the field type is an Iterable other than string or mapping.
+
+        If ``self.annotation`` is an optional union, only the non-optional members of the union are evaluated.
+        """
+        annotation = self.annotation
+        if self.is_optional:
+            annotation = make_non_optional_union(annotation)
+        return is_non_string_non_mapping_iterable(annotation)
 
     @property
     def is_any(self) -> bool:

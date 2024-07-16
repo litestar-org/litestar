@@ -55,6 +55,7 @@ __all__ = (
     "is_generic",
     "is_mapping",
     "is_non_string_iterable",
+    "is_non_string_non_mapping_iterable",
     "is_non_string_sequence",
     "is_optional_union",
     "is_undefined_sentinel",
@@ -207,6 +208,28 @@ def is_non_string_sequence(annotation: Any) -> TypeGuard[Sequence[Any]]:
                 set,
                 frozenset,
             ),
+        )
+    except TypeError:  # pragma: no cover
+        return False
+
+
+def is_non_string_non_mapping_iterable(annotation: Any) -> TypeGuard[Iterable[Any]]:
+    """Given a type annotation determine if the annotation is a sequence.
+
+    Args:
+    annotation: A type.
+
+    Returns:
+        A typeguard determining whether the type can be cast as :class`Iterable <typing.Iterable>`
+         that is not a string or Mapping.
+    """
+    origin = get_origin_or_inner_type(annotation)
+    if not origin and not isclass(annotation):
+        return False
+    typ = origin or annotation
+    try:
+        return issubclass(origin or annotation, Iterable) and not (
+            issubclass(typ, (str, bytes)) or issubclass(typ, Mapping)
         )
     except TypeError:  # pragma: no cover
         return False
