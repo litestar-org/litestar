@@ -331,7 +331,7 @@ def test_with_generic_class(openapi_controller: type[OpenAPIController] | None) 
                             "200": {
                                 "description": "Request fulfilled, document follows",
                                 "headers": {},
-                                "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Foo[str]"}}},
+                                "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Foo_str_"}}},
                             }
                         },
                         "deprecated": False,
@@ -345,7 +345,7 @@ def test_with_generic_class(openapi_controller: type[OpenAPIController] | None) 
                             "200": {
                                 "description": "Request fulfilled, document follows",
                                 "headers": {},
-                                "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Foo[int]"}}},
+                                "content": {"application/json": {"schema": {"$ref": "#/components/schemas/Foo_int_"}}},
                             }
                         },
                         "deprecated": False,
@@ -354,13 +354,13 @@ def test_with_generic_class(openapi_controller: type[OpenAPIController] | None) 
             },
             "components": {
                 "schemas": {
-                    "Foo[str]": {
+                    "Foo_str_": {
                         "properties": {"foo": {"type": "string"}},
                         "type": "object",
                         "required": ["foo"],
                         "title": "Foo[str]",
                     },
-                    "Foo[int]": {
+                    "Foo_int_": {
                         "properties": {"foo": {"type": "integer"}},
                         "type": "object",
                         "required": ["foo"],
