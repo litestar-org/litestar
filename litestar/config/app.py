@@ -11,6 +11,7 @@ from litestar.events.emitter import SimpleEventEmitter
 from litestar.types.empty import Empty
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
     from contextlib import AbstractAsyncContextManager
 
     from litestar import Litestar, Response
@@ -195,9 +196,9 @@ class AppConfig:
     """A :class:`State` <.datastructures.State>` instance holding application state."""
     static_files_config: list[StaticFilesConfig] = field(default_factory=list)
     """An instance or list of :class:`StaticFilesConfig <.static_files.StaticFilesConfig>`."""
-    stores: StoreRegistry | dict[str, Store] | None = None
+    stores: StoreRegistry | Mapping[str, Store] | None = None
     """Central registry of :class:`Store <.stores.base.Store>` to be made available and be used throughout the
-    application. Can be either a dictionary mapping strings to :class:`Store <.stores.base.Store>` instances, or an
+    application. Can be either a mapping of strings to :class:`Store <.stores.base.Store>` instances, or an
     instance of :class:`StoreRegistry <.stores.registry.StoreRegistry>`.
     """
     tags: list[str] = field(default_factory=list)

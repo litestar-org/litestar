@@ -3,6 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Callable
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     from .base import Store
 
 
@@ -21,7 +23,9 @@ class StoreRegistry:
     __slots__ = ("_stores", "_default_factory")
 
     def __init__(
-        self, stores: dict[str, Store] | None = None, default_factory: Callable[[str], Store] = default_default_factory
+        self,
+        stores: Mapping[str, Store] | None = None,
+        default_factory: Callable[[str], Store] = default_default_factory,
     ) -> None:
         """Initialize ``StoreRegistry``.
 

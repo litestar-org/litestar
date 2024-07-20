@@ -211,7 +211,7 @@ class Litestar(Router):
         signature_types: Sequence[Any] | None = None,
         state: State | None = None,
         static_files_config: Sequence[StaticFilesConfig] | None = None,
-        stores: StoreRegistry | dict[str, Store] | None = None,
+        stores: StoreRegistry | Mapping[str, Store] | None = None,
         tags: Sequence[str] | None = None,
         template_config: TemplateConfigType | None = None,
         type_decoders: TypeDecodersSequence | None = None,
@@ -304,7 +304,7 @@ class Litestar(Router):
             state: An optional :class:`State <.datastructures.State>` for application state.
             static_files_config: A sequence of :class:`StaticFilesConfig <.static_files.StaticFilesConfig>`
             stores: Central registry of :class:`Store <.stores.base.Store>` that will be available throughout the
-                application. If this is a dictionary to it will be passed to a
+                application. If this is a mapping, it will be passed to a
                 :class:`StoreRegistry <.stores.registry.StoreRegistry>`. If it is a
                 :class:`StoreRegistry <.stores.registry.StoreRegistry>`, this instance will be used directly.
             tags: A sequence of string tags that will be appended to the schema of all route handlers under the
