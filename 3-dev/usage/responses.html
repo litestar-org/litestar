@@ -847,11 +847,11 @@ calculate the best matching return media type.</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/resource
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;status_code&quot;</span>:500,<span class="s2">&quot;detail&quot;</span>:<span class="s2">&quot;Internal Server Error&quot;</span><span class="o">}</span>
+</span><span data-line="2">Hello<span class="w"> </span>World!
 </span><span data-line="3">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/resource<span class="w"> </span>-H<span class="w"> </span>Accept:<span class="w"> </span>text/html
-</span><span data-line="4"><span class="o">{</span><span class="s2">&quot;status_code&quot;</span>:500,<span class="s2">&quot;detail&quot;</span>:<span class="s2">&quot;Internal Server Error&quot;</span><span class="o">}</span>
+</span><span data-line="4">&lt;h1&gt;Hello<span class="w"> </span>World!&lt;/h1&gt;
 </span><span data-line="5">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/resource<span class="w"> </span>-H<span class="w"> </span>Accept:<span class="w"> </span>application/xml
-</span><span data-line="6"><span class="o">{</span><span class="s2">&quot;status_code&quot;</span>:500,<span class="s2">&quot;detail&quot;</span>:<span class="s2">&quot;Internal Server Error&quot;</span><span class="o">}</span>
+</span><span data-line="6">&lt;xml&gt;&lt;msg&gt;Hello<span class="w"> </span>World!&lt;/msg&gt;&lt;/xml&gt;
 </span></pre></div>
 </div>
 </div>

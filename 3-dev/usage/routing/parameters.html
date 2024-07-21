@@ -767,9 +767,9 @@ Every <a class="reference external" href="https://docs.python.org/3/glossary.htm
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/?param<span class="o">=</span>foo
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;status_code&quot;</span>:500,<span class="s2">&quot;detail&quot;</span>:<span class="s2">&quot;Internal Server Error&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;param&quot;</span>:<span class="s2">&quot;foo&quot;</span><span class="o">}</span>
 </span><span data-line="3">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/?param<span class="o">=</span>bar
-</span><span data-line="4"><span class="o">{</span><span class="s2">&quot;status_code&quot;</span>:500,<span class="s2">&quot;detail&quot;</span>:<span class="s2">&quot;Internal Server Error&quot;</span><span class="o">}</span>
+</span><span data-line="4"><span class="o">{</span><span class="s2">&quot;param&quot;</span>:<span class="s2">&quot;bar&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -811,9 +811,9 @@ If it is passed as a query <a class="reference external" href="https://docs.pyth
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;status_code&quot;</span>:500,<span class="s2">&quot;detail&quot;</span>:<span class="s2">&quot;Internal Server Error&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;param&quot;</span>:<span class="s2">&quot;hello&quot;</span><span class="o">}</span>
 </span><span data-line="3">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/?param<span class="o">=</span>john
-</span><span data-line="4"><span class="o">{</span><span class="s2">&quot;status_code&quot;</span>:500,<span class="s2">&quot;detail&quot;</span>:<span class="s2">&quot;Internal Server Error&quot;</span><span class="o">}</span>
+</span><span data-line="4"><span class="o">{</span><span class="s2">&quot;param&quot;</span>:<span class="s2">&quot;john&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -844,9 +844,9 @@ If it is not given, it will have a default value of <code class="docutils litera
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;status_code&quot;</span>:500,<span class="s2">&quot;detail&quot;</span>:<span class="s2">&quot;Internal Server Error&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;param&quot;</span>:null<span class="o">}</span>
 </span><span data-line="3">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/?param<span class="o">=</span>goodbye
-</span><span data-line="4"><span class="o">{</span><span class="s2">&quot;status_code&quot;</span>:500,<span class="s2">&quot;detail&quot;</span>:<span class="s2">&quot;Internal Server Error&quot;</span><span class="o">}</span>
+</span><span data-line="4"><span class="o">{</span><span class="s2">&quot;param&quot;</span>:<span class="s2">&quot;goodbye&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -882,7 +882,7 @@ A query starts out as a <a class="reference external" href="https://docs.python.
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/?date<span class="o">=</span><span class="m">2022</span>-11-28T13:22:06.916540<span class="p">&amp;</span><span class="nv">floating_number</span><span class="o">=</span><span class="m">0</span>.1<span class="p">&amp;</span><span class="nv">number</span><span class="o">=</span><span class="m">42</span><span class="p">&amp;</span><span class="nv">strings</span><span class="o">=</span><span class="m">1</span><span class="p">&amp;</span><span class="nv">strings</span><span class="o">=</span><span class="m">2</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;status_code&quot;</span>:500,<span class="s2">&quot;detail&quot;</span>:<span class="s2">&quot;Internal Server Error&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;datetime&quot;</span>:<span class="s2">&quot;2022-11-29T13:22:06.916540&quot;</span>,<span class="s2">&quot;int&quot;</span>:42,<span class="s2">&quot;float&quot;</span>:0.1,<span class="s2">&quot;list&quot;</span>:<span class="o">[</span><span class="s2">&quot;1&quot;</span>,<span class="s2">&quot;2&quot;</span><span class="o">]}</span>
 </span></pre></div>
 </div>
 </div>
@@ -913,7 +913,7 @@ than what is being used in the handler function. This can be done by making use 
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/?camelCase<span class="o">=</span>foo
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;status_code&quot;</span>:500,<span class="s2">&quot;detail&quot;</span>:<span class="s2">&quot;Internal Server Error&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;param&quot;</span>:<span class="s2">&quot;foo&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>

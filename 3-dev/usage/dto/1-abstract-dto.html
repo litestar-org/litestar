@@ -633,7 +633,7 @@ a DTO for use with a SQLAlchemy model:</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;status_code&quot;</span>:500,<span class="s2">&quot;detail&quot;</span>:<span class="s2">&quot;Internal Server Error&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;1eb940a9-c095-42f4-ad0c-ddbd4e21db16&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -690,7 +690,7 @@ configuration.</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;status_code&quot;</span>:500,<span class="s2">&quot;detail&quot;</span>:<span class="s2">&quot;Internal Server Error&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;1062431c-e33e-4ef3-bc1a-31bf56159975&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -905,7 +905,7 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;status_code&quot;</span>:500,<span class="s2">&quot;detail&quot;</span>:<span class="s2">&quot;Internal Server Error&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;address&quot;</span>:<span class="o">{</span><span class="s2">&quot;city&quot;</span>:<span class="s2">&quot;Anytown&quot;</span>,<span class="s2">&quot;state&quot;</span>:<span class="s2">&quot;NY&quot;</span>,<span class="s2">&quot;zip&quot;</span>:<span class="s2">&quot;12345&quot;</span><span class="o">}</span>,<span class="s2">&quot;pets&quot;</span>:<span class="o">[{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Fido&quot;</span><span class="o">}</span>,<span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Spot&quot;</span><span class="o">}]</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -1020,7 +1020,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;status_code&quot;</span>:500,<span class="s2">&quot;detail&quot;</span>:<span class="s2">&quot;Internal Server Error&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;86444ab5-dd01-4ad6-9beb-03a4fb2b7651&quot;</span>,<span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -1112,7 +1112,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;firstName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;createdAt&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;status_code&quot;</span>:500,<span class="s2">&quot;detail&quot;</span>:<span class="s2">&quot;Internal Server Error&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;createdAt&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;68ad66fc-182c-4e21-af2f-12ec5497b829&quot;</span>,<span class="s2">&quot;firstName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -1283,7 +1283,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/a<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="w"> </span><span class="s2">&quot;6955e63c-c2bc-4707-8fa4-2144d1764746&quot;</span>,<span class="w"> </span><span class="s2">&quot;b_id&quot;</span>:<span class="w"> </span><span class="s2">&quot;9cf3518d-7e19-4215-9ec2-e056cac55bf7&quot;</span>,<span class="w"> </span><span class="s2">&quot;b&quot;</span>:<span class="w"> </span><span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="w"> </span><span class="s2">&quot;9cf3518d-7e19-4215-9ec2-e056cac55bf7&quot;</span><span class="o">}}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;status_code&quot;</span>:500,<span class="s2">&quot;detail&quot;</span>:<span class="s2">&quot;Internal Server Error&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;b_id&quot;</span>:<span class="s2">&quot;9cf3518d-7e19-4215-9ec2-e056cac55bf7&quot;</span>,<span class="s2">&quot;b&quot;</span>:<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;9cf3518d-7e19-4215-9ec2-e056cac55bf7&quot;</span><span class="o">}</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;6955e63c-c2bc-4707-8fa4-2144d1764746&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -1339,7 +1339,7 @@ handler.</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;email&quot;</span>:<span class="w"> </span><span class="s2">&quot;peter@example.com&quot;</span>,<span class="w"> </span><span class="s2">&quot;age&quot;</span>:41<span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;status_code&quot;</span>:500,<span class="s2">&quot;detail&quot;</span>:<span class="s2">&quot;Internal Server Error&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;email&quot;</span>:<span class="s2">&quot;peter@example.com&quot;</span>,<span class="s2">&quot;age&quot;</span>:41,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;fdce23c8-356f-451b-b2bd-f3879bbbc160&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -1384,7 +1384,7 @@ type of the data that it will contain, and provides useful methods for interacti
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="w"> </span><span class="s2">&quot;email&quot;</span>:<span class="w"> </span><span class="s2">&quot;peter@example.com&quot;</span>,<span class="w"> </span><span class="s2">&quot;age&quot;</span>:41<span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;status_code&quot;</span>:500,<span class="s2">&quot;detail&quot;</span>:<span class="s2">&quot;Internal Server Error&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;email&quot;</span>:<span class="s2">&quot;peter@example.com&quot;</span>,<span class="s2">&quot;age&quot;</span>:41,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;bda6d41b-6ead-4510-b5c0-bd83f0f92371&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -1440,7 +1440,7 @@ nested model with excluded fields.</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/person<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;age&quot;</span>:41,<span class="w"> </span><span class="s2">&quot;address&quot;</span>:<span class="w"> </span><span class="o">{</span><span class="s2">&quot;street&quot;</span>:<span class="w"> </span><span class="s2">&quot;Fake Street&quot;</span><span class="o">}}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;status_code&quot;</span>:500,<span class="s2">&quot;detail&quot;</span>:<span class="s2">&quot;Internal Server Error&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;id&quot;</span>:1,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;age&quot;</span>:41,<span class="s2">&quot;address&quot;</span>:<span class="o">{</span><span class="s2">&quot;id&quot;</span>:2,<span class="s2">&quot;street&quot;</span>:<span class="s2">&quot;Fake Street&quot;</span><span class="o">}}</span>
 </span></pre></div>
 </div>
 </div>
@@ -1500,7 +1500,7 @@ attributes in the client payload, which requires some special handling internall
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/person/f32ff2ce-e32f-4537-9dc0-26e7599f1380<span class="w"> </span>-X<span class="w"> </span>PATCH<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter Pan&quot;</span><span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;status_code&quot;</span>:500,<span class="s2">&quot;detail&quot;</span>:<span class="s2">&quot;Internal Server Error&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;f32ff2ce-e32f-4537-9dc0-26e7599f1380&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter Pan&quot;</span>,<span class="s2">&quot;age&quot;</span>:40<span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -1573,7 +1573,7 @@ parsed from client data, and will not be serialized into return data.</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;this_will&quot;</span>:<span class="s2">&quot;stay&quot;</span>,<span class="s2">&quot;_this_will&quot;</span>:<span class="s2">&quot;not_go_away!&quot;</span><span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;status_code&quot;</span>:500,<span class="s2">&quot;detail&quot;</span>:<span class="s2">&quot;Internal Server Error&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;this_will&quot;</span>:<span class="s2">&quot;stay&quot;</span>,<span class="s2">&quot;_this_will&quot;</span>:<span class="s2">&quot;not_go_away!&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
