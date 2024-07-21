@@ -1,8 +1,9 @@
 from pathlib import Path
+from typing import Generic, TypeVar
 
 import pytest
 
-from litestar import HttpMethod, Litestar, head
+from litestar import HttpMethod, Litestar, Response, head
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.response.file import ASGIFileResponse, File
 from litestar.status_codes import HTTP_200_OK
@@ -26,7 +27,25 @@ def test_head_decorator_raises_validation_error_if_body_is_declared() -> None:
         def handler() -> dict:
             return {}
 
-        handler.on_registration(Litestar())
+        Litestar(route_handlers=[handler])
+
+
+def test_head_decorator_none_response_return_value_allowed() -> None:
+    # https://github.com/litestar-org/litestar/issues/3640
+    T = TypeVar("T")
+
+    class MyResponse(Generic[T], Response[T]):
+        pass
+
+    @head("/1")
+    def handler() -> Response[None]:
+        return Response(None)
+
+    @head("/2")
+    def handler_subclass() -> MyResponse[None]:
+        return MyResponse(None)
+
+    Litestar(route_handlers=[handler, handler_subclass])
 
 
 def test_head_decorator_raises_validation_error_if_method_is_passed() -> None:
