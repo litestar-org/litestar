@@ -477,7 +477,7 @@ data-aria-dark="Switch to auto color mode">
 <p class="caption" role="heading" aria-level="3"><span class="caption-text">Contributing</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../contribution-guide.html">Contribution Guide</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/search?q=user%3Alitestar-org+state%3Aopen+label%3A%22good+first+issue%22+++no%3Aassignee+&amp;type=issues=">Available Issues</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/search?q=user%3Alitestar-org+state%3Aopen+label%3A%22good+first+issue%22+++no%3Aassignee+&amp;type=issues">Available Issues</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/litestar-org/.github?tab=coc-ov-file#readme">Code of Conduct</a></li>
 </ul>
 
@@ -601,7 +601,7 @@ data-aria-dark="Switch to auto color mode">
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/static/hello.txt
-</span><span data-line="2">Hello,<span class="w"> </span>world!
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;status_code&quot;</span>:500,<span class="s2">&quot;detail&quot;</span>:<span class="s2">&quot;Internal Server Error&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -682,9 +682,9 @@ parameter of <a class="reference internal" href="../reference/static_files.html#
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/
 </span><span data-line="2">&lt;strong&gt;Hello,<span class="w"> </span>world!&lt;/strong&gt;
 </span><span data-line="3">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/index.html
-</span><span data-line="4">&lt;strong&gt;Hello,<span class="w"> </span>world!&lt;/strong&gt;
+</span><span data-line="4"><span class="o">{</span><span class="s2">&quot;status_code&quot;</span>:500,<span class="s2">&quot;detail&quot;</span>:<span class="s2">&quot;Internal Server Error&quot;</span><span class="o">}</span>
 </span><span data-line="5">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/something
-</span><span data-line="6">&lt;h1&gt;Not<span class="w"> </span>found&lt;/h1&gt;
+</span><span data-line="6"><span class="o">{</span><span class="s2">&quot;status_code&quot;</span>:500,<span class="s2">&quot;detail&quot;</span>:<span class="s2">&quot;Internal Server Error&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
