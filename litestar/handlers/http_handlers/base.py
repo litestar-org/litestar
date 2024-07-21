@@ -748,7 +748,10 @@ class HTTPRouteHandler(BaseRouteHandler):
             if parameter_model.dependency_batches:
                 cleanup_group = await parameter_model.resolve_dependencies(request, kwargs)
 
-            parsed_kwargs = self.signature_model.parse_values_from_connection_kwargs(connection=request, **kwargs)
+            parsed_kwargs = self.signature_model.parse_values_from_connection_kwargs(
+                connection=request,
+                kwargs=kwargs,
+            )
 
         if cleanup_group:
             async with cleanup_group:
