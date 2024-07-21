@@ -11,7 +11,7 @@ from unittest.mock import patch
 
 import pytest
 
-from litestar import MediaType, Request, asgi, get
+from litestar import MediaType, Request, asgi, get, post
 from litestar.connection.base import empty_send
 from litestar.datastructures import Address, Cookie
 from litestar.exceptions import (
@@ -280,6 +280,24 @@ def test_request_form_urlencoded() -> None:
 
     response = client.post("/", data={"abc": "123 @"})
     assert response.json() == {"form": {"abc": "123 @"}}
+
+
+def test_request_form_urlencoded_multi_keys() -> None:
+    @post("/")
+    async def handler(request: Request) -> Any:
+        return (await request.form()).getall("foo")
+
+    with create_test_client(handler) as client:
+        assert client.post("/", data={"foo": ["1", "2"]}).json() == ["1", "2"]
+
+
+def test_request_form_multipart_multi_keys() -> None:
+    @post("/")
+    async def handler(request: Request) -> int:
+        return len((await request.form()).getall("foo"))
+
+    with create_test_client(handler) as client:
+        assert client.post("/", data={"foo": "1"}, files={"foo": b"a"}).json() == 2
 
 
 def test_request_body_then_stream() -> None:
