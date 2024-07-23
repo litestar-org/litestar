@@ -8,9 +8,9 @@ from litestar.exceptions import HTTPException, ImproperlyConfiguredException
 from litestar.openapi.spec import Operation
 from litestar.response.file import ASGIFileResponse, File
 from litestar.types import Empty, TypeDecodersSequence
-from litestar.types.builtin_types import NoneType
 from litestar.utils import is_class_and_subclass
 
+from ._utils import is_empty_response_annotation
 from .base import HTTPRouteHandler
 
 if TYPE_CHECKING:
@@ -590,11 +590,11 @@ class head(HTTPRouteHandler):
         super()._validate_handler_function()
 
         # we allow here File and File because these have special setting for head responses
-        return_annotation = self.parsed_fn_signature.return_type.annotation
+        field_definition = self.parsed_fn_signature.return_type
         if not (
-            return_annotation in {NoneType, None}
-            or is_class_and_subclass(return_annotation, File)
-            or is_class_and_subclass(return_annotation, ASGIFileResponse)
+            is_empty_response_annotation(field_definition)
+            or is_class_and_subclass(field_definition.annotation, File)
+            or is_class_and_subclass(field_definition.annotation, ASGIFileResponse)
         ):
             raise ImproperlyConfiguredException(
                 f"{self}: Handlers for 'HEAD' requests must not return a value. Either return 'None' or a response type without a body."
