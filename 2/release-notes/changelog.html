@@ -1530,6 +1530,68 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.10.0">
+<h2>2.10.0<a class="headerlink" href="#2.10.0" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2024-07-26<section id="2.10.0-feature">
+<h3>Features<a class="headerlink" href="#2.10.0-feature" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Allow creating parent directories for a file store<a class="headerlink reference internal" href="#2.10.0-allow creating parent directories for a file store" id="2.10.0-allow creating parent directories for a file store">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Allow <code class="docutils literal notranslate"><span class="pre">mkdir</span></code> True when creating a file store.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3526">litestar-org/litestar#3526</a></span></p>
+</div>
+</dd>
+<dt>Add <code class="docutils literal notranslate"><span class="pre">logging_module</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">LoggingConfig</span></code><a class="headerlink reference internal" href="#2.10.0-add" id="2.10.0-add">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Provide a way in the <code class="docutils literal notranslate"><span class="pre">logging_module</span></code> to switch easily from <code class="docutils literal notranslate"><span class="pre">logging</span></code> to <code class="docutils literal notranslate"><span class="pre">picologging</span></code>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3536">litestar-org/litestar#3536</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3578">litestar-org/litestar#3578</a></span></p>
+</div>
+</dd>
+<dt>Add handler name to exceptions in handler validation<a class="headerlink reference internal" href="#2.10.0-add handler name to exceptions in handler validation" id="2.10.0-add handler name to exceptions in handler validation">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Add handler name to exceptions raise by <code class="docutils literal notranslate"><span class="pre">_validate_handler_function</span></code>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3575">litestar-org/litestar#3575</a></span></p>
+</div>
+</dd>
+<dt>Add strict validation support for Pydantic plugin<a class="headerlink reference internal" href="#2.10.0-add strict validation support for pydantic plugin" id="2.10.0-add strict validation support for pydantic plugin">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Adds parameters in pydantic plugin to support strict validation and all the <code class="docutils literal notranslate"><span class="pre">model_dump</span></code> args</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3572">litestar-org/litestar#3572</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3608">litestar-org/litestar#3608</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+<section id="2.10.0-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.10.0-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Fix signature model signatures clash<a class="headerlink reference internal" href="#2.10.0-fix signature model signatures clash" id="2.10.0-fix signature model signatures clash">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Ensures that the functions used by the signature model itself do not interfere with the signature model created.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3593">litestar-org/litestar#3593</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3605">litestar-org/litestar#3605</a></span></p>
+</div>
+</dd>
+<dt>Correctly handle Annotated <code class="docutils literal notranslate"><span class="pre">NewType</span></code><a class="headerlink reference internal" href="#2.10.0-correctly handle annotated" id="2.10.0-correctly handle annotated">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Resolves infinite loop in schema generation when a model has an Annotated <code class="docutils literal notranslate"><span class="pre">NewType</span></code>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3614">litestar-org/litestar#3614</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3615">litestar-org/litestar#3615</a></span></p>
+</div>
+</dd>
+<dt>Use <cite>ASGIConnection</cite> instead of <code class="docutils literal notranslate"><span class="pre">Request</span></code> for <code class="docutils literal notranslate"><span class="pre">flash</span></code><a class="headerlink reference internal" href="#2.10.0-use" id="2.10.0-use">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Currently, the <code class="docutils literal notranslate"><span class="pre">FlashPlugin</span></code> expects the <code class="docutils literal notranslate"><span class="pre">request</span></code> parameter to be a type of <code class="docutils literal notranslate"><span class="pre">Request</span></code>.  However, there’s no reason it can’t use the parent class <code class="docutils literal notranslate"><span class="pre">ASGIConnection</span></code>.</p>
+<p>Doing this, allows for flash to be called in guards that expect an <code class="docutils literal notranslate"><span class="pre">ASGIConnection</span></code> instead of <code class="docutils literal notranslate"><span class="pre">Request</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">requires_active_user</span><span class="p">(</span><span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="n">BaseRouteHandler</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">connection</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">is_active</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Your user account is inactive.&quot;</span>
+    <span class="n">flash</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;error&quot;</span><span class="p">)</span>
+    <span class="k">raise</span> <span class="n">PermissionDeniedException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3626">litestar-org/litestar#3626</a></span></p>
+</div>
+</dd>
+<dt>Allow returning <code class="docutils literal notranslate"><span class="pre">Response[None]</span></code> from head route handlers<a class="headerlink reference internal" href="#2.10.0-allow returning" id="2.10.0-allow returning">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug where the validation of the return annotation for the <code class="docutils literal notranslate"><span class="pre">head</span></code> route handler was too strict and would not allow returning a <code class="docutils literal notranslate"><span class="pre">Response[None]</span></code>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3640">litestar-org/litestar#3640</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3641">litestar-org/litestar#3641</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.9.1">
 <h2>2.9.1<a class="headerlink" href="#2.9.1" title="Permalink to this heading">#</a></h2>
 <strong>Released: </strong>2024-06-21<section id="2.9.1-bugfix">
@@ -6168,6 +6230,11 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.10.0">2.10.0</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.10.0-feature">Features</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.10.0-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.9.1">2.9.1</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.9.1-bugfix">Bugfixes</a></li>
 </ul>
