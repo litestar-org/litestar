@@ -3,6 +3,74 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.10.0
+    :date: 2024-07-26
+
+    .. change:: Allow creating parent directories for a file store
+        :type: feature
+        :pr: 3526
+
+        Allow ``mkdir`` True when creating a file store.
+
+    .. change:: Add ``logging_module`` parameter to ``LoggingConfig``
+        :type: feature
+        :pr: 3578
+        :issue: 3536
+
+        Provide a way in the ``logging_module`` to switch easily from ``logging`` to ``picologging``.
+
+    .. change:: Add handler name to exceptions in handler validation
+        :type: feature
+        :pr: 3575
+
+        Add handler name to exceptions raise by ``_validate_handler_function``.
+
+    .. change:: Add strict validation support for Pydantic plugin
+        :type: feature
+        :pr: 3608
+        :issue: 3572
+
+        Adds parameters in pydantic plugin to support strict validation and all the ``model_dump`` args
+
+    .. change:: Fix signature model signatures clash
+        :type: bugfix
+        :pr: 3605
+        :issue: 3593
+
+        Ensures that the functions used by the signature model itself do not interfere with the signature model created.
+
+    .. change:: Correctly handle Annotated ``NewType``
+        :type: bugfix
+        :pr: 3615
+        :issue: 3614
+
+        Resolves infinite loop in schema generation when a model has an Annotated ``NewType``.
+
+    .. change:: Use `ASGIConnection` instead of ``Request`` for ``flash``
+        :type: bugfix
+        :pr: 3626
+
+        Currently, the ``FlashPlugin`` expects the ``request`` parameter to be a type of ``Request``.  However, there's no reason it can't use the parent class ``ASGIConnection``.
+
+        Doing this, allows for flash to be called in guards that expect an ``ASGIConnection`` instead of ``Request``:
+
+        .. code-block:: python
+
+            def requires_active_user(connection: ASGIConnection, _: BaseRouteHandler) -> None:
+                if connection.user.is_active:
+                    return
+                msg = "Your user account is inactive."
+                flash(connection, msg, category="error")
+                raise PermissionDeniedException(msg)
+
+    .. change:: Allow returning ``Response[None]`` from head route handlers
+        :type: bugfix
+        :pr: 3641
+        :issue: 3640
+
+        Fix a bug where the validation of the return annotation for the ``head`` route handler was too strict and would not allow returning a ``Response[None]``.
+
+
 .. changelog:: 2.9.1
     :date: 2024-06-21
 

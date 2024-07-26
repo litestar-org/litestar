@@ -368,7 +368,7 @@ def update_pyproject_version(new_version: str) -> None:
     # can't use tomli-w / tomllib for this as is messes up the formatting
     pyproject = pathlib.Path("pyproject.toml")
     content = pyproject.read_text()
-    content = re.sub(r'(\nversion ?= ?")\d\.\d\.\d("\s*\n)', rf"\g<1>{new_version}\g<2>", content)
+    content = re.sub(r'(\nversion ?= ?")\d+\.\d+\.\d+("\s*\n)', rf"\g<1>{new_version}\g<2>", content)
     pyproject.write_text(content)
 
 
@@ -408,7 +408,7 @@ def cli(
     if base is None:
         base = _get_latest_tag()
 
-    if not re.match(r"\d\.\d\.\d", version):
+    if not re.match(r"\d+\.\d+\.\d+", version):
         click.secho(f"Invalid version: {version!r}")
         quit(1)
 
