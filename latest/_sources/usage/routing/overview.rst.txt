@@ -260,7 +260,7 @@ The handler function will receive all requests with an url that begins with ``/s
     :class: info
 
     If we are sending a request to the above with the url ``/some/sub-path``, the handler will be invoked and
-    the value of ``scope["path"]`` will equal ``"/`"``. If we send a request to ``/some/sub-path/abc``, it will also be
+    the value of ``scope["path"]`` will equal ``"/"``. If we send a request to ``/some/sub-path/abc``, it will also be
     invoked,and ``scope["path"]`` will equal ``"/abc"``.
 
 Mounting is especially useful when you need to combine components of other ASGI applications - for example, for third
