@@ -74,7 +74,7 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         super().__init__(scope, receive, send)
         self.is_connected: bool = True
         self._body: bytes | EmptyType = Empty
-        self._form: dict[str, str | list[str]] | EmptyType = Empty
+        self._form: FormMultiDict | EmptyType = Empty
         self._json: Any = Empty
         self._msgpack: Any = Empty
         self._content_type: tuple[str, dict[str, str]] | EmptyType = Empty
@@ -205,26 +205,36 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
             A FormMultiDict instance
         """
         if self._form is Empty:
-            if (form := self._connection_state.form) is not Empty:
-                self._form = form
-            else:
+            if (form_data := self._connection_state.form) is Empty:
                 content_type, options = self.content_type
                 if content_type == RequestEncodingType.MULTI_PART:
-                    self._form = parse_multipart_form(
+                    form_data = parse_multipart_form(
                         body=await self.body(),
                         boundary=options.get("boundary", "").encode(),
                         multipart_form_part_limit=self.app.multipart_form_part_limit,
                     )
                 elif content_type == RequestEncodingType.URL_ENCODED:
-                    self._form = parse_url_encoded_form_data(
+                    form_data = parse_url_encoded_form_data(
                         await self.body(),
                     )
                 else:
-                    self._form = {}
+                    form_data = {}
 
-                self._connection_state.form = self._form
+                self._connection_state.form = form_data
 
-        return FormMultiDict(self._form)
+            # form_data is a dict[str, list[str] | str | UploadFile]. Convert it to a
+            # list[tuple[str, str | UploadFile]] before passing it to FormMultiDict so
+            # multi-keys can be accessed properly
+            items = []
+            for k, v in form_data.items():
+                if isinstance(v, list):
+                    for sv in v:
+                        items.append((k, sv))
+                else:
+                    items.append((k, v))
+            self._form = FormMultiDict(items)
+
+        return self._form
 
     async def send_push_promise(self, path: str, raise_if_unavailable: bool = False) -> None:
         """Send a push promise.
