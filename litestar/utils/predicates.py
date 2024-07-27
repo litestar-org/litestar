@@ -228,7 +228,7 @@ def is_non_string_non_mapping_iterable(annotation: Any) -> TypeGuard[Iterable[An
         return False
     typ = origin or annotation
     try:
-        return issubclass(origin or annotation, Iterable) and not (
+        return issubclass(typ, Iterable) and not (
             issubclass(typ, (str, bytes)) or issubclass(typ, Mapping)
         )
     except TypeError:  # pragma: no cover
