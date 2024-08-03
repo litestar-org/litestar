@@ -279,6 +279,19 @@ But also this:
             assert response.text == "healthy"
 
 
+Creating an external test app
+-------------------
+
+The test clients make use of the capability to directly load an ASGI app into an httpx Client without having to run an actual server like uvicorn. For most test cases, this is sufficient but there are some situations where this will not work. For example, when using server-sent events with an infinite generator, it will lock up the test client, since it tries to first exhaust the generator and then return to the test function.
+
+Litestar offers two helper functions called :func:`subprocess_sync_client <litestar.testing.client.subprocess_client.subprocess_sync_client>` and :func:`subprocess_async_client <litestar.testing.client.subprocess_client.subprocess_async_client>` that will launch a litestar instance with uvicorn in a subprocess and set up an httpx client for running tests. You can either load your actual app file or create subsets from it as you would with the regular test client setup. An example is shown below.
+
+.. literalinclude:: /examples/testing/subprocess_sse_app.py
+    :language: python
+
+.. literalinclude:: /examples/testing/test_subprocess_sse.py
+    :language: python
+
 RequestFactory
 --------------
 
