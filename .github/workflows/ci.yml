@@ -235,9 +235,8 @@ jobs:
         run: pdm run make docs-linkcheck
 
       - name: Save PR number
-        env:
-          PR_NUMBER: ${{ github.event.number }}
-        run: echo $PR_NUMBER > .pr_number
+        run: |
+          echo "${{ github.event.number }}" > .pr_number
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
