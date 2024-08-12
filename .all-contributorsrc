@@ -626,7 +626,8 @@
       "contributions": [
         "doc",
         "code",
-        "test"
+        "test",
+        "infra"
       ]
     },
     {
@@ -1705,6 +1706,117 @@
       "profile": "https://github.com/carlsmedstad",
       "contributions": [
         "test"
+      ]
+    },
+    {
+      "login": "maintain0404",
+      "name": "Taein Min",
+      "avatar_url": "https://avatars.githubusercontent.com/u/50428534?v=4",
+      "profile": "https://github.com/maintain0404",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "wallseat",
+      "name": "Stanislav Lyu.",
+      "avatar_url": "https://avatars.githubusercontent.com/u/26143672?v=4",
+      "profile": "https://github.com/wallseat",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "tibor-reiss",
+      "name": "Tibor Reiss",
+      "avatar_url": "https://avatars.githubusercontent.com/u/75096465?v=4",
+      "profile": "https://github.com/tibor-reiss",
+      "contributions": [
+        "test",
+        "doc",
+        "code"
+      ]
+    },
+    {
+      "login": "0xE111",
+      "name": "Alex",
+      "avatar_url": "https://avatars.githubusercontent.com/u/11032969?v=4",
+      "profile": "https://pogrom.dev",
+      "contributions": [
+        "bug",
+        "code"
+      ]
+    },
+    {
+      "login": "JorenSix",
+      "name": "Joren Six",
+      "avatar_url": "https://avatars.githubusercontent.com/u/60453?v=4",
+      "profile": "http://0110.be",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "jderrien",
+      "name": "jderrien",
+      "avatar_url": "https://avatars.githubusercontent.com/u/145396?v=4",
+      "profile": "https://github.com/jderrien",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "PossiblePanda",
+      "name": "PossiblePanda",
+      "avatar_url": "https://avatars.githubusercontent.com/u/85448494?v=4",
+      "profile": "https://possiblepanda.me",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "evstratbg",
+      "name": "evstrat",
+      "avatar_url": "https://avatars.githubusercontent.com/u/10176401?v=4",
+      "profile": "https://github.com/evstratbg",
+      "contributions": [
+        "infra"
+      ]
+    },
+    {
+      "login": "eltociear",
+      "name": "Ikko Eltociear Ashimine",
+      "avatar_url": "https://avatars.githubusercontent.com/u/22633385?v=4",
+      "profile": "https://speakerdeck.com/eltociear",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "taihim",
+      "name": "Taimur Ibrahim",
+      "avatar_url": "https://avatars.githubusercontent.com/u/13764071?v=4",
+      "profile": "https://github.com/taihim",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "l-armstrong",
+      "name": "l-armstrong",
+      "avatar_url": "https://avatars.githubusercontent.com/u/43922258?v=4",
+      "profile": "https://github.com/l-armstrong",
+      "contributions": [
+        "doc"
+      ]
+    },
+    {
+      "login": "Anu-cool-007",
+      "name": "Anuranjan Srivastava",
+      "avatar_url": "https://avatars.githubusercontent.com/u/16525919?v=4",
+      "profile": "https://github.com/Anu-cool-007",
+      "contributions": [
+        "code"
       ]
     }
   ],

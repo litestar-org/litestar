@@ -5,22 +5,10 @@ from collections import abc, deque
 from copy import deepcopy
 from dataclasses import dataclass, is_dataclass, replace
 from inspect import Parameter, Signature
-from typing import (
-    Any,
-    AnyStr,
-    Callable,
-    Collection,
-    ForwardRef,
-    Literal,
-    Mapping,
-    Protocol,
-    Sequence,
-    TypeVar,
-    cast,
-)
+from typing import Any, AnyStr, Callable, Collection, ForwardRef, Literal, Mapping, Protocol, Sequence, TypeVar, cast
 
 from msgspec import UnsetType
-from typing_extensions import NotRequired, Required, Self, get_args, get_origin, get_type_hints, is_typeddict
+from typing_extensions import NewType, NotRequired, Required, Self, get_args, get_origin, get_type_hints, is_typeddict
 
 from litestar.exceptions import ImproperlyConfiguredException, LitestarWarning
 from litestar.openapi.spec import Example
@@ -314,7 +302,12 @@ class FieldDefinition:
     def is_simple_type(self) -> bool:
         """Check if the field type is a singleton value (e.g. int, str etc.)."""
         return not (
-            self.is_generic or self.is_optional or self.is_union or self.is_mapping or self.is_non_string_iterable
+            self.is_generic
+            or self.is_optional
+            or self.is_union
+            or self.is_mapping
+            or self.is_non_string_iterable
+            or self.is_new_type
         )
 
     @property
@@ -365,6 +358,10 @@ class FieldDefinition:
     def is_tuple(self) -> bool:
         """Whether the annotation is a ``tuple`` or not."""
         return self.is_subclass_of(tuple)
+
+    @property
+    def is_new_type(self) -> bool:
+        return isinstance(self.annotation, NewType)
 
     @property
     def is_type_var(self) -> bool:
@@ -512,13 +509,11 @@ class FieldDefinition:
         if not kwargs.get("kwarg_definition"):
             if isinstance(kwargs.get("default"), (KwargDefinition, DependencyKwarg)):
                 kwargs["kwarg_definition"] = kwargs.pop("default")
-            elif any(isinstance(v, (KwargDefinition, DependencyKwarg)) for v in metadata):
-                kwarg_definition = kwargs["kwarg_definition"] = next(  # pragma: no cover
-                    # see https://github.com/nedbat/coveragepy/issues/475
-                    v
-                    for v in metadata
-                    if isinstance(v, (KwargDefinition, DependencyKwarg))
-                )
+            elif kwarg_definition := next(
+                (v for v in metadata if isinstance(v, (KwargDefinition, DependencyKwarg))), None
+            ):
+                kwargs["kwarg_definition"] = kwarg_definition
+
                 if kwarg_definition.default is not Empty:
                     warnings.warn(
                         f"Deprecated default value specification for annotation '{annotation}'. Setting defaults "
@@ -529,7 +524,7 @@ class FieldDefinition:
                         category=DeprecationWarning,
                         stacklevel=2,
                     )
-                    if "default" in kwargs and kwarg_definition.default != kwargs["default"]:
+                    if kwargs.get("default", Empty) is not Empty and kwarg_definition.default != kwargs["default"]:
                         warnings.warn(
                             f"Ambiguous default values for annotation '{annotation}'. The default value "
                             f"'{kwarg_definition.default!r}' set inside the parameter annotation differs from the "

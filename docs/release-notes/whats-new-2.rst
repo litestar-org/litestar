@@ -93,7 +93,7 @@ Imports
 +----------------------------------------------------+------------------------------------------------------------------------+
 | ``starlite.OpenAPIConfig``                         | :class:`.openapi.OpenAPIConfig`                                        |
 +----------------------------------------------------+------------------------------------------------------------------------+
-| ``starlite.StaticFilesConfig``                     | :class:`.static_files.config.StaticFilesConfig`                        |
+| ``starlite.StaticFilesConfig``                     | ``.static_files.config.StaticFilesConfig``                             |
 +----------------------------------------------------+------------------------------------------------------------------------+
 | ``starlite.TemplateConfig``                        | :class:`.template.TemplateConfig`                                      |
 +----------------------------------------------------+------------------------------------------------------------------------+
@@ -544,7 +544,7 @@ is equivalent to
 ``sync_to_thread``
 ------------------
 
-The ``sync_to_thread`` option can be use to run a synchronous callable provided to a
+The ``sync_to_thread`` option can be used to run a synchronous callable provided to a
 route handler or :class:`~litestar.di.Provide` inside a thread pool. Since synchronous
 functions may block the main thread when not used with ``sync_to_thread=True``, a
 warning will be raised in these cases. If the synchronous function should not be run in

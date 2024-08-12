@@ -5,4 +5,4 @@ FROM python:${VARIANT}
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get purge -y fish
 
-RUN python3 -m pip install --upgrade setuptools cython pip poetry
+RUN python3 -m pip install --upgrade setuptools cython pip pdm

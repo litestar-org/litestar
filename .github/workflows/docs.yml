@@ -37,19 +37,15 @@ jobs:
         run: git fetch origin gh-pages --depth=1
 
       - name: Build release docs
-        run: pdm run python tools/build_docs.py docs-build
+        run: pdm run python tools/build_docs.py docs-build --environment 2
         if: github.event_name == 'release'
 
       - name: Build docs (main branch)
-        run: pdm run python tools/build_docs.py docs-build --version main
+        run: pdm run python tools/build_docs.py docs-build --version main --environment development
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
-      - name: Build docs (develop branch)
-        run: pdm run python tools/build_docs.py docs-build --version develop
-        if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
-
       - name: Build docs (v3.0 branch)
-        run: pdm run python tools/build_docs.py docs-build --version 3-dev
+        run: pdm run python tools/build_docs.py docs-build --version 3-dev --environment v3-development
         if: github.event_name == 'push' && github.ref == 'refs/heads/v3.0'
 
       - name: Deploy

@@ -38,7 +38,7 @@ from litestar.enums import ParamType, ScopeType
 from litestar.exceptions import InternalServerException, ValidationException
 from litestar.params import KwargDefinition, ParameterKwarg
 from litestar.typing import FieldDefinition  # noqa
-from litestar.utils import is_class_and_subclass
+from litestar.utils import get_origin_or_inner_type, is_class_and_subclass
 from litestar.utils.dataclass import simple_asdict
 
 if TYPE_CHECKING:
@@ -85,8 +85,15 @@ def _deserializer(target_type: Any, value: Any, default_deserializer: Callable[[
     if isinstance(value, DTOData):
         return value
 
-    if isinstance(value, target_type):
-        return value
+    try:
+        if isinstance(value, target_type):
+            return value
+    except TypeError as exc:
+        if (origin := get_origin_or_inner_type(target_type)) is not None:
+            if isinstance(value, origin):
+                return value
+        else:
+            raise exc
 
     if decoder := getattr(target_type, "_decoder", None):
         return decoder(target_type, value)
@@ -161,7 +168,9 @@ class SignatureModel(Struct):
         return message
 
     @classmethod
-    def _collect_errors(cls, deserializer: Callable[[Any, Any], Any], **kwargs: Any) -> list[tuple[str, Exception]]:
+    def _collect_errors(
+        cls, deserializer: Callable[[Any, Any], Any], kwargs: dict[str, Any]
+    ) -> list[tuple[str, Exception]]:
         exceptions: list[tuple[str, Exception]] = []
         for field_name in cls._fields:
             try:
@@ -174,12 +183,12 @@ class SignatureModel(Struct):
         return exceptions
 
     @classmethod
-    def parse_values_from_connection_kwargs(cls, connection: ASGIConnection, **kwargs: Any) -> dict[str, Any]:
+    def parse_values_from_connection_kwargs(cls, connection: ASGIConnection, kwargs: dict[str, Any]) -> dict[str, Any]:
         """Extract values from the connection instance and return a dict of parsed values.
 
         Args:
             connection: The ASGI connection instance.
-            **kwargs: A dictionary of kwargs.
+            kwargs: A dictionary of kwargs.
 
         Raises:
             ValidationException: If validation failed.
@@ -199,7 +208,7 @@ class SignatureModel(Struct):
                 messages.append(message)
             raise cls._create_exception(messages=messages, connection=connection) from e
         except ValidationError as e:
-            for field_name, exc in cls._collect_errors(deserializer=deserializer, **kwargs):  # type: ignore[assignment]
+            for field_name, exc in cls._collect_errors(deserializer=deserializer, kwargs=kwargs):  # type: ignore[assignment]
                 match = ERR_RE.search(str(exc))
                 keys = [field_name, str(match.group(1))] if match else [field_name]
                 message = cls._build_error_message(keys=keys, exc_msg=str(exc), connection=connection)

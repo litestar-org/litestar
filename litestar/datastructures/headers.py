@@ -5,7 +5,6 @@ from copy import copy
 from dataclasses import dataclass, fields
 from typing import (
     TYPE_CHECKING,
-    AbstractSet,
     Any,
     ClassVar,
     Dict,
@@ -302,8 +301,6 @@ class CacheControlHeader(Header):
     stale_while_revalidate: Optional[int] = None
     """Accessor for the ``stale-while-revalidate`` directive."""
 
-    _field_names: ClassVar[AbstractSet[str]]
-
     def _get_header_value(self) -> str:
         """Get the header value as string."""
 
@@ -325,7 +322,7 @@ class CacheControlHeader(Header):
         """
 
         kwargs: Dict[str, Any] = {}
-        field_names = cls._get_field_names()
+        field_names = {f.name for f in fields(cls)}
         for cc_item in (stripped for v in header_value.split(",") if (stripped := v.strip())):
             key, *value = cc_item.split("=", maxsplit=1)
             key = key.replace("-", "_")
@@ -348,23 +345,6 @@ class CacheControlHeader(Header):
         """
 
         return cls(no_store=True)
-
-    @classmethod
-    def _get_field_names(cls) -> AbstractSet[str]:
-        """Get the type annotations for the ``CacheControlHeader`` class properties.
-
-        This is needed due to the conversion from pydantic models to dataclasses. Dataclasses do not support
-        automatic conversion of types like pydantic models do.
-
-        Returns:
-            A dictionary of type annotations
-
-        """
-        try:
-            names = cls._field_names
-        except AttributeError:
-            names = cls._field_names = {f.name for f in fields(cls)}
-        return names
 
 
 @dataclass

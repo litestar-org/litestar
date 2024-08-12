@@ -19,8 +19,10 @@ from uuid import UUID
 
 import msgspec
 
+from litestar.datastructures.secret_values import SecretBytes, SecretString
 from litestar.exceptions import SerializationException
 from litestar.types import Empty, EmptyType, Serializer, TypeDecodersSequence
+from litestar.utils.typing import get_origin_or_inner_type
 
 if TYPE_CHECKING:
     from litestar.types import TypeEncodersMap
@@ -52,6 +54,8 @@ DEFAULT_TYPE_ENCODERS: TypeEncodersMap = {
     deque: list,
     Decimal: lambda val: int(val) if val.as_tuple().exponent >= 0 else float(val),
     Pattern: lambda val: val.pattern,
+    SecretBytes: lambda val: val.get_obscured().decode("utf-8"),
+    SecretString: lambda val: val.get_obscured(),
     # support subclasses of stdlib types, If no previous type matched, these will be
     # the last type in the mro, so we use this to (attempt to) convert a subclass into
     # its base class. # see https://github.com/jcrist/msgspec/issues/248
@@ -104,8 +108,19 @@ def default_deserializer(
 
     from litestar.datastructures.state import ImmutableState
 
-    if isinstance(value, target_type):
-        return value
+    try:
+        if isinstance(value, target_type):
+            return value
+    except TypeError as exc:
+        # we might get a TypeError here if target_type is a subscribed generic. For
+        # performance reasons, we let this happen and only unwrap this when we're
+        # certain this might be the case
+        if (origin := get_origin_or_inner_type(target_type)) is not None:
+            target_type = origin
+            if isinstance(value, target_type):
+                return value
+        else:
+            raise exc
 
     if type_decoders:
         for predicate, decoder in type_decoders:
@@ -114,6 +129,12 @@ def default_deserializer(
 
     if issubclass(target_type, (Path, PurePath, ImmutableState, UUID)):
         return target_type(value)
+
+    if issubclass(target_type, SecretBytes) and isinstance(value, (bytes, str)):
+        return SecretBytes(value.encode("utf-8") if isinstance(value, str) else value)
+
+    if issubclass(target_type, SecretString) and isinstance(value, str):
+        return SecretString(value)
 
     raise TypeError(f"Unsupported type: {type(value)!r}")
 

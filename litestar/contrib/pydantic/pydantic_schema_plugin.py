@@ -10,6 +10,7 @@ from litestar.contrib.pydantic.utils import (
     is_pydantic_constrained_field,
     is_pydantic_model_class,
     is_pydantic_undefined,
+    is_pydantic_v2,
     pydantic_get_type_hints_with_generics_resolved,
     pydantic_unwrap_and_get_origin,
 )
@@ -21,17 +22,21 @@ from litestar.typing import FieldDefinition
 from litestar.utils import is_class_and_subclass, is_generic
 
 try:
-    # check if we have pydantic v2 installed, and try to import both versions
+    import pydantic as _  # noqa: F401
+except ImportError as e:
+    raise MissingDependencyException("pydantic") from e
+
+try:
     import pydantic as pydantic_v2
+
+    if not is_pydantic_v2(pydantic_v2):
+        raise ImportError
+
     from pydantic import v1 as pydantic_v1
 except ImportError:
-    # check if pydantic 1 is installed and import it
-    try:
-        import pydantic as pydantic_v1  # type: ignore[no-redef]
+    import pydantic as pydantic_v1  # type: ignore[no-redef]
 
-        pydantic_v2 = None  # type: ignore[assignment]
-    except ImportError as e:
-        raise MissingDependencyException("pydantic") from e
+    pydantic_v2 = None  # type: ignore[assignment]
 
 if TYPE_CHECKING:
     from litestar._openapi.schema_generation.schema import SchemaCreator
@@ -281,7 +286,8 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
         else:
             # pydantic v1 requires some workarounds here
             model_annotations = {
-                k: f.outer_type_ if f.required else Optional[f.outer_type_] for k, f in model.__fields__.items()
+                k: f.outer_type_ if f.required or f.default else Optional[f.outer_type_]
+                for k, f in model.__fields__.items()
             }
 
         if is_generic_model:

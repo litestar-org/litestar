@@ -14,7 +14,7 @@ from litestar.exceptions import (
     MissingDependencyException,
     ValidationException,
 )
-from litestar.middleware.exceptions.middleware import create_exception_response
+from litestar.exceptions.responses import create_exception_response
 from litestar.status_codes import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import RequestFactory, create_test_client
 

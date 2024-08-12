@@ -5,20 +5,19 @@ from abc import ABC, abstractmethod
 from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any, Callable, Generic, TypeVar
 from uuid import UUID
 
 import msgspec
 
-from litestar._kwargs import KwargsModel
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types.internal_types import PathParameterDefinition
 from litestar.utils import join_paths, normalize_path
 
+ScopeT = TypeVar("ScopeT", bound="BaseScope")
+
 if TYPE_CHECKING:
-    from litestar.enums import ScopeType
-    from litestar.handlers.base import BaseRouteHandler
-    from litestar.types import Method, Receive, Scope, Send
+    from litestar.types import BaseScope, Receive, Send
 
 
 def _parse_datetime(value: str) -> datetime:
@@ -68,7 +67,7 @@ parsers_map: dict[Any, Callable[[Any], Any]] = {
 }
 
 
-class BaseRoute(ABC):
+class BaseRoute(ABC, Generic[ScopeT]):
     """Base Route class used by Litestar.
 
     It's an abstract class meant to be extended.
@@ -88,29 +87,17 @@ class BaseRoute(ABC):
     def __init__(
         self,
         *,
-        handler_names: list[str],
         path: str,
-        scope_type: ScopeType,
-        methods: list[Method] | None = None,
     ) -> None:
         """Initialize the route.
 
         Args:
-            handler_names: Names of the associated handler functions
             path: Base path of the route
-            scope_type: Type of the ASGI scope
-            methods: Supported methods
         """
-        self.path, self.path_format, self.path_components = self._parse_path(path)
-        self.path_parameters: tuple[PathParameterDefinition, ...] = tuple(
-            component for component in self.path_components if isinstance(component, PathParameterDefinition)
-        )
-        self.handler_names = handler_names
-        self.scope_type = scope_type
-        self.methods = set(methods or [])
+        self.path, self.path_format, self.path_components, self.path_parameters = self._parse_path(path)
 
     @abstractmethod
-    async def handle(self, scope: Scope, receive: Receive, send: Send) -> None:
+    async def handle(self, scope: ScopeT, receive: Receive, send: Send) -> None:
         """ASGI App of the route.
 
         Args:
@@ -122,23 +109,6 @@ class BaseRoute(ABC):
             None
         """
         raise NotImplementedError("Route subclasses must implement handle which serves as the ASGI app entry point")
-
-    def create_handler_kwargs_model(self, route_handler: BaseRouteHandler) -> KwargsModel:
-        """Create a `KwargsModel` for a given route handler."""
-
-        path_parameters = set()
-        for param in self.path_parameters:
-            if param.name in path_parameters:
-                raise ImproperlyConfiguredException(f"Duplicate parameter '{param.name}' detected in '{self.path}'.")
-            path_parameters.add(param.name)
-
-        return KwargsModel.create_for_signature_model(
-            signature_model=route_handler.signature_model,
-            parsed_signature=route_handler.parsed_fn_signature,
-            dependencies=route_handler.resolve_dependencies(),
-            path_parameters=path_parameters,
-            layered_parameters=route_handler.resolve_layered_parameters(),
-        )
 
     @staticmethod
     def _validate_path_parameter(param: str, path: str) -> None:
@@ -160,7 +130,9 @@ class BaseRoute(ABC):
             )
 
     @classmethod
-    def _parse_path(cls, path: str) -> tuple[str, str, list[str | PathParameterDefinition]]:
+    def _parse_path(
+        cls, path: str
+    ) -> tuple[str, str, list[str | PathParameterDefinition], dict[str, PathParameterDefinition]]:
         """Normalize and parse a path.
 
         Splits the path into a list of components, parsing any that are path parameters. Also builds the OpenAPI
@@ -173,6 +145,7 @@ class BaseRoute(ABC):
 
         parsed_components: list[str | PathParameterDefinition] = []
         path_format_components = []
+        path_parameters: dict[str, PathParameterDefinition] = {}
 
         components = [component for component in path.split("/") if component]
         for component in components:
@@ -182,9 +155,11 @@ class BaseRoute(ABC):
                 param_name, param_type = (p.strip() for p in param.split(":"))
                 type_class = param_type_map[param_type]
                 parser = parsers_map[type_class] if type_class not in {str, Path} else None
-                parsed_components.append(
-                    PathParameterDefinition(name=param_name, type=type_class, full=param, parser=parser)
-                )
+                if param_name in path_parameters:
+                    raise ImproperlyConfiguredException(f"Duplicate parameter '{param_name}' detected in '{path}'.")
+                param_definition = PathParameterDefinition(name=param_name, type=type_class, full=param, parser=parser)
+                parsed_components.append(param_definition)
+                path_parameters[param_name] = param_definition
                 path_format_components.append("{" + param_name + "}")
             else:
                 parsed_components.append(component)
@@ -192,4 +167,4 @@ class BaseRoute(ABC):
 
         path_format = join_paths(path_format_components)
 
-        return path, path_format, parsed_components
+        return path, path_format, parsed_components, path_parameters

@@ -1,4 +1,4 @@
-blank_lines_enabled: true
+blank_issues_enabled: false
 contact_links:
   - name: Litestar Documentation
     url: https://docs.litestar.dev/
@@ -7,5 +7,5 @@ contact_links:
     url: https://litestar.dev/
     about: Main Litestar website - for details about Litestar's projects.
   - name: Discord
-    url: https://discord.gg/litestar-919193495116337154
+    url: https://discord.gg/litestar
     about: Join our Discord community to chat or get in touch with the maintainers.

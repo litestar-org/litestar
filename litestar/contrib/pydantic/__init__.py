@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from pydantic.v1 import BaseModel as BaseModelV1
 
     from litestar.config.app import AppConfig
+    from litestar.types.serialization import PydanticV1FieldsListType, PydanticV2FieldsListType
 
 __all__ = (
     "PydanticDTO",
@@ -43,15 +44,43 @@ def _model_dump_json(model: BaseModel | BaseModelV1, by_alias: bool = False) -> 
 class PydanticPlugin(InitPluginProtocol):
     """A plugin that provides Pydantic integration."""
 
-    __slots__ = ("prefer_alias",)
+    __slots__ = (
+        "exclude",
+        "exclude_defaults",
+        "exclude_none",
+        "exclude_unset",
+        "include",
+        "prefer_alias",
+        "validate_strict",
+    )
 
-    def __init__(self, prefer_alias: bool = False) -> None:
-        """Initialize ``PydanticPlugin``.
+    def __init__(
+        self,
+        exclude: PydanticV1FieldsListType | PydanticV2FieldsListType | None = None,
+        exclude_defaults: bool = False,
+        exclude_none: bool = False,
+        exclude_unset: bool = False,
+        include: PydanticV1FieldsListType | PydanticV2FieldsListType | None = None,
+        prefer_alias: bool = False,
+        validate_strict: bool = False,
+    ) -> None:
+        """Pydantic Plugin to support serialization / validation of Pydantic types / models
 
-        Args:
-            prefer_alias: OpenAPI and ``type_encoders`` will export by alias
+        :param exclude: Fields to exclude during serialization
+        :param exclude_defaults: Fields to exclude during serialization when they are set to their default value
+        :param exclude_none: Fields to exclude during serialization when they are set to ``None``
+        :param exclude_unset: Fields to exclude during serialization when they arenot set
+        :param include: Fields to exclude during serialization
+        :param prefer_alias: Use the ``by_alias=True`` flag when dumping models
+        :param validate_strict: Use ``strict=True`` when calling ``.model_validate`` on Pydantic 2.x models
         """
+        self.exclude = exclude
+        self.exclude_defaults = exclude_defaults
+        self.exclude_none = exclude_none
+        self.exclude_unset = exclude_unset
+        self.include = include
         self.prefer_alias = prefer_alias
+        self.validate_strict = validate_strict
 
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
         """Configure application for use with Pydantic.
@@ -61,7 +90,15 @@ class PydanticPlugin(InitPluginProtocol):
         """
         app_config.plugins.extend(
             [
-                PydanticInitPlugin(prefer_alias=self.prefer_alias),
+                PydanticInitPlugin(
+                    exclude=self.exclude,
+                    exclude_defaults=self.exclude_defaults,
+                    exclude_none=self.exclude_none,
+                    exclude_unset=self.exclude_unset,
+                    include=self.include,
+                    prefer_alias=self.prefer_alias,
+                    validate_strict=self.validate_strict,
+                ),
                 PydanticSchemaPlugin(prefer_alias=self.prefer_alias),
                 PydanticDIPlugin(),
             ]

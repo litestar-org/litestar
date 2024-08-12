@@ -18,13 +18,18 @@ from litestar.datastructures import UploadFile
 from litestar.dto import DataclassDTO, DTOConfig, DTOData, MsgspecDTO, dto_field
 from litestar.dto.types import RenameStrategy
 from litestar.enums import MediaType, RequestEncodingType
+from litestar.openapi.spec.response import OpenAPIResponse
+from litestar.openapi.spec.schema import Schema
 from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
 from litestar.params import Body
 from litestar.serialization import encode_json
 from litestar.testing import create_test_client
+from tests.helpers import not_none
 
 if TYPE_CHECKING:
     from typing import Any
+
+    from litestar import Litestar
 
 
 def test_url_encoded_form_data(use_experimental_dto_backend: bool) -> None:
@@ -898,3 +903,158 @@ def test_msgspec_dto_dont_copy_length_constraint_for_partial_dto() -> None:
 
     with create_test_client([handler]) as client:
         assert client.post("/", json={"bar": "1", "baz": "123"}).status_code == 201
+
+
+def test_openapi_schema_for_type_with_generic_pagination_type(
+    create_module: Callable[[str], ModuleType], use_experimental_dto_backend: bool
+) -> None:
+    module = create_module(
+        """
+from dataclasses import dataclass
+
+from litestar import Litestar, get
+from litestar.dto import DataclassDTO
+from litestar.pagination import ClassicPagination
+
+@dataclass
+class Test:
+    name: str
+    age: int
+
+@get("/without-dto", sync_to_thread=False)
+def without_dto() -> ClassicPagination[Test]:
+    return ClassicPagination(
+        items=[Test("John", 25), Test("Jane", 30)],
+        page_size=1,
+        current_page=2,
+        total_pages=2,
+    )
+
+@get("/with-dto", return_dto=DataclassDTO[Test], sync_to_thread=False)
+def with_dto() -> ClassicPagination[Test]:
+    return ClassicPagination(
+        items=[Test("John", 25), Test("Jane", 30)],
+        page_size=1,
+        current_page=2,
+        total_pages=2,
+    )
+
+app = Litestar([without_dto, with_dto])
+"""
+    )
+    openapi = cast("Litestar", module.app).openapi_schema
+    paths = not_none(openapi.paths)
+    without_dto_response = not_none(not_none(paths["/without-dto"].get).responses)["200"]
+    with_dto_response = not_none(not_none(paths["/with-dto"].get).responses)["200"]
+    assert isinstance(without_dto_response, OpenAPIResponse)
+    assert isinstance(with_dto_response, OpenAPIResponse)
+    without_dto_schema = not_none(without_dto_response.content)["application/json"].schema
+    with_dto_schema = not_none(with_dto_response.content)["application/json"].schema
+    assert isinstance(without_dto_schema, Schema)
+    assert isinstance(with_dto_schema, Schema)
+    assert not_none(without_dto_schema.properties).keys() == not_none(with_dto_schema.properties).keys()
+
+
+def test_openapi_schema_for_type_with_custom_generic_type(
+    create_module: Callable[[str], ModuleType], use_experimental_dto_backend: bool
+) -> None:
+    module = create_module(
+        """
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Generic, List, TypeVar
+
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+
+from litestar import Litestar, get
+from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
+from litestar.dto import DTOConfig
+
+T = TypeVar("T")
+
+@dataclass
+class WithCount(Generic[T]):
+    count: int
+    data: List[T]
+
+class Base(DeclarativeBase): ...
+
+class User(Base):
+    __tablename__ = "user"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str]
+    password: Mapped[str]
+    created_at: Mapped[datetime]
+
+class UserDTO(SQLAlchemyDTO[User]):
+    config = DTOConfig(exclude={"password", "created_at"})
+
+@get("/users", dto=UserDTO, sync_to_thread=False)
+def get_users() -> WithCount[User]:
+    return WithCount(
+        count=1, data=[User(id=1, name="Litestar User", password="xyz", created_at=datetime.now())]
+    )
+
+app = Litestar(route_handlers=[get_users])
+"""
+    )
+    openapi = cast("Litestar", module.app).openapi_schema
+    schema = openapi.components.schemas["WithCount[litestar.dto._backend.GetUsersUserResponseBody]"]
+    assert not_none(schema.properties).keys() == {"count", "data"}
+    model_schema = openapi.components.schemas["GetUsersUserResponseBody"]
+    assert not_none(model_schema.properties).keys() == {"id", "name"}
+
+
+def test_openapi_schema_for_dto_includes_body_examples(create_module: Callable[[str], ModuleType]) -> None:
+    module = create_module(
+        """
+from dataclasses import dataclass
+from uuid import UUID
+
+from typing_extensions import Annotated
+
+from litestar import Litestar, post
+from litestar.dto import DataclassDTO
+from litestar.openapi.spec import Example
+from litestar.params import Body
+
+
+@dataclass
+class Item:
+    id: UUID
+    name: str
+
+
+body = Body(
+    title="Create item",
+    description="Create a new item.",
+    examples=[
+        Example(
+            summary="Post is Ok",
+            value={
+                "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                "name": "Swatch",
+            },
+        )
+    ],
+)
+
+
+@post()
+async def create_item(data: Annotated[Item, body]) -> Item:
+    return data
+
+
+@post("dto", dto=DataclassDTO[Item])
+async def create_item_with_dto(data: Annotated[Item, body]) -> Item:
+    return data
+
+
+app = Litestar(route_handlers=[create_item, create_item_with_dto])
+"""
+    )
+
+    openapi_schema = module.app.openapi_schema
+    item_schema = openapi_schema.components.schemas["Item"]
+    item_with_dto_schema = openapi_schema.components.schemas["CreateItemWithDtoItemRequestBody"]
+    assert item_schema.examples == item_with_dto_schema.examples

@@ -2,11 +2,13 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from http.cookiejar import CookieJar
-from typing import TYPE_CHECKING, Any, Generator, Generic, Mapping, TypeVar, cast
+from typing import TYPE_CHECKING, Any, Generator, Generic, Mapping, Sequence, TypeVar, cast
 from warnings import warn
 
+import httpx
 from anyio.from_thread import BlockingPortal, start_blocking_portal
 from httpx import Cookies, Request, Response
+from httpx._client import USE_CLIENT_DEFAULT, BaseClient, UseClientDefault
 
 from litestar import Litestar
 from litestar.connection import ASGIConnection
@@ -19,7 +21,12 @@ from litestar.types import AnyIOBackend, ASGIApp, HTTPResponseStartEvent
 from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
-    from httpx._types import CookieTypes
+    from httpx._types import (
+        CookieTypes,
+        HeaderTypes,
+        QueryParamTypes,
+        TimeoutTypes,
+    )
 
     from litestar.middleware.session.base import BaseBackendConfig, BaseSessionBackend
     from litestar.types.asgi_types import HTTPScope, Receive, Scope, Send
@@ -177,4 +184,30 @@ class BaseTestClient(Generic[T]):
                 app=self.app,
                 cookies=dict(self.cookies),  # type: ignore[arg-type]
             ),
+        )
+
+    def _prepare_ws_connect_request(  # type: ignore[misc]
+        self: BaseClient,  # pyright: ignore
+        url: str,
+        subprotocols: Sequence[str] | None = None,
+        params: QueryParamTypes | None = None,
+        headers: HeaderTypes | None = None,
+        cookies: CookieTypes | None = None,
+        timeout: TimeoutTypes | UseClientDefault = USE_CLIENT_DEFAULT,
+        extensions: Mapping[str, Any] | None = None,
+    ) -> httpx.Request:
+        default_headers: dict[str, str] = {}
+        default_headers.setdefault("connection", "upgrade")
+        default_headers.setdefault("sec-websocket-key", "testserver==")
+        default_headers.setdefault("sec-websocket-version", "13")
+        if subprotocols is not None:
+            default_headers.setdefault("sec-websocket-protocol", ", ".join(subprotocols))
+        return self.build_request(
+            "GET",
+            self.base_url.copy_with(scheme="ws").join(url),
+            headers={**dict(headers or {}), **default_headers},  # type: ignore[misc]
+            params=params,
+            cookies=cookies,
+            extensions=None if extensions is None else dict(extensions),
+            timeout=timeout,
         )

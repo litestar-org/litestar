@@ -6,7 +6,7 @@ from warnings import warn
 
 from typing_extensions import Annotated, TypeAlias, override
 
-from litestar.contrib.pydantic.utils import is_pydantic_undefined
+from litestar.contrib.pydantic.utils import is_pydantic_undefined, is_pydantic_v2
 from litestar.dto.base_dto import AbstractDTO
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.dto.field import DTO_FIELD_META_KEY, extract_dto_field
@@ -25,6 +25,10 @@ except ImportError as e:
 
 try:
     import pydantic as pydantic_v2
+
+    if not is_pydantic_v2(pydantic_v2):
+        raise ImportError
+
     from pydantic import ValidationError as ValidationErrorV2
     from pydantic import v1 as pydantic_v1
     from pydantic.v1 import ValidationError as ValidationErrorV1
@@ -46,17 +50,23 @@ T = TypeVar("T", bound="ModelType | Collection[ModelType]")
 
 __all__ = ("PydanticDTO",)
 
-_down_types = {
-    pydantic_v2.JsonValue: Any,
+_down_types: dict[Any, Any] = {
     pydantic_v1.EmailStr: str,
-    pydantic_v2.EmailStr: str,
     pydantic_v1.IPvAnyAddress: str,
-    pydantic_v2.IPvAnyAddress: str,
     pydantic_v1.IPvAnyInterface: str,
-    pydantic_v2.IPvAnyInterface: str,
     pydantic_v1.IPvAnyNetwork: str,
-    pydantic_v2.IPvAnyNetwork: str,
 }
+
+if pydantic_v2 is not Empty:  # type: ignore[comparison-overlap]  # pragma: no cover
+    _down_types.update(
+        {
+            pydantic_v2.JsonValue: Any,
+            pydantic_v2.EmailStr: str,
+            pydantic_v2.IPvAnyAddress: str,
+            pydantic_v2.IPvAnyInterface: str,
+            pydantic_v2.IPvAnyNetwork: str,
+        }
+    )
 
 
 def convert_validation_error(validation_error: ValidationErrorV1 | ValidationErrorV2) -> list[dict[str, Any]]:
