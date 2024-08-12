@@ -37,7 +37,11 @@ def get_module_global_imports(module_import_path: str, reference_target_source_o
     """
     module = importlib.import_module(module_import_path)
     obj = getattr(module, reference_target_source_obj)
-    tree = _get_module_ast(inspect.getsourcefile(obj))
+
+    try:
+        tree = _get_module_ast(inspect.getsourcefile(obj))
+    except TypeError:
+        return set()
 
     import_nodes = _get_import_nodes(tree.body)
     return {path.asname or path.name for import_node in import_nodes for path in import_node.names}
@@ -75,9 +79,10 @@ def on_warn_missing_reference(app: Sphinx, domain: str, node: Node) -> bool | No
     for pattern, targets in ignore_ref_rgs.items():
         if not pattern.match(source):
             continue
-        if isinstance(targets, set) and target in targets:
-            return True
-        if targets.match(target):
+        if isinstance(targets, set):
+            if target in targets:
+                return True
+        elif targets.match(target):
             return True
 
     return None

@@ -12,7 +12,6 @@ from litestar.template.base import (
     TemplateProtocol,
     csrf_token,
     url_for,
-    url_for_static_asset,
 )
 
 try:
@@ -72,7 +71,6 @@ class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate, Mapping[str, Any]]
             directory: Direct path or list of directory paths from which to serve templates.
             engine_instance: A mako TemplateLookup instance.
         """
-        super().__init__(directory, engine_instance)
         if directory and engine_instance:
             raise ImproperlyConfiguredException("You must provide either a directory or a mako TemplateLookup.")
         if directory:
@@ -83,7 +81,6 @@ class MakoTemplateEngine(TemplateEngineProtocol[MakoTemplate, Mapping[str, Any]]
             self.engine = engine_instance
 
         self._template_callables: list[tuple[str, TemplateCallableType]] = []
-        self.register_template_callable(key="url_for_static_asset", template_callable=url_for_static_asset)
         self.register_template_callable(key="csrf_token", template_callable=csrf_token)
         self.register_template_callable(key="url_for", template_callable=url_for)
 

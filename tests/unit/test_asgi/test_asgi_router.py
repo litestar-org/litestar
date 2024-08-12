@@ -8,11 +8,13 @@ import anyio
 import pytest
 from pytest_mock import MockerFixture
 
-from litestar import Litestar, asgi
+from litestar import Litestar, asgi, get
 from litestar._asgi.asgi_router import ASGIRouter
-from litestar.exceptions import ImproperlyConfiguredException
+from litestar.exceptions import ImproperlyConfiguredException, NotFoundException
 from litestar.testing import TestClient, create_test_client
+from litestar.types.empty import Empty
 from litestar.utils.helpers import get_exception_group
+from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
     from contextlib import AbstractAsyncContextManager
@@ -27,7 +29,7 @@ def test_add_mount_route_disallow_path_parameter() -> None:
         return None
 
     with pytest.raises(ImproperlyConfiguredException):
-        Litestar(route_handlers=[asgi("/mount-path", is_static=True)(handler), asgi("/mount-path/{id:str}")(handler)])
+        Litestar(route_handlers=[asgi("/mount-path", is_mount=True)(handler), asgi("/mount-path/{id:str}")(handler)])
 
 
 class _LifeSpanCallable:
@@ -225,3 +227,47 @@ async def test_lifespan_context_exception_after_startup(mock_format_exc: MagicMo
             call({"type": "lifespan.shutdown.failed", "message": mock_format_exc.return_value}),
         ]
     )
+
+
+async def test_asgi_router_set_exception_handlers_in_scope_routing_error(scope: Scope) -> None:
+    # If routing fails, the exception handlers that are set in scope should be the ones
+    # defined on the app instance.
+
+    app_exception_handlers_mock = MagicMock()
+    handler_exception_handlers_mock = MagicMock()
+
+    @get(exception_handlers={RuntimeError: handler_exception_handlers_mock})
+    async def handler() -> None:
+        return None
+
+    app = Litestar(route_handlers=[handler], exception_handlers={RuntimeError: app_exception_handlers_mock})
+    scope["path"] = "/nowhere-to-be-found"
+    with pytest.raises(NotFoundException):
+        await app.asgi_router(scope, AsyncMock(), AsyncMock())
+
+    state = ScopeState.from_scope(scope)
+    assert state.exception_handlers is not Empty
+    assert state.exception_handlers[RuntimeError] is app_exception_handlers_mock
+
+
+async def test_asgi_router_set_exception_handlers_in_scope_successful_routing(
+    scope: Scope, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # if routing is successful, the exception handlers that are set in scope should be the ones
+    # resolved from the handler.
+
+    app_exception_handlers_mock = MagicMock()
+    handler_exception_handlers_mock = MagicMock()
+
+    @get(exception_handlers={TypeError: handler_exception_handlers_mock})
+    async def handler() -> None:
+        return None
+
+    app = Litestar(route_handlers=[handler], exception_handlers={RuntimeError: app_exception_handlers_mock})
+    router = app.asgi_router
+    scope["path"] = "/"
+    await router(scope, AsyncMock(), AsyncMock())
+    state = ScopeState.from_scope(scope)
+    assert state.exception_handlers is not Empty
+    assert state.exception_handlers[RuntimeError] is app_exception_handlers_mock
+    assert state.exception_handlers[TypeError] is handler_exception_handlers_mock

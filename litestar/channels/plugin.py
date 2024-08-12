@@ -116,11 +116,11 @@ class ChannelsPlugin(InitPluginProtocol, AbstractAsyncContextManager):
         if self._create_route_handlers:
             if self._arbitrary_channels_allowed:
                 path = self._handler_root_path + "{channel_name:str}"
-                route_handlers = [WebsocketRouteHandler(path)(self._ws_handler_func)]
+                route_handlers = [WebsocketRouteHandler(path, fn=self._ws_handler_func)]
             else:
                 route_handlers = [
-                    WebsocketRouteHandler(self._handler_root_path + channel_name)(
-                        self._create_ws_handler_func(channel_name)
+                    WebsocketRouteHandler(
+                        self._handler_root_path + channel_name, fn=self._create_ws_handler_func(channel_name)
                     )
                     for channel_name in self._channels
                 ]

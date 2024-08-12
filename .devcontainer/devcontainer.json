@@ -2,7 +2,7 @@
   "name": "litestar-org/litestar",
   "build": {
     "dockerfile": "./Dockerfile",
-    "context": ".",
+    "context": "."
   },
   "features": {
     "ghcr.io/devcontainers/features/common-utils:2": {
@@ -10,19 +10,19 @@
       "username": "vscode",
       "userUid": "1000",
       "userGid": "1000",
-      "upgradePackages": "true",
+      "upgradePackages": "true"
     },
     "ghcr.io/devcontainers/features/github-cli:1": {},
     "ghcr.io/devcontainers-contrib/features/pre-commit:2": {},
     "ghcr.io/devcontainers/features/python:1": "none",
     "ghcr.io/devcontainers/features/git:1": {
       "version": "latest",
-      "ppa": "false",
-    },
+      "ppa": "false"
+    }
   },
   "customizations": {
     "codespaces": {
-      "openFiles": ["CONTRIBUTING.rst"],
+      "openFiles": ["CONTRIBUTING.rst"]
     },
     "vscode": {
       "extensions": [
@@ -31,7 +31,7 @@
         "github.vscode-github-actions",
         "ms-python.black-formatter",
         "ms-python.mypy-type-checker",
-        "charliermarsh.ruff",
+        "charliermarsh.ruff"
       ],
       "settings": {
         "python.editor.defaultFormatter": "charliermarsh.ruff",
@@ -45,26 +45,22 @@
         "terminal.integrated.profiles.linux": {
           "bash": {
             "path": "bash",
-            "icon": "terminal-bash",
+            "icon": "terminal-bash"
           },
           "zsh": {
-            "path": "zsh",
+            "path": "zsh"
           },
           "fish": {
-            "path": "fish",
-          },
-        },
-      },
-    },
+            "path": "fish"
+          }
+        }
+      }
+    }
   },
   "forwardPorts": [8000],
   "postCreateCommand": [
-    "poetry",
-    "install",
-    "--extras",
-    "full",
-    "--with",
-    "docs,lint",
+    "pdm",
+    "install"
   ],
-  "remoteUser": "vscode",
+  "remoteUser": "vscode"
 }

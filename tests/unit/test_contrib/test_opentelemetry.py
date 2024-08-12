@@ -113,11 +113,11 @@ def test_open_telemetry_middleware_with_websocket_route() -> None:
         assert dict(fourth_span.attributes) == {"type": "websocket.close"}  # type: ignore[arg-type]
         assert dict(fifth_span.attributes) == {  # type: ignore[arg-type]
             "http.scheme": "ws",
-            "http.host": "testserver",
+            "http.host": "testserver.local",
             "net.host.port": 80,
             "http.target": "/",
-            "http.url": "ws://testserver/",
-            "http.server_name": "testserver",
+            "http.url": "ws://testserver.local/",
+            "http.server_name": "testserver.local",
             "http.user_agent": "testclient",
             "net.peer.ip": "testclient",
             "net.peer.port": 50000,

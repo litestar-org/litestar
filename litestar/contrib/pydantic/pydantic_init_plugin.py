@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from contextlib import suppress
+from functools import partial
 from typing import TYPE_CHECKING, Any, Callable, TypeVar, cast
 from uuid import UUID
 
@@ -8,28 +9,33 @@ from msgspec import ValidationError
 from typing_extensions import Buffer, TypeGuard
 
 from litestar._signature.types import ExtendedMsgSpecValidationError
-from litestar.contrib.pydantic.utils import is_pydantic_constrained_field
+from litestar.contrib.pydantic.utils import is_pydantic_constrained_field, is_pydantic_v2
 from litestar.exceptions import MissingDependencyException
 from litestar.plugins import InitPluginProtocol
 from litestar.typing import _KWARG_META_EXTRACTORS
 from litestar.utils import is_class_and_subclass
 
 try:
-    # check if we have pydantic v2 installed, and try to import both versions
+    import pydantic as _  # noqa: F401
+except ImportError as e:
+    raise MissingDependencyException("pydantic") from e
+
+try:
     import pydantic as pydantic_v2
+
+    if not is_pydantic_v2(pydantic_v2):
+        raise ImportError
+
     from pydantic import v1 as pydantic_v1
 except ImportError:
-    # check if pydantic 1 is installed and import it
-    try:
-        import pydantic as pydantic_v1  # type: ignore[no-redef]
+    import pydantic as pydantic_v1  # type: ignore[no-redef]
 
-        pydantic_v2 = None  # type: ignore[assignment]
-    except ImportError as e:
-        raise MissingDependencyException("pydantic") from e
+    pydantic_v2 = None  # type: ignore[assignment]
 
 
 if TYPE_CHECKING:
     from litestar.config.app import AppConfig
+    from litestar.types.serialization import PydanticV1FieldsListType, PydanticV2FieldsListType
 
 
 T = TypeVar("T")
@@ -42,9 +48,9 @@ def _dec_pydantic_v1(model_type: type[pydantic_v1.BaseModel], value: Any) -> pyd
         raise ExtendedMsgSpecValidationError(errors=cast("list[dict[str, Any]]", e.errors())) from e
 
 
-def _dec_pydantic_v2(model_type: type[pydantic_v2.BaseModel], value: Any) -> pydantic_v2.BaseModel:
+def _dec_pydantic_v2(model_type: type[pydantic_v2.BaseModel], value: Any, strict: bool) -> pydantic_v2.BaseModel:
     try:
-        return model_type.model_validate(value, strict=False)
+        return model_type.model_validate(value, strict=strict)
     except pydantic_v2.ValidationError as e:
         raise ExtendedMsgSpecValidationError(errors=cast("list[dict[str, Any]]", e.errors())) from e
 
@@ -119,36 +125,116 @@ class ConstrainedFieldMetaExtractor:
 
 
 class PydanticInitPlugin(InitPluginProtocol):
-    __slots__ = ("prefer_alias",)
+    __slots__ = (
+        "exclude",
+        "exclude_defaults",
+        "exclude_none",
+        "exclude_unset",
+        "include",
+        "prefer_alias",
+        "validate_strict",
+    )
 
-    def __init__(self, prefer_alias: bool = False) -> None:
+    def __init__(
+        self,
+        exclude: PydanticV1FieldsListType | PydanticV2FieldsListType | None = None,
+        exclude_defaults: bool = False,
+        exclude_none: bool = False,
+        exclude_unset: bool = False,
+        include: PydanticV1FieldsListType | PydanticV2FieldsListType | None = None,
+        prefer_alias: bool = False,
+        validate_strict: bool = False,
+    ) -> None:
+        """Pydantic Plugin to support serialization / validation of Pydantic types / models
+
+        :param exclude: Fields to exclude during serialization
+        :param exclude_defaults: Fields to exclude during serialization when they are set to their default value
+        :param exclude_none: Fields to exclude during serialization when they are set to ``None``
+        :param exclude_unset: Fields to exclude during serialization when they arenot set
+        :param include: Fields to exclude during serialization
+        :param prefer_alias: Use the ``by_alias=True`` flag when dumping models
+        :param validate_strict: Use ``strict=True`` when calling ``.model_validate`` on Pydantic 2.x models
+        """
+        self.exclude = exclude
+        self.exclude_defaults = exclude_defaults
+        self.exclude_none = exclude_none
+        self.exclude_unset = exclude_unset
+        self.include = include
         self.prefer_alias = prefer_alias
+        self.validate_strict = validate_strict
 
     @classmethod
-    def encoders(cls, prefer_alias: bool = False) -> dict[Any, Callable[[Any], Any]]:
-        encoders = {**_base_encoders, **cls._create_pydantic_v1_encoders(prefer_alias)}
+    def encoders(
+        cls,
+        exclude: PydanticV1FieldsListType | PydanticV2FieldsListType | None = None,
+        exclude_defaults: bool = False,
+        exclude_none: bool = False,
+        exclude_unset: bool = False,
+        include: PydanticV1FieldsListType | PydanticV2FieldsListType | None = None,
+        prefer_alias: bool = False,
+    ) -> dict[Any, Callable[[Any], Any]]:
+        encoders = {
+            **_base_encoders,
+            **cls._create_pydantic_v1_encoders(
+                prefer_alias=prefer_alias,
+                exclude=exclude,
+                exclude_defaults=exclude_defaults,
+                exclude_none=exclude_none,
+                exclude_unset=exclude_unset,
+                include=include,
+            ),
+        }
         if pydantic_v2 is not None:  # pragma: no cover
-            encoders.update(cls._create_pydantic_v2_encoders(prefer_alias))
+            encoders.update(
+                cls._create_pydantic_v2_encoders(
+                    prefer_alias=prefer_alias,
+                    exclude=exclude,
+                    exclude_defaults=exclude_defaults,
+                    exclude_none=exclude_none,
+                    exclude_unset=exclude_unset,
+                    include=include,
+                )
+            )
         return encoders
 
     @classmethod
-    def decoders(cls) -> list[tuple[Callable[[Any], bool], Callable[[Any, Any], Any]]]:
+    def decoders(cls, validate_strict: bool = False) -> list[tuple[Callable[[Any], bool], Callable[[Any, Any], Any]]]:
         decoders: list[tuple[Callable[[Any], bool], Callable[[Any, Any], Any]]] = [
             (is_pydantic_v1_model_class, _dec_pydantic_v1)
         ]
 
         if pydantic_v2 is not None:  # pragma: no cover
-            decoders.append((is_pydantic_v2_model_class, _dec_pydantic_v2))
+            decoders.append(
+                (
+                    is_pydantic_v2_model_class,
+                    partial(_dec_pydantic_v2, strict=validate_strict),
+                )
+            )
 
         decoders.append((_is_pydantic_v1_uuid, _dec_pydantic_uuid))
 
         return decoders
 
     @staticmethod
-    def _create_pydantic_v1_encoders(prefer_alias: bool = False) -> dict[Any, Callable[[Any], Any]]:  # pragma: no cover
+    def _create_pydantic_v1_encoders(
+        exclude: PydanticV1FieldsListType | None = None,
+        exclude_defaults: bool = False,
+        exclude_none: bool = False,
+        exclude_unset: bool = False,
+        include: PydanticV1FieldsListType | None = None,
+        prefer_alias: bool = False,
+    ) -> dict[Any, Callable[[Any], Any]]:  # pragma: no cover
         return {
             pydantic_v1.BaseModel: lambda model: {
-                k: v.decode() if isinstance(v, bytes) else v for k, v in model.dict(by_alias=prefer_alias).items()
+                k: v.decode() if isinstance(v, bytes) else v
+                for k, v in model.dict(
+                    by_alias=prefer_alias,
+                    exclude=exclude,
+                    exclude_defaults=exclude_defaults,
+                    exclude_none=exclude_none,
+                    exclude_unset=exclude_unset,
+                    include=include,
+                ).items()
             },
             pydantic_v1.SecretField: str,
             pydantic_v1.StrictBool: int,
@@ -159,9 +245,24 @@ class PydanticInitPlugin(InitPluginProtocol):
         }
 
     @staticmethod
-    def _create_pydantic_v2_encoders(prefer_alias: bool = False) -> dict[Any, Callable[[Any], Any]]:
+    def _create_pydantic_v2_encoders(
+        exclude: PydanticV2FieldsListType | None = None,
+        exclude_defaults: bool = False,
+        exclude_none: bool = False,
+        exclude_unset: bool = False,
+        include: PydanticV2FieldsListType | None = None,
+        prefer_alias: bool = False,
+    ) -> dict[Any, Callable[[Any], Any]]:
         encoders: dict[Any, Callable[[Any], Any]] = {
-            pydantic_v2.BaseModel: lambda model: model.model_dump(mode="json", by_alias=prefer_alias),
+            pydantic_v2.BaseModel: lambda model: model.model_dump(
+                by_alias=prefer_alias,
+                exclude=exclude,
+                exclude_defaults=exclude_defaults,
+                exclude_none=exclude_none,
+                exclude_unset=exclude_unset,
+                include=include,
+                mode="json",
+            ),
             pydantic_v2.types.SecretStr: lambda val: "**********" if val else "",
             pydantic_v2.types.SecretBytes: lambda val: "**********" if val else "",
             pydantic_v2.AnyUrl: str,
@@ -175,8 +276,21 @@ class PydanticInitPlugin(InitPluginProtocol):
         return encoders
 
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
-        app_config.type_encoders = {**self.encoders(self.prefer_alias), **(app_config.type_encoders or {})}
-        app_config.type_decoders = [*self.decoders(), *(app_config.type_decoders or [])]
+        app_config.type_encoders = {
+            **self.encoders(
+                prefer_alias=self.prefer_alias,
+                exclude=self.exclude,
+                exclude_defaults=self.exclude_defaults,
+                exclude_none=self.exclude_none,
+                exclude_unset=self.exclude_unset,
+                include=self.include,
+            ),
+            **(app_config.type_encoders or {}),
+        }
+        app_config.type_decoders = [
+            *self.decoders(validate_strict=self.validate_strict),
+            *(app_config.type_decoders or []),
+        ]
 
         _KWARG_META_EXTRACTORS.add(ConstrainedFieldMetaExtractor)
         return app_config

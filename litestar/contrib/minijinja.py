@@ -13,7 +13,6 @@ from litestar.template.base import (
     TemplateProtocol,
     csrf_token,
     url_for,
-    url_for_static_asset,
 )
 from litestar.utils.deprecation import warn_deprecation
 
@@ -105,7 +104,6 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
             directory: Direct path or list of directory paths from which to serve templates.
             engine_instance: A Minijinja Environment instance.
         """
-        super().__init__(directory, engine_instance)
         if directory and engine_instance:
             raise ImproperlyConfiguredException(
                 "You must provide either a directory or a minijinja Environment instance."
@@ -142,7 +140,6 @@ class MiniJinjaTemplateEngine(TemplateEngineProtocol["MiniJinjaTemplate", StateP
 
         self.register_template_callable("url_for", _transform_state(url_for))
         self.register_template_callable("csrf_token", _transform_state(csrf_token))
-        self.register_template_callable("url_for_static_asset", _transform_state(url_for_static_asset))
 
     def get_template(self, template_name: str) -> MiniJinjaTemplate:
         """Retrieve a template by matching its name (dotted path) with files in the directory or directories provided.

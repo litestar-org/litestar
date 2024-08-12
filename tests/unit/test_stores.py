@@ -250,6 +250,19 @@ async def test_file_init_directory(file_store: FileStore) -> None:
     await file_store.set("foo", b"bar")
 
 
+async def test_file_init_subdirectory(file_store_create_directories: FileStore) -> None:
+    file_store = file_store_create_directories
+    async with file_store:
+        await file_store.set("foo", b"bar")
+
+
+async def test_file_init_subdirectory_negative(file_store_create_directories_flag_false: FileStore) -> None:
+    file_store = file_store_create_directories_flag_false
+    async with file_store:
+        with pytest.raises(FileNotFoundError):
+            await file_store.set("foo", b"bar")
+
+
 async def test_file_path(file_store: FileStore) -> None:
     await file_store.set("foo", b"bar")
 

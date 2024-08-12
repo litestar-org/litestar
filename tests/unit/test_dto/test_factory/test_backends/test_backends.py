@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from types import ModuleType
-from typing import TYPE_CHECKING, Callable, List, Optional
+from typing import TYPE_CHECKING, Callable, Dict, List, Optional
 from unittest.mock import MagicMock
 
 import pytest
@@ -40,6 +40,7 @@ class DC:
     a: int
     nested: NestedDC
     nested_list: List[NestedDC]
+    nested_mapping: Dict[str, NestedDC]
     b: str = field(default="b")
     c: List[int] = field(default_factory=list)
     optional: Optional[str] = None
@@ -51,13 +52,20 @@ DESTRUCTURED = {
     "c": [],
     "nested": {"a": 1, "b": "two"},
     "nested_list": [{"a": 1, "b": "two"}],
+    "nested_mapping": {"a": {"a": 1, "b": "two"}},
     "optional": None,
 }
-RAW = b'{"a":1,"nested":{"a":1,"b":"two"},"nested_list":[{"a":1,"b":"two"}],"b":"b","c":[],"optional":null}'
-COLLECTION_RAW = (
-    b'[{"a":1,"nested":{"a":1,"b":"two"},"nested_list":[{"a":1,"b":"two"}],"b":"b","c":[],"optional":null}]'
+RAW = b'{"a":1,"nested":{"a":1,"b":"two"},"nested_list":[{"a":1,"b":"two"}],"nested_mapping":{"a":{"a":1,"b":"two"}},"b":"b","c":[],"optional":null}'
+COLLECTION_RAW = b'[{"a":1,"nested":{"a":1,"b":"two"},"nested_list":[{"a":1,"b":"two"}],"nested_mapping":{"a":{"a":1,"b":"two"}},"b":"b","c":[],"optional":null}]'
+STRUCTURED = DC(
+    a=1,
+    b="b",
+    c=[],
+    nested=NestedDC(a=1, b="two"),
+    nested_list=[NestedDC(a=1, b="two")],
+    nested_mapping={"a": NestedDC(a=1, b="two")},
+    optional=None,
 )
-STRUCTURED = DC(a=1, b="b", c=[], nested=NestedDC(a=1, b="two"), nested_list=[NestedDC(a=1, b="two")], optional=None)
 
 
 @pytest.fixture(name="dto_factory")
@@ -89,7 +97,10 @@ def test_backend_parse_raw_json(
                 wrapper_attribute_name=None,
                 is_data_field=True,
                 handler_id="test",
-            ).parse_raw(b'{"a":1,"nested":{"a":1,"b":"two"},"nested_list":[{"a":1,"b":"two"}]}', asgi_connection)
+            ).parse_raw(
+                b'{"a":1,"nested":{"a":1,"b":"two"},"nested_list":[{"a":1,"b":"two"}],"nested_mapping":{"a":{"a":1,"b":"two"}}}',
+                asgi_connection,
+            )
         )
         == DESTRUCTURED
     )
@@ -112,7 +123,7 @@ def test_backend_parse_raw_msgpack(dto_factory: type[DataclassDTO], backend_cls:
                 is_data_field=True,
                 handler_id="test",
             ).parse_raw(
-                b"\x83\xa1a\x01\xa6nested\x82\xa1a\x01\xa1b\xa3two\xabnested_list\x91\x82\xa1a\x01\xa1b\xa3two",
+                b"\x87\xa1a\x01\xa6nested\x82\xa1a\x01\xa1b\xa3two\xabnested_list\x91\x82\xa1a\x01\xa1b\xa3two\xaenested_mapping\x81\xa1a\x82\xa1a\x01\xa1b\xa3two\xa1b\xa1b\xa1c\x90\xa8optional\xc0",
                 asgi_connection,
             )
         )

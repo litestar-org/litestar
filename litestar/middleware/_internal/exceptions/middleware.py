@@ -1,23 +1,20 @@
 from __future__ import annotations
 
 import pdb  # noqa: T100
-from dataclasses import asdict, dataclass, field
 from inspect import getmro
 from sys import exc_info
 from traceback import format_exception
 from typing import TYPE_CHECKING, Any, Type, cast
 
-from litestar.datastructures import Headers
-from litestar.enums import MediaType, ScopeType
+from litestar.enums import ScopeType
 from litestar.exceptions import HTTPException, LitestarException, WebSocketException
-from litestar.middleware.cors import CORSMiddleware
-from litestar.middleware.exceptions._debug_response import _get_type_encoders_for_request, create_debug_response
-from litestar.serialization import encode_json, get_serializer
+from litestar.exceptions.responses import create_exception_response
+from litestar.exceptions.responses._debug_response import (
+    create_debug_response,
+)
 from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
-from litestar.utils.deprecation import warn_deprecation
-
-__all__ = ("ExceptionHandlerMiddleware", "ExceptionResponseContent", "create_exception_response")
-
+from litestar.utils.empty import value_or_raise
+from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
     from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -25,17 +22,21 @@ if TYPE_CHECKING:
     from litestar import Response
     from litestar.app import Litestar
     from litestar.connection import Request
+    from litestar.handlers import BaseRouteHandler
     from litestar.logging import BaseLoggingConfig
     from litestar.types import (
         ASGIApp,
         ExceptionHandler,
         ExceptionHandlersMap,
         Logger,
+        Message,
         Receive,
         Scope,
         Send,
     )
     from litestar.types.asgi_types import WebSocketCloseEvent
+
+__all__ = ("ExceptionHandlerMiddleware",)
 
 
 def get_exception_handler(exception_handlers: ExceptionHandlersMap, exc: Exception) -> ExceptionHandler | None:
@@ -73,44 +74,6 @@ def get_exception_handler(exception_handlers: ExceptionHandlersMap, exc: Excepti
     )
 
 
-@dataclass
-class ExceptionResponseContent:
-    """Represent the contents of an exception-response."""
-
-    status_code: int
-    """Exception status code."""
-    detail: str
-    """Exception details or message."""
-    media_type: MediaType | str
-    """Media type of the response."""
-    headers: dict[str, str] | None = field(default=None)
-    """Headers to attach to the response."""
-    extra: dict[str, Any] | list[Any] | None = field(default=None)
-    """An extra mapping to attach to the exception."""
-
-    def to_response(self, request: Request | None = None) -> Response:
-        """Create a response from the model attributes.
-
-        Returns:
-            A response instance.
-        """
-        from litestar.response import Response
-
-        content: Any = {k: v for k, v in asdict(self).items() if k not in ("headers", "media_type") and v is not None}
-        type_encoders = _get_type_encoders_for_request(request) if request is not None else None
-
-        if self.media_type != MediaType.JSON:
-            content = encode_json(content, get_serializer(type_encoders))
-
-        return Response(
-            content=content,
-            headers=self.headers,
-            status_code=self.status_code,
-            media_type=self.media_type,
-            type_encoders=type_encoders,
-        )
-
-
 def _starlette_exception_handler(request: Request[Any, Any, Any], exc: StarletteHTTPException) -> Response:
     return create_exception_response(
         request=request,
@@ -122,83 +85,20 @@ def _starlette_exception_handler(request: Request[Any, Any, Any], exc: Starlette
     )
 
 
-def create_exception_response(request: Request[Any, Any, Any], exc: Exception) -> Response:
-    """Construct a response from an exception.
-
-    Notes:
-        - For instances of :class:`HTTPException <litestar.exceptions.HTTPException>` or other exception classes that have a
-          ``status_code`` attribute (e.g. Starlette exceptions), the status code is drawn from the exception, otherwise
-          response status is ``HTTP_500_INTERNAL_SERVER_ERROR``.
-
-    Args:
-        request: The request that triggered the exception.
-        exc: An exception.
-
-    Returns:
-        Response: HTTP response constructed from exception details.
-    """
-    headers: dict[str, Any] | None
-    extra: dict[str, Any] | list | None
-
-    if isinstance(exc, HTTPException):
-        status_code = exc.status_code
-        headers = exc.headers
-        extra = exc.extra
-    else:
-        status_code = HTTP_500_INTERNAL_SERVER_ERROR
-        headers = None
-        extra = None
-
-    detail = (
-        exc.detail
-        if isinstance(exc, LitestarException) and status_code != HTTP_500_INTERNAL_SERVER_ERROR
-        else "Internal Server Error"
-    )
-
-    try:
-        media_type = request.route_handler.media_type
-    except (KeyError, AttributeError):
-        media_type = MediaType.JSON
-
-    content = ExceptionResponseContent(
-        status_code=status_code,
-        detail=detail,
-        headers=headers,
-        extra=extra,
-        media_type=media_type,
-    )
-    return content.to_response(request=request)
-
-
 class ExceptionHandlerMiddleware:
     """Middleware used to wrap an ASGIApp inside a try catch block and handle any exceptions raised.
 
     This used in multiple layers of Litestar.
     """
 
-    def __init__(self, app: ASGIApp, debug: bool | None, exception_handlers: ExceptionHandlersMap) -> None:
+    def __init__(self, app: ASGIApp) -> None:
         """Initialize ``ExceptionHandlerMiddleware``.
 
         Args:
             app: The ``next`` ASGI app to call.
-            debug: Whether ``debug`` mode is enabled. Deprecated. Debug mode will be inferred from the request scope
-            exception_handlers: A dictionary mapping status codes and/or exception types to handler functions.
 
-        .. deprecated:: 2.0.0
-            The ``debug`` parameter is deprecated. It will be inferred from the request scope
         """
         self.app = app
-        self.exception_handlers = exception_handlers
-        self.debug = debug
-        if debug is not None:
-            warn_deprecation(
-                "2.0.0",
-                deprecated_name="debug",
-                kind="parameter",
-                info="Debug mode will be inferred from the request scope",
-            )
-
-        self._get_debug = self._get_debug_scope if debug is None else lambda *a: debug
 
     @staticmethod
     def _get_debug_scope(scope: Scope) -> bool:
@@ -215,9 +115,19 @@ class ExceptionHandlerMiddleware:
         Returns:
             None
         """
+        scope_state = ScopeState.from_scope(scope)
+
+        async def capture_response_started(event: Message) -> None:
+            if event["type"] == "http.response.start":
+                scope_state.response_started = True
+            await send(event)
+
         try:
-            await self.app(scope, receive, send)
-        except Exception as e:  # noqa: BLE001
+            await self.app(scope, receive, capture_response_started)
+        except Exception as e:
+            if scope_state.response_started:
+                raise LitestarException("Exception caught after response started") from e
+
             litestar_app = scope["app"]
 
             if litestar_app.logging_config and (logger := litestar_app.logger):
@@ -252,15 +162,15 @@ class ExceptionHandlerMiddleware:
             None.
         """
 
-        headers = Headers.from_scope(scope=scope)
-        if litestar_app.cors_config and (origin := headers.get("origin")):
-            cors_middleware = CORSMiddleware(app=self.app, config=litestar_app.cors_config)
-            send = cors_middleware.send_wrapper(send=send, origin=origin, has_cookie="cookie" in headers)
-
-        exception_handler = get_exception_handler(self.exception_handlers, exc) or self.default_http_exception_handler
+        exception_handlers = value_or_raise(ScopeState.from_scope(scope).exception_handlers)
+        exception_handler = get_exception_handler(exception_handlers, exc) or self.default_http_exception_handler
         request: Request[Any, Any, Any] = litestar_app.request_class(scope=scope, receive=receive, send=send)
         response = exception_handler(request, exc)
-        await response.to_asgi_response(app=None, request=request)(scope=scope, receive=receive, send=send)
+        route_handler: BaseRouteHandler | None = scope.get("route_handler")
+        type_encoders = route_handler.resolve_type_encoders() if route_handler else litestar_app.type_encoders
+        await response.to_asgi_response(request=request, type_encoders=type_encoders)(
+            scope=scope, receive=receive, send=send
+        )
 
     @staticmethod
     async def handle_websocket_exception(send: Send, exc: Exception) -> None:

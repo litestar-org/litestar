@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from copy import copy
 from functools import partial
-from typing import TYPE_CHECKING, Any, Callable, Mapping, Sequence, cast
+from typing import TYPE_CHECKING, Any, Callable, Iterable, Mapping, Sequence, cast
 
 from litestar._signature import SignatureModel
 from litestar.di import Provide
@@ -27,12 +27,14 @@ from litestar.utils.signature import ParsedSignature, add_types_to_signature_nam
 if TYPE_CHECKING:
     from typing_extensions import Self
 
+    from litestar._kwargs import KwargsModel
     from litestar.app import Litestar
     from litestar.connection import ASGIConnection
     from litestar.controller import Controller
     from litestar.dto import AbstractDTO
     from litestar.params import ParameterKwarg
     from litestar.router import Router
+    from litestar.routes import BaseRoute
     from litestar.types import AnyCallable, AsyncAnyCallable, ExceptionHandler
     from litestar.types.empty import EmptyType
 
@@ -46,7 +48,6 @@ class BaseRouteHandler:
     """
 
     __slots__ = (
-        "_fn",
         "_parsed_data_field",
         "_parsed_fn_signature",
         "_parsed_return_field",
@@ -62,6 +63,7 @@ class BaseRouteHandler:
         "dependencies",
         "dto",
         "exception_handlers",
+        "fn",
         "guards",
         "middleware",
         "name",
@@ -78,6 +80,7 @@ class BaseRouteHandler:
         self,
         path: str | Sequence[str] | None = None,
         *,
+        fn: AsyncAnyCallable,
         dependencies: Dependencies | None = None,
         dto: type[AbstractDTO] | None | EmptyType = Empty,
         exception_handlers: ExceptionHandlersMap | None = None,
@@ -97,6 +100,9 @@ class BaseRouteHandler:
         Args:
             path: A path fragment for the route handler function or a sequence of path fragments. If not given defaults
                 to ``/``
+            fn: The handler function
+
+                .. versionadded:: 3.0
             dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
             dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
                 validation of request data.
@@ -149,11 +155,10 @@ class BaseRouteHandler:
         self.paths = (
             {normalize_path(p) for p in path} if path and isinstance(path, list) else {normalize_path(path or "/")}  # type: ignore[arg-type]
         )
+        self.fn = self._prepare_fn(fn)
 
-    def __call__(self, fn: AsyncAnyCallable) -> Self:
-        """Replace a function with itself."""
-        self._fn = fn
-        return self
+    def _prepare_fn(self, fn: AsyncAnyCallable) -> AsyncAnyCallable:
+        return fn
 
     @property
     def handler_id(self) -> str:
@@ -197,20 +202,6 @@ class BaseRouteHandler:
                 type_decoders=self.resolve_type_decoders(),
             )
         return self._signature_model
-
-    @property
-    def fn(self) -> AsyncAnyCallable:
-        """Get the handler function.
-
-        Raises:
-            ImproperlyConfiguredException: if handler fn is not set.
-
-        Returns:
-            Handler function
-        """
-        if not hasattr(self, "_fn"):
-            raise ImproperlyConfiguredException("No callable has been registered for this handler")
-        return self._fn
 
     @property
     def parsed_fn_signature(self) -> ParsedSignature:
@@ -432,13 +423,13 @@ class BaseRouteHandler:
         When merging keys from multiple layers, if the same key is defined by multiple layers, the value from the
         layer closest to the response handler will take precedence.
         """
-        if self._resolved_layered_parameters is Empty:
+        if self._resolved_signature_namespace is Empty:
             ns: dict[str, Any] = {}
             for layer in self.ownership_layers:
                 ns.update(layer.signature_namespace)
 
             self._resolved_signature_namespace = ns
-        return cast("dict[str, Any]", self._resolved_signature_namespace)
+        return self._resolved_signature_namespace
 
     def resolve_data_dto(self) -> type[AbstractDTO] | None:
         """Resolve the data_dto by starting from the route handler and moving up.
@@ -524,11 +515,12 @@ class BaseRouteHandler:
                     f"If you wish to override a provider, it must have the same key."
                 )
 
-    def on_registration(self, app: Litestar) -> None:
+    def on_registration(self, app: Litestar, route: BaseRoute) -> None:
         """Called once per handler when the app object is instantiated.
 
         Args:
             app: The :class:`Litestar<.app.Litestar>` app object.
+            route: The route this handler is being registered on
 
         Returns:
             None
@@ -564,3 +556,18 @@ class BaseRouteHandler:
         if not hasattr(target, "__qualname__"):
             target = type(target)
         return f"{target.__module__}.{target.__qualname__}"
+
+    def _create_kwargs_model(
+        self,
+        path_parameters: Iterable[str],
+    ) -> KwargsModel:
+        """Create a `KwargsModel` for a given route handler."""
+        from litestar._kwargs import KwargsModel
+
+        return KwargsModel.create_for_signature_model(
+            signature_model=self.signature_model,
+            parsed_signature=self.parsed_fn_signature,
+            dependencies=self.resolve_dependencies(),
+            path_parameters=set(path_parameters),
+            layered_parameters=self.resolve_layered_parameters(),
+        )

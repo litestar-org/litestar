@@ -16,7 +16,8 @@ from litestar.enums import ParamType, RequestEncodingType
 from litestar.exceptions import ValidationException
 from litestar.params import BodyKwarg
 from litestar.types import Empty
-from litestar.utils.predicates import is_non_string_sequence
+from litestar.utils import make_non_optional_union
+from litestar.utils.predicates import is_non_string_sequence, is_optional_union
 from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
@@ -348,7 +349,10 @@ async def _extract_multipart(
 
     if field_definition.is_non_string_sequence:
         values = list(form_values.values())
-        if field_definition.has_inner_subclass_of(UploadFile) and isinstance(values[0], list):
+        if isinstance(values[0], list) and (
+            field_definition.has_inner_subclass_of(UploadFile)
+            or (field_definition.is_optional and field_definition.inner_types[0].is_non_string_sequence)
+        ):
             return values[0]
 
         return values
@@ -364,7 +368,14 @@ async def _extract_multipart(
 
     for name, tp in field_definition.get_type_hints().items():
         value = form_values.get(name)
-        if value is not None and is_non_string_sequence(tp) and not isinstance(value, list):
+        if (
+            value is not None
+            and not isinstance(value, list)
+            and (
+                is_non_string_sequence(tp)
+                or (is_optional_union(tp) and is_non_string_sequence(make_non_optional_union(tp)))
+            )
+        ):
             form_values[name] = [value]
 
     return form_values

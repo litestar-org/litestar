@@ -1,54 +1,31 @@
-from advanced_alchemy import filters, types
-from advanced_alchemy.base import (
-    AuditColumns,
-    BigIntAuditBase,
-    BigIntBase,
-    BigIntPrimaryKey,
-    CommonTableAttributes,
-    UUIDAuditBase,
-    UUIDBase,
-    UUIDPrimaryKey,
-    orm_registry,
-)
-from advanced_alchemy.extensions.litestar import (
-    AlembicAsyncConfig,
-    AlembicCommands,
-    AlembicSyncConfig,
-    AsyncSessionConfig,
-    EngineConfig,
-    SQLAlchemyAsyncConfig,
-    SQLAlchemyDTO,
-    SQLAlchemyDTOConfig,
-    SQLAlchemyInitPlugin,
-    SQLAlchemyPlugin,
-    SQLAlchemySerializationPlugin,
-    SQLAlchemySyncConfig,
-    SyncSessionConfig,
-)
+from litestar.utils import warn_deprecation
 
-__all__ = (
-    "orm_registry",
-    "filters",
-    "types",
-    "AuditColumns",
-    "BigIntAuditBase",
-    "BigIntBase",
-    "UUIDAuditBase",
-    "UUIDPrimaryKey",
-    "CommonTableAttributes",
-    "UUIDBase",
-    "BigIntPrimaryKey",
-    "AlembicCommands",
-    "AlembicAsyncConfig",
-    "AlembicSyncConfig",
-    "AsyncSessionConfig",
-    "SyncSessionConfig",
-    "SQLAlchemyDTO",
-    "SQLAlchemyDTOConfig",
-    "SQLAlchemyAsyncConfig",
-    "SQLAlchemyInitPlugin",
-    "SQLAlchemyPlugin",
-    "SQLAlchemySerializationPlugin",
-    "SQLAlchemySyncConfig",
-    "EngineConfig",
-)
+
+def __getattr__(attr_name: str) -> object:
+    from advanced_alchemy.extensions import litestar as aa  # pyright: ignore[reportMissingImports]
+
+    if attr_name in {
+        "AuditColumns",
+        "BigIntAuditBase",
+        "BigIntBase",
+        "BigIntPrimaryKey",
+        "CommonTableAttributes",
+        "UUIDAuditBase",
+        "UUIDBase",
+        "UUIDPrimaryKey",
+        "orm_registry",
+    }:
+        warn_deprecation(
+            deprecated_name=f"litestar.plugins.sqlalchemy.{attr_name}",
+            version="2.9.0",
+            kind="import",
+            removal_in="3.0",
+            info=f"importing {attr_name} from 'litestar.plugins.sqlalchemy' is deprecated, please"
+            f"import it from 'litestar.plugins.sqlalchemy.base.{attr_name}' instead",
+        )
+        value = globals()[attr_name] = getattr(aa.base, attr_name)
+        return value
+    if attr_name in aa.__all__:
+        value = globals()[attr_name] = getattr(aa, attr_name)
+        return value
+    raise AttributeError(f"module {__name__!r} has no attribute {attr_name!r}")

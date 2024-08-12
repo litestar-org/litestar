@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Callable, List, Optional, Type
+from typing import Any, Callable, List, Optional
 
 import httpx
 import pytest
@@ -75,29 +75,27 @@ def test_path_parsing_with_ambiguous_paths() -> None:
 
 
 @pytest.mark.parametrize(
-    "decorator, test_path, decorator_path, delete_handler",
+    "test_path, decorator_path, delete_handler",
     [
-        (get, "", "/something", None),
-        (get, "/", "/something", None),
-        (get, "", "/", None),
-        (get, "/", "/", None),
-        (get, "", "", None),
-        (get, "/", "", None),
-        (get, "", "/something", root_delete_handler),
-        (get, "/", "/something", root_delete_handler),
-        (get, "", "/", root_delete_handler),
-        (get, "/", "/", root_delete_handler),
-        (get, "", "", root_delete_handler),
-        (get, "/", "", root_delete_handler),
+        ("", "/something", None),
+        ("/", "/something", None),
+        ("", "/", None),
+        ("/", "/", None),
+        ("", "", None),
+        ("/", "", None),
+        ("", "/something", root_delete_handler),
+        ("/", "/something", root_delete_handler),
+        ("", "/", root_delete_handler),
+        ("/", "/", root_delete_handler),
+        ("", "", root_delete_handler),
+        ("/", "", root_delete_handler),
     ],
 )
-def test_root_route_handler(
-    decorator: Type[get], test_path: str, decorator_path: str, delete_handler: Optional[Callable]
-) -> None:
+def test_root_route_handler(test_path: str, decorator_path: str, delete_handler: Optional[Callable]) -> None:
     class MyController(Controller):
         path = test_path
 
-        @decorator(path=decorator_path)
+        @get(path=decorator_path)
         def test_method(self) -> str:
             return "hello"
 
@@ -350,7 +348,7 @@ from litestar.handlers import get
 from typing import Optional
 
 @get(path=["/", "/{path:path}"])
-async def pathfinder(path: Optional[Path]) -> str:
+async def pathfinder(path: Optional[Path] = None) -> str:
     return str(path)
 
 app = Litestar(route_handlers=[pathfinder], debug=True)
@@ -360,3 +358,51 @@ app = Litestar(route_handlers=[pathfinder], debug=True)
 
     assert httpx.get("http://127.0.0.1:9999/").text == "None"
     assert httpx.get("http://127.0.0.1:9999/something").text == "/something"
+
+
+@pytest.mark.parametrize(
+    "server_command",
+    [
+        pytest.param(["uvicorn", "app:app", "--port", "9999", "--root-path", "/test"], id="uvicorn"),
+        pytest.param(["hypercorn", "app:app", "--bind", "127.0.0.1:9999", "--root-path", "/test"], id="hypercorn"),
+        pytest.param(["daphne", "app:app", "--port", "9999", "--root-path", "/test"], id="daphne"),
+    ],
+)
+@pytest.mark.xdist_group("live_server_test")
+@pytest.mark.server_integration
+def test_no_path_traversal_from_static_directory(
+    tmp_path: Path, monkeypatch: MonkeyPatch, server_command: List[str], run_server: Callable[[str, List[str]], None]
+) -> None:
+    import http.client
+
+    static = tmp_path / "static"
+    static.mkdir()
+    (static / "index.html").write_text("Hello, World!")
+
+    app = """
+from pathlib import Path
+from litestar import Litestar
+from litestar.static_files import create_static_files_router
+import uvicorn
+
+app = Litestar(
+    route_handlers=[
+        create_static_files_router(path="/static", directories=["static"]),
+    ],
+)
+    """
+
+    def send_request(host: str, port: int, path: str) -> http.client.HTTPResponse:
+        connection = http.client.HTTPConnection(host, port)
+        connection.request("GET", path)
+        resp = connection.getresponse()
+        connection.close()
+        return resp
+
+    run_server(app, server_command)
+
+    response = send_request("127.0.0.1", 9999, "/static/index.html")
+    assert response.status == 200
+
+    response = send_request("127.0.0.1", 9999, "/static/../app.py")
+    assert response.status == 404

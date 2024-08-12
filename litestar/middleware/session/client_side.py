@@ -5,9 +5,9 @@ import contextlib
 import re
 import time
 from base64 import b64decode, b64encode
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, fields
 from os import urandom
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Any, Final, Literal, Mapping
 
 from litestar.datastructures import MutableScopeHeaders
 from litestar.datastructures.cookie import Cookie
@@ -38,12 +38,19 @@ if TYPE_CHECKING:
 NONCE_SIZE = 12
 CHUNK_SIZE = 4096 - 64
 AAD = b"additional_authenticated_data="
+SET_COOKIE_INCLUDE = {f.name for f in fields(Cookie) if f.name not in {"key", "secret"}}
+CLEAR_COOKIE_INCLUDE = {f.name for f in fields(Cookie) if f.name not in {"key", "secret", "max_age"}}
 
 
 class ClientSideSessionBackend(BaseSessionBackend["CookieBackendConfig"]):
     """Cookie backend for SessionMiddleware."""
 
-    __slots__ = ("aesgcm", "cookie_re")
+    __slots__ = (
+        "_clear_cookie_params",
+        "_set_cookie_params",
+        "aesgcm",
+        "cookie_re",
+    )
 
     def __init__(self, config: CookieBackendConfig) -> None:
         """Initialize ``ClientSideSessionBackend``.
@@ -54,6 +61,12 @@ class ClientSideSessionBackend(BaseSessionBackend["CookieBackendConfig"]):
         super().__init__(config)
         self.aesgcm = AESGCM(config.secret)
         self.cookie_re = re.compile(rf"{self.config.key}(?:-\d+)?")
+        self._set_cookie_params: Final[Mapping[str, Any]] = dict(
+            extract_dataclass_items(config, exclude_none=True, include=SET_COOKIE_INCLUDE)
+        )
+        self._clear_cookie_params: Final[Mapping[str, Any]] = dict(
+            extract_dataclass_items(config, exclude_none=True, include=CLEAR_COOKIE_INCLUDE)
+        )
 
     def dump_data(self, data: Any, scope: Scope | None = None) -> list[bytes]:
         """Given serializable data, including pydantic models and numpy types, dump it into a bytes string, encrypt,
@@ -107,19 +120,25 @@ class ClientSideSessionBackend(BaseSessionBackend["CookieBackendConfig"]):
         """
         return sorted(key for key in connection.cookies if self.cookie_re.fullmatch(key))
 
-    def _create_session_cookies(self, data: list[bytes], cookie_params: dict[str, Any] | None = None) -> list[Cookie]:
+    def get_cookie_key_set(self, connection: ASGIConnection) -> set[str]:
+        """Return a set of cookie-keys from the connection if they match the session-cookie pattern.
+
+        .. versionadded:: 2.8.3
+
+        Args:
+            connection: An ASGIConnection instance
+
+        Returns:
+            A set of session-cookie keys
+        """
+        return {key for key in connection.cookies if self.cookie_re.fullmatch(key)}
+
+    def _create_session_cookies(self, data: list[bytes]) -> list[Cookie]:
         """Create a list of cookies containing the session data.
         If the data is split into multiple cookies, the key will be of the format ``session-{segment number}``,
         however if only one cookie is needed, the key will be ``session``.
         """
-        if cookie_params is None:
-            cookie_params = dict(
-                extract_dataclass_items(
-                    self.config,
-                    exclude_none=True,
-                    include={f for f in Cookie.__dict__ if f not in ("key", "secret")},
-                )
-            )
+        cookie_params = self._set_cookie_params
 
         if len(data) == 1:
             return [
@@ -156,38 +175,23 @@ class ClientSideSessionBackend(BaseSessionBackend["CookieBackendConfig"]):
 
         scope = connection.scope
         headers = MutableScopeHeaders.from_message(message)
-        cookie_keys = self.get_cookie_keys(connection)
+        connection_cookies = self.get_cookie_key_set(connection)
+        response_cookies: set[str] = set()
 
         if scope_session and scope_session is not Empty:
             data = self.dump_data(scope_session, scope=scope)
-            cookie_params = dict(
-                extract_dataclass_items(
-                    self.config,
-                    exclude_none=True,
-                    include={f for f in Cookie.__dict__ if f not in ("key", "secret")},
-                )
-            )
-            for cookie in self._create_session_cookies(data, cookie_params):
+            for cookie in self._create_session_cookies(data):
                 headers.add("Set-Cookie", cookie.to_header(header=""))
-            # Cookies with the same key overwrite the earlier cookie with that key. To expire earlier session
-            # cookies, first check how many session cookies will not be overwritten in this upcoming response.
-            # If leftover cookies are greater than or equal to 1, that means older session cookies have to be
-            # expired and their names are in cookie_keys.
-            cookies_to_clear = cookie_keys[len(data) :] if len(cookie_keys) - len(data) > 0 else []
+                response_cookies.add(cookie.key)
+
+            cookies_to_clear = connection_cookies - response_cookies
         else:
-            cookies_to_clear = cookie_keys
+            cookies_to_clear = connection_cookies
 
         for cookie_key in cookies_to_clear:
-            cookie_params = dict(
-                extract_dataclass_items(
-                    self.config,
-                    exclude_none=True,
-                    include={f for f in Cookie.__dict__ if f not in ("key", "secret", "max_age")},
-                )
-            )
             headers.add(
                 "Set-Cookie",
-                Cookie(value="null", key=cookie_key, expires=0, **cookie_params).to_header(header=""),
+                Cookie(value="null", key=cookie_key, expires=0, **self._clear_cookie_params).to_header(header=""),
             )
 
     async def load_from_connection(self, connection: ASGIConnection) -> dict[str, Any]:

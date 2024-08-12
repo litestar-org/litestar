@@ -6,13 +6,13 @@ from datetime import date, datetime
 from typing import List
 from uuid import UUID
 
-from advanced_alchemy import SQLAlchemyAsyncRepository, SQLAlchemySyncRepository, base
-from advanced_alchemy.base import UUIDAuditBase, UUIDBase
+from advanced_alchemy import base
+from advanced_alchemy.repository import SQLAlchemyAsyncRepository, SQLAlchemySyncRepository
 from sqlalchemy import Column, FetchedValue, ForeignKey, String, Table, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
-class UUIDAuthor(UUIDAuditBase):
+class UUIDAuthor(base.UUIDAuditBase):
     """The UUIDAuthor domain object."""
 
     name: Mapped[str] = mapped_column(String(length=100))  # pyright: ignore
@@ -24,7 +24,7 @@ class UUIDAuthor(UUIDAuditBase):
     )
 
 
-class UUIDBook(UUIDBase):
+class UUIDBook(base.UUIDBase):
     """The Book domain object."""
 
     title: Mapped[str] = mapped_column(String(length=250))  # pyright: ignore
@@ -32,14 +32,14 @@ class UUIDBook(UUIDBase):
     author: Mapped[UUIDAuthor] = relationship(lazy="joined", innerjoin=True, back_populates="books")  # pyright: ignore
 
 
-class UUIDEventLog(UUIDAuditBase):
+class UUIDEventLog(base.UUIDAuditBase):
     """The event log domain object."""
 
     logged_at: Mapped[datetime] = mapped_column(default=datetime.now())  # pyright: ignore
     payload: Mapped[dict] = mapped_column(default={})  # pyright: ignore
 
 
-class UUIDModelWithFetchedValue(UUIDBase):
+class UUIDModelWithFetchedValue(base.UUIDBase):
     """The ModelWithFetchedValue UUIDBase."""
 
     val: Mapped[int]  # pyright: ignore
@@ -58,20 +58,20 @@ uuid_item_tag = Table(
 )
 
 
-class UUIDItem(UUIDBase):
+class UUIDItem(base.UUIDBase):
     name: Mapped[str] = mapped_column(String(length=50))  # pyright: ignore
     description: Mapped[str] = mapped_column(String(length=100), nullable=True)  # pyright: ignore
     tags: Mapped[List[UUIDTag]] = relationship(secondary=lambda: uuid_item_tag, back_populates="items")  # noqa
 
 
-class UUIDTag(UUIDAuditBase):
+class UUIDTag(base.UUIDAuditBase):
     """The event log domain object."""
 
     name: Mapped[str] = mapped_column(String(length=50))  # pyright: ignore
     items: Mapped[List[UUIDItem]] = relationship(secondary=lambda: uuid_item_tag, back_populates="tags")  # noqa
 
 
-class UUIDRule(UUIDAuditBase):
+class UUIDRule(base.UUIDAuditBase):
     """The rule domain object."""
 
     name: Mapped[str] = mapped_column(String(length=250))  # pyright: ignore

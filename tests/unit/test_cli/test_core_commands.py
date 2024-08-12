@@ -375,7 +375,7 @@ def test_run_command_arguments_precedence(
         if isinstance(env_value, list):
             monkeypatch.setenv(env_name, "".join(env_value))
         else:
-            monkeypatch.setenv(env_name, env_value)  # type: ignore[arg-type] # pyright: ignore (reportGeneralTypeIssues)
+            monkeypatch.setenv(env_name, str(env_value))
 
     if cli_name:
         if cli_value is True:
@@ -578,12 +578,12 @@ def test_run_command_with_server_lifespan_plugin(
             2,
             id="schema-disabled_exclude",
         ),
-        pytest.param(APP_FILE_CONTENT_ROUTES_EXAMPLE, True, (), 13, id="schema-enabled_no-exclude"),
+        pytest.param(APP_FILE_CONTENT_ROUTES_EXAMPLE, True, (), 7, id="schema-enabled_no-exclude"),
         pytest.param(
             APP_FILE_CONTENT_ROUTES_EXAMPLE,
             True,
             ("/foo", "/destroy/.*", "/java", "/haskell"),
-            12,
+            6,
             id="schema-enabled_exclude",
         ),
     ],
@@ -643,7 +643,7 @@ def test_remove_default_schema_routes() -> None:
         http_routes.append(http_route)
 
     api_config = MagicMock()
-    api_config.openapi_controller.path = "/schema"
+    api_config.openapi_router.path = "/schema"
 
     results = _utils.remove_default_schema_routes(http_routes, api_config)  # type: ignore[arg-type]
     assert len(results) == 3

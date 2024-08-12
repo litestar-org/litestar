@@ -27,6 +27,8 @@ from litestar.serialization import (
 
 from . import PydanticVersion
 
+TODAY = datetime.date.today()
+
 
 class CustomStr(str):
     pass
@@ -84,7 +86,7 @@ class ModelV1(pydantic_v1.BaseModel):
 
     constr: pydantic_v1.constr(min_length=1)  # type: ignore[valid-type]
     conbytes: pydantic_v1.conbytes(min_length=1)  # type: ignore[valid-type]
-    condate: pydantic_v1.condate(ge=datetime.date.today())  # type: ignore[valid-type]
+    condate: pydantic_v1.condate(ge=TODAY)  # type: ignore[valid-type]
     condecimal: pydantic_v1.condecimal(ge=Decimal("1"))  # type: ignore[valid-type]
     confloat: pydantic_v1.confloat(ge=0)  # type: ignore[valid-type]
 
@@ -112,7 +114,7 @@ class ModelV2(pydantic_v2.BaseModel):
 
     constr: pydantic_v2.constr(min_length=1)  # type: ignore[valid-type]
     conbytes: pydantic_v2.conbytes(min_length=1)  # type: ignore[valid-type]
-    condate: pydantic_v2.condate(ge=datetime.date.today())  # type: ignore[valid-type]
+    condate: pydantic_v2.condate(ge=TODAY)  # type: ignore[valid-type]
     condecimal: pydantic_v2.condecimal(ge=Decimal("1"))  # type: ignore[valid-type]
     confloat: pydantic_v2.confloat(ge=0)  # type: ignore[valid-type]
 
@@ -144,7 +146,7 @@ def model(pydantic_version: PydanticVersion) -> ModelV1 | ModelV2:
             payment_card_number=pydantic_v1.PaymentCardNumber("4000000000000002"),
             constr="hello",
             conbytes=b"hello",
-            condate=datetime.date.today(),
+            condate=TODAY,
             condecimal=Decimal("3.14"),
             confloat=1.0,
             conset={1},
@@ -165,7 +167,7 @@ def model(pydantic_version: PydanticVersion) -> ModelV1 | ModelV2:
         payment_card_number=pydantic_v2.PaymentCardNumber("4000000000000002"),
         constr="hello",
         conbytes=b"hello",
-        condate=datetime.date.today(),
+        condate=TODAY,
         condecimal=Decimal("3.14"),
         confloat=1.0,
         conset={1},
@@ -190,7 +192,7 @@ def model(pydantic_version: PydanticVersion) -> ModelV1 | ModelV2:
         ("payment_card_number", "4000000000000002"),
         ("constr", "hello"),
         ("conbytes", b"hello"),
-        ("condate", datetime.date.today().isoformat()),
+        ("condate", TODAY.isoformat()),
         ("condecimal", 3.14),
         ("conset", {1}),
         ("confrozenset", frozenset([1])),
