@@ -1818,6 +1818,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "Zimzozaur",
+      "name": "Simon Joseph",
+      "avatar_url": "https://avatars.githubusercontent.com/u/106471045?v=4",
+      "profile": "https://github.com/Zimzozaur",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
