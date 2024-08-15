@@ -821,7 +821,7 @@ class Litestar(Router):
         if not isinstance(handler_fn, StaticFiles):
             raise NoRouteMatchFoundException(f"Handler with name {name} is not a static files handler")
 
-        return join_paths([handler_index["paths"][0], file_path])  # type: ignore[unreachable]
+        return join_paths([handler_index["paths"][0], file_path])
 
     @property
     def route_handler_method_view(self) -> dict[str, list[str]]:

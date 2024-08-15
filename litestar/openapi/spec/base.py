@@ -26,7 +26,11 @@ def _normalize_value(value: Any) -> Any:
     if isinstance(value, BaseSchemaObject):
         return value.to_schema()
     if is_dataclass(value):
-        return {_normalize_value(k): _normalize_value(v) for k, v in asdict(value).items() if v is not None}
+        return {
+            _normalize_value(k): _normalize_value(v)
+            for k, v in asdict(value).items()  # type: ignore[call-overload]
+            if v is not None
+        }
     if isinstance(value, dict):
         return {_normalize_value(k): _normalize_value(v) for k, v in value.items() if v is not None}
     if isinstance(value, list):

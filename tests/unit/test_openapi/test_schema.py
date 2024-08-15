@@ -502,7 +502,7 @@ def test_process_schema_result_with_unregistered_object_schema() -> None:
 
 @pytest.mark.parametrize("base_type", [msgspec.Struct, TypedDict, dataclass])
 def test_type_union(base_type: type) -> None:
-    if base_type is dataclass:  # type: ignore[comparison-overlap]
+    if base_type is dataclass:
 
         @dataclass
         class ModelA:  # pyright: ignore
@@ -532,7 +532,7 @@ def test_type_union(base_type: type) -> None:
 @pytest.mark.parametrize("base_type", [msgspec.Struct, TypedDict, dataclass])
 def test_type_union_with_none(base_type: type) -> None:
     # https://github.com/litestar-org/litestar/issues/2971
-    if base_type is dataclass:  # type: ignore[comparison-overlap]
+    if base_type is dataclass:
 
         @dataclass
         class ModelA:  # pyright: ignore
