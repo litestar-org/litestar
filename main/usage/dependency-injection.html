@@ -1568,9 +1568,8 @@ the application:</p>
         <span class="n">local_dependency</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
 
-    <span class="c1"># on the router</span>
 
-
+<span class="c1"># on the router</span>
 <span class="n">my_router</span> <span class="o">=</span> <span class="n">Router</span><span class="p">(</span>
     <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/router&quot;</span><span class="p">,</span>
     <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;router_dependency&quot;</span><span class="p">:</span> <span class="n">Provide</span><span class="p">(</span><span class="n">dict_fn</span><span class="p">)},</span>
