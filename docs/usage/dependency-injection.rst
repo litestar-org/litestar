@@ -37,9 +37,8 @@ the application:
            local_dependency: int,
        ) -> None: ...
 
-       # on the router
 
-
+   # on the router
    my_router = Router(
        path="/router",
        dependencies={"router_dependency": Provide(dict_fn)},
