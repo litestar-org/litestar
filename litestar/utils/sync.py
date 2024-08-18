@@ -42,7 +42,7 @@ class AsyncCallable:
         self.func = fn
 
     def __call__(self, *args: P.args, **kwargs: P.kwargs) -> Awaitable[T]:  # pyright: ignore
-        return sync_to_thread(self.func, *args, **kwargs)  # pyright: ignore
+        return sync_to_thread(self.func, *args, **kwargs)  # type: ignore[arg-type]
 
 
 class AsyncIteratorWrapper(Generic[T]):

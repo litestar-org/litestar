@@ -202,7 +202,7 @@ declared in the route handler. Now, examine these more closely.
 * ``controller_param`` is a query param with the key ``controller_param``. It has an :paramref:`~.params.Parameter.lt`
   set to ``100`` defined on the controller, which means the provided value must be less than 100.
 
-  Yet the route handler re-declares it with an :paramref:`~.params.Parameter.lt` set to ``50``,
+  Yet the route handler redeclares it with an :paramref:`~.params.Parameter.lt` set to ``50``,
   which means for the route handler this value must be less than 50.
 * ``local_param`` is a route handler local :ref:`query parameter <usage/routing/parameters:query parameters>`, and
   ``path_param`` is a :ref:`path parameter <usage/routing/parameters:path parameters>`.

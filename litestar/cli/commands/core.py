@@ -100,8 +100,8 @@ def _run_uvicorn_in_subprocess(
         process_args["ssl-certfile"] = certfile_path
     if keyfile_path is not None:
         process_args["ssl-keyfile"] = keyfile_path
-    subprocess.run(
-        [sys.executable, "-m", "uvicorn", env.app_path, *_convert_uvicorn_args(process_args)],  # noqa: S603
+    subprocess.run(  # noqa: S603
+        [sys.executable, "-m", "uvicorn", env.app_path, *_convert_uvicorn_args(process_args)],
         check=True,
     )
 
