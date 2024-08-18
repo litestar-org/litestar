@@ -2014,7 +2014,7 @@ route handler - and in this case it is.</p>
 </li>
 <li><p><code class="docutils literal notranslate"><span class="pre">controller_param</span></code> is a query param with the key <code class="docutils literal notranslate"><span class="pre">controller_param</span></code>. It has an <a class="reference internal" href="../../reference/params.html#litestar.params.Parameter.params.lt" title="litestar.params.Parameter"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">lt</span></code></a>
 set to <code class="docutils literal notranslate"><span class="pre">100</span></code> defined on the controller, which means the provided value must be less than 100.</p>
-<p>Yet the route handler re-declares it with an <a class="reference internal" href="../../reference/params.html#litestar.params.Parameter.params.lt" title="litestar.params.Parameter"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">lt</span></code></a> set to <code class="docutils literal notranslate"><span class="pre">50</span></code>,
+<p>Yet the route handler redeclares it with an <a class="reference internal" href="../../reference/params.html#litestar.params.Parameter.params.lt" title="litestar.params.Parameter"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">lt</span></code></a> set to <code class="docutils literal notranslate"><span class="pre">50</span></code>,
 which means for the route handler this value must be less than 50.</p>
 </li>
 <li><p><code class="docutils literal notranslate"><span class="pre">local_param</span></code> is a route handler local <a class="reference internal" href="#query-parameters"><span class="std std-ref">query parameter</span></a>, and
