@@ -60,8 +60,8 @@ def test_open_telemetry_middleware_with_http_route() -> None:
         assert reader.get_metrics_data()
 
         first_span, second_span, third_span = cast("Tuple[Span, Span, Span]", exporter.get_finished_spans())
-        assert dict(first_span.attributes) == {"http.status_code": 200, "type": "http.response.start"}  # type: ignore[arg-type]
-        assert dict(second_span.attributes) == {"type": "http.response.body"}  # type: ignore[arg-type]
+        assert dict(first_span.attributes) == {"http.status_code": 200, "asgi.event.type": "http.response.start"}  # type: ignore[arg-type]
+        assert dict(second_span.attributes) == {"asgi.event.type": "http.response.body"}  # type: ignore[arg-type]
         assert dict(third_span.attributes) == {  # type: ignore[arg-type]
             "http.scheme": "http",
             "http.host": "testserver.local",
@@ -107,10 +107,10 @@ def test_open_telemetry_middleware_with_websocket_route() -> None:
         first_span, second_span, third_span, fourth_span, fifth_span = cast(
             "Tuple[Span, Span, Span, Span, Span]", exporter.get_finished_spans()
         )
-        assert dict(first_span.attributes) == {"type": "websocket.connect"}  # type: ignore[arg-type]
-        assert dict(second_span.attributes) == {"type": "websocket.accept"}  # type: ignore[arg-type]
-        assert dict(third_span.attributes) == {"http.status_code": 200, "type": "websocket.send"}  # type: ignore[arg-type]
-        assert dict(fourth_span.attributes) == {"type": "websocket.close"}  # type: ignore[arg-type]
+        assert dict(first_span.attributes) == {"asgi.event.type": "websocket.connect"}  # type: ignore[arg-type]
+        assert dict(second_span.attributes) == {"asgi.event.type": "websocket.accept"}  # type: ignore[arg-type]
+        assert dict(third_span.attributes) == {"asgi.event.type": "websocket.send", "http.status_code": 200}  # type: ignore[arg-type]
+        assert dict(fourth_span.attributes) == {"asgi.event.type": "websocket.close"}  # type: ignore[arg-type]
         assert dict(fifth_span.attributes) == {  # type: ignore[arg-type]
             "http.scheme": "ws",
             "http.host": "testserver.local",
