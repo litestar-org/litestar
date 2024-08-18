@@ -92,7 +92,7 @@ picologging = ["picologging"]
 prometheus = ["prometheus-client"]
 pydantic = ["pydantic", "email-validator", "pydantic-extra-types"]
 redis = ["redis[hiredis]>=4.4.4"]
-sqlalchemy = ["advanced-alchemy>=0.2.2"]
+sqlalchemy = ["advanced-alchemy>=0.2.2,<=0.17.1"]
 standard = ["jinja2", "jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0; sys_platform != 'win32'", "fast-query-parsers>=1.0.2"]
 structlog = ["structlog"]
 
@@ -136,7 +136,7 @@ dev = [
   "trio",
   "aiosqlite",
   "asyncpg>=0.29.0",
-  "psycopg[pool,binary]>=3.1.10",
+  "psycopg[pool,binary]>=3.1.10,<3.2",
   "psycopg2-binary",
   "psutil>=5.9.8",
   "hypercorn>=0.16.0",
