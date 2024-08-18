@@ -341,12 +341,12 @@ def _get_gh_token() -> str:
 
 def _get_latest_tag() -> str:
     click.secho("Using latest tag", fg="blue")
-    return subprocess.run(
+    return subprocess.run(  # noqa: S602
         "git tag --sort=taggerdate | tail -1",
         check=True,
         capture_output=True,
         text=True,
-        shell=True,  # noqa: S602
+        shell=True,
     ).stdout.strip()
 
 

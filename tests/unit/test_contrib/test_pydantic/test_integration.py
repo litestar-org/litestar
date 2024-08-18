@@ -335,7 +335,7 @@ def test_dto_with_non_instantiable_types(base_model: BaseModelType, type_: Any, 
 )
 def test_params_with_v1_and_v2_models(plugin_params: dict, response: dict) -> None:
     class ModelV1(pydantic_v1.BaseModel):  # pyright: ignore
-        alias: str = pydantic_v1.fields.Field(alias="prefer_alias")
+        alias: str = pydantic_v1.fields.Field(alias="prefer_alias")  # pyright: ignore
         default: str = "default"
         none: None = None
 

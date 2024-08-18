@@ -13,7 +13,7 @@ __all__ = ("MsgspecDIPlugin",)
 
 class MsgspecDIPlugin(DIPlugin):
     def has_typed_init(self, type_: Any) -> bool:
-        return type(type_) is type(msgspec.Struct)  # noqa: E721
+        return type(type_) is type(msgspec.Struct)
 
     def get_typed_init(self, type_: Any) -> tuple[Signature, dict[str, Any]]:
         parameters = []
