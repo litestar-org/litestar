@@ -573,6 +573,7 @@ see [the contribution guide](CONTRIBUTING.rst).
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Anu-cool-007"><img src="https://avatars.githubusercontent.com/u/16525919?v=4?s=100" width="100px;" alt="Anuranjan Srivastava"/><br /><sub><b>Anuranjan Srivastava</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=Anu-cool-007" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Zimzozaur"><img src="https://avatars.githubusercontent.com/u/106471045?v=4?s=100" width="100px;" alt="Simon Joseph"/><br /><sub><b>Simon Joseph</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=Zimzozaur" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/abelkm99"><img src="https://avatars.githubusercontent.com/u/41730180?v=4?s=100" width="100px;" alt="Abel Kidanemariam"/><br /><sub><b>Abel Kidanemariam</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=abelkm99" title="Code">💻</a> <a href="https://github.com/litestar-org/litestar/commits?author=abelkm99" title="Tests">⚠️</a> <a href="https://github.com/litestar-org/litestar/commits?author=abelkm99" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>
