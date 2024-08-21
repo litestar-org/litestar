@@ -15,6 +15,7 @@ from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanE
 from litestar import WebSocket, get, websocket
 from litestar.contrib.opentelemetry import OpenTelemetryConfig
 from litestar.exceptions import http_exceptions
+from litestar.plugins.opentelemetry import OpenTelemetryPlugin
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 from litestar.types.asgi_types import ASGIApp, Receive, Scope, Send
@@ -93,6 +94,37 @@ def test_open_telemetry_middleware_with_http_route() -> None:
         assert len(list(request_metric.data.data_points)) == 1
 
 
+def test_open_telemetry_middleware_with_http_route_using_plugin_only() -> None:
+    config, reader, exporter = create_config()
+
+    @get("/")
+    def handler() -> dict:
+        return {"hello": "world"}
+
+    with create_test_client(handler, plugins=[OpenTelemetryPlugin(config)]) as client:
+        response = client.get("/")
+        assert response.status_code == HTTP_200_OK
+
+        first_span, second_span, third_span = cast("Tuple[Span, Span, Span]", exporter.get_finished_spans())
+        assert dict(first_span.attributes) == {"http.status_code": 200, "asgi.event.type": "http.response.start"}  # type: ignore[arg-type]
+        assert dict(second_span.attributes) == {"asgi.event.type": "http.response.body"}  # type: ignore[arg-type]
+        assert dict(third_span.attributes) == {  # type: ignore[arg-type]
+            "http.scheme": "http",
+            "http.host": "testserver.local",
+            "net.host.port": 80,
+            "http.flavor": "1.1",
+            "http.target": "/",
+            "http.url": "http://testserver.local/",
+            "http.method": "GET",
+            "http.server_name": "testserver.local",
+            "http.user_agent": "testclient",
+            "net.peer.ip": "testclient",
+            "net.peer.port": 50000,
+            "http.route": "GET /",
+            "http.status_code": 200,
+        }
+
+
 def test_open_telemetry_middleware_with_websocket_route() -> None:
     config, reader, exporter = create_config()
 
@@ -129,13 +161,14 @@ def test_open_telemetry_middleware_with_websocket_route() -> None:
 
 
 def test_open_telemetry_middleware_handles_route_not_found_under_span_http() -> None:
+    # if we want it to get the desired outcome we have to pass the OpenTelemetryPlugin
     config, _, exporter = create_config()
 
     @get("/")
     def handler() -> dict:
         raise Exception("random Exception")
 
-    with create_test_client(handler, middleware=[config.middleware]) as client:
+    with create_test_client(handler, middleware=[config.middleware], plugins=[OpenTelemetryPlugin()]) as client:
         response = client.get("/route_that_does_not_exist")
         assert response.status_code
 
@@ -169,7 +202,7 @@ def test_open_telemetry_middleware_handles_method_not_allowed_under_span_http() 
     def handler() -> dict:
         raise Exception("random Exception")
 
-    with create_test_client(handler, middleware=[config.middleware]) as client:
+    with create_test_client(handler, middleware=[config.middleware], plugins=[OpenTelemetryPlugin()]) as client:
         response = client.post("/")
         assert response.status_code
 
@@ -213,7 +246,9 @@ def test_open_telemetry_middleware_handles_errors_caused_on_middleware() -> None
     def handler() -> dict:
         raise Exception("random Exception")
 
-    with create_test_client(handler, middleware=[middleware_factory, config.middleware]) as client:
+    with create_test_client(
+        handler, middleware=[middleware_factory, config.middleware], plugins=[OpenTelemetryPlugin()]
+    ) as client:
         response = client.get("/")
         assert response.status_code
 

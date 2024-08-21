@@ -24,7 +24,6 @@ from litestar.config.allowed_hosts import AllowedHostsConfig
 from litestar.config.app import AppConfig, ExperimentalFeatures
 from litestar.config.response_cache import ResponseCacheConfig
 from litestar.connection import Request, WebSocket
-from litestar.contrib.opentelemetry import OpenTelemetryInstrumentationMiddleware
 from litestar.datastructures.state import State
 from litestar.events.emitter import BaseEventEmitterBackend, SimpleEventEmitter
 from litestar.exceptions import (
@@ -34,7 +33,6 @@ from litestar.exceptions import (
 )
 from litestar.logging.config import LoggingConfig, get_logger_placeholder
 from litestar.middleware._internal.cors import CORSMiddleware
-from litestar.middleware.base import DefineMiddleware
 from litestar.openapi.config import OpenAPIConfig
 from litestar.plugins import (
     CLIPluginProtocol,
@@ -66,6 +64,7 @@ if TYPE_CHECKING:
     from litestar.dto import AbstractDTO
     from litestar.events.listener import EventListener
     from litestar.logging.config import BaseLoggingConfig
+    from litestar.middleware.base import DefineMiddleware
     from litestar.openapi.spec import SecurityRequirement
     from litestar.openapi.spec.open_api import OpenAPI
     from litestar.response import Response
@@ -223,6 +222,7 @@ class Litestar(Router):
         | None = None,
         pdb_on_exception: bool | None = None,
         experimental_features: Iterable[ExperimentalFeatures] | None = None,
+        otel: DefineMiddleware | None = None,
     ) -> None:
         """Initialize a ``Litestar`` application.
 
@@ -318,6 +318,7 @@ class Litestar(Router):
             websocket_class: An optional subclass of :class:`WebSocket <.connection.WebSocket>` to use for websocket
                 connections.
             experimental_features: An iterable of experimental features to enable
+            otel: OpenTelemetry middleware to use for the application.
         """
 
         if logging_config is Empty:
@@ -380,6 +381,7 @@ class Litestar(Router):
             type_decoders=type_decoders,
             websocket_class=websocket_class,
             experimental_features=list(experimental_features or []),
+            otel=otel,
         )
 
         config.plugins.extend([OpenAPIPlugin(self), *openapi_schema_plugins])
@@ -436,7 +438,7 @@ class Litestar(Router):
         self.debug = config.debug
         self.pdb_on_exception: bool = config.pdb_on_exception
         self.include_in_schema = include_in_schema
-        self.otel: DefineMiddleware | None = self._get_otel_middleware(config.middleware)
+        self.otel = config.otel
 
         if self.pdb_on_exception:
             warn_pdb_on_exception()
@@ -851,20 +853,6 @@ class Litestar(Router):
             asgi_handler = self.otel.middleware(app=asgi_handler, **self.otel.kwargs)
 
         return asgi_handler
-
-    @staticmethod
-    def _get_otel_middleware(middlewares: list[Middleware]) -> DefineMiddleware | None:
-        """Get the OpenTelemetry middleware if it is enabled in the application.
-        Remove the middleware from the list of middlewares if it is found.
-        """
-        for middleware in middlewares:
-            if (
-                isinstance(middleware, DefineMiddleware)
-                and middleware.middleware == OpenTelemetryInstrumentationMiddleware
-            ):
-                middlewares.remove(middleware)
-                return middleware
-        return None
 
     def _wrap_send(self, send: Send, scope: Scope) -> Send:
         """Wrap the ASGI send and handles any 'before send' hooks.

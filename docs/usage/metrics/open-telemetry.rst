@@ -23,10 +23,11 @@ the Litestar constructor:
 
    from litestar import Litestar
    from litestar.contrib.opentelemetry import OpenTelemetryConfig
+   from litestar.plugins.opentelemetry import OpenTelemetryPlugin
 
    open_telemetry_config = OpenTelemetryConfig()
 
-   app = Litestar(middleware=[open_telemetry_config.middleware])
+   app = Litestar(plugins=[OpenTelemetryPlugin(open_telemetry_config)])
 
 The above example will work out of the box if you configure a global ``tracer_provider`` and/or ``metric_provider`` and an
 exporter to use these (see the
