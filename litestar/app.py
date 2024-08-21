@@ -24,6 +24,7 @@ from litestar.config.allowed_hosts import AllowedHostsConfig
 from litestar.config.app import AppConfig, ExperimentalFeatures
 from litestar.config.response_cache import ResponseCacheConfig
 from litestar.connection import Request, WebSocket
+from litestar.contrib.opentelemetry import OpenTelemetryInstrumentationMiddleware
 from litestar.datastructures.state import State
 from litestar.events.emitter import BaseEventEmitterBackend, SimpleEventEmitter
 from litestar.exceptions import (
@@ -33,6 +34,7 @@ from litestar.exceptions import (
 )
 from litestar.logging.config import LoggingConfig, get_logger_placeholder
 from litestar.middleware._internal.cors import CORSMiddleware
+from litestar.middleware.base import DefineMiddleware
 from litestar.openapi.config import OpenAPIConfig
 from litestar.plugins import (
     CLIPluginProtocol,
@@ -101,7 +103,6 @@ if TYPE_CHECKING:
     )
     from litestar.types.callable_types import LifespanHook
 
-
 __all__ = ("HandlerIndex", "Litestar", "DEFAULT_OPENAPI_CONFIG")
 
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Litestar API", version="1.0.0")
@@ -164,6 +165,7 @@ class Litestar(Router):
         "template_engine",
         "pdb_on_exception",
         "experimental_features",
+        "otel",
     )
 
     def __init__(
@@ -434,6 +436,7 @@ class Litestar(Router):
         self.debug = config.debug
         self.pdb_on_exception: bool = config.pdb_on_exception
         self.include_in_schema = include_in_schema
+        self.otel: DefineMiddleware | None = self._get_otel_middleware(config.middleware)
 
         if self.pdb_on_exception:
             warn_pdb_on_exception()
@@ -446,7 +449,6 @@ class Litestar(Router):
             config.exception_handlers.setdefault(StarletteHTTPException, _starlette_exception_handler)
         except ImportError:
             pass
-
         super().__init__(
             after_request=config.after_request,
             after_response=config.after_response,
@@ -843,9 +845,26 @@ class Litestar(Router):
         asgi_handler = wrap_in_exception_handler(app=self.asgi_router)
 
         if self.cors_config:
-            return CORSMiddleware(app=asgi_handler, config=self.cors_config)
+            asgi_handler = CORSMiddleware(app=asgi_handler, config=self.cors_config)
+
+        if self.otel:
+            asgi_handler = self.otel.middleware(app=asgi_handler, **self.otel.kwargs)
 
         return asgi_handler
+
+    @staticmethod
+    def _get_otel_middleware(middlewares: list[Middleware]) -> DefineMiddleware | None:
+        """Get the OpenTelemetry middleware if it is enabled in the application.
+        Remove the middleware from the list of middlewares if it is found.
+        """
+        for middleware in middlewares:
+            if (
+                isinstance(middleware, DefineMiddleware)
+                and middleware.middleware == OpenTelemetryInstrumentationMiddleware
+            ):
+                middlewares.remove(middleware)
+                return middleware
+        return None
 
     def _wrap_send(self, send: Send, scope: Scope) -> Send:
         """Wrap the ASGI send and handles any 'before send' hooks.
