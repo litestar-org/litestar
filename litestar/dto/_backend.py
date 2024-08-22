@@ -232,9 +232,9 @@ class DTOBackend:
         type_decoders = asgi_connection.route_handler.resolve_type_decoders()
 
         if request_encoding == RequestEncodingType.MESSAGEPACK:
-            result = decode_msgpack(value=raw, target_type=self.annotation, type_decoders=type_decoders)
+            result = decode_msgpack(value=raw, target_type=self.annotation, type_decoders=type_decoders, strict=False)
         else:
-            result = decode_json(value=raw, target_type=self.annotation, type_decoders=type_decoders)
+            result = decode_json(value=raw, target_type=self.annotation, type_decoders=type_decoders, strict=False)
 
         return cast("Struct | Collection[Struct]", result)
 
