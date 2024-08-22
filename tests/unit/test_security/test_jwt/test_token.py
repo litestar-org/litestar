@@ -8,7 +8,7 @@ from uuid import uuid4
 import pytest
 from hypothesis import given
 from hypothesis.strategies import datetimes
-from jose import jwt
+import jwt
 
 from litestar.exceptions import ImproperlyConfiguredException, NotAuthorizedException
 from litestar.security.jwt import Token
@@ -150,7 +150,7 @@ def test_extra_fields() -> None:
         "exp": (datetime.now(timezone.utc) + timedelta(seconds=30)),
     }
     token_secret = secrets.token_hex()
-    encoded_token = jwt.encode(claims=raw_token, key=token_secret, algorithm="HS256")
+    encoded_token = jwt.encode(payload=raw_token, key=token_secret, algorithm="HS256")
     token = Token.decode(encoded_token=encoded_token, secret=token_secret, algorithm="HS256")
     assert "azp" in token.extras
     assert "email" in token.extras
@@ -161,6 +161,6 @@ def test_extra_fields() -> None:
         "exp": (datetime.now(timezone.utc) + timedelta(seconds=30)),
     }
     token_secret = secrets.token_hex()
-    encoded_token = jwt.encode(claims=raw_token, key=token_secret, algorithm="HS256")
+    encoded_token = jwt.encode(payload=raw_token, key=token_secret, algorithm="HS256")
     token = Token.decode(encoded_token=encoded_token, secret=token_secret, algorithm="HS256")
     assert token.extras == {}
