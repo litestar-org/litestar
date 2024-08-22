@@ -5,10 +5,10 @@ from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, Optional
 from uuid import uuid4
 
+import jwt
 import pytest
 from hypothesis import given
 from hypothesis.strategies import datetimes
-import jwt
 
 from litestar.exceptions import ImproperlyConfiguredException, NotAuthorizedException
 from litestar.security.jwt import Token
