@@ -132,6 +132,7 @@ class BaseScope(HeaderScope):
     http_version: str
     path: str
     path_params: dict[str, str]
+    path_template: str
     query_string: bytes
     raw_path: bytes
     root_path: str

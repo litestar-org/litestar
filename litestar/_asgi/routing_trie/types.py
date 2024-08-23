@@ -38,6 +38,7 @@ class RouteTrieNode:
         "is_path_param_node",
         "is_path_type",
         "path_parameters",
+        "path_template",
     )
 
     asgi_handlers: dict[Method | Literal["websocket", "asgi"], ASGIHandlerTuple]
@@ -63,9 +64,11 @@ class RouteTrieNode:
 
     This is used for parsing extracted path parameter values.
     """
+    path_template: str
+    """The path template string used to lower prometheus cardinality when group_path enabled"""
 
 
-def create_node() -> RouteTrieNode:
+def create_node(path_template: str = "") -> RouteTrieNode:
     """Create a RouteMapNode instance.
 
     Returns:
@@ -82,4 +85,5 @@ def create_node() -> RouteTrieNode:
         is_static=False,
         is_path_type=False,
         path_parameters={},
+        path_template=path_template,
     )

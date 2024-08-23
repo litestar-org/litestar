@@ -117,15 +117,7 @@ class PrometheusMiddleware(AbstractMiddleware):
 
         path = request.url.path
         if self._config.group_path:
-            path_parts = path.split("/")[1:]
-            path = ""
-            for path_parameter, path_parameter_value in request.scope.get("path_params", {}).items():
-                for path_part in path_parts:
-                    path_parameter_value = str(path_parameter_value)
-                    if path_part == path_parameter_value:
-                        path += f"/{{{path_parameter}}}"
-                    else:
-                        path += f"/{path_part}"
+            path = request.scope["path_template"]
         return {
             "method": request.method if request.scope["type"] == ScopeType.HTTP else request.scope["type"],
             "path": path,

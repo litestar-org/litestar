@@ -42,10 +42,10 @@ def test_prometheus_exporter_metrics_with_http() -> None:
     ) as client:
         client.get("/error")
         client.get("/duration")
-        metrix_exporter_response = client.get("/metrics")
+        metrics_exporter_response = client.get("/metrics")
 
-        assert metrix_exporter_response.status_code == HTTP_200_OK
-        metrics = metrix_exporter_response.content.decode()
+        assert metrics_exporter_response.status_code == HTTP_200_OK
+        metrics = metrics_exporter_response.content.decode()
 
         assert (
             """litestar_request_duration_seconds_sum{app_name="litestar",method="GET",path="/duration",status_code="200"}"""
@@ -121,10 +121,10 @@ def test_prometheus_middleware_configurations() -> None:
     with create_test_client([test, ignore, PrometheusController], middleware=[config.middleware]) as client:
         client.get("/test")
         client.post("/ignore")
-        metrix_exporter_response = client.get("/metrics")
+        metrics_exporter_response = client.get("/metrics")
 
-        assert metrix_exporter_response.status_code == HTTP_200_OK
-        metrics = metrix_exporter_response.content.decode()
+        assert metrics_exporter_response.status_code == HTTP_200_OK
+        metrics = metrics_exporter_response.content.decode()
 
         assert (
             """litestar_rocks_requests_total{app_name="litestar_test",baz="qux",foo="bar",method="GET",path="/test",status_code="200"} 1.0"""
@@ -168,10 +168,10 @@ def test_prometheus_controller_configurations() -> None:
     with create_test_client([test, CustomPrometheusController], middleware=[config.middleware]) as client:
         client.get("/test")
 
-        metrix_exporter_response = client.get("/metrics/custom")
+        metrics_exporter_response = client.get("/metrics/custom")
 
-        assert metrix_exporter_response.status_code == HTTP_200_OK
-        metrics = metrix_exporter_response.content.decode()
+        assert metrics_exporter_response.status_code == HTTP_200_OK
+        metrics = metrics_exporter_response.content.decode()
 
         assert (
             """litestar_requests_total{app_name="litestar",method="GET",path="/test",status_code="200"} 1.0 # {trace_id="1234"} 1.0"""
@@ -191,10 +191,10 @@ def test_prometheus_with_websocket() -> None:
             websocket.send_text("litestar")
             websocket.receive_json()
 
-        metrix_exporter_response = client.get("/metrics")
+        metrics_exporter_response = client.get("/metrics")
 
-        assert metrix_exporter_response.status_code == HTTP_200_OK
-        metrics = metrix_exporter_response.content.decode()
+        assert metrics_exporter_response.status_code == HTTP_200_OK
+        metrics = metrics_exporter_response.content.decode()
 
         assert (
             """litestar_requests_total{app_name="litestar",method="websocket",path="/test",status_code="200"} 1.0"""

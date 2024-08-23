@@ -188,6 +188,7 @@ class RequestFactory:
             route_handler=route_handler
             or _create_default_route_handler(http_method, self.handler_kwargs, app=self.app),
             extensions={},
+            path_template="",
         )
 
     @classmethod
