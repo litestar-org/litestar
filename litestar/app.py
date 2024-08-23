@@ -60,13 +60,13 @@ if TYPE_CHECKING:
     from litestar.config.compression import CompressionConfig
     from litestar.config.cors import CORSConfig
     from litestar.config.csrf import CSRFConfig
+    from litestar.contrib.opentelemetry import OpenTelemetryPlugin
     from litestar.datastructures import CacheControlHeader, ETag
     from litestar.dto import AbstractDTO
     from litestar.events.listener import EventListener
     from litestar.logging.config import BaseLoggingConfig
     from litestar.openapi.spec import SecurityRequirement
     from litestar.openapi.spec.open_api import OpenAPI
-    from litestar.plugins.opentelemetry import OpenTelemetryPlugin
     from litestar.response import Response
     from litestar.static_files.config import StaticFilesConfig
     from litestar.stores.base import Store
@@ -501,7 +501,7 @@ class Litestar(Router):
         # workaround to support otel middleware priority. Should be replaced by regular
         # middleware priorities once available
         try:
-            from litestar.plugins.opentelemetry import OpenTelemetryPlugin
+            from litestar.contrib.opentelemetry import OpenTelemetryPlugin
 
             if not any(isinstance(p, OpenTelemetryPlugin) for p in config.plugins):
                 config.middleware, otel_middleware = OpenTelemetryPlugin.pop_otel_middleware(config.middleware)

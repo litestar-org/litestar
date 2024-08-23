@@ -16,9 +16,8 @@ from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanE
 
 from litestar import WebSocket, get, websocket
 from litestar.config.app import AppConfig
-from litestar.contrib.opentelemetry import OpenTelemetryConfig
+from litestar.contrib.opentelemetry import OpenTelemetryConfig, OpenTelemetryPlugin
 from litestar.exceptions import http_exceptions
-from litestar.plugins.opentelemetry import OpenTelemetryPlugin
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 from litestar.types.asgi_types import ASGIApp, Receive, Scope, Send
