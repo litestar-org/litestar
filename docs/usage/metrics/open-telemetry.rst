@@ -22,8 +22,7 @@ the Litestar constructor:
 .. code-block:: python
 
    from litestar import Litestar
-   from litestar.contrib.opentelemetry import OpenTelemetryConfig
-   from litestar.plugins.opentelemetry import OpenTelemetryPlugin
+   from litestar.contrib.opentelemetry import OpenTelemetryConfig, OpenTelemetryPlugin
 
    open_telemetry_config = OpenTelemetryConfig()
 

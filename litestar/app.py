@@ -165,7 +165,6 @@ class Litestar(Router):
         "template_engine",
         "pdb_on_exception",
         "experimental_features",
-        "otel",
     )
 
     def __init__(
@@ -318,7 +317,6 @@ class Litestar(Router):
             websocket_class: An optional subclass of :class:`WebSocket <.connection.WebSocket>` to use for websocket
                 connections.
             experimental_features: An iterable of experimental features to enable
-            otel: OpenTelemetry middleware to use for the application.
         """
 
         if logging_config is Empty:
