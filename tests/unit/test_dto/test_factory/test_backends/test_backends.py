@@ -41,6 +41,7 @@ class DC:
     nested: NestedDC
     nested_list: List[NestedDC]
     nested_mapping: Dict[str, NestedDC]
+    integer: int
     b: str = field(default="b")
     c: List[int] = field(default_factory=list)
     optional: Optional[str] = None
@@ -53,10 +54,12 @@ DESTRUCTURED = {
     "nested": {"a": 1, "b": "two"},
     "nested_list": [{"a": 1, "b": "two"}],
     "nested_mapping": {"a": {"a": 1, "b": "two"}},
+    "integer": 1,
     "optional": None,
 }
-RAW = b'{"a":1,"nested":{"a":1,"b":"two"},"nested_list":[{"a":1,"b":"two"}],"nested_mapping":{"a":{"a":1,"b":"two"}},"b":"b","c":[],"optional":null}'
-COLLECTION_RAW = b'[{"a":1,"nested":{"a":1,"b":"two"},"nested_list":[{"a":1,"b":"two"}],"nested_mapping":{"a":{"a":1,"b":"two"}},"b":"b","c":[],"optional":null}]'
+RAW = b'{"a":1,"nested":{"a":1,"b":"two"},"nested_list":[{"a":1,"b":"two"}],"nested_mapping":{"a":{"a":1,"b":"two"}},"integer":1,"b":"b","c":[],"optional":null}'
+MSGPACK_RAW = b"\x88\xa1a\x01\xa6nested\x82\xa1a\x01\xa1b\xa3two\xabnested_list\x91\x82\xa1a\x01\xa1b\xa3two\xaenested_mapping\x81\xa1a\x82\xa1a\x01\xa1b\xa3two\xa7integer\x01\xa1b\xa1b\xa1c\x90\xa8optional\xc0"
+COLLECTION_RAW = b'[{"a":1,"nested":{"a":1,"b":"two"},"nested_list":[{"a":1,"b":"two"}],"nested_mapping":{"a":{"a":1,"b":"two"}},"integer":1,"b":"b","c":[],"optional":null}]'
 STRUCTURED = DC(
     a=1,
     b="b",
@@ -65,6 +68,7 @@ STRUCTURED = DC(
     nested_list=[NestedDC(a=1, b="two")],
     nested_mapping={"a": NestedDC(a=1, b="two")},
     optional=None,
+    integer=1,
 )
 
 
@@ -97,10 +101,7 @@ def test_backend_parse_raw_json(
                 wrapper_attribute_name=None,
                 is_data_field=True,
                 handler_id="test",
-            ).parse_raw(
-                b'{"a":1,"nested":{"a":1,"b":"two"},"nested_list":[{"a":1,"b":"two"}],"nested_mapping":{"a":{"a":1,"b":"two"}}}',
-                asgi_connection,
-            )
+            ).parse_raw(RAW, asgi_connection)
         )
         == DESTRUCTURED
     )
@@ -122,10 +123,7 @@ def test_backend_parse_raw_msgpack(dto_factory: type[DataclassDTO], backend_cls:
                 wrapper_attribute_name=None,
                 is_data_field=True,
                 handler_id="test",
-            ).parse_raw(
-                b"\x87\xa1a\x01\xa6nested\x82\xa1a\x01\xa1b\xa3two\xabnested_list\x91\x82\xa1a\x01\xa1b\xa3two\xaenested_mapping\x81\xa1a\x82\xa1a\x01\xa1b\xa3two\xa1b\xa1b\xa1c\x90\xa8optional\xc0",
-                asgi_connection,
-            )
+            ).parse_raw(MSGPACK_RAW, asgi_connection)
         )
         == DESTRUCTURED
     )
