@@ -502,7 +502,7 @@ class Litestar(Router):
             from litestar.contrib.opentelemetry import OpenTelemetryPlugin
 
             if not any(isinstance(p, OpenTelemetryPlugin) for p in config.plugins):
-                config.middleware, otel_middleware = OpenTelemetryPlugin.pop_otel_middleware(config.middleware)
+                config.middleware, otel_middleware = OpenTelemetryPlugin._pop_otel_middleware(config.middleware)
                 if otel_middleware:
                     otel_plugin = OpenTelemetryPlugin()
                     otel_plugin._middleware = otel_middleware
