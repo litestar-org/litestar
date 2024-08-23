@@ -165,7 +165,7 @@ class RequestFactory:
 
         if path_params is None:
             path_params = {}
-        a = 1
+
         return HTTPScope(
             type=ScopeType.HTTP,
             method=http_method.value,
