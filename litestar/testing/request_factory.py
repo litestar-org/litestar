@@ -165,7 +165,7 @@ class RequestFactory:
 
         if path_params is None:
             path_params = {}
-
+        a = 1
         return HTTPScope(
             type=ScopeType.HTTP,
             method=http_method.value,
@@ -188,6 +188,7 @@ class RequestFactory:
             route_handler=route_handler
             or _create_default_route_handler(http_method, self.handler_kwargs, app=self.app),
             extensions={},
+            path_template="",
         )
 
     @classmethod

@@ -87,7 +87,7 @@ class ASGIRouter:
         normalized_path = normalize_path(path)
 
         try:
-            asgi_app, route_handler, scope["path"], scope["path_params"] = self.handle_routing(
+            asgi_app, route_handler, scope["path"], scope["path_params"], path_template = self.handle_routing(
                 path=normalized_path, method=scope.get("method")
             )
         except Exception:
@@ -96,10 +96,11 @@ class ASGIRouter:
         else:
             ScopeState.from_scope(scope).exception_handlers = route_handler.resolve_exception_handlers()
             scope["route_handler"] = route_handler
+            scope["path_template"] = path_template
         await asgi_app(scope, receive, send)
 
     @lru_cache(1024)  # noqa: B019
-    def handle_routing(self, path: str, method: Method | None) -> tuple[ASGIApp, RouteHandlerType, str, dict[str, Any]]:
+    def handle_routing(self, path: str, method: Method | None) -> tuple[ASGIApp, RouteHandlerType, str, dict[str, Any], str]:
         """Handle routing for a given path / method combo. This method is meant to allow easy caching.
 
         Args:
