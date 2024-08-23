@@ -64,9 +64,9 @@ if TYPE_CHECKING:
     from litestar.dto import AbstractDTO
     from litestar.events.listener import EventListener
     from litestar.logging.config import BaseLoggingConfig
-    from litestar.middleware.base import DefineMiddleware
     from litestar.openapi.spec import SecurityRequirement
     from litestar.openapi.spec.open_api import OpenAPI
+    from litestar.plugins.opentelemetry import OpenTelemetryPlugin
     from litestar.response import Response
     from litestar.static_files.config import StaticFilesConfig
     from litestar.stores.base import Store
@@ -101,6 +101,7 @@ if TYPE_CHECKING:
         TypeEncodersMap,
     )
     from litestar.types.callable_types import LifespanHook
+
 
 __all__ = ("HandlerIndex", "Litestar", "DEFAULT_OPENAPI_CONFIG")
 
@@ -222,7 +223,6 @@ class Litestar(Router):
         | None = None,
         pdb_on_exception: bool | None = None,
         experimental_features: Iterable[ExperimentalFeatures] | None = None,
-        otel: DefineMiddleware | None = None,
     ) -> None:
         """Initialize a ``Litestar`` application.
 
@@ -381,7 +381,6 @@ class Litestar(Router):
             type_decoders=type_decoders,
             websocket_class=websocket_class,
             experimental_features=list(experimental_features or []),
-            otel=otel,
         )
 
         config.plugins.extend([OpenAPIPlugin(self), *openapi_schema_plugins])
@@ -389,8 +388,10 @@ class Litestar(Router):
         for handler in chain(
             on_app_init or [],
             (p.on_app_init for p in config.plugins if isinstance(p, InitPluginProtocol)),
+            [self._patch_opentelemetry_middleware],
         ):
             config = handler(config)  # pyright: ignore
+
         self.plugins = PluginRegistry(config.plugins)
 
         self._openapi_schema: OpenAPI | None = None
@@ -438,7 +439,6 @@ class Litestar(Router):
         self.debug = config.debug
         self.pdb_on_exception: bool = config.pdb_on_exception
         self.include_in_schema = include_in_schema
-        self.otel = config.otel
 
         if self.pdb_on_exception:
             warn_pdb_on_exception()
@@ -495,6 +495,23 @@ class Litestar(Router):
             self.register(static_config.to_static_files_app())
 
         self.asgi_handler = self._create_asgi_handler()
+
+    @staticmethod
+    def _patch_opentelemetry_middleware(config: AppConfig) -> AppConfig:
+        # workaround to support otel middleware priority. Should be replaced by regular
+        # middleware priorities once available
+        try:
+            from litestar.plugins.opentelemetry import OpenTelemetryPlugin
+
+            if not any(isinstance(p, OpenTelemetryPlugin) for p in config.plugins):
+                config.middleware, otel_middleware = OpenTelemetryPlugin.pop_otel_middleware(config.middleware)
+                if otel_middleware:
+                    otel_plugin = OpenTelemetryPlugin()
+                    otel_plugin._middleware = otel_middleware
+                    config.plugins = [*config.plugins, otel_plugin]
+        except ImportError:
+            pass
+        return config
 
     @property
     @deprecated(version="2.6.0", kind="property", info="Use create_static_files router instead")
@@ -849,8 +866,11 @@ class Litestar(Router):
         if self.cors_config:
             asgi_handler = CORSMiddleware(app=asgi_handler, config=self.cors_config)
 
-        if self.otel:
-            asgi_handler = self.otel.middleware(app=asgi_handler, **self.otel.kwargs)
+        try:
+            otel_plugin: OpenTelemetryPlugin = self.plugins.get("OpenTelemetryPlugin")
+            asgi_handler = otel_plugin.middleware(app=asgi_handler)
+        except KeyError:
+            pass
 
         return asgi_handler
 

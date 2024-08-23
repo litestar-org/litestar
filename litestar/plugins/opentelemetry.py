@@ -15,30 +15,36 @@ if TYPE_CHECKING:
 class OpenTelemetryPlugin(InitPluginProtocol):
     """OpenTelemetry Plugin."""
 
-    __slots__ = ("_otel_config",)
+    __slots__ = ("config", "_middleware")
 
     def __init__(self, config: OpenTelemetryConfig | None = None) -> None:
-        if config is None:
-            config = OpenTelemetryConfig()
-        self._otel_config = config
+        self.config = config or OpenTelemetryConfig()
+        self._middleware: DefineMiddleware | None = None
         super().__init__()
 
+    @property
+    def middleware(self) -> DefineMiddleware:
+        if self._middleware:
+            return self._middleware
+        return DefineMiddleware(OpenTelemetryInstrumentationMiddleware, config=self.config)
+
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
-        app_config.otel = self._otel_config.middleware
-        # check if the middleware is passed though the app_config.middlewares this should override the default middleware
-        app_config.otel = self._get_otel_middleware(app_config.middleware) or app_config.otel
+        app_config.middleware, _middleware = self.pop_otel_middleware(app_config.middleware)
         return app_config
 
     @staticmethod
-    def _get_otel_middleware(middlewares: list[Middleware]) -> DefineMiddleware | None:
+    def pop_otel_middleware(middlewares: list[Middleware]) -> tuple[list[Middleware], DefineMiddleware | None]:
         """Get the OpenTelemetry middleware if it is enabled in the application.
         Remove the middleware from the list of middlewares if it is found.
         """
+        otel_middleware: DefineMiddleware | None = None
+        other_middlewares = []
         for middleware in middlewares:
             if (
                 isinstance(middleware, DefineMiddleware)
-                and middleware.middleware == OpenTelemetryInstrumentationMiddleware
+                and middleware.middleware is OpenTelemetryInstrumentationMiddleware
             ):
-                middlewares.remove(middleware)
-                return middleware
-        return None
+                otel_middleware = middleware
+            else:
+                other_middlewares.append(middleware)
+        return other_middlewares, otel_middleware

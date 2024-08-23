@@ -24,7 +24,6 @@ if TYPE_CHECKING:
     from litestar.events.emitter import BaseEventEmitterBackend
     from litestar.events.listener import EventListener
     from litestar.logging.config import BaseLoggingConfig
-    from litestar.middleware.base import DefineMiddleware
     from litestar.openapi.config import OpenAPIConfig
     from litestar.openapi.spec import SecurityRequirement
     from litestar.plugins import PluginProtocol
@@ -215,8 +214,6 @@ class AppConfig:
     """The maximal number of allowed parts in a multipart/formdata request. This limit is intended to protect from
     DoS attacks."""
     experimental_features: list[ExperimentalFeatures] | None = None
-    otel: DefineMiddleware | None = None
-    """OpenTelemetryInstrumentationMiddleware that will be used to wrap all the middlewares if not None. Default is None"""
 
     def __post_init__(self) -> None:
         """Normalize the allowed hosts to be a config or None.
