@@ -20,14 +20,26 @@ def clear_collectors() -> None:
 @pytest.mark.parametrize(
     "group_path, route_path, route_template, expected_path",
     [
-        (True,"/test/litestar", "test/{name:str}", "/test/{name}"),
-        (True,"/test/litestar", "test/{name:str}", "/test/{name}"),
-        (False,"/test/litestar", "test/{name:str}", "/test/litestar"),
-        (True,  "/project/123a/team/abc/test/hi", "project/{project:str}/team/{team:str}/test/{name:str}", "/project/{project}/team/{team}/test/{name}"),
-        (False, "/project/123a/team/abc/test/hi", "project/{project:str}/team/{team:str}/test/{name:str}", "/project/123a/team/abc/test/hi"),
+        (True, "/test/litestar", "test/{name:str}", "/test/{name}"),
+        (True, "/test/litestar", "test/{name:str}", "/test/{name}"),
+        (False, "/test/litestar", "test/{name:str}", "/test/litestar"),
+        (
+            True,
+            "/project/123a/team/abc/test/hi",
+            "project/{project:str}/team/{team:str}/test/{name:str}",
+            "/project/{project}/team/{team}/test/{name}",
+        ),
+        (
+            False,
+            "/project/123a/team/abc/test/hi",
+            "project/{project:str}/team/{team:str}/test/{name:str}",
+            "/project/123a/team/abc/test/hi",
+        ),
     ],
 )
-def test_prometheus_exporter_example(group_path: bool,route_path: str,route_template: str,  expected_path: str) -> None:
+def test_prometheus_exporter_example(
+    group_path: bool, route_path: str, route_template: str, expected_path: str
+) -> None:
     from docs.examples.contrib.prometheus.using_prometheus_exporter import create_app
 
     app = create_app(group_path=group_path)
