@@ -371,7 +371,6 @@ class JWTCookieAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
     token_cls: type[Token] = Token
     """Target type the JWT payload will be converted into"""
 
-
     @property
     def openapi_components(self) -> Components:
         """Create OpenAPI documentation for the JWT Cookie auth scheme.
