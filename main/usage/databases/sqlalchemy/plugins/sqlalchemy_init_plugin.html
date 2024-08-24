@@ -1568,7 +1568,7 @@ Async</label><div class="sd-tab-content docutils">
 <span class="linenos"> 5</span><span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">select</span>
 <span class="linenos"> 6</span>
 <span class="linenos"> 7</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-<span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.plugins</span> <span class="kn">import</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span> <span class="n">SQLAlchemyInitPlugin</span>
+<span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">litestar.plugins.sqlalchemy</span> <span class="kn">import</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span> <span class="n">SQLAlchemyInitPlugin</span>
 <span class="linenos"> 9</span>
 <span class="linenos">10</span><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
 <span class="linenos">11</span>
@@ -1604,7 +1604,7 @@ Sync</label><div class="sd-tab-content docutils">
 <span class="linenos"> 5</span><span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">select</span>
 <span class="linenos"> 6</span>
 <span class="linenos"> 7</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-<span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.plugins</span> <span class="kn">import</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">,</span> <span class="n">SQLAlchemySyncConfig</span>
+<span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">litestar.plugins.sqlalchemy</span> <span class="kn">import</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">,</span> <span class="n">SQLAlchemySyncConfig</span>
 <span class="linenos"> 9</span>
 <span class="linenos">10</span><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
 <span class="linenos">11</span>
@@ -1656,16 +1656,18 @@ Async</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-<span class="linenos"> 4</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.plugins</span> <span class="kn">import</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span> <span class="n">SQLAlchemyInitPlugin</span>
-<span class="linenos"> 5</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.plugins.init.config.asyncio</span> <span class="kn">import</span> <span class="n">autocommit_before_send_handler</span>
-<span class="linenos"> 6</span>
-<span class="linenos"> 7</span><span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">(</span>
-<span class="linenos"> 8</span>    <span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///:memory:&quot;</span><span class="p">,</span>
-<span class="linenos"> 9</span>    <span class="n">before_send_handler</span><span class="o">=</span><span class="n">autocommit_before_send_handler</span><span class="p">,</span>
-<span class="linenos">10</span><span class="p">)</span>
-<span class="linenos">11</span><span class="n">plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
-<span class="linenos">12</span>
-<span class="linenos">13</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">plugin</span><span class="p">])</span>
+<span class="linenos"> 4</span><span class="kn">from</span> <span class="nn">litestar.plugins.sqlalchemy</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="linenos"> 5</span>    <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span>
+<span class="linenos"> 6</span>    <span class="n">SQLAlchemyInitPlugin</span><span class="p">,</span>
+<span class="linenos"> 7</span>    <span class="n">async_autocommit_before_send_handler</span><span class="p">,</span>
+<span class="linenos"> 8</span><span class="p">)</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span><span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">(</span>
+<span class="linenos">11</span>    <span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///:memory:&quot;</span><span class="p">,</span> <span class="n">before_send_handler</span><span class="o">=</span><span class="n">async_autocommit_before_send_handler</span>
+<span class="linenos">12</span><span class="p">)</span>
+<span class="linenos">13</span><span class="n">plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+<span class="linenos">14</span>
+<span class="linenos">15</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">plugin</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1678,16 +1680,15 @@ Sync</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-<span class="linenos"> 4</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.plugins</span> <span class="kn">import</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">,</span> <span class="n">SQLAlchemySyncConfig</span>
-<span class="linenos"> 5</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.plugins.init.config.sync</span> <span class="kn">import</span> <span class="n">autocommit_before_send_handler</span>
-<span class="linenos"> 6</span>
-<span class="linenos"> 7</span><span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemySyncConfig</span><span class="p">(</span>
-<span class="linenos"> 8</span>    <span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite:///:memory:&quot;</span><span class="p">,</span>
-<span class="linenos"> 9</span>    <span class="n">before_send_handler</span><span class="o">=</span><span class="n">autocommit_before_send_handler</span><span class="p">,</span>
-<span class="linenos">10</span><span class="p">)</span>
-<span class="linenos">11</span><span class="n">plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
-<span class="linenos">12</span>
-<span class="linenos">13</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">plugin</span><span class="p">])</span>
+<span class="linenos"> 4</span><span class="kn">from</span> <span class="nn">litestar.plugins.sqlalchemy</span> <span class="kn">import</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">,</span> <span class="n">SQLAlchemySyncConfig</span><span class="p">,</span> <span class="n">sync_autocommit_before_send_handler</span>
+<span class="linenos"> 5</span>
+<span class="linenos"> 6</span><span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemySyncConfig</span><span class="p">(</span>
+<span class="linenos"> 7</span>    <span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite:///:memory:&quot;</span><span class="p">,</span>
+<span class="linenos"> 8</span>    <span class="n">before_send_handler</span><span class="o">=</span><span class="n">sync_autocommit_before_send_handler</span><span class="p">,</span>
+<span class="linenos"> 9</span><span class="p">)</span>
+<span class="linenos">10</span><span class="n">plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+<span class="linenos">11</span>
+<span class="linenos">12</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">plugin</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
@@ -1733,7 +1734,7 @@ Async</label><div class="sd-tab-content docutils">
 <span class="linenos"> 6</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">DeclarativeBase</span><span class="p">,</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span>
 <span class="linenos"> 7</span>
 <span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-<span class="linenos"> 9</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.plugins</span> <span class="kn">import</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span> <span class="n">SQLAlchemyInitPlugin</span>
+<span class="linenos"> 9</span><span class="kn">from</span> <span class="nn">litestar.plugins.sqlalchemy</span> <span class="kn">import</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span> <span class="n">SQLAlchemyInitPlugin</span>
 <span class="linenos">10</span>
 <span class="linenos">11</span><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
 <span class="linenos">12</span>    <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
@@ -1765,14 +1766,13 @@ Async</label><div class="sd-tab-content docutils">
 <span class="linenos">38</span>
 <span class="linenos">39</span>
 <span class="linenos">40</span><span class="k">async</span> <span class="k">def</span> <span class="nf">init_db</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos">41</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">db_engine</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
-<span class="linenos">42</span>        <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">drop_all</span><span class="p">)</span>
-<span class="linenos">43</span>        <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">)</span>
+<span class="linenos">41</span>    <span class="k">async</span> <span class="k">with</span> <span class="n">config</span><span class="o">.</span><span class="n">get_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+<span class="linenos">42</span>        <span class="k">await</span> <span class="n">conn</span><span class="o">.</span><span class="n">run_sync</span><span class="p">(</span><span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">)</span>
+<span class="linenos">43</span>
 <span class="linenos">44</span>
-<span class="linenos">45</span>
-<span class="linenos">46</span><span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">(</span><span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///todo_async.sqlite&quot;</span><span class="p">)</span>
-<span class="linenos">47</span><span class="n">plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
-<span class="linenos">48</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">add_item</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">plugin</span><span class="p">],</span> <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">init_db</span><span class="p">])</span>
+<span class="linenos">45</span><span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">(</span><span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite+aiosqlite:///todo_async.sqlite&quot;</span><span class="p">)</span>
+<span class="linenos">46</span><span class="n">plugin</span> <span class="o">=</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">(</span><span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+<span class="linenos">47</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">add_item</span><span class="p">],</span> <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">plugin</span><span class="p">],</span> <span class="n">on_startup</span><span class="o">=</span><span class="p">[</span><span class="n">init_db</span><span class="p">],</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1790,7 +1790,7 @@ Sync</label><div class="sd-tab-content docutils">
 <span class="linenos"> 6</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">DeclarativeBase</span><span class="p">,</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span>
 <span class="linenos"> 7</span>
 <span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-<span class="linenos"> 9</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.plugins</span> <span class="kn">import</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">,</span> <span class="n">SQLAlchemySyncConfig</span>
+<span class="linenos"> 9</span><span class="kn">from</span> <span class="nn">litestar.plugins.sqlalchemy</span> <span class="kn">import</span> <span class="n">SQLAlchemyInitPlugin</span><span class="p">,</span> <span class="n">SQLAlchemySyncConfig</span>
 <span class="linenos">10</span>
 <span class="linenos">11</span><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
 <span class="linenos">12</span>    <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
@@ -1822,8 +1822,8 @@ Sync</label><div class="sd-tab-content docutils">
 <span class="linenos">38</span>
 <span class="linenos">39</span>
 <span class="linenos">40</span><span class="k">def</span> <span class="nf">init_db</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="linenos">41</span>    <span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">drop_all</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">db_engine</span><span class="p">)</span>
-<span class="linenos">42</span>    <span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">state</span><span class="o">.</span><span class="n">db_engine</span><span class="p">)</span>
+<span class="linenos">41</span>    <span class="k">with</span> <span class="n">config</span><span class="o">.</span><span class="n">get_engine</span><span class="p">()</span><span class="o">.</span><span class="n">begin</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+<span class="linenos">42</span>        <span class="n">Base</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
 <span class="linenos">43</span>
 <span class="linenos">44</span>
 <span class="linenos">45</span><span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemySyncConfig</span><span class="p">(</span><span class="n">connection_string</span><span class="o">=</span><span class="s2">&quot;sqlite:///todo_sync.sqlite&quot;</span><span class="p">)</span>

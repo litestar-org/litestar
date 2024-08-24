@@ -1560,7 +1560,7 @@ Async</label><div class="sd-tab-content docutils">
 <span class="linenos"> 5</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">DeclarativeBase</span><span class="p">,</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span>
 <span class="linenos"> 6</span>
 <span class="linenos"> 7</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-<span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.plugins</span> <span class="kn">import</span> <span class="n">SQLAlchemySerializationPlugin</span>
+<span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">litestar.plugins.sqlalchemy</span> <span class="kn">import</span> <span class="n">SQLAlchemySerializationPlugin</span>
 <span class="linenos"> 9</span>
 <span class="linenos">10</span><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
 <span class="linenos">11</span>    <span class="k">pass</span>
@@ -1597,7 +1597,7 @@ Sync</label><div class="sd-tab-content docutils">
 <span class="linenos"> 5</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">DeclarativeBase</span><span class="p">,</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span>
 <span class="linenos"> 6</span>
 <span class="linenos"> 7</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-<span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.plugins</span> <span class="kn">import</span> <span class="n">SQLAlchemySerializationPlugin</span>
+<span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">litestar.plugins.sqlalchemy</span> <span class="kn">import</span> <span class="n">SQLAlchemySerializationPlugin</span>
 <span class="linenos"> 9</span>
 <span class="linenos">10</span><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
 <span class="linenos">11</span>    <span class="k">pass</span>
@@ -1626,7 +1626,7 @@ Sync</label><div class="sd-tab-content docutils">
 </section>
 <section id="how-it-works">
 <h2>How it works<a class="headerlink" href="#how-it-works" title="Permalink to this heading">#</a></h2>
-<p>The plugin works by defining a <a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span></code></a> class for each
+<p>The plugin works by defining a <a class="reference internal" href="../../../../reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO" title="advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span></code></a> class for each
 handler <code class="docutils literal notranslate"><span class="pre">data</span></code> or return annotation that is a SQLAlchemy model, or collection of SQLAlchemy models, that isn’t
 otherwise managed by an explicitly defined DTO class.</p>
 <p>The following two examples are functionally equivalent:</p>
@@ -1641,7 +1641,7 @@ Serialization Plugin</label><div class="sd-tab-content docutils">
 <span class="linenos"> 5</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">DeclarativeBase</span><span class="p">,</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span>
 <span class="linenos"> 6</span>
 <span class="linenos"> 7</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-<span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.plugins</span> <span class="kn">import</span> <span class="n">SQLAlchemySerializationPlugin</span>
+<span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">litestar.plugins.sqlalchemy</span> <span class="kn">import</span> <span class="n">SQLAlchemySerializationPlugin</span>
 <span class="linenos"> 9</span>
 <span class="linenos">10</span><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
 <span class="linenos">11</span>    <span class="k">pass</span>
@@ -1675,7 +1675,7 @@ Data Transfer Object</label><div class="sd-tab-content docutils">
 <span class="linenos"> 5</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">DeclarativeBase</span><span class="p">,</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span>
 <span class="linenos"> 6</span>
 <span class="linenos"> 7</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-<span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.dto</span> <span class="kn">import</span> <span class="n">SQLAlchemyDTO</span>
+<span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">litestar.plugins.sqlalchemy</span> <span class="kn">import</span> <span class="n">SQLAlchemyDTO</span>
 <span class="linenos"> 9</span>
 <span class="linenos">10</span><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
 <span class="linenos">11</span>    <span class="k">pass</span>
@@ -1721,8 +1721,8 @@ Async</label><div class="sd-tab-content docutils">
 <span class="linenos"> 5</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">DeclarativeBase</span><span class="p">,</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span>
 <span class="linenos"> 6</span>
 <span class="linenos"> 7</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-<span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.plugins</span> <span class="kn">import</span> <span class="n">SQLAlchemySerializationPlugin</span>
-<span class="hll"><span class="linenos"> 9</span><span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">dto_field</span>
+<span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">dto_field</span>
+<span class="hll"><span class="linenos"> 9</span><span class="kn">from</span> <span class="nn">litestar.plugins.sqlalchemy</span> <span class="kn">import</span> <span class="n">SQLAlchemySerializationPlugin</span>
 </span><span class="linenos">10</span>
 <span class="linenos">11</span><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
 <span class="linenos">12</span>    <span class="k">pass</span>
@@ -1761,8 +1761,8 @@ Sync</label><div class="sd-tab-content docutils">
 <span class="linenos"> 5</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">DeclarativeBase</span><span class="p">,</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span>
 <span class="linenos"> 6</span>
 <span class="linenos"> 7</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-<span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.plugins</span> <span class="kn">import</span> <span class="n">SQLAlchemySerializationPlugin</span>
-<span class="hll"><span class="linenos"> 9</span><span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">dto_field</span>
+<span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">dto_field</span>
+<span class="hll"><span class="linenos"> 9</span><span class="kn">from</span> <span class="nn">litestar.plugins.sqlalchemy</span> <span class="kn">import</span> <span class="n">SQLAlchemySerializationPlugin</span>
 </span><span class="linenos">10</span>
 <span class="linenos">11</span><span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
 <span class="linenos">12</span>    <span class="k">pass</span>
