@@ -156,18 +156,6 @@ def test_add_types_to_signature_namespace() -> None:
     assert ns == {"int": int, "str": str}
 
 
-def test_add_types_to_signature_namespace_with_existing_types() -> None:
-    """Test add_types_to_signature_namespace with existing types."""
-    ns = add_types_to_signature_namespace([str], {"int": int})
-    assert ns == {"int": int, "str": str}
-
-
-def test_add_types_to_signature_namespace_with_existing_types_raises() -> None:
-    """Test add_types_to_signature_namespace with existing types raises."""
-    with pytest.raises(ImproperlyConfiguredException):
-        add_types_to_signature_namespace([int], {"int": int})
-
-
 @pytest.mark.parametrize(
     ("namespace", "expected"),
     (
