@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Optional, cast
 import pydantic as pydantic_v2
 import pytest
 from pydantic import v1 as pydantic_v1
-from typing_extensions import Annotated
+from typing_extensions import Annotated, Literal
 
 from litestar import Request, post
 from litestar.contrib.pydantic import PydanticDTO, _model_dump_json
@@ -104,13 +104,26 @@ app = Litestar(route_handlers=[get_user])
     assert component_schema.properties["id"].description == "This is a test (id description)."
 
 
-@pytest.mark.parametrize("forbid_unknown_fields_default", [True, False])
+@pytest.mark.parametrize(
+    "model_config_option, forbid_unknown_fields_default, expected_dto_config_option",
+    [
+        ("forbid", False, True),
+        ("forbid", True, True),
+        ("allow", False, False),
+        ("allow", True, True),
+        ("ignore", True, True),
+        ("ignore", False, False),
+    ],
+)
 def test_forbid_unknown_fields_if_forbid_extra_is_set_v1(
-    use_experimental_dto_backend: bool, forbid_unknown_fields_default: bool
+    use_experimental_dto_backend: bool,
+    forbid_unknown_fields_default: bool,
+    model_config_option: Literal["forbid", "allow", "ignore"],
+    expected_dto_config_option: bool,
 ) -> None:
     class Model(pydantic_v1.BaseModel):
         class Config:
-            extra = "forbid"
+            extra = model_config_option
 
         a: str
 
@@ -121,18 +134,31 @@ def test_forbid_unknown_fields_if_forbid_extra_is_set_v1(
     )
     dto = PydanticDTO[Annotated[Model, dto_config]]
 
-    assert dto.config.forbid_unknown_fields is True
+    assert dto.config.forbid_unknown_fields is expected_dto_config_option
     # ensure the config is merged
     assert dto.config.experimental_codegen_backend is use_experimental_dto_backend
 
 
-@pytest.mark.parametrize("forbid_unknown_fields_default", [True, False])
+@pytest.mark.parametrize(
+    "model_config_option, forbid_unknown_fields_default, expected_dto_config_option",
+    [
+        ("forbid", False, True),
+        ("forbid", True, True),
+        ("allow", False, False),
+        ("allow", True, True),
+        ("ignore", True, True),
+        ("ignore", False, False),
+    ],
+)
 def test_forbid_unknown_fields_if_forbid_extra_is_set_v2(
-    use_experimental_dto_backend: bool, forbid_unknown_fields_default: bool
+    use_experimental_dto_backend: bool,
+    forbid_unknown_fields_default: bool,
+    model_config_option: Literal["forbid", "allow", "ignore"],
+    expected_dto_config_option: bool,
 ) -> None:
     class Model(pydantic_v2.BaseModel):
         a: str
-        model_config = pydantic_v2.ConfigDict(extra="forbid")
+        model_config = pydantic_v2.ConfigDict(extra=model_config_option)
 
     dto_config = DTOConfig(
         experimental_codegen_backend=use_experimental_dto_backend,
@@ -141,6 +167,6 @@ def test_forbid_unknown_fields_if_forbid_extra_is_set_v2(
     )
     dto = PydanticDTO[Annotated[Model, dto_config]]
 
-    assert dto.config.forbid_unknown_fields is True
+    assert dto.config.forbid_unknown_fields is expected_dto_config_option
     # ensure the config is merged
     assert dto.config.experimental_codegen_backend is use_experimental_dto_backend
