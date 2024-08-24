@@ -30,6 +30,7 @@ else:
 
 __all__ = (
     "add_types_to_signature_namespace",
+    "merge_signature_namespaces",
     "get_fn_type_hints",
     "ParsedSignature",
 )
