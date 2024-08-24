@@ -1,3 +1,5 @@
+import dataclasses
+import secrets
 import string
 from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING, Any, Dict, Optional
@@ -126,6 +128,56 @@ async def test_jwt_auth(
 
         response = client.get("/my-endpoint", headers={auth_header: jwt_auth.format_auth_header(fake_token)})
         assert response.status_code == HTTP_401_UNAUTHORIZED
+
+
+@pytest.mark.parametrize("auth_cls", [JWTAuth, JWTCookieAuth, OAuth2PasswordBearerAuth])
+async def test_jwt_auth_custom_token_cls(auth_cls: Any) -> None:
+    @dataclasses.dataclass
+    class CustomToken(Token):
+        random_field: int = 1
+
+    async def retrieve_user_handler(token: CustomToken, _: "ASGIConnection") -> Any:
+        return object()
+
+    token_secret = secrets.token_hex()
+
+    if auth_cls is OAuth2PasswordBearerAuth:
+        jwt_auth = auth_cls(
+            token_secret=token_secret,
+            retrieve_user_handler=retrieve_user_handler,
+            token_cls=CustomToken,
+            token_url="http://testserver.local",
+        )
+    else:
+        jwt_auth = auth_cls[Any](
+            token_secret=token_secret,
+            retrieve_user_handler=retrieve_user_handler,
+            token_cls=CustomToken,
+        )
+
+    @get("/", middleware=[jwt_auth.middleware])
+    def handler(request: Request[Any, CustomToken, Any]) -> Dict[str, Any]:
+        return {
+            "is_token_cls": isinstance(request.auth, CustomToken),
+            "token": dataclasses.asdict(request.auth),
+        }
+
+    header = jwt_auth.format_auth_header(
+        jwt_auth.create_token(
+            "foo",
+            token_extras={"foo": "bar"},
+            # pass a string here as value to ensure things get converted properly
+            random_field="2",
+        ),
+    )
+
+    with create_test_client(route_handlers=[handler]) as client:
+        response = client.get("/", headers={"Authorization": header})
+        assert response.status_code == 200
+        response_data = response.json()
+        assert response_data["is_token_cls"] is True
+        assert response_data["token"]["extras"] == {"foo": "bar"}
+        assert response_data["token"]["random_field"] == 2
 
 
 @given(

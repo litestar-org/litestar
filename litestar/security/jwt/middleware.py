@@ -30,6 +30,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         "auth_header",
         "retrieve_user_handler",
         "token_secret",
+        "token_cls",
     )
 
     def __init__(
@@ -43,6 +44,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         retrieve_user_handler: Callable[[Token, ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]],
         scopes: Scopes,
         token_secret: str,
+        token_cls: type[Token] = Token,
     ) -> None:
         """Check incoming requests for an encoded token in the auth header specified, and if present retrieve the user
         from persistence using the provided function.
@@ -57,8 +59,9 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
             retrieve_user_handler: A function that receives a :class:`Token <.security.jwt.Token>` and returns a user,
                 which can be any arbitrary value.
             scopes: ASGI scopes processed by the authentication middleware.
-            token_secret: Secret for decoding the JWT token. This value should be equivalent to the secret used to
+            token_secret: Secret for decoding the JWT. This value should be equivalent to the secret used to
                 encode it.
+            token_cls: Token class used when encoding / decoding JWTs
         """
         super().__init__(
             app=app,
@@ -71,6 +74,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         self.auth_header = auth_header
         self.retrieve_user_handler = retrieve_user_handler
         self.token_secret = token_secret
+        self.token_cls = token_cls
 
     async def authenticate_request(self, connection: ASGIConnection[Any, Any, Any, Any]) -> AuthenticationResult:
         """Given an HTTP Connection, parse the JWT api key stored in the header and retrieve the user correlating to the
@@ -106,7 +110,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         Returns:
             AuthenticationResult
         """
-        token = Token.decode(
+        token = self.token_cls.decode(
             encoded_token=encoded_token,
             secret=self.token_secret,
             algorithm=self.algorithm,
@@ -137,6 +141,7 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
         retrieve_user_handler: Callable[[Token, ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]],
         scopes: Scopes,
         token_secret: str,
+        token_cls: type[Token] = Token,
     ) -> None:
         """Check incoming requests for an encoded token in the auth header or cookie name specified, and if present
         retrieves the user from persistence using the provided function.
@@ -152,8 +157,9 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
             retrieve_user_handler: A function that receives a :class:`Token <.security.jwt.Token>` and returns a user,
                 which can be any arbitrary value.
             scopes: ASGI scopes processed by the authentication middleware.
-            token_secret: Secret for decoding the JWT token. This value should be equivalent to the secret used to
+            token_secret: Secret for decoding the JWT. This value should be equivalent to the secret used to
                 encode it.
+            token_cls: Token class used when encoding / decoding JWTs
         """
         super().__init__(
             algorithm=algorithm,
@@ -165,6 +171,7 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
             retrieve_user_handler=retrieve_user_handler,
             scopes=scopes,
             token_secret=token_secret,
+            token_cls=token_cls,
         )
         self.auth_cookie_key = auth_cookie_key
 

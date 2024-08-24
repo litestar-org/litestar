@@ -44,3 +44,24 @@ OAuth 2.0 Bearer password flows.
 
     .. literalinclude:: /examples/security/jwt/using_oauth2_password_bearer.py
        :caption: Using OAUTH2 Bearer Password
+
+
+Using a custom token class
+--------------------------
+
+The token class used can be customized with arbitrary fields, by creating a subclass of
+:class:`~.security.jwt.Token`, and specifying it on the backend:
+
+.. literalinclude:: /examples/security/jwt/custom_token_cls.py
+   :caption: Using a custom token
+
+
+The token will be converted from JSON into the appropriate type, including basic type
+conversions.
+
+.. important::
+    Complex type conversions, especially those including third libraries such as
+    Pydantic or attrs, as well as any custom ``type_decoders`` are not available for
+    converting the token. To support more complex conversions, the
+    :meth:`~.security.jwt.Token.encode` and :meth:`~.security.jwt.Token.decode` methods
+    must be overwritten in the subclass.

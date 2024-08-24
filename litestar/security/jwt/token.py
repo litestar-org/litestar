@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any
 
 import jwt
+import msgspec
 
 from litestar.exceptions import ImproperlyConfiguredException, NotAuthorizedException
 
@@ -86,15 +87,22 @@ class Token:
             NotAuthorizedException: If the token is invalid.
         """
         try:
-            payload = jwt.decode(jwt=encoded_token, key=secret, algorithms=[algorithm], options={"verify_aud": False})
-            exp = datetime.fromtimestamp(payload.pop("exp"), tz=timezone.utc)
-            iat = datetime.fromtimestamp(payload.pop("iat"), tz=timezone.utc)
-            field_names = {f.name for f in dataclasses.fields(Token)}
-            extra_fields = payload.keys() - field_names
-            extras = payload.pop("extras", {})
+            payload: dict[str, Any] = jwt.decode(
+                jwt=encoded_token,
+                key=secret,
+                algorithms=[algorithm],
+                options={"verify_aud": False},
+            )
+            # msgspec can do these conversions as well, but to keep backwards
+            # compatibility, we do it ourselves, since the datetime parsing works a
+            # little bit different there
+            payload["exp"] = datetime.fromtimestamp(payload["exp"], tz=timezone.utc)
+            payload["iat"] = datetime.fromtimestamp(payload["iat"], tz=timezone.utc)
+            extra_fields = payload.keys() - {f.name for f in dataclasses.fields(cls)}
+            extras = payload.setdefault("extras", {})
             for key in extra_fields:
                 extras[key] = payload.pop(key)
-            return cls(exp=exp, iat=iat, **payload, extras=extras)
+            return msgspec.convert(payload, cls, strict=False)
         except (KeyError, jwt.DecodeError, ImproperlyConfiguredException, jwt.exceptions.InvalidAlgorithmError) as e:
             raise NotAuthorizedException("Invalid token") from e
 
@@ -113,7 +121,9 @@ class Token:
         """
         try:
             return jwt.encode(
-                payload={k: v for k, v in asdict(self).items() if v is not None}, key=secret, algorithm=algorithm
+                payload={k: v for k, v in asdict(self).items() if v is not None},
+                key=secret,
+                algorithm=algorithm,
             )
         except (jwt.DecodeError, NotImplementedError) as e:
             raise ImproperlyConfiguredException("Failed to encode token") from e
