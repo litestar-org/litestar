@@ -3,9 +3,10 @@
 from __future__ import annotations
 
 import inspect
+import logging
 from inspect import Parameter
 from types import ModuleType
-from typing import Any, Callable, Generic, List, Optional, TypeVar, Union
+from typing import TYPE_CHECKING, Any, Callable, Generic, List, Optional, TypeVar, Union
 
 import pytest
 from typing_extensions import Annotated, NotRequired, Required, TypedDict, get_args, get_type_hints
@@ -19,6 +20,11 @@ from litestar.types.builtin_types import NoneType
 from litestar.types.empty import Empty
 from litestar.typing import FieldDefinition
 from litestar.utils.signature import ParsedSignature, add_types_to_signature_namespace, get_fn_type_hints
+
+if TYPE_CHECKING:
+    from _pytest.capture import CaptureFixture
+    from _pytest.logging import LogCaptureFixture
+
 
 T = TypeVar("T")
 U = TypeVar("U")
@@ -156,16 +162,21 @@ def test_add_types_to_signature_namespace() -> None:
     assert ns == {"int": int, "str": str}
 
 
-def test_add_types_to_signature_namespace_with_existing_types() -> None:
+def test_add_types_to_signature_namespace_with_logger(caplog: LogCaptureFixture) -> None:
     """Test add_types_to_signature_namespace with existing types."""
-    ns = add_types_to_signature_namespace([str], {"int": int})
-    assert ns == {"int": int, "str": str}
+    logger = logging.getLogger("test_logger")
+    with caplog.at_level(logging.DEBUG, logger="test_logger"):
+        add_types_to_signature_namespace([int], {"int": int}, logger=logger) # type: ignore[arg-type]
+        log_output = "; ".join(caplog.messages)
+        assert "already defined" not in log_output
 
-
-def test_add_types_to_signature_namespace_with_existing_types_raises() -> None:
+def test_add_types_to_signature_namespace_with_existing_types_logger(caplog: LogCaptureFixture) -> None:
     """Test add_types_to_signature_namespace with existing types raises."""
-    with pytest.raises(ImproperlyConfiguredException):
-        add_types_to_signature_namespace([int], {"int": int})
+    logger = logging.getLogger("test_logger")
+    with caplog.at_level(logging.DEBUG, logger="test_logger"):
+        add_types_to_signature_namespace([int], {"int": str}, logger=logger) # type: ignore[arg-type]
+        log_output = "; ".join(caplog.messages)
+        assert "already defined" in log_output
 
 
 @pytest.mark.parametrize(

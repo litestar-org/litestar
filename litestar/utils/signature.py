@@ -11,7 +11,6 @@ from typing import TYPE_CHECKING, Any, Union
 from typing_extensions import Annotated, Self, get_args, get_origin, get_type_hints
 
 from litestar import connection, datastructures, types
-from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
 from litestar.utils.typing import expand_type_var_in_type_hint, unwrap_annotation
@@ -20,6 +19,7 @@ if TYPE_CHECKING:
     from typing import Sequence
 
     from litestar.types import AnyCallable
+    from litestar.types.protocols import Logger
 
 if sys.version_info < (3, 11):
     from typing import _get_defaults  # type: ignore[attr-defined]
@@ -244,7 +244,7 @@ class ParsedSignature:
 
 
 def add_types_to_signature_namespace(
-    signature_types: Sequence[Any], signature_namespace: dict[str, Any]
+    signature_types: Sequence[Any], signature_namespace: dict[str, Any], logger: Logger | None = None
 ) -> dict[str, Any]:
     """Add types to ith signature namespace mapping.
 
@@ -253,16 +253,46 @@ def add_types_to_signature_namespace(
     Args:
         signature_types: A list of types to add to the signature namespace.
         signature_namespace: The signature namespace to add types to.
+        logger: a logging facility to optional use for warning
 
     Raises:
-        ImproperlyConfiguredException: If a type is already defined in the signature namespace.
         AttributeError: If a type does not have a `__name__` attribute.
 
     Returns:
         The updated signature namespace.
     """
-    for typ in signature_types:
-        if (name := typ.__name__) in signature_namespace:
-            raise ImproperlyConfiguredException(f"Type '{name}' is already defined in the signature namespace")
-        signature_namespace[name] = typ
+    return merge_signature_namespaces(
+        signature_namespace=signature_namespace,
+        additional_signature_namespace={signature_type.__name__: signature_type for signature_type in signature_types},
+        logger=logger,
+    )
+
+
+def merge_signature_namespaces(
+    signature_namespace: dict[str, Any], additional_signature_namespace: dict[str, Any], logger: Logger | None = None
+) -> dict[str, Any]:
+    """Add types to ith signature namespace mapping.
+
+    Types are added mapped to their `__name__` attribute.
+
+    Args:
+        signature_namespace: The signature namespace to add types to.
+        additional_signature_namespace: The signature namespace to merge
+        logger: a logging facility to optional use for warning
+
+    Raises:
+        AttributeError: If a type does not have a `__name__` attribute.
+
+    Returns:
+        The updated signature namespace.
+    """
+    for signature_key, signature_type in additional_signature_namespace.items():
+        if (
+            logger is not None
+            and signature_key in signature_namespace
+            and signature_namespace.get(signature_key) != signature_type
+        ):
+            msg = f"Type '{signature_key}' is already defined as a different type in the signature namespace"
+            logger.debug(msg)
+    signature_namespace.update(additional_signature_namespace)
     return signature_namespace
