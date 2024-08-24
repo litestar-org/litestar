@@ -1844,6 +1844,64 @@ Click to see the code<div class="sd-summary-down docutils">
 </div>
 </div>
 </details></section>
+<section id="using-a-custom-token-class">
+<h2>Using a custom token class<a class="headerlink" href="#using-a-custom-token-class" title="Permalink to this heading">#</a></h2>
+<p>The token class used can be customized with arbitrary fields, by creating a subclass of
+<a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.Token" title="litestar.security.jwt.Token"><code class="xref py py-class docutils literal notranslate"><span class="pre">Token</span></code></a>, and specifying it on the backend:</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Using a custom token</span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dataclasses</span>
+<span class="kn">import</span> <span class="nn">secrets</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.connection</span> <span class="kn">import</span> <span class="n">ASGIConnection</span>
+<span class="kn">from</span> <span class="nn">litestar.security.jwt</span> <span class="kn">import</span> <span class="n">JWTAuth</span><span class="p">,</span> <span class="n">Token</span>
+
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">CustomToken</span><span class="p">(</span><span class="n">Token</span><span class="p">):</span>
+    <span class="n">token_flag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">retrieve_user_handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">CustomToken</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">User</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">token</span><span class="o">.</span><span class="n">sub</span><span class="p">)</span>
+
+
+<span class="n">TOKEN_SECRET</span> <span class="o">=</span> <span class="n">secrets</span><span class="o">.</span><span class="n">token_hex</span><span class="p">()</span>
+
+<span class="n">jwt_auth</span> <span class="o">=</span> <span class="n">JWTAuth</span><span class="p">[</span><span class="n">User</span><span class="p">](</span>
+    <span class="n">token_secret</span><span class="o">=</span><span class="n">TOKEN_SECRET</span><span class="p">,</span>
+    <span class="n">retrieve_user_handler</span><span class="o">=</span><span class="n">retrieve_user_handler</span><span class="p">,</span>
+    <span class="n">token_cls</span><span class="o">=</span><span class="n">CustomToken</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">CustomToken</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;token_flag&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">token_flag</span><span class="p">}</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">jwt_auth</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<p>The token will be converted from JSON into the appropriate type, including basic type
+conversions.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Complex type conversions, especially those including third libraries such as
+Pydantic or attrs, as well as any custom <code class="docutils literal notranslate"><span class="pre">type_decoders</span></code> are not available for
+converting the token. To support more complex conversions, the
+<a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.Token.encode" title="litestar.security.jwt.Token.encode"><code class="xref py py-meth docutils literal notranslate"><span class="pre">encode()</span></code></a> and <a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.Token.decode" title="litestar.security.jwt.Token.decode"><code class="xref py py-meth docutils literal notranslate"><span class="pre">decode()</span></code></a> methods
+must be overwritten in the subclass.</p>
+</div>
+</section>
 </section>
 
 
@@ -1893,6 +1951,7 @@ Click to see the code<div class="sd-summary-down docutils">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#jwt-auth-backend"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWT</span> <span class="pre">Auth</span></code> Backend</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#jwt-cookie-auth-backend"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWT</span> <span class="pre">Cookie</span> <span class="pre">Auth</span></code> Backend</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#oauth2-bearer-password-flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">OAuth2</span> <span class="pre">Bearer</span></code> Password Flow</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-a-custom-token-class">Using a custom token class</a></li>
 </ul>
   </nav></div>
 
