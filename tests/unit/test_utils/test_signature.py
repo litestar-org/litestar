@@ -22,7 +22,6 @@ from litestar.typing import FieldDefinition
 from litestar.utils.signature import ParsedSignature, add_types_to_signature_namespace, get_fn_type_hints
 
 if TYPE_CHECKING:
-    from _pytest.capture import CaptureFixture
     from _pytest.logging import LogCaptureFixture
 
 
@@ -166,15 +165,16 @@ def test_add_types_to_signature_namespace_with_logger(caplog: LogCaptureFixture)
     """Test add_types_to_signature_namespace with existing types."""
     logger = logging.getLogger("test_logger")
     with caplog.at_level(logging.DEBUG, logger="test_logger"):
-        add_types_to_signature_namespace([int], {"int": int}, logger=logger) # type: ignore[arg-type]
+        add_types_to_signature_namespace([int], {"int": int}, logger=logger)  # type: ignore[arg-type]
         log_output = "; ".join(caplog.messages)
         assert "already defined" not in log_output
 
+
 def test_add_types_to_signature_namespace_with_existing_types_logger(caplog: LogCaptureFixture) -> None:
     """Test add_types_to_signature_namespace with existing types raises."""
-    logger = logging.getLogger("test_logger")
-    with caplog.at_level(logging.DEBUG, logger="test_logger"):
-        add_types_to_signature_namespace([int], {"int": str}, logger=logger) # type: ignore[arg-type]
+    logger = logging.getLogger("test_logger_2")
+    with caplog.at_level(logging.DEBUG, logger="test_logger_2"):
+        add_types_to_signature_namespace([int], {"int": str}, logger=logger)  # type: ignore[arg-type]
         log_output = "; ".join(caplog.messages)
         assert "already defined" in log_output
 
