@@ -1058,3 +1058,26 @@ app = Litestar(route_handlers=[create_item, create_item_with_dto])
     item_schema = openapi_schema.components.schemas["Item"]
     item_with_dto_schema = openapi_schema.components.schemas["CreateItemWithDtoItemRequestBody"]
     assert item_schema.examples == item_with_dto_schema.examples
+
+
+@pytest.mark.parametrize("forbid_unknown_fields, expected_status_code", [(False, 201), (True, 400)])
+def test_forbid_unknown_fields(
+    use_experimental_dto_backend: bool, forbid_unknown_fields: bool, expected_status_code: int
+) -> None:
+    @dataclass
+    class Foo:
+        bar: str
+
+    config = DTOConfig(
+        forbid_unknown_fields=forbid_unknown_fields,
+        experimental_codegen_backend=use_experimental_dto_backend,
+    )
+    dto = DataclassDTO[Annotated[Foo, config]]
+
+    @post(dto=dto, signature_types=[Foo])
+    def handler(data: Foo) -> Foo:
+        return data
+
+    with create_test_client(route_handlers=[handler]) as client:
+        response = client.post("/", json={"bar": "hello", "baz": "given"})
+        assert response.status_code == expected_status_code

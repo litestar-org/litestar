@@ -106,3 +106,11 @@ def test_response_return_data_app() -> None:
         assert response.status_code == 200
         assert response.json() == {"id": 1, "name": "Litestar User"}
         assert response.headers["X-Total-Count"] == "1"
+
+
+def test_unknown_fields() -> None:
+    from docs.examples.data_transfer_objects.factory.unknown_fields import app
+
+    with TestClient(app) as client:
+        response = client.post("/users", json={"id": "1", "name": "Peter"})
+        assert response.status_code == 400
