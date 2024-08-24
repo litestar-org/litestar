@@ -68,6 +68,14 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
     """
     token_cls: type[Token] = Token
     """Target type the JWT payload will be converted into"""
+    accepted_audiences: Sequence[str] | None = None
+    """Audiences to accept when verifying the token. If given, and the audience in the
+    token does not match, a 401 response is returned
+    """
+    accepted_issuers: Sequence[str] | None = None
+    """Issuers to accept when verifying the token. If given, and the issuer in the
+    token does not match, a 401 response is returned
+    """
 
     @property
     def openapi_components(self) -> Components:
@@ -120,6 +128,8 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
             scopes=self.scopes,
             token_secret=self.token_secret,
             token_cls=self.token_cls,
+            token_issuer=self.accepted_issuers,
+            token_audience=self.accepted_audiences,
         )
 
     def login(
@@ -290,6 +300,14 @@ class JWTAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
     """
     token_cls: type[Token] = Token
     """Target type the JWT payload will be converted into"""
+    accepted_audiences: Sequence[str] | None = None
+    """Audiences to accept when verifying the token. If given, and the audience in the
+    token does not match, a 401 response is returned
+    """
+    accepted_issuers: Sequence[str] | None = None
+    """Issuers to accept when verifying the token. If given, and the issuer in the
+    token does not match, a 401 response is returned
+    """
 
 
 @dataclass
@@ -370,6 +388,8 @@ class JWTCookieAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
     """
     token_cls: type[Token] = Token
     """Target type the JWT payload will be converted into"""
+    accepted_audiences: Sequence[str] | None = None
+    accepted_issuers: Sequence[str] | None = None
 
     @property
     def openapi_components(self) -> Components:
@@ -411,6 +431,8 @@ class JWTCookieAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
             scopes=self.scopes,
             token_secret=self.token_secret,
             token_cls=self.token_cls,
+            token_issuer=self.accepted_issuers,
+            token_audience=self.accepted_audiences,
         )
 
     def login(
@@ -579,6 +601,14 @@ class OAuth2PasswordBearerAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, 
     """
     token_cls: type[Token] = Token
     """Target type the JWT payload will be converted into"""
+    accepted_audiences: Sequence[str] | None = None
+    """Audiences to accept when verifying the token. If given, and the audience in the
+    token does not match, a 401 response is returned
+    """
+    accepted_issuers: Sequence[str] | None = None
+    """Issuers to accept when verifying the token. If given, and the issuer in the
+    token does not match, a 401 response is returned
+    """
 
     @property
     def middleware(self) -> DefineMiddleware:
@@ -600,6 +630,8 @@ class OAuth2PasswordBearerAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, 
             scopes=self.scopes,
             token_secret=self.token_secret,
             token_cls=self.token_cls,
+            token_issuer=self.accepted_issuers,
+            token_audience=self.accepted_audiences,
         )
 
     @property

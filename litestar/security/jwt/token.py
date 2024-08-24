@@ -3,7 +3,7 @@ from __future__ import annotations
 import dataclasses
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
-from typing import TYPE_CHECKING, Any, Dict, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional, Sequence
 
 import jwt
 import msgspec
@@ -72,13 +72,26 @@ class Token:
             raise ImproperlyConfiguredException("iat must be a current or past time")
 
     @classmethod
-    def decode(cls, encoded_token: str, secret: str, algorithm: str) -> Self:
+    def decode(
+        cls,
+        encoded_token: str,
+        secret: str,
+        algorithm: str,
+        audience: Sequence[str] | None = None,
+        issuer: Sequence[str] | None = None,
+    ) -> Self:
         """Decode a passed in token string and returns a Token instance.
 
         Args:
             encoded_token: A base64 string containing an encoded JWT.
             secret: The secret with which the JWT is encoded. It may optionally be an individual JWK or JWS set dict
             algorithm: The algorithm used to encode the JWT.
+            audience: Verify the audience when decoding the token. If the audience in
+                the token does not match any audience given, raise a
+                :exc:`NotAuthorizedException`
+            issuer: Verify the issuer when decoding the token. If the issuer in the
+                token does not match any issuer given, raise a
+                :exc:`NotAuthorizedException`
 
         Returns:
             A decoded Token instance.
@@ -91,7 +104,9 @@ class Token:
                 jwt=encoded_token,
                 key=secret,
                 algorithms=[algorithm],
-                options={"verify_aud": False},
+                issuer=list(issuer) if issuer else None,
+                audience=audience,
+                options={"verify_aud": bool(audience)},
             )
             # msgspec can do these conversions as well, but to keep backwards
             # compatibility, we do it ourselves, since the datetime parsing works a
@@ -106,8 +121,8 @@ class Token:
         except (
             KeyError,
             jwt.DecodeError,
-            ImproperlyConfiguredException,
             jwt.exceptions.InvalidAlgorithmError,
+            ImproperlyConfiguredException,
             msgspec.ValidationError,
         ) as e:
             raise NotAuthorizedException("Invalid token") from e

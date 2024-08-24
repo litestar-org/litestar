@@ -65,3 +65,18 @@ conversions.
     converting the token. To support more complex conversions, the
     :meth:`~.security.jwt.Token.encode` and :meth:`~.security.jwt.Token.decode` methods
     must be overwritten in the subclass.
+
+
+Verifying issuer and audience
+-----------------------------
+
+To verify the JWT ``iss`` (*issuer*) and ``aud`` (*audience*) claim, a list of accepted
+issuers or audiences can bet set on the authentication backend. When a JWT is decoded,
+the issuer or audience on the token is compared to the list of accepted issuers /
+audiences. If the value in the token does not match any value in the respective list,
+a :exc:`NotAuthorizedException` will be raised, returning a response with a
+``401 Unauthorized`` status.
+
+
+.. literalinclude:: /examples/security/jwt/verify_issuer_audience.py
+   :caption: Verifying issuer and audience
