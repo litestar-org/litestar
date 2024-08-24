@@ -6,7 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from litestar import Litestar, post
-from litestar.contrib.sqlalchemy.plugins import SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
+from litestar.plugins.sqlalchemy import SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
 
 if TYPE_CHECKING:
     from typing import Any, Dict, List
@@ -38,11 +38,10 @@ async def add_item(data: Dict[str, Any], db_session: AsyncSession) -> List[Dict[
 
 
 async def init_db(app: Litestar) -> None:
-    async with app.state.db_engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all)
+    async with config.get_engine().begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
 
 config = SQLAlchemyAsyncConfig(connection_string="sqlite+aiosqlite:///todo_async.sqlite")
 plugin = SQLAlchemyInitPlugin(config=config)
-app = Litestar(route_handlers=[add_item], plugins=[plugin], on_startup=[init_db])
+app = Litestar(route_handlers=[add_item], plugins=[plugin], on_startup=[init_db], debug=True)

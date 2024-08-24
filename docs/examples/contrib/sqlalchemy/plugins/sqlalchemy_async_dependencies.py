@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from sqlalchemy import select
 
 from litestar import Litestar, post
-from litestar.contrib.sqlalchemy.plugins import SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
+from litestar.plugins.sqlalchemy import SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
 
 if TYPE_CHECKING:
     from typing import Tuple
