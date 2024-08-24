@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+import dataclasses
 from dataclasses import replace
 from typing import TYPE_CHECKING, Any, Collection, Generic, TypeVar
 from warnings import warn
 
 from typing_extensions import Annotated, TypeAlias, override
 
-from litestar.contrib.pydantic.utils import is_pydantic_undefined, is_pydantic_v2
+from litestar.contrib.pydantic.utils import is_pydantic_2_model, is_pydantic_undefined, is_pydantic_v2
 from litestar.dto.base_dto import AbstractDTO
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.dto.field import DTO_FIELD_META_KEY, extract_dto_field
@@ -16,6 +17,8 @@ from litestar.typing import FieldDefinition
 
 if TYPE_CHECKING:
     from typing import Generator
+
+    from litestar.dto import DTOConfig
 
 try:
     import pydantic as _  # noqa: F401
@@ -160,3 +163,13 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
         if pydantic_v2 is not Empty:  # type: ignore[comparison-overlap]
             return field_definition.is_subclass_of((pydantic_v1.BaseModel, pydantic_v2.BaseModel))
         return field_definition.is_subclass_of(pydantic_v1.BaseModel)  # type: ignore[unreachable]
+
+    @classmethod
+    def get_config_for_model_type(cls, config: DTOConfig, model_type: type[Any]) -> DTOConfig:
+        if is_pydantic_2_model(model_type) and (model_config := getattr(model_type, "model_config", None)):
+            if model_config.get("extra") == "forbid":
+                config = dataclasses.replace(config, forbid_unknown_fields=True)
+        elif issubclass(model_type, pydantic_v1.BaseModel) and (model_config := getattr(model_type, "Config", None)):  # noqa: SIM102
+            if getattr(model_config, "extra", None) == "forbid":
+                config = dataclasses.replace(config, forbid_unknown_fields=True)
+        return config
