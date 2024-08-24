@@ -19,12 +19,12 @@ repos:
       - id: trailing-whitespace
         exclude: "tests/unit/test_openapi/test_typescript_converter/test_converter.py"
   - repo: https://github.com/provinzkraut/unasyncd
-    rev: "v0.7.3"
+    rev: "v0.8.1"
     hooks:
       - id: unasyncd
         additional_dependencies: ["ruff"]
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.6.1"
+    rev: "v0.6.2"
     hooks:
       - id: ruff
         args: ["--fix"]
