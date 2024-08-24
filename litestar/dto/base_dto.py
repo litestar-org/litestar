@@ -84,6 +84,24 @@ class AbstractDTO(Generic[T]):
 
         return type(f"{cls.__name__}[{annotation}]", (cls,), cls_dict)  # pyright: ignore
 
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        if (config := getattr(cls, "config", None)) and (model_type := getattr(cls, "model_type", None)):
+            # it's a concrete class
+            cls.config = cls.get_config_for_model_type(config, model_type)
+
+    @classmethod
+    def get_config_for_model_type(cls, config: DTOConfig, model_type: type[Any]) -> DTOConfig:
+        """Create a new configuration for this specific ``model_type``, during the
+        creation of the factory.
+
+        The returned config object will be set as the ``config`` attribute on the newly
+        defined factory class.
+
+        .. versionadded: 2.11
+
+        """
+        return config
+
     def decode_builtins(self, value: dict[str, Any]) -> Any:
         """Decode a dictionary of Python values into an the DTO's datatype."""
 
