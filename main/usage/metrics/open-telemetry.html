@@ -1552,11 +1552,11 @@ this package, you should first install the required dependencies:</p>
 of <a class="reference internal" href="../../reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryConfig" title="litestar.contrib.opentelemetry.OpenTelemetryConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenTelemetryConfig</span></code></a> and passing the middleware it creates to
 the Litestar constructor:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-<span class="kn">from</span> <span class="nn">litestar.contrib.opentelemetry</span> <span class="kn">import</span> <span class="n">OpenTelemetryConfig</span>
+<span class="kn">from</span> <span class="nn">litestar.contrib.opentelemetry</span> <span class="kn">import</span> <span class="n">OpenTelemetryConfig</span><span class="p">,</span> <span class="n">OpenTelemetryPlugin</span>
 
 <span class="n">open_telemetry_config</span> <span class="o">=</span> <span class="n">OpenTelemetryConfig</span><span class="p">()</span>
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">open_telemetry_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">OpenTelemetryPlugin</span><span class="p">(</span><span class="n">open_telemetry_config</span><span class="p">)])</span>
 </pre></div>
 </div>
 <p>The above example will work out of the box if you configure a global <code class="docutils literal notranslate"><span class="pre">tracer_provider</span></code> and/or <code class="docutils literal notranslate"><span class="pre">metric_provider</span></code> and an
