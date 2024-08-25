@@ -286,7 +286,6 @@ def merge_signature_namespaces(
     """
     for signature_key, signature_type in additional_signature_namespace.items():
         if signature_key in signature_namespace and signature_namespace.get(signature_key) != signature_type:
-            msg = f"Type '{signature_key}' is already defined as a different type in the signature namespace"
-            warn_signature_namespace_override(msg)
+            warn_signature_namespace_override(signature_key)
     signature_namespace.update(additional_signature_namespace)
     return signature_namespace
