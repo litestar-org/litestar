@@ -53,7 +53,7 @@ from litestar.types import (
 )
 from litestar.types.builtin_types import NoneType
 from litestar.utils import ensure_async_callable
-from litestar.utils.predicates import is_async_callable
+from litestar.utils.predicates import is_async_callable, is_class_and_subclass
 from litestar.utils.scope.state import ScopeState
 from litestar.utils.warnings import warn_implicit_sync_to_thread, warn_sync_to_thread_with_async_callable
 
@@ -641,7 +641,15 @@ class HTTPRouteHandler(BaseRouteHandler):
         if self.http_methods == {HttpMethod.HEAD} and not self.parsed_fn_signature.return_type.is_subclass_of(
             (NoneType, File, ASGIFileResponse)
         ):
-            raise ImproperlyConfiguredException("A response to a head request should not have a body")
+            field_definition = self.parsed_fn_signature.return_type
+            if not (
+                is_empty_response_annotation(field_definition)
+                or is_class_and_subclass(field_definition.annotation, File)
+                or is_class_and_subclass(field_definition.annotation, ASGIFileResponse)
+            ):
+                raise ImproperlyConfiguredException(
+                    f"{self}: Handlers for 'HEAD' requests must not return a value. Either return 'None' or a response type without a body."
+                )
 
         if (body_param := self.parsed_fn_signature.parameters.get("body")) and not body_param.is_subclass_of(bytes):
             raise ImproperlyConfiguredException(
