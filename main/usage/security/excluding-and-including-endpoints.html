@@ -1539,12 +1539,23 @@ document.write(`
                   
   <section id="excluding-and-including-endpoints">
 <h1>Excluding and including endpoints<a class="headerlink" href="#excluding-and-including-endpoints" title="Permalink to this heading">#</a></h1>
-<p>Please make sure you read the <a class="reference internal" href="security-backends.html"><span class="doc">security backends documentation</span></a> first for learning how to set up a security backend. This section focuses on configuring the <code class="docutils literal notranslate"><span class="pre">exclude</span></code> rule for those backends.</p>
-<p>There are multiple ways for including or excluding endpoints in the authentication flow. The default rules are configured in the <code class="docutils literal notranslate"><span class="pre">Auth</span></code> object used (subclass of <a class="reference internal" href="../../reference/security/index.html#litestar.security.AbstractSecurityConfig" title="litestar.security.base.AbstractSecurityConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractSecurityConfig</span></code></a>). The examples below use <a class="reference internal" href="../../reference/security/session_auth.html#litestar.security.session_auth.SessionAuth" title="litestar.security.session_auth.auth.SessionAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">SessionAuth</span></code></a> but it is the same for <a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.JWTAuth" title="litestar.security.jwt.auth.JWTAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWTAuth</span></code></a> and <a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.JWTCookieAuth" title="litestar.security.jwt.auth.JWTCookieAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWTCookieAuth</span></code></a>.</p>
+<p>Please make sure you read the <a class="reference internal" href="security-backends.html"><span class="doc">security backends documentation</span></a> first for
+learning how to set up a security backend. This section focuses on configuring the <code class="docutils literal notranslate"><span class="pre">exclude</span></code> rule for those backends.</p>
+<p>There are multiple ways for including or excluding endpoints in the authentication flow. The default rules are
+configured in the <code class="docutils literal notranslate"><span class="pre">Auth</span></code> object used (subclass of <a class="reference internal" href="../../reference/security/index.html#litestar.security.AbstractSecurityConfig" title="litestar.security.base.AbstractSecurityConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractSecurityConfig</span></code></a>). The examples
+below use <a class="reference internal" href="../../reference/security/session_auth.html#litestar.security.session_auth.SessionAuth" title="litestar.security.session_auth.auth.SessionAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">SessionAuth</span></code></a> but it is the same for <a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.JWTAuth" title="litestar.security.jwt.auth.JWTAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWTAuth</span></code></a>
+and <a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.JWTCookieAuth" title="litestar.security.jwt.auth.JWTCookieAuth"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWTCookieAuth</span></code></a>.</p>
 <section id="excluding-routes">
 <h2>Excluding routes<a class="headerlink" href="#excluding-routes" title="Permalink to this heading">#</a></h2>
-<p>The <code class="docutils literal notranslate"><span class="pre">exclude</span></code> argument takes a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">string</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">strings</span></code></a> that are interpreted as regex patterns. For example, the configuration below would apply authentication to all endpoints except those where the route starts with <code class="docutils literal notranslate"><span class="pre">/login</span></code>, <code class="docutils literal notranslate"><span class="pre">/signup</span></code>, or <code class="docutils literal notranslate"><span class="pre">/schema</span></code>. Thus, one does not have to exclude <code class="docutils literal notranslate"><span class="pre">/schema/swagger</span></code> as well - it is included in the <code class="docutils literal notranslate"><span class="pre">/schema</span></code> pattern.</p>
-<p>This also means that passing <code class="docutils literal notranslate"><span class="pre">/</span></code> will disable authentication for all routes.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">exclude</span></code> argument takes a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">string</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">strings</span></code></a> that are interpreted
+as regex patterns. For example, the configuration below would apply authentication to all endpoints except those where
+the route starts with <code class="docutils literal notranslate"><span class="pre">/login</span></code>, <code class="docutils literal notranslate"><span class="pre">/signup</span></code>, or <code class="docutils literal notranslate"><span class="pre">/schema</span></code>. Thus, one does not have to exclude <code class="docutils literal notranslate"><span class="pre">/schema/swagger</span></code>
+as well - it is included in the <code class="docutils literal notranslate"><span class="pre">/schema</span></code> pattern.</p>
+<div class="admonition danger">
+<p class="admonition-title">Danger</p>
+<p>Passing <code class="docutils literal notranslate"><span class="pre">/</span></code> will disable authentication for all routes, since, as a regex, it
+matches <em>every</em> path.</p>
+</div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">session_auth</span> <span class="o">=</span> <span class="n">SessionAuth</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">ServerSideSessionBackend</span><span class="p">](</span>
 <span class="n">retrieve_user_handler</span><span class="o">=</span><span class="n">retrieve_user_handler</span><span class="p">,</span>
 <span class="c1"># we must pass a config for a session backend.</span>
@@ -1560,7 +1571,9 @@ document.write(`
 </section>
 <section id="including-routes">
 <h2>Including routes<a class="headerlink" href="#including-routes" title="Permalink to this heading">#</a></h2>
-<p>Since the exclusion rules are evaluated as regex, it is possible to pass a rule that inverts exclusion - meaning, no path but the one specified in the pattern will be protected by authentication. In the example below, only endpoints under the <code class="docutils literal notranslate"><span class="pre">/secured</span></code> route will require authentication - all other routes do not.</p>
+<p>Since the exclusion rules are evaluated as regex, it is possible to pass a rule that inverts exclusion - meaning, no
+path but the one specified in the pattern will be protected by authentication. In the example below, only endpoints
+under the <code class="docutils literal notranslate"><span class="pre">/secured</span></code> route will require authentication - all other routes do not.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">...</span>
 <span class="n">session_auth</span> <span class="o">=</span> <span class="n">SessionAuth</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">ServerSideSessionBackend</span><span class="p">](</span>
 <span class="n">retrieve_user_handler</span><span class="o">=</span><span class="n">retrieve_user_handler</span><span class="p">,</span>
@@ -1577,7 +1590,8 @@ document.write(`
 </section>
 <section id="exclude-from-auth">
 <h2>Exclude from auth<a class="headerlink" href="#exclude-from-auth" title="Permalink to this heading">#</a></h2>
-<p>Sometimes, you might want to apply authentication to all endpoints under a route but a few selected. In this case, you can pass <code class="docutils literal notranslate"><span class="pre">exclude_from_auth=True</span></code> to the route handler as shown below.</p>
+<p>Sometimes, you might want to apply authentication to all endpoints under a route but a few selected. In this case, you
+can pass <code class="docutils literal notranslate"><span class="pre">exclude_from_auth=True</span></code> to the route handler as shown below.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">...</span>
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/secured&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">secured_route</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
@@ -1589,7 +1603,8 @@ document.write(`
 <span class="o">...</span>
 </pre></div>
 </div>
-<p>You can set an alternative option key in the security configuration, e.g., you can use <code class="docutils literal notranslate"><span class="pre">no_auth</span></code> instead of <code class="docutils literal notranslate"><span class="pre">exclude_from_auth</span></code>.</p>
+<p>You can set an alternative option key in the security configuration, e.g., you can use <code class="docutils literal notranslate"><span class="pre">no_auth</span></code> instead of
+<code class="docutils literal notranslate"><span class="pre">exclude_from_auth</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="o">...</span>
 <span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/secured&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">secured_route</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>

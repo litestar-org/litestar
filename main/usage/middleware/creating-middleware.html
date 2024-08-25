@@ -1899,6 +1899,11 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
+<div class="admonition danger">
+<p class="admonition-title">Danger</p>
+<p>Using <code class="docutils literal notranslate"><span class="pre">/</span></code> as an exclude pattern, will disable this middleware for all routes,
+since, as a regex, it matches <em>every</em> path</p>
+</div>
 </section>
 <section id="using-definemiddleware-to-pass-arguments">
 <h2>Using DefineMiddleware to pass arguments<a class="headerlink" href="#using-definemiddleware-to-pass-arguments" title="Permalink to this heading">#</a></h2>
