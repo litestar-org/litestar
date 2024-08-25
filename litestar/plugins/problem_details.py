@@ -29,7 +29,7 @@ def _problem_details_exception_handler(request: Request[Any, Any, Any], exc: Pro
 
 def _create_exception_handler(
     exc_to_problem_details_exc_fn: Callable[[ExceptionT], ProblemDetailsException], exc_type: type[ExceptionT]
-) -> ExceptionHandler:
+) -> ExceptionHandler[ExceptionT]:
     def _exception_handler(req: Request, exc: exc_type) -> Response:  # type: ignore[valid-type]
         problem_details_exc = exc_to_problem_details_exc_fn(exc)
 
@@ -39,7 +39,12 @@ def _create_exception_handler(
 
 
 def _http_exception_to_problem_detail_exception(exc: HTTPException) -> ProblemDetailsException:
-    return ProblemDetailsException(status_code=exc.status_code, detail=exc.detail, extra=exc.extra, headers=exc.headers)
+    return ProblemDetailsException(
+        status_code=exc.status_code,
+        title=exc.detail,
+        extra=exc.extra,
+        headers=exc.headers,
+    )
 
 
 class ProblemDetailsException(HTTPException):
@@ -54,7 +59,7 @@ class ProblemDetailsException(HTTPException):
         status_code: int | None = None,
         headers: dict[str, str] | None = None,
         extra: dict[str, Any] | list[Any] | None = None,
-        type_: str = "about:blank",
+        type_: str | None = None,
         title: str | None = None,
         instance: str | None = None,
     ) -> None:
@@ -71,7 +76,13 @@ class ProblemDetailsException(HTTPException):
             instance: The instance field in the problem details.
         """
 
-        super().__init__(*args, detail=detail, status_code=status_code, headers=headers, extra=extra)
+        super().__init__(
+            *args,
+            detail=detail,
+            status_code=status_code,
+            headers=headers,
+            extra=extra,
+        )
 
         self.type_ = type_
         self.title = title
@@ -80,14 +91,15 @@ class ProblemDetailsException(HTTPException):
     def to_response(self, request: Request[Any, Any, Any]) -> Response[dict[str, Any]]:
         """Convert the problem details exception into a ``Response.``"""
 
-        problem_details = {"type": self.type_, "status": self.status_code}
-        for attr in ("title", "instance", "detail"):
-            if (value := getattr(self, attr, None)) is not None:
-                problem_details[attr] = value
+        problem_details: dict[str, Any] = {"type": self.type_, "status": self.status_code}
+        if self.title is not None:
+            problem_details["title"] = self.title
+        if self.instance is not None:
+            problem_details["instance"] = self.instance
+        if self.detail is not None:
+            problem_details["detail"] = self.detail
 
-        if isinstance(self.extra, Mapping):
-            problem_details.update(self.extra)
-        elif (extra := self.extra) is not None:
+        if extra := self.extra:
             if isinstance(extra, Mapping):
                 problem_details.update(extra)
             else:
