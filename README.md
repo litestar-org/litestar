@@ -89,6 +89,7 @@ app = Litestar(route_handlers=[hello_world])
 - Support for `dataclasses`, `TypedDict`, [pydantic version 1 and version 2](https://docs.pydantic.dev/latest/),
   [msgspec](https://github.com/jcrist/msgspec) and [attrs](https://www.attrs.org/en/stable/)
 - Layered parameter declaration
+- Support for [RFC 9457](https://datatracker.ietf.org/doc/html/rfc9457) standardized "Problem Detail" error responses
 - [Automatic API documentation with](#redoc-swagger-ui-and-stoplight-elements-api-documentation):
   - [Scalar](https://github.com/scalar/scalar/)
   - [RapiDoc](https://github.com/rapi-doc/RapiDoc)

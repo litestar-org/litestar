@@ -10,5 +10,6 @@ plugins
     :hidden:
 
     flash_messages
+    problem_details
     structlog
     sqlalchemy

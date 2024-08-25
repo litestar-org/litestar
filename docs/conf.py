@@ -214,6 +214,7 @@ nitpick_ignore_regex = [
     (PY_RE, r"advanced_alchemy\.config.common\.SessionT"),
     (PY_RE, r".*R"),
     (PY_OBJ, r"litestar.security.jwt.auth.TokenT"),
+    (PY_CLASS, "ExceptionToProblemDetailMapType"),
 ]
 
 # Warnings about missing references to those targets in the specified location will be ignored.
