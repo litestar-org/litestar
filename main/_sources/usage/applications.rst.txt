@@ -258,6 +258,6 @@ Parameters that support layering are:
 * :doc:`return_dto </usage/dto/0-basic-use>`
 * ``security``
 * ``tags``
-* ``type_decoders``
-* ``type_encoders``
+* :doc:`type_decoders </usage/custom-types>`
+* :doc:`type_encoders </usage/custom-types>`
 * :ref:`websocket_class <usage/websockets:custom websocket>`
