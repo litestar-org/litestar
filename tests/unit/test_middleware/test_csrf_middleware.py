@@ -249,6 +249,10 @@ def test_csrf_middleware_exclude_from_check() -> None:
         assert response.status_code == HTTP_201_CREATED
         assert response.json() == data
 
+    with create_test_client(
+        route_handlers=[get_handler, get_handler2],
+        csrf_config=CSRFConfig(secret=str(urandom(10)), exclude=["unprotected-handler"]),
+    ) as client:
         response = client.get("/protected-handler")
         assert response.status_code == HTTP_200_OK
         assert "set-cookie" in response.headers
