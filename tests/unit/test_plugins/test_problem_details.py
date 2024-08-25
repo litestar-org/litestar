@@ -16,12 +16,14 @@ from litestar.testing.helpers import create_test_client
     [
         (
             ProblemDetailsException(),
-            {"type": "about:blank", "status": 500, "detail": HTTPStatus(500).phrase},
+            {
+                "status": 500,
+                "detail": HTTPStatus(500).phrase,
+            },
         ),
         (
             ProblemDetailsException(status_code=400, detail="validation error", instance="https://example.net/error"),
             {
-                "type": "about:blank",
                 "status": 400,
                 "detail": "validation error",
                 "instance": "https://example.net/error",
@@ -34,7 +36,6 @@ from litestar.testing.helpers import create_test_client
                 extra={"error": "must be positive integer", "pointer": "#age"},
             ),
             {
-                "type": "about:blank",
                 "status": 400,
                 "detail": "validation error",
                 "error": "must be positive integer",
@@ -48,7 +49,6 @@ from litestar.testing.helpers import create_test_client
                 extra=[{"error": "must be positive integer", "pointer": "#age"}],
             ),
             {
-                "type": "about:blank",
                 "status": 400,
                 "detail": "validation error",
                 "extra": [{"error": "must be positive integer", "pointer": "#age"}],
@@ -56,7 +56,11 @@ from litestar.testing.helpers import create_test_client
         ),
         (
             ProblemDetailsException(type_="https://example.net/validation-error"),
-            {"type": "https://example.net/validation-error", "status": 500, "detail": HTTPStatus(500).phrase},
+            {
+                "type": "https://example.net/validation-error",
+                "status": 500,
+                "detail": HTTPStatus(500).phrase,
+            },
         ),
     ],
 )

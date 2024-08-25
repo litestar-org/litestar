@@ -91,7 +91,9 @@ class ProblemDetailsException(HTTPException):
     def to_response(self, request: Request[Any, Any, Any]) -> Response[dict[str, Any]]:
         """Convert the problem details exception into a ``Response.``"""
 
-        problem_details: dict[str, Any] = {"type": self.type_, "status": self.status_code}
+        problem_details: dict[str, Any] = {"status": self.status_code}
+        if self.type_ is not None:
+            problem_details["type"] = self.type_
         if self.title is not None:
             problem_details["title"] = self.title
         if self.instance is not None:
