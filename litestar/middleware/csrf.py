@@ -32,7 +32,6 @@ if TYPE_CHECKING:
 
 __all__ = ("CSRFMiddleware",)
 
-
 CSRF_SECRET_BYTES = 32
 CSRF_SECRET_LENGTH = CSRF_SECRET_BYTES * 2
 
@@ -95,6 +94,15 @@ class CSRFMiddleware(MiddlewareProtocol):
             None
         """
         if scope["type"] != ScopeType.HTTP:
+            await self.app(scope, receive, send)
+            return
+
+        if should_bypass_middleware(
+            scope=scope,
+            scopes=self.scopes,
+            exclude_opt_key=self.config.exclude_from_csrf_key,
+            exclude_path_pattern=self.exclude,
+        ):
             await self.app(scope, receive, send)
             return
 
