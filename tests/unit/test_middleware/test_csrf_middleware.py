@@ -253,13 +253,13 @@ def test_csrf_middleware_exclude_from_check() -> None:
         route_handlers=[get_handler, get_handler2],
         csrf_config=CSRFConfig(secret=str(urandom(10)), exclude=["unprotected-handler"]),
     ) as client:
-        response = client.get("/protected-handler")
-        assert response.status_code == HTTP_200_OK
-        assert "set-cookie" in response.headers
-
         response = client.get("/unprotected-handler")
         assert response.status_code == HTTP_200_OK
         assert "set-cookie" not in response.headers
+
+        response = client.get("/protected-handler")
+        assert response.status_code == HTTP_200_OK
+        assert "set-cookie" in response.headers
 
 
 def test_csrf_middleware_configure_name_for_exclude_from_check_via_opts() -> None:
