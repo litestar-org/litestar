@@ -727,6 +727,7 @@ def auth_cls(request: pytest.FixtureRequest) -> Any:
     "accepted_audiences, token_audience, expected_status_code",
     [
         (["audience_a"], "audience_a", 200),
+        ("audience_a", "audience_a", 200),
         (["audience_a"], ["audience_a", "audience_b"], 401),
         (["audience_b"], "audience_a", 401),
     ],
