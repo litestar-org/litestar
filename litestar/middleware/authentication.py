@@ -61,7 +61,7 @@ class AbstractAuthenticationMiddleware(ABC):
             scopes: ASGI scopes processed by the authentication middleware.
         """
         self.app = app
-        self.exclude = build_exclude_path_pattern(exclude=exclude)
+        self.exclude = build_exclude_path_pattern(exclude=exclude, middleware_cls=type(self))
         self.exclude_http_methods = (HttpMethod.OPTIONS,) if exclude_http_methods is None else exclude_http_methods
         self.exclude_opt_key = exclude_from_auth_key
         self.scopes = scopes or {ScopeType.HTTP, ScopeType.WEBSOCKET}

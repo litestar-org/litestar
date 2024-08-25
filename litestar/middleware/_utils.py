@@ -7,16 +7,23 @@ from litestar.exceptions import ImproperlyConfiguredException
 
 __all__ = ("build_exclude_path_pattern", "should_bypass_middleware")
 
+from litestar.utils.warnings import warn_middleware_excluded_on_all_routes
 
 if TYPE_CHECKING:
     from litestar.types import Method, Scope, Scopes
 
 
-def build_exclude_path_pattern(*, exclude: str | list[str] | None = None) -> Pattern | None:
+def build_exclude_path_pattern(
+    *,
+    exclude: str | list[str] | None = None,
+    middleware_cls: type | None = None,
+) -> Pattern | None:
     """Build single path pattern from list of patterns to opt-out from middleware processing.
 
     Args:
         exclude: A pattern or a list of patterns.
+        middleware_cls: Middleware class this is being called from - used for creating
+            more informative warnings
 
     Returns:
         An optional pattern to match against scope["path"] to opt-out from middleware processing.
@@ -25,7 +32,10 @@ def build_exclude_path_pattern(*, exclude: str | list[str] | None = None) -> Pat
         return None
 
     try:
-        return re.compile("|".join(exclude)) if isinstance(exclude, list) else re.compile(exclude)
+        pattern = re.compile("|".join(exclude)) if isinstance(exclude, list) else re.compile(exclude)
+        if pattern.match("/"):
+            warn_middleware_excluded_on_all_routes(pattern, middleware_cls=middleware_cls)
+        return pattern
     except re.error as e:  # pragma: no cover
         raise ImproperlyConfiguredException(
             "Unable to compile exclude patterns for middleware. Please make sure you passed a valid regular expression."
