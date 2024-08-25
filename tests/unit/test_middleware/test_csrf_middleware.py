@@ -243,6 +243,9 @@ def test_csrf_middleware_exclude_from_check() -> None:
 
 
 def test_csrf_middleware_exclude_from_set_cookies() -> None:
+    #  https://github.com/litestar-org/litestar/issues/3688
+    #  middleware should be bypassed completely when excluded, so no cookies should be set
+
     @get("/protected-handler")
     def get_handler() -> dict:
         return {}
