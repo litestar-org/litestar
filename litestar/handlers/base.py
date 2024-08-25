@@ -437,7 +437,9 @@ class BaseRouteHandler:
         if self._resolved_layered_parameters is Empty:
             ns: dict[str, Any] = {}
             for layer in self.ownership_layers:
-                merge_signature_namespaces(signature_namespace=ns, additional_signature_namespace=layer.signature_namespace)
+                merge_signature_namespaces(
+                    signature_namespace=ns, additional_signature_namespace=layer.signature_namespace
+                )
             self._resolved_signature_namespace = ns
         return cast("dict[str, Any]", self._resolved_signature_namespace)
 
