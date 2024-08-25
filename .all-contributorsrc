@@ -1848,6 +1848,15 @@
         "code",
         "test"
       ]
+    },
+    {
+      "login": "aarcex3",
+      "name": "Agustin Arce",
+      "avatar_url": "https://avatars.githubusercontent.com/u/59893355?v=4",
+      "profile": "http://aarcex3.github.io",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
