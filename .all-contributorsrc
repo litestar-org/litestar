@@ -1838,6 +1838,16 @@
         "test",
         "doc"
       ]
+    },
+    {
+      "login": "trim21",
+      "name": "Trim21",
+      "avatar_url": "https://avatars.githubusercontent.com/u/13553903?v=4",
+      "profile": "https://blog.trim21.me/",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
