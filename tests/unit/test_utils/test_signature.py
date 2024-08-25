@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import inspect
-import os
 import warnings
 from inspect import Parameter
 from types import ModuleType
@@ -159,26 +158,24 @@ def test_add_types_to_signature_namespace() -> None:
     assert ns == {"int": int, "str": str}
 
 
-def test_add_types_to_signature_namespace_no_warn() -> None:
+def test_add_types_to_signature_namespace_no_warn(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test add_types_to_signature_namespace with existing types."""
-    if os.environ.get("LITESTAR_WARN_SIGNATURE_NAMESPACE_OVERRIDE", None):
-        del os.environ["LITESTAR_WARN_SIGNATURE_NAMESPACE_OVERRIDE"]
+    monkeypatch.delenv("LITESTAR_WARN_SIGNATURE_NAMESPACE_OVERRIDE", raising=False)
     with warnings.catch_warnings():
         warnings.simplefilter("error")
         add_types_to_signature_namespace([int], {"int": int})
 
 
-def test_add_types_to_signature_namespace_with_existing_types_warn() -> None:
+def test_add_types_to_signature_namespace_with_existing_types_warn(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test add_types_to_signature_namespace with existing types raises."""
-    if os.environ.get("LITESTAR_WARN_SIGNATURE_NAMESPACE_OVERRIDE", None):
-        del os.environ["LITESTAR_WARN_SIGNATURE_NAMESPACE_OVERRIDE"]
+    monkeypatch.delenv("LITESTAR_WARN_SIGNATURE_NAMESPACE_OVERRIDE", raising=False)
     with pytest.warns(LitestarWarning):
         add_types_to_signature_namespace([int], {"int": str})
 
 
-def test_add_types_to_signature_namespace_warn_disabled() -> None:
+def test_add_types_to_signature_namespace_warn_disabled(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test add_types_to_signature_namespace with existing types."""
-    os.environ["LITESTAR_WARN_SIGNATURE_NAMESPACE_OVERRIDE"] = "0"
+    monkeypatch.setenv("LITESTAR_WARN_SIGNATURE_NAMESPACE_OVERRIDE", "0")
     with warnings.catch_warnings():
         warnings.simplefilter("error")
         add_types_to_signature_namespace([int], {"int": str})
