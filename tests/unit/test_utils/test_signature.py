@@ -3,16 +3,18 @@
 from __future__ import annotations
 
 import inspect
-import logging
+import os
+import warnings
 from inspect import Parameter
 from types import ModuleType
-from typing import TYPE_CHECKING, Any, Callable, Generic, List, Optional, TypeVar, Union
+from typing import Any, Callable, Generic, List, Optional, TypeVar, Union
 
 import pytest
 from typing_extensions import Annotated, NotRequired, Required, TypedDict, get_args, get_type_hints
 
 from litestar import Controller, Router, post
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.exceptions.base_exceptions import LitestarWarning
 from litestar.file_system import BaseLocalFileSystem
 from litestar.static_files import StaticFiles
 from litestar.types.asgi_types import Receive, Scope, Send
@@ -20,10 +22,6 @@ from litestar.types.builtin_types import NoneType
 from litestar.types.empty import Empty
 from litestar.typing import FieldDefinition
 from litestar.utils.signature import ParsedSignature, add_types_to_signature_namespace, get_fn_type_hints
-
-if TYPE_CHECKING:
-    from _pytest.logging import LogCaptureFixture
-
 
 T = TypeVar("T")
 U = TypeVar("U")
@@ -161,22 +159,29 @@ def test_add_types_to_signature_namespace() -> None:
     assert ns == {"int": int, "str": str}
 
 
-def test_add_types_to_signature_namespace_with_logger(caplog: LogCaptureFixture) -> None:
+def test_add_types_to_signature_namespace_no_warn() -> None:
     """Test add_types_to_signature_namespace with existing types."""
-    logger = logging.getLogger("test_logger")
-    with caplog.at_level(logging.DEBUG, logger="test_logger"):
-        add_types_to_signature_namespace([int], {"int": int}, logger=logger)  # type: ignore[arg-type]
-        log_output = "; ".join(caplog.messages)
-        assert "already defined" not in log_output
+    if os.environ.get("LITESTAR_WARN_SIGNATURE_NAMESPACE_OVERRIDE", None):
+        del os.environ["LITESTAR_WARN_SIGNATURE_NAMESPACE_OVERRIDE"]
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        add_types_to_signature_namespace([int], {"int": int})
 
 
-def test_add_types_to_signature_namespace_with_existing_types_logger(caplog: LogCaptureFixture) -> None:
+def test_add_types_to_signature_namespace_with_existing_types_warn() -> None:
     """Test add_types_to_signature_namespace with existing types raises."""
-    logger = logging.getLogger("test_logger_2")
-    with caplog.at_level(logging.DEBUG, logger="test_logger_2"):
-        add_types_to_signature_namespace([int], {"int": str}, logger=logger)  # type: ignore[arg-type]
-        log_output = "; ".join(caplog.messages)
-        assert "already defined" in log_output
+    if os.environ.get("LITESTAR_WARN_SIGNATURE_NAMESPACE_OVERRIDE", None):
+        del os.environ["LITESTAR_WARN_SIGNATURE_NAMESPACE_OVERRIDE"]
+    with pytest.warns(LitestarWarning):
+        add_types_to_signature_namespace([int], {"int": str})
+
+
+def test_add_types_to_signature_namespace_warn_disabled() -> None:
+    """Test add_types_to_signature_namespace with existing types."""
+    os.environ["LITESTAR_WARN_SIGNATURE_NAMESPACE_OVERRIDE"] = "1"
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        add_types_to_signature_namespace([int], {"int": str})
 
 
 @pytest.mark.parametrize(
