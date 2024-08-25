@@ -142,14 +142,13 @@ class BaseRouteHandler:
         self.opt.update(**kwargs)
         self.owner: Controller | Router | None = None
         self.return_dto = return_dto
-        self.signature_namespace = add_types_to_signature_namespace(
-            signature_types or [], dict(signature_namespace or {})
-        )
         self.type_decoders = type_decoders
         self.type_encoders = type_encoders
-
         self.paths = (
             {normalize_path(p) for p in path} if path and isinstance(path, list) else {normalize_path(path or "/")}  # type: ignore[arg-type]
+        )
+        self.signature_namespace = add_types_to_signature_namespace(
+            signature_types or [], dict(signature_namespace or {}), self.app.logger
         )
 
     def __call__(self, fn: AsyncAnyCallable) -> Self:
