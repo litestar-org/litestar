@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import secrets
 import sys
 from dataclasses import asdict
 from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, Optional
+from typing import Any
 from uuid import uuid4
 
 import jwt
@@ -23,10 +25,10 @@ from litestar.security.jwt import Token
 @pytest.mark.parametrize("token_extras", [None, {"email": "test@test.com"}])
 def test_token(
     algorithm: str,
-    token_issuer: Optional[str],
-    token_audience: Optional[str],
-    token_unique_jwt_id: Optional[str],
-    token_extras: Optional[Dict[str, Any]],
+    token_issuer: str | None,
+    token_audience: str | None,
+    token_unique_jwt_id: str | None,
+    token_extras: dict[str, Any] | None,
 ) -> None:
     token_secret = secrets.token_hex()
     token = Token(
