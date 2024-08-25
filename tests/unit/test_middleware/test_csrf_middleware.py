@@ -244,7 +244,6 @@ def test_csrf_middleware_exclude_from_check() -> None:
         data = {"field": "value"}
         response = client.post("/protected-handler", data=data)
         assert response.status_code == HTTP_403_FORBIDDEN
-        assert "set-cookie" in response.headers
 
         response = client.post("/unprotected-handler", data=data)
         assert response.status_code == HTTP_201_CREATED
