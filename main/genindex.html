@@ -1245,6 +1245,7 @@ document.write(`
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="usage/plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="usage/plugins/flash_messages.html">Flash Messages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/plugins/problem_details.html">Problem Details</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="usage/responses.html">Responses</a></li>
@@ -1356,6 +1357,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="reference/params.html">params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="reference/plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
@@ -1674,6 +1676,8 @@ document.write(`
         <li><a href="reference/exceptions.html#litestar.exceptions.WebSocketException.params.*args">(litestar.exceptions.WebSocketException parameter)</a>
 </li>
         <li><a href="reference/middleware/index.html#litestar.middleware.DefineMiddleware.params.*args">(litestar.middleware.DefineMiddleware parameter)</a>
+</li>
+        <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsException.params.*args">(litestar.plugins.problem_details.ProblemDetailsException parameter)</a>
 </li>
         <li><a href="reference/template.html#litestar.template.TemplateProtocol.render.params.*args">(litestar.template.TemplateProtocol.render parameter)</a>
 </li>
@@ -2416,6 +2420,12 @@ document.write(`
 </li>
         <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPluginProtocol.__init__">(litestar.plugins.OpenAPISchemaPluginProtocol method)</a>
 </li>
+        <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsConfig.__init__">(litestar.plugins.problem_details.ProblemDetailsConfig method)</a>
+</li>
+        <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsException.__init__">(litestar.plugins.problem_details.ProblemDetailsException method)</a>
+</li>
+        <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsPlugin.__init__">(litestar.plugins.problem_details.ProblemDetailsPlugin method)</a>
+</li>
         <li><a href="reference/plugins/index.html#litestar.plugins.SerializationPluginProtocol.__init__">(litestar.plugins.SerializationPluginProtocol method)</a>
 </li>
         <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.AlembicAsyncConfig.__init__">(litestar.plugins.sqlalchemy.AlembicAsyncConfig method)</a>
@@ -2951,6 +2961,8 @@ document.write(`
         <li><a href="reference/plugins/flash_messages.html#litestar.plugins.flash.FlashPlugin.on_app_init.params.app_config">(litestar.plugins.flash.FlashPlugin.on_app_init parameter)</a>
 </li>
         <li><a href="reference/plugins/index.html#litestar.plugins.InitPluginProtocol.on_app_init.params.app_config">(litestar.plugins.InitPluginProtocol.on_app_init parameter)</a>
+</li>
+        <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsPlugin.on_app_init.params.app_config">(litestar.plugins.problem_details.ProblemDetailsPlugin.on_app_init parameter)</a>
 </li>
         <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin.on_app_init.params.app_config">(litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin.on_app_init parameter)</a>
 </li>
@@ -4584,6 +4596,8 @@ document.write(`
 </li>
         <li><a href="reference/exceptions.html#litestar.exceptions.WebSocketException.params.detail">(litestar.exceptions.WebSocketException parameter)</a>
 </li>
+        <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsException.params.detail">(litestar.plugins.problem_details.ProblemDetailsException parameter)</a>
+</li>
       </ul></li>
       <li><a href="reference/contrib/piccolo.html#litestar.contrib.piccolo.PiccoloDTO.detect_nested_field">detect_nested_field() (litestar.contrib.piccolo.PiccoloDTO class method)</a>
 
@@ -4745,6 +4759,8 @@ document.write(`
         <li><a href="reference/events.html#litestar.events.SimpleEventEmitter.emit">(litestar.events.SimpleEventEmitter method)</a>
 </li>
       </ul></li>
+      <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsConfig.enable_for_all_http_exceptions">enable_for_all_http_exceptions (litestar.plugins.problem_details.ProblemDetailsConfig attribute)</a>
+</li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.enable_from_linting">enable_from_linting (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
 </li>
       <li><a href="reference/plugins/structlog.html#litestar.plugins.structlog.StructlogConfig.enable_middleware_logging">enable_middleware_logging (litestar.plugins.structlog.StructlogConfig attribute)</a>
@@ -5047,6 +5063,8 @@ document.write(`
       </ul></li>
       <li><a href="reference/types.html#litestar.types.Logger.exception">exception() (litestar.types.Logger method)</a>
 </li>
+      <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsConfig.exception_handler">exception_handler() (litestar.plugins.problem_details.ProblemDetailsConfig method)</a>
+</li>
       <li><a href="reference/app.html#litestar.app.Litestar.params.exception_handlers">exception_handlers (litestar.app.Litestar parameter)</a>
 
       <ul>
@@ -5101,6 +5119,8 @@ document.write(`
         <li><a href="reference/logging/config.html#litestar.logging.config.StructLoggingConfig.exception_logging_handler">(litestar.logging.config.StructLoggingConfig attribute)</a>
 </li>
       </ul></li>
+      <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsConfig.exception_to_problem_detail_map">exception_to_problem_detail_map (litestar.plugins.problem_details.ProblemDetailsConfig attribute)</a>
+</li>
       <li><a href="reference/types.html#litestar.types.ExceptionHandler">ExceptionHandler (in module litestar.types)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.ExceptionHandlersMap">ExceptionHandlersMap (in module litestar.types)</a>
@@ -5359,6 +5379,8 @@ document.write(`
         <li><a href="reference/exceptions.html#litestar.exceptions.HTTPException.params.extra">(litestar.exceptions.HTTPException parameter)</a>
 </li>
         <li><a href="reference/exceptions.html#litestar.exceptions.responses.ExceptionResponseContent.extra">(litestar.exceptions.responses.ExceptionResponseContent attribute)</a>
+</li>
+        <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsException.params.extra">(litestar.plugins.problem_details.ProblemDetailsException parameter)</a>
 </li>
         <li><a href="reference/typing.html#litestar.typing.FieldDefinition.extra">(litestar.typing.FieldDefinition attribute)</a>
 </li>
@@ -6072,6 +6094,8 @@ document.write(`
 </li>
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OpenAPIResponse.headers">(litestar.openapi.spec.OpenAPIResponse attribute)</a>
 </li>
+        <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsException.params.headers">(litestar.plugins.problem_details.ProblemDetailsException parameter)</a>
+</li>
         <li><a href="reference/response/base.html#litestar.response.base.ASGIResponse.params.headers">(litestar.response.base.ASGIResponse parameter)</a>
 </li>
         <li><a href="reference/response/base.html#litestar.response.base.Response.params.headers">(litestar.response.base.Response parameter)</a>
@@ -6177,10 +6201,10 @@ document.write(`
 </li>
       <li><a href="reference/status_codes.html#litestar.status_codes.HTTP_102_PROCESSING">HTTP_102_PROCESSING (in module litestar.status_codes)</a>
 </li>
-      <li><a href="reference/status_codes.html#litestar.status_codes.HTTP_103_EARLY_HINTS">HTTP_103_EARLY_HINTS (in module litestar.status_codes)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/status_codes.html#litestar.status_codes.HTTP_103_EARLY_HINTS">HTTP_103_EARLY_HINTS (in module litestar.status_codes)</a>
+</li>
       <li><a href="reference/status_codes.html#litestar.status_codes.HTTP_200_OK">HTTP_200_OK (in module litestar.status_codes)</a>
 </li>
       <li><a href="reference/status_codes.html#litestar.status_codes.HTTP_201_CREATED">HTTP_201_CREATED (in module litestar.status_codes)</a>
@@ -6506,6 +6530,8 @@ document.write(`
       <li><a href="reference/dto/data_structures.html#litestar.dto.data_structures.DTOData.update_instance.params.instance">instance (litestar.dto.data_structures.DTOData.update_instance parameter)</a>
 
       <ul>
+        <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsException.params.instance">(litestar.plugins.problem_details.ProblemDetailsException parameter)</a>
+</li>
         <li><a href="reference/template.html#litestar.template.TemplateConfig.instance">(litestar.template.TemplateConfig attribute)</a>
 </li>
       </ul></li>
@@ -7308,8 +7334,6 @@ document.write(`
         <li><a href="reference/di.html#module-litestar.di">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     litestar.dto.base_dto
 
@@ -7317,6 +7341,8 @@ document.write(`
         <li><a href="reference/dto/base_dto.html#module-litestar.dto.base_dto">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     litestar.dto.config
 
@@ -7539,6 +7565,13 @@ document.write(`
 
       <ul>
         <li><a href="reference/plugins/flash_messages.html#module-litestar.plugins.flash">module</a>
+</li>
+      </ul></li>
+      <li>
+    litestar.plugins.problem_details
+
+      <ul>
+        <li><a href="reference/plugins/problem_details.html#module-litestar.plugins.problem_details">module</a>
 </li>
       </ul></li>
       <li>
@@ -8306,6 +8339,8 @@ document.write(`
 </li>
         <li><a href="reference/plugins/flash_messages.html#module-litestar.plugins.flash">litestar.plugins.flash</a>
 </li>
+        <li><a href="reference/plugins/problem_details.html#module-litestar.plugins.problem_details">litestar.plugins.problem_details</a>
+</li>
         <li><a href="reference/plugins/sqlalchemy.html#module-litestar.plugins.sqlalchemy">litestar.plugins.sqlalchemy</a>
 </li>
         <li><a href="reference/plugins/structlog.html#module-litestar.plugins.structlog">litestar.plugins.structlog</a>
@@ -8603,6 +8638,8 @@ document.write(`
         <li><a href="reference/plugins/flash_messages.html#litestar.plugins.flash.FlashPlugin.on_app_init">(litestar.plugins.flash.FlashPlugin method)</a>
 </li>
         <li><a href="reference/plugins/index.html#litestar.plugins.InitPluginProtocol.on_app_init">(litestar.plugins.InitPluginProtocol method)</a>
+</li>
+        <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsPlugin.on_app_init">(litestar.plugins.problem_details.ProblemDetailsPlugin method)</a>
 </li>
         <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin.on_app_init">(litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin method)</a>
 </li>
@@ -9252,6 +9289,12 @@ document.write(`
       <li><a href="reference/datastructures/index.html#litestar.datastructures.CacheControlHeader.private">private (litestar.datastructures.CacheControlHeader attribute)</a>
 </li>
       <li><a href="reference/dto/field.html#litestar.dto.field.Mark.PRIVATE">PRIVATE (litestar.dto.field.Mark attribute)</a>
+</li>
+      <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsConfig">ProblemDetailsConfig (class in litestar.plugins.problem_details)</a>
+</li>
+      <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsException">ProblemDetailsException</a>
+</li>
+      <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsPlugin">ProblemDetailsPlugin (class in litestar.plugins.problem_details)</a>
 </li>
       <li><a href="reference/logging/config.html#litestar.logging.config.StructLoggingConfig.processors">processors (litestar.logging.config.StructLoggingConfig attribute)</a>
 </li>
@@ -10853,10 +10896,10 @@ document.write(`
       </ul></li>
       <li><a href="reference/concurrency.html#litestar.concurrency.set_asyncio_executor">set_asyncio_executor() (in module litestar.concurrency)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.set_cached_history">set_cached_history() (litestar.middleware.rate_limit.RateLimitMiddleware method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/response/base.html#litestar.response.base.Response.set_cookie">set_cookie() (litestar.response.base.Response method)</a>
 
       <ul>
@@ -11139,6 +11182,8 @@ document.write(`
         <li><a href="reference/handlers.html#litestar.handlers.post.params.status_code">(litestar.handlers.post parameter)</a>
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.put.params.status_code">(litestar.handlers.put parameter)</a>
+</li>
+        <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsException.params.status_code">(litestar.plugins.problem_details.ProblemDetailsException parameter)</a>
 </li>
         <li><a href="reference/response/base.html#litestar.response.base.ASGIResponse.params.status_code">(litestar.response.base.ASGIResponse parameter)</a>
 </li>
@@ -11608,6 +11653,8 @@ document.write(`
 </li>
         <li><a href="reference/params.html#litestar.params.Parameter.params.title">(litestar.params.Parameter parameter)</a>
 </li>
+        <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsException.params.title">(litestar.plugins.problem_details.ProblemDetailsException parameter)</a>
+</li>
       </ul></li>
       <li><a href="reference/response/base.html#litestar.response.base.Response.to_asgi_response">to_asgi_response() (litestar.response.base.Response method)</a>
 
@@ -11659,6 +11706,8 @@ document.write(`
 
       <ul>
         <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.to_response">(litestar.handlers.HTTPRouteHandler method)</a>
+</li>
+        <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsException.to_response">(litestar.plugins.problem_details.ProblemDetailsException method)</a>
 </li>
       </ul></li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.BaseSchemaObject.to_schema">to_schema() (litestar.openapi.spec.BaseSchemaObject method)</a>
@@ -11797,8 +11846,12 @@ document.write(`
         <li><a href="reference/types.html#litestar.types.FileInfo.type">(litestar.types.FileInfo attribute)</a>
 </li>
       </ul></li>
-      <li><a href="reference/typing.html#litestar.typing.FieldDefinition.type_">type_ (litestar.typing.FieldDefinition property)</a>
+      <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsException.params.type_">type_ (litestar.plugins.problem_details.ProblemDetailsException parameter)</a>
+
+      <ul>
+        <li><a href="reference/typing.html#litestar.typing.FieldDefinition.type_">(litestar.typing.FieldDefinition property)</a>
 </li>
+      </ul></li>
       <li><a href="reference/app.html#litestar.app.Litestar.params.type_decoders">type_decoders (litestar.app.Litestar parameter)</a>
 
       <ul>
