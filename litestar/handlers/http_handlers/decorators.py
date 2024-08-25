@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Callable, Mapping, Sequence
 
 from litestar.enums import HttpMethod, MediaType
+from litestar.exceptions import HTTPException
 from litestar.handlers.http_handlers.base import HTTPRouteHandler
 from litestar.openapi.spec import Operation, SecurityRequirement
 from litestar.types import (
@@ -24,14 +25,6 @@ from litestar.types import (
     TypeDecodersSequence,
     TypeEncodersMap,
 )
-from litestar.exceptions import HTTPException, ImproperlyConfiguredException
-from litestar.openapi.spec import Operation
-from litestar.response.file import ASGIFileResponse, File
-from litestar.types import Empty, TypeDecodersSequence
-from litestar.utils import is_class_and_subclass
-
-from ._utils import is_empty_response_annotation
-from .base import HTTPRouteHandler
 
 if TYPE_CHECKING:
     from typing import Any, Mapping, Sequence
