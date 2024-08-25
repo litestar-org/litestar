@@ -1586,8 +1586,8 @@ the function when it is called.</p>
 <li><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a>: Accepts ints and floats.</p></li>
 <li><p><a class="reference internal" href="../../reference/handlers.html#litestar.handlers.WebsocketListener.path" title="litestar.handlers.WebsocketListener.path"><code class="xref py py-class docutils literal notranslate"><span class="pre">path</span></code></a>: Accepts valid POSIX paths.</p></li>
 <li><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>: Accepts all string values.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">time</span></code>: Accepts time strings with optional timezone compatible with pydantic formats.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">timedelta</span></code>: Accepts duration strings compatible with the pydantic formats.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">time</span></code>: Accepts time strings with optional timezone compatible with standard (Pydantic/Msgspec) datetime formats.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">timedelta</span></code>: Accepts duration strings compatible with the standard (Pydantic/Msgspec) timedelta formats.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">uuid</span></code>: Accepts all uuid values.</p></li>
 </ul>
 <p>The types declared in the path <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.12)"><span class="xref std std-term">parameter</span></a> and the function do not need to match 1:1 - as long as
@@ -1628,8 +1628,7 @@ this is fine. For example, consider this:</p>
 <p>The <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.12)"><span class="xref std std-term">parameter</span></a> defined inside the <code class="docutils literal notranslate"><span class="pre">path</span></code> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">kwarg</span></a> is typed as <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> , because the value
 passed as part of the request will be a timestamp in milliseconds without any decimals. The parameter in
 the function declaration though is typed as <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime.datetime</span></code></a>.</p>
-<p>This works because the int value will be passed to a pydantic model representing the function signature, which will
-coerce the <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> into a <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a>.</p>
+<p>This works because the int value will be automatically coerced from an <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a> into a <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a>.</p>
 <p>Thus, when the function is called it will be called with a <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a>-typed parameter.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -1727,10 +1726,10 @@ Every <a class="reference external" href="https://docs.python.org/3/glossary.htm
 </div>
 <div class="info admonition">
 <p class="admonition-title">Technical details</p>
-<p>These <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.12)"><span class="xref std std-term">parameters</span></a> will be parsed from the function signature and used to generate a Pydantic model.
+<p>These <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.12)"><span class="xref std std-term">parameters</span></a> will be parsed from the function signature and used to generate an internal data model.
 This model in turn will be used to validate the parameters and generate the OpenAPI schema.</p>
-<p>This means that you can also use any pydantic type in the signature, and it will
-follow the same kind of validation and parsing as you would get from pydantic.</p>
+<p>This ability allows you to use any number of schema/modelling libraries, including Pydantic, Msgspec, Attrs, and Dataclasses, and it will
+follow the same kind of validation and parsing as you would get from these libraries.</p>
 </div>
 <p>Query <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.12)"><span class="xref std std-term">parameters</span></a> come in three basic types:</p>
 <ul class="simple">
@@ -1808,7 +1807,6 @@ def<span class="w"> </span>index<span class="o">(</span>param:<span class="w"> <
 <h2>Type coercion<a class="headerlink" href="#type-coercion" title="Permalink to this heading">#</a></h2>
 <p>It is possible to coerce query <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.12)"><span class="xref std std-term">parameters</span></a> into different types.
 A query starts out as a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">string</span></code></a>, but its values can be parsed into all kinds of types.</p>
-<p>Since this is done by Pydantic, everything that works there will work for query parameters as well.</p>
 <div class="literal-block-wrapper docutils container" id="id7">
 <div class="code-block-caption"><span class="caption-text">Coercing query parameters into different types</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>from<span class="w"> </span>datetime<span class="w"> </span>import<span class="w"> </span>datetime,<span class="w"> </span>timedelta
