@@ -215,7 +215,7 @@ Thus, in the following example, the middleware will only run against the route h
 
 .. danger::
 
-    Using ``/`` as an exclude pattern, will disable authentication for all routes,#
+    Using ``/`` as an exclude pattern, will disable this middleware for all routes,
     since, as a regex, it matches *every* path
 
 
