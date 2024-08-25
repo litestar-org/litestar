@@ -178,7 +178,7 @@ def test_add_types_to_signature_namespace_with_existing_types_warn() -> None:
 
 def test_add_types_to_signature_namespace_warn_disabled() -> None:
     """Test add_types_to_signature_namespace with existing types."""
-    os.environ["LITESTAR_WARN_SIGNATURE_NAMESPACE_OVERRIDE"] = "1"
+    os.environ["LITESTAR_WARN_SIGNATURE_NAMESPACE_OVERRIDE"] = "0"
     with warnings.catch_warnings():
         warnings.simplefilter("error")
         add_types_to_signature_namespace([int], {"int": str})
