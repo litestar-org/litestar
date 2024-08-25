@@ -3,7 +3,7 @@ from typing import Generic, TypeVar
 
 import pytest
 
-from litestar import HttpMethod, Litestar, Response, head
+from litestar import Litestar, Response, head
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.response.file import ASGIFileResponse, File
 from litestar.routes import HTTPRoute
