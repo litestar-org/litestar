@@ -236,10 +236,12 @@ def test_csrf_middleware_exclude_from_check() -> None:
         data = {"field": "value"}
         response = client.post("/protected-handler", data=data)
         assert response.status_code == HTTP_403_FORBIDDEN
+        assert "set-cookie" in response.headers
 
         response = client.post("/unprotected-handler", data=data)
         assert response.status_code == HTTP_201_CREATED
         assert response.json() == data
+        assert "set-cookie" not in response.headers
 
 
 def test_csrf_middleware_configure_name_for_exclude_from_check_via_opts() -> None:
