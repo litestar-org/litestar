@@ -70,3 +70,16 @@ def warn_middleware_excluded_on_all_routes(
         category=LitestarWarning,
         stacklevel=2,
     )
+
+
+def warn_signature_namespace_override(signature_key: str, stacklevel: int = 2) -> None:
+    if os.getenv("LITESTAR_WARN_SIGNATURE_NAMESPACE_OVERRIDE") == "0":
+        return
+
+    warnings.warn(
+        f"Type '{signature_key}' is already defined as a different type in the signature namespace"
+        "If this is intentional, you can disable this warning by setting "
+        "LITESTAR_WARN_SIGNATURE_NAMESPACE_OVERRIDE=0",
+        category=LitestarWarning,
+        stacklevel=stacklevel,
+    )
