@@ -22,7 +22,7 @@ from litestar.types import (
 from litestar.typing import FieldDefinition
 from litestar.utils import ensure_async_callable, get_name, normalize_path
 from litestar.utils.helpers import unwrap_partial
-from litestar.utils.signature import ParsedSignature, add_types_to_signature_namespace
+from litestar.utils.signature import ParsedSignature, add_types_to_signature_namespace, merge_signature_namespaces
 
 if TYPE_CHECKING:
     from typing_extensions import Self
@@ -437,8 +437,7 @@ class BaseRouteHandler:
         if self._resolved_layered_parameters is Empty:
             ns: dict[str, Any] = {}
             for layer in self.ownership_layers:
-                ns.update(layer.signature_namespace)
-
+                merge_signature_namespaces(signature_namespace=ns, additional_signature_namespace=layer.signature_namespace)
             self._resolved_signature_namespace = ns
         return cast("dict[str, Any]", self._resolved_signature_namespace)
 
