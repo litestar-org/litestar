@@ -1,17 +1,12 @@
-
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" data-accent-color="amber" data-content_root="">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>testing - Litestar Framework</title>
-    <link rel="shortcut icon" href="../_static/favicon.svg"/><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="types" href="types.html" /><link rel="prev" title="template" href="template.html" />
-
-  <script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>testing - Litestar Framework</title><link rel="shortcut icon" href="../_static/favicon.svg"/><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="types" href="types.html" /><link rel="prev" title="template" href="template.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
-    setColorMode(sessionStorage._theme||"auto");
-  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=aecf457f" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=bb1fd5f2" />
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=397bb51e" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=5117e564" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -32,7 +27,7 @@
 <meta name="twitter:card" content="summary"/>
 <meta property="og:image" content="_static/logo-light.png"/>
   </head>
-<body><div class="document"><div class="announcement">
+<body><div class="announcement">
     <div class="announcement-inner">
       <p>You are viewing the <bold>v3-development</bold> version of the documentation. Click here to go to the latest version.</p>
       <button class="announcement-close" aria-label="Close announcement">
@@ -42,21 +37,18 @@
   </div><div class="sy-head">
   <div class="sy-head-blur"></div>
   <div class="sy-head-inner sy-container mx-auto">
-    <a class="sy-head-brand mr-4" href="/">
-      <img class="light-logo" src="../_static/logo-light.png" alt="Litestar" height="28" />
-      <img class="dark-logo" src="../_static/logo-dark.png" alt="Litestar" height="28" />
+    <a class="sy-head-brand" href="/">
+      <img class="light-logo" src="../_static/logo-light.png" alt="Litestar" height="28" loading="lazy" />
+      <img class="dark-logo" src="../_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
       <strong>Litestar</strong>
     </a>
-    <div class="sy-head-links" id="NavLinks">
-      <nav class="sy-head-nav">
-
-<ul><li class="link"><a href="../index.html">Home</a></li>
+    <div class="sy-head-nav" id="HeadNav">
+      <nav class="sy-head-links"><ul><li class="link"><a href="../index.html">Home</a></li>
       <li class="link"><button type="button">
             <span>Community</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul>
-          <li><a href="../contribution-guide.html">
+        <ul><li><a href="../contribution-guide.html">
                 <span>Contributing</span>
                 <small>Learn how to contribute to the Litestar project</small>
               </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
@@ -71,8 +63,7 @@
             <span>About</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul>
-          <li><a href="https://litestar.dev/about/organization">
+        <ul><li><a href="https://litestar.dev/about/organization">
                 <span>Litestar Organization</span>
                 <small>Details about the Litestar organization</small>
               </a></li><li><a href="https://litestar.dev/about/litestar-releases">
@@ -84,8 +75,7 @@
             <span>Release notes</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul>
-          <li><a href="../release-notes/whats-new-3.html">
+        <ul><li><a href="../release-notes/whats-new-3.html">
                 <span>What's new in 3.0</span>
                 <small>Explore the new features in Litestar 3.0</small>
               </a></li><li><a href="../release-notes/changelog.html">
@@ -100,8 +90,7 @@
             <span>Help</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul>
-          <li><a href="https://discord.gg/litestar">
+        <ul><li><a href="https://discord.gg/litestar">
                 <span>Discord Help Forum</span>
                 <small>Dedicated Discord help forum</small>
               </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
@@ -113,45 +102,32 @@
               </a></li></ul>
       </li><li class="link">
           <a href="https://github.com/sponsors/Litestar-Org">
-            <span>Sponsor</span>
-            
-          </a>
+            <span>Sponsor</span></a>
         </li></ul></nav>
-      <div class="sy-head-extra flex items-center print:hidden">
-        
-<form class="searchbox flex items-center" action="../search.html" method="get">
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
   <input type="text" name="q" placeholder="Search" />
   <kbd>/</kbd>
-</form>
-        
-  <div class="nav-versions">
+</form><div class="nav-versions">
     <button type="button" aria-label="Versions">
       <span class="md:hidden">Versions</span>
       <span class="hidden md:inline">latest</span>
       <i class="i-lucide chevron-down"></i>
     </button>
-    <div class="nav-versions-choices">
-      <ul><li><a href="/latest">latest</a></li><li><a href="/main">development</a></li><li><a href="/3-dev">v3</a></li><li><a href="/2">v2</a></li><li><a href="/1">v1</a></li></ul></div>
-  </div>
-        
-        <div class="sy-head-socials flex items-center">
-  <a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)">
-    <i class="i-simpleicons x-twitter"></i>
-  </a>
-    <a href="https://discord.gg/litestar" aria-label="Discord">
-      <i class="i-simpleicons discord"></i>
-    </a>
-</div>
-      </div>
+    <div class="nav-versions-choices"><ul><li><a href="/latest">latest</a></li><li><a href="/main">development</a></li><li><a href="/3-dev">v3</a></li><li><a href="/2">v2</a></li><li><a href="/1">v1</a></li></ul></div>
+  </div><div class="sy-head-socials">
+<a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)">
+  <i class="i-simpleicons x-twitter"></i>
+</a>
+  <a href="https://discord.gg/litestar" aria-label="Discord">
+    <i class="i-simpleicons discord"></i>
+  </a></div></div>
     </div>
-    <div class="sy-head-actions flex items-center shrink-0 print:hidden">
-      <button class="js-theme theme-switch flex items-center"
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
 data-aria-auto="Switch to light color mode"
 data-aria-light="Switch to dark color mode"
 data-aria-dark="Switch to auto color mode">
 <i class="i-lucide theme-icon"></i>
-</button>
-      <button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="NavLinks" aria-expanded="false">
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="HeadNav" aria-expanded="false">
         <div class="hamburger">
           <span class="hamburger_1"></span>
           <span class="hamburger_2 -translate-x-2"></span>
@@ -164,8 +140,7 @@ data-aria-dark="Switch to auto color mode">
 <div class="sy-page sy-container flex mx-auto">
   <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
     <div class="sy-lside-inner md:sticky">
-      <div class="sy-scrollbar p-6">
-<div class="sidebar-links">
+      <div class="sy-scrollbar p-6"><div class="sidebar-links">
   <ul>
     <li><a class="icon-link" href="https://github.com/orgs/litestar-org/discussions">
   <span class="icon">
@@ -180,7 +155,6 @@ data-aria-dark="Switch to auto color mode">
 </a></li>
   </ul>
 </div>
-
         <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting Started</a></li>
@@ -266,6 +240,7 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/static-files.html">Static files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/custom-types.html">Custom types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/stores.html">Stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/templating.html">Templating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/testing.html">Testing</a></li>
@@ -482,109 +457,103 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 
         </div>
-      </div>
-      
-    </div>
+      </div></div>
   </aside>
   <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
   <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
     <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
       <i class="i-lucide close"></i>
     </button>
-    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4">
-  <div class="localtoc">
-    <h3>On this page</h3>
-    <ul>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
 <li><a class="reference internal" href="#litestar.testing.AsyncTestClient"><code class="docutils literal notranslate"><span class="pre">AsyncTestClient</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.testing.AsyncTestClient.lifespan_handler"><code class="docutils literal notranslate"><span class="pre">AsyncTestClient.lifespan_handler</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.AsyncTestClient.exit_stack"><code class="docutils literal notranslate"><span class="pre">AsyncTestClient.exit_stack</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.AsyncTestClient.__init__"><code class="docutils literal notranslate"><span class="pre">AsyncTestClient.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.AsyncTestClient.websocket_connect"><code class="docutils literal notranslate"><span class="pre">AsyncTestClient.websocket_connect()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.AsyncTestClient.get_session_data"><code class="docutils literal notranslate"><span class="pre">AsyncTestClient.get_session_data()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.AsyncTestClient.set_session_data"><code class="docutils literal notranslate"><span class="pre">AsyncTestClient.set_session_data()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.AsyncTestClient.app"><code class="docutils literal notranslate"><span class="pre">AsyncTestClient.app</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.AsyncTestClient.base_url"><code class="docutils literal notranslate"><span class="pre">AsyncTestClient.base_url</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.AsyncTestClient.backend"><code class="docutils literal notranslate"><span class="pre">AsyncTestClient.backend</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.AsyncTestClient.backend_options"><code class="docutils literal notranslate"><span class="pre">AsyncTestClient.backend_options</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.AsyncTestClient.session_config"><code class="docutils literal notranslate"><span class="pre">AsyncTestClient.session_config</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.AsyncTestClient.cookies"><code class="docutils literal notranslate"><span class="pre">AsyncTestClient.cookies</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.AsyncTestClient.lifespan_handler"><code class="docutils literal notranslate">lifespan_handler</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.AsyncTestClient.exit_stack"><code class="docutils literal notranslate">exit_stack</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.AsyncTestClient.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.AsyncTestClient.websocket_connect"><code class="docutils literal notranslate">websocket_connect()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.AsyncTestClient.get_session_data"><code class="docutils literal notranslate">get_session_data()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.AsyncTestClient.set_session_data"><code class="docutils literal notranslate">set_session_data()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.AsyncTestClient.app"><code class="docutils literal notranslate">app</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.AsyncTestClient.base_url"><code class="docutils literal notranslate">base_url</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.AsyncTestClient.backend"><code class="docutils literal notranslate">backend</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.AsyncTestClient.backend_options"><code class="docutils literal notranslate">backend_options</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.AsyncTestClient.session_config"><code class="docutils literal notranslate">session_config</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.AsyncTestClient.cookies"><code class="docutils literal notranslate">cookies</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.testing.BaseTestClient"><code class="docutils literal notranslate"><span class="pre">BaseTestClient</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.testing.BaseTestClient.blocking_portal"><code class="docutils literal notranslate"><span class="pre">BaseTestClient.blocking_portal</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.BaseTestClient.__init__"><code class="docutils literal notranslate"><span class="pre">BaseTestClient.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.BaseTestClient.app"><code class="docutils literal notranslate"><span class="pre">BaseTestClient.app</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.BaseTestClient.base_url"><code class="docutils literal notranslate"><span class="pre">BaseTestClient.base_url</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.BaseTestClient.backend"><code class="docutils literal notranslate"><span class="pre">BaseTestClient.backend</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.BaseTestClient.backend_options"><code class="docutils literal notranslate"><span class="pre">BaseTestClient.backend_options</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.BaseTestClient.cookies"><code class="docutils literal notranslate"><span class="pre">BaseTestClient.cookies</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.BaseTestClient.session_backend"><code class="docutils literal notranslate"><span class="pre">BaseTestClient.session_backend</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.BaseTestClient.portal"><code class="docutils literal notranslate"><span class="pre">BaseTestClient.portal()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.BaseTestClient.session_config"><code class="docutils literal notranslate"><span class="pre">BaseTestClient.session_config</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.BaseTestClient.blocking_portal"><code class="docutils literal notranslate">blocking_portal</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.BaseTestClient.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.BaseTestClient.app"><code class="docutils literal notranslate">app</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.BaseTestClient.base_url"><code class="docutils literal notranslate">base_url</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.BaseTestClient.backend"><code class="docutils literal notranslate">backend</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.BaseTestClient.backend_options"><code class="docutils literal notranslate">backend_options</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.BaseTestClient.cookies"><code class="docutils literal notranslate">cookies</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.BaseTestClient.session_backend"><code class="docutils literal notranslate">session_backend</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.BaseTestClient.portal"><code class="docutils literal notranslate">portal()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.BaseTestClient.session_config"><code class="docutils literal notranslate">session_config</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.testing.create_async_test_client"><code class="docutils literal notranslate"><span class="pre">create_async_test_client()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.testing.create_test_client"><code class="docutils literal notranslate"><span class="pre">create_test_client()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.testing.RequestFactory"><code class="docutils literal notranslate"><span class="pre">RequestFactory</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.testing.RequestFactory.__init__"><code class="docutils literal notranslate"><span class="pre">RequestFactory.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.RequestFactory.app"><code class="docutils literal notranslate"><span class="pre">RequestFactory.app</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.RequestFactory.server"><code class="docutils literal notranslate"><span class="pre">RequestFactory.server</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.RequestFactory.port"><code class="docutils literal notranslate"><span class="pre">RequestFactory.port</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.RequestFactory.root_path"><code class="docutils literal notranslate"><span class="pre">RequestFactory.root_path</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.RequestFactory.scheme"><code class="docutils literal notranslate"><span class="pre">RequestFactory.scheme</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.RequestFactory.handler_kwargs"><code class="docutils literal notranslate"><span class="pre">RequestFactory.handler_kwargs</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.RequestFactory.serializer"><code class="docutils literal notranslate"><span class="pre">RequestFactory.serializer</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.RequestFactory.get"><code class="docutils literal notranslate"><span class="pre">RequestFactory.get()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.RequestFactory.post"><code class="docutils literal notranslate"><span class="pre">RequestFactory.post()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.RequestFactory.put"><code class="docutils literal notranslate"><span class="pre">RequestFactory.put()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.RequestFactory.patch"><code class="docutils literal notranslate"><span class="pre">RequestFactory.patch()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.RequestFactory.delete"><code class="docutils literal notranslate"><span class="pre">RequestFactory.delete()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.RequestFactory.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.RequestFactory.app"><code class="docutils literal notranslate">app</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.RequestFactory.server"><code class="docutils literal notranslate">server</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.RequestFactory.port"><code class="docutils literal notranslate">port</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.RequestFactory.root_path"><code class="docutils literal notranslate">root_path</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.RequestFactory.scheme"><code class="docutils literal notranslate">scheme</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.RequestFactory.handler_kwargs"><code class="docutils literal notranslate">handler_kwargs</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.RequestFactory.serializer"><code class="docutils literal notranslate">serializer</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.RequestFactory.get"><code class="docutils literal notranslate">get()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.RequestFactory.post"><code class="docutils literal notranslate">post()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.RequestFactory.put"><code class="docutils literal notranslate">put()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.RequestFactory.patch"><code class="docutils literal notranslate">patch()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.RequestFactory.delete"><code class="docutils literal notranslate">delete()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.testing.TestClient"><code class="docutils literal notranslate"><span class="pre">TestClient</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.testing.TestClient.lifespan_handler"><code class="docutils literal notranslate"><span class="pre">TestClient.lifespan_handler</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.TestClient.exit_stack"><code class="docutils literal notranslate"><span class="pre">TestClient.exit_stack</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.TestClient.__init__"><code class="docutils literal notranslate"><span class="pre">TestClient.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.TestClient.websocket_connect"><code class="docutils literal notranslate"><span class="pre">TestClient.websocket_connect()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.TestClient.set_session_data"><code class="docutils literal notranslate"><span class="pre">TestClient.set_session_data()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.TestClient.get_session_data"><code class="docutils literal notranslate"><span class="pre">TestClient.get_session_data()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.TestClient.app"><code class="docutils literal notranslate"><span class="pre">TestClient.app</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.TestClient.base_url"><code class="docutils literal notranslate"><span class="pre">TestClient.base_url</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.TestClient.backend"><code class="docutils literal notranslate"><span class="pre">TestClient.backend</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.TestClient.backend_options"><code class="docutils literal notranslate"><span class="pre">TestClient.backend_options</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.TestClient.session_config"><code class="docutils literal notranslate"><span class="pre">TestClient.session_config</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.TestClient.cookies"><code class="docutils literal notranslate"><span class="pre">TestClient.cookies</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.TestClient.lifespan_handler"><code class="docutils literal notranslate">lifespan_handler</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.TestClient.exit_stack"><code class="docutils literal notranslate">exit_stack</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.TestClient.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.TestClient.websocket_connect"><code class="docutils literal notranslate">websocket_connect()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.TestClient.set_session_data"><code class="docutils literal notranslate">set_session_data()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.TestClient.get_session_data"><code class="docutils literal notranslate">get_session_data()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.TestClient.app"><code class="docutils literal notranslate">app</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.TestClient.base_url"><code class="docutils literal notranslate">base_url</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.TestClient.backend"><code class="docutils literal notranslate">backend</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.TestClient.backend_options"><code class="docutils literal notranslate">backend_options</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.TestClient.session_config"><code class="docutils literal notranslate">session_config</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.TestClient.cookies"><code class="docutils literal notranslate">cookies</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.testing.WebSocketTestSession"><code class="docutils literal notranslate"><span class="pre">WebSocketTestSession</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.testing.WebSocketTestSession.exit_stack"><code class="docutils literal notranslate"><span class="pre">WebSocketTestSession.exit_stack</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.WebSocketTestSession.__init__"><code class="docutils literal notranslate"><span class="pre">WebSocketTestSession.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.WebSocketTestSession.do_asgi_call"><code class="docutils literal notranslate"><span class="pre">WebSocketTestSession.do_asgi_call()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.WebSocketTestSession.send"><code class="docutils literal notranslate"><span class="pre">WebSocketTestSession.send()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.WebSocketTestSession.send_text"><code class="docutils literal notranslate"><span class="pre">WebSocketTestSession.send_text()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.WebSocketTestSession.send_bytes"><code class="docutils literal notranslate"><span class="pre">WebSocketTestSession.send_bytes()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.WebSocketTestSession.send_json"><code class="docutils literal notranslate"><span class="pre">WebSocketTestSession.send_json()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.WebSocketTestSession.send_msgpack"><code class="docutils literal notranslate"><span class="pre">WebSocketTestSession.send_msgpack()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.WebSocketTestSession.close"><code class="docutils literal notranslate"><span class="pre">WebSocketTestSession.close()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.WebSocketTestSession.receive"><code class="docutils literal notranslate"><span class="pre">WebSocketTestSession.receive()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.WebSocketTestSession.receive_text"><code class="docutils literal notranslate"><span class="pre">WebSocketTestSession.receive_text()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.WebSocketTestSession.receive_bytes"><code class="docutils literal notranslate"><span class="pre">WebSocketTestSession.receive_bytes()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.WebSocketTestSession.receive_json"><code class="docutils literal notranslate"><span class="pre">WebSocketTestSession.receive_json()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.testing.WebSocketTestSession.receive_msgpack"><code class="docutils literal notranslate"><span class="pre">WebSocketTestSession.receive_msgpack()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.WebSocketTestSession.exit_stack"><code class="docutils literal notranslate">exit_stack</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.WebSocketTestSession.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.WebSocketTestSession.do_asgi_call"><code class="docutils literal notranslate">do_asgi_call()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.WebSocketTestSession.send"><code class="docutils literal notranslate">send()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.WebSocketTestSession.send_text"><code class="docutils literal notranslate">send_text()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.WebSocketTestSession.send_bytes"><code class="docutils literal notranslate">send_bytes()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.WebSocketTestSession.send_json"><code class="docutils literal notranslate">send_json()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.WebSocketTestSession.send_msgpack"><code class="docutils literal notranslate">send_msgpack()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.WebSocketTestSession.close"><code class="docutils literal notranslate">close()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.WebSocketTestSession.receive"><code class="docutils literal notranslate">receive()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.WebSocketTestSession.receive_text"><code class="docutils literal notranslate">receive_text()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.WebSocketTestSession.receive_bytes"><code class="docutils literal notranslate">receive_bytes()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.WebSocketTestSession.receive_json"><code class="docutils literal notranslate">receive_json()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.WebSocketTestSession.receive_msgpack"><code class="docutils literal notranslate">receive_msgpack()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.testing.life_span_handler.LifeSpanHandler"><code class="docutils literal notranslate"><span class="pre">LifeSpanHandler</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.testing.life_span_handler.LifeSpanHandler.__init__"><code class="docutils literal notranslate"><span class="pre">LifeSpanHandler.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.testing.life_span_handler.LifeSpanHandler.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
 </ul>
 </li>
 </ul>
-
-  </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
+</div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
   data-type="github" data-user="litestar-org" data-repo="litestar">
   <span class="w-8 flex items-center justify-around shrink-0 text-3xl">
     <i class="i-simpleicons github"></i>
   </span>
-  <span class="flex-grow px-2">
+  <span class="flex-grow px-2 break-all">
     <span>litestar-org/litestar</span>
     <span class="flex text-sm repo-stats-count">
       <span class="flex items-center pr-3">
@@ -599,40 +568,28 @@ data-aria-dark="Switch to auto color mode">
   </span>
 </a><div class="edit-this-page">
   <a href="https://github.com/litestar-org/litestar/blob/master/docs/reference/testing.rst">Edit this page</a>
-</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div>
-    </div>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
   </aside>
   <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
-  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
-    <div class="sy-breadcrumbs" role="navigation">
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6"><div class="sy-breadcrumbs" role="navigation">
   <div class="sy-breadcrumbs-inner flex items-center">
     <div class="md:hidden mr-3">
       <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
         <i class="i-lucide menu"></i>
       </button>
     </div>
-    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList">
-      
-      
-      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
         <a itemprop="item" href="../index.html"><span itemprop="name">Litestar</span></a>
         <span>/</span>
         <meta itemprop="position" content="1" />
-      </li>
-      
-      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
         <a itemprop="item" href="index.html"><span itemprop="name">API reference</span></a>
         <span>/</span>
         <meta itemprop="position" content="2" />
-      </li>
-      
-      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
         <strong itemprop="name">testing</strong>
         <meta itemprop="position" content="3" />
-      </li>
-      
-      
-    </ol>
+      </li></ol>
     <div class="xl:hidden ml-1">
       <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
         aria-expanded="false">
@@ -640,8 +597,7 @@ data-aria-dark="Switch to auto color mode">
       </button>
     </div>
   </div>
-</div>
-    <div class="flex flex-col break-words justify-between">
+</div><div class="flex flex-col break-words justify-between">
       <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
         <article class="yue" role="main">
           <section id="module-litestar.testing">
@@ -1779,27 +1735,18 @@ route handlers.</p></li>
 
 </section>
 
-        </article>
-        <button class="back-to-top" type="button">
+        </article><button class="back-to-top" type="button">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
     <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
   </svg>
   <span>Back to top</span>
-</button>
-        
-        <div class="navigation flex print:hidden">
-  <div class="navigation-prev">
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
     <a href="template.html">
       <i class="i-lucide chevron-left"></i>
       <div class="page-info">
-        <span>Previous</span>
-        
-        <div class="title">template</div>
-        
-      </div>
+        <span>Previous</span><div class="title">template</div></div>
     </a>
-  </div>
-  <div class="navigation-next">
+  </div><div class="navigation-next">
     <a href="types.html">
       <div class="page-info">
         <span>Next</span>
@@ -1807,16 +1754,12 @@ route handlers.</p></li>
       </div>
       <i class="i-lucide chevron-right"></i>
     </a>
-  </div>
-</div>
-        
-      </div>
+  </div></div></div>
     </div>
   </main>
 </div>
 <footer class="sy-foot">
   <div class="sy-foot-inner sy-container mx-auto">
-    
     <div class="sy-foot-reserved md:flex justify-between items-center">
       <div class="sy-foot-copyright"><p>2024, Litestar Organization</p>
   
@@ -1829,13 +1772,12 @@ route handlers.</p></li>
   </p>
 </div>
       <div class="sy-foot-socials">
-  <a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)"><i class="i-simpleicons x-twitter"></i></a>
-  <a href="https://discord.gg/litestar" aria-label="Discord"><i class="i-simpleicons discord"></i></a>
-  <a href="https://www.reddit.com/r/LitestarAPI" aria-label="Reddit"><i class="i-simpleicons reddit"></i></a>
-</div>
+<a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)"><i class="i-simpleicons x-twitter"></i></a>
+<a href="https://discord.gg/litestar" aria-label="Discord"><i class="i-simpleicons discord"></i></a>
+<a href="https://www.reddit.com/r/LitestarAPI" aria-label="Reddit"><i class="i-simpleicons reddit"></i></a></div>
     </div>
   </div>
-</footer></div>
+</footer>
       <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=c19e757c"></script>
       <script src="../_static/doctools.js?v=888ff710"></script>
       <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
@@ -1848,8 +1790,6 @@ route handlers.</p></li>
       <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
       <script src="../_static/design-tabs.js?v=36754332"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../_static/shibuya.js?v=5f0e4c24"></script>
-      <script src="../_static/versioning.js?v=bc681eff"></script>
-    
-</body>
+      <script src="../_static/shibuya.js?v=3cc430e2"></script>
+      <script src="../_static/versioning.js?v=bc681eff"></script></body>
 </html>

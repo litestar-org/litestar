@@ -1,17 +1,12 @@
-
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" data-accent-color="amber" data-content_root="">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>datastructures - Litestar Framework</title>
-    <link rel="shortcut icon" href="../../_static/favicon.svg"/><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="secret_values" href="secret_values.html" /><link rel="prev" title="data_extractors" href="../data_extractors.html" />
-
-  <script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>datastructures - Litestar Framework</title><link rel="shortcut icon" href="../../_static/favicon.svg"/><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="secret_values" href="secret_values.html" /><link rel="prev" title="data_extractors" href="../data_extractors.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
-    setColorMode(sessionStorage._theme||"auto");
-  </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=aecf457f" />
-    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=bb1fd5f2" />
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=397bb51e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=5117e564" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -32,7 +27,7 @@
 <meta name="twitter:card" content="summary"/>
 <meta property="og:image" content="_static/logo-light.png"/>
   </head>
-<body><div class="document"><div class="announcement">
+<body><div class="announcement">
     <div class="announcement-inner">
       <p>You are viewing the <bold>v3-development</bold> version of the documentation. Click here to go to the latest version.</p>
       <button class="announcement-close" aria-label="Close announcement">
@@ -42,21 +37,18 @@
   </div><div class="sy-head">
   <div class="sy-head-blur"></div>
   <div class="sy-head-inner sy-container mx-auto">
-    <a class="sy-head-brand mr-4" href="/">
-      <img class="light-logo" src="../../_static/logo-light.png" alt="Litestar" height="28" />
-      <img class="dark-logo" src="../../_static/logo-dark.png" alt="Litestar" height="28" />
+    <a class="sy-head-brand" href="/">
+      <img class="light-logo" src="../../_static/logo-light.png" alt="Litestar" height="28" loading="lazy" />
+      <img class="dark-logo" src="../../_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
       <strong>Litestar</strong>
     </a>
-    <div class="sy-head-links" id="NavLinks">
-      <nav class="sy-head-nav">
-
-<ul><li class="link"><a href="../../index.html">Home</a></li>
+    <div class="sy-head-nav" id="HeadNav">
+      <nav class="sy-head-links"><ul><li class="link"><a href="../../index.html">Home</a></li>
       <li class="link"><button type="button">
             <span>Community</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul>
-          <li><a href="../../contribution-guide.html">
+        <ul><li><a href="../../contribution-guide.html">
                 <span>Contributing</span>
                 <small>Learn how to contribute to the Litestar project</small>
               </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
@@ -71,8 +63,7 @@
             <span>About</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul>
-          <li><a href="https://litestar.dev/about/organization">
+        <ul><li><a href="https://litestar.dev/about/organization">
                 <span>Litestar Organization</span>
                 <small>Details about the Litestar organization</small>
               </a></li><li><a href="https://litestar.dev/about/litestar-releases">
@@ -84,8 +75,7 @@
             <span>Release notes</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul>
-          <li><a href="../../release-notes/whats-new-3.html">
+        <ul><li><a href="../../release-notes/whats-new-3.html">
                 <span>What's new in 3.0</span>
                 <small>Explore the new features in Litestar 3.0</small>
               </a></li><li><a href="../../release-notes/changelog.html">
@@ -100,8 +90,7 @@
             <span>Help</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul>
-          <li><a href="https://discord.gg/litestar">
+        <ul><li><a href="https://discord.gg/litestar">
                 <span>Discord Help Forum</span>
                 <small>Dedicated Discord help forum</small>
               </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
@@ -113,45 +102,32 @@
               </a></li></ul>
       </li><li class="link">
           <a href="https://github.com/sponsors/Litestar-Org">
-            <span>Sponsor</span>
-            
-          </a>
+            <span>Sponsor</span></a>
         </li></ul></nav>
-      <div class="sy-head-extra flex items-center print:hidden">
-        
-<form class="searchbox flex items-center" action="../../search.html" method="get">
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../../search.html" method="get">
   <input type="text" name="q" placeholder="Search" />
   <kbd>/</kbd>
-</form>
-        
-  <div class="nav-versions">
+</form><div class="nav-versions">
     <button type="button" aria-label="Versions">
       <span class="md:hidden">Versions</span>
       <span class="hidden md:inline">latest</span>
       <i class="i-lucide chevron-down"></i>
     </button>
-    <div class="nav-versions-choices">
-      <ul><li><a href="/latest">latest</a></li><li><a href="/main">development</a></li><li><a href="/3-dev">v3</a></li><li><a href="/2">v2</a></li><li><a href="/1">v1</a></li></ul></div>
-  </div>
-        
-        <div class="sy-head-socials flex items-center">
-  <a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)">
-    <i class="i-simpleicons x-twitter"></i>
-  </a>
-    <a href="https://discord.gg/litestar" aria-label="Discord">
-      <i class="i-simpleicons discord"></i>
-    </a>
-</div>
-      </div>
+    <div class="nav-versions-choices"><ul><li><a href="/latest">latest</a></li><li><a href="/main">development</a></li><li><a href="/3-dev">v3</a></li><li><a href="/2">v2</a></li><li><a href="/1">v1</a></li></ul></div>
+  </div><div class="sy-head-socials">
+<a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)">
+  <i class="i-simpleicons x-twitter"></i>
+</a>
+  <a href="https://discord.gg/litestar" aria-label="Discord">
+    <i class="i-simpleicons discord"></i>
+  </a></div></div>
     </div>
-    <div class="sy-head-actions flex items-center shrink-0 print:hidden">
-      <button class="js-theme theme-switch flex items-center"
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
 data-aria-auto="Switch to light color mode"
 data-aria-light="Switch to dark color mode"
 data-aria-dark="Switch to auto color mode">
 <i class="i-lucide theme-icon"></i>
-</button>
-      <button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="NavLinks" aria-expanded="false">
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="HeadNav" aria-expanded="false">
         <div class="hamburger">
           <span class="hamburger_1"></span>
           <span class="hamburger_2 -translate-x-2"></span>
@@ -164,8 +140,7 @@ data-aria-dark="Switch to auto color mode">
 <div class="sy-page sy-container flex mx-auto">
   <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
     <div class="sy-lside-inner md:sticky">
-      <div class="sy-scrollbar p-6">
-<div class="sidebar-links">
+      <div class="sy-scrollbar p-6"><div class="sidebar-links">
   <ul>
     <li><a class="icon-link" href="https://github.com/orgs/litestar-org/discussions">
   <span class="icon">
@@ -180,7 +155,6 @@ data-aria-dark="Switch to auto color mode">
 </a></li>
   </ul>
 </div>
-
         <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../getting-started.html">Getting Started</a></li>
@@ -266,6 +240,7 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/static-files.html">Static files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/custom-types.html">Custom types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/stores.html">Stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/templating.html">Templating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/testing.html">Testing</a></li>
@@ -482,204 +457,198 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 
         </div>
-      </div>
-      
-    </div>
+      </div></div>
   </aside>
   <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
   <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
     <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
       <i class="i-lucide close"></i>
     </button>
-    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4">
-  <div class="localtoc">
-    <h3>On this page</h3>
-    <ul>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
 <li><a class="reference internal" href="#litestar.datastructures.Accept"><code class="docutils literal notranslate"><span class="pre">Accept</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.datastructures.Accept.__init__"><code class="docutils literal notranslate"><span class="pre">Accept.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.Accept.best_match"><code class="docutils literal notranslate"><span class="pre">Accept.best_match()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.Accept.accepts"><code class="docutils literal notranslate"><span class="pre">Accept.accepts()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.Accept.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.Accept.best_match"><code class="docutils literal notranslate">best_match()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.Accept.accepts"><code class="docutils literal notranslate">accepts()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.datastructures.Address"><code class="docutils literal notranslate"><span class="pre">Address</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.datastructures.Address.host"><code class="docutils literal notranslate"><span class="pre">Address.host</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.Address.port"><code class="docutils literal notranslate"><span class="pre">Address.port</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.Address.__new__"><code class="docutils literal notranslate"><span class="pre">Address.__new__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.Address.host"><code class="docutils literal notranslate">host</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.Address.port"><code class="docutils literal notranslate">port</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.Address.__new__"><code class="docutils literal notranslate">__new__()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.datastructures.CacheControlHeader"><code class="docutils literal notranslate"><span class="pre">CacheControlHeader</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.datastructures.CacheControlHeader.max_age"><code class="docutils literal notranslate"><span class="pre">CacheControlHeader.max_age</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.CacheControlHeader.s_maxage"><code class="docutils literal notranslate"><span class="pre">CacheControlHeader.s_maxage</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.CacheControlHeader.no_cache"><code class="docutils literal notranslate"><span class="pre">CacheControlHeader.no_cache</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.CacheControlHeader.no_store"><code class="docutils literal notranslate"><span class="pre">CacheControlHeader.no_store</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.CacheControlHeader.private"><code class="docutils literal notranslate"><span class="pre">CacheControlHeader.private</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.CacheControlHeader.public"><code class="docutils literal notranslate"><span class="pre">CacheControlHeader.public</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.CacheControlHeader.no_transform"><code class="docutils literal notranslate"><span class="pre">CacheControlHeader.no_transform</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.CacheControlHeader.must_revalidate"><code class="docutils literal notranslate"><span class="pre">CacheControlHeader.must_revalidate</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.CacheControlHeader.proxy_revalidate"><code class="docutils literal notranslate"><span class="pre">CacheControlHeader.proxy_revalidate</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.CacheControlHeader.must_understand"><code class="docutils literal notranslate"><span class="pre">CacheControlHeader.must_understand</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.CacheControlHeader.immutable"><code class="docutils literal notranslate"><span class="pre">CacheControlHeader.immutable</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.CacheControlHeader.stale_while_revalidate"><code class="docutils literal notranslate"><span class="pre">CacheControlHeader.stale_while_revalidate</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.CacheControlHeader.from_header"><code class="docutils literal notranslate"><span class="pre">CacheControlHeader.from_header()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.CacheControlHeader.prevent_storing"><code class="docutils literal notranslate"><span class="pre">CacheControlHeader.prevent_storing()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.CacheControlHeader.__init__"><code class="docutils literal notranslate"><span class="pre">CacheControlHeader.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.CacheControlHeader.max_age"><code class="docutils literal notranslate">max_age</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.CacheControlHeader.s_maxage"><code class="docutils literal notranslate">s_maxage</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.CacheControlHeader.no_cache"><code class="docutils literal notranslate">no_cache</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.CacheControlHeader.no_store"><code class="docutils literal notranslate">no_store</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.CacheControlHeader.private"><code class="docutils literal notranslate">private</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.CacheControlHeader.public"><code class="docutils literal notranslate">public</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.CacheControlHeader.no_transform"><code class="docutils literal notranslate">no_transform</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.CacheControlHeader.must_revalidate"><code class="docutils literal notranslate">must_revalidate</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.CacheControlHeader.proxy_revalidate"><code class="docutils literal notranslate">proxy_revalidate</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.CacheControlHeader.must_understand"><code class="docutils literal notranslate">must_understand</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.CacheControlHeader.immutable"><code class="docutils literal notranslate">immutable</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.CacheControlHeader.stale_while_revalidate"><code class="docutils literal notranslate">stale_while_revalidate</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.CacheControlHeader.from_header"><code class="docutils literal notranslate">from_header()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.CacheControlHeader.prevent_storing"><code class="docutils literal notranslate">prevent_storing()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.CacheControlHeader.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.datastructures.Cookie"><code class="docutils literal notranslate"><span class="pre">Cookie</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.datastructures.Cookie.key"><code class="docutils literal notranslate"><span class="pre">Cookie.key</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.Cookie.path"><code class="docutils literal notranslate"><span class="pre">Cookie.path</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.Cookie.value"><code class="docutils literal notranslate"><span class="pre">Cookie.value</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.Cookie.max_age"><code class="docutils literal notranslate"><span class="pre">Cookie.max_age</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.Cookie.expires"><code class="docutils literal notranslate"><span class="pre">Cookie.expires</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.Cookie.domain"><code class="docutils literal notranslate"><span class="pre">Cookie.domain</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.Cookie.secure"><code class="docutils literal notranslate"><span class="pre">Cookie.secure</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.Cookie.httponly"><code class="docutils literal notranslate"><span class="pre">Cookie.httponly</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.Cookie.__init__"><code class="docutils literal notranslate"><span class="pre">Cookie.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.Cookie.samesite"><code class="docutils literal notranslate"><span class="pre">Cookie.samesite</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.Cookie.description"><code class="docutils literal notranslate"><span class="pre">Cookie.description</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.Cookie.documentation_only"><code class="docutils literal notranslate"><span class="pre">Cookie.documentation_only</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.Cookie.simple_cookie"><code class="docutils literal notranslate"><span class="pre">Cookie.simple_cookie</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.Cookie.to_header"><code class="docutils literal notranslate"><span class="pre">Cookie.to_header()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.Cookie.to_encoded_header"><code class="docutils literal notranslate"><span class="pre">Cookie.to_encoded_header()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.Cookie.dict"><code class="docutils literal notranslate"><span class="pre">Cookie.dict</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.Cookie.__eq__"><code class="docutils literal notranslate"><span class="pre">Cookie.__eq__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.Cookie.key"><code class="docutils literal notranslate">key</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.Cookie.path"><code class="docutils literal notranslate">path</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.Cookie.value"><code class="docutils literal notranslate">value</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.Cookie.max_age"><code class="docutils literal notranslate">max_age</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.Cookie.expires"><code class="docutils literal notranslate">expires</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.Cookie.domain"><code class="docutils literal notranslate">domain</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.Cookie.secure"><code class="docutils literal notranslate">secure</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.Cookie.httponly"><code class="docutils literal notranslate">httponly</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.Cookie.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.Cookie.samesite"><code class="docutils literal notranslate">samesite</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.Cookie.description"><code class="docutils literal notranslate">description</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.Cookie.documentation_only"><code class="docutils literal notranslate">documentation_only</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.Cookie.simple_cookie"><code class="docutils literal notranslate">simple_cookie</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.Cookie.to_header"><code class="docutils literal notranslate">to_header()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.Cookie.to_encoded_header"><code class="docutils literal notranslate">to_encoded_header()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.Cookie.dict"><code class="docutils literal notranslate">dict</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.Cookie.__eq__"><code class="docutils literal notranslate">__eq__()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.datastructures.ETag"><code class="docutils literal notranslate"><span class="pre">ETag</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.datastructures.ETag.from_header"><code class="docutils literal notranslate"><span class="pre">ETag.from_header()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.ETag.__init__"><code class="docutils literal notranslate"><span class="pre">ETag.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.ETag.from_header"><code class="docutils literal notranslate">from_header()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.ETag.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.datastructures.FormMultiDict"><code class="docutils literal notranslate"><span class="pre">FormMultiDict</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.datastructures.FormMultiDict.close"><code class="docutils literal notranslate"><span class="pre">FormMultiDict.close()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.FormMultiDict.close"><code class="docutils literal notranslate">close()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.datastructures.Header"><code class="docutils literal notranslate"><span class="pre">Header</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.datastructures.Header.documentation_only"><code class="docutils literal notranslate"><span class="pre">Header.documentation_only</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.Header.from_header"><code class="docutils literal notranslate"><span class="pre">Header.from_header()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.Header.to_header"><code class="docutils literal notranslate"><span class="pre">Header.to_header()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.Header.__init__"><code class="docutils literal notranslate"><span class="pre">Header.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.Header.documentation_only"><code class="docutils literal notranslate">documentation_only</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.Header.from_header"><code class="docutils literal notranslate">from_header()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.Header.to_header"><code class="docutils literal notranslate">to_header()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.Header.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.datastructures.Headers"><code class="docutils literal notranslate"><span class="pre">Headers</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.datastructures.Headers.__init__"><code class="docutils literal notranslate"><span class="pre">Headers.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.Headers.from_scope"><code class="docutils literal notranslate"><span class="pre">Headers.from_scope()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.Headers.to_header_list"><code class="docutils literal notranslate"><span class="pre">Headers.to_header_list()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.Headers.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.Headers.from_scope"><code class="docutils literal notranslate">from_scope()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.Headers.to_header_list"><code class="docutils literal notranslate">to_header_list()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.datastructures.ImmutableMultiDict"><code class="docutils literal notranslate"><span class="pre">ImmutableMultiDict</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.datastructures.ImmutableMultiDict.__init__"><code class="docutils literal notranslate"><span class="pre">ImmutableMultiDict.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.ImmutableMultiDict.mutable_copy"><code class="docutils literal notranslate"><span class="pre">ImmutableMultiDict.mutable_copy()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.ImmutableMultiDict.copy"><code class="docutils literal notranslate"><span class="pre">ImmutableMultiDict.copy()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.ImmutableMultiDict.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.ImmutableMultiDict.mutable_copy"><code class="docutils literal notranslate">mutable_copy()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.ImmutableMultiDict.copy"><code class="docutils literal notranslate">copy()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.datastructures.ImmutableState"><code class="docutils literal notranslate"><span class="pre">ImmutableState</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.datastructures.ImmutableState.__init__"><code class="docutils literal notranslate"><span class="pre">ImmutableState.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.ImmutableState.__bool__"><code class="docutils literal notranslate"><span class="pre">ImmutableState.__bool__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.ImmutableState.__getitem__"><code class="docutils literal notranslate"><span class="pre">ImmutableState.__getitem__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.ImmutableState.__iter__"><code class="docutils literal notranslate"><span class="pre">ImmutableState.__iter__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.ImmutableState.__len__"><code class="docutils literal notranslate"><span class="pre">ImmutableState.__len__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.ImmutableState.__getattr__"><code class="docutils literal notranslate"><span class="pre">ImmutableState.__getattr__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.ImmutableState.__copy__"><code class="docutils literal notranslate"><span class="pre">ImmutableState.__copy__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.ImmutableState.mutable_copy"><code class="docutils literal notranslate"><span class="pre">ImmutableState.mutable_copy()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.ImmutableState.dict"><code class="docutils literal notranslate"><span class="pre">ImmutableState.dict()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.ImmutableState.__get_validators__"><code class="docutils literal notranslate"><span class="pre">ImmutableState.__get_validators__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.ImmutableState.validate"><code class="docutils literal notranslate"><span class="pre">ImmutableState.validate()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.ImmutableState.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.ImmutableState.__bool__"><code class="docutils literal notranslate">__bool__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.ImmutableState.__getitem__"><code class="docutils literal notranslate">__getitem__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.ImmutableState.__iter__"><code class="docutils literal notranslate">__iter__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.ImmutableState.__len__"><code class="docutils literal notranslate">__len__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.ImmutableState.__getattr__"><code class="docutils literal notranslate">__getattr__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.ImmutableState.__copy__"><code class="docutils literal notranslate">__copy__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.ImmutableState.mutable_copy"><code class="docutils literal notranslate">mutable_copy()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.ImmutableState.dict"><code class="docutils literal notranslate">dict()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.ImmutableState.__get_validators__"><code class="docutils literal notranslate">__get_validators__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.ImmutableState.validate"><code class="docutils literal notranslate">validate()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.datastructures.MultiDict"><code class="docutils literal notranslate"><span class="pre">MultiDict</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.datastructures.MultiDict.__init__"><code class="docutils literal notranslate"><span class="pre">MultiDict.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.MultiDict.immutable"><code class="docutils literal notranslate"><span class="pre">MultiDict.immutable()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.MultiDict.copy"><code class="docutils literal notranslate"><span class="pre">MultiDict.copy()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.MultiDict.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.MultiDict.immutable"><code class="docutils literal notranslate">immutable()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.MultiDict.copy"><code class="docutils literal notranslate">copy()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.datastructures.MultiMixin"><code class="docutils literal notranslate"><span class="pre">MultiMixin</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.datastructures.MultiMixin.dict"><code class="docutils literal notranslate"><span class="pre">MultiMixin.dict()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.MultiMixin.multi_items"><code class="docutils literal notranslate"><span class="pre">MultiMixin.multi_items()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.MultiMixin.dict"><code class="docutils literal notranslate">dict()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.MultiMixin.multi_items"><code class="docutils literal notranslate">multi_items()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.datastructures.MutableScopeHeaders"><code class="docutils literal notranslate"><span class="pre">MutableScopeHeaders</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.datastructures.MutableScopeHeaders.__init__"><code class="docutils literal notranslate"><span class="pre">MutableScopeHeaders.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.MutableScopeHeaders.from_message"><code class="docutils literal notranslate"><span class="pre">MutableScopeHeaders.from_message()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.MutableScopeHeaders.add"><code class="docutils literal notranslate"><span class="pre">MutableScopeHeaders.add()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.MutableScopeHeaders.getall"><code class="docutils literal notranslate"><span class="pre">MutableScopeHeaders.getall()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.MutableScopeHeaders.extend_header_value"><code class="docutils literal notranslate"><span class="pre">MutableScopeHeaders.extend_header_value()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.MutableScopeHeaders.__getitem__"><code class="docutils literal notranslate"><span class="pre">MutableScopeHeaders.__getitem__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.MutableScopeHeaders.__setitem__"><code class="docutils literal notranslate"><span class="pre">MutableScopeHeaders.__setitem__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.MutableScopeHeaders.__delitem__"><code class="docutils literal notranslate"><span class="pre">MutableScopeHeaders.__delitem__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.MutableScopeHeaders.__len__"><code class="docutils literal notranslate"><span class="pre">MutableScopeHeaders.__len__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.MutableScopeHeaders.__iter__"><code class="docutils literal notranslate"><span class="pre">MutableScopeHeaders.__iter__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.MutableScopeHeaders.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.MutableScopeHeaders.from_message"><code class="docutils literal notranslate">from_message()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.MutableScopeHeaders.add"><code class="docutils literal notranslate">add()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.MutableScopeHeaders.getall"><code class="docutils literal notranslate">getall()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.MutableScopeHeaders.extend_header_value"><code class="docutils literal notranslate">extend_header_value()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.MutableScopeHeaders.__getitem__"><code class="docutils literal notranslate">__getitem__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.MutableScopeHeaders.__setitem__"><code class="docutils literal notranslate">__setitem__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.MutableScopeHeaders.__delitem__"><code class="docutils literal notranslate">__delitem__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.MutableScopeHeaders.__len__"><code class="docutils literal notranslate">__len__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.MutableScopeHeaders.__iter__"><code class="docutils literal notranslate">__iter__()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.datastructures.ResponseHeader"><code class="docutils literal notranslate"><span class="pre">ResponseHeader</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.datastructures.ResponseHeader.name"><code class="docutils literal notranslate"><span class="pre">ResponseHeader.name</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.ResponseHeader.documentation_only"><code class="docutils literal notranslate"><span class="pre">ResponseHeader.documentation_only</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.ResponseHeader.value"><code class="docutils literal notranslate"><span class="pre">ResponseHeader.value</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.ResponseHeader.description"><code class="docutils literal notranslate"><span class="pre">ResponseHeader.description</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.ResponseHeader.required"><code class="docutils literal notranslate"><span class="pre">ResponseHeader.required</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.ResponseHeader.deprecated"><code class="docutils literal notranslate"><span class="pre">ResponseHeader.deprecated</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.ResponseHeader.allow_empty_value"><code class="docutils literal notranslate"><span class="pre">ResponseHeader.allow_empty_value</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.ResponseHeader.__init__"><code class="docutils literal notranslate"><span class="pre">ResponseHeader.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.ResponseHeader.style"><code class="docutils literal notranslate"><span class="pre">ResponseHeader.style</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.ResponseHeader.explode"><code class="docutils literal notranslate"><span class="pre">ResponseHeader.explode</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.ResponseHeader.allow_reserved"><code class="docutils literal notranslate"><span class="pre">ResponseHeader.allow_reserved</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.ResponseHeader.example"><code class="docutils literal notranslate"><span class="pre">ResponseHeader.example</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.ResponseHeader.examples"><code class="docutils literal notranslate"><span class="pre">ResponseHeader.examples</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.ResponseHeader.__post_init__"><code class="docutils literal notranslate"><span class="pre">ResponseHeader.__post_init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.ResponseHeader.name"><code class="docutils literal notranslate">name</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.ResponseHeader.documentation_only"><code class="docutils literal notranslate">documentation_only</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.ResponseHeader.value"><code class="docutils literal notranslate">value</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.ResponseHeader.description"><code class="docutils literal notranslate">description</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.ResponseHeader.required"><code class="docutils literal notranslate">required</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.ResponseHeader.deprecated"><code class="docutils literal notranslate">deprecated</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.ResponseHeader.allow_empty_value"><code class="docutils literal notranslate">allow_empty_value</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.ResponseHeader.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.ResponseHeader.style"><code class="docutils literal notranslate">style</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.ResponseHeader.explode"><code class="docutils literal notranslate">explode</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.ResponseHeader.allow_reserved"><code class="docutils literal notranslate">allow_reserved</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.ResponseHeader.example"><code class="docutils literal notranslate">example</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.ResponseHeader.examples"><code class="docutils literal notranslate">examples</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.ResponseHeader.__post_init__"><code class="docutils literal notranslate">__post_init__()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.datastructures.SecretBytes"><code class="docutils literal notranslate"><span class="pre">SecretBytes</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.datastructures.SecretBytes.get_obscured"><code class="docutils literal notranslate"><span class="pre">SecretBytes.get_obscured()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.SecretBytes.get_obscured"><code class="docutils literal notranslate">get_obscured()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.datastructures.SecretString"><code class="docutils literal notranslate"><span class="pre">SecretString</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.datastructures.SecretString.get_obscured"><code class="docutils literal notranslate"><span class="pre">SecretString.get_obscured()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.SecretString.get_obscured"><code class="docutils literal notranslate">get_obscured()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.datastructures.State"><code class="docutils literal notranslate"><span class="pre">State</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.datastructures.State.__init__"><code class="docutils literal notranslate"><span class="pre">State.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.State.__delitem__"><code class="docutils literal notranslate"><span class="pre">State.__delitem__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.State.__setitem__"><code class="docutils literal notranslate"><span class="pre">State.__setitem__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.State.__setattr__"><code class="docutils literal notranslate"><span class="pre">State.__setattr__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.State.__delattr__"><code class="docutils literal notranslate"><span class="pre">State.__delattr__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.State.copy"><code class="docutils literal notranslate"><span class="pre">State.copy()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.State.immutable_copy"><code class="docutils literal notranslate"><span class="pre">State.immutable_copy()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.State.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.State.__delitem__"><code class="docutils literal notranslate">__delitem__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.State.__setitem__"><code class="docutils literal notranslate">__setitem__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.State.__setattr__"><code class="docutils literal notranslate">__setattr__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.State.__delattr__"><code class="docutils literal notranslate">__delattr__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.State.copy"><code class="docutils literal notranslate">copy()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.State.immutable_copy"><code class="docutils literal notranslate">immutable_copy()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.datastructures.UploadFile"><code class="docutils literal notranslate"><span class="pre">UploadFile</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.datastructures.UploadFile.__init__"><code class="docutils literal notranslate"><span class="pre">UploadFile.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.UploadFile.rolled_to_disk"><code class="docutils literal notranslate"><span class="pre">UploadFile.rolled_to_disk</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.UploadFile.write"><code class="docutils literal notranslate"><span class="pre">UploadFile.write()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.UploadFile.read"><code class="docutils literal notranslate"><span class="pre">UploadFile.read()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.UploadFile.seek"><code class="docutils literal notranslate"><span class="pre">UploadFile.seek()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.UploadFile.close"><code class="docutils literal notranslate"><span class="pre">UploadFile.close()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.UploadFile.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.UploadFile.rolled_to_disk"><code class="docutils literal notranslate">rolled_to_disk</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.UploadFile.write"><code class="docutils literal notranslate">write()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.UploadFile.read"><code class="docutils literal notranslate">read()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.UploadFile.seek"><code class="docutils literal notranslate">seek()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.UploadFile.close"><code class="docutils literal notranslate">close()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.datastructures.URL"><code class="docutils literal notranslate"><span class="pre">URL</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.datastructures.URL.scheme"><code class="docutils literal notranslate"><span class="pre">URL.scheme</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.URL.netloc"><code class="docutils literal notranslate"><span class="pre">URL.netloc</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.URL.path"><code class="docutils literal notranslate"><span class="pre">URL.path</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.URL.fragment"><code class="docutils literal notranslate"><span class="pre">URL.fragment</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.URL.query"><code class="docutils literal notranslate"><span class="pre">URL.query</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.URL.username"><code class="docutils literal notranslate"><span class="pre">URL.username</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.URL.password"><code class="docutils literal notranslate"><span class="pre">URL.password</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.URL.port"><code class="docutils literal notranslate"><span class="pre">URL.port</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.URL.hostname"><code class="docutils literal notranslate"><span class="pre">URL.hostname</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.URL.__new__"><code class="docutils literal notranslate"><span class="pre">URL.__new__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.URL.from_components"><code class="docutils literal notranslate"><span class="pre">URL.from_components()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.URL.from_scope"><code class="docutils literal notranslate"><span class="pre">URL.from_scope()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.URL.with_replacements"><code class="docutils literal notranslate"><span class="pre">URL.with_replacements()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.datastructures.URL.query_params"><code class="docutils literal notranslate"><span class="pre">URL.query_params</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.URL.scheme"><code class="docutils literal notranslate">scheme</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.URL.netloc"><code class="docutils literal notranslate">netloc</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.URL.path"><code class="docutils literal notranslate">path</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.URL.fragment"><code class="docutils literal notranslate">fragment</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.URL.query"><code class="docutils literal notranslate">query</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.URL.username"><code class="docutils literal notranslate">username</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.URL.password"><code class="docutils literal notranslate">password</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.URL.port"><code class="docutils literal notranslate">port</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.URL.hostname"><code class="docutils literal notranslate">hostname</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.URL.__new__"><code class="docutils literal notranslate">__new__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.URL.from_components"><code class="docutils literal notranslate">from_components()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.URL.from_scope"><code class="docutils literal notranslate">from_scope()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.URL.with_replacements"><code class="docutils literal notranslate">with_replacements()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.datastructures.URL.query_params"><code class="docutils literal notranslate">query_params</span></code></a></li>
 </ul>
 </li>
 </ul>
-
-  </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
+</div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
   data-type="github" data-user="litestar-org" data-repo="litestar">
   <span class="w-8 flex items-center justify-around shrink-0 text-3xl">
     <i class="i-simpleicons github"></i>
   </span>
-  <span class="flex-grow px-2">
+  <span class="flex-grow px-2 break-all">
     <span>litestar-org/litestar</span>
     <span class="flex text-sm repo-stats-count">
       <span class="flex items-center pr-3">
@@ -694,40 +663,28 @@ data-aria-dark="Switch to auto color mode">
   </span>
 </a><div class="edit-this-page">
   <a href="https://github.com/litestar-org/litestar/blob/master/docs/reference/datastructures/index.rst">Edit this page</a>
-</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div>
-    </div>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
   </aside>
   <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
-  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
-    <div class="sy-breadcrumbs" role="navigation">
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6"><div class="sy-breadcrumbs" role="navigation">
   <div class="sy-breadcrumbs-inner flex items-center">
     <div class="md:hidden mr-3">
       <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
         <i class="i-lucide menu"></i>
       </button>
     </div>
-    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList">
-      
-      
-      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
         <a itemprop="item" href="../../index.html"><span itemprop="name">Litestar</span></a>
         <span>/</span>
         <meta itemprop="position" content="1" />
-      </li>
-      
-      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
         <a itemprop="item" href="../index.html"><span itemprop="name">API reference</span></a>
         <span>/</span>
         <meta itemprop="position" content="2" />
-      </li>
-      
-      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
         <strong itemprop="name">datastructures</strong>
         <meta itemprop="position" content="3" />
-      </li>
-      
-      
-    </ol>
+      </li></ol>
     <div class="xl:hidden ml-1">
       <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
         aria-expanded="false">
@@ -735,8 +692,7 @@ data-aria-dark="Switch to auto color mode">
       </button>
     </div>
   </div>
-</div>
-    <div class="flex flex-col break-words justify-between">
+</div><div class="flex flex-col break-words justify-between">
       <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
         <article class="yue" role="main">
           <section id="module-litestar.datastructures">
@@ -2153,27 +2109,18 @@ multidict and pass them back to <a class="reference internal" href="#litestar.da
 </div>
 </section>
 
-        </article>
-        <button class="back-to-top" type="button">
+        </article><button class="back-to-top" type="button">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
     <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
   </svg>
   <span>Back to top</span>
-</button>
-        
-        <div class="navigation flex print:hidden">
-  <div class="navigation-prev">
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
     <a href="../data_extractors.html">
       <i class="i-lucide chevron-left"></i>
       <div class="page-info">
-        <span>Previous</span>
-        
-        <div class="title">data_extractors</div>
-        
-      </div>
+        <span>Previous</span><div class="title">data_extractors</div></div>
     </a>
-  </div>
-  <div class="navigation-next">
+  </div><div class="navigation-next">
     <a href="secret_values.html">
       <div class="page-info">
         <span>Next</span>
@@ -2181,16 +2128,12 @@ multidict and pass them back to <a class="reference internal" href="#litestar.da
       </div>
       <i class="i-lucide chevron-right"></i>
     </a>
-  </div>
-</div>
-        
-      </div>
+  </div></div></div>
     </div>
   </main>
 </div>
 <footer class="sy-foot">
   <div class="sy-foot-inner sy-container mx-auto">
-    
     <div class="sy-foot-reserved md:flex justify-between items-center">
       <div class="sy-foot-copyright"><p>2024, Litestar Organization</p>
   
@@ -2203,13 +2146,12 @@ multidict and pass them back to <a class="reference internal" href="#litestar.da
   </p>
 </div>
       <div class="sy-foot-socials">
-  <a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)"><i class="i-simpleicons x-twitter"></i></a>
-  <a href="https://discord.gg/litestar" aria-label="Discord"><i class="i-simpleicons discord"></i></a>
-  <a href="https://www.reddit.com/r/LitestarAPI" aria-label="Reddit"><i class="i-simpleicons reddit"></i></a>
-</div>
+<a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)"><i class="i-simpleicons x-twitter"></i></a>
+<a href="https://discord.gg/litestar" aria-label="Discord"><i class="i-simpleicons discord"></i></a>
+<a href="https://www.reddit.com/r/LitestarAPI" aria-label="Reddit"><i class="i-simpleicons reddit"></i></a></div>
     </div>
   </div>
-</footer></div>
+</footer>
       <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=c19e757c"></script>
       <script src="../../_static/doctools.js?v=888ff710"></script>
       <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
@@ -2222,8 +2164,6 @@ multidict and pass them back to <a class="reference internal" href="#litestar.da
       <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
       <script src="../../_static/design-tabs.js?v=36754332"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../../_static/shibuya.js?v=5f0e4c24"></script>
-      <script src="../../_static/versioning.js?v=bc681eff"></script>
-    
-</body>
+      <script src="../../_static/shibuya.js?v=3cc430e2"></script>
+      <script src="../../_static/versioning.js?v=bc681eff"></script></body>
 </html>

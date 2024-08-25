@@ -1,17 +1,12 @@
-
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" data-accent-color="amber" data-content_root="">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Templating - Litestar Framework</title>
-    <link rel="shortcut icon" href="../_static/favicon.svg"/><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Testing" href="testing.html" /><link rel="prev" title="Stores" href="stores.html" />
-
-  <script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Templating - Litestar Framework</title><link rel="shortcut icon" href="../_static/favicon.svg"/><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Testing" href="testing.html" /><link rel="prev" title="Stores" href="stores.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
-    setColorMode(sessionStorage._theme||"auto");
-  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=aecf457f" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=bb1fd5f2" />
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=397bb51e" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=5117e564" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -32,7 +27,7 @@
 <meta name="twitter:card" content="summary"/>
 <meta property="og:image" content="_static/logo-light.png"/>
   </head>
-<body><div class="document"><div class="announcement">
+<body><div class="announcement">
     <div class="announcement-inner">
       <p>You are viewing the <bold>v3-development</bold> version of the documentation. Click here to go to the latest version.</p>
       <button class="announcement-close" aria-label="Close announcement">
@@ -42,21 +37,18 @@
   </div><div class="sy-head">
   <div class="sy-head-blur"></div>
   <div class="sy-head-inner sy-container mx-auto">
-    <a class="sy-head-brand mr-4" href="/">
-      <img class="light-logo" src="../_static/logo-light.png" alt="Litestar" height="28" />
-      <img class="dark-logo" src="../_static/logo-dark.png" alt="Litestar" height="28" />
+    <a class="sy-head-brand" href="/">
+      <img class="light-logo" src="../_static/logo-light.png" alt="Litestar" height="28" loading="lazy" />
+      <img class="dark-logo" src="../_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
       <strong>Litestar</strong>
     </a>
-    <div class="sy-head-links" id="NavLinks">
-      <nav class="sy-head-nav">
-
-<ul><li class="link"><a href="../index.html">Home</a></li>
+    <div class="sy-head-nav" id="HeadNav">
+      <nav class="sy-head-links"><ul><li class="link"><a href="../index.html">Home</a></li>
       <li class="link"><button type="button">
             <span>Community</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul>
-          <li><a href="../contribution-guide.html">
+        <ul><li><a href="../contribution-guide.html">
                 <span>Contributing</span>
                 <small>Learn how to contribute to the Litestar project</small>
               </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
@@ -71,8 +63,7 @@
             <span>About</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul>
-          <li><a href="https://litestar.dev/about/organization">
+        <ul><li><a href="https://litestar.dev/about/organization">
                 <span>Litestar Organization</span>
                 <small>Details about the Litestar organization</small>
               </a></li><li><a href="https://litestar.dev/about/litestar-releases">
@@ -84,8 +75,7 @@
             <span>Release notes</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul>
-          <li><a href="../release-notes/whats-new-3.html">
+        <ul><li><a href="../release-notes/whats-new-3.html">
                 <span>What's new in 3.0</span>
                 <small>Explore the new features in Litestar 3.0</small>
               </a></li><li><a href="../release-notes/changelog.html">
@@ -100,8 +90,7 @@
             <span>Help</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul>
-          <li><a href="https://discord.gg/litestar">
+        <ul><li><a href="https://discord.gg/litestar">
                 <span>Discord Help Forum</span>
                 <small>Dedicated Discord help forum</small>
               </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
@@ -113,45 +102,32 @@
               </a></li></ul>
       </li><li class="link">
           <a href="https://github.com/sponsors/Litestar-Org">
-            <span>Sponsor</span>
-            
-          </a>
+            <span>Sponsor</span></a>
         </li></ul></nav>
-      <div class="sy-head-extra flex items-center print:hidden">
-        
-<form class="searchbox flex items-center" action="../search.html" method="get">
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
   <input type="text" name="q" placeholder="Search" />
   <kbd>/</kbd>
-</form>
-        
-  <div class="nav-versions">
+</form><div class="nav-versions">
     <button type="button" aria-label="Versions">
       <span class="md:hidden">Versions</span>
       <span class="hidden md:inline">latest</span>
       <i class="i-lucide chevron-down"></i>
     </button>
-    <div class="nav-versions-choices">
-      <ul><li><a href="/latest">latest</a></li><li><a href="/main">development</a></li><li><a href="/3-dev">v3</a></li><li><a href="/2">v2</a></li><li><a href="/1">v1</a></li></ul></div>
-  </div>
-        
-        <div class="sy-head-socials flex items-center">
-  <a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)">
-    <i class="i-simpleicons x-twitter"></i>
-  </a>
-    <a href="https://discord.gg/litestar" aria-label="Discord">
-      <i class="i-simpleicons discord"></i>
-    </a>
-</div>
-      </div>
+    <div class="nav-versions-choices"><ul><li><a href="/latest">latest</a></li><li><a href="/main">development</a></li><li><a href="/3-dev">v3</a></li><li><a href="/2">v2</a></li><li><a href="/1">v1</a></li></ul></div>
+  </div><div class="sy-head-socials">
+<a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)">
+  <i class="i-simpleicons x-twitter"></i>
+</a>
+  <a href="https://discord.gg/litestar" aria-label="Discord">
+    <i class="i-simpleicons discord"></i>
+  </a></div></div>
     </div>
-    <div class="sy-head-actions flex items-center shrink-0 print:hidden">
-      <button class="js-theme theme-switch flex items-center"
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
 data-aria-auto="Switch to light color mode"
 data-aria-light="Switch to dark color mode"
 data-aria-dark="Switch to auto color mode">
 <i class="i-lucide theme-icon"></i>
-</button>
-      <button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="NavLinks" aria-expanded="false">
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="HeadNav" aria-expanded="false">
         <div class="hamburger">
           <span class="hamburger_1"></span>
           <span class="hamburger_2 -translate-x-2"></span>
@@ -164,8 +140,7 @@ data-aria-dark="Switch to auto color mode">
 <div class="sy-page sy-container flex mx-auto">
   <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
     <div class="sy-lside-inner md:sticky">
-      <div class="sy-scrollbar p-6">
-<div class="sidebar-links">
+      <div class="sy-scrollbar p-6"><div class="sidebar-links">
   <ul>
     <li><a class="icon-link" href="https://github.com/orgs/litestar-org/discussions">
   <span class="icon">
@@ -180,7 +155,6 @@ data-aria-dark="Switch to auto color mode">
 </a></li>
   </ul>
 </div>
-
         <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting Started</a></li>
@@ -266,6 +240,7 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="static-files.html">Static files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom-types.html">Custom types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="stores.html">Stores</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Templating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="testing.html">Testing</a></li>
@@ -482,19 +457,14 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 
         </div>
-      </div>
-      
-    </div>
+      </div></div>
   </aside>
   <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
   <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
     <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
       <i class="i-lucide close"></i>
     </button>
-    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4">
-  <div class="localtoc">
-    <h3>On this page</h3>
-    <ul>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
 <li><a class="reference internal" href="#template-engines">Template engines</a><ul>
 <li><a class="reference internal" href="#registering-a-template-engine">Registering a template engine</a></li>
 <li><a class="reference internal" href="#registering-a-custom-template-engine">Registering a Custom Template Engine</a></li>
@@ -516,13 +486,12 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </li>
 </ul>
-
-  </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
+</div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
   data-type="github" data-user="litestar-org" data-repo="litestar">
   <span class="w-8 flex items-center justify-around shrink-0 text-3xl">
     <i class="i-simpleicons github"></i>
   </span>
-  <span class="flex-grow px-2">
+  <span class="flex-grow px-2 break-all">
     <span>litestar-org/litestar</span>
     <span class="flex text-sm repo-stats-count">
       <span class="flex items-center pr-3">
@@ -537,40 +506,28 @@ data-aria-dark="Switch to auto color mode">
   </span>
 </a><div class="edit-this-page">
   <a href="https://github.com/litestar-org/litestar/blob/master/docs/usage/templating.rst">Edit this page</a>
-</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div>
-    </div>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
   </aside>
   <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
-  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
-    <div class="sy-breadcrumbs" role="navigation">
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6"><div class="sy-breadcrumbs" role="navigation">
   <div class="sy-breadcrumbs-inner flex items-center">
     <div class="md:hidden mr-3">
       <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
         <i class="i-lucide menu"></i>
       </button>
     </div>
-    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList">
-      
-      
-      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
         <a itemprop="item" href="../index.html"><span itemprop="name">Litestar</span></a>
         <span>/</span>
         <meta itemprop="position" content="1" />
-      </li>
-      
-      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
         <a itemprop="item" href="index.html"><span itemprop="name">Usage</span></a>
         <span>/</span>
         <meta itemprop="position" content="2" />
-      </li>
-      
-      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
         <strong itemprop="name">Templating</strong>
         <meta itemprop="position" content="3" />
-      </li>
-      
-      
-    </ol>
+      </li></ol>
     <div class="xl:hidden ml-1">
       <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
         aria-expanded="false">
@@ -578,8 +535,7 @@ data-aria-dark="Switch to auto color mode">
       </button>
     </div>
   </div>
-</div>
-    <div class="flex flex-col break-words justify-between">
+</div><div class="flex flex-col break-words justify-between">
       <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
         <article class="yue" role="main">
           <section id="templating">
@@ -737,8 +693,29 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </span></pre></div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-7" name="sd-tab-set-2" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-7">
+<input id="sd-tab-item-7" name="sd-tab-set-2" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-7">
+Python 3.9+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">Union</span>
+</span><span data-line="2"><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">DirectoryPath</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="c1"># the template class of the respective library</span>
+</span><span data-line="5"><span class="kn">from</span> <span class="nn">some_lib</span> <span class="kn">import</span> <span class="n">SomeTemplate</span>
+</span><span data-line="6">
+</span><span data-line="7">
+</span><span data-line="8"><span class="k">class</span> <span class="nc">TemplateEngineProtocol</span><span class="p">(</span><span class="n">Protocol</span><span class="p">[</span><span class="n">SomeTemplate</span><span class="p">]):</span>
+</span><span data-line="9">    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">DirectoryPath</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="n">DirectoryPath</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span data-line="10"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Builds a template engine.&quot;&quot;&quot;</span>
+</span><span data-line="11">        <span class="o">...</span>
+</span><span data-line="12">
+</span><span data-line="13">    <span class="k">def</span> <span class="nf">get_template</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">template_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SomeTemplate</span><span class="p">:</span>
+</span><span data-line="14"><span class="w">        </span><span class="sd">&quot;&quot;&quot;Loads the template with template_name and returns it.&quot;&quot;&quot;</span>
+</span><span data-line="15">        <span class="o">...</span>
+</span></pre></div>
+</div>
+</div>
+<input checked="checked" id="sd-tab-item-8" name="sd-tab-set-2" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-8">
 Python 3.10+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Protocol</span>
 </span><span data-line="2"><span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">DirectoryPath</span>
@@ -766,8 +743,8 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 <p>If you need to access the template engine instance, you can do so via the
 <a class="reference internal" href="../reference/template.html#litestar.template.TemplateConfig" title="litestar.template.TemplateConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">TemplateConfig.engine</span></code></a> attribute:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-8" name="sd-tab-set-3" type="radio">
-</input><label class="sd-tab-label" data-sync-id="jinja" for="sd-tab-item-8">
+<input checked="checked" id="sd-tab-item-9" name="sd-tab-set-3" type="radio">
+</input><label class="sd-tab-label" data-sync-id="jinja" for="sd-tab-item-9">
 Jinja</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar.contrib.jinja</span> <span class="kn">import</span> <span class="n">JinjaTemplateEngine</span>
 </span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.template.config</span> <span class="kn">import</span> <span class="n">TemplateConfig</span>
@@ -776,8 +753,8 @@ Jinja</label><div class="sd-tab-content docutils">
 </span></pre></div>
 </div>
 </div>
-<input id="sd-tab-item-9" name="sd-tab-set-3" type="radio">
-</input><label class="sd-tab-label" data-sync-id="mako" for="sd-tab-item-9">
+<input id="sd-tab-item-10" name="sd-tab-set-3" type="radio">
+</input><label class="sd-tab-label" data-sync-id="mako" for="sd-tab-item-10">
 Mako</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar.contrib.mako</span> <span class="kn">import</span> <span class="n">MakoTemplateEngine</span>
 </span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.template.config</span> <span class="kn">import</span> <span class="n">TemplateConfig</span>
@@ -786,8 +763,8 @@ Mako</label><div class="sd-tab-content docutils">
 </span></pre></div>
 </div>
 </div>
-<input id="sd-tab-item-10" name="sd-tab-set-3" type="radio">
-</input><label class="sd-tab-label" data-sync-id="minijinja" for="sd-tab-item-10">
+<input id="sd-tab-item-11" name="sd-tab-set-3" type="radio">
+</input><label class="sd-tab-label" data-sync-id="minijinja" for="sd-tab-item-11">
 MiniJinja</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">litestar.contrib.minijinja</span> <span class="kn">import</span> <span class="n">MiniJinjaTemplateEngine</span>
 </span><span data-line="2"><span class="kn">from</span> <span class="nn">litestar.template.config</span> <span class="kn">import</span> <span class="n">TemplateConfig</span>
@@ -804,8 +781,8 @@ MiniJinja</label><div class="sd-tab-content docutils">
 <p>Once you have a template engine registered you can return <a class="reference internal" href="../reference/response/index.html#litestar.response.Template" title="litestar.response.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">templates</span> <span class="pre">responses</span></code></a> from
 your route handlers:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-11" name="sd-tab-set-4" type="radio">
-</input><label class="sd-tab-label" data-sync-id="jinja" for="sd-tab-item-11">
+<input checked="checked" id="sd-tab-item-12" name="sd-tab-set-4" type="radio">
+</input><label class="sd-tab-label" data-sync-id="jinja" for="sd-tab-item-12">
 Jinja</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 </span><span data-line="2">
@@ -833,8 +810,8 @@ Jinja</label><div class="sd-tab-content docutils">
 </span></pre></div>
 </div>
 </div>
-<input id="sd-tab-item-12" name="sd-tab-set-4" type="radio">
-</input><label class="sd-tab-label" data-sync-id="mako" for="sd-tab-item-12">
+<input id="sd-tab-item-13" name="sd-tab-set-4" type="radio">
+</input><label class="sd-tab-label" data-sync-id="mako" for="sd-tab-item-13">
 Mako</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 </span><span data-line="2">
@@ -864,8 +841,8 @@ Mako</label><div class="sd-tab-content docutils">
 </span></pre></div>
 </div>
 </div>
-<input id="sd-tab-item-13" name="sd-tab-set-4" type="radio">
-</input><label class="sd-tab-label" data-sync-id="minijinja" for="sd-tab-item-13">
+<input id="sd-tab-item-14" name="sd-tab-set-4" type="radio">
+</input><label class="sd-tab-label" data-sync-id="minijinja" for="sd-tab-item-14">
 MiniJinja</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 </span><span data-line="2">
@@ -910,8 +887,8 @@ engine’s <code class="docutils literal notranslate"><span class="pre">render</
 containing the template. The latter is useful if you want to define the template inline
 for small templates or <a class="reference internal" href="htmx.html"><span class="doc">HTMX</span></a> responses for example.</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-14" name="sd-tab-set-5" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-14">
+<input checked="checked" id="sd-tab-item-15" name="sd-tab-set-5" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-15">
 File name</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id6">
 <div class="code-block-caption"><span class="caption-text">Template via file</span><a class="headerlink" href="#id6" title="Permalink to this code">¶</a></div>
@@ -922,8 +899,8 @@ File name</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input id="sd-tab-item-15" name="sd-tab-set-5" type="radio">
-</input><label class="sd-tab-label" for="sd-tab-item-15">
+<input id="sd-tab-item-16" name="sd-tab-set-5" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-16">
 String</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id7">
 <div class="code-block-caption"><span class="caption-text">Template via string</span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
@@ -948,8 +925,8 @@ template context under <code class="docutils literal notranslate"><span class="p
 <p>Accessing <code class="docutils literal notranslate"><span class="pre">app.state.key</span></code> for example would look like this:
 &lt;strong&gt;check_context_key: &lt;/strong&gt;{{ check_context_key() }}</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-16" name="sd-tab-set-6" type="radio">
-</input><label class="sd-tab-label" data-sync-id="jinja" for="sd-tab-item-16">
+<input checked="checked" id="sd-tab-item-17" name="sd-tab-set-6" type="radio">
+</input><label class="sd-tab-label" data-sync-id="jinja" for="sd-tab-item-17">
 Jinja</label><div class="sd-tab-content docutils">
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
 </span><span data-line="2">    <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
@@ -961,8 +938,8 @@ Jinja</label><div class="sd-tab-content docutils">
 </span></pre></div>
 </div>
 </div>
-<input id="sd-tab-item-17" name="sd-tab-set-6" type="radio">
-</input><label class="sd-tab-label" data-sync-id="mako" for="sd-tab-item-17">
+<input id="sd-tab-item-18" name="sd-tab-set-6" type="radio">
+</input><label class="sd-tab-label" data-sync-id="mako" for="sd-tab-item-18">
 Mako</label><div class="sd-tab-content docutils">
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span data-line="1">html
 </span><span data-line="2"><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
@@ -975,8 +952,8 @@ Mako</label><div class="sd-tab-content docutils">
 </span></pre></div>
 </div>
 </div>
-<input id="sd-tab-item-18" name="sd-tab-set-6" type="radio">
-</input><label class="sd-tab-label" data-sync-id="minijinja" for="sd-tab-item-18">
+<input id="sd-tab-item-19" name="sd-tab-set-6" type="radio">
+</input><label class="sd-tab-label" data-sync-id="minijinja" for="sd-tab-item-19">
 MiniJinja</label><div class="sd-tab-content docutils">
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
 </span><span data-line="2">    <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
@@ -997,8 +974,8 @@ MiniJinja</label><div class="sd-tab-content docutils">
 you first need to configure <a class="reference internal" href="middleware/builtin-middleware.html#csrf"><span class="std std-ref">CSRF protection</span></a>.
 With that in place, you can now insert the CSRF input field inside an HTML form:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-19" name="sd-tab-set-7" type="radio">
-</input><label class="sd-tab-label" data-sync-id="jinja" for="sd-tab-item-19">
+<input checked="checked" id="sd-tab-item-20" name="sd-tab-set-7" type="radio">
+</input><label class="sd-tab-label" data-sync-id="jinja" for="sd-tab-item-20">
 Jinja</label><div class="sd-tab-content docutils">
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
 </span><span data-line="2">    <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
@@ -1016,8 +993,8 @@ Jinja</label><div class="sd-tab-content docutils">
 </span></pre></div>
 </div>
 </div>
-<input id="sd-tab-item-20" name="sd-tab-set-7" type="radio">
-</input><label class="sd-tab-label" data-sync-id="mako" for="sd-tab-item-20">
+<input id="sd-tab-item-21" name="sd-tab-set-7" type="radio">
+</input><label class="sd-tab-label" data-sync-id="mako" for="sd-tab-item-21">
 Mako</label><div class="sd-tab-content docutils">
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
 </span><span data-line="2">    <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
@@ -1035,8 +1012,8 @@ Mako</label><div class="sd-tab-content docutils">
 </span></pre></div>
 </div>
 </div>
-<input id="sd-tab-item-21" name="sd-tab-set-7" type="radio">
-</input><label class="sd-tab-label" data-sync-id="minijinja" for="sd-tab-item-21">
+<input id="sd-tab-item-22" name="sd-tab-set-7" type="radio">
+</input><label class="sd-tab-label" data-sync-id="minijinja" for="sd-tab-item-22">
 MiniJinja</label><div class="sd-tab-content docutils">
 <div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
 </span><span data-line="2">    <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
@@ -1105,12 +1082,12 @@ for the two built in engines, and it can be used to register callables that will
 should expect one argument - the context dictionary. It can be any callable - a function, method, or class that defines
 the call method. For example:</p>
 <div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-22" name="sd-tab-set-8" type="radio">
-</input><label class="sd-tab-label" data-sync-id="jinja" for="sd-tab-item-22">
+<input checked="checked" id="sd-tab-item-23" name="sd-tab-set-8" type="radio">
+</input><label class="sd-tab-label" data-sync-id="jinja" for="sd-tab-item-23">
 Jinja</label><div class="sd-tab-content docutils">
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-25" name="sd-tab-set-9" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-25">
+<input id="sd-tab-item-26" name="sd-tab-set-9" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-26">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id8">
 <div class="code-block-caption"><span class="caption-text">template_functions.py</span><a class="headerlink" href="#id8" title="Permalink to this code">¶</a></div>
@@ -1154,9 +1131,9 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-26" name="sd-tab-set-9" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-26">
-Python 3.10+</label><div class="sd-tab-content docutils">
+<input checked="checked" id="sd-tab-item-27" name="sd-tab-set-9" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-27">
+Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id9">
 <div class="code-block-caption"><span class="caption-text">template_functions.py</span><a class="headerlink" href="#id9" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
@@ -1207,12 +1184,12 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input id="sd-tab-item-23" name="sd-tab-set-8" type="radio">
-</input><label class="sd-tab-label" data-sync-id="mako" for="sd-tab-item-23">
+<input id="sd-tab-item-24" name="sd-tab-set-8" type="radio">
+</input><label class="sd-tab-label" data-sync-id="mako" for="sd-tab-item-24">
 Mako</label><div class="sd-tab-content docutils">
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-27" name="sd-tab-set-10" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-27">
+<input id="sd-tab-item-28" name="sd-tab-set-10" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-28">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id11">
 <div class="code-block-caption"><span class="caption-text">template_functions.py</span><a class="headerlink" href="#id11" title="Permalink to this code">¶</a></div>
@@ -1256,9 +1233,9 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-28" name="sd-tab-set-10" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-28">
-Python 3.10+</label><div class="sd-tab-content docutils">
+<input checked="checked" id="sd-tab-item-29" name="sd-tab-set-10" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-29">
+Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id12">
 <div class="code-block-caption"><span class="caption-text">template_functions.py</span><a class="headerlink" href="#id12" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
@@ -1309,8 +1286,8 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input id="sd-tab-item-24" name="sd-tab-set-8" type="radio">
-</input><label class="sd-tab-label" data-sync-id="minijinja" for="sd-tab-item-24">
+<input id="sd-tab-item-25" name="sd-tab-set-8" type="radio">
+</input><label class="sd-tab-label" data-sync-id="minijinja" for="sd-tab-item-25">
 Minijinja</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id14">
 <div class="code-block-caption"><span class="caption-text">template_functions.py</span><a class="headerlink" href="#id14" title="Permalink to this code">¶</a></div>
@@ -1361,27 +1338,18 @@ you’ll see</p>
 </section>
 </section>
 
-        </article>
-        <button class="back-to-top" type="button">
+        </article><button class="back-to-top" type="button">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
     <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
   </svg>
   <span>Back to top</span>
-</button>
-        
-        <div class="navigation flex print:hidden">
-  <div class="navigation-prev">
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
     <a href="stores.html">
       <i class="i-lucide chevron-left"></i>
       <div class="page-info">
-        <span>Previous</span>
-        
-        <div class="title">Stores</div>
-        
-      </div>
+        <span>Previous</span><div class="title">Stores</div></div>
     </a>
-  </div>
-  <div class="navigation-next">
+  </div><div class="navigation-next">
     <a href="testing.html">
       <div class="page-info">
         <span>Next</span>
@@ -1389,16 +1357,12 @@ you’ll see</p>
       </div>
       <i class="i-lucide chevron-right"></i>
     </a>
-  </div>
-</div>
-        
-      </div>
+  </div></div></div>
     </div>
   </main>
 </div>
 <footer class="sy-foot">
   <div class="sy-foot-inner sy-container mx-auto">
-    
     <div class="sy-foot-reserved md:flex justify-between items-center">
       <div class="sy-foot-copyright"><p>2024, Litestar Organization</p>
   
@@ -1411,13 +1375,12 @@ you’ll see</p>
   </p>
 </div>
       <div class="sy-foot-socials">
-  <a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)"><i class="i-simpleicons x-twitter"></i></a>
-  <a href="https://discord.gg/litestar" aria-label="Discord"><i class="i-simpleicons discord"></i></a>
-  <a href="https://www.reddit.com/r/LitestarAPI" aria-label="Reddit"><i class="i-simpleicons reddit"></i></a>
-</div>
+<a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)"><i class="i-simpleicons x-twitter"></i></a>
+<a href="https://discord.gg/litestar" aria-label="Discord"><i class="i-simpleicons discord"></i></a>
+<a href="https://www.reddit.com/r/LitestarAPI" aria-label="Reddit"><i class="i-simpleicons reddit"></i></a></div>
     </div>
   </div>
-</footer></div>
+</footer>
       <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=c19e757c"></script>
       <script src="../_static/doctools.js?v=888ff710"></script>
       <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
@@ -1430,8 +1393,6 @@ you’ll see</p>
       <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
       <script src="../_static/design-tabs.js?v=36754332"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../_static/shibuya.js?v=5f0e4c24"></script>
-      <script src="../_static/versioning.js?v=bc681eff"></script>
-    
-</body>
+      <script src="../_static/shibuya.js?v=3cc430e2"></script>
+      <script src="../_static/versioning.js?v=bc681eff"></script></body>
 </html>

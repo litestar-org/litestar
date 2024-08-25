@@ -1,17 +1,12 @@
-
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" data-accent-color="amber" data-content_root="">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>spec - Litestar Framework</title>
-    <link rel="shortcut icon" href="../../_static/favicon.svg"/><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="pagination" href="../pagination.html" /><link rel="prev" title="plugins" href="plugins.html" />
-
-  <script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>spec - Litestar Framework</title><link rel="shortcut icon" href="../../_static/favicon.svg"/><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="pagination" href="../pagination.html" /><link rel="prev" title="plugins" href="plugins.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
-    setColorMode(sessionStorage._theme||"auto");
-  </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=aecf457f" />
-    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=bb1fd5f2" />
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=397bb51e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=5117e564" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -32,7 +27,7 @@
 <meta name="twitter:card" content="summary"/>
 <meta property="og:image" content="_static/logo-light.png"/>
   </head>
-<body><div class="document"><div class="announcement">
+<body><div class="announcement">
     <div class="announcement-inner">
       <p>You are viewing the <bold>v3-development</bold> version of the documentation. Click here to go to the latest version.</p>
       <button class="announcement-close" aria-label="Close announcement">
@@ -42,21 +37,18 @@
   </div><div class="sy-head">
   <div class="sy-head-blur"></div>
   <div class="sy-head-inner sy-container mx-auto">
-    <a class="sy-head-brand mr-4" href="/">
-      <img class="light-logo" src="../../_static/logo-light.png" alt="Litestar" height="28" />
-      <img class="dark-logo" src="../../_static/logo-dark.png" alt="Litestar" height="28" />
+    <a class="sy-head-brand" href="/">
+      <img class="light-logo" src="../../_static/logo-light.png" alt="Litestar" height="28" loading="lazy" />
+      <img class="dark-logo" src="../../_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
       <strong>Litestar</strong>
     </a>
-    <div class="sy-head-links" id="NavLinks">
-      <nav class="sy-head-nav">
-
-<ul><li class="link"><a href="../../index.html">Home</a></li>
+    <div class="sy-head-nav" id="HeadNav">
+      <nav class="sy-head-links"><ul><li class="link"><a href="../../index.html">Home</a></li>
       <li class="link"><button type="button">
             <span>Community</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul>
-          <li><a href="../../contribution-guide.html">
+        <ul><li><a href="../../contribution-guide.html">
                 <span>Contributing</span>
                 <small>Learn how to contribute to the Litestar project</small>
               </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
@@ -71,8 +63,7 @@
             <span>About</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul>
-          <li><a href="https://litestar.dev/about/organization">
+        <ul><li><a href="https://litestar.dev/about/organization">
                 <span>Litestar Organization</span>
                 <small>Details about the Litestar organization</small>
               </a></li><li><a href="https://litestar.dev/about/litestar-releases">
@@ -84,8 +75,7 @@
             <span>Release notes</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul>
-          <li><a href="../../release-notes/whats-new-3.html">
+        <ul><li><a href="../../release-notes/whats-new-3.html">
                 <span>What's new in 3.0</span>
                 <small>Explore the new features in Litestar 3.0</small>
               </a></li><li><a href="../../release-notes/changelog.html">
@@ -100,8 +90,7 @@
             <span>Help</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul>
-          <li><a href="https://discord.gg/litestar">
+        <ul><li><a href="https://discord.gg/litestar">
                 <span>Discord Help Forum</span>
                 <small>Dedicated Discord help forum</small>
               </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
@@ -113,45 +102,32 @@
               </a></li></ul>
       </li><li class="link">
           <a href="https://github.com/sponsors/Litestar-Org">
-            <span>Sponsor</span>
-            
-          </a>
+            <span>Sponsor</span></a>
         </li></ul></nav>
-      <div class="sy-head-extra flex items-center print:hidden">
-        
-<form class="searchbox flex items-center" action="../../search.html" method="get">
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../../search.html" method="get">
   <input type="text" name="q" placeholder="Search" />
   <kbd>/</kbd>
-</form>
-        
-  <div class="nav-versions">
+</form><div class="nav-versions">
     <button type="button" aria-label="Versions">
       <span class="md:hidden">Versions</span>
       <span class="hidden md:inline">latest</span>
       <i class="i-lucide chevron-down"></i>
     </button>
-    <div class="nav-versions-choices">
-      <ul><li><a href="/latest">latest</a></li><li><a href="/main">development</a></li><li><a href="/3-dev">v3</a></li><li><a href="/2">v2</a></li><li><a href="/1">v1</a></li></ul></div>
-  </div>
-        
-        <div class="sy-head-socials flex items-center">
-  <a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)">
-    <i class="i-simpleicons x-twitter"></i>
-  </a>
-    <a href="https://discord.gg/litestar" aria-label="Discord">
-      <i class="i-simpleicons discord"></i>
-    </a>
-</div>
-      </div>
+    <div class="nav-versions-choices"><ul><li><a href="/latest">latest</a></li><li><a href="/main">development</a></li><li><a href="/3-dev">v3</a></li><li><a href="/2">v2</a></li><li><a href="/1">v1</a></li></ul></div>
+  </div><div class="sy-head-socials">
+<a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)">
+  <i class="i-simpleicons x-twitter"></i>
+</a>
+  <a href="https://discord.gg/litestar" aria-label="Discord">
+    <i class="i-simpleicons discord"></i>
+  </a></div></div>
     </div>
-    <div class="sy-head-actions flex items-center shrink-0 print:hidden">
-      <button class="js-theme theme-switch flex items-center"
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
 data-aria-auto="Switch to light color mode"
 data-aria-light="Switch to dark color mode"
 data-aria-dark="Switch to auto color mode">
 <i class="i-lucide theme-icon"></i>
-</button>
-      <button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="NavLinks" aria-expanded="false">
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="HeadNav" aria-expanded="false">
         <div class="hamburger">
           <span class="hamburger_1"></span>
           <span class="hamburger_2 -translate-x-2"></span>
@@ -164,8 +140,7 @@ data-aria-dark="Switch to auto color mode">
 <div class="sy-page sy-container flex mx-auto">
   <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
     <div class="sy-lside-inner md:sticky">
-      <div class="sy-scrollbar p-6">
-<div class="sidebar-links">
+      <div class="sy-scrollbar p-6"><div class="sidebar-links">
   <ul>
     <li><a class="icon-link" href="https://github.com/orgs/litestar-org/discussions">
   <span class="icon">
@@ -180,7 +155,6 @@ data-aria-dark="Switch to auto color mode">
 </a></li>
   </ul>
 </div>
-
         <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../getting-started.html">Getting Started</a></li>
@@ -266,6 +240,7 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/static-files.html">Static files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/custom-types.html">Custom types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/stores.html">Stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/templating.html">Templating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/testing.html">Testing</a></li>
@@ -482,344 +457,338 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 
         </div>
-      </div>
-      
-    </div>
+      </div></div>
   </aside>
   <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
   <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
     <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
       <i class="i-lucide close"></i>
     </button>
-    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4">
-  <div class="localtoc">
-    <h3>On this page</h3>
-    <ul>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
 <li><a class="reference internal" href="#litestar.openapi.spec.BaseSchemaObject"><code class="docutils literal notranslate"><span class="pre">BaseSchemaObject</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.openapi.spec.BaseSchemaObject.to_schema"><code class="docutils literal notranslate"><span class="pre">BaseSchemaObject.to_schema()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.BaseSchemaObject.__init__"><code class="docutils literal notranslate"><span class="pre">BaseSchemaObject.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.BaseSchemaObject.to_schema"><code class="docutils literal notranslate">to_schema()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.BaseSchemaObject.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.openapi.spec.Components"><code class="docutils literal notranslate"><span class="pre">Components</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.openapi.spec.Components.schemas"><code class="docutils literal notranslate"><span class="pre">Components.schemas</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Components.responses"><code class="docutils literal notranslate"><span class="pre">Components.responses</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Components.parameters"><code class="docutils literal notranslate"><span class="pre">Components.parameters</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Components.examples"><code class="docutils literal notranslate"><span class="pre">Components.examples</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Components.request_bodies"><code class="docutils literal notranslate"><span class="pre">Components.request_bodies</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Components.__init__"><code class="docutils literal notranslate"><span class="pre">Components.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Components.headers"><code class="docutils literal notranslate"><span class="pre">Components.headers</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Components.security_schemes"><code class="docutils literal notranslate"><span class="pre">Components.security_schemes</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Components.links"><code class="docutils literal notranslate"><span class="pre">Components.links</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Components.callbacks"><code class="docutils literal notranslate"><span class="pre">Components.callbacks</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Components.path_items"><code class="docutils literal notranslate"><span class="pre">Components.path_items</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Components.schemas"><code class="docutils literal notranslate">schemas</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Components.responses"><code class="docutils literal notranslate">responses</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Components.parameters"><code class="docutils literal notranslate">parameters</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Components.examples"><code class="docutils literal notranslate">examples</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Components.request_bodies"><code class="docutils literal notranslate">request_bodies</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Components.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Components.headers"><code class="docutils literal notranslate">headers</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Components.security_schemes"><code class="docutils literal notranslate">security_schemes</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Components.links"><code class="docutils literal notranslate">links</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Components.callbacks"><code class="docutils literal notranslate">callbacks</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Components.path_items"><code class="docutils literal notranslate">path_items</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.openapi.spec.Contact"><code class="docutils literal notranslate"><span class="pre">Contact</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.openapi.spec.Contact.name"><code class="docutils literal notranslate"><span class="pre">Contact.name</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Contact.__init__"><code class="docutils literal notranslate"><span class="pre">Contact.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Contact.url"><code class="docutils literal notranslate"><span class="pre">Contact.url</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Contact.email"><code class="docutils literal notranslate"><span class="pre">Contact.email</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Contact.name"><code class="docutils literal notranslate">name</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Contact.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Contact.url"><code class="docutils literal notranslate">url</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Contact.email"><code class="docutils literal notranslate">email</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.openapi.spec.Discriminator"><code class="docutils literal notranslate"><span class="pre">Discriminator</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.openapi.spec.Discriminator.property_name"><code class="docutils literal notranslate"><span class="pre">Discriminator.property_name</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Discriminator.__init__"><code class="docutils literal notranslate"><span class="pre">Discriminator.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Discriminator.mapping"><code class="docutils literal notranslate"><span class="pre">Discriminator.mapping</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Discriminator.property_name"><code class="docutils literal notranslate">property_name</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Discriminator.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Discriminator.mapping"><code class="docutils literal notranslate">mapping</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.openapi.spec.Encoding"><code class="docutils literal notranslate"><span class="pre">Encoding</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.openapi.spec.Encoding.content_type"><code class="docutils literal notranslate"><span class="pre">Encoding.content_type</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Encoding.headers"><code class="docutils literal notranslate"><span class="pre">Encoding.headers</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Encoding.__init__"><code class="docutils literal notranslate"><span class="pre">Encoding.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Encoding.style"><code class="docutils literal notranslate"><span class="pre">Encoding.style</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Encoding.explode"><code class="docutils literal notranslate"><span class="pre">Encoding.explode</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Encoding.allow_reserved"><code class="docutils literal notranslate"><span class="pre">Encoding.allow_reserved</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Encoding.content_type"><code class="docutils literal notranslate">content_type</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Encoding.headers"><code class="docutils literal notranslate">headers</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Encoding.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Encoding.style"><code class="docutils literal notranslate">style</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Encoding.explode"><code class="docutils literal notranslate">explode</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Encoding.allow_reserved"><code class="docutils literal notranslate">allow_reserved</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.openapi.spec.Example"><code class="docutils literal notranslate"><span class="pre">Example</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.openapi.spec.Example.summary"><code class="docutils literal notranslate"><span class="pre">Example.summary</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Example.description"><code class="docutils literal notranslate"><span class="pre">Example.description</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Example.__init__"><code class="docutils literal notranslate"><span class="pre">Example.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Example.value"><code class="docutils literal notranslate"><span class="pre">Example.value</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Example.external_value"><code class="docutils literal notranslate"><span class="pre">Example.external_value</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Example.summary"><code class="docutils literal notranslate">summary</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Example.description"><code class="docutils literal notranslate">description</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Example.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Example.value"><code class="docutils literal notranslate">value</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Example.external_value"><code class="docutils literal notranslate">external_value</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.openapi.spec.ExternalDocumentation"><code class="docutils literal notranslate"><span class="pre">ExternalDocumentation</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.openapi.spec.ExternalDocumentation.url"><code class="docutils literal notranslate"><span class="pre">ExternalDocumentation.url</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.ExternalDocumentation.__init__"><code class="docutils literal notranslate"><span class="pre">ExternalDocumentation.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.ExternalDocumentation.description"><code class="docutils literal notranslate"><span class="pre">ExternalDocumentation.description</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.ExternalDocumentation.url"><code class="docutils literal notranslate">url</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.ExternalDocumentation.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.ExternalDocumentation.description"><code class="docutils literal notranslate">description</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.openapi.spec.Info"><code class="docutils literal notranslate"><span class="pre">Info</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.openapi.spec.Info.title"><code class="docutils literal notranslate"><span class="pre">Info.title</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Info.version"><code class="docutils literal notranslate"><span class="pre">Info.version</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Info.summary"><code class="docutils literal notranslate"><span class="pre">Info.summary</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Info.__init__"><code class="docutils literal notranslate"><span class="pre">Info.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Info.description"><code class="docutils literal notranslate"><span class="pre">Info.description</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Info.terms_of_service"><code class="docutils literal notranslate"><span class="pre">Info.terms_of_service</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Info.contact"><code class="docutils literal notranslate"><span class="pre">Info.contact</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Info.license"><code class="docutils literal notranslate"><span class="pre">Info.license</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Info.title"><code class="docutils literal notranslate">title</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Info.version"><code class="docutils literal notranslate">version</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Info.summary"><code class="docutils literal notranslate">summary</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Info.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Info.description"><code class="docutils literal notranslate">description</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Info.terms_of_service"><code class="docutils literal notranslate">terms_of_service</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Info.contact"><code class="docutils literal notranslate">contact</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Info.license"><code class="docutils literal notranslate">license</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.openapi.spec.License"><code class="docutils literal notranslate"><span class="pre">License</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.openapi.spec.License.name"><code class="docutils literal notranslate"><span class="pre">License.name</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.License.__init__"><code class="docutils literal notranslate"><span class="pre">License.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.License.identifier"><code class="docutils literal notranslate"><span class="pre">License.identifier</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.License.url"><code class="docutils literal notranslate"><span class="pre">License.url</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.License.name"><code class="docutils literal notranslate">name</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.License.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.License.identifier"><code class="docutils literal notranslate">identifier</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.License.url"><code class="docutils literal notranslate">url</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.openapi.spec.Link"><code class="docutils literal notranslate"><span class="pre">Link</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.openapi.spec.Link.operation_ref"><code class="docutils literal notranslate"><span class="pre">Link.operation_ref</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Link.operation_id"><code class="docutils literal notranslate"><span class="pre">Link.operation_id</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Link.parameters"><code class="docutils literal notranslate"><span class="pre">Link.parameters</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Link.__init__"><code class="docutils literal notranslate"><span class="pre">Link.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Link.request_body"><code class="docutils literal notranslate"><span class="pre">Link.request_body</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Link.description"><code class="docutils literal notranslate"><span class="pre">Link.description</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Link.server"><code class="docutils literal notranslate"><span class="pre">Link.server</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Link.operation_ref"><code class="docutils literal notranslate">operation_ref</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Link.operation_id"><code class="docutils literal notranslate">operation_id</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Link.parameters"><code class="docutils literal notranslate">parameters</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Link.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Link.request_body"><code class="docutils literal notranslate">request_body</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Link.description"><code class="docutils literal notranslate">description</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Link.server"><code class="docutils literal notranslate">server</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.openapi.spec.OAuthFlow"><code class="docutils literal notranslate"><span class="pre">OAuthFlow</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.openapi.spec.OAuthFlow.authorization_url"><code class="docutils literal notranslate"><span class="pre">OAuthFlow.authorization_url</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OAuthFlow.token_url"><code class="docutils literal notranslate"><span class="pre">OAuthFlow.token_url</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OAuthFlow.__init__"><code class="docutils literal notranslate"><span class="pre">OAuthFlow.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OAuthFlow.refresh_url"><code class="docutils literal notranslate"><span class="pre">OAuthFlow.refresh_url</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OAuthFlow.scopes"><code class="docutils literal notranslate"><span class="pre">OAuthFlow.scopes</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OAuthFlow.authorization_url"><code class="docutils literal notranslate">authorization_url</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OAuthFlow.token_url"><code class="docutils literal notranslate">token_url</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OAuthFlow.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OAuthFlow.refresh_url"><code class="docutils literal notranslate">refresh_url</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OAuthFlow.scopes"><code class="docutils literal notranslate">scopes</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.openapi.spec.OAuthFlows"><code class="docutils literal notranslate"><span class="pre">OAuthFlows</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.openapi.spec.OAuthFlows.implicit"><code class="docutils literal notranslate"><span class="pre">OAuthFlows.implicit</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OAuthFlows.password"><code class="docutils literal notranslate"><span class="pre">OAuthFlows.password</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OAuthFlows.__init__"><code class="docutils literal notranslate"><span class="pre">OAuthFlows.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OAuthFlows.client_credentials"><code class="docutils literal notranslate"><span class="pre">OAuthFlows.client_credentials</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OAuthFlows.authorization_code"><code class="docutils literal notranslate"><span class="pre">OAuthFlows.authorization_code</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OAuthFlows.implicit"><code class="docutils literal notranslate">implicit</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OAuthFlows.password"><code class="docutils literal notranslate">password</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OAuthFlows.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OAuthFlows.client_credentials"><code class="docutils literal notranslate">client_credentials</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OAuthFlows.authorization_code"><code class="docutils literal notranslate">authorization_code</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.openapi.spec.OpenAPI"><code class="docutils literal notranslate"><span class="pre">OpenAPI</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPI.info"><code class="docutils literal notranslate"><span class="pre">OpenAPI.info</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPI.openapi"><code class="docutils literal notranslate"><span class="pre">OpenAPI.openapi</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPI.json_schema_dialect"><code class="docutils literal notranslate"><span class="pre">OpenAPI.json_schema_dialect</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPI.servers"><code class="docutils literal notranslate"><span class="pre">OpenAPI.servers</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPI.paths"><code class="docutils literal notranslate"><span class="pre">OpenAPI.paths</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPI.__init__"><code class="docutils literal notranslate"><span class="pre">OpenAPI.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPI.webhooks"><code class="docutils literal notranslate"><span class="pre">OpenAPI.webhooks</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPI.components"><code class="docutils literal notranslate"><span class="pre">OpenAPI.components</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPI.security"><code class="docutils literal notranslate"><span class="pre">OpenAPI.security</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPI.tags"><code class="docutils literal notranslate"><span class="pre">OpenAPI.tags</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPI.external_docs"><code class="docutils literal notranslate"><span class="pre">OpenAPI.external_docs</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPI.info"><code class="docutils literal notranslate">info</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPI.openapi"><code class="docutils literal notranslate">openapi</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPI.json_schema_dialect"><code class="docutils literal notranslate">json_schema_dialect</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPI.servers"><code class="docutils literal notranslate">servers</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPI.paths"><code class="docutils literal notranslate">paths</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPI.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPI.webhooks"><code class="docutils literal notranslate">webhooks</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPI.components"><code class="docutils literal notranslate">components</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPI.security"><code class="docutils literal notranslate">security</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPI.tags"><code class="docutils literal notranslate">tags</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPI.external_docs"><code class="docutils literal notranslate">external_docs</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIFormat"><code class="docutils literal notranslate"><span class="pre">OpenAPIFormat</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIFormat.__new__"><code class="docutils literal notranslate"><span class="pre">OpenAPIFormat.__new__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIFormat.__new__"><code class="docutils literal notranslate">__new__()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIHeader"><code class="docutils literal notranslate"><span class="pre">OpenAPIHeader</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIHeader.schema"><code class="docutils literal notranslate"><span class="pre">OpenAPIHeader.schema</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIHeader.name"><code class="docutils literal notranslate"><span class="pre">OpenAPIHeader.name</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIHeader.param_in"><code class="docutils literal notranslate"><span class="pre">OpenAPIHeader.param_in</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIHeader.description"><code class="docutils literal notranslate"><span class="pre">OpenAPIHeader.description</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIHeader.required"><code class="docutils literal notranslate"><span class="pre">OpenAPIHeader.required</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIHeader.deprecated"><code class="docutils literal notranslate"><span class="pre">OpenAPIHeader.deprecated</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIHeader.allow_empty_value"><code class="docutils literal notranslate"><span class="pre">OpenAPIHeader.allow_empty_value</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIHeader.__init__"><code class="docutils literal notranslate"><span class="pre">OpenAPIHeader.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIHeader.style"><code class="docutils literal notranslate"><span class="pre">OpenAPIHeader.style</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIHeader.explode"><code class="docutils literal notranslate"><span class="pre">OpenAPIHeader.explode</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIHeader.allow_reserved"><code class="docutils literal notranslate"><span class="pre">OpenAPIHeader.allow_reserved</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIHeader.example"><code class="docutils literal notranslate"><span class="pre">OpenAPIHeader.example</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIHeader.examples"><code class="docutils literal notranslate"><span class="pre">OpenAPIHeader.examples</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIHeader.content"><code class="docutils literal notranslate"><span class="pre">OpenAPIHeader.content</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIHeader.schema"><code class="docutils literal notranslate">schema</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIHeader.name"><code class="docutils literal notranslate">name</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIHeader.param_in"><code class="docutils literal notranslate">param_in</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIHeader.description"><code class="docutils literal notranslate">description</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIHeader.required"><code class="docutils literal notranslate">required</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIHeader.deprecated"><code class="docutils literal notranslate">deprecated</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIHeader.allow_empty_value"><code class="docutils literal notranslate">allow_empty_value</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIHeader.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIHeader.style"><code class="docutils literal notranslate">style</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIHeader.explode"><code class="docutils literal notranslate">explode</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIHeader.allow_reserved"><code class="docutils literal notranslate">allow_reserved</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIHeader.example"><code class="docutils literal notranslate">example</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIHeader.examples"><code class="docutils literal notranslate">examples</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIHeader.content"><code class="docutils literal notranslate">content</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIMediaType"><code class="docutils literal notranslate"><span class="pre">OpenAPIMediaType</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIMediaType.schema"><code class="docutils literal notranslate"><span class="pre">OpenAPIMediaType.schema</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIMediaType.example"><code class="docutils literal notranslate"><span class="pre">OpenAPIMediaType.example</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIMediaType.__init__"><code class="docutils literal notranslate"><span class="pre">OpenAPIMediaType.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIMediaType.examples"><code class="docutils literal notranslate"><span class="pre">OpenAPIMediaType.examples</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIMediaType.encoding"><code class="docutils literal notranslate"><span class="pre">OpenAPIMediaType.encoding</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIMediaType.schema"><code class="docutils literal notranslate">schema</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIMediaType.example"><code class="docutils literal notranslate">example</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIMediaType.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIMediaType.examples"><code class="docutils literal notranslate">examples</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIMediaType.encoding"><code class="docutils literal notranslate">encoding</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIResponse"><code class="docutils literal notranslate"><span class="pre">OpenAPIResponse</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIResponse.description"><code class="docutils literal notranslate"><span class="pre">OpenAPIResponse.description</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIResponse.headers"><code class="docutils literal notranslate"><span class="pre">OpenAPIResponse.headers</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIResponse.__init__"><code class="docutils literal notranslate"><span class="pre">OpenAPIResponse.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIResponse.content"><code class="docutils literal notranslate"><span class="pre">OpenAPIResponse.content</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIResponse.links"><code class="docutils literal notranslate"><span class="pre">OpenAPIResponse.links</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIResponse.description"><code class="docutils literal notranslate">description</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIResponse.headers"><code class="docutils literal notranslate">headers</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIResponse.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIResponse.content"><code class="docutils literal notranslate">content</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIResponse.links"><code class="docutils literal notranslate">links</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIType"><code class="docutils literal notranslate"><span class="pre">OpenAPIType</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIType.__new__"><code class="docutils literal notranslate"><span class="pre">OpenAPIType.__new__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.OpenAPIType.__new__"><code class="docutils literal notranslate">__new__()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.openapi.spec.Operation"><code class="docutils literal notranslate"><span class="pre">Operation</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.openapi.spec.Operation.tags"><code class="docutils literal notranslate"><span class="pre">Operation.tags</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Operation.summary"><code class="docutils literal notranslate"><span class="pre">Operation.summary</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Operation.description"><code class="docutils literal notranslate"><span class="pre">Operation.description</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Operation.external_docs"><code class="docutils literal notranslate"><span class="pre">Operation.external_docs</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Operation.operation_id"><code class="docutils literal notranslate"><span class="pre">Operation.operation_id</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Operation.parameters"><code class="docutils literal notranslate"><span class="pre">Operation.parameters</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Operation.__init__"><code class="docutils literal notranslate"><span class="pre">Operation.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Operation.request_body"><code class="docutils literal notranslate"><span class="pre">Operation.request_body</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Operation.responses"><code class="docutils literal notranslate"><span class="pre">Operation.responses</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Operation.callbacks"><code class="docutils literal notranslate"><span class="pre">Operation.callbacks</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Operation.deprecated"><code class="docutils literal notranslate"><span class="pre">Operation.deprecated</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Operation.security"><code class="docutils literal notranslate"><span class="pre">Operation.security</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Operation.servers"><code class="docutils literal notranslate"><span class="pre">Operation.servers</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Operation.tags"><code class="docutils literal notranslate">tags</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Operation.summary"><code class="docutils literal notranslate">summary</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Operation.description"><code class="docutils literal notranslate">description</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Operation.external_docs"><code class="docutils literal notranslate">external_docs</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Operation.operation_id"><code class="docutils literal notranslate">operation_id</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Operation.parameters"><code class="docutils literal notranslate">parameters</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Operation.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Operation.request_body"><code class="docutils literal notranslate">request_body</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Operation.responses"><code class="docutils literal notranslate">responses</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Operation.callbacks"><code class="docutils literal notranslate">callbacks</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Operation.deprecated"><code class="docutils literal notranslate">deprecated</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Operation.security"><code class="docutils literal notranslate">security</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Operation.servers"><code class="docutils literal notranslate">servers</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.openapi.spec.Parameter"><code class="docutils literal notranslate"><span class="pre">Parameter</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.openapi.spec.Parameter.name"><code class="docutils literal notranslate"><span class="pre">Parameter.name</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Parameter.param_in"><code class="docutils literal notranslate"><span class="pre">Parameter.param_in</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Parameter.schema"><code class="docutils literal notranslate"><span class="pre">Parameter.schema</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Parameter.description"><code class="docutils literal notranslate"><span class="pre">Parameter.description</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Parameter.required"><code class="docutils literal notranslate"><span class="pre">Parameter.required</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Parameter.deprecated"><code class="docutils literal notranslate"><span class="pre">Parameter.deprecated</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Parameter.__init__"><code class="docutils literal notranslate"><span class="pre">Parameter.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Parameter.allow_empty_value"><code class="docutils literal notranslate"><span class="pre">Parameter.allow_empty_value</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Parameter.style"><code class="docutils literal notranslate"><span class="pre">Parameter.style</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Parameter.explode"><code class="docutils literal notranslate"><span class="pre">Parameter.explode</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Parameter.allow_reserved"><code class="docutils literal notranslate"><span class="pre">Parameter.allow_reserved</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Parameter.example"><code class="docutils literal notranslate"><span class="pre">Parameter.example</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Parameter.examples"><code class="docutils literal notranslate"><span class="pre">Parameter.examples</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Parameter.content"><code class="docutils literal notranslate"><span class="pre">Parameter.content</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Parameter.name"><code class="docutils literal notranslate">name</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Parameter.param_in"><code class="docutils literal notranslate">param_in</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Parameter.schema"><code class="docutils literal notranslate">schema</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Parameter.description"><code class="docutils literal notranslate">description</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Parameter.required"><code class="docutils literal notranslate">required</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Parameter.deprecated"><code class="docutils literal notranslate">deprecated</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Parameter.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Parameter.allow_empty_value"><code class="docutils literal notranslate">allow_empty_value</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Parameter.style"><code class="docutils literal notranslate">style</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Parameter.explode"><code class="docutils literal notranslate">explode</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Parameter.allow_reserved"><code class="docutils literal notranslate">allow_reserved</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Parameter.example"><code class="docutils literal notranslate">example</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Parameter.examples"><code class="docutils literal notranslate">examples</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Parameter.content"><code class="docutils literal notranslate">content</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.openapi.spec.PathItem"><code class="docutils literal notranslate"><span class="pre">PathItem</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.openapi.spec.PathItem.ref"><code class="docutils literal notranslate"><span class="pre">PathItem.ref</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.PathItem.summary"><code class="docutils literal notranslate"><span class="pre">PathItem.summary</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.PathItem.description"><code class="docutils literal notranslate"><span class="pre">PathItem.description</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.PathItem.get"><code class="docutils literal notranslate"><span class="pre">PathItem.get</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.PathItem.put"><code class="docutils literal notranslate"><span class="pre">PathItem.put</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.PathItem.post"><code class="docutils literal notranslate"><span class="pre">PathItem.post</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.PathItem.__init__"><code class="docutils literal notranslate"><span class="pre">PathItem.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.PathItem.delete"><code class="docutils literal notranslate"><span class="pre">PathItem.delete</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.PathItem.options"><code class="docutils literal notranslate"><span class="pre">PathItem.options</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.PathItem.head"><code class="docutils literal notranslate"><span class="pre">PathItem.head</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.PathItem.patch"><code class="docutils literal notranslate"><span class="pre">PathItem.patch</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.PathItem.trace"><code class="docutils literal notranslate"><span class="pre">PathItem.trace</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.PathItem.servers"><code class="docutils literal notranslate"><span class="pre">PathItem.servers</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.PathItem.parameters"><code class="docutils literal notranslate"><span class="pre">PathItem.parameters</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.PathItem.ref"><code class="docutils literal notranslate">ref</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.PathItem.summary"><code class="docutils literal notranslate">summary</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.PathItem.description"><code class="docutils literal notranslate">description</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.PathItem.get"><code class="docutils literal notranslate">get</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.PathItem.put"><code class="docutils literal notranslate">put</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.PathItem.post"><code class="docutils literal notranslate">post</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.PathItem.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.PathItem.delete"><code class="docutils literal notranslate">delete</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.PathItem.options"><code class="docutils literal notranslate">options</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.PathItem.head"><code class="docutils literal notranslate">head</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.PathItem.patch"><code class="docutils literal notranslate">patch</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.PathItem.trace"><code class="docutils literal notranslate">trace</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.PathItem.servers"><code class="docutils literal notranslate">servers</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.PathItem.parameters"><code class="docutils literal notranslate">parameters</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.openapi.spec.Reference"><code class="docutils literal notranslate"><span class="pre">Reference</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.openapi.spec.Reference.ref"><code class="docutils literal notranslate"><span class="pre">Reference.ref</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Reference.summary"><code class="docutils literal notranslate"><span class="pre">Reference.summary</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Reference.__init__"><code class="docutils literal notranslate"><span class="pre">Reference.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Reference.description"><code class="docutils literal notranslate"><span class="pre">Reference.description</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Reference.ref"><code class="docutils literal notranslate">ref</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Reference.summary"><code class="docutils literal notranslate">summary</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Reference.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Reference.description"><code class="docutils literal notranslate">description</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.openapi.spec.RequestBody"><code class="docutils literal notranslate"><span class="pre">RequestBody</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.openapi.spec.RequestBody.content"><code class="docutils literal notranslate"><span class="pre">RequestBody.content</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.RequestBody.__init__"><code class="docutils literal notranslate"><span class="pre">RequestBody.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.RequestBody.description"><code class="docutils literal notranslate"><span class="pre">RequestBody.description</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.RequestBody.required"><code class="docutils literal notranslate"><span class="pre">RequestBody.required</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.RequestBody.content"><code class="docutils literal notranslate">content</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.RequestBody.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.RequestBody.description"><code class="docutils literal notranslate">description</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.RequestBody.required"><code class="docutils literal notranslate">required</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.openapi.spec.Schema"><code class="docutils literal notranslate"><span class="pre">Schema</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.all_of"><code class="docutils literal notranslate"><span class="pre">Schema.all_of</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.any_of"><code class="docutils literal notranslate"><span class="pre">Schema.any_of</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.one_of"><code class="docutils literal notranslate"><span class="pre">Schema.one_of</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.schema_not"><code class="docutils literal notranslate"><span class="pre">Schema.schema_not</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.schema_if"><code class="docutils literal notranslate"><span class="pre">Schema.schema_if</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.then"><code class="docutils literal notranslate"><span class="pre">Schema.then</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.schema_else"><code class="docutils literal notranslate"><span class="pre">Schema.schema_else</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.dependent_schemas"><code class="docutils literal notranslate"><span class="pre">Schema.dependent_schemas</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.prefix_items"><code class="docutils literal notranslate"><span class="pre">Schema.prefix_items</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.items"><code class="docutils literal notranslate"><span class="pre">Schema.items</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.contains"><code class="docutils literal notranslate"><span class="pre">Schema.contains</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.properties"><code class="docutils literal notranslate"><span class="pre">Schema.properties</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.pattern_properties"><code class="docutils literal notranslate"><span class="pre">Schema.pattern_properties</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.additional_properties"><code class="docutils literal notranslate"><span class="pre">Schema.additional_properties</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.property_names"><code class="docutils literal notranslate"><span class="pre">Schema.property_names</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.unevaluated_items"><code class="docutils literal notranslate"><span class="pre">Schema.unevaluated_items</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.unevaluated_properties"><code class="docutils literal notranslate"><span class="pre">Schema.unevaluated_properties</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.type"><code class="docutils literal notranslate"><span class="pre">Schema.type</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.enum"><code class="docutils literal notranslate"><span class="pre">Schema.enum</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.const"><code class="docutils literal notranslate"><span class="pre">Schema.const</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.multiple_of"><code class="docutils literal notranslate"><span class="pre">Schema.multiple_of</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.maximum"><code class="docutils literal notranslate"><span class="pre">Schema.maximum</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.exclusive_maximum"><code class="docutils literal notranslate"><span class="pre">Schema.exclusive_maximum</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.minimum"><code class="docutils literal notranslate"><span class="pre">Schema.minimum</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.exclusive_minimum"><code class="docutils literal notranslate"><span class="pre">Schema.exclusive_minimum</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.max_length"><code class="docutils literal notranslate"><span class="pre">Schema.max_length</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.min_length"><code class="docutils literal notranslate"><span class="pre">Schema.min_length</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.__init__"><code class="docutils literal notranslate"><span class="pre">Schema.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.pattern"><code class="docutils literal notranslate"><span class="pre">Schema.pattern</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.max_items"><code class="docutils literal notranslate"><span class="pre">Schema.max_items</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.min_items"><code class="docutils literal notranslate"><span class="pre">Schema.min_items</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.unique_items"><code class="docutils literal notranslate"><span class="pre">Schema.unique_items</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.max_contains"><code class="docutils literal notranslate"><span class="pre">Schema.max_contains</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.min_contains"><code class="docutils literal notranslate"><span class="pre">Schema.min_contains</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.max_properties"><code class="docutils literal notranslate"><span class="pre">Schema.max_properties</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.min_properties"><code class="docutils literal notranslate"><span class="pre">Schema.min_properties</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.required"><code class="docutils literal notranslate"><span class="pre">Schema.required</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.dependent_required"><code class="docutils literal notranslate"><span class="pre">Schema.dependent_required</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.format"><code class="docutils literal notranslate"><span class="pre">Schema.format</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.content_encoding"><code class="docutils literal notranslate"><span class="pre">Schema.content_encoding</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.content_media_type"><code class="docutils literal notranslate"><span class="pre">Schema.content_media_type</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.content_schema"><code class="docutils literal notranslate"><span class="pre">Schema.content_schema</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.title"><code class="docutils literal notranslate"><span class="pre">Schema.title</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.description"><code class="docutils literal notranslate"><span class="pre">Schema.description</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.default"><code class="docutils literal notranslate"><span class="pre">Schema.default</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.deprecated"><code class="docutils literal notranslate"><span class="pre">Schema.deprecated</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.read_only"><code class="docutils literal notranslate"><span class="pre">Schema.read_only</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.write_only"><code class="docutils literal notranslate"><span class="pre">Schema.write_only</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.examples"><code class="docutils literal notranslate"><span class="pre">Schema.examples</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.discriminator"><code class="docutils literal notranslate"><span class="pre">Schema.discriminator</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.xml"><code class="docutils literal notranslate"><span class="pre">Schema.xml</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.external_docs"><code class="docutils literal notranslate"><span class="pre">Schema.external_docs</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Schema.example"><code class="docutils literal notranslate"><span class="pre">Schema.example</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.all_of"><code class="docutils literal notranslate">all_of</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.any_of"><code class="docutils literal notranslate">any_of</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.one_of"><code class="docutils literal notranslate">one_of</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.schema_not"><code class="docutils literal notranslate">schema_not</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.schema_if"><code class="docutils literal notranslate">schema_if</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.then"><code class="docutils literal notranslate">then</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.schema_else"><code class="docutils literal notranslate">schema_else</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.dependent_schemas"><code class="docutils literal notranslate">dependent_schemas</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.prefix_items"><code class="docutils literal notranslate">prefix_items</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.items"><code class="docutils literal notranslate">items</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.contains"><code class="docutils literal notranslate">contains</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.properties"><code class="docutils literal notranslate">properties</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.pattern_properties"><code class="docutils literal notranslate">pattern_properties</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.additional_properties"><code class="docutils literal notranslate">additional_properties</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.property_names"><code class="docutils literal notranslate">property_names</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.unevaluated_items"><code class="docutils literal notranslate">unevaluated_items</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.unevaluated_properties"><code class="docutils literal notranslate">unevaluated_properties</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.type"><code class="docutils literal notranslate">type</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.enum"><code class="docutils literal notranslate">enum</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.const"><code class="docutils literal notranslate">const</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.multiple_of"><code class="docutils literal notranslate">multiple_of</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.maximum"><code class="docutils literal notranslate">maximum</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.exclusive_maximum"><code class="docutils literal notranslate">exclusive_maximum</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.minimum"><code class="docutils literal notranslate">minimum</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.exclusive_minimum"><code class="docutils literal notranslate">exclusive_minimum</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.max_length"><code class="docutils literal notranslate">max_length</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.min_length"><code class="docutils literal notranslate">min_length</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.pattern"><code class="docutils literal notranslate">pattern</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.max_items"><code class="docutils literal notranslate">max_items</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.min_items"><code class="docutils literal notranslate">min_items</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.unique_items"><code class="docutils literal notranslate">unique_items</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.max_contains"><code class="docutils literal notranslate">max_contains</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.min_contains"><code class="docutils literal notranslate">min_contains</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.max_properties"><code class="docutils literal notranslate">max_properties</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.min_properties"><code class="docutils literal notranslate">min_properties</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.required"><code class="docutils literal notranslate">required</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.dependent_required"><code class="docutils literal notranslate">dependent_required</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.format"><code class="docutils literal notranslate">format</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.content_encoding"><code class="docutils literal notranslate">content_encoding</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.content_media_type"><code class="docutils literal notranslate">content_media_type</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.content_schema"><code class="docutils literal notranslate">content_schema</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.title"><code class="docutils literal notranslate">title</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.description"><code class="docutils literal notranslate">description</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.default"><code class="docutils literal notranslate">default</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.deprecated"><code class="docutils literal notranslate">deprecated</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.read_only"><code class="docutils literal notranslate">read_only</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.write_only"><code class="docutils literal notranslate">write_only</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.examples"><code class="docutils literal notranslate">examples</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.discriminator"><code class="docutils literal notranslate">discriminator</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.xml"><code class="docutils literal notranslate">xml</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.external_docs"><code class="docutils literal notranslate">external_docs</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Schema.example"><code class="docutils literal notranslate">example</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.openapi.spec.SecurityScheme"><code class="docutils literal notranslate"><span class="pre">SecurityScheme</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.openapi.spec.SecurityScheme.type"><code class="docutils literal notranslate"><span class="pre">SecurityScheme.type</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.SecurityScheme.description"><code class="docutils literal notranslate"><span class="pre">SecurityScheme.description</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.SecurityScheme.name"><code class="docutils literal notranslate"><span class="pre">SecurityScheme.name</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.SecurityScheme.security_scheme_in"><code class="docutils literal notranslate"><span class="pre">SecurityScheme.security_scheme_in</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.SecurityScheme.__init__"><code class="docutils literal notranslate"><span class="pre">SecurityScheme.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.SecurityScheme.scheme"><code class="docutils literal notranslate"><span class="pre">SecurityScheme.scheme</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.SecurityScheme.bearer_format"><code class="docutils literal notranslate"><span class="pre">SecurityScheme.bearer_format</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.SecurityScheme.flows"><code class="docutils literal notranslate"><span class="pre">SecurityScheme.flows</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.SecurityScheme.open_id_connect_url"><code class="docutils literal notranslate"><span class="pre">SecurityScheme.open_id_connect_url</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.SecurityScheme.type"><code class="docutils literal notranslate">type</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.SecurityScheme.description"><code class="docutils literal notranslate">description</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.SecurityScheme.name"><code class="docutils literal notranslate">name</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.SecurityScheme.security_scheme_in"><code class="docutils literal notranslate">security_scheme_in</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.SecurityScheme.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.SecurityScheme.scheme"><code class="docutils literal notranslate">scheme</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.SecurityScheme.bearer_format"><code class="docutils literal notranslate">bearer_format</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.SecurityScheme.flows"><code class="docutils literal notranslate">flows</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.SecurityScheme.open_id_connect_url"><code class="docutils literal notranslate">open_id_connect_url</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.openapi.spec.Server"><code class="docutils literal notranslate"><span class="pre">Server</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.openapi.spec.Server.url"><code class="docutils literal notranslate"><span class="pre">Server.url</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Server.__init__"><code class="docutils literal notranslate"><span class="pre">Server.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Server.description"><code class="docutils literal notranslate"><span class="pre">Server.description</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Server.variables"><code class="docutils literal notranslate"><span class="pre">Server.variables</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Server.url"><code class="docutils literal notranslate">url</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Server.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Server.description"><code class="docutils literal notranslate">description</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Server.variables"><code class="docutils literal notranslate">variables</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.openapi.spec.ServerVariable"><code class="docutils literal notranslate"><span class="pre">ServerVariable</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.openapi.spec.ServerVariable.default"><code class="docutils literal notranslate"><span class="pre">ServerVariable.default</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.ServerVariable.__init__"><code class="docutils literal notranslate"><span class="pre">ServerVariable.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.ServerVariable.enum"><code class="docutils literal notranslate"><span class="pre">ServerVariable.enum</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.ServerVariable.description"><code class="docutils literal notranslate"><span class="pre">ServerVariable.description</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.ServerVariable.default"><code class="docutils literal notranslate">default</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.ServerVariable.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.ServerVariable.enum"><code class="docutils literal notranslate">enum</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.ServerVariable.description"><code class="docutils literal notranslate">description</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.openapi.spec.Tag"><code class="docutils literal notranslate"><span class="pre">Tag</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.openapi.spec.Tag.name"><code class="docutils literal notranslate"><span class="pre">Tag.name</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Tag.__init__"><code class="docutils literal notranslate"><span class="pre">Tag.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Tag.description"><code class="docutils literal notranslate"><span class="pre">Tag.description</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.Tag.external_docs"><code class="docutils literal notranslate"><span class="pre">Tag.external_docs</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Tag.name"><code class="docutils literal notranslate">name</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Tag.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Tag.description"><code class="docutils literal notranslate">description</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.Tag.external_docs"><code class="docutils literal notranslate">external_docs</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.openapi.spec.XML"><code class="docutils literal notranslate"><span class="pre">XML</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.openapi.spec.XML.name"><code class="docutils literal notranslate"><span class="pre">XML.name</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.XML.namespace"><code class="docutils literal notranslate"><span class="pre">XML.namespace</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.XML.__init__"><code class="docutils literal notranslate"><span class="pre">XML.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.XML.prefix"><code class="docutils literal notranslate"><span class="pre">XML.prefix</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.XML.attribute"><code class="docutils literal notranslate"><span class="pre">XML.attribute</span></code></a></li>
-<li><a class="reference internal" href="#litestar.openapi.spec.XML.wrapped"><code class="docutils literal notranslate"><span class="pre">XML.wrapped</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.XML.name"><code class="docutils literal notranslate">name</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.XML.namespace"><code class="docutils literal notranslate">namespace</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.XML.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.XML.prefix"><code class="docutils literal notranslate">prefix</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.XML.attribute"><code class="docutils literal notranslate">attribute</span></code></a></li>
+<li><a class="reference internal" href="#litestar.openapi.spec.XML.wrapped"><code class="docutils literal notranslate">wrapped</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.openapi.spec.SecurityRequirement"><code class="docutils literal notranslate"><span class="pre">SecurityRequirement</span></code></a></li>
 </ul>
-
-  </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
+</div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
   data-type="github" data-user="litestar-org" data-repo="litestar">
   <span class="w-8 flex items-center justify-around shrink-0 text-3xl">
     <i class="i-simpleicons github"></i>
   </span>
-  <span class="flex-grow px-2">
+  <span class="flex-grow px-2 break-all">
     <span>litestar-org/litestar</span>
     <span class="flex text-sm repo-stats-count">
       <span class="flex items-center pr-3">
@@ -834,46 +803,32 @@ data-aria-dark="Switch to auto color mode">
   </span>
 </a><div class="edit-this-page">
   <a href="https://github.com/litestar-org/litestar/blob/master/docs/reference/openapi/spec.rst">Edit this page</a>
-</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div>
-    </div>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
   </aside>
   <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
-  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
-    <div class="sy-breadcrumbs" role="navigation">
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6"><div class="sy-breadcrumbs" role="navigation">
   <div class="sy-breadcrumbs-inner flex items-center">
     <div class="md:hidden mr-3">
       <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
         <i class="i-lucide menu"></i>
       </button>
     </div>
-    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList">
-      
-      
-      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
         <a itemprop="item" href="../../index.html"><span itemprop="name">Litestar</span></a>
         <span>/</span>
         <meta itemprop="position" content="1" />
-      </li>
-      
-      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
         <a itemprop="item" href="../index.html"><span itemprop="name">API reference</span></a>
         <span>/</span>
         <meta itemprop="position" content="2" />
-      </li>
-      
-      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
         <a itemprop="item" href="index.html"><span itemprop="name">openapi</span></a>
         <span>/</span>
         <meta itemprop="position" content="3" />
-      </li>
-      
-      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
         <strong itemprop="name">spec</strong>
         <meta itemprop="position" content="4" />
-      </li>
-      
-      
-    </ol>
+      </li></ol>
     <div class="xl:hidden ml-1">
       <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
         aria-expanded="false">
@@ -881,8 +836,7 @@ data-aria-dark="Switch to auto color mode">
       </button>
     </div>
   </div>
-</div>
-    <div class="flex flex-col break-words justify-between">
+</div><div class="flex flex-col break-words justify-between">
       <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
         <article class="yue" role="main">
           <section id="module-litestar.openapi.spec">
@@ -3024,27 +2978,18 @@ takes effect only when defined alongside <code class="docutils literal notransla
 
 </section>
 
-        </article>
-        <button class="back-to-top" type="button">
+        </article><button class="back-to-top" type="button">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
     <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
   </svg>
   <span>Back to top</span>
-</button>
-        
-        <div class="navigation flex print:hidden">
-  <div class="navigation-prev">
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
     <a href="plugins.html">
       <i class="i-lucide chevron-left"></i>
       <div class="page-info">
-        <span>Previous</span>
-        
-        <div class="title">plugins</div>
-        
-      </div>
+        <span>Previous</span><div class="title">plugins</div></div>
     </a>
-  </div>
-  <div class="navigation-next">
+  </div><div class="navigation-next">
     <a href="../pagination.html">
       <div class="page-info">
         <span>Next</span>
@@ -3052,16 +2997,12 @@ takes effect only when defined alongside <code class="docutils literal notransla
       </div>
       <i class="i-lucide chevron-right"></i>
     </a>
-  </div>
-</div>
-        
-      </div>
+  </div></div></div>
     </div>
   </main>
 </div>
 <footer class="sy-foot">
   <div class="sy-foot-inner sy-container mx-auto">
-    
     <div class="sy-foot-reserved md:flex justify-between items-center">
       <div class="sy-foot-copyright"><p>2024, Litestar Organization</p>
   
@@ -3074,13 +3015,12 @@ takes effect only when defined alongside <code class="docutils literal notransla
   </p>
 </div>
       <div class="sy-foot-socials">
-  <a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)"><i class="i-simpleicons x-twitter"></i></a>
-  <a href="https://discord.gg/litestar" aria-label="Discord"><i class="i-simpleicons discord"></i></a>
-  <a href="https://www.reddit.com/r/LitestarAPI" aria-label="Reddit"><i class="i-simpleicons reddit"></i></a>
-</div>
+<a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)"><i class="i-simpleicons x-twitter"></i></a>
+<a href="https://discord.gg/litestar" aria-label="Discord"><i class="i-simpleicons discord"></i></a>
+<a href="https://www.reddit.com/r/LitestarAPI" aria-label="Reddit"><i class="i-simpleicons reddit"></i></a></div>
     </div>
   </div>
-</footer></div>
+</footer>
       <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=c19e757c"></script>
       <script src="../../_static/doctools.js?v=888ff710"></script>
       <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
@@ -3093,8 +3033,6 @@ takes effect only when defined alongside <code class="docutils literal notransla
       <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
       <script src="../../_static/design-tabs.js?v=36754332"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../../_static/shibuya.js?v=5f0e4c24"></script>
-      <script src="../../_static/versioning.js?v=bc681eff"></script>
-    
-</body>
+      <script src="../../_static/shibuya.js?v=3cc430e2"></script>
+      <script src="../../_static/versioning.js?v=bc681eff"></script></body>
 </html>

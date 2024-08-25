@@ -1,17 +1,12 @@
-
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" data-accent-color="amber" data-content_root="">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>JWT Security Backends - Litestar Framework</title>
-    <link rel="shortcut icon" href="../../_static/favicon.svg"/><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Handling Secrets" href="secret-datastructures.html" /><link rel="prev" title="Excluding and including endpoints" href="excluding-and-including-endpoints.html" />
-
-  <script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>JWT Security Backends - Litestar Framework</title><link rel="shortcut icon" href="../../_static/favicon.svg"/><link rel="index" title="Index" href="../../genindex.html" /><link rel="search" title="Search" href="../../search.html" /><link rel="next" title="Handling Secrets" href="secret-datastructures.html" /><link rel="prev" title="Excluding and including endpoints" href="excluding-and-including-endpoints.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
-    setColorMode(sessionStorage._theme||"auto");
-  </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=aecf457f" />
-    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=bb1fd5f2" />
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=397bb51e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/shibuya.css?v=5117e564" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -32,7 +27,7 @@
 <meta name="twitter:card" content="summary"/>
 <meta property="og:image" content="_static/logo-light.png"/>
   </head>
-<body><div class="document"><div class="announcement">
+<body><div class="announcement">
     <div class="announcement-inner">
       <p>You are viewing the <bold>v3-development</bold> version of the documentation. Click here to go to the latest version.</p>
       <button class="announcement-close" aria-label="Close announcement">
@@ -42,21 +37,18 @@
   </div><div class="sy-head">
   <div class="sy-head-blur"></div>
   <div class="sy-head-inner sy-container mx-auto">
-    <a class="sy-head-brand mr-4" href="/">
-      <img class="light-logo" src="../../_static/logo-light.png" alt="Litestar" height="28" />
-      <img class="dark-logo" src="../../_static/logo-dark.png" alt="Litestar" height="28" />
+    <a class="sy-head-brand" href="/">
+      <img class="light-logo" src="../../_static/logo-light.png" alt="Litestar" height="28" loading="lazy" />
+      <img class="dark-logo" src="../../_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
       <strong>Litestar</strong>
     </a>
-    <div class="sy-head-links" id="NavLinks">
-      <nav class="sy-head-nav">
-
-<ul><li class="link"><a href="../../index.html">Home</a></li>
+    <div class="sy-head-nav" id="HeadNav">
+      <nav class="sy-head-links"><ul><li class="link"><a href="../../index.html">Home</a></li>
       <li class="link"><button type="button">
             <span>Community</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul>
-          <li><a href="../../contribution-guide.html">
+        <ul><li><a href="../../contribution-guide.html">
                 <span>Contributing</span>
                 <small>Learn how to contribute to the Litestar project</small>
               </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
@@ -71,8 +63,7 @@
             <span>About</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul>
-          <li><a href="https://litestar.dev/about/organization">
+        <ul><li><a href="https://litestar.dev/about/organization">
                 <span>Litestar Organization</span>
                 <small>Details about the Litestar organization</small>
               </a></li><li><a href="https://litestar.dev/about/litestar-releases">
@@ -84,8 +75,7 @@
             <span>Release notes</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul>
-          <li><a href="../../release-notes/whats-new-3.html">
+        <ul><li><a href="../../release-notes/whats-new-3.html">
                 <span>What's new in 3.0</span>
                 <small>Explore the new features in Litestar 3.0</small>
               </a></li><li><a href="../../release-notes/changelog.html">
@@ -100,8 +90,7 @@
             <span>Help</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul>
-          <li><a href="https://discord.gg/litestar">
+        <ul><li><a href="https://discord.gg/litestar">
                 <span>Discord Help Forum</span>
                 <small>Dedicated Discord help forum</small>
               </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
@@ -113,45 +102,32 @@
               </a></li></ul>
       </li><li class="link">
           <a href="https://github.com/sponsors/Litestar-Org">
-            <span>Sponsor</span>
-            
-          </a>
+            <span>Sponsor</span></a>
         </li></ul></nav>
-      <div class="sy-head-extra flex items-center print:hidden">
-        
-<form class="searchbox flex items-center" action="../../search.html" method="get">
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../../search.html" method="get">
   <input type="text" name="q" placeholder="Search" />
   <kbd>/</kbd>
-</form>
-        
-  <div class="nav-versions">
+</form><div class="nav-versions">
     <button type="button" aria-label="Versions">
       <span class="md:hidden">Versions</span>
       <span class="hidden md:inline">latest</span>
       <i class="i-lucide chevron-down"></i>
     </button>
-    <div class="nav-versions-choices">
-      <ul><li><a href="/latest">latest</a></li><li><a href="/main">development</a></li><li><a href="/3-dev">v3</a></li><li><a href="/2">v2</a></li><li><a href="/1">v1</a></li></ul></div>
-  </div>
-        
-        <div class="sy-head-socials flex items-center">
-  <a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)">
-    <i class="i-simpleicons x-twitter"></i>
-  </a>
-    <a href="https://discord.gg/litestar" aria-label="Discord">
-      <i class="i-simpleicons discord"></i>
-    </a>
-</div>
-      </div>
+    <div class="nav-versions-choices"><ul><li><a href="/latest">latest</a></li><li><a href="/main">development</a></li><li><a href="/3-dev">v3</a></li><li><a href="/2">v2</a></li><li><a href="/1">v1</a></li></ul></div>
+  </div><div class="sy-head-socials">
+<a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)">
+  <i class="i-simpleicons x-twitter"></i>
+</a>
+  <a href="https://discord.gg/litestar" aria-label="Discord">
+    <i class="i-simpleicons discord"></i>
+  </a></div></div>
     </div>
-    <div class="sy-head-actions flex items-center shrink-0 print:hidden">
-      <button class="js-theme theme-switch flex items-center"
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
 data-aria-auto="Switch to light color mode"
 data-aria-light="Switch to dark color mode"
 data-aria-dark="Switch to auto color mode">
 <i class="i-lucide theme-icon"></i>
-</button>
-      <button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="NavLinks" aria-expanded="false">
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="HeadNav" aria-expanded="false">
         <div class="hamburger">
           <span class="hamburger_1"></span>
           <span class="hamburger_2 -translate-x-2"></span>
@@ -164,8 +140,7 @@ data-aria-dark="Switch to auto color mode">
 <div class="sy-page sy-container flex mx-auto">
   <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
     <div class="sy-lside-inner md:sticky">
-      <div class="sy-scrollbar p-6">
-<div class="sidebar-links">
+      <div class="sy-scrollbar p-6"><div class="sidebar-links">
   <ul>
     <li><a class="icon-link" href="https://github.com/orgs/litestar-org/discussions">
   <span class="icon">
@@ -180,7 +155,6 @@ data-aria-dark="Switch to auto color mode">
 </a></li>
   </ul>
 </div>
-
         <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../../getting-started.html">Getting Started</a></li>
@@ -266,6 +240,7 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../static-files.html">Static files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../custom-types.html">Custom types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../stores.html">Stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../templating.html">Templating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../testing.html">Testing</a></li>
@@ -482,30 +457,25 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 
         </div>
-      </div>
-      
-    </div>
+      </div></div>
   </aside>
   <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
   <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
     <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
       <i class="i-lucide close"></i>
     </button>
-    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4">
-  <div class="localtoc">
-    <h3>On this page</h3>
-    <ul>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
 <li><a class="reference internal" href="#jwt-auth-backend"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWT</span> <span class="pre">Auth</span></code> Backend</a></li>
 <li><a class="reference internal" href="#jwt-cookie-auth-backend"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWT</span> <span class="pre">Cookie</span> <span class="pre">Auth</span></code> Backend</a></li>
 <li><a class="reference internal" href="#oauth2-bearer-password-flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">OAuth2</span> <span class="pre">Bearer</span></code> Password Flow</a></li>
+<li><a class="reference internal" href="#using-a-custom-token-class">Using a custom token class</a></li>
 </ul>
-
-  </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
+</div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
   data-type="github" data-user="litestar-org" data-repo="litestar">
   <span class="w-8 flex items-center justify-around shrink-0 text-3xl">
     <i class="i-simpleicons github"></i>
   </span>
-  <span class="flex-grow px-2">
+  <span class="flex-grow px-2 break-all">
     <span>litestar-org/litestar</span>
     <span class="flex text-sm repo-stats-count">
       <span class="flex items-center pr-3">
@@ -520,46 +490,32 @@ data-aria-dark="Switch to auto color mode">
   </span>
 </a><div class="edit-this-page">
   <a href="https://github.com/litestar-org/litestar/blob/master/docs/usage/security/jwt.rst">Edit this page</a>
-</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div>
-    </div>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
   </aside>
   <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
-  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
-    <div class="sy-breadcrumbs" role="navigation">
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6"><div class="sy-breadcrumbs" role="navigation">
   <div class="sy-breadcrumbs-inner flex items-center">
     <div class="md:hidden mr-3">
       <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
         <i class="i-lucide menu"></i>
       </button>
     </div>
-    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList">
-      
-      
-      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
         <a itemprop="item" href="../../index.html"><span itemprop="name">Litestar</span></a>
         <span>/</span>
         <meta itemprop="position" content="1" />
-      </li>
-      
-      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
         <a itemprop="item" href="../index.html"><span itemprop="name">Usage</span></a>
         <span>/</span>
         <meta itemprop="position" content="2" />
-      </li>
-      
-      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
         <a itemprop="item" href="index.html"><span itemprop="name">Security</span></a>
         <span>/</span>
         <meta itemprop="position" content="3" />
-      </li>
-      
-      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
         <strong itemprop="name">JWT Security Backends</strong>
         <meta itemprop="position" content="4" />
-      </li>
-      
-      
-    </ol>
+      </li></ol>
     <div class="xl:hidden ml-1">
       <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
         aria-expanded="false">
@@ -567,8 +523,7 @@ data-aria-dark="Switch to auto color mode">
       </button>
     </div>
   </div>
-</div>
-    <div class="flex flex-col break-words justify-between">
+</div><div class="flex flex-col break-words justify-between">
       <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
         <article class="yue" role="main">
           <section id="jwt-security-backends">
@@ -879,29 +834,78 @@ Click to see the code<div class="sd-summary-down docutils">
 </div>
 </div>
 </details></section>
+<section id="using-a-custom-token-class">
+<h2>Using a custom token class<a class="headerlink" href="#using-a-custom-token-class" title="Permalink to this heading">¶</a></h2>
+<p>The token class used can be customized with arbitrary fields, by creating a subclass of
+<a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.Token" title="litestar.security.jwt.Token"><code class="xref py py-class docutils literal notranslate"><span class="pre">Token</span></code></a>, and specifying it on the backend:</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Using a custom token</span><a class="headerlink" href="#id5" title="Permalink to this code">¶</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">dataclasses</span>
+</span><span data-line="2"><span class="kn">import</span> <span class="nn">secrets</span>
+</span><span data-line="3"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="6"><span class="kn">from</span> <span class="nn">litestar.connection</span> <span class="kn">import</span> <span class="n">ASGIConnection</span>
+</span><span data-line="7"><span class="kn">from</span> <span class="nn">litestar.security.jwt</span> <span class="kn">import</span> <span class="n">JWTAuth</span><span class="p">,</span> <span class="n">Token</span>
+</span><span data-line="8">
+</span><span data-line="9">
+</span><span data-line="10"><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+</span><span data-line="11"><span class="k">class</span> <span class="nc">CustomToken</span><span class="p">(</span><span class="n">Token</span><span class="p">):</span>
+</span><span data-line="12">    <span class="n">token_flag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+</span><span data-line="13">
+</span><span data-line="14">
+</span><span data-line="15"><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+</span><span data-line="16"><span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
+</span><span data-line="17">    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="18">
+</span><span data-line="19">
+</span><span data-line="20"><span class="k">async</span> <span class="k">def</span> <span class="nf">retrieve_user_handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">CustomToken</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+</span><span data-line="21">    <span class="k">return</span> <span class="n">User</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">token</span><span class="o">.</span><span class="n">sub</span><span class="p">)</span>
+</span><span data-line="22">
+</span><span data-line="23">
+</span><span data-line="24"><span class="n">TOKEN_SECRET</span> <span class="o">=</span> <span class="n">secrets</span><span class="o">.</span><span class="n">token_hex</span><span class="p">()</span>
+</span><span data-line="25">
+</span><span data-line="26"><span class="n">jwt_auth</span> <span class="o">=</span> <span class="n">JWTAuth</span><span class="p">[</span><span class="n">User</span><span class="p">](</span>
+</span><span data-line="27">    <span class="n">token_secret</span><span class="o">=</span><span class="n">TOKEN_SECRET</span><span class="p">,</span>
+</span><span data-line="28">    <span class="n">retrieve_user_handler</span><span class="o">=</span><span class="n">retrieve_user_handler</span><span class="p">,</span>
+</span><span data-line="29">    <span class="n">token_cls</span><span class="o">=</span><span class="n">CustomToken</span><span class="p">,</span>
+</span><span data-line="30"><span class="p">)</span>
+</span><span data-line="31">
+</span><span data-line="32">
+</span><span data-line="33"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="34"><span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">CustomToken</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="35">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;token_flag&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">token_flag</span><span class="p">}</span>
+</span><span data-line="36">
+</span><span data-line="37">
+</span><span data-line="38"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">jwt_auth</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+</span></pre></div>
+</div>
+</div>
+<p>The token will be converted from JSON into the appropriate type, including basic type
+conversions.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Complex type conversions, especially those including third libraries such as
+Pydantic or attrs, as well as any custom <code class="docutils literal notranslate"><span class="pre">type_decoders</span></code> are not available for
+converting the token. To support more complex conversions, the
+<a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.Token.encode" title="litestar.security.jwt.Token.encode"><code class="xref py py-meth docutils literal notranslate"><span class="pre">encode()</span></code></a> and <a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.Token.decode" title="litestar.security.jwt.Token.decode"><code class="xref py py-meth docutils literal notranslate"><span class="pre">decode()</span></code></a> methods
+must be overwritten in the subclass.</p>
+</div>
+</section>
 </section>
 
-        </article>
-        <button class="back-to-top" type="button">
+        </article><button class="back-to-top" type="button">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
     <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
   </svg>
   <span>Back to top</span>
-</button>
-        
-        <div class="navigation flex print:hidden">
-  <div class="navigation-prev">
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
     <a href="excluding-and-including-endpoints.html">
       <i class="i-lucide chevron-left"></i>
       <div class="page-info">
-        <span>Previous</span>
-        
-        <div class="title">Excluding and including endpoints</div>
-        
-      </div>
+        <span>Previous</span><div class="title">Excluding and including endpoints</div></div>
     </a>
-  </div>
-  <div class="navigation-next">
+  </div><div class="navigation-next">
     <a href="secret-datastructures.html">
       <div class="page-info">
         <span>Next</span>
@@ -909,16 +913,12 @@ Click to see the code<div class="sd-summary-down docutils">
       </div>
       <i class="i-lucide chevron-right"></i>
     </a>
-  </div>
-</div>
-        
-      </div>
+  </div></div></div>
     </div>
   </main>
 </div>
 <footer class="sy-foot">
   <div class="sy-foot-inner sy-container mx-auto">
-    
     <div class="sy-foot-reserved md:flex justify-between items-center">
       <div class="sy-foot-copyright"><p>2024, Litestar Organization</p>
   
@@ -931,13 +931,12 @@ Click to see the code<div class="sd-summary-down docutils">
   </p>
 </div>
       <div class="sy-foot-socials">
-  <a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)"><i class="i-simpleicons x-twitter"></i></a>
-  <a href="https://discord.gg/litestar" aria-label="Discord"><i class="i-simpleicons discord"></i></a>
-  <a href="https://www.reddit.com/r/LitestarAPI" aria-label="Reddit"><i class="i-simpleicons reddit"></i></a>
-</div>
+<a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)"><i class="i-simpleicons x-twitter"></i></a>
+<a href="https://discord.gg/litestar" aria-label="Discord"><i class="i-simpleicons discord"></i></a>
+<a href="https://www.reddit.com/r/LitestarAPI" aria-label="Reddit"><i class="i-simpleicons reddit"></i></a></div>
     </div>
   </div>
-</footer></div>
+</footer>
       <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=c19e757c"></script>
       <script src="../../_static/doctools.js?v=888ff710"></script>
       <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
@@ -950,8 +949,6 @@ Click to see the code<div class="sd-summary-down docutils">
       <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
       <script src="../../_static/design-tabs.js?v=36754332"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../../_static/shibuya.js?v=5f0e4c24"></script>
-      <script src="../../_static/versioning.js?v=bc681eff"></script>
-    
-</body>
+      <script src="../../_static/shibuya.js?v=3cc430e2"></script>
+      <script src="../../_static/versioning.js?v=bc681eff"></script></body>
 </html>

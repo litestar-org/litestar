@@ -2,15 +2,11 @@
 <html lang="en" data-accent-color="amber" data-content_root="">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Index - Litestar Framework</title>
-    <link rel="shortcut icon" href="_static/favicon.svg"/><link rel="index" title="Index" href="#" /><link rel="search" title="Search" href="search.html" />
-
-  <script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Index - Litestar Framework</title><link rel="shortcut icon" href="_static/favicon.svg"/><link rel="index" title="Index" href="#" /><link rel="search" title="Search" href="search.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
-    setColorMode(sessionStorage._theme||"auto");
-  </script><link rel="stylesheet" type="text/css" href="_static/pygments.css?v=aecf457f" />
-    <link rel="stylesheet" type="text/css" href="_static/shibuya.css?v=bb1fd5f2" />
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="_static/pygments.css?v=397bb51e" />
+    <link rel="stylesheet" type="text/css" href="_static/shibuya.css?v=5117e564" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -28,7 +24,7 @@
 }
 </style>
     </head>
-<body><div class="document"><div class="announcement">
+<body><div class="announcement">
     <div class="announcement-inner">
       <p>You are viewing the <bold>v3-development</bold> version of the documentation. Click here to go to the latest version.</p>
       <button class="announcement-close" aria-label="Close announcement">
@@ -38,21 +34,18 @@
   </div><div class="sy-head">
   <div class="sy-head-blur"></div>
   <div class="sy-head-inner sy-container mx-auto">
-    <a class="sy-head-brand mr-4" href="/">
-      <img class="light-logo" src="_static/logo-light.png" alt="Litestar" height="28" />
-      <img class="dark-logo" src="_static/logo-dark.png" alt="Litestar" height="28" />
+    <a class="sy-head-brand" href="/">
+      <img class="light-logo" src="_static/logo-light.png" alt="Litestar" height="28" loading="lazy" />
+      <img class="dark-logo" src="_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
       <strong>Litestar</strong>
     </a>
-    <div class="sy-head-links" id="NavLinks">
-      <nav class="sy-head-nav">
-
-<ul><li class="link"><a href="index.html">Home</a></li>
+    <div class="sy-head-nav" id="HeadNav">
+      <nav class="sy-head-links"><ul><li class="link"><a href="index.html">Home</a></li>
       <li class="link"><button type="button">
             <span>Community</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul>
-          <li><a href="contribution-guide.html">
+        <ul><li><a href="contribution-guide.html">
                 <span>Contributing</span>
                 <small>Learn how to contribute to the Litestar project</small>
               </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
@@ -67,8 +60,7 @@
             <span>About</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul>
-          <li><a href="https://litestar.dev/about/organization">
+        <ul><li><a href="https://litestar.dev/about/organization">
                 <span>Litestar Organization</span>
                 <small>Details about the Litestar organization</small>
               </a></li><li><a href="https://litestar.dev/about/litestar-releases">
@@ -80,8 +72,7 @@
             <span>Release notes</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul>
-          <li><a href="release-notes/whats-new-3.html">
+        <ul><li><a href="release-notes/whats-new-3.html">
                 <span>What's new in 3.0</span>
                 <small>Explore the new features in Litestar 3.0</small>
               </a></li><li><a href="release-notes/changelog.html">
@@ -96,8 +87,7 @@
             <span>Help</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul>
-          <li><a href="https://discord.gg/litestar">
+        <ul><li><a href="https://discord.gg/litestar">
                 <span>Discord Help Forum</span>
                 <small>Dedicated Discord help forum</small>
               </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
@@ -109,45 +99,32 @@
               </a></li></ul>
       </li><li class="link">
           <a href="https://github.com/sponsors/Litestar-Org">
-            <span>Sponsor</span>
-            
-          </a>
+            <span>Sponsor</span></a>
         </li></ul></nav>
-      <div class="sy-head-extra flex items-center print:hidden">
-        
-<form class="searchbox flex items-center" action="search.html" method="get">
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="search.html" method="get">
   <input type="text" name="q" placeholder="Search" />
   <kbd>/</kbd>
-</form>
-        
-  <div class="nav-versions">
+</form><div class="nav-versions">
     <button type="button" aria-label="Versions">
       <span class="md:hidden">Versions</span>
       <span class="hidden md:inline">latest</span>
       <i class="i-lucide chevron-down"></i>
     </button>
-    <div class="nav-versions-choices">
-      <ul><li><a href="/latest">latest</a></li><li><a href="/main">development</a></li><li><a href="/3-dev">v3</a></li><li><a href="/2">v2</a></li><li><a href="/1">v1</a></li></ul></div>
-  </div>
-        
-        <div class="sy-head-socials flex items-center">
-  <a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)">
-    <i class="i-simpleicons x-twitter"></i>
-  </a>
-    <a href="https://discord.gg/litestar" aria-label="Discord">
-      <i class="i-simpleicons discord"></i>
-    </a>
-</div>
-      </div>
+    <div class="nav-versions-choices"><ul><li><a href="/latest">latest</a></li><li><a href="/main">development</a></li><li><a href="/3-dev">v3</a></li><li><a href="/2">v2</a></li><li><a href="/1">v1</a></li></ul></div>
+  </div><div class="sy-head-socials">
+<a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)">
+  <i class="i-simpleicons x-twitter"></i>
+</a>
+  <a href="https://discord.gg/litestar" aria-label="Discord">
+    <i class="i-simpleicons discord"></i>
+  </a></div></div>
     </div>
-    <div class="sy-head-actions flex items-center shrink-0 print:hidden">
-      <button class="js-theme theme-switch flex items-center"
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
 data-aria-auto="Switch to light color mode"
 data-aria-light="Switch to dark color mode"
 data-aria-dark="Switch to auto color mode">
 <i class="i-lucide theme-icon"></i>
-</button>
-      <button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="NavLinks" aria-expanded="false">
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="HeadNav" aria-expanded="false">
         <div class="hamburger">
           <span class="hamburger_1"></span>
           <span class="hamburger_2 -translate-x-2"></span>
@@ -290,6 +267,8 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.list.params.**kwargs">(litestar.repository.abc.AbstractSyncRepository.list parameter)</a>
 </li>
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.list_and_count.params.**kwargs">(litestar.repository.abc.AbstractSyncRepository.list_and_count parameter)</a>
+</li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.BaseJWTAuth.create_token.params.**kwargs">(litestar.security.jwt.BaseJWTAuth.create_token parameter)</a>
 </li>
         <li><a href="reference/template.html#litestar.template.TemplateProtocol.render.params.**kwargs">(litestar.template.TemplateProtocol.render parameter)</a>
 </li>
@@ -804,6 +783,8 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware.__init__">(litestar.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware method)</a>
 </li>
+        <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryPlugin.__init__">(litestar.contrib.opentelemetry.OpenTelemetryPlugin method)</a>
+</li>
         <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticInitPlugin.__init__">(litestar.contrib.pydantic.PydanticInitPlugin method)</a>
 </li>
         <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticPlugin.__init__">(litestar.contrib.pydantic.PydanticPlugin method)</a>
@@ -1063,6 +1044,26 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPluginProtocol.__init__">(litestar.plugins.OpenAPISchemaPluginProtocol method)</a>
 </li>
         <li><a href="reference/plugins/index.html#litestar.plugins.SerializationPluginProtocol.__init__">(litestar.plugins.SerializationPluginProtocol method)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.AlembicAsyncConfig.__init__">(litestar.plugins.sqlalchemy.AlembicAsyncConfig method)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.AlembicSyncConfig.__init__">(litestar.plugins.sqlalchemy.AlembicSyncConfig method)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.AsyncSessionConfig.__init__">(litestar.plugins.sqlalchemy.AsyncSessionConfig method)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.EngineConfig.__init__">(litestar.plugins.sqlalchemy.EngineConfig method)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.__init__">(litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig method)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTOConfig.__init__">(litestar.plugins.sqlalchemy.SQLAlchemyDTOConfig method)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin.__init__">(litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin method)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyPlugin.__init__">(litestar.plugins.sqlalchemy.SQLAlchemyPlugin method)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySerializationPlugin.__init__">(litestar.plugins.sqlalchemy.SQLAlchemySerializationPlugin method)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.__init__">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig method)</a>
 </li>
         <li><a href="reference/plugins/structlog.html#litestar.plugins.structlog.StructlogConfig.__init__">(litestar.plugins.structlog.StructlogConfig method)</a>
 </li>
@@ -1387,6 +1388,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="reference/types.html#litestar.types.AfterResponseHookHandler">AfterResponseHookHandler (in module litestar.types)</a>
 </li>
+      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.AlembicAsyncConfig">AlembicAsyncConfig (class in litestar.plugins.sqlalchemy)</a>
+</li>
+      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.AlembicSyncConfig">AlembicSyncConfig (class in litestar.plugins.sqlalchemy)</a>
+</li>
       <li><a href="reference/security/jwt.html#litestar.security.jwt.BaseJWTAuth.algorithm">algorithm (litestar.security.jwt.BaseJWTAuth attribute)</a>
 
       <ul>
@@ -1467,8 +1472,6 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/typing.html#litestar.typing.FieldDefinition.from_kwarg.params.annotation">(litestar.typing.FieldDefinition.from_kwarg parameter)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.any_of">any_of (litestar.openapi.spec.Schema attribute)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.AnyCallable">AnyCallable (in module litestar.types)</a>
@@ -1506,6 +1509,14 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.SessionMiddleware.params.app">(litestar.middleware.session.base.SessionMiddleware parameter)</a>
 </li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.create_all_metadata.params.app">(litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.create_all_metadata parameter)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.update_app_state.params.app">(litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.update_app_state parameter)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.create_all_metadata.params.app">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.create_all_metadata parameter)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.update_app_state.params.app">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.update_app_state parameter)</a>
+</li>
         <li><a href="reference/response/file.html#litestar.response.file.File.to_asgi_response.params.app">(litestar.response.file.File.to_asgi_response parameter)</a>
 </li>
         <li><a href="reference/response/index.html#litestar.response.File.to_asgi_response.params.app">(litestar.response.File.to_asgi_response parameter)</a>
@@ -1531,9 +1542,13 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/testing.html#litestar.testing.TestClient.params.app">(litestar.testing.TestClient parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticInitPlugin.on_app_init.params.app_config">app_config (litestar.contrib.pydantic.PydanticInitPlugin.on_app_init parameter)</a>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryPlugin.on_app_init.params.app_config">app_config (litestar.contrib.opentelemetry.OpenTelemetryPlugin.on_app_init parameter)</a>
 
       <ul>
+        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticInitPlugin.on_app_init.params.app_config">(litestar.contrib.pydantic.PydanticInitPlugin.on_app_init parameter)</a>
+</li>
         <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticPlugin.on_app_init.params.app_config">(litestar.contrib.pydantic.PydanticPlugin.on_app_init parameter)</a>
 </li>
         <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin.on_app_init.params.app_config">(litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin.on_app_init parameter)</a>
@@ -1543,6 +1558,10 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/plugins/flash_messages.html#litestar.plugins.flash.FlashPlugin.on_app_init.params.app_config">(litestar.plugins.flash.FlashPlugin.on_app_init parameter)</a>
 </li>
         <li><a href="reference/plugins/index.html#litestar.plugins.InitPluginProtocol.on_app_init.params.app_config">(litestar.plugins.InitPluginProtocol.on_app_init parameter)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin.on_app_init.params.app_config">(litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin.on_app_init parameter)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyPlugin.on_app_init.params.app_config">(litestar.plugins.sqlalchemy.SQLAlchemyPlugin.on_app_init parameter)</a>
 </li>
         <li><a href="reference/plugins/structlog.html#litestar.plugins.structlog.StructlogPlugin.on_app_init.params.app_config">(litestar.plugins.structlog.StructlogPlugin.on_app_init parameter)</a>
 </li>
@@ -1589,6 +1608,14 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="reference/types.html#litestar.types.ASGIVersion">ASGIVersion (in module litestar.types)</a>
 </li>
+      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.async_autocommit_before_send_handler">async_autocommit_before_send_handler() (in module litestar.plugins.sqlalchemy)</a>
+</li>
+      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.async_autocommit_handler_maker">async_autocommit_handler_maker() (in module litestar.plugins.sqlalchemy)</a>
+</li>
+      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.async_default_before_send_handler">async_default_before_send_handler() (in module litestar.plugins.sqlalchemy)</a>
+</li>
+      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.async_default_handler_maker">async_default_handler_maker() (in module litestar.plugins.sqlalchemy)</a>
+</li>
       <li><a href="reference/response/file.html#litestar.response.file.async_file_iterator">async_file_iterator() (in module litestar.response.file)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.AsyncAnyCallable">AsyncAnyCallable (in module litestar.types)</a>
@@ -1596,7 +1623,11 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="reference/channels/backends/asyncpg.html#litestar.channels.backends.asyncpg.AsyncPgChannelsBackend">AsyncPgChannelsBackend (class in litestar.channels.backends.asyncpg)</a>
 </li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.AsyncSessionConfig">AsyncSessionConfig (class in litestar.contrib.sqlalchemy.plugins)</a>
+
+      <ul>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.AsyncSessionConfig">(class in litestar.plugins.sqlalchemy)</a>
 </li>
+      </ul></li>
       <li><a href="reference/testing.html#litestar.testing.AsyncTestClient">AsyncTestClient (class in litestar.testing)</a>
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.XML.attribute">attribute (litestar.openapi.spec.XML attribute)</a>
@@ -1895,6 +1926,12 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/testing.html#litestar.testing.create_test_client.params.before_send">(litestar.testing.create_test_client parameter)</a>
 </li>
       </ul></li>
+      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.before_send_handler">before_send_handler (litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig attribute)</a>
+
+      <ul>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.before_send_handler">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig attribute)</a>
+</li>
+      </ul></li>
       <li><a href="reference/types.html#litestar.types.BeforeMessageSendHookHandler">BeforeMessageSendHookHandler (in module litestar.types)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.BeforeRequestHookHandler">BeforeRequestHookHandler (in module litestar.types)</a>
@@ -2118,6 +2155,8 @@ data-aria-dark="Switch to auto color mode">
       <ul>
         <li><a href="reference/plugins/index.html#litestar.plugins.CLIPluginProtocol.on_cli_init.params.cli">(litestar.plugins.CLIPluginProtocol.on_cli_init parameter)</a>
 </li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin.on_cli_init.params.cli">(litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin.on_cli_init parameter)</a>
+</li>
       </ul></li>
       <li><a href="reference/connection.html#litestar.connection.ASGIConnection.client">client (litestar.connection.ASGIConnection property)</a>
 </li>
@@ -2173,6 +2212,12 @@ data-aria-dark="Switch to auto color mode">
 
       <ul>
         <li><a href="reference/response/sse.html#litestar.response.sse.ServerSentEvent.params.comment_message">(litestar.response.sse.ServerSentEvent parameter)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.async_autocommit_handler_maker.params.commit_on_redirect">commit_on_redirect (litestar.plugins.sqlalchemy.async_autocommit_handler_maker parameter)</a>
+
+      <ul>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.sync_autocommit_handler_maker.params.commit_on_redirect">(litestar.plugins.sqlalchemy.sync_autocommit_handler_maker parameter)</a>
 </li>
       </ul></li>
       <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.CommonTableAttributes">CommonTableAttributes (class in litestar.contrib.sqlalchemy.base)</a>
@@ -2241,6 +2286,12 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionBackend.params.config">(litestar.middleware.session.server_side.ServerSideSessionBackend parameter)</a>
 </li>
         <li><a href="reference/plugins/flash_messages.html#litestar.plugins.flash.FlashPlugin.params.config">(litestar.plugins.flash.FlashPlugin parameter)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO.config">(litestar.plugins.sqlalchemy.SQLAlchemyDTO attribute)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin.params.config">(litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin parameter)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyPlugin.params.config">(litestar.plugins.sqlalchemy.SQLAlchemyPlugin parameter)</a>
 </li>
       </ul></li>
       <li><a href="reference/logging/config.html#litestar.logging.config.BaseLoggingConfig.configure">configure() (litestar.logging.config.BaseLoggingConfig method)</a>
@@ -2601,6 +2652,18 @@ data-aria-dark="Switch to auto color mode">
       </ul></li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.create_all">create_all (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig attribute)</a>
 </li>
+      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.create_all_metadata">create_all_metadata() (litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig method)</a>
+
+      <ul>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.create_all_metadata">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig method)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.create_app_state_items">create_app_state_items() (litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig method)</a>
+
+      <ul>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.create_app_state_items">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig method)</a>
+</li>
+      </ul></li>
       <li><a href="reference/testing.html#litestar.testing.create_async_test_client">create_async_test_client() (in module litestar.testing)</a>
 </li>
       <li><a href="reference/middleware/compression.html#litestar.middleware.compression.CompressionMiddleware.create_compression_send_wrapper">create_compression_send_wrapper() (litestar.middleware.compression.CompressionMiddleware method)</a>
@@ -2617,6 +2680,8 @@ data-aria-dark="Switch to auto color mode">
 
       <ul>
         <li><a href="reference/plugins/index.html#litestar.plugins.SerializationPluginProtocol.create_dto_for_type">(litestar.plugins.SerializationPluginProtocol method)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySerializationPlugin.create_dto_for_type">(litestar.plugins.sqlalchemy.SQLAlchemySerializationPlugin method)</a>
 </li>
       </ul></li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.create_engine_callable">create_engine_callable (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig attribute)</a>
@@ -2652,7 +2717,13 @@ data-aria-dark="Switch to auto color mode">
 </li>
       </ul></li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.create_session_maker">create_session_maker() (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig method)</a>
+
+      <ul>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.create_session_maker">(litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig method)</a>
 </li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.create_session_maker">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig method)</a>
+</li>
+      </ul></li>
       <li><a href="reference/static_files.html#litestar.static_files.create_static_files_router">create_static_files_router() (in module litestar.static_files)</a>
 </li>
       <li><a href="reference/response/index.html#litestar.response.Template.create_template_context">create_template_context() (litestar.response.Template method)</a>
@@ -3156,6 +3227,8 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/dto/msgspec_dto.html#litestar.dto.msgspec_dto.MsgspecDTO.detect_nested_field">(litestar.dto.msgspec_dto.MsgspecDTO class method)</a>
 </li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO.detect_nested_field">(litestar.plugins.sqlalchemy.SQLAlchemyDTO class method)</a>
+</li>
       </ul></li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.Cookie.dict">dict (litestar.datastructures.Cookie property)</a>
 </li>
@@ -3407,12 +3480,30 @@ data-aria-dark="Switch to auto color mode">
       </ul></li>
       <li><a href="reference/template.html#litestar.template.TemplateConfig.engine">engine (litestar.template.TemplateConfig attribute)</a>
 </li>
+      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.engine_app_state_key">engine_app_state_key (litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig attribute)</a>
+
+      <ul>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.engine_app_state_key">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig attribute)</a>
+</li>
+      </ul></li>
       <li><a href="reference/template.html#litestar.template.TemplateConfig.engine_callback">engine_callback (litestar.template.TemplateConfig attribute)</a>
 </li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.engine_config">engine_config (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig attribute)</a>
+
+      <ul>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.engine_config">(litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig attribute)</a>
 </li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.engine_config">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig attribute)</a>
+</li>
+      </ul></li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.engine_config_dict">engine_config_dict (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig property)</a>
 </li>
+      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.engine_dependency_key">engine_dependency_key (litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig attribute)</a>
+
+      <ul>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.engine_dependency_key">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig attribute)</a>
+</li>
+      </ul></li>
       <li><a href="reference/contrib/jinja.html#litestar.contrib.jinja.JinjaTemplateEngine.params.engine_instance">engine_instance (litestar.contrib.jinja.JinjaTemplateEngine parameter)</a>
 
       <ul>
@@ -3426,7 +3517,11 @@ data-aria-dark="Switch to auto color mode">
 </li>
       </ul></li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig">EngineConfig (class in litestar.contrib.sqlalchemy.plugins)</a>
+
+      <ul>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.EngineConfig">(class in litestar.plugins.sqlalchemy)</a>
 </li>
+      </ul></li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.enum">enum (litestar.openapi.spec.Schema attribute)</a>
 
       <ul>
@@ -3897,6 +3992,18 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/typing.html#litestar.typing.FieldDefinition.from_kwarg.params.extra">(litestar.typing.FieldDefinition.from_kwarg parameter)</a>
 </li>
       </ul></li>
+      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.async_autocommit_handler_maker.params.extra_commit_statuses">extra_commit_statuses (litestar.plugins.sqlalchemy.async_autocommit_handler_maker parameter)</a>
+
+      <ul>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.sync_autocommit_handler_maker.params.extra_commit_statuses">(litestar.plugins.sqlalchemy.sync_autocommit_handler_maker parameter)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.async_autocommit_handler_maker.params.extra_rollback_statuses">extra_rollback_statuses (litestar.plugins.sqlalchemy.async_autocommit_handler_maker parameter)</a>
+
+      <ul>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.sync_autocommit_handler_maker.params.extra_rollback_statuses">(litestar.plugins.sqlalchemy.sync_autocommit_handler_maker parameter)</a>
+</li>
+      </ul></li>
       <li><a href="reference/data_extractors.html#litestar.data_extractors.ConnectionDataExtractor.params.extract_body">extract_body (litestar.data_extractors.ConnectionDataExtractor parameter)</a>
 
       <ul>
@@ -4028,6 +4135,12 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/plugins/index.html#litestar.plugins.SerializationPluginProtocol.supports_type.params.field_definition">(litestar.plugins.SerializationPluginProtocol.supports_type parameter)</a>
 </li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO.detect_nested_field.params.field_definition">(litestar.plugins.sqlalchemy.SQLAlchemyDTO.detect_nested_field parameter)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySerializationPlugin.create_dto_for_type.params.field_definition">(litestar.plugins.sqlalchemy.SQLAlchemySerializationPlugin.create_dto_for_type parameter)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySerializationPlugin.supports_type.params.field_definition">(litestar.plugins.sqlalchemy.SQLAlchemySerializationPlugin.supports_type parameter)</a>
+</li>
       </ul></li>
       <li><a href="reference/dto/field.html#litestar.dto.field.extract_dto_field.params.field_info_mapping">field_info_mapping (litestar.dto.field.extract_dto_field parameter)</a>
 </li>
@@ -4079,10 +4192,10 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/response/file.html#litestar.response.file.File.params.filename">(litestar.response.file.File parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/stores/file.html#litestar.stores.file.FileStore">FileStore (class in litestar.stores.file)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/stores/file.html#litestar.stores.file.FileStore">FileStore (class in litestar.stores.file)</a>
+</li>
       <li><a href="reference/types.html#litestar.types.FileSystemProtocol">FileSystemProtocol (class in litestar.types)</a>
 </li>
       <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.filter_collection_by_kwargs">filter_collection_by_kwargs() (litestar.repository.abc.AbstractAsyncRepository method)</a>
@@ -4128,6 +4241,8 @@ data-aria-dark="Switch to auto color mode">
 </li>
       </ul></li>
       <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticSchemaPlugin.for_pydantic_model">for_pydantic_model() (litestar.contrib.pydantic.PydanticSchemaPlugin class method)</a>
+</li>
+      <li><a href="reference/dto/config.html#litestar.dto.config.DTOConfig.forbid_unknown_fields">forbid_unknown_fields (litestar.dto.config.DTOConfig attribute)</a>
 </li>
       <li><a href="reference/connection.html#litestar.connection.Request.form">form() (litestar.connection.Request method)</a>
 </li>
@@ -4212,6 +4327,8 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/dto/msgspec_dto.html#litestar.dto.msgspec_dto.MsgspecDTO.generate_field_definitions">(litestar.dto.msgspec_dto.MsgspecDTO class method)</a>
 </li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO.generate_field_definitions">(litestar.plugins.sqlalchemy.SQLAlchemyDTO class method)</a>
+</li>
       </ul></li>
       <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionBackend.generate_session_id">generate_session_id() (litestar.middleware.session.server_side.ServerSideSessionBackend method)</a>
 </li>
@@ -4247,6 +4364,12 @@ data-aria-dark="Switch to auto color mode">
       </ul></li>
       <li><a href="reference/concurrency.html#litestar.concurrency.get_asyncio_executor">get_asyncio_executor() (in module litestar.concurrency)</a>
 </li>
+      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticDTO.get_config_for_model_type">get_config_for_model_type() (litestar.contrib.pydantic.PydanticDTO class method)</a>
+
+      <ul>
+        <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.get_config_for_model_type">(litestar.dto.base_dto.AbstractDTO class method)</a>
+</li>
+      </ul></li>
       <li><a href="reference/middleware/session/client_side.html#litestar.middleware.session.client_side.ClientSideSessionBackend.get_cookie_key_set">get_cookie_key_set() (litestar.middleware.session.client_side.ClientSideSessionBackend method)</a>
 </li>
       <li><a href="reference/middleware/session/client_side.html#litestar.middleware.session.client_side.ClientSideSessionBackend.get_cookie_keys">get_cookie_keys() (litestar.middleware.session.client_side.ClientSideSessionBackend method)</a>
@@ -4325,12 +4448,12 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.get_or_create">(litestar.repository.abc.AbstractSyncRepository method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.get_response_handler">get_response_handler() (litestar.handlers.HTTPRouteHandler method)</a>
 </li>
       <li><a href="reference/router.html#litestar.router.Router.get_route_handler_map">get_route_handler_map() (litestar.router.Router class method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/controller.html#litestar.controller.Controller.get_route_handlers">get_route_handlers() (litestar.controller.Controller method)</a>
 </li>
       <li><a href="reference/datastructures/secret_values.html#litestar.datastructures.secret_values.SecretValue.get_secret">get_secret() (litestar.datastructures.secret_values.SecretValue method)</a>
@@ -4939,6 +5062,8 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.Header.to_header.params.include_header_name">include_header_name (litestar.datastructures.Header.to_header parameter)</a>
 </li>
+      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTOConfig.include_implicit_fields">include_implicit_fields (litestar.plugins.sqlalchemy.SQLAlchemyDTOConfig attribute)</a>
+</li>
       <li><a href="reference/app.html#litestar.app.Litestar.params.include_in_schema">include_in_schema (litestar.app.Litestar parameter)</a>
 
       <ul>
@@ -5230,11 +5355,19 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="reference/connection.html#litestar.connection.Request.json">json() (litestar.connection.Request method)</a>
 </li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.json_deserializer">json_deserializer() (litestar.contrib.sqlalchemy.plugins.EngineConfig method)</a>
+
+      <ul>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.EngineConfig.json_deserializer">(litestar.plugins.sqlalchemy.EngineConfig method)</a>
 </li>
+      </ul></li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OpenAPI.json_schema_dialect">json_schema_dialect (litestar.openapi.spec.OpenAPI attribute)</a>
 </li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.json_serializer">json_serializer() (litestar.contrib.sqlalchemy.plugins.EngineConfig method)</a>
+
+      <ul>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.EngineConfig.json_serializer">(litestar.plugins.sqlalchemy.EngineConfig method)</a>
 </li>
+      </ul></li>
       <li><a href="reference/security/jwt.html#litestar.security.jwt.Token.jti">jti (litestar.security.jwt.Token attribute)</a>
 </li>
       <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTAuth">JWTAuth (class in litestar.security.jwt)</a>
@@ -6471,6 +6604,14 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionBackend.store_in_message.params.message">(litestar.middleware.session.server_side.ServerSideSessionBackend.store_in_message parameter)</a>
 </li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.async_autocommit_before_send_handler.params.message">(litestar.plugins.sqlalchemy.async_autocommit_before_send_handler parameter)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.async_default_before_send_handler.params.message">(litestar.plugins.sqlalchemy.async_default_before_send_handler parameter)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.sync_autocommit_before_send_handler.params.message">(litestar.plugins.sqlalchemy.sync_autocommit_before_send_handler parameter)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.sync_default_before_send_handler.params.message">(litestar.plugins.sqlalchemy.sync_default_before_send_handler parameter)</a>
+</li>
       </ul></li>
       <li><a href="reference/data_extractors.html#litestar.data_extractors.ResponseDataExtractor.__call__.params.messages">messages (litestar.data_extractors.ResponseDataExtractor.__call__ parameter)</a>
 
@@ -6600,6 +6741,8 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/params.html#litestar.params.Parameter.params.min_items">(litestar.params.Parameter parameter)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.min_length">min_length (litestar.openapi.spec.Schema attribute)</a>
 
       <ul>
@@ -6610,8 +6753,6 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/params.html#litestar.params.Parameter.params.min_length">(litestar.params.Parameter parameter)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.min_properties">min_properties (litestar.openapi.spec.Schema attribute)</a>
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.minimum">minimum (litestar.openapi.spec.Schema attribute)</a>
@@ -7080,6 +7221,8 @@ data-aria-dark="Switch to auto color mode">
       <ul>
         <li><a href="reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.on_app_init">(litestar.channels.plugin.ChannelsPlugin method)</a>
 </li>
+        <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryPlugin.on_app_init">(litestar.contrib.opentelemetry.OpenTelemetryPlugin method)</a>
+</li>
         <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticInitPlugin.on_app_init">(litestar.contrib.pydantic.PydanticInitPlugin method)</a>
 </li>
         <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticPlugin.on_app_init">(litestar.contrib.pydantic.PydanticPlugin method)</a>
@@ -7092,6 +7235,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/plugins/index.html#litestar.plugins.InitPluginProtocol.on_app_init">(litestar.plugins.InitPluginProtocol method)</a>
 </li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin.on_app_init">(litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin method)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyPlugin.on_app_init">(litestar.plugins.sqlalchemy.SQLAlchemyPlugin method)</a>
+</li>
         <li><a href="reference/plugins/structlog.html#litestar.plugins.structlog.StructlogPlugin.on_app_init">(litestar.plugins.structlog.StructlogPlugin method)</a>
 </li>
         <li><a href="reference/security/index.html#litestar.security.AbstractSecurityConfig.on_app_init">(litestar.security.AbstractSecurityConfig method)</a>
@@ -7101,6 +7248,8 @@ data-aria-dark="Switch to auto color mode">
 
       <ul>
         <li><a href="reference/plugins/index.html#litestar.plugins.CLIPluginProtocol.on_cli_init">(litestar.plugins.CLIPluginProtocol method)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin.on_cli_init">(litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin method)</a>
 </li>
       </ul></li>
       <li><a href="reference/handlers.html#litestar.handlers.websocket_listener.params.on_disconnect">on_disconnect (litestar.handlers.websocket_listener parameter)</a>
@@ -7270,6 +7419,8 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.config.OpenTelemetryHookHandler">OpenTelemetryHookHandler (in module litestar.contrib.opentelemetry.config)</a>
 </li>
       <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware">OpenTelemetryInstrumentationMiddleware (class in litestar.contrib.opentelemetry)</a>
+</li>
+      <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryPlugin">OpenTelemetryPlugin (class in litestar.contrib.opentelemetry)</a>
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Operation">Operation (class in litestar.openapi.spec)</a>
 </li>
@@ -7753,6 +7904,18 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="reference/di.html#litestar.di.Provide">Provide (class in litestar.di)</a>
 </li>
+      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.provide_engine">provide_engine() (litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig method)</a>
+
+      <ul>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.provide_engine">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig method)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.provide_session">provide_session() (litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig method)</a>
+
+      <ul>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.provide_session">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig method)</a>
+</li>
+      </ul></li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.Accept.best_match.params.provided_types">provided_types (litestar.datastructures.Accept.best_match parameter)</a>
 </li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.CacheControlHeader.proxy_revalidate">proxy_revalidate (litestar.datastructures.CacheControlHeader attribute)</a>
@@ -8837,6 +9000,18 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/middleware/session/client_side.html#litestar.middleware.session.client_side.ClientSideSessionBackend.dump_data.params.scope">(litestar.middleware.session.client_side.ClientSideSessionBackend.dump_data parameter)</a>
 </li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.async_autocommit_before_send_handler.params.scope">(litestar.plugins.sqlalchemy.async_autocommit_before_send_handler parameter)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.async_default_before_send_handler.params.scope">(litestar.plugins.sqlalchemy.async_default_before_send_handler parameter)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.provide_session.params.scope">(litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.provide_session parameter)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.provide_session.params.scope">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.provide_session parameter)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.sync_autocommit_before_send_handler.params.scope">(litestar.plugins.sqlalchemy.sync_autocommit_before_send_handler parameter)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.sync_default_before_send_handler.params.scope">(litestar.plugins.sqlalchemy.sync_default_before_send_handler parameter)</a>
+</li>
         <li><a href="reference/response/base.html#litestar.response.base.ASGIResponse.__call__.params.scope">(litestar.response.base.ASGIResponse.__call__ parameter)</a>
 </li>
         <li><a href="reference/routes.html#litestar.routes.ASGIRoute.handle.params.scope">(litestar.routes.ASGIRoute.handle parameter)</a>
@@ -9214,6 +9389,12 @@ data-aria-dark="Switch to auto color mode">
       </ul></li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.session_config_dict">session_config_dict (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig property)</a>
 </li>
+      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.session_dependency_key">session_dependency_key (litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig attribute)</a>
+
+      <ul>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.session_dependency_key">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig attribute)</a>
+</li>
+      </ul></li>
       <li>
     SESSION_ID
 
@@ -9233,16 +9414,34 @@ data-aria-dark="Switch to auto color mode">
 </li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.session_maker">session_maker (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig attribute)</a>
 </li>
+      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.session_maker_app_state_key">session_maker_app_state_key (litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig attribute)</a>
+
+      <ul>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.session_maker_app_state_key">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig attribute)</a>
+</li>
+      </ul></li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.session_maker_class">session_maker_class (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig attribute)</a>
 </li>
+      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.async_autocommit_handler_maker.params.session_scope_key">session_scope_key (litestar.plugins.sqlalchemy.async_autocommit_handler_maker parameter)</a>
+
+      <ul>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.async_default_handler_maker.params.session_scope_key">(litestar.plugins.sqlalchemy.async_default_handler_maker parameter)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.session_scope_key">(litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig attribute)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.session_scope_key">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig attribute)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.sync_autocommit_handler_maker.params.session_scope_key">(litestar.plugins.sqlalchemy.sync_autocommit_handler_maker parameter)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.sync_default_handler_maker.params.session_scope_key">(litestar.plugins.sqlalchemy.sync_default_handler_maker parameter)</a>
+</li>
+      </ul></li>
       <li><a href="reference/security/session_auth.html#litestar.security.session_auth.SessionAuth">SessionAuth (class in litestar.security.session_auth)</a>
 </li>
       <li><a href="reference/security/session_auth.html#litestar.security.session_auth.middleware.SessionAuthMiddleware">SessionAuthMiddleware (class in litestar.security.session_auth.middleware)</a>
 </li>
       <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.SessionMiddleware">SessionMiddleware (class in litestar.middleware.session.base)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionBackend.set">set() (litestar.middleware.session.server_side.ServerSideSessionBackend method)</a>
 
       <ul>
@@ -9255,6 +9454,8 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/stores/redis.html#litestar.stores.redis.RedisStore.set">(litestar.stores.redis.RedisStore method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/concurrency.html#litestar.concurrency.set_asyncio_executor">set_asyncio_executor() (in module litestar.concurrency)</a>
 </li>
       <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.set_cached_history">set_cached_history() (litestar.middleware.rate_limit.RateLimitMiddleware method)</a>
@@ -9352,6 +9553,10 @@ data-aria-dark="Switch to auto color mode">
 </li>
         <li><a href="reference/handlers.html#litestar.handlers.WebsocketRouteHandler.params.signature_namespace">(litestar.handlers.WebsocketRouteHandler parameter)</a>
 </li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.signature_namespace">(litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig property)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.signature_namespace">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig property)</a>
+</li>
         <li><a href="reference/router.html#litestar.router.Router.params.signature_namespace">(litestar.router.Router parameter)</a>
 </li>
         <li><a href="reference/testing.html#litestar.testing.create_async_test_client.params.signature_namespace">(litestar.testing.create_async_test_client parameter)</a>
@@ -9398,15 +9603,39 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="reference/handlers.html#litestar.handlers.WebsocketListenerRouteHandler.default_connection_lifespan.params.socket">socket (litestar.handlers.WebsocketListenerRouteHandler.default_connection_lifespan parameter)</a>
 </li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig">SQLAlchemyAsyncConfig (class in litestar.contrib.sqlalchemy.plugins)</a>
+
+      <ul>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig">(class in litestar.plugins.sqlalchemy)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO">SQLAlchemyDTO (class in litestar.plugins.sqlalchemy)</a>
+</li>
+      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTOConfig">SQLAlchemyDTOConfig (class in litestar.plugins.sqlalchemy)</a>
 </li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin">SQLAlchemyInitPlugin (class in litestar.contrib.sqlalchemy.plugins)</a>
+
+      <ul>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin">(class in litestar.plugins.sqlalchemy)</a>
 </li>
+      </ul></li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin">SQLAlchemyPlugin (class in litestar.contrib.sqlalchemy.plugins)</a>
+
+      <ul>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyPlugin">(class in litestar.plugins.sqlalchemy)</a>
 </li>
+      </ul></li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin">SQLAlchemySerializationPlugin (class in litestar.contrib.sqlalchemy.plugins)</a>
+
+      <ul>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySerializationPlugin">(class in litestar.plugins.sqlalchemy)</a>
 </li>
+      </ul></li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig">SQLAlchemySyncConfig (class in litestar.contrib.sqlalchemy.plugins)</a>
+
+      <ul>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig">(class in litestar.plugins.sqlalchemy)</a>
 </li>
+      </ul></li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.CacheControlHeader.stale_while_revalidate">stale_while_revalidate (litestar.datastructures.CacheControlHeader attribute)</a>
 </li>
       <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.SwaggerRenderPlugin.params.standalone_preset_js_url">standalone_preset_js_url (litestar.openapi.plugins.SwaggerRenderPlugin parameter)</a>
@@ -9441,6 +9670,14 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/datastructures/index.html#litestar.datastructures.ImmutableState.params.state">(litestar.datastructures.ImmutableState parameter)</a>
 </li>
         <li><a href="reference/datastructures/index.html#litestar.datastructures.State.params.state">(litestar.datastructures.State parameter)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.provide_engine.params.state">(litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.provide_engine parameter)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.provide_session.params.state">(litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.provide_session parameter)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.provide_engine.params.state">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.provide_engine parameter)</a>
+</li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.provide_session.params.state">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.provide_session parameter)</a>
 </li>
         <li><a href="reference/testing.html#litestar.testing.create_async_test_client.params.state">(litestar.testing.create_async_test_client parameter)</a>
 </li>
@@ -9633,6 +9870,12 @@ data-aria-dark="Switch to auto color mode">
       </ul></li>
       <li><a href="reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsStreamBackend.params.stream_ttl">stream_ttl (litestar.channels.backends.redis.RedisChannelsStreamBackend parameter)</a>
 </li>
+      <li><a href="reference/serialization.html#litestar.serialization.decode_json.params.strict">strict (litestar.serialization.decode_json parameter)</a>
+
+      <ul>
+        <li><a href="reference/serialization.html#litestar.serialization.decode_msgpack.params.strict">(litestar.serialization.decode_msgpack parameter)</a>
+</li>
+      </ul></li>
       <li><a href="reference/plugins/structlog.html#litestar.plugins.structlog.StructlogConfig.structlog_logging_config">structlog_logging_config (litestar.plugins.structlog.StructlogConfig attribute)</a>
 </li>
       <li><a href="reference/plugins/structlog.html#litestar.plugins.structlog.StructlogConfig">StructlogConfig (class in litestar.plugins.structlog)</a>
@@ -9726,11 +9969,25 @@ data-aria-dark="Switch to auto color mode">
       <ul>
         <li><a href="reference/plugins/index.html#litestar.plugins.SerializationPluginProtocol.supports_type">(litestar.plugins.SerializationPluginProtocol method)</a>
 </li>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySerializationPlugin.supports_type">(litestar.plugins.sqlalchemy.SQLAlchemySerializationPlugin method)</a>
+</li>
       </ul></li>
       <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.SwaggerRenderPlugin">SwaggerRenderPlugin (class in litestar.openapi.plugins)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.AsyncSessionConfig.sync_session_class">sync_session_class (litestar.contrib.sqlalchemy.plugins.AsyncSessionConfig attribute)</a>
+      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.sync_autocommit_before_send_handler">sync_autocommit_before_send_handler() (in module litestar.plugins.sqlalchemy)</a>
 </li>
+      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.sync_autocommit_handler_maker">sync_autocommit_handler_maker() (in module litestar.plugins.sqlalchemy)</a>
+</li>
+      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.sync_default_before_send_handler">sync_default_before_send_handler() (in module litestar.plugins.sqlalchemy)</a>
+</li>
+      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.sync_default_handler_maker">sync_default_handler_maker() (in module litestar.plugins.sqlalchemy)</a>
+</li>
+      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.AsyncSessionConfig.sync_session_class">sync_session_class (litestar.contrib.sqlalchemy.plugins.AsyncSessionConfig attribute)</a>
+
+      <ul>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.AsyncSessionConfig.sync_session_class">(litestar.plugins.sqlalchemy.AsyncSessionConfig attribute)</a>
+</li>
+      </ul></li>
       <li><a href="reference/di.html#litestar.di.Provide.params.sync_to_thread">sync_to_thread (litestar.di.Provide parameter)</a>
 
       <ul>
@@ -9756,7 +10013,11 @@ data-aria-dark="Switch to auto color mode">
       <li><a href="reference/types.html#litestar.types.SyncOrAsyncUnion">SyncOrAsyncUnion (in module litestar.types)</a>
 </li>
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SyncSessionConfig">SyncSessionConfig (class in litestar.contrib.sqlalchemy.plugins)</a>
+
+      <ul>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SyncSessionConfig">(class in litestar.plugins.sqlalchemy)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -9995,6 +10256,22 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/security/jwt.html#litestar.security.jwt.OAuth2PasswordBearerAuth.login.params.token_audience">(litestar.security.jwt.OAuth2PasswordBearerAuth.login parameter)</a>
 </li>
       </ul></li>
+      <li><a href="reference/security/jwt.html#litestar.security.jwt.BaseJWTAuth.token_cls">token_cls (litestar.security.jwt.BaseJWTAuth attribute)</a>
+
+      <ul>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTAuth.token_cls">(litestar.security.jwt.JWTAuth attribute)</a>
+</li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTAuthenticationMiddleware.params.token_cls">(litestar.security.jwt.JWTAuthenticationMiddleware parameter)</a>
+</li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTCookieAuth.token_cls">(litestar.security.jwt.JWTCookieAuth attribute)</a>
+</li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTCookieAuthenticationMiddleware.params.token_cls">(litestar.security.jwt.JWTCookieAuthenticationMiddleware parameter)</a>
+</li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.OAuth2PasswordBearerAuth.token_cls">(litestar.security.jwt.OAuth2PasswordBearerAuth attribute)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/security/jwt.html#litestar.security.jwt.BaseJWTAuth.create_token.params.token_expiration">token_expiration (litestar.security.jwt.BaseJWTAuth.create_token parameter)</a>
 
       <ul>
@@ -10005,8 +10282,6 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/security/jwt.html#litestar.security.jwt.OAuth2PasswordBearerAuth.login.params.token_expiration">(litestar.security.jwt.OAuth2PasswordBearerAuth.login parameter)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/security/jwt.html#litestar.security.jwt.BaseJWTAuth.create_token.params.token_extras">token_extras (litestar.security.jwt.BaseJWTAuth.create_token parameter)</a>
 
       <ul>
@@ -10267,6 +10542,12 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.update">(litestar.repository.abc.AbstractSyncRepository method)</a>
 </li>
       </ul></li>
+      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.update_app_state">update_app_state() (litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig method)</a>
+
+      <ul>
+        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.update_app_state">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig method)</a>
+</li>
+      </ul></li>
       <li><a href="reference/dto/data_structures.html#litestar.dto.data_structures.DTOData.update_instance">update_instance() (litestar.dto.data_structures.DTOData method)</a>
 </li>
       <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.update_many">update_many() (litestar.repository.abc.AbstractAsyncRepository method)</a>
@@ -10295,10 +10576,10 @@ data-aria-dark="Switch to auto color mode">
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.upsert_many">(litestar.repository.abc.AbstractSyncRepository method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/datastructures/index.html#litestar.datastructures.URL">URL (class in litestar.datastructures)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.URL">URL (class in litestar.datastructures)</a>
+</li>
       <li><a href="reference/connection.html#litestar.connection.ASGIConnection.url">url (litestar.connection.ASGIConnection property)</a>
 
       <ul>
@@ -10647,7 +10928,6 @@ data-aria-dark="Switch to auto color mode">
     </main>
   </div><footer class="sy-foot">
   <div class="sy-foot-inner sy-container mx-auto">
-    
     <div class="sy-foot-reserved md:flex justify-between items-center">
       <div class="sy-foot-copyright"><p>2024, Litestar Organization</p>
   
@@ -10660,13 +10940,12 @@ data-aria-dark="Switch to auto color mode">
   </p>
 </div>
       <div class="sy-foot-socials">
-  <a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)"><i class="i-simpleicons x-twitter"></i></a>
-  <a href="https://discord.gg/litestar" aria-label="Discord"><i class="i-simpleicons discord"></i></a>
-  <a href="https://www.reddit.com/r/LitestarAPI" aria-label="Reddit"><i class="i-simpleicons reddit"></i></a>
-</div>
+<a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)"><i class="i-simpleicons x-twitter"></i></a>
+<a href="https://discord.gg/litestar" aria-label="Discord"><i class="i-simpleicons discord"></i></a>
+<a href="https://www.reddit.com/r/LitestarAPI" aria-label="Reddit"><i class="i-simpleicons reddit"></i></a></div>
     </div>
   </div>
-</footer></div>
+</footer>
       <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=c19e757c"></script>
       <script src="_static/doctools.js?v=888ff710"></script>
       <script src="_static/sphinx_highlight.js?v=4825356b"></script>
@@ -10679,10 +10958,8 @@ data-aria-dark="Switch to auto color mode">
       <script src="_static/togglebutton.js?v=4a39c7ea"></script>
       <script src="_static/design-tabs.js?v=36754332"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="_static/shibuya.js?v=5f0e4c24"></script>
+      <script src="_static/shibuya.js?v=3cc430e2"></script>
       <script src="https://unpkg.com/mermaid@10.2.0/dist/mermaid.min.js"></script>
       <script>mermaid.initialize({startOnLoad:true});</script>
-      <script src="_static/versioning.js?v=bc681eff"></script>
-    
-</body>
+      <script src="_static/versioning.js?v=bc681eff"></script></body>
 </html>

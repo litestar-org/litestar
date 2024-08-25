@@ -1,17 +1,12 @@
-
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" data-accent-color="amber" data-content_root="">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>config - Litestar Framework</title>
-    <link rel="shortcut icon" href="../_static/favicon.svg"/><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="connection" href="connection.html" /><link rel="prev" title="cli" href="cli.html" />
-
-  <script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>config - Litestar Framework</title><link rel="shortcut icon" href="../_static/favicon.svg"/><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="connection" href="connection.html" /><link rel="prev" title="cli" href="cli.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
-    setColorMode(sessionStorage._theme||"auto");
-  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=aecf457f" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=bb1fd5f2" />
+    setColorMode(localStorage._theme||"auto");
+  </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=397bb51e" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=5117e564" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -32,7 +27,7 @@
 <meta name="twitter:card" content="summary"/>
 <meta property="og:image" content="_static/logo-light.png"/>
   </head>
-<body><div class="document"><div class="announcement">
+<body><div class="announcement">
     <div class="announcement-inner">
       <p>You are viewing the <bold>v3-development</bold> version of the documentation. Click here to go to the latest version.</p>
       <button class="announcement-close" aria-label="Close announcement">
@@ -42,21 +37,18 @@
   </div><div class="sy-head">
   <div class="sy-head-blur"></div>
   <div class="sy-head-inner sy-container mx-auto">
-    <a class="sy-head-brand mr-4" href="/">
-      <img class="light-logo" src="../_static/logo-light.png" alt="Litestar" height="28" />
-      <img class="dark-logo" src="../_static/logo-dark.png" alt="Litestar" height="28" />
+    <a class="sy-head-brand" href="/">
+      <img class="light-logo" src="../_static/logo-light.png" alt="Litestar" height="28" loading="lazy" />
+      <img class="dark-logo" src="../_static/logo-dark.png" alt="Litestar" height="28" loading="lazy" />
       <strong>Litestar</strong>
     </a>
-    <div class="sy-head-links" id="NavLinks">
-      <nav class="sy-head-nav">
-
-<ul><li class="link"><a href="../index.html">Home</a></li>
+    <div class="sy-head-nav" id="HeadNav">
+      <nav class="sy-head-links"><ul><li class="link"><a href="../index.html">Home</a></li>
       <li class="link"><button type="button">
             <span>Community</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul>
-          <li><a href="../contribution-guide.html">
+        <ul><li><a href="../contribution-guide.html">
                 <span>Contributing</span>
                 <small>Learn how to contribute to the Litestar project</small>
               </a></li><li><a href="https://github.com/litestar-org/.github?tab=coc-ov-file">
@@ -71,8 +63,7 @@
             <span>About</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul>
-          <li><a href="https://litestar.dev/about/organization">
+        <ul><li><a href="https://litestar.dev/about/organization">
                 <span>Litestar Organization</span>
                 <small>Details about the Litestar organization</small>
               </a></li><li><a href="https://litestar.dev/about/litestar-releases">
@@ -84,8 +75,7 @@
             <span>Release notes</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul>
-          <li><a href="../release-notes/whats-new-3.html">
+        <ul><li><a href="../release-notes/whats-new-3.html">
                 <span>What's new in 3.0</span>
                 <small>Explore the new features in Litestar 3.0</small>
               </a></li><li><a href="../release-notes/changelog.html">
@@ -100,8 +90,7 @@
             <span>Help</span>
             <i class="i-lucide chevron-down"></i>
           </button>
-        <ul>
-          <li><a href="https://discord.gg/litestar">
+        <ul><li><a href="https://discord.gg/litestar">
                 <span>Discord Help Forum</span>
                 <small>Dedicated Discord help forum</small>
               </a></li><li><a href="https://github.com/orgs/litestar-org/discussions">
@@ -113,45 +102,32 @@
               </a></li></ul>
       </li><li class="link">
           <a href="https://github.com/sponsors/Litestar-Org">
-            <span>Sponsor</span>
-            
-          </a>
+            <span>Sponsor</span></a>
         </li></ul></nav>
-      <div class="sy-head-extra flex items-center print:hidden">
-        
-<form class="searchbox flex items-center" action="../search.html" method="get">
+      <div class="sy-head-extra flex items-center print:hidden"><form class="searchbox flex items-center" action="../search.html" method="get">
   <input type="text" name="q" placeholder="Search" />
   <kbd>/</kbd>
-</form>
-        
-  <div class="nav-versions">
+</form><div class="nav-versions">
     <button type="button" aria-label="Versions">
       <span class="md:hidden">Versions</span>
       <span class="hidden md:inline">latest</span>
       <i class="i-lucide chevron-down"></i>
     </button>
-    <div class="nav-versions-choices">
-      <ul><li><a href="/latest">latest</a></li><li><a href="/main">development</a></li><li><a href="/3-dev">v3</a></li><li><a href="/2">v2</a></li><li><a href="/1">v1</a></li></ul></div>
-  </div>
-        
-        <div class="sy-head-socials flex items-center">
-  <a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)">
-    <i class="i-simpleicons x-twitter"></i>
-  </a>
-    <a href="https://discord.gg/litestar" aria-label="Discord">
-      <i class="i-simpleicons discord"></i>
-    </a>
-</div>
-      </div>
+    <div class="nav-versions-choices"><ul><li><a href="/latest">latest</a></li><li><a href="/main">development</a></li><li><a href="/3-dev">v3</a></li><li><a href="/2">v2</a></li><li><a href="/1">v1</a></li></ul></div>
+  </div><div class="sy-head-socials">
+<a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)">
+  <i class="i-simpleicons x-twitter"></i>
+</a>
+  <a href="https://discord.gg/litestar" aria-label="Discord">
+    <i class="i-simpleicons discord"></i>
+  </a></div></div>
     </div>
-    <div class="sy-head-actions flex items-center shrink-0 print:hidden">
-      <button class="js-theme theme-switch flex items-center"
+    <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
 data-aria-auto="Switch to light color mode"
 data-aria-light="Switch to dark color mode"
 data-aria-dark="Switch to auto color mode">
 <i class="i-lucide theme-icon"></i>
-</button>
-      <button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="NavLinks" aria-expanded="false">
+</button><button class="md:hidden flex items-center js-menu" aria-label="Menu" type="button" aria-controls="HeadNav" aria-expanded="false">
         <div class="hamburger">
           <span class="hamburger_1"></span>
           <span class="hamburger_2 -translate-x-2"></span>
@@ -164,8 +140,7 @@ data-aria-dark="Switch to auto color mode">
 <div class="sy-page sy-container flex mx-auto">
   <aside id="lside" class="sy-lside md:w-72 md:shrink-0 print:hidden">
     <div class="sy-lside-inner md:sticky">
-      <div class="sy-scrollbar p-6">
-<div class="sidebar-links">
+      <div class="sy-scrollbar p-6"><div class="sidebar-links">
   <ul>
     <li><a class="icon-link" href="https://github.com/orgs/litestar-org/discussions">
   <span class="icon">
@@ -180,7 +155,6 @@ data-aria-dark="Switch to auto color mode">
 </a></li>
   </ul>
 </div>
-
         <div class="globaltoc" data-expand-depth="0"><p class="caption" role="heading" aria-level="3"><span class="caption-text">Documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting-started.html">Getting Started</a></li>
@@ -266,6 +240,7 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/static-files.html">Static files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/custom-types.html">Custom types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/stores.html">Stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/templating.html">Templating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/testing.html">Testing</a></li>
@@ -482,156 +457,150 @@ data-aria-dark="Switch to auto color mode">
 </ul>
 
         </div>
-      </div>
-      
-    </div>
+      </div></div>
   </aside>
   <div class="lside-overlay js-menu" role="button" aria-label="Close left sidebar" aria-controls="lside" aria-expanded="false"></div>
   <aside id="rside" class="sy-rside pb-3 w-64 shrink-0 order-last">
     <button class="rside-close js-menu xl:hidden" aria-label="Close Table of Contents" type="button" aria-controls="rside" aria-expanded="false">
       <i class="i-lucide close"></i>
     </button>
-    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4">
-  <div class="localtoc">
-    <h3>On this page</h3>
-    <ul>
+    <div class="sy-scrollbar sy-rside-inner px-6 xl:top-16 xl:sticky xl:pl-0 pt-6 pb-4"><div class="localtoc"><h3>On this page</h3><ul>
 <li><a class="reference internal" href="#litestar.config.allowed_hosts.AllowedHostsConfig"><code class="docutils literal notranslate"><span class="pre">AllowedHostsConfig</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.config.allowed_hosts.AllowedHostsConfig.allowed_hosts"><code class="docutils literal notranslate"><span class="pre">AllowedHostsConfig.allowed_hosts</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.allowed_hosts.AllowedHostsConfig.exclude"><code class="docutils literal notranslate"><span class="pre">AllowedHostsConfig.exclude</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.allowed_hosts.AllowedHostsConfig.exclude_opt_key"><code class="docutils literal notranslate"><span class="pre">AllowedHostsConfig.exclude_opt_key</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.allowed_hosts.AllowedHostsConfig.__init__"><code class="docutils literal notranslate"><span class="pre">AllowedHostsConfig.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.allowed_hosts.AllowedHostsConfig.scopes"><code class="docutils literal notranslate"><span class="pre">AllowedHostsConfig.scopes</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.allowed_hosts.AllowedHostsConfig.www_redirect"><code class="docutils literal notranslate"><span class="pre">AllowedHostsConfig.www_redirect</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.allowed_hosts.AllowedHostsConfig.__post_init__"><code class="docutils literal notranslate"><span class="pre">AllowedHostsConfig.__post_init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.allowed_hosts.AllowedHostsConfig.allowed_hosts"><code class="docutils literal notranslate">allowed_hosts</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.allowed_hosts.AllowedHostsConfig.exclude"><code class="docutils literal notranslate">exclude</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.allowed_hosts.AllowedHostsConfig.exclude_opt_key"><code class="docutils literal notranslate">exclude_opt_key</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.allowed_hosts.AllowedHostsConfig.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.allowed_hosts.AllowedHostsConfig.scopes"><code class="docutils literal notranslate">scopes</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.allowed_hosts.AllowedHostsConfig.www_redirect"><code class="docutils literal notranslate">www_redirect</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.allowed_hosts.AllowedHostsConfig.__post_init__"><code class="docutils literal notranslate">__post_init__()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.config.app.AppConfig"><code class="docutils literal notranslate"><span class="pre">AppConfig</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.after_exception"><code class="docutils literal notranslate"><span class="pre">AppConfig.after_exception</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.after_request"><code class="docutils literal notranslate"><span class="pre">AppConfig.after_request</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.after_response"><code class="docutils literal notranslate"><span class="pre">AppConfig.after_response</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.allowed_hosts"><code class="docutils literal notranslate"><span class="pre">AppConfig.allowed_hosts</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.before_request"><code class="docutils literal notranslate"><span class="pre">AppConfig.before_request</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.before_send"><code class="docutils literal notranslate"><span class="pre">AppConfig.before_send</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.cache_control"><code class="docutils literal notranslate"><span class="pre">AppConfig.cache_control</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.compression_config"><code class="docutils literal notranslate"><span class="pre">AppConfig.compression_config</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.cors_config"><code class="docutils literal notranslate"><span class="pre">AppConfig.cors_config</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.csrf_config"><code class="docutils literal notranslate"><span class="pre">AppConfig.csrf_config</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.debug"><code class="docutils literal notranslate"><span class="pre">AppConfig.debug</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.dependencies"><code class="docutils literal notranslate"><span class="pre">AppConfig.dependencies</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.dto"><code class="docutils literal notranslate"><span class="pre">AppConfig.dto</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.etag"><code class="docutils literal notranslate"><span class="pre">AppConfig.etag</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.event_emitter_backend"><code class="docutils literal notranslate"><span class="pre">AppConfig.event_emitter_backend</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.exception_handlers"><code class="docutils literal notranslate"><span class="pre">AppConfig.exception_handlers</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.guards"><code class="docutils literal notranslate"><span class="pre">AppConfig.guards</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.include_in_schema"><code class="docutils literal notranslate"><span class="pre">AppConfig.include_in_schema</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.lifespan"><code class="docutils literal notranslate"><span class="pre">AppConfig.lifespan</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.listeners"><code class="docutils literal notranslate"><span class="pre">AppConfig.listeners</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.logging_config"><code class="docutils literal notranslate"><span class="pre">AppConfig.logging_config</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.middleware"><code class="docutils literal notranslate"><span class="pre">AppConfig.middleware</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.on_shutdown"><code class="docutils literal notranslate"><span class="pre">AppConfig.on_shutdown</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.on_startup"><code class="docutils literal notranslate"><span class="pre">AppConfig.on_startup</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.openapi_config"><code class="docutils literal notranslate"><span class="pre">AppConfig.openapi_config</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.opt"><code class="docutils literal notranslate"><span class="pre">AppConfig.opt</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.__init__"><code class="docutils literal notranslate"><span class="pre">AppConfig.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.parameters"><code class="docutils literal notranslate"><span class="pre">AppConfig.parameters</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.path"><code class="docutils literal notranslate"><span class="pre">AppConfig.path</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.pdb_on_exception"><code class="docutils literal notranslate"><span class="pre">AppConfig.pdb_on_exception</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.plugins"><code class="docutils literal notranslate"><span class="pre">AppConfig.plugins</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.request_class"><code class="docutils literal notranslate"><span class="pre">AppConfig.request_class</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.response_class"><code class="docutils literal notranslate"><span class="pre">AppConfig.response_class</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.response_cookies"><code class="docutils literal notranslate"><span class="pre">AppConfig.response_cookies</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.response_headers"><code class="docutils literal notranslate"><span class="pre">AppConfig.response_headers</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.response_cache_config"><code class="docutils literal notranslate"><span class="pre">AppConfig.response_cache_config</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.return_dto"><code class="docutils literal notranslate"><span class="pre">AppConfig.return_dto</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.route_handlers"><code class="docutils literal notranslate"><span class="pre">AppConfig.route_handlers</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.security"><code class="docutils literal notranslate"><span class="pre">AppConfig.security</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.signature_namespace"><code class="docutils literal notranslate"><span class="pre">AppConfig.signature_namespace</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.signature_types"><code class="docutils literal notranslate"><span class="pre">AppConfig.signature_types</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.state"><code class="docutils literal notranslate"><span class="pre">AppConfig.state</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.stores"><code class="docutils literal notranslate"><span class="pre">AppConfig.stores</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.tags"><code class="docutils literal notranslate"><span class="pre">AppConfig.tags</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.template_config"><code class="docutils literal notranslate"><span class="pre">AppConfig.template_config</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.type_decoders"><code class="docutils literal notranslate"><span class="pre">AppConfig.type_decoders</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.type_encoders"><code class="docutils literal notranslate"><span class="pre">AppConfig.type_encoders</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.websocket_class"><code class="docutils literal notranslate"><span class="pre">AppConfig.websocket_class</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.multipart_form_part_limit"><code class="docutils literal notranslate"><span class="pre">AppConfig.multipart_form_part_limit</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.app.AppConfig.__post_init__"><code class="docutils literal notranslate"><span class="pre">AppConfig.__post_init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.after_exception"><code class="docutils literal notranslate">after_exception</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.after_request"><code class="docutils literal notranslate">after_request</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.after_response"><code class="docutils literal notranslate">after_response</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.allowed_hosts"><code class="docutils literal notranslate">allowed_hosts</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.before_request"><code class="docutils literal notranslate">before_request</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.before_send"><code class="docutils literal notranslate">before_send</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.cache_control"><code class="docutils literal notranslate">cache_control</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.compression_config"><code class="docutils literal notranslate">compression_config</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.cors_config"><code class="docutils literal notranslate">cors_config</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.csrf_config"><code class="docutils literal notranslate">csrf_config</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.debug"><code class="docutils literal notranslate">debug</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.dependencies"><code class="docutils literal notranslate">dependencies</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.dto"><code class="docutils literal notranslate">dto</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.etag"><code class="docutils literal notranslate">etag</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.event_emitter_backend"><code class="docutils literal notranslate">event_emitter_backend</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.exception_handlers"><code class="docutils literal notranslate">exception_handlers</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.guards"><code class="docutils literal notranslate">guards</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.include_in_schema"><code class="docutils literal notranslate">include_in_schema</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.lifespan"><code class="docutils literal notranslate">lifespan</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.listeners"><code class="docutils literal notranslate">listeners</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.logging_config"><code class="docutils literal notranslate">logging_config</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.middleware"><code class="docutils literal notranslate">middleware</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.on_shutdown"><code class="docutils literal notranslate">on_shutdown</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.on_startup"><code class="docutils literal notranslate">on_startup</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.openapi_config"><code class="docutils literal notranslate">openapi_config</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.opt"><code class="docutils literal notranslate">opt</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.parameters"><code class="docutils literal notranslate">parameters</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.path"><code class="docutils literal notranslate">path</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.pdb_on_exception"><code class="docutils literal notranslate">pdb_on_exception</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.plugins"><code class="docutils literal notranslate">plugins</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.request_class"><code class="docutils literal notranslate">request_class</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.response_class"><code class="docutils literal notranslate">response_class</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.response_cookies"><code class="docutils literal notranslate">response_cookies</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.response_headers"><code class="docutils literal notranslate">response_headers</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.response_cache_config"><code class="docutils literal notranslate">response_cache_config</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.return_dto"><code class="docutils literal notranslate">return_dto</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.route_handlers"><code class="docutils literal notranslate">route_handlers</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.security"><code class="docutils literal notranslate">security</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.signature_namespace"><code class="docutils literal notranslate">signature_namespace</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.signature_types"><code class="docutils literal notranslate">signature_types</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.state"><code class="docutils literal notranslate">state</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.stores"><code class="docutils literal notranslate">stores</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.tags"><code class="docutils literal notranslate">tags</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.template_config"><code class="docutils literal notranslate">template_config</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.type_decoders"><code class="docutils literal notranslate">type_decoders</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.type_encoders"><code class="docutils literal notranslate">type_encoders</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.websocket_class"><code class="docutils literal notranslate">websocket_class</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.multipart_form_part_limit"><code class="docutils literal notranslate">multipart_form_part_limit</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.AppConfig.__post_init__"><code class="docutils literal notranslate">__post_init__()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.config.app.ExperimentalFeatures"><code class="docutils literal notranslate"><span class="pre">ExperimentalFeatures</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.config.app.ExperimentalFeatures.__new__"><code class="docutils literal notranslate"><span class="pre">ExperimentalFeatures.__new__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.app.ExperimentalFeatures.__new__"><code class="docutils literal notranslate">__new__()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.config.compression.CompressionConfig"><code class="docutils literal notranslate"><span class="pre">CompressionConfig</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.config.compression.CompressionConfig.backend"><code class="docutils literal notranslate"><span class="pre">CompressionConfig.backend</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.compression.CompressionConfig.minimum_size"><code class="docutils literal notranslate"><span class="pre">CompressionConfig.minimum_size</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.compression.CompressionConfig.gzip_compress_level"><code class="docutils literal notranslate"><span class="pre">CompressionConfig.gzip_compress_level</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.compression.CompressionConfig.brotli_quality"><code class="docutils literal notranslate"><span class="pre">CompressionConfig.brotli_quality</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.compression.CompressionConfig.brotli_mode"><code class="docutils literal notranslate"><span class="pre">CompressionConfig.brotli_mode</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.compression.CompressionConfig.brotli_lgwin"><code class="docutils literal notranslate"><span class="pre">CompressionConfig.brotli_lgwin</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.compression.CompressionConfig.brotli_lgblock"><code class="docutils literal notranslate"><span class="pre">CompressionConfig.brotli_lgblock</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.compression.CompressionConfig.__init__"><code class="docutils literal notranslate"><span class="pre">CompressionConfig.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.compression.CompressionConfig.brotli_gzip_fallback"><code class="docutils literal notranslate"><span class="pre">CompressionConfig.brotli_gzip_fallback</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.compression.CompressionConfig.middleware_class"><code class="docutils literal notranslate"><span class="pre">CompressionConfig.middleware_class</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.compression.CompressionConfig.exclude"><code class="docutils literal notranslate"><span class="pre">CompressionConfig.exclude</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.compression.CompressionConfig.exclude_opt_key"><code class="docutils literal notranslate"><span class="pre">CompressionConfig.exclude_opt_key</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.compression.CompressionConfig.compression_facade"><code class="docutils literal notranslate"><span class="pre">CompressionConfig.compression_facade</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.compression.CompressionConfig.backend_config"><code class="docutils literal notranslate"><span class="pre">CompressionConfig.backend_config</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.compression.CompressionConfig.gzip_fallback"><code class="docutils literal notranslate"><span class="pre">CompressionConfig.gzip_fallback</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.compression.CompressionConfig.backend"><code class="docutils literal notranslate">backend</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.compression.CompressionConfig.minimum_size"><code class="docutils literal notranslate">minimum_size</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.compression.CompressionConfig.gzip_compress_level"><code class="docutils literal notranslate">gzip_compress_level</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.compression.CompressionConfig.brotli_quality"><code class="docutils literal notranslate">brotli_quality</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.compression.CompressionConfig.brotli_mode"><code class="docutils literal notranslate">brotli_mode</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.compression.CompressionConfig.brotli_lgwin"><code class="docutils literal notranslate">brotli_lgwin</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.compression.CompressionConfig.brotli_lgblock"><code class="docutils literal notranslate">brotli_lgblock</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.compression.CompressionConfig.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.compression.CompressionConfig.brotli_gzip_fallback"><code class="docutils literal notranslate">brotli_gzip_fallback</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.compression.CompressionConfig.middleware_class"><code class="docutils literal notranslate">middleware_class</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.compression.CompressionConfig.exclude"><code class="docutils literal notranslate">exclude</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.compression.CompressionConfig.exclude_opt_key"><code class="docutils literal notranslate">exclude_opt_key</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.compression.CompressionConfig.compression_facade"><code class="docutils literal notranslate">compression_facade</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.compression.CompressionConfig.backend_config"><code class="docutils literal notranslate">backend_config</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.compression.CompressionConfig.gzip_fallback"><code class="docutils literal notranslate">gzip_fallback</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.config.cors.CORSConfig"><code class="docutils literal notranslate"><span class="pre">CORSConfig</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.config.cors.CORSConfig.allow_origins"><code class="docutils literal notranslate"><span class="pre">CORSConfig.allow_origins</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.cors.CORSConfig.allow_methods"><code class="docutils literal notranslate"><span class="pre">CORSConfig.allow_methods</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.cors.CORSConfig.allow_headers"><code class="docutils literal notranslate"><span class="pre">CORSConfig.allow_headers</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.cors.CORSConfig.allow_credentials"><code class="docutils literal notranslate"><span class="pre">CORSConfig.allow_credentials</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.cors.CORSConfig.allow_origin_regex"><code class="docutils literal notranslate"><span class="pre">CORSConfig.allow_origin_regex</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.cors.CORSConfig.expose_headers"><code class="docutils literal notranslate"><span class="pre">CORSConfig.expose_headers</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.cors.CORSConfig.max_age"><code class="docutils literal notranslate"><span class="pre">CORSConfig.max_age</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.cors.CORSConfig.__init__"><code class="docutils literal notranslate"><span class="pre">CORSConfig.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.cors.CORSConfig.allowed_origins_regex"><code class="docutils literal notranslate"><span class="pre">CORSConfig.allowed_origins_regex</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.cors.CORSConfig.is_allow_all_origins"><code class="docutils literal notranslate"><span class="pre">CORSConfig.is_allow_all_origins</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.cors.CORSConfig.is_allow_all_methods"><code class="docutils literal notranslate"><span class="pre">CORSConfig.is_allow_all_methods</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.cors.CORSConfig.is_allow_all_headers"><code class="docutils literal notranslate"><span class="pre">CORSConfig.is_allow_all_headers</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.cors.CORSConfig.preflight_headers"><code class="docutils literal notranslate"><span class="pre">CORSConfig.preflight_headers</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.cors.CORSConfig.simple_headers"><code class="docutils literal notranslate"><span class="pre">CORSConfig.simple_headers</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.cors.CORSConfig.is_origin_allowed"><code class="docutils literal notranslate"><span class="pre">CORSConfig.is_origin_allowed()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.cors.CORSConfig.allow_origins"><code class="docutils literal notranslate">allow_origins</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.cors.CORSConfig.allow_methods"><code class="docutils literal notranslate">allow_methods</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.cors.CORSConfig.allow_headers"><code class="docutils literal notranslate">allow_headers</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.cors.CORSConfig.allow_credentials"><code class="docutils literal notranslate">allow_credentials</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.cors.CORSConfig.allow_origin_regex"><code class="docutils literal notranslate">allow_origin_regex</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.cors.CORSConfig.expose_headers"><code class="docutils literal notranslate">expose_headers</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.cors.CORSConfig.max_age"><code class="docutils literal notranslate">max_age</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.cors.CORSConfig.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.cors.CORSConfig.allowed_origins_regex"><code class="docutils literal notranslate">allowed_origins_regex</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.cors.CORSConfig.is_allow_all_origins"><code class="docutils literal notranslate">is_allow_all_origins</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.cors.CORSConfig.is_allow_all_methods"><code class="docutils literal notranslate">is_allow_all_methods</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.cors.CORSConfig.is_allow_all_headers"><code class="docutils literal notranslate">is_allow_all_headers</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.cors.CORSConfig.preflight_headers"><code class="docutils literal notranslate">preflight_headers</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.cors.CORSConfig.simple_headers"><code class="docutils literal notranslate">simple_headers</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.cors.CORSConfig.is_origin_allowed"><code class="docutils literal notranslate">is_origin_allowed()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.config.csrf.CSRFConfig"><code class="docutils literal notranslate"><span class="pre">CSRFConfig</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.config.csrf.CSRFConfig.secret"><code class="docutils literal notranslate"><span class="pre">CSRFConfig.secret</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.csrf.CSRFConfig.cookie_name"><code class="docutils literal notranslate"><span class="pre">CSRFConfig.cookie_name</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.csrf.CSRFConfig.cookie_path"><code class="docutils literal notranslate"><span class="pre">CSRFConfig.cookie_path</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.csrf.CSRFConfig.header_name"><code class="docutils literal notranslate"><span class="pre">CSRFConfig.header_name</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.csrf.CSRFConfig.cookie_secure"><code class="docutils literal notranslate"><span class="pre">CSRFConfig.cookie_secure</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.csrf.CSRFConfig.__init__"><code class="docutils literal notranslate"><span class="pre">CSRFConfig.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.csrf.CSRFConfig.cookie_httponly"><code class="docutils literal notranslate"><span class="pre">CSRFConfig.cookie_httponly</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.csrf.CSRFConfig.cookie_samesite"><code class="docutils literal notranslate"><span class="pre">CSRFConfig.cookie_samesite</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.csrf.CSRFConfig.cookie_domain"><code class="docutils literal notranslate"><span class="pre">CSRFConfig.cookie_domain</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.csrf.CSRFConfig.safe_methods"><code class="docutils literal notranslate"><span class="pre">CSRFConfig.safe_methods</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.csrf.CSRFConfig.exclude"><code class="docutils literal notranslate"><span class="pre">CSRFConfig.exclude</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.csrf.CSRFConfig.exclude_from_csrf_key"><code class="docutils literal notranslate"><span class="pre">CSRFConfig.exclude_from_csrf_key</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.csrf.CSRFConfig.secret"><code class="docutils literal notranslate">secret</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.csrf.CSRFConfig.cookie_name"><code class="docutils literal notranslate">cookie_name</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.csrf.CSRFConfig.cookie_path"><code class="docutils literal notranslate">cookie_path</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.csrf.CSRFConfig.header_name"><code class="docutils literal notranslate">header_name</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.csrf.CSRFConfig.cookie_secure"><code class="docutils literal notranslate">cookie_secure</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.csrf.CSRFConfig.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.csrf.CSRFConfig.cookie_httponly"><code class="docutils literal notranslate">cookie_httponly</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.csrf.CSRFConfig.cookie_samesite"><code class="docutils literal notranslate">cookie_samesite</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.csrf.CSRFConfig.cookie_domain"><code class="docutils literal notranslate">cookie_domain</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.csrf.CSRFConfig.safe_methods"><code class="docutils literal notranslate">safe_methods</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.csrf.CSRFConfig.exclude"><code class="docutils literal notranslate">exclude</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.csrf.CSRFConfig.exclude_from_csrf_key"><code class="docutils literal notranslate">exclude_from_csrf_key</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.config.response_cache.ResponseCacheConfig"><code class="docutils literal notranslate"><span class="pre">ResponseCacheConfig</span></code></a><ul>
-<li><a class="reference internal" href="#litestar.config.response_cache.ResponseCacheConfig.default_expiration"><code class="docutils literal notranslate"><span class="pre">ResponseCacheConfig.default_expiration</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.response_cache.ResponseCacheConfig.key_builder"><code class="docutils literal notranslate"><span class="pre">ResponseCacheConfig.key_builder()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.response_cache.ResponseCacheConfig.__init__"><code class="docutils literal notranslate"><span class="pre">ResponseCacheConfig.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.response_cache.ResponseCacheConfig.store"><code class="docutils literal notranslate"><span class="pre">ResponseCacheConfig.store</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.response_cache.ResponseCacheConfig.cache_response_filter"><code class="docutils literal notranslate"><span class="pre">ResponseCacheConfig.cache_response_filter()</span></code></a></li>
-<li><a class="reference internal" href="#litestar.config.response_cache.ResponseCacheConfig.get_store_from_app"><code class="docutils literal notranslate"><span class="pre">ResponseCacheConfig.get_store_from_app()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.response_cache.ResponseCacheConfig.default_expiration"><code class="docutils literal notranslate">default_expiration</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.response_cache.ResponseCacheConfig.key_builder"><code class="docutils literal notranslate">key_builder()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.response_cache.ResponseCacheConfig.__init__"><code class="docutils literal notranslate">__init__()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.response_cache.ResponseCacheConfig.store"><code class="docutils literal notranslate">store</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.response_cache.ResponseCacheConfig.cache_response_filter"><code class="docutils literal notranslate">cache_response_filter()</span></code></a></li>
+<li><a class="reference internal" href="#litestar.config.response_cache.ResponseCacheConfig.get_store_from_app"><code class="docutils literal notranslate">get_store_from_app()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#litestar.config.response_cache.default_cache_key_builder"><code class="docutils literal notranslate"><span class="pre">default_cache_key_builder()</span></code></a></li>
 <li><a class="reference internal" href="#litestar.config.response_cache.CACHE_FOREVER"><code class="docutils literal notranslate"><span class="pre">CACHE_FOREVER</span></code></a></li>
 </ul>
-
-  </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
+</div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
   data-type="github" data-user="litestar-org" data-repo="litestar">
   <span class="w-8 flex items-center justify-around shrink-0 text-3xl">
     <i class="i-simpleicons github"></i>
   </span>
-  <span class="flex-grow px-2">
+  <span class="flex-grow px-2 break-all">
     <span>litestar-org/litestar</span>
     <span class="flex text-sm repo-stats-count">
       <span class="flex items-center pr-3">
@@ -646,40 +615,28 @@ data-aria-dark="Switch to auto color mode">
   </span>
 </a><div class="edit-this-page">
   <a href="https://github.com/litestar-org/litestar/blob/master/docs/reference/config.rst">Edit this page</a>
-</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div>
-    </div>
+</div><div id="ethical-ad-placement" data-ea-publisher="readthedocs"></div></div>
   </aside>
   <div class="rside-overlay js-menu" role="button" aria-label="Close Table of Contents" aria-controls="rside" aria-expanded="false"></div>
-  <main class="sy-main w-full max-sm:max-w-full print:pt-6">
-    <div class="sy-breadcrumbs" role="navigation">
+  <main class="sy-main w-full max-sm:max-w-full print:pt-6"><div class="sy-breadcrumbs" role="navigation">
   <div class="sy-breadcrumbs-inner flex items-center">
     <div class="md:hidden mr-3">
       <button class="js-menu" aria-label="Menu" type="button" aria-controls="lside" aria-expanded="false">
         <i class="i-lucide menu"></i>
       </button>
     </div>
-    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList">
-      
-      
-      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+    <ol class="flex-1" itemscope itemtype="https://schema.org/BreadcrumbList"><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
         <a itemprop="item" href="../index.html"><span itemprop="name">Litestar</span></a>
         <span>/</span>
         <meta itemprop="position" content="1" />
-      </li>
-      
-      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
         <a itemprop="item" href="index.html"><span itemprop="name">API reference</span></a>
         <span>/</span>
         <meta itemprop="position" content="2" />
-      </li>
-      
-      <li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+      </li><li itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
         <strong itemprop="name">config</strong>
         <meta itemprop="position" content="3" />
-      </li>
-      
-      
-    </ol>
+      </li></ol>
     <div class="xl:hidden ml-1">
       <button class="js-menu" aria-label="Show table of contents" type="button" aria-controls="rside"
         aria-expanded="false">
@@ -687,8 +644,7 @@ data-aria-dark="Switch to auto color mode">
       </button>
     </div>
   </div>
-</div>
-    <div class="flex flex-col break-words justify-between">
+</div><div class="flex flex-col break-words justify-between">
       <div class="min-w-0 max-w-6xl px-6 pb-6 pt-8 xl:px-12">
         <article class="yue" role="main">
           <section id="module-litestar.config.allowed_hosts">
@@ -1489,27 +1445,18 @@ default expiration</p>
 
 </section>
 
-        </article>
-        <button class="back-to-top" type="button">
+        </article><button class="back-to-top" type="button">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
     <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
   </svg>
   <span>Back to top</span>
-</button>
-        
-        <div class="navigation flex print:hidden">
-  <div class="navigation-prev">
+</button><div class="navigation flex print:hidden"><div class="navigation-prev">
     <a href="cli.html">
       <i class="i-lucide chevron-left"></i>
       <div class="page-info">
-        <span>Previous</span>
-        
-        <div class="title">cli</div>
-        
-      </div>
+        <span>Previous</span><div class="title">cli</div></div>
     </a>
-  </div>
-  <div class="navigation-next">
+  </div><div class="navigation-next">
     <a href="connection.html">
       <div class="page-info">
         <span>Next</span>
@@ -1517,16 +1464,12 @@ default expiration</p>
       </div>
       <i class="i-lucide chevron-right"></i>
     </a>
-  </div>
-</div>
-        
-      </div>
+  </div></div></div>
     </div>
   </main>
 </div>
 <footer class="sy-foot">
   <div class="sy-foot-inner sy-container mx-auto">
-    
     <div class="sy-foot-reserved md:flex justify-between items-center">
       <div class="sy-foot-copyright"><p>2024, Litestar Organization</p>
   
@@ -1539,13 +1482,12 @@ default expiration</p>
   </p>
 </div>
       <div class="sy-foot-socials">
-  <a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)"><i class="i-simpleicons x-twitter"></i></a>
-  <a href="https://discord.gg/litestar" aria-label="Discord"><i class="i-simpleicons discord"></i></a>
-  <a href="https://www.reddit.com/r/LitestarAPI" aria-label="Reddit"><i class="i-simpleicons reddit"></i></a>
-</div>
+<a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)"><i class="i-simpleicons x-twitter"></i></a>
+<a href="https://discord.gg/litestar" aria-label="Discord"><i class="i-simpleicons discord"></i></a>
+<a href="https://www.reddit.com/r/LitestarAPI" aria-label="Reddit"><i class="i-simpleicons reddit"></i></a></div>
     </div>
   </div>
-</footer></div>
+</footer>
       <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=c19e757c"></script>
       <script src="../_static/doctools.js?v=888ff710"></script>
       <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
@@ -1558,8 +1500,6 @@ default expiration</p>
       <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
       <script src="../_static/design-tabs.js?v=36754332"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../_static/shibuya.js?v=5f0e4c24"></script>
-      <script src="../_static/versioning.js?v=bc681eff"></script>
-    
-</body>
+      <script src="../_static/shibuya.js?v=3cc430e2"></script>
+      <script src="../_static/versioning.js?v=bc681eff"></script></body>
 </html>

@@ -497,7 +497,7 @@ in:
    Set-Cookie: router-cookie=router value; Path=/; SameSite=lax
    Set-Cookie: app-cookie=app value; Path=/; SameSite=lax
 
-You can easily override cookies declared in higher levels by re-declaring a cookie with the same key in a lower level,
+You can easily override cookies declared in higher levels by redeclaring a cookie with the same key in a lower level,
 e.g.:
 
 .. literalinclude:: /examples/responses/response_cookies_2.py

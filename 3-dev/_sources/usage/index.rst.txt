@@ -26,6 +26,7 @@ Usage
     responses
     security/index
     static-files
+    custom-types
     stores
     templating
     testing
