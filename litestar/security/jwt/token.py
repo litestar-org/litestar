@@ -13,7 +13,6 @@ from litestar.exceptions import ImproperlyConfiguredException, NotAuthorizedExce
 if TYPE_CHECKING:
     from typing_extensions import Self
 
-
 __all__ = ("Token",)
 
 
@@ -77,8 +76,12 @@ class Token:
         encoded_token: str,
         secret: str,
         algorithm: str,
-        audience: Sequence[str] | None = None,
-        issuer: Sequence[str] | None = None,
+        audience: str | Sequence[str] | None = None,
+        issuer: str | Sequence[str] | None = None,
+        require_claims: Sequence[str] | None = None,
+        verify_exp: bool = True,
+        verify_nbf: bool = True,
+        strict_audience: bool = False,
     ) -> Self:
         """Decode a passed in token string and returns a Token instance.
 
@@ -92,6 +95,15 @@ class Token:
             issuer: Verify the issuer when decoding the token. If the issuer in the
                 token does not match any issuer given, raise a
                 :exc:`NotAuthorizedException`
+            require_claims: Verify that the given claims are present in the token
+            verify_exp: Verify that the value of the ``exp`` (*expiration*) claim is in
+                the future
+            verify_nbf: Verify that the value of the ``nbf``(*not before*) claim is in
+                the past
+            strict_audience: Verify that the value of the ``aud`` (*audience*) claim is
+                a single value, and not a list of values, and matches ``audience``
+                exactly. Requires the value passed to the ``audience`` to be a sequence
+                of length 1
 
         Returns:
             A decoded Token instance.
@@ -99,6 +111,26 @@ class Token:
         Raises:
             NotAuthorizedException: If the token is invalid.
         """
+
+        options: dict[str, Any] = {
+            "verify_aud": bool(audience),
+            "verify_iss": bool(issuer),
+        }
+        if require_claims:
+            options["require"] = list(require_claims)
+        if verify_exp is False:
+            options["verify_exp"] = False
+        if verify_nbf is False:
+            options["verify_nbf"] = False
+        if strict_audience:
+            if audience is None or (not isinstance(audience, str) and len(audience) != 1):
+                raise ValueError("When using 'strict_audience=True', 'audience' must be a sequence of length 1")
+            options["strict_aud"] = True
+            # although not documented, pyjwt requires audience to be a string if
+            # using the strict_aud option
+            if not isinstance(audience, str):
+                audience = audience[0]
+
         try:
             payload: dict[str, Any] = jwt.decode(
                 jwt=encoded_token,
@@ -106,7 +138,7 @@ class Token:
                 algorithms=[algorithm],
                 issuer=list(issuer) if issuer else None,
                 audience=audience,
-                options={"verify_aud": bool(audience)},
+                options=options,
             )
             # msgspec can do these conversions as well, but to keep backwards
             # compatibility, we do it ourselves, since the datetime parsing works a

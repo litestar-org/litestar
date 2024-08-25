@@ -76,6 +76,19 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
     """Issuers to accept when verifying the token. If given, and the issuer in the
     token does not match, a 401 response is returned
     """
+    require_claims: Sequence[str] | None = None
+    """Require these claims to be present in the JWT payload. If any of those claims
+    is missing, a 401 response is returned
+    """
+    verify_expiry: bool = True
+    """Verify that the value of the ``exp`` (*expiration*) claim is in the future"""
+    verify_not_before: bool = True
+    """Verify that the value of the ``nbf``(*not before*) claim is in the past"""
+    strict_audience: bool = False
+    """Verify that the value of the ``aud`` (*audience*) claim is a single value, and
+    not a list of values, and matches ``audience`` exactly. Requires that
+    ``accepted_audiences`` is a sequence of length 1
+    """
 
     @property
     def openapi_components(self) -> Components:
@@ -130,6 +143,10 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
             token_cls=self.token_cls,
             token_issuer=self.accepted_issuers,
             token_audience=self.accepted_audiences,
+            require_claims=self.require_claims,
+            verify_expiry=self.verify_expiry,
+            verify_not_before=self.verify_not_before,
+            strict_audience=self.strict_audience,
         )
 
     def login(
@@ -308,6 +325,19 @@ class JWTAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
     """Issuers to accept when verifying the token. If given, and the issuer in the
     token does not match, a 401 response is returned
     """
+    require_claims: Sequence[str] | None = None
+    """Require these claims to be present in the JWT payload. If any of those claims
+    is missing, a 401 response is returned
+    """
+    verify_expiry: bool = True
+    """Verify that the value of the ``exp`` (*expiration*) claim is in the future"""
+    verify_not_before: bool = True
+    """Verify that the value of the ``nbf``(*not before*) claim is in the past"""
+    strict_audience: bool = False
+    """Verify that the value of the ``aud`` (*audience*) claim is a single value, and
+    not a list of values, and matches ``audience`` exactly. Requires that
+    ``accepted_audiences`` is a sequence of length 1
+    """
 
 
 @dataclass
@@ -389,7 +419,26 @@ class JWTCookieAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
     token_cls: type[Token] = Token
     """Target type the JWT payload will be converted into"""
     accepted_audiences: Sequence[str] | None = None
+    """Audiences to accept when verifying the token. If given, and the audience in the
+    token does not match, a 401 response is returned
+    """
     accepted_issuers: Sequence[str] | None = None
+    """Issuers to accept when verifying the token. If given, and the issuer in the
+    token does not match, a 401 response is returned
+    """
+    require_claims: Sequence[str] | None = None
+    """Require these claims to be present in the JWT payload. If any of those claims
+    is missing, a 401 response is returned
+    """
+    verify_expiry: bool = True
+    """Verify that the value of the ``exp`` (*expiration*) claim is in the future"""
+    verify_not_before: bool = True
+    """Verify that the value of the ``nbf``(*not before*) claim is in the past"""
+    strict_audience: bool = False
+    """Verify that the value of the ``aud`` (*audience*) claim is a single value, and
+    not a list of values, and matches ``audience`` exactly. Requires that
+    ``accepted_audiences`` is a sequence of length 1
+    """
 
     @property
     def openapi_components(self) -> Components:
@@ -433,6 +482,10 @@ class JWTCookieAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
             token_cls=self.token_cls,
             token_issuer=self.accepted_issuers,
             token_audience=self.accepted_audiences,
+            require_claims=self.require_claims,
+            verify_expiry=self.verify_expiry,
+            verify_not_before=self.verify_not_before,
+            strict_audience=self.strict_audience,
         )
 
     def login(
@@ -609,6 +662,19 @@ class OAuth2PasswordBearerAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, 
     """Issuers to accept when verifying the token. If given, and the issuer in the
     token does not match, a 401 response is returned
     """
+    require_claims: Sequence[str] | None = None
+    """Require these claims to be present in the JWT payload. If any of those claims
+    is missing, a 401 response is returned
+    """
+    verify_expiry: bool = True
+    """Verify that the value of the ``exp`` (*expiration*) claim is in the future"""
+    verify_not_before: bool = True
+    """Verify that the value of the ``nbf``(*not before*) claim is in the past"""
+    strict_audience: bool = False
+    """Verify that the value of the ``aud`` (*audience*) claim is a single value, and
+    not a list of values, and matches ``audience`` exactly. Requires that
+    ``accepted_audiences`` is a sequence of length 1
+    """
 
     @property
     def middleware(self) -> DefineMiddleware:
@@ -632,6 +698,10 @@ class OAuth2PasswordBearerAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, 
             token_cls=self.token_cls,
             token_issuer=self.accepted_issuers,
             token_audience=self.accepted_audiences,
+            require_claims=self.require_claims,
+            verify_expiry=self.verify_expiry,
+            verify_not_before=self.verify_not_before,
+            strict_audience=self.strict_audience,
         )
 
     @property
