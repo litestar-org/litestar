@@ -1,8 +1,15 @@
+from __future__ import annotations
+
 import os
 import warnings
+from typing import TYPE_CHECKING
 
 from litestar.exceptions import LitestarWarning
-from litestar.types import AnyCallable, AnyGenerator
+
+if TYPE_CHECKING:
+    import re
+
+    from litestar.types import AnyCallable, AnyGenerator
 
 
 def warn_implicit_sync_to_thread(source: AnyCallable, stacklevel: int = 2) -> None:
@@ -49,3 +56,17 @@ def warn_sync_to_thread_with_generator(source: AnyGenerator, stacklevel: int = 2
 
 def warn_pdb_on_exception(stacklevel: int = 2) -> None:
     warnings.warn("Python Debugger on exception enabled", category=LitestarWarning, stacklevel=stacklevel)
+
+
+def warn_middleware_excluded_on_all_routes(
+    pattern: re.Pattern,
+    middleware_cls: type | None = None,
+) -> None:
+    middleware_name = f" {middleware_cls.__name__!r}" if middleware_cls else ""
+    warnings.warn(
+        f"Middleware{middleware_name} exclude pattern {pattern.pattern!r} greedily "
+        "matches all paths, effectively disabling this middleware. If this was "
+        "intentional, consider removing this middleware entirely",
+        category=LitestarWarning,
+        stacklevel=2,
+    )

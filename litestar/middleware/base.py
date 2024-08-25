@@ -109,7 +109,7 @@ class AbstractMiddleware:
         self.app = app
         self.scopes = scopes or self.scopes
         self.exclude_opt_key = exclude_opt_key or self.exclude_opt_key
-        self.exclude_pattern = build_exclude_path_pattern(exclude=(exclude or self.exclude))
+        self.exclude_pattern = build_exclude_path_pattern(exclude=(exclude or self.exclude), middleware_cls=type(self))
 
     @classmethod
     def __init_subclass__(cls, **kwargs: Any) -> None:

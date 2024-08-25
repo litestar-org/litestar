@@ -81,7 +81,7 @@ class CSRFMiddleware(MiddlewareProtocol):
         """
         self.app = app
         self.config = config
-        self.exclude = build_exclude_path_pattern(exclude=config.exclude)
+        self.exclude = build_exclude_path_pattern(exclude=config.exclude, middleware_cls=type(self))
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
         """ASGI callable.
