@@ -83,7 +83,7 @@ class BaseJWTAuth(Generic[UserType, TokenT], AbstractSecurityConfig[UserType, To
     verify_expiry: bool = True
     """Verify that the value of the ``exp`` (*expiration*) claim is in the future"""
     verify_not_before: bool = True
-    """Verify that the value of the ``nbf``(*not before*) claim is in the past"""
+    """Verify that the value of the ``nbf`` (*not before*) claim is in the past"""
     strict_audience: bool = False
     """Verify that the value of the ``aud`` (*audience*) claim is a single value, and
     not a list of values, and matches ``audience`` exactly. Requires that
@@ -332,7 +332,7 @@ class JWTAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
     verify_expiry: bool = True
     """Verify that the value of the ``exp`` (*expiration*) claim is in the future"""
     verify_not_before: bool = True
-    """Verify that the value of the ``nbf``(*not before*) claim is in the past"""
+    """Verify that the value of the ``nbf`` (*not before*) claim is in the past"""
     strict_audience: bool = False
     """Verify that the value of the ``aud`` (*audience*) claim is a single value, and
     not a list of values, and matches ``audience`` exactly. Requires that
@@ -433,7 +433,7 @@ class JWTCookieAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, TokenT]):
     verify_expiry: bool = True
     """Verify that the value of the ``exp`` (*expiration*) claim is in the future"""
     verify_not_before: bool = True
-    """Verify that the value of the ``nbf``(*not before*) claim is in the past"""
+    """Verify that the value of the ``nbf`` (*not before*) claim is in the past"""
     strict_audience: bool = False
     """Verify that the value of the ``aud`` (*audience*) claim is a single value, and
     not a list of values, and matches ``audience`` exactly. Requires that
@@ -669,7 +669,7 @@ class OAuth2PasswordBearerAuth(Generic[UserType, TokenT], BaseJWTAuth[UserType, 
     verify_expiry: bool = True
     """Verify that the value of the ``exp`` (*expiration*) claim is in the future"""
     verify_not_before: bool = True
-    """Verify that the value of the ``nbf``(*not before*) claim is in the past"""
+    """Verify that the value of the ``nbf`` (*not before*) claim is in the past"""
     strict_audience: bool = False
     """Verify that the value of the ``aud`` (*audience*) claim is a single value, and
     not a list of values, and matches ``audience`` exactly. Requires that

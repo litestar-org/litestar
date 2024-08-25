@@ -82,7 +82,7 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
                 :exc:`NotAuthorizedException`
             require_claims: Require these claims to be present in the JWT payload
             verify_expiry: Verify that the value of the ``exp`` (*expiration*) claim is in the future
-            verify_not_before: Verify that the value of the ``nbf``(*not before*) claim is in the past
+            verify_not_before: Verify that the value of the ``nbf`` (*not before*) claim is in the past
             strict_audience: Verify that the value of the ``aud`` (*audience*) claim is a single value, and
                 not a list of values, and matches ``audience`` exactly. Requires that
                 ``accepted_audiences`` is a sequence of length 1
@@ -210,7 +210,7 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
                 :exc:`NotAuthorizedException`
             require_claims: Require these claims to be present in the JWT payload
             verify_expiry: Verify that the value of the ``exp`` (*expiration*) claim is in the future
-            verify_not_before: Verify that the value of the ``nbf``(*not before*) claim is in the past
+            verify_not_before: Verify that the value of the ``nbf`` (*not before*) claim is in the past
             strict_audience: Verify that the value of the ``aud`` (*audience*) claim is a single value, and
                 not a list of values, and matches ``audience`` exactly. Requires that
                 ``accepted_audiences`` is a sequence of length 1

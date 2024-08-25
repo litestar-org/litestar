@@ -98,7 +98,7 @@ class Token:
             require_claims: Verify that the given claims are present in the token
             verify_exp: Verify that the value of the ``exp`` (*expiration*) claim is in
                 the future
-            verify_nbf: Verify that the value of the ``nbf``(*not before*) claim is in
+            verify_nbf: Verify that the value of the ``nbf`` (*not before*) claim is in
                 the past
             strict_audience: Verify that the value of the ``aud`` (*audience*) claim is
                 a single value, and not a list of values, and matches ``audience``
