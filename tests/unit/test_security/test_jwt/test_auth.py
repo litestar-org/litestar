@@ -5,6 +5,7 @@ from datetime import datetime, timedelta, timezone
 from typing import TYPE_CHECKING, Any, Dict, Optional
 from uuid import uuid4
 
+import jwt
 import msgspec
 import pytest
 from hypothesis import given, settings
@@ -545,3 +546,37 @@ def test_returns_none_when_response_body_is_none(config: JWTAuth) -> None:
         response = client.get("/")
         assert response.status_code == HTTP_201_CREATED
         assert response.json() is None
+
+
+async def test_jwt_auth_validation_error_returns_not_authorized() -> None:
+    # if the value of a field has an invalid type, msgspec will raise a 'ValidationError'.
+    # this should still result in a '401' status response
+    async def retrieve_user_handler(token: Token, _: "ASGIConnection") -> Any:
+        return object()
+
+    token_secret = secrets.token_hex()
+
+    jwt_auth = JWTAuth[Any](
+        token_secret=token_secret,
+        retrieve_user_handler=retrieve_user_handler,
+    )
+
+    @get("/", middleware=[jwt_auth.middleware])
+    def handler() -> None:
+        return None
+
+    header = jwt_auth.format_auth_header(
+        jwt.encode(
+            {
+                "sub": "foo",
+                "exp": (datetime.now() + timedelta(days=1)).timestamp(),
+                "iat": datetime.now().timestamp(),
+                "iss": {"foo": "bar"},
+            },
+            key=token_secret,
+        ),
+    )
+
+    with create_test_client(route_handlers=[handler]) as client:
+        response = client.get("/", headers={"Authorization": header})
+        assert response.status_code == 401
