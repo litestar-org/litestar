@@ -229,16 +229,8 @@ def test_csrf_middleware_exclude_from_check() -> None:
     def post_handler2(data: dict = Body(media_type=RequestEncodingType.URL_ENCODED)) -> dict:
         return data
 
-    @get("/protected-handler")
-    def get_handler() -> dict:
-        return {}
-
-    @get("/unprotected-handler")
-    def get_handler2() -> dict:
-        return {}
-
     with create_test_client(
-        route_handlers=[post_handler, post_handler2, get_handler, get_handler2],
+        route_handlers=[post_handler, post_handler2],
         csrf_config=CSRFConfig(secret=str(urandom(10)), exclude=["unprotected-handler"]),
     ) as client:
         data = {"field": "value"}
@@ -248,6 +240,16 @@ def test_csrf_middleware_exclude_from_check() -> None:
         response = client.post("/unprotected-handler", data=data)
         assert response.status_code == HTTP_201_CREATED
         assert response.json() == data
+
+
+def test_csrf_middleware_exclude_from_set_cookies() -> None:
+    @get("/protected-handler")
+    def get_handler() -> dict:
+        return {}
+
+    @get("/unprotected-handler")
+    def get_handler2() -> dict:
+        return {}
 
     with create_test_client(
         route_handlers=[get_handler, get_handler2],
