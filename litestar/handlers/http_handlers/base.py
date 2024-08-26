@@ -214,7 +214,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             return_dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for serializing
                 outbound response data.
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
-            status_code: An http status code for the response.``200`` for ``GET``, ``PUT`` and ``PATCH``,
+            status_code: An http status code for the response. Defaults to ``200`` for ``GET``, ``PUT`` and ``PATCH``,
             ``201`` for ``POST`` and ``204`` for ``DELETE``. For mixed method requests it will check for ``POST`` and ``DELETE`` first
             then defaults to ``200``.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
