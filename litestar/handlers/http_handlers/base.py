@@ -215,7 +215,7 @@ class HTTPRouteHandler(BaseRouteHandler):
                 outbound response data.
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             status_code: An http status code for the response.``200`` for ``GET``, ``PUT`` and ``PATCH``,
-            ``201`` for ``POST`` and ``204`` for ``DELETE``.For mixed method it will check for ``POST`` and ``DELETE`` first
+            ``201`` for ``POST`` and ``204`` for ``DELETE``. For mixed method requests it will check for ``POST`` and ``DELETE`` first
             then defaults to ``200``.
             sync_to_thread: A boolean dictating whether the handler function will be executed in a worker thread or the
                 main event loop. This has an effect only for sync handler functions. See using sync handler functions.
