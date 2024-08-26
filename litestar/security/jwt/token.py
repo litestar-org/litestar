@@ -103,7 +103,13 @@ class Token:
             for key in extra_fields:
                 extras[key] = payload.pop(key)
             return msgspec.convert(payload, cls, strict=False)
-        except (KeyError, jwt.DecodeError, ImproperlyConfiguredException, jwt.exceptions.InvalidAlgorithmError) as e:
+        except (
+            KeyError,
+            jwt.DecodeError,
+            ImproperlyConfiguredException,
+            jwt.exceptions.InvalidAlgorithmError,
+            msgspec.ValidationError,
+        ) as e:
             raise NotAuthorizedException("Invalid token") from e
 
     def encode(self, secret: str, algorithm: str) -> str:

@@ -11,10 +11,10 @@ from typing import TYPE_CHECKING, Any, Union
 from typing_extensions import Annotated, Self, get_args, get_origin, get_type_hints
 
 from litestar import connection, datastructures, types
-from litestar.exceptions import ImproperlyConfiguredException
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
 from litestar.utils.typing import expand_type_var_in_type_hint, unwrap_annotation
+from litestar.utils.warnings import warn_signature_namespace_override
 
 if TYPE_CHECKING:
     from typing import Sequence
@@ -30,6 +30,7 @@ else:
 
 __all__ = (
     "add_types_to_signature_namespace",
+    "merge_signature_namespaces",
     "get_fn_type_hints",
     "ParsedSignature",
 )
@@ -255,14 +256,36 @@ def add_types_to_signature_namespace(
         signature_namespace: The signature namespace to add types to.
 
     Raises:
-        ImproperlyConfiguredException: If a type is already defined in the signature namespace.
         AttributeError: If a type does not have a `__name__` attribute.
 
     Returns:
         The updated signature namespace.
     """
-    for typ in signature_types:
-        if (name := typ.__name__) in signature_namespace:
-            raise ImproperlyConfiguredException(f"Type '{name}' is already defined in the signature namespace")
-        signature_namespace[name] = typ
+    return merge_signature_namespaces(
+        signature_namespace=signature_namespace,
+        additional_signature_namespace={signature_type.__name__: signature_type for signature_type in signature_types},
+    )
+
+
+def merge_signature_namespaces(
+    signature_namespace: dict[str, Any], additional_signature_namespace: dict[str, Any]
+) -> dict[str, Any]:
+    """Add types to ith signature namespace mapping.
+
+    Types are added mapped to their `__name__` attribute.
+
+    Args:
+        signature_namespace: The signature namespace to add types to.
+        additional_signature_namespace: The signature namespace to merge
+
+    Raises:
+        AttributeError: If a type does not have a `__name__` attribute.
+
+    Returns:
+        The updated signature namespace.
+    """
+    for signature_key, signature_type in additional_signature_namespace.items():
+        if signature_key in signature_namespace and signature_namespace.get(signature_key) != signature_type:
+            warn_signature_namespace_override(signature_key)
+    signature_namespace.update(additional_signature_namespace)
     return signature_namespace
