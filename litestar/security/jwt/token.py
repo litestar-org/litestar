@@ -3,7 +3,7 @@ from __future__ import annotations
 import dataclasses
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
-from typing import TYPE_CHECKING, Any, Dict, Optional, Sequence
+from typing import TYPE_CHECKING, Any, Dict, Optional, Sequence, TypedDict
 
 import jwt
 import msgspec
@@ -13,7 +13,10 @@ from litestar.exceptions import ImproperlyConfiguredException, NotAuthorizedExce
 if TYPE_CHECKING:
     from typing_extensions import Self
 
-__all__ = ("Token",)
+__all__ = (
+    "Token",
+    "JWTDecodeOptions",
+)
 
 
 def _normalize_datetime(value: datetime) -> datetime:
@@ -29,6 +32,15 @@ def _normalize_datetime(value: datetime) -> datetime:
         value.astimezone(timezone.utc)
 
     return value.replace(microsecond=0)
+
+
+class JWTDecodeOptions(TypedDict, total=False):
+    verify_aud: bool
+    verify_iss: bool
+    verify_exp: bool
+    verify_nbf: bool
+    strict_aud: bool
+    require: list[str]
 
 
 @dataclass
@@ -71,6 +83,26 @@ class Token:
             raise ImproperlyConfiguredException("iat must be a current or past time")
 
     @classmethod
+    def decode_payload(
+        cls,
+        encoded_token: str,
+        secret: str,
+        algorithms: list[str],
+        issuer: list[str] | None = None,
+        audience: str | Sequence[str] | None = None,
+        options: JWTDecodeOptions | None = None,
+    ) -> dict[str, Any]:
+        """Decode and verify the JWT and return its payload"""
+        return jwt.decode(
+            jwt=encoded_token,
+            key=secret,
+            algorithms=algorithms,
+            issuer=issuer,
+            audience=audience,
+            options=options,  # type: ignore[arg-type]
+        )
+
+    @classmethod
     def decode(
         cls,
         encoded_token: str,
@@ -83,7 +115,7 @@ class Token:
         verify_nbf: bool = True,
         strict_audience: bool = False,
     ) -> Self:
-        """Decode a passed in token string and returns a Token instance.
+        """Decode a passed in token string and return a Token instance.
 
         Args:
             encoded_token: A base64 string containing an encoded JWT.
@@ -112,7 +144,7 @@ class Token:
             NotAuthorizedException: If the token is invalid.
         """
 
-        options: dict[str, Any] = {
+        options: JWTDecodeOptions = {
             "verify_aud": bool(audience),
             "verify_iss": bool(issuer),
         }
@@ -132,12 +164,12 @@ class Token:
                 audience = audience[0]
 
         try:
-            payload: dict[str, Any] = jwt.decode(
-                jwt=encoded_token,
-                key=secret,
+            payload = cls.decode_payload(
+                encoded_token=encoded_token,
+                secret=secret,
                 algorithms=[algorithm],
-                issuer=list(issuer) if issuer else None,
                 audience=audience,
+                issuer=list(issuer) if issuer else None,
                 options=options,
             )
             # msgspec can do these conversions as well, but to keep backwards
@@ -152,8 +184,7 @@ class Token:
             return msgspec.convert(payload, cls, strict=False)
         except (
             KeyError,
-            jwt.DecodeError,
-            jwt.exceptions.InvalidAlgorithmError,
+            jwt.exceptions.InvalidTokenError,
             ImproperlyConfiguredException,
             msgspec.ValidationError,
         ) as e:

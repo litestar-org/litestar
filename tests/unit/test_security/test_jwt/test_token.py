@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+import dataclasses
 import secrets
 import sys
 from dataclasses import asdict
 from datetime import datetime, timedelta, timezone
-from typing import Any
+from typing import Any, Sequence
 from uuid import uuid4
 
 import jwt
@@ -14,6 +15,7 @@ from hypothesis.strategies import datetimes
 
 from litestar.exceptions import ImproperlyConfiguredException, NotAuthorizedException
 from litestar.security.jwt import Token
+from litestar.security.jwt.token import JWTDecodeOptions
 
 
 @pytest.mark.parametrize("algorithm", ["HS256", "HS384", "HS512"])
@@ -194,3 +196,29 @@ def test_strict_aud_with_one_element_sequence(audience: str | list[str]) -> None
         audience=["foo"],
         strict_audience=True,
     )
+
+
+def test_custom_decode_payload() -> None:
+    @dataclasses.dataclass
+    class CustomToken(Token):
+        @classmethod
+        def decode_payload(
+            cls,
+            encoded_token: str,
+            secret: str,
+            algorithms: list[str],
+            issuer: list[str] | None = None,
+            audience: str | Sequence[str] | None = None,
+            options: JWTDecodeOptions | None = None,
+        ) -> Any:
+            payload = super().decode_payload(
+                encoded_token=encoded_token,
+                secret=secret,
+                algorithms=algorithms,
+            )
+            payload["sub"] = "some-random-value"
+            return payload
+
+    _secret = secrets.token_hex()
+    encoded = CustomToken(exp=datetime.now() + timedelta(days=1), sub="foo").encode(_secret, "HS256")
+    assert CustomToken.decode(encoded, secret=_secret, algorithm="HS256").sub == "some-random-value"
