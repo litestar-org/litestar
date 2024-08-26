@@ -35,6 +35,8 @@ def _normalize_datetime(value: datetime) -> datetime:
 
 
 class JWTDecodeOptions(TypedDict, total=False):
+    """``options`` for PyJWTs :func:`jwt.decode`"""
+
     verify_aud: bool
     verify_iss: bool
     verify_exp: bool
@@ -119,7 +121,7 @@ class Token:
 
         Args:
             encoded_token: A base64 string containing an encoded JWT.
-            secret: The secret with which the JWT is encoded. It may optionally be an individual JWK or JWS set dict
+            secret: The secret with which the JWT is encoded.
             algorithm: The algorithm used to encode the JWT.
             audience: Verify the audience when decoding the token. If the audience in
                 the token does not match any audience given, raise a
