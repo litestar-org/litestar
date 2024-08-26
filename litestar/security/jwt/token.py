@@ -91,7 +91,7 @@ class Token:
         issuer: list[str] | None = None,
         audience: str | Sequence[str] | None = None,
         options: JWTDecodeOptions | None = None,
-    ) -> dict[str, Any]:
+    ) -> Any:
         """Decode and verify the JWT and return its payload"""
         return jwt.decode(
             jwt=encoded_token,
