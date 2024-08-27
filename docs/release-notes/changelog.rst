@@ -3,6 +3,240 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.11.0
+    :date: 2024-08-27
+    
+    .. change:: Fix creation of ``FormMultiDict`` in ``Request.form`` to properly handle multi-keys
+        :type: bugfix
+        :pr: 3639
+        :issue: 3627
+        
+        Fix https://github.com/litestar-org/litestar/issues/3627 by properly handling the creation of ``FormMultiDict`` where multiple values are given for a single key, to make ``Request.form()`` match the behaviour of receiving form data via the ``data`` kwarg.
+        
+        **Before**
+        
+        .. code-block:: python
+
+            @post("/")
+            async def handler(request: Request) -> Any:
+                return (await request.form()).getall("foo")
+            
+            with create_test_client(handler) as client:
+                print(client.post("/", data={"foo": ["1", "2"]}).json()) # [["1", "2"]]
+        
+        **After**
+        
+        .. code-block:: python
+
+            @post("/")
+            async def handler(request: Request) -> Any:
+                return (await request.form()).getall("foo")
+            
+            with create_test_client(handler) as client:
+                print(client.post("/", data={"foo": ["1", "2"]}).json()) # ["1", "2"]
+    
+    .. change:: Small docs update.
+        :type: bugfix
+        :pr: 3661
+        
+        Starting from version 2, Pydantic uses ``model_validate()`` instead of ``parse_obj()``. 
+        https://docs.pydantic.dev/2.8/migration/#changes-to-pydanticbasemodel
+    
+    .. change:: Inconsistent use of strict mode
+        :type: bugfix
+        :pr: 3685
+        
+        Fix inconsistent usage of msgspec's ``strict`` mode in the base DTO backend.
+        
+        ``strict=False`` was being used when transferring from builtins, while ``strict=True`` was used transferring from raw data, causing an unwanted discrepancy in behaviour.
+    
+    .. change:: use path template for prometheus metrics
+        :type: bugfix
+        :pr: 3687
+        
+        Changed previous 1-by-1 replacement logic for ``PrometheusMiddleware.group_path=true`` with a more robust and slightly faster solution.
+    
+    .. change:: OpenTelemetry doesn't capture exceptions in the outermost application layer
+        :type: bugfix
+        :pr: 3689
+        :issue: 3663
+        
+        Extend the work done in #3665. For description / discussion, check over there.
+        
+        Fixes #3663.
+    
+    .. change:: updated sqlalchemy samples & unpin ``advanced-alchemy``
+        :type: bugfix
+        :pr: 3693
+
+        This does this following:
+        - Uses ``litestar.plugins.sqlalchemy`` instead of the soon-to-be-deprecated ``litestar.contrib.sqlalchemy``
+        - Unpin Advanced Alchemy
+        - Updated examples to use the plugins ``create_all`` functionality
+    
+    .. change:: correct ``module_to_os_path`` to return directory paths
+        :type: bugfix
+        :pr: 3565
+        
+        To resolve the issue, we need to update the ``module_to_os_path`` function to check if the found path is a file. If it is, we should return the parent directory instead. This can be done by using ``Path(src.origin).parent`` if ``src.origin`` is a file.
+    
+    .. change:: csrf middleware excluding router
+        :type: bugfix
+        :pr: 3698
+        :issue: 3688
+
+        Closes #3688
+    
+    .. change:: inconsistent behavior between ``signature_namespace`` and ``signature_types``
+        :type: bugfix
+        :pr: 3696
+        :issue: 3681
+        
+        Fixes #3681
+    
+    .. change:: Response with 401 on token payload validation
+        :type: bugfix
+        :pr: 3705
+        
+        Fix a bug introduced in #3692 that would cause a ``500`` status response to be returned when ``ValidationError`` was raised during the token payload conversion.
+        
+        This was caused by the switch to ``msgspec`` for converting the token payload after decoding and verification, and the lack of error handling for this case.
+    
+    .. change:: switched abandonded ``python-jose`` to ``pyjwt``
+        :type: feature
+        :pr: 3684
+        
+        This PR adresses the abandoned/obsolete python package: ``python-jose``.
+        This package has not been maintained since 2021.
+    
+    .. change:: introduce ``forbid_unknown_fields`` config
+        :type: feature
+        :pr: 3690
+        
+        Add a new config option to ``DTOConfig``: ``forbid_unknown_fields``.
+        When set to ``True``, a validation error response will be returned if the source data contains fields not defined on the model.
+    
+    .. change:: Custom JWT payload classes
+        :type: feature
+        :pr: 3692
+        
+        Support customizing the ``Token`` class the JWT backends decode the payload into.
+        
+        - Add new ``token_cls`` field on the JWT auth config classes
+        - Add new ``token_cls`` parameter to JWT auth middlewares
+        - Switch to using msgspec to convert the JWT payload into tokens, providing type coercion for custom token types without having to override the ``Token.decode`` method
+        
+        .. code-block:: python
+
+            import dataclasses
+            import secrets
+            from typing import Any, Dict
+            
+            from litestar import Litestar, Request, get
+            from litestar.connection import ASGIConnection
+            from litestar.security.jwt import JWTAuth, Token
+            
+            
+            @dataclasses.dataclass
+            class CustomToken(Token):
+                token_flag: bool = False
+            
+            
+            @dataclasses.dataclass
+            class User:
+                id: str
+            
+            
+            async def retrieve_user_handler(token: CustomToken, connection: ASGIConnection) -> User:
+                return User(id=token.sub)
+            
+            
+            TOKEN_SECRET = secrets.token_hex()
+            
+            jwt_auth = JWTAuth[User](
+                token_secret=TOKEN_SECRET,
+                retrieve_user_handler=retrieve_user_handler,
+                token_cls=CustomToken,
+            )
+            
+            
+            @get("/")
+            def handler(request: Request[User, CustomToken, Any]) -> Dict[str, Any]:
+                return {"id": request.user.id, "token_flag": request.auth.token_flag}
+    
+    .. change:: Support ``extra="forbid"`` model config for ``PydanticDTO``
+        :type: feature
+        :pr: 3691
+        
+        Set ``forbid_unkown_fields=True`` for ``PydanticDTOs`` where the Pydantic model has an [``extra="forbid"``](https://docs.pydantic.dev/latest/api/config/#pydantic.config.ConfigDict.extra) config.
+        
+        - Add a new ``get_config_for_model_type`` method to ``AbstractDTO``, that allows to customise the base config defined on the DTO factory for a specific model type
+        - Use ``get_config_for_model_type`` to set ``forbid_unkown_fields=True`` for Pydantic models that use the ``extra="forbid"`` config
+    
+    .. change:: Warn about greedy exclude patterns
+        :type: feature
+        :pr: 3700
+        
+        Raise a warning when a middlewares `exclude` pattern greedily matches all paths.
+        
+        Also document this footgun more prominently.
+    
+    .. change:: problem details plugin
+        :type: feature
+        :pr: 3323
+        :issue: 3199
+
+        A plugin to enable usage of problem details as the response.
+        
+        The way this works is by injecting an exception handler into the app level exception handlers to convert ``ProblemDetailsException`` into a response following the specification as per RFC 9457.
+        
+        Users can pass in a mapping of exception types to callables that will convert those exception types into ``ProblemDetailsException`` for handling specific exceptions such as pydantic's ``ValidationError``. That converted ``ProblemDetailsException`` will then be used to create the response. This should allow for flexibility when needed.
+        
+        Closes #3199.
+    
+    .. change:: Customised token verification
+        :type: feature
+        :pr: 3695
+        
+        Customise the automatic verification of JWTs.
+        
+        - [x] Config to verify `aud`
+        - [x] Config to verify `iss`
+        - [x] Config to verify `iat`
+        - [x] Config to verify `nbf`
+        - [x] Config for strict `aud` verification
+        - [x] Config for required claims
+        - [x] Update ocumentation
+        
+        **JWT backend changes**
+        
+        - Add `accepted_audiences` field
+        - Add `accepted_issuers` field 
+        - Add `require_claims` field 
+        - Add `verify_expiry` field 
+        - Add `verify_not_before` field 
+        - Add `strict_audience` field 
+        
+        **JWT middleware changes**
+        
+        - Add token_audience` parameter
+        - Add `token_issuer` parameter
+        - Add `require_claims` parameter 
+        - Add `verify_expiry` parameter 
+        - Add `verify_not_before` parameter 
+        - Add `strict_audience` parameter 
+        
+        **Token changes** 
+         
+        - Add `audience` parameter to `Token.decode`
+        - Add `issuer` parameter to `Token.decode`
+        - Add `require_claims` parameter to `Token.decode`
+        - Add `verify_exp` parameter to `Token.decode`
+        - Add `verify_nbf` parameter to `Token.decode`
+        - Add `strict_audience` parameter to `Token.decode`
+        - Add `decode_payload` method
+    
+
 .. changelog:: 2.10.0
     :date: 2024-07-26
 
@@ -2512,7 +2746,7 @@
         :type: feature
         :pr: 2313
 
-        Adds ``token_extras`` to both :func:`BaseJWTAuth.login` and :meth:`BaseJWTAuth.create_token` methods,
+        Adds ``token_extras`` to both :func:``BaseJWTAuth.login``` and :meth:``BaseJWTAuth.create_token`` methods,
         to allow the definition of the ``extras`` JWT field.
 
     .. change:: Templating: Add possibility to customize Jinja environment
