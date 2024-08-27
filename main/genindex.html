@@ -2667,6 +2667,26 @@ document.write(`
 </li>
       <li><a href="reference/connection.html#litestar.connection.WebSocket.accept">accept() (litestar.connection.WebSocket method)</a>
 </li>
+      <li><a href="reference/security/jwt.html#litestar.security.jwt.BaseJWTAuth.accepted_audiences">accepted_audiences (litestar.security.jwt.BaseJWTAuth attribute)</a>
+
+      <ul>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTAuth.accepted_audiences">(litestar.security.jwt.JWTAuth attribute)</a>
+</li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTCookieAuth.accepted_audiences">(litestar.security.jwt.JWTCookieAuth attribute)</a>
+</li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.OAuth2PasswordBearerAuth.accepted_audiences">(litestar.security.jwt.OAuth2PasswordBearerAuth attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/security/jwt.html#litestar.security.jwt.BaseJWTAuth.accepted_issuers">accepted_issuers (litestar.security.jwt.BaseJWTAuth attribute)</a>
+
+      <ul>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTAuth.accepted_issuers">(litestar.security.jwt.JWTAuth attribute)</a>
+</li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTCookieAuth.accepted_issuers">(litestar.security.jwt.JWTCookieAuth attribute)</a>
+</li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.OAuth2PasswordBearerAuth.accepted_issuers">(litestar.security.jwt.OAuth2PasswordBearerAuth attribute)</a>
+</li>
+      </ul></li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.Accept.accepts">accepts() (litestar.datastructures.Accept method)</a>
 </li>
       <li><a href="reference/security/jwt.html#litestar.security.jwt.OAuth2Login.access_token">access_token (litestar.security.jwt.OAuth2Login attribute)</a>
@@ -3038,6 +3058,8 @@ document.write(`
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.XML.attribute">attribute (litestar.openapi.spec.XML attribute)</a>
 </li>
       <li><a href="reference/security/jwt.html#litestar.security.jwt.Token.aud">aud (litestar.security.jwt.Token attribute)</a>
+</li>
+      <li><a href="reference/security/jwt.html#litestar.security.jwt.Token.decode.params.audience">audience (litestar.security.jwt.Token.decode parameter)</a>
 </li>
       <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.AuditColumns">AuditColumns (class in litestar.contrib.sqlalchemy.base)</a>
 </li>
@@ -4298,6 +4320,8 @@ document.write(`
       <li><a href="reference/serialization.html#litestar.serialization.decode_json">decode_json() (in module litestar.serialization)</a>
 </li>
       <li><a href="reference/serialization.html#litestar.serialization.decode_msgpack">decode_msgpack() (in module litestar.serialization)</a>
+</li>
+      <li><a href="reference/security/jwt.html#litestar.security.jwt.Token.decode_payload">decode_payload() (litestar.security.jwt.Token class method)</a>
 </li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.ImmutableState.params.deep_copy">deep_copy (litestar.datastructures.ImmutableState parameter)</a>
 
@@ -6666,6 +6690,8 @@ document.write(`
       <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.isolation_level">isolation_level (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
 </li>
       <li><a href="reference/security/jwt.html#litestar.security.jwt.Token.iss">iss (litestar.security.jwt.Token attribute)</a>
+</li>
+      <li><a href="reference/security/jwt.html#litestar.security.jwt.Token.decode.params.issuer">issuer (litestar.security.jwt.Token.decode parameter)</a>
 </li>
       <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.get_id_attribute_value.params.item">item (litestar.repository.abc.AbstractAsyncRepository.get_id_attribute_value parameter)</a>
 
@@ -9860,6 +9886,24 @@ document.write(`
 </li>
       <li><a href="reference/testing.html#litestar.testing.RequestFactory">RequestFactory (class in litestar.testing)</a>
 </li>
+      <li><a href="reference/security/jwt.html#litestar.security.jwt.BaseJWTAuth.require_claims">require_claims (litestar.security.jwt.BaseJWTAuth attribute)</a>
+
+      <ul>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTAuth.require_claims">(litestar.security.jwt.JWTAuth attribute)</a>
+</li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTAuthenticationMiddleware.params.require_claims">(litestar.security.jwt.JWTAuthenticationMiddleware parameter)</a>
+</li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTCookieAuth.require_claims">(litestar.security.jwt.JWTCookieAuth attribute)</a>
+</li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTCookieAuthenticationMiddleware.params.require_claims">(litestar.security.jwt.JWTCookieAuthenticationMiddleware parameter)</a>
+</li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.OAuth2PasswordBearerAuth.require_claims">(litestar.security.jwt.OAuth2PasswordBearerAuth attribute)</a>
+</li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.Token.decode.params.require_claims">(litestar.security.jwt.Token.decode parameter)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.ResponseHeader.required">required (litestar.datastructures.ResponseHeader attribute)</a>
 
       <ul>
@@ -9876,8 +9920,6 @@ document.write(`
         <li><a href="reference/params.html#litestar.params.ParameterKwarg.required">(litestar.params.ParameterKwarg attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.resolve_after_response">resolve_after_response() (litestar.handlers.HTTPRouteHandler method)</a>
 </li>
       <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.resolve_before_request">resolve_before_request() (litestar.handlers.HTTPRouteHandler method)</a>
@@ -10898,8 +10940,6 @@ document.write(`
 </li>
       <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.set_cached_history">set_cached_history() (litestar.middleware.rate_limit.RateLimitMiddleware method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/response/base.html#litestar.response.base.Response.set_cookie">set_cookie() (litestar.response.base.Response method)</a>
 
       <ul>
@@ -10912,6 +10952,8 @@ document.write(`
         <li><a href="reference/response/index.html#litestar.response.Response.set_etag">(litestar.response.Response method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/response/base.html#litestar.response.base.Response.set_header">set_header() (litestar.response.base.Response method)</a>
 
       <ul>
@@ -11334,6 +11376,22 @@ document.write(`
         <li><a href="reference/serialization.html#litestar.serialization.decode_msgpack.params.strict">(litestar.serialization.decode_msgpack parameter)</a>
 </li>
       </ul></li>
+      <li><a href="reference/security/jwt.html#litestar.security.jwt.BaseJWTAuth.strict_audience">strict_audience (litestar.security.jwt.BaseJWTAuth attribute)</a>
+
+      <ul>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTAuth.strict_audience">(litestar.security.jwt.JWTAuth attribute)</a>
+</li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTAuthenticationMiddleware.params.strict_audience">(litestar.security.jwt.JWTAuthenticationMiddleware parameter)</a>
+</li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTCookieAuth.strict_audience">(litestar.security.jwt.JWTCookieAuth attribute)</a>
+</li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTCookieAuthenticationMiddleware.params.strict_audience">(litestar.security.jwt.JWTCookieAuthenticationMiddleware parameter)</a>
+</li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.OAuth2PasswordBearerAuth.strict_audience">(litestar.security.jwt.OAuth2PasswordBearerAuth attribute)</a>
+</li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.Token.decode.params.strict_audience">(litestar.security.jwt.Token.decode parameter)</a>
+</li>
+      </ul></li>
       <li><a href="reference/plugins/structlog.html#litestar.plugins.structlog.StructlogConfig.structlog_logging_config">structlog_logging_config (litestar.plugins.structlog.StructlogConfig attribute)</a>
 </li>
       <li><a href="reference/plugins/structlog.html#litestar.plugins.structlog.StructlogConfig">StructlogConfig (class in litestar.plugins.structlog)</a>
@@ -11723,7 +11781,11 @@ document.write(`
       <ul>
         <li><a href="reference/security/jwt.html#litestar.security.jwt.BaseJWTAuth.login.params.token_audience">(litestar.security.jwt.BaseJWTAuth.login parameter)</a>
 </li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTAuthenticationMiddleware.params.token_audience">(litestar.security.jwt.JWTAuthenticationMiddleware parameter)</a>
+</li>
         <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTCookieAuth.login.params.token_audience">(litestar.security.jwt.JWTCookieAuth.login parameter)</a>
+</li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTCookieAuthenticationMiddleware.params.token_audience">(litestar.security.jwt.JWTCookieAuthenticationMiddleware parameter)</a>
 </li>
         <li><a href="reference/security/jwt.html#litestar.security.jwt.OAuth2PasswordBearerAuth.login.params.token_audience">(litestar.security.jwt.OAuth2PasswordBearerAuth.login parameter)</a>
 </li>
@@ -11769,7 +11831,11 @@ document.write(`
       <ul>
         <li><a href="reference/security/jwt.html#litestar.security.jwt.BaseJWTAuth.login.params.token_issuer">(litestar.security.jwt.BaseJWTAuth.login parameter)</a>
 </li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTAuthenticationMiddleware.params.token_issuer">(litestar.security.jwt.JWTAuthenticationMiddleware parameter)</a>
+</li>
         <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTCookieAuth.login.params.token_issuer">(litestar.security.jwt.JWTCookieAuth.login parameter)</a>
+</li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTCookieAuthenticationMiddleware.params.token_issuer">(litestar.security.jwt.JWTCookieAuthenticationMiddleware parameter)</a>
 </li>
         <li><a href="reference/security/jwt.html#litestar.security.jwt.OAuth2PasswordBearerAuth.login.params.token_issuer">(litestar.security.jwt.OAuth2PasswordBearerAuth.login parameter)</a>
 </li>
@@ -12202,6 +12268,38 @@ document.write(`
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Server.variables">variables (litestar.openapi.spec.Server attribute)</a>
 </li>
+      <li><a href="reference/security/jwt.html#litestar.security.jwt.Token.decode.params.verify_exp">verify_exp (litestar.security.jwt.Token.decode parameter)</a>
+</li>
+      <li><a href="reference/security/jwt.html#litestar.security.jwt.BaseJWTAuth.verify_expiry">verify_expiry (litestar.security.jwt.BaseJWTAuth attribute)</a>
+
+      <ul>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTAuth.verify_expiry">(litestar.security.jwt.JWTAuth attribute)</a>
+</li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTAuthenticationMiddleware.params.verify_expiry">(litestar.security.jwt.JWTAuthenticationMiddleware parameter)</a>
+</li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTCookieAuth.verify_expiry">(litestar.security.jwt.JWTCookieAuth attribute)</a>
+</li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTCookieAuthenticationMiddleware.params.verify_expiry">(litestar.security.jwt.JWTCookieAuthenticationMiddleware parameter)</a>
+</li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.OAuth2PasswordBearerAuth.verify_expiry">(litestar.security.jwt.OAuth2PasswordBearerAuth attribute)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/security/jwt.html#litestar.security.jwt.Token.decode.params.verify_nbf">verify_nbf (litestar.security.jwt.Token.decode parameter)</a>
+</li>
+      <li><a href="reference/security/jwt.html#litestar.security.jwt.BaseJWTAuth.verify_not_before">verify_not_before (litestar.security.jwt.BaseJWTAuth attribute)</a>
+
+      <ul>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTAuth.verify_not_before">(litestar.security.jwt.JWTAuth attribute)</a>
+</li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTAuthenticationMiddleware.params.verify_not_before">(litestar.security.jwt.JWTAuthenticationMiddleware parameter)</a>
+</li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTCookieAuth.verify_not_before">(litestar.security.jwt.JWTCookieAuth attribute)</a>
+</li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTCookieAuthenticationMiddleware.params.verify_not_before">(litestar.security.jwt.JWTCookieAuthenticationMiddleware parameter)</a>
+</li>
+        <li><a href="reference/security/jwt.html#litestar.security.jwt.OAuth2PasswordBearerAuth.verify_not_before">(litestar.security.jwt.OAuth2PasswordBearerAuth attribute)</a>
+</li>
+      </ul></li>
       <li><a href="reference/logging/config.html#litestar.logging.config.LoggingConfig.version">version (litestar.logging.config.LoggingConfig attribute)</a>
 
       <ul>
