@@ -227,6 +227,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../plugins/index.html">Plugins</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../plugins/flash_messages.html">Flash Messages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plugins/problem_details.html">Problem Details</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../responses.html">Responses</a></li>
@@ -338,6 +339,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../../reference/params.html">params</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../reference/plugins/index.html">plugins</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
@@ -469,6 +471,8 @@ data-aria-dark="Switch to auto color mode">
 <li><a class="reference internal" href="#jwt-cookie-auth-backend"><code class="xref py py-class docutils literal notranslate"><span class="pre">JWT</span> <span class="pre">Cookie</span> <span class="pre">Auth</span></code> Backend</a></li>
 <li><a class="reference internal" href="#oauth2-bearer-password-flow"><code class="xref py py-class docutils literal notranslate"><span class="pre">OAuth2</span> <span class="pre">Bearer</span></code> Password Flow</a></li>
 <li><a class="reference internal" href="#using-a-custom-token-class">Using a custom token class</a></li>
+<li><a class="reference internal" href="#verifying-issuer-and-audience">Verifying issuer and audience</a></li>
+<li><a class="reference internal" href="#customizing-token-validation">Customizing token validation</a></li>
 </ul>
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
   data-type="github" data-user="litestar-org" data-repo="litestar">
@@ -890,6 +894,93 @@ Pydantic or attrs, as well as any custom <code class="docutils literal notransla
 converting the token. To support more complex conversions, the
 <a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.Token.encode" title="litestar.security.jwt.Token.encode"><code class="xref py py-meth docutils literal notranslate"><span class="pre">encode()</span></code></a> and <a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.Token.decode" title="litestar.security.jwt.Token.decode"><code class="xref py py-meth docutils literal notranslate"><span class="pre">decode()</span></code></a> methods
 must be overwritten in the subclass.</p>
+</div>
+</section>
+<section id="verifying-issuer-and-audience">
+<h2>Verifying issuer and audience<a class="headerlink" href="#verifying-issuer-and-audience" title="Permalink to this heading">¶</a></h2>
+<p>To verify the JWT <code class="docutils literal notranslate"><span class="pre">iss</span></code> (<em>issuer</em>) and <code class="docutils literal notranslate"><span class="pre">aud</span></code> (<em>audience</em>) claim, a list of accepted
+issuers or audiences can bet set on the authentication backend. When a JWT is decoded,
+the issuer or audience on the token is compared to the list of accepted issuers /
+audiences. If the value in the token does not match any value in the respective list,
+a <a class="reference internal" href="../../reference/exceptions.html#litestar.exceptions.NotAuthorizedException" title="litestar.exceptions.NotAuthorizedException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">NotAuthorizedException</span></code></a> will be raised, returning a response with a
+<code class="docutils literal notranslate"><span class="pre">401</span> <span class="pre">Unauthorized</span></code> status.</p>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Verifying issuer and audience</span><a class="headerlink" href="#id6" title="Permalink to this code">¶</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">dataclasses</span>
+</span><span data-line="2"><span class="kn">import</span> <span class="nn">secrets</span>
+</span><span data-line="3"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+</span><span data-line="4">
+</span><span data-line="5"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
+</span><span data-line="6"><span class="kn">from</span> <span class="nn">litestar.connection</span> <span class="kn">import</span> <span class="n">ASGIConnection</span>
+</span><span data-line="7"><span class="kn">from</span> <span class="nn">litestar.security.jwt</span> <span class="kn">import</span> <span class="n">JWTAuth</span><span class="p">,</span> <span class="n">Token</span>
+</span><span data-line="8">
+</span><span data-line="9">
+</span><span data-line="10"><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+</span><span data-line="11"><span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
+</span><span data-line="12">    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+</span><span data-line="13">
+</span><span data-line="14">
+</span><span data-line="15"><span class="k">async</span> <span class="k">def</span> <span class="nf">retrieve_user_handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">Token</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+</span><span data-line="16">    <span class="k">return</span> <span class="n">User</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">token</span><span class="o">.</span><span class="n">sub</span><span class="p">)</span>
+</span><span data-line="17">
+</span><span data-line="18">
+</span><span data-line="19"><span class="n">jwt_auth</span> <span class="o">=</span> <span class="n">JWTAuth</span><span class="p">[</span><span class="n">User</span><span class="p">](</span>
+</span><span data-line="20">    <span class="n">token_secret</span><span class="o">=</span><span class="n">secrets</span><span class="o">.</span><span class="n">token_hex</span><span class="p">(),</span>
+</span><span data-line="21">    <span class="n">retrieve_user_handler</span><span class="o">=</span><span class="n">retrieve_user_handler</span><span class="p">,</span>
+</span><span data-line="22">    <span class="n">accepted_audiences</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;https://api.testserver.local&quot;</span><span class="p">],</span>
+</span><span data-line="23">    <span class="n">accepted_issuers</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;https://auth.testserver.local&quot;</span><span class="p">],</span>
+</span><span data-line="24"><span class="p">)</span>
+</span><span data-line="25">
+</span><span data-line="26">
+</span><span data-line="27"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+</span><span data-line="28"><span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">Token</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="29">    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">}</span>
+</span><span data-line="30">
+</span><span data-line="31">
+</span><span data-line="32"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">handler</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">jwt_auth</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+</span></pre></div>
+</div>
+</div>
+</section>
+<section id="customizing-token-validation">
+<h2>Customizing token validation<a class="headerlink" href="#customizing-token-validation" title="Permalink to this heading">¶</a></h2>
+<p>Token decoding / validation can be further customized by overriding the
+<a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.Token.decode_payload" title="litestar.security.jwt.Token.decode_payload"><code class="xref py py-meth docutils literal notranslate"><span class="pre">decode_payload()</span></code></a> method. It will be called by
+<a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.Token.decode" title="litestar.security.jwt.Token.decode"><code class="xref py py-meth docutils literal notranslate"><span class="pre">decode()</span></code></a> with the encoded token string, and must return a
+dictionary representing the decoded payload, which will then used by
+<a class="reference internal" href="../../reference/security/jwt.html#litestar.security.jwt.Token.decode" title="litestar.security.jwt.Token.decode"><code class="xref py py-meth docutils literal notranslate"><span class="pre">decode()</span></code></a> to construct an instance of the token class.</p>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">Customizing payload decoding</span><a class="headerlink" href="#id7" title="Permalink to this code">¶</a></div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span data-line="1"><span class="kn">import</span> <span class="nn">dataclasses</span>
+</span><span data-line="2"><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Union</span>
+</span><span data-line="3">
+</span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar.security.jwt.token</span> <span class="kn">import</span> <span class="n">JWTDecodeOptions</span><span class="p">,</span> <span class="n">Token</span>
+</span><span data-line="5">
+</span><span data-line="6">
+</span><span data-line="7"><span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+</span><span data-line="8"><span class="k">class</span> <span class="nc">CustomToken</span><span class="p">(</span><span class="n">Token</span><span class="p">):</span>
+</span><span data-line="9">    <span class="nd">@classmethod</span>
+</span><span data-line="10">    <span class="k">def</span> <span class="nf">decode_payload</span><span class="p">(</span>
+</span><span data-line="11">        <span class="bp">cls</span><span class="p">,</span>
+</span><span data-line="12">        <span class="n">encoded_token</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="13">        <span class="n">secret</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+</span><span data-line="14">        <span class="n">algorithms</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+</span><span data-line="15">        <span class="n">issuer</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="16">        <span class="n">audience</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="17">        <span class="n">options</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">JWTDecodeOptions</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span data-line="18">    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+</span><span data-line="19">        <span class="n">payload</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">decode_payload</span><span class="p">(</span>
+</span><span data-line="20">            <span class="n">encoded_token</span><span class="o">=</span><span class="n">encoded_token</span><span class="p">,</span>
+</span><span data-line="21">            <span class="n">secret</span><span class="o">=</span><span class="n">secret</span><span class="p">,</span>
+</span><span data-line="22">            <span class="n">algorithms</span><span class="o">=</span><span class="n">algorithms</span><span class="p">,</span>
+</span><span data-line="23">            <span class="n">issuer</span><span class="o">=</span><span class="n">issuer</span><span class="p">,</span>
+</span><span data-line="24">            <span class="n">audience</span><span class="o">=</span><span class="n">audience</span><span class="p">,</span>
+</span><span data-line="25">            <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span>
+</span><span data-line="26">        <span class="p">)</span>
+</span><span data-line="27">        <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;sub&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">payload</span><span class="p">[</span><span class="s2">&quot;sub&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">,</span> <span class="n">maxsplit</span><span class="o">=</span><span class="mi">1</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+</span><span data-line="28">        <span class="k">return</span> <span class="n">payload</span>
+</span></pre></div>
+</div>
 </div>
 </section>
 </section>

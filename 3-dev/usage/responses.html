@@ -2,7 +2,7 @@
 <html lang="en" data-accent-color="amber" data-content_root="">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Responses - Litestar Framework</title><link rel="shortcut icon" href="../_static/favicon.svg"/><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Security" href="security/index.html" /><link rel="prev" title="Flash Messages" href="plugins/flash_messages.html" /><script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Responses - Litestar Framework</title><link rel="shortcut icon" href="../_static/favicon.svg"/><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Security" href="security/index.html" /><link rel="prev" title="Problem Details" href="plugins/problem_details.html" /><script>
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=397bb51e" />
@@ -227,6 +227,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l2"><a class="reference internal" href="plugins/index.html">Plugins</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="plugins/flash_messages.html">Flash Messages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plugins/problem_details.html">Problem Details</a></li>
 </ul>
 </li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Responses</a></li>
@@ -338,6 +339,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="../reference/params.html">params</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/plugins/index.html">plugins</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
@@ -648,9 +650,8 @@ the value in the route handler function.</p>
 this <a class="reference internal" href="#custom-responses"><span class="std std-ref">custom responses</span></a>.</p>
 <p>You can also set an application media type string with the <code class="docutils literal notranslate"><span class="pre">+json</span></code> suffix
 defined in <a class="reference external" href="https://datatracker.ietf.org/doc/html/rfc6839#section-3.1">RFC 6839</a>
-as the <code class="docutils literal notranslate"><span class="pre">media_type</span></code> and it will be recognized and serialized as json.
-For example, you can use <code class="docutils literal notranslate"><span class="pre">application/problem+json</span></code>
-(see <a class="reference external" href="https://datatracker.ietf.org/doc/html/rfc7807#section-6.1">RFC 7807</a>)
+as the <code class="docutils literal notranslate"><span class="pre">media_type</span></code> and it will be recognized and serialized as json.</p>
+<p>For example, you can use <code class="docutils literal notranslate"><span class="pre">application/vnd.example.resource+json</span></code>
 and it will work just like json but have the appropriate content-type header
 and show up in the generated OpenAPI schema.</p>
 <div class="sd-tab-set docutils">
@@ -663,16 +664,20 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 </span><span data-line="5">
 </span><span data-line="6">
-</span><span data-line="7"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/resources&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="n">litestar</span><span class="o">.</span><span class="n">status_codes</span><span class="o">.</span><span class="n">HTTP_418_IM_A_TEAPOT</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="s2">&quot;application/problem+json&quot;</span><span class="p">)</span>
-</span><span data-line="8"><span class="k">async</span> <span class="k">def</span> <span class="nf">retrieve_resource</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-</span><span data-line="9">    <span class="k">return</span> <span class="p">{</span>
-</span><span data-line="10">        <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Server thinks it is a teapot&quot;</span><span class="p">,</span>
-</span><span data-line="11">        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Server delusion&quot;</span><span class="p">,</span>
-</span><span data-line="12">        <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">litestar</span><span class="o">.</span><span class="n">status_codes</span><span class="o">.</span><span class="n">HTTP_418_IM_A_TEAPOT</span><span class="p">,</span>
-</span><span data-line="13">    <span class="p">}</span>
-</span><span data-line="14">
-</span><span data-line="15">
-</span><span data-line="16"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">retrieve_resource</span><span class="p">])</span>
+</span><span data-line="7"><span class="nd">@get</span><span class="p">(</span>
+</span><span data-line="8">    <span class="s2">&quot;/resources&quot;</span><span class="p">,</span>
+</span><span data-line="9">    <span class="n">status_code</span><span class="o">=</span><span class="n">litestar</span><span class="o">.</span><span class="n">status_codes</span><span class="o">.</span><span class="n">HTTP_418_IM_A_TEAPOT</span><span class="p">,</span>
+</span><span data-line="10">    <span class="n">media_type</span><span class="o">=</span><span class="s2">&quot;application/vnd.example.resource+json&quot;</span><span class="p">,</span>
+</span><span data-line="11"><span class="p">)</span>
+</span><span data-line="12"><span class="k">async</span> <span class="k">def</span> <span class="nf">retrieve_resource</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="13">    <span class="k">return</span> <span class="p">{</span>
+</span><span data-line="14">        <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Server thinks it is a teapot&quot;</span><span class="p">,</span>
+</span><span data-line="15">        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Server delusion&quot;</span><span class="p">,</span>
+</span><span data-line="16">        <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">litestar</span><span class="o">.</span><span class="n">status_codes</span><span class="o">.</span><span class="n">HTTP_418_IM_A_TEAPOT</span><span class="p">,</span>
+</span><span data-line="17">    <span class="p">}</span>
+</span><span data-line="18">
+</span><span data-line="19">
+</span><span data-line="20"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">retrieve_resource</span><span class="p">])</span>
 </span></pre></div>
 </div>
 </div>
@@ -685,16 +690,20 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </span><span data-line="4"><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 </span><span data-line="5">
 </span><span data-line="6">
-</span><span data-line="7"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/resources&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="n">litestar</span><span class="o">.</span><span class="n">status_codes</span><span class="o">.</span><span class="n">HTTP_418_IM_A_TEAPOT</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="s2">&quot;application/problem+json&quot;</span><span class="p">)</span>
-</span><span data-line="8"><span class="k">async</span> <span class="k">def</span> <span class="nf">retrieve_resource</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
-</span><span data-line="9">    <span class="k">return</span> <span class="p">{</span>
-</span><span data-line="10">        <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Server thinks it is a teapot&quot;</span><span class="p">,</span>
-</span><span data-line="11">        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Server delusion&quot;</span><span class="p">,</span>
-</span><span data-line="12">        <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">litestar</span><span class="o">.</span><span class="n">status_codes</span><span class="o">.</span><span class="n">HTTP_418_IM_A_TEAPOT</span><span class="p">,</span>
-</span><span data-line="13">    <span class="p">}</span>
-</span><span data-line="14">
-</span><span data-line="15">
-</span><span data-line="16"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">retrieve_resource</span><span class="p">])</span>
+</span><span data-line="7"><span class="nd">@get</span><span class="p">(</span>
+</span><span data-line="8">    <span class="s2">&quot;/resources&quot;</span><span class="p">,</span>
+</span><span data-line="9">    <span class="n">status_code</span><span class="o">=</span><span class="n">litestar</span><span class="o">.</span><span class="n">status_codes</span><span class="o">.</span><span class="n">HTTP_418_IM_A_TEAPOT</span><span class="p">,</span>
+</span><span data-line="10">    <span class="n">media_type</span><span class="o">=</span><span class="s2">&quot;application/vnd.example.resource+json&quot;</span><span class="p">,</span>
+</span><span data-line="11"><span class="p">)</span>
+</span><span data-line="12"><span class="k">async</span> <span class="k">def</span> <span class="nf">retrieve_resource</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+</span><span data-line="13">    <span class="k">return</span> <span class="p">{</span>
+</span><span data-line="14">        <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Server thinks it is a teapot&quot;</span><span class="p">,</span>
+</span><span data-line="15">        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;Server delusion&quot;</span><span class="p">,</span>
+</span><span data-line="16">        <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="n">litestar</span><span class="o">.</span><span class="n">status_codes</span><span class="o">.</span><span class="n">HTTP_418_IM_A_TEAPOT</span><span class="p">,</span>
+</span><span data-line="17">    <span class="p">}</span>
+</span><span data-line="18">
+</span><span data-line="19">
+</span><span data-line="20"><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">retrieve_resource</span><span class="p">])</span>
 </span></pre></div>
 </div>
 </div>
@@ -2697,10 +2706,10 @@ the <a class="reference internal" href="../reference/pagination.html#litestar.pa
   </svg>
   <span>Back to top</span>
 </button><div class="navigation flex print:hidden"><div class="navigation-prev">
-    <a href="plugins/flash_messages.html">
+    <a href="plugins/problem_details.html">
       <i class="i-lucide chevron-left"></i>
       <div class="page-info">
-        <span>Previous</span><div class="title">Flash Messages</div></div>
+        <span>Previous</span><div class="title">Problem Details</div></div>
     </a>
   </div><div class="navigation-next">
     <a href="security/index.html">

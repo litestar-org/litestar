@@ -227,6 +227,7 @@ data-aria-dark="Switch to auto color mode">
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/plugins/index.html">Plugins</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../usage/plugins/flash_messages.html">Flash Messages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/plugins/problem_details.html">Problem Details</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/responses.html">Responses</a></li>
@@ -338,6 +339,7 @@ data-aria-dark="Switch to auto color mode">
 <li class="toctree-l2"><a class="reference internal" href="params.html">params</a></li>
 <li class="toctree-l2"><a class="reference internal" href="plugins/index.html">plugins</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
@@ -984,8 +986,9 @@ This information will be included in the OpenAPI schema</p></li>
 <li><p><span class="target" id="litestar.handlers.HTTPRouteHandler.params.return_dto"></span><strong>return_dto</strong><a class="paramlink headerlink reference internal" href="#litestar.handlers.HTTPRouteHandler.params.return_dto">¶</a> – <a class="reference internal" href="dto/base_dto.html#litestar.dto.base_dto.AbstractDTO" title="litestar.dto.base_dto.AbstractDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDTO</span></code></a> to use for serializing
 outbound response data.</p></li>
 <li><p><span class="target" id="litestar.handlers.HTTPRouteHandler.params.signature_namespace"></span><strong>signature_namespace</strong><a class="paramlink headerlink reference internal" href="#litestar.handlers.HTTPRouteHandler.params.signature_namespace">¶</a> – A mapping of names to types for use in forward reference resolution during signature modelling.</p></li>
-<li><p><span class="target" id="litestar.handlers.HTTPRouteHandler.params.status_code"></span><strong>status_code</strong><a class="paramlink headerlink reference internal" href="#litestar.handlers.HTTPRouteHandler.params.status_code">¶</a> – An http status code for the response. Defaults to <code class="docutils literal notranslate"><span class="pre">200</span></code> for mixed method or <code class="docutils literal notranslate"><span class="pre">GET</span></code>, <code class="docutils literal notranslate"><span class="pre">PUT</span></code> and
-<code class="docutils literal notranslate"><span class="pre">PATCH</span></code>, <code class="docutils literal notranslate"><span class="pre">201</span></code> for <code class="docutils literal notranslate"><span class="pre">POST</span></code> and <code class="docutils literal notranslate"><span class="pre">204</span></code> for <code class="docutils literal notranslate"><span class="pre">DELETE</span></code>.</p></li>
+<li><p><span class="target" id="litestar.handlers.HTTPRouteHandler.params.status_code"></span><strong>status_code</strong><a class="paramlink headerlink reference internal" href="#litestar.handlers.HTTPRouteHandler.params.status_code">¶</a> – An http status code for the response. Defaults to <code class="docutils literal notranslate"><span class="pre">200</span></code> for <code class="docutils literal notranslate"><span class="pre">GET</span></code>, <code class="docutils literal notranslate"><span class="pre">PUT</span></code> and <code class="docutils literal notranslate"><span class="pre">PATCH</span></code>,
+<code class="docutils literal notranslate"><span class="pre">201</span></code> for <code class="docutils literal notranslate"><span class="pre">POST</span></code> and <code class="docutils literal notranslate"><span class="pre">204</span></code> for <code class="docutils literal notranslate"><span class="pre">DELETE</span></code>. For mixed method requests it will check for <code class="docutils literal notranslate"><span class="pre">POST</span></code> and <code class="docutils literal notranslate"><span class="pre">DELETE</span></code> first
+then defaults to <code class="docutils literal notranslate"><span class="pre">200</span></code>.</p></li>
 <li><p><span class="target" id="litestar.handlers.HTTPRouteHandler.params.sync_to_thread"></span><strong>sync_to_thread</strong><a class="paramlink headerlink reference internal" href="#litestar.handlers.HTTPRouteHandler.params.sync_to_thread">¶</a> – A boolean dictating whether the handler function will be executed in a worker thread or the
 main event loop. This has an effect only for sync handler functions. See using sync handler functions.</p></li>
 <li><p><span class="target" id="litestar.handlers.HTTPRouteHandler.params.content_encoding"></span><strong>content_encoding</strong><a class="paramlink headerlink reference internal" href="#litestar.handlers.HTTPRouteHandler.params.content_encoding">¶</a> – A string describing the encoding of the content, e.g. <code class="docutils literal notranslate"><span class="pre">&quot;base64&quot;</span></code>.</p></li>
