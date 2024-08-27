@@ -2781,7 +2781,7 @@
         :type: feature
         :pr: 2313
 
-        Adds ``token_extras`` to both :func:``BaseJWTAuth.login``` and :meth:``BaseJWTAuth.create_token`` methods,
+        Adds ``token_extras`` to both :func:`BaseJWTAuth.login` and :meth:`BaseJWTAuth.create_token` methods,
         to allow the definition of the ``extras`` JWT field.
 
     .. change:: Templating: Add possibility to customize Jinja environment
