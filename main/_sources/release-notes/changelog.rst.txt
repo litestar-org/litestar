@@ -3,6 +3,275 @@
 2.x Changelog
 =============
 
+.. changelog:: 2.11.0
+    :date: 2024-08-27
+
+    .. change:: Use PyJWT instead of python-jose
+        :type: feature
+        :pr: 3684
+
+        The functionality in :mod:`litestar.security.jwt` is now backed by
+        `PyJWT <https://pyjwt.readthedocs.io/en/stable/>`_ instead of
+        `python-jose <https://github.com/mpdavis/python-jose/>`_, due to the unclear
+        maintenance status of the latter.
+
+    .. change:: DTO: Introduce ``forbid_unknown_fields`` config
+        :type: feature
+        :pr: 3690
+
+        Add a new config option to :class:`~litestar.dto.config.DTOConfig`:
+        :attr:`~litestar.dto.config.DTOConfig.forbid_unknown_fields`
+        When set to ``True``, a validation error response will be returned if the source
+        data contains fields not defined on the model.
+
+    .. change:: DTO: Support ``extra="forbid"`` model config for ``PydanticDTO``
+        :type: feature
+        :pr: 3691
+
+        For Pydantic models with `extra="forbid" <https://docs.pydantic.dev/latest/api/config/#pydantic.config.ConfigDict.extra>`_
+        in their configuration:
+
+        .. tab-set::
+
+            .. tab-item:: Pydantic 2
+
+                .. code-block:: python
+
+                    class User(BaseModel):
+                        model_config = ConfigDict(extra='ignore')
+                        name: str
+
+            .. tab-item:: Pydantic 1
+
+                .. code-block:: python
+
+                    class User(BaseModel):
+                        class Config:
+                            extra = "ignore"
+                        name: str
+
+        :attr:`~litestar.dto.config.DTOConfig.forbid_unknown_fields` will be set to ``True`` by default.
+
+        .. note::
+            It's still possible to override this configuration at the DTO level
+
+
+        To facilitate this feature, :meth:`~litestar.dto.base_dto.AbstractDTO.get_config_for_model_type`
+        has been added to :class:`~litestar.dto.base_dto.AbstractDTO`, allowing the
+        customization of the base config defined on the DTO factory for a specific model
+        type. It will be called on DTO factory initialization, and receives the concrete
+        DTO model type along side the :class:`~litestar.dto.config.DTOConfig` defined
+        on the base DTO, which it can alter and return a new version to be used within
+        the DTO instance.
+
+    .. change:: Custom JWT payload classes
+        :type: feature
+        :pr: 3692
+
+        Support extending the default :class:`~litestar.security.jwt.Token` class used
+        by the JWT backends decode the payload into.
+
+        - Add new ``token_cls`` field on the JWT auth config classes
+        - Add new ``token_cls`` parameter to JWT auth middlewares
+        - Switch to using msgspec to convert the JWT payload into instances of the token
+          class
+
+        .. code-block:: python
+
+            import dataclasses
+            import secrets
+            from typing import Any, Dict
+
+            from litestar import Litestar, Request, get
+            from litestar.connection import ASGIConnection
+            from litestar.security.jwt import JWTAuth, Token
+
+            @dataclasses.dataclass
+            class CustomToken(Token):
+                token_flag: bool = False
+
+            @dataclasses.dataclass
+            class User:
+                id: str
+
+            async def retrieve_user_handler(token: CustomToken, connection: ASGIConnection) -> User:
+                return User(id=token.sub)
+
+            TOKEN_SECRET = secrets.token_hex()
+
+            jwt_auth = JWTAuth[User](
+                token_secret=TOKEN_SECRET,
+                retrieve_user_handler=retrieve_user_handler,
+                token_cls=CustomToken,
+            )
+
+            @get("/")
+            def handler(request: Request[User, CustomToken, Any]) -> Dict[str, Any]:
+                return {"id": request.user.id, "token_flag": request.auth.token_flag}
+
+
+    .. change:: Extended JWT configuration options
+        :type: feature
+        :pr: 3695
+
+        **New JWT backend fields**
+
+        - :attr:`~litestar.security.jwt.JWTAuth.accepted_audiences`
+        - :attr:`~litestar.security.jwt.JWTAuth.accepted_issuers`
+        - :attr:`~litestar.security.jwt.JWTAuth.require_claims`
+        - :attr:`~litestar.security.jwt.JWTAuth.verify_expiry`
+        - :attr:`~litestar.security.jwt.JWTAuth.verify_not_before`
+        - :attr:`~litestar.security.jwt.JWTAuth.strict_audience`
+
+        **New JWT middleware parameters**
+
+        - :paramref:`~litestar.security.jwt.JWTAuthenticationMiddleware.token_audience`
+        - :paramref:`~litestar.security.jwt.JWTAuthenticationMiddleware.token_issuer`
+        - :paramref:`~litestar.security.jwt.JWTAuthenticationMiddleware.require_claims`
+        - :paramref:`~litestar.security.jwt.JWTAuthenticationMiddleware.verify_expiry`
+        - :paramref:`~litestar.security.jwt.JWTAuthenticationMiddleware.verify_not_before`
+        - :paramref:`~litestar.security.jwt.JWTAuthenticationMiddleware.strict_audience`
+
+        **New ``Token.decode`` parameters**
+
+        - :paramref:`~litestar.security.jwt.Token.decode.audience`
+        - :paramref:`~litestar.security.jwt.Token.decode.issuer`
+        - :paramref:`~litestar.security.jwt.Token.decode.require_claims`
+        - :paramref:`~litestar.security.jwt.Token.decode.verify_exp`
+        - :paramref:`~litestar.security.jwt.Token.decode.verify_nbf`
+        - :paramref:`~litestar.security.jwt.Token.decode.strict_audience`
+
+        **Other changes**
+
+        :meth`Token.decode_payload <~litestar.security.jwt.Token.decode_payload>` has
+        been added to make customization of payload decoding / verification easier
+        without having to re-implement the functionality of the base class method.
+
+        .. seealso::
+            :doc:`/usage/security/jwt`
+
+    .. change:: Warn about greedy exclude patterns in middlewares
+        :type: feature
+        :pr: 3700
+
+        Raise a warning when a middlewares ``exclude`` pattern greedily matches all
+        paths.
+
+        .. code-block:: python
+
+            from litestar.middlewares
+
+            class MyMiddleware(AbstractMiddleware):
+                exclude = ["/", "/home"]
+
+                async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+                    await self.app(scope, receive, send)
+
+        Middleware like this would silently be disabled for every route, since the
+        exclude pattern ``/`` matches all paths. If a configuration like this is
+        detected, a warning will now be raised at application startup.
+
+    .. change:: RFC 9457 *Problem Details* plugin
+        :type: feature
+        :pr: 3323
+        :issue: 3199
+
+        Add a plugin to support `RFC 9457 <https://datatracker.ietf.org/doc/html/rfc9457>`_
+        *Problem Details*  responses for error response.
+
+        :class:`~litestar.plugins.problem_details.ProblemDetailsPlugin` enables to
+        selectively or collectively turn responses with an error status code into
+        *Problem Detail* responses.
+
+        .. seealso::
+            :doc:`/usage/plugins/problem_details`
+
+    .. change:: Fix creation of ``FormMultiDict`` in ``Request.form`` to properly handle multi-keys
+        :type: bugfix
+        :pr: 3639
+        :issue: 3627
+
+        Fix https://github.com/litestar-org/litestar/issues/3627 by properly handling
+        the creation of :class:`~litestar.datastructures.FormMultiDict` where multiple
+        values are given for a single key, to make
+        :meth:`~litestar.connection.Request.form` match the behaviour of receiving form
+        data via the ``data`` kwarg inside a route handler.
+
+        **Before**
+
+        .. code-block:: python
+
+            @post("/")
+            async def handler(request: Request) -> Any:
+                return (await request.form()).getall("foo")
+
+            with create_test_client(handler) as client:
+                print(client.post("/", data={"foo": ["1", "2"]}).json()) # [["1", "2"]]
+
+        **After**
+
+        .. code-block:: python
+
+            @post("/")
+            async def handler(request: Request) -> Any:
+                return (await request.form()).getall("foo")
+
+            with create_test_client(handler) as client:
+                print(client.post("/", data={"foo": ["1", "2"]}).json()) # ["1", "2"]
+
+    .. change:: DTO: Fix inconsistent use of strict decoding mode
+        :type: bugfix
+        :pr: 3685
+
+        Fix inconsistent usage of msgspec's ``strict`` mode in the base DTO backend.
+
+        ``strict=False`` was being used when transferring from builtins, while
+        ``strict=True`` was used transferring from raw data, causing an unwanted
+        discrepancy in behaviour.
+
+    .. change:: Use path template for prometheus metrics
+        :type: bugfix
+        :pr: 3687
+
+        Changed previous 1-by-1 replacement logic for
+        ``PrometheusMiddleware.group_path=true`` with a more robust and slightly faster
+        solution.
+
+    .. change:: Ensure OpenTelemetry captures exceptions in the outermost application layers
+        :type: bugfix
+        :pr: 3689
+        :issue: 3663
+
+        A bug was fixed that resulted in exception occurring in the outermost
+        application layer not being captured under the current request span, which led
+        to incomplete traces.
+
+    .. change:: Fix CSRFMiddleware sometimes setting cookies for excluded paths
+        :type: bugfix
+        :pr: 3698
+        :issue: 3688
+
+        Fix a bug that would cause :class:`~litestar.middleware.csrf.CSRFMiddleware` to
+        set a cookie (which would not be used subsequently) on routes it had been
+        excluded from via a path pattern.
+
+    .. change:: Make override behaviour consistent between ``signature_namespace`` and ``signature_types``
+        :type: bugfix
+        :pr: 3696
+        :issue: 3681
+
+        Ensure that adding signature types to ``signature_namespace`` and
+        ``signature_types`` behaves the same way when a name was already present in the
+        namespace.
+
+        Both will now issue a warning if a name is being overwritten with a different
+        type. If a name is registered again for the same type, no warning will be given.
+
+        .. note::
+
+            You can disable this warning globally by setting
+            ``LITESTAR_WARN_SIGNATURE_NAMESPACE_OVERRIDE=0`` in your environment
+
 .. changelog:: 2.10.0
     :date: 2024-07-26
 
