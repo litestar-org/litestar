@@ -101,14 +101,14 @@ We create a function ``init_db`` that we'll use to initialize the database when 
         .. literalinclude:: /examples/contrib/sqlalchemy/plugins/sqlalchemy_async_plugin_example.py
             :caption: SQLAlchemy Async Plugin Example
             :language: python
-            :lines: 8,32-37
+            :lines: 9,31-35
 
    .. tab-item:: Sync
 
         .. literalinclude:: /examples/contrib/sqlalchemy/plugins/sqlalchemy_sync_plugin_example.py
             :caption: SQLAlchemy Sync Plugin Example
             :language: python
-            :lines: 8,32-36
+            :lines: 9,31-33
 
 Setting Up the Plugin and the App
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -122,14 +122,14 @@ Finally, we set up the SQLAlchemy Plugin and the Litestar app.
         .. literalinclude:: /examples/contrib/sqlalchemy/plugins/sqlalchemy_async_plugin_example.py
             :caption: SQLAlchemy Async Plugin Example
             :language: python
-            :lines: 8-9,38-41
+            :lines: 8,31-35
 
    .. tab-item:: Sync
 
         .. literalinclude:: /examples/contrib/sqlalchemy/plugins/sqlalchemy_sync_plugin_example.py
             :caption: SQLAlchemy Sync Plugin Example
             :language: python
-            :lines: 8-9,37-40
+            :lines: 9,31-33
 
 This configures the app with the plugin, sets up a route handler for adding items, and specifies that the ``init_db``
 function should be run when the app starts up.

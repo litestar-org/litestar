@@ -1250,6 +1250,7 @@ document.write(`
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../usage/plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../usage/plugins/flash_messages.html">Flash Messages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../usage/plugins/problem_details.html">Problem Details</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/responses.html">Responses</a></li>
@@ -1263,6 +1264,7 @@ document.write(`
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/static-files.html">Static files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../usage/custom-types.html">Custom types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/stores.html">Stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/templating.html">Templating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../usage/testing.html">Testing</a></li>
@@ -1360,6 +1362,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../params.html">params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
@@ -1567,6 +1570,15 @@ document.write(`
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="litestar.dto.base_dto.AbstractDTO.get_config_for_model_type">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_config_for_model_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="config.html#litestar.dto.config.DTOConfig" title="litestar.dto.config.DTOConfig"><span class="pre">DTOConfig</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.12)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="config.html#litestar.dto.config.DTOConfig" title="litestar.dto.config.DTOConfig"><span class="pre">DTOConfig</span></a></span></span><a class="headerlink" href="#litestar.dto.base_dto.AbstractDTO.get_config_for_model_type" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a new configuration for this specific <code class="docutils literal notranslate"><span class="pre">model_type</span></code>, during the
+creation of the factory.</p>
+<p>The returned config object will be set as the <code class="docutils literal notranslate"><span class="pre">config</span></code> attribute on the newly
+defined factory class.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="litestar.dto.base_dto.AbstractDTO.decode_builtins">
 <span class="sig-name descname"><span class="pre">decode_builtins</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#litestar.dto.base_dto.AbstractDTO.decode_builtins" title="Permalink to this definition">#</a></dt>
 <dd><p>Decode a dictionary of Python values into an the DTO’s datatype.</p>
@@ -1765,6 +1777,7 @@ document.write(`
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.base_dto.AbstractDTO.config"><code class="docutils literal notranslate"><span class="pre">AbstractDTO.config</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.base_dto.AbstractDTO.model_type"><code class="docutils literal notranslate"><span class="pre">AbstractDTO.model_type</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.base_dto.AbstractDTO.__init__"><code class="docutils literal notranslate"><span class="pre">AbstractDTO.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.base_dto.AbstractDTO.get_config_for_model_type"><code class="docutils literal notranslate"><span class="pre">AbstractDTO.get_config_for_model_type()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.base_dto.AbstractDTO.decode_builtins"><code class="docutils literal notranslate"><span class="pre">AbstractDTO.decode_builtins()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.base_dto.AbstractDTO.decode_bytes"><code class="docutils literal notranslate"><span class="pre">AbstractDTO.decode_bytes()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.dto.base_dto.AbstractDTO.generate_field_definitions"><code class="docutils literal notranslate"><span class="pre">AbstractDTO.generate_field_definitions()</span></code></a></li>

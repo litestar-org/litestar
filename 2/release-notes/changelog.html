@@ -1248,6 +1248,7 @@ document.write(`
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../usage/plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../usage/plugins/flash_messages.html">Flash Messages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../usage/plugins/problem_details.html">Problem Details</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/responses.html">Responses</a></li>
@@ -1261,6 +1262,7 @@ document.write(`
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/static-files.html">Static files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../usage/custom-types.html">Custom types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/stores.html">Stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/templating.html">Templating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../usage/testing.html">Testing</a></li>
@@ -1358,6 +1360,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/params.html">params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
@@ -1530,6 +1533,300 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.11.0">
+<h2>2.11.0<a class="headerlink" href="#2.11.0" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2024-08-27<section id="2.11.0-feature">
+<h3>Features<a class="headerlink" href="#2.11.0-feature" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Use PyJWT instead of python-jose<a class="headerlink reference internal" href="#2.11.0-use pyjwt instead of python-jose" id="2.11.0-use pyjwt instead of python-jose">#</a></dt><dd><div class="changelog-change docutils container">
+<p>The functionality in <a class="reference internal" href="../reference/security/jwt.html#module-litestar.security.jwt" title="litestar.security.jwt"><code class="xref py py-mod docutils literal notranslate"><span class="pre">litestar.security.jwt</span></code></a> is now backed by
+<a class="reference external" href="https://pyjwt.readthedocs.io/en/stable/">PyJWT</a> instead of
+<a class="reference external" href="https://github.com/mpdavis/python-jose/">python-jose</a>, due to the unclear
+maintenance status of the latter.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3684">litestar-org/litestar#3684</a></span></p>
+</div>
+</dd>
+<dt>DTO: Introduce <code class="docutils literal notranslate"><span class="pre">forbid_unknown_fields</span></code> config<a class="headerlink reference internal" href="#2.11.0-dto: introduce" id="2.11.0-dto: introduce">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Add a new config option to <a class="reference internal" href="../reference/dto/config.html#litestar.dto.config.DTOConfig" title="litestar.dto.config.DTOConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">DTOConfig</span></code></a>:
+<a class="reference internal" href="../reference/dto/config.html#litestar.dto.config.DTOConfig.forbid_unknown_fields" title="litestar.dto.config.DTOConfig.forbid_unknown_fields"><code class="xref py py-attr docutils literal notranslate"><span class="pre">forbid_unknown_fields</span></code></a>
+When set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, a validation error response will be returned if the source
+data contains fields not defined on the model.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3690">litestar-org/litestar#3690</a></span></p>
+</div>
+</dd>
+<dt>DTO: Support <code class="docutils literal notranslate"><span class="pre">extra=&quot;forbid&quot;</span></code> model config for <code class="docutils literal notranslate"><span class="pre">PydanticDTO</span></code><a class="headerlink reference internal" href="#2.11.0-dto: support" id="2.11.0-dto: support">#</a></dt><dd><div class="changelog-change docutils container">
+<p>For Pydantic models with <a class="reference external" href="https://docs.pydantic.dev/latest/api/config/#pydantic.config.ConfigDict.extra">extra=”forbid”</a>
+in their configuration:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-0">
+Pydantic 2</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">model_config</span> <span class="o">=</span> <span class="n">ConfigDict</span><span class="p">(</span><span class="n">extra</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-1">
+Pydantic 1</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
+        <span class="n">extra</span> <span class="o">=</span> <span class="s2">&quot;ignore&quot;</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><a class="reference internal" href="../reference/dto/config.html#litestar.dto.config.DTOConfig.forbid_unknown_fields" title="litestar.dto.config.DTOConfig.forbid_unknown_fields"><code class="xref py py-attr docutils literal notranslate"><span class="pre">forbid_unknown_fields</span></code></a> will be set to <code class="docutils literal notranslate"><span class="pre">True</span></code> by default.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>It’s still possible to override this configuration at the DTO level</p>
+</div>
+<p>To facilitate this feature, <a class="reference internal" href="../reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.get_config_for_model_type" title="litestar.dto.base_dto.AbstractDTO.get_config_for_model_type"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_config_for_model_type()</span></code></a>
+has been added to <a class="reference internal" href="../reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO" title="litestar.dto.base_dto.AbstractDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractDTO</span></code></a>, allowing the
+customization of the base config defined on the DTO factory for a specific model
+type. It will be called on DTO factory initialization, and receives the concrete
+DTO model type along side the <a class="reference internal" href="../reference/dto/config.html#litestar.dto.config.DTOConfig" title="litestar.dto.config.DTOConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">DTOConfig</span></code></a> defined
+on the base DTO, which it can alter and return a new version to be used within
+the DTO instance.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3691">litestar-org/litestar#3691</a></span></p>
+</div>
+</dd>
+<dt>Custom JWT payload classes<a class="headerlink reference internal" href="#2.11.0-custom jwt payload classes" id="2.11.0-custom jwt payload classes">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Support extending the default <a class="reference internal" href="../reference/security/jwt.html#litestar.security.jwt.Token" title="litestar.security.jwt.Token"><code class="xref py py-class docutils literal notranslate"><span class="pre">Token</span></code></a> class used
+by the JWT backends decode the payload into.</p>
+<ul class="simple">
+<li><p>Add new <code class="docutils literal notranslate"><span class="pre">token_cls</span></code> field on the JWT auth config classes</p></li>
+<li><p>Add new <code class="docutils literal notranslate"><span class="pre">token_cls</span></code> parameter to JWT auth middlewares</p></li>
+<li><p>Switch to using msgspec to convert the JWT payload into instances of the token
+class</p></li>
+</ul>
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-2">
+Python 3.8+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dataclasses</span>
+<span class="kn">import</span> <span class="nn">secrets</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.connection</span> <span class="kn">import</span> <span class="n">ASGIConnection</span>
+<span class="kn">from</span> <span class="nn">litestar.security.jwt</span> <span class="kn">import</span> <span class="n">JWTAuth</span><span class="p">,</span> <span class="n">Token</span>
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">CustomToken</span><span class="p">(</span><span class="n">Token</span><span class="p">):</span>
+    <span class="n">token_flag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">retrieve_user_handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">CustomToken</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">User</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">token</span><span class="o">.</span><span class="n">sub</span><span class="p">)</span>
+
+<span class="n">TOKEN_SECRET</span> <span class="o">=</span> <span class="n">secrets</span><span class="o">.</span><span class="n">token_hex</span><span class="p">()</span>
+
+<span class="n">jwt_auth</span> <span class="o">=</span> <span class="n">JWTAuth</span><span class="p">[</span><span class="n">User</span><span class="p">](</span>
+    <span class="n">token_secret</span><span class="o">=</span><span class="n">TOKEN_SECRET</span><span class="p">,</span>
+    <span class="n">retrieve_user_handler</span><span class="o">=</span><span class="n">retrieve_user_handler</span><span class="p">,</span>
+    <span class="n">token_cls</span><span class="o">=</span><span class="n">CustomToken</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">CustomToken</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;token_flag&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">token_flag</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+<input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-3">
+Python 3.9+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">dataclasses</span>
+<span class="kn">import</span> <span class="nn">secrets</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.connection</span> <span class="kn">import</span> <span class="n">ASGIConnection</span>
+<span class="kn">from</span> <span class="nn">litestar.security.jwt</span> <span class="kn">import</span> <span class="n">JWTAuth</span><span class="p">,</span> <span class="n">Token</span>
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">CustomToken</span><span class="p">(</span><span class="n">Token</span><span class="p">):</span>
+    <span class="n">token_flag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="nd">@dataclasses</span><span class="o">.</span><span class="n">dataclass</span>
+<span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">retrieve_user_handler</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">CustomToken</span><span class="p">,</span> <span class="n">connection</span><span class="p">:</span> <span class="n">ASGIConnection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">User</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">token</span><span class="o">.</span><span class="n">sub</span><span class="p">)</span>
+
+<span class="n">TOKEN_SECRET</span> <span class="o">=</span> <span class="n">secrets</span><span class="o">.</span><span class="n">token_hex</span><span class="p">()</span>
+
+<span class="n">jwt_auth</span> <span class="o">=</span> <span class="n">JWTAuth</span><span class="p">[</span><span class="n">User</span><span class="p">](</span>
+    <span class="n">token_secret</span><span class="o">=</span><span class="n">TOKEN_SECRET</span><span class="p">,</span>
+    <span class="n">retrieve_user_handler</span><span class="o">=</span><span class="n">retrieve_user_handler</span><span class="p">,</span>
+    <span class="n">token_cls</span><span class="o">=</span><span class="n">CustomToken</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">CustomToken</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;token_flag&quot;</span><span class="p">:</span> <span class="n">request</span><span class="o">.</span><span class="n">auth</span><span class="o">.</span><span class="n">token_flag</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3692">litestar-org/litestar#3692</a></span></p>
+</div>
+</dd>
+<dt>Extended JWT configuration options<a class="headerlink reference internal" href="#2.11.0-extended jwt configuration options" id="2.11.0-extended jwt configuration options">#</a></dt><dd><div class="changelog-change docutils container">
+<p><strong>New JWT backend fields</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../reference/security/jwt.html#litestar.security.jwt.JWTAuth.accepted_audiences" title="litestar.security.jwt.JWTAuth.accepted_audiences"><code class="xref py py-attr docutils literal notranslate"><span class="pre">accepted_audiences</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/security/jwt.html#litestar.security.jwt.JWTAuth.accepted_issuers" title="litestar.security.jwt.JWTAuth.accepted_issuers"><code class="xref py py-attr docutils literal notranslate"><span class="pre">accepted_issuers</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/security/jwt.html#litestar.security.jwt.JWTAuth.require_claims" title="litestar.security.jwt.JWTAuth.require_claims"><code class="xref py py-attr docutils literal notranslate"><span class="pre">require_claims</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/security/jwt.html#litestar.security.jwt.JWTAuth.verify_expiry" title="litestar.security.jwt.JWTAuth.verify_expiry"><code class="xref py py-attr docutils literal notranslate"><span class="pre">verify_expiry</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/security/jwt.html#litestar.security.jwt.JWTAuth.verify_not_before" title="litestar.security.jwt.JWTAuth.verify_not_before"><code class="xref py py-attr docutils literal notranslate"><span class="pre">verify_not_before</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/security/jwt.html#litestar.security.jwt.JWTAuth.strict_audience" title="litestar.security.jwt.JWTAuth.strict_audience"><code class="xref py py-attr docutils literal notranslate"><span class="pre">strict_audience</span></code></a></p></li>
+</ul>
+<p><strong>New JWT middleware parameters</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../reference/security/jwt.html#litestar.security.jwt.JWTAuthenticationMiddleware.params.token_audience" title="litestar.security.jwt.JWTAuthenticationMiddleware"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">token_audience</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/security/jwt.html#litestar.security.jwt.JWTAuthenticationMiddleware.params.token_issuer" title="litestar.security.jwt.JWTAuthenticationMiddleware"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">token_issuer</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/security/jwt.html#litestar.security.jwt.JWTAuthenticationMiddleware.params.require_claims" title="litestar.security.jwt.JWTAuthenticationMiddleware"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">require_claims</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/security/jwt.html#litestar.security.jwt.JWTAuthenticationMiddleware.params.verify_expiry" title="litestar.security.jwt.JWTAuthenticationMiddleware"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">verify_expiry</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/security/jwt.html#litestar.security.jwt.JWTAuthenticationMiddleware.params.verify_not_before" title="litestar.security.jwt.JWTAuthenticationMiddleware"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">verify_not_before</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/security/jwt.html#litestar.security.jwt.JWTAuthenticationMiddleware.params.strict_audience" title="litestar.security.jwt.JWTAuthenticationMiddleware"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">strict_audience</span></code></a></p></li>
+</ul>
+<p><strong>New ``Token.decode`` parameters</strong></p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../reference/security/jwt.html#litestar.security.jwt.Token.decode.params.audience" title="litestar.security.jwt.Token.decode"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">audience</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/security/jwt.html#litestar.security.jwt.Token.decode.params.issuer" title="litestar.security.jwt.Token.decode"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">issuer</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/security/jwt.html#litestar.security.jwt.Token.decode.params.require_claims" title="litestar.security.jwt.Token.decode"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">require_claims</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/security/jwt.html#litestar.security.jwt.Token.decode.params.verify_exp" title="litestar.security.jwt.Token.decode"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">verify_exp</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/security/jwt.html#litestar.security.jwt.Token.decode.params.verify_nbf" title="litestar.security.jwt.Token.decode"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">verify_nbf</span></code></a></p></li>
+<li><p><a class="reference internal" href="../reference/security/jwt.html#litestar.security.jwt.Token.decode.params.strict_audience" title="litestar.security.jwt.Token.decode"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">strict_audience</span></code></a></p></li>
+</ul>
+<p><strong>Other changes</strong></p>
+<p>:meth`Token.decode_payload &lt;~litestar.security.jwt.Token.decode_payload&gt;` has
+been added to make customization of payload decoding / verification easier
+without having to re-implement the functionality of the base class method.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../usage/security/jwt.html"><span class="doc">JWT Security Backends</span></a></p>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3695">litestar-org/litestar#3695</a></span></p>
+</div>
+</dd>
+<dt>Warn about greedy exclude patterns in middlewares<a class="headerlink reference internal" href="#2.11.0-warn about greedy exclude patterns in middlewares" id="2.11.0-warn about greedy exclude patterns in middlewares">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Raise a warning when a middlewares <code class="docutils literal notranslate"><span class="pre">exclude</span></code> pattern greedily matches all
+paths.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.middlewares</span>
+
+<span class="k">class</span> <span class="nc">MyMiddleware</span><span class="p">(</span><span class="n">AbstractMiddleware</span><span class="p">):</span>
+    <span class="n">exclude</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="s2">&quot;/home&quot;</span><span class="p">]</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scope</span><span class="p">:</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">:</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">send</span><span class="p">:</span> <span class="n">Send</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="p">(</span><span class="n">scope</span><span class="p">,</span> <span class="n">receive</span><span class="p">,</span> <span class="n">send</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Middleware like this would silently be disabled for every route, since the
+exclude pattern <code class="docutils literal notranslate"><span class="pre">/</span></code> matches all paths. If a configuration like this is
+detected, a warning will now be raised at application startup.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3700">litestar-org/litestar#3700</a></span></p>
+</div>
+</dd>
+<dt>RFC 9457 <em>Problem Details</em> plugin<a class="headerlink reference internal" href="#2.11.0-rfc 9457" id="2.11.0-rfc 9457">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Add a plugin to support <a class="reference external" href="https://datatracker.ietf.org/doc/html/rfc9457">RFC 9457</a>
+<em>Problem Details</em>  responses for error response.</p>
+<p><a class="reference internal" href="../reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsPlugin" title="litestar.plugins.problem_details.ProblemDetailsPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProblemDetailsPlugin</span></code></a> enables to
+selectively or collectively turn responses with an error status code into
+<em>Problem Detail</em> responses.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../usage/plugins/problem_details.html"><span class="doc">Problem Details</span></a></p>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3199">litestar-org/litestar#3199</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3323">litestar-org/litestar#3323</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+<section id="2.11.0-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.11.0-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Fix creation of <code class="docutils literal notranslate"><span class="pre">FormMultiDict</span></code> in <code class="docutils literal notranslate"><span class="pre">Request.form</span></code> to properly handle multi-keys<a class="headerlink reference internal" href="#2.11.0-fix creation of" id="2.11.0-fix creation of">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix <a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3627">litestar-org/litestar#3627</a> by properly handling
+the creation of <a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.FormMultiDict" title="litestar.datastructures.FormMultiDict"><code class="xref py py-class docutils literal notranslate"><span class="pre">FormMultiDict</span></code></a> where multiple
+values are given for a single key, to make
+<a class="reference internal" href="../reference/connection.html#litestar.connection.Request.form" title="litestar.connection.Request.form"><code class="xref py py-meth docutils literal notranslate"><span class="pre">form()</span></code></a> match the behaviour of receiving form
+data via the <code class="docutils literal notranslate"><span class="pre">data</span></code> kwarg inside a route handler.</p>
+<p><strong>Before</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">())</span><span class="o">.</span><span class="n">getall</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">create_test_client</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">]})</span><span class="o">.</span><span class="n">json</span><span class="p">())</span> <span class="c1"># [[&quot;1&quot;, &quot;2&quot;]]</span>
+</pre></div>
+</div>
+<p><strong>After</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">request</span><span class="p">:</span> <span class="n">Request</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+    <span class="k">return</span> <span class="p">(</span><span class="k">await</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">())</span><span class="o">.</span><span class="n">getall</span><span class="p">(</span><span class="s2">&quot;foo&quot;</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">create_test_client</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;2&quot;</span><span class="p">]})</span><span class="o">.</span><span class="n">json</span><span class="p">())</span> <span class="c1"># [&quot;1&quot;, &quot;2&quot;]</span>
+</pre></div>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3627">litestar-org/litestar#3627</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3639">litestar-org/litestar#3639</a></span></p>
+</div>
+</dd>
+<dt>DTO: Fix inconsistent use of strict decoding mode<a class="headerlink reference internal" href="#2.11.0-dto: fix inconsistent use of strict decoding mode" id="2.11.0-dto: fix inconsistent use of strict decoding mode">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix inconsistent usage of msgspec’s <code class="docutils literal notranslate"><span class="pre">strict</span></code> mode in the base DTO backend.</p>
+<p><code class="docutils literal notranslate"><span class="pre">strict=False</span></code> was being used when transferring from builtins, while
+<code class="docutils literal notranslate"><span class="pre">strict=True</span></code> was used transferring from raw data, causing an unwanted
+discrepancy in behaviour.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3685">litestar-org/litestar#3685</a></span></p>
+</div>
+</dd>
+<dt>Use path template for prometheus metrics<a class="headerlink reference internal" href="#2.11.0-use path template for prometheus metrics" id="2.11.0-use path template for prometheus metrics">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Changed previous 1-by-1 replacement logic for
+<code class="docutils literal notranslate"><span class="pre">PrometheusMiddleware.group_path=true</span></code> with a more robust and slightly faster
+solution.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3687">litestar-org/litestar#3687</a></span></p>
+</div>
+</dd>
+<dt>Ensure OpenTelemetry captures exceptions in the outermost application layers<a class="headerlink reference internal" href="#2.11.0-ensure opentelemetry captures exceptions in the outermost application layers" id="2.11.0-ensure opentelemetry captures exceptions in the outermost application layers">#</a></dt><dd><div class="changelog-change docutils container">
+<p>A bug was fixed that resulted in exception occurring in the outermost
+application layer not being captured under the current request span, which led
+to incomplete traces.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3663">litestar-org/litestar#3663</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3689">litestar-org/litestar#3689</a></span></p>
+</div>
+</dd>
+<dt>Fix CSRFMiddleware sometimes setting cookies for excluded paths<a class="headerlink reference internal" href="#2.11.0-fix csrfmiddleware sometimes setting cookies for excluded paths" id="2.11.0-fix csrfmiddleware sometimes setting cookies for excluded paths">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug that would cause <a class="reference internal" href="../reference/middleware/csrf.html#litestar.middleware.csrf.CSRFMiddleware" title="litestar.middleware.csrf.CSRFMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">CSRFMiddleware</span></code></a> to
+set a cookie (which would not be used subsequently) on routes it had been
+excluded from via a path pattern.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3688">litestar-org/litestar#3688</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3698">litestar-org/litestar#3698</a></span></p>
+</div>
+</dd>
+<dt>Make override behaviour consistent between <code class="docutils literal notranslate"><span class="pre">signature_namespace</span></code> and <code class="docutils literal notranslate"><span class="pre">signature_types</span></code><a class="headerlink reference internal" href="#2.11.0-make override behaviour consistent between" id="2.11.0-make override behaviour consistent between">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Ensure that adding signature types to <code class="docutils literal notranslate"><span class="pre">signature_namespace</span></code> and
+<code class="docutils literal notranslate"><span class="pre">signature_types</span></code> behaves the same way when a name was already present in the
+namespace.</p>
+<p>Both will now issue a warning if a name is being overwritten with a different
+type. If a name is registered again for the same type, no warning will be given.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You can disable this warning globally by setting
+<code class="docutils literal notranslate"><span class="pre">LITESTAR_WARN_SIGNATURE_NAMESPACE_OVERRIDE=0</span></code> in your environment</p>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3681">litestar-org/litestar#3681</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3696">litestar-org/litestar#3696</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.10.0">
 <h2>2.10.0<a class="headerlink" href="#2.10.0" title="Permalink to this heading">#</a></h2>
 <strong>Released: </strong>2024-07-26<section id="2.10.0-feature">
@@ -2926,7 +3223,7 @@ stream and psycopg backends were not affected.</p>
 <p>Performance of threaded synchronous code was improved by using the async
 library’s native threading helpers instead of anyio. On asyncio,
 <a class="reference external" href="https://docs.python.org/3/library/asyncio-eventloop.html#asyncio.loop.run_in_executor" title="(in Python v3.12)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">asyncio.loop.run_in_executor()</span></code></a> is now used and on trio
-<a class="reference external" href="https://trio.readthedocs.io/en/stable/reference-core.html#trio.to_thread.run_sync" title="(in Trio v0.26.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.to_thread.run_sync()</span></code></a>.</p>
+<a class="reference external" href="https://trio.readthedocs.io/en/stable/reference-core.html#trio.to_thread.run_sync" title="(in Trio v0.26.2)"><code class="xref py py-func docutils literal notranslate"><span class="pre">trio.to_thread.run_sync()</span></code></a>.</p>
 <p>Beneficiaries of these performance improvements are:</p>
 <ul class="simple">
 <li><p>Synchronous route handlers making use of <code class="docutils literal notranslate"><span class="pre">sync_to_thread=True</span></code></p></li>
@@ -3445,8 +3742,8 @@ an error response</p>
 <p>OpenAPI schemas are now correctly generated when a response type annotation
 contains a generic type such as</p>
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-0">
+<input id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-4">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">msgspec</span> <span class="kn">import</span> <span class="n">Struct</span>
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">Response</span>
@@ -3468,8 +3765,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-1">
+<input checked="checked" id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-5">
 Python 3.10+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">msgspec</span> <span class="kn">import</span> <span class="n">Struct</span>
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">Response</span>
@@ -3799,11 +4096,11 @@ dedicated class method.</p>
 </div>
 </dd>
 <dt>SQLAlchemy: Exclude implicit fields for SQLAlchemy DTO<a class="headerlink reference internal" href="#2.1.0-sqlalchemy: exclude implicit fields for sqlalchemy dto" id="2.1.0-sqlalchemy: exclude implicit fields for sqlalchemy dto">#</a></dt><dd><div class="changelog-change docutils container">
-<p><a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be
+<p><a class="reference internal" href="../reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO" title="advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be
 configured using a separate config object. This can be set using both
 class inheritance and <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Annotated">Annotated</a>:</p>
 <div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be configured using a separate config object using <code class="docutils literal notranslate"><span class="pre">config</span></code> object.</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text"><a class="reference internal" href="../reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO" title="advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be configured using a separate config object using <code class="docutils literal notranslate"><span class="pre">config</span></code> object.</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyModelDTO</span><span class="p">(</span><span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">MyModel</span><span class="p">]):</span>
     <span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemyDTOConfig</span><span class="p">()</span>
 </pre></div>
@@ -3811,7 +4108,7 @@ class inheritance and <a class="reference external" href="https://docs.python.or
 </div>
 <p>or</p>
 <div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text"><a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be configured using a separate config object using <code class="docutils literal notranslate"><span class="pre">Annotated</span></code>.</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text"><a class="reference internal" href="../reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO" title="advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be configured using a separate config object using <code class="docutils literal notranslate"><span class="pre">Annotated</span></code>.</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span> <span class="n">MyModelDTO</span> <span class="o">=</span> <span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="n">MyModel</span><span class="p">,</span> <span class="n">SQLAlchemyDTOConfig</span><span class="p">()]]</span>
 </pre></div>
 </div>
@@ -4245,7 +4542,7 @@ has been added.</p>
 <strong>Released: </strong>2023/07/20<section id="2.0.0beta3-feature">
 <h3>Features<a class="headerlink" href="#2.0.0beta3-feature" title="Permalink to this heading">#</a></h3>
 <dl>
-<dt><a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a>: column/relationship type inference<a class="headerlink reference internal" href="#2.0.0beta3-sqlalchemydto (advanced alchemy)" id="2.0.0beta3-sqlalchemydto (advanced alchemy)">#</a></dt><dd><div class="changelog-change docutils container">
+<dt><a class="reference internal" href="../reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO" title="advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a>: column/relationship type inference<a class="headerlink reference internal" href="#2.0.0beta3-sqlalchemydto (advanced alchemy)" id="2.0.0beta3-sqlalchemydto (advanced alchemy)">#</a></dt><dd><div class="changelog-change docutils container">
 <p>If type annotations aren’t available for a given column/relationship, they may
 be inferred from the mapped object.</p>
 <p>For columns, the <a class="reference external" href="https://docs.sqlalchemy.org/en/20/core/reflection.html#sqlalchemy.engine.interfaces.ReflectedColumn.type" title="(in SQLAlchemy v2.0)"><code class="xref py py-attr docutils literal notranslate"><span class="pre">type</span></code></a>‘s
@@ -4367,7 +4664,7 @@ of the update.</p>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1894">litestar-org/litestar#1894</a></span></p>
 </div>
 </dd>
-<dt><a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a>: Fix handling of <code class="docutils literal notranslate"><span class="pre">Sequence</span></code> with defaults<a class="headerlink reference internal" href="#2.0.0beta3-sqlalchemydto (advanced alchemy)" id="2.0.0beta3-sqlalchemydto (advanced alchemy)">#</a></dt><dd><div class="changelog-change docutils container">
+<dt><a class="reference internal" href="../reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO" title="advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a>: Fix handling of <code class="docutils literal notranslate"><span class="pre">Sequence</span></code> with defaults<a class="headerlink reference internal" href="#2.0.0beta3-sqlalchemydto (advanced alchemy)" id="2.0.0beta3-sqlalchemydto (advanced alchemy)">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fixes handling of columns defined with
 <a class="reference external" href="https://docs.sqlalchemy.org/en/20/core/defaults.html#defining-sequences">Sequence</a>
 default values.</p>
@@ -4656,8 +4953,8 @@ using a double-underscore syntax, for example
 </div>
 </dd>
 <dt>DTOs: Hybrid properties and association proxies in
-<a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a><a class="headerlink reference internal" href="#2.0.0beta1-dtos: hybrid properties and association proxies in" id="2.0.0beta1-dtos: hybrid properties and association proxies in">#</a></dt><dd><div class="changelog-change docutils container">
-<p>The <a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a>
+<a class="reference internal" href="../reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO" title="advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a><a class="headerlink reference internal" href="#2.0.0beta1-dtos: hybrid properties and association proxies in" id="2.0.0beta1-dtos: hybrid properties and association proxies in">#</a></dt><dd><div class="changelog-change docutils container">
+<p>The <a class="reference internal" href="../reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO" title="advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a>
 now supports <a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/extensions/hybrid.html">hybrid attribute</a>
 and <a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/extensions/associationproxy.html">associationproxy</a>.</p>
 <p>The generated field will be marked read-only.</p>
@@ -4810,8 +5107,8 @@ natively encode</p></li>
 can otherwise manage</p></li>
 </ul>
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-2">
+<input id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-6">
 Python 3.8+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">TypeVar</span>
@@ -4853,52 +5150,9 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </pre></div>
 </div>
 </div>
-<input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-3">
+<input checked="checked" id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-7">
 Python 3.9+</label><div class="sd-tab-content docutils">
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">TypeVar</span>
-
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span>
-
-<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
-<span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DTOConfig</span>
-<span class="kn">from</span> <span class="nn">litestar.dto.factory.dataclass_factory</span> <span class="kn">import</span> <span class="n">DataclassDTO</span>
-
-
-<span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">age</span><span class="p">:</span> <span class="nb">int</span>
-
-
-<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
-<span class="n">V</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;V&quot;</span><span class="p">)</span>
-
-
-<span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Wrapped</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">]):</span>
-    <span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
-    <span class="n">other</span><span class="p">:</span> <span class="n">V</span>
-
-
-<span class="nd">@get</span><span class="p">(</span><span class="n">dto</span><span class="o">=</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;age&quot;</span><span class="p">})]])</span>
-<span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Wrapped</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
-    <span class="k">return</span> <span class="n">Wrapped</span><span class="p">(</span>
-        <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">User</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;John&quot;</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">42</span><span class="p">),</span> <span class="n">User</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;Jane&quot;</span><span class="p">,</span> <span class="n">age</span><span class="o">=</span><span class="mi">43</span><span class="p">)],</span>
-        <span class="n">other</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-    <span class="p">)</span>
-
-
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">])</span>
-
-<span class="c1"># GET &quot;/&quot;: {&quot;data&quot;: [{&quot;name&quot;: &quot;John&quot;}, {&quot;name&quot;: &quot;Jane&quot;}], &quot;other&quot;: 2}</span>
-</pre></div>
-</div>
-</div>
-<input checked="checked" id="sd-tab-item-4" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-4">
-Python 3.10+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span>
 
@@ -6230,6 +6484,11 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.11.0">2.11.0</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.11.0-feature">Features</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.11.0-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.10.0">2.10.0</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.10.0-feature">Features</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.10.0-bugfix">Bugfixes</a></li>

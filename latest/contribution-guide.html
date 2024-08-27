@@ -1249,6 +1249,7 @@ document.write(`
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="usage/plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="usage/plugins/flash_messages.html">Flash Messages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="usage/plugins/problem_details.html">Problem Details</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="usage/responses.html">Responses</a></li>
@@ -1262,6 +1263,7 @@ document.write(`
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="usage/static-files.html">Static files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/custom-types.html">Custom types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/stores.html">Stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/templating.html">Templating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usage/testing.html">Testing</a></li>
@@ -1359,6 +1361,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="reference/params.html">params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="reference/plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
@@ -1802,7 +1805,7 @@ to test them alongside the rest of the test suite, ensuring they do not become s
 <p>Please follow the next guidelines when adding a new example:</p>
 <ul class="simple">
 <li><p>Add the example in the corresponding module directory in <code class="docutils literal notranslate"><span class="pre">/docs/examples</span></code> or create a new one if necessary</p></li>
-<li><p>Create a suite for the module in <code class="docutils literal notranslate"><span class="pre">/docs/examples/tests</span></code> that tests the aspects of the example that it demonstrates</p></li>
+<li><p>Create a suite for the module in <code class="docutils literal notranslate"><span class="pre">/tests/examples</span></code> that tests the aspects of the example that it demonstrates</p></li>
 <li><p>Reference the example in the rst file with an external reference code block, e.g.</p></li>
 </ul>
 <div class="literal-block-wrapper docutils container" id="id16">

@@ -1250,6 +1250,7 @@ document.write(`
 </li>
 <li class="toctree-l2 current active has-children"><a class="current reference internal" href="#">Plugins</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="flash_messages.html">Flash Messages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="problem_details.html">Problem Details</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../responses.html">Responses</a></li>
@@ -1263,6 +1264,7 @@ document.write(`
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../static-files.html">Static files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../custom-types.html">Custom types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../stores.html">Stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../templating.html">Templating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../testing.html">Testing</a></li>
@@ -1360,6 +1362,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../reference/params.html">params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
@@ -1601,8 +1604,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input checked="checked" id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-1">
-Python 3.10+</label><div class="sd-tab-content docutils">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-1">
+Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id3">
 <div class="code-block-caption"><span class="caption-text"><code class="docutils literal notranslate"><span class="pre">InitPluginProtocol</span></code> implementation example</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
@@ -1686,12 +1689,12 @@ returns a <a class="reference external" href="https://docs.python.org/3/library/
 <code class="docutils literal notranslate"><span class="pre">True</span></code> if the parsed type is either a collection of SQLAlchemy models or a single SQLAlchemy model.</p>
 <p><code class="xref py py-meth docutils literal notranslate"><span class="pre">create_dto_for_type(self,</span> <span class="pre">field_definition:</span> <span class="pre">FieldDefinition)</span> <span class="pre">-&gt;</span> <span class="pre">type[AbstractDTO]:</span></code>
 takes a <a class="reference internal" href="../../reference/typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">FieldDefinition</span></code></a> instance as an argument and returns a
-<a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span></code></a> subclass and includes some logic that may be
+<a class="reference internal" href="../../reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO" title="advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span></code></a> subclass and includes some logic that may be
 interesting to potential serialization plugin authors.</p>
 <p>The first thing the method does is check if the parsed type is a collection of SQLAlchemy models or a single SQLAlchemy
 model, retrieves the model type in either case and assigns it to the <code class="docutils literal notranslate"><span class="pre">annotation</span></code> variable.</p>
 <p>The method then checks if <code class="docutils literal notranslate"><span class="pre">annotation</span></code> is already in the <code class="docutils literal notranslate"><span class="pre">_type_dto_map</span></code> dictionary. If it is, it returns the
-corresponding DTO type. This is done to ensure that multiple <a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span></code></a>
+corresponding DTO type. This is done to ensure that multiple <a class="reference internal" href="../../reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO" title="advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span></code></a>
 subtypes are not created for the same model.</p>
 <p>If the annotation is not in the <code class="docutils literal notranslate"><span class="pre">_type_dto_map</span></code> dictionary, the method creates a new DTO type for the annotation,
 adds it to the <code class="docutils literal notranslate"><span class="pre">_type_dto_map</span></code> dictionary, and returns it.</p>
@@ -1745,8 +1748,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-3">
-Python 3.10+</label><div class="sd-tab-content docutils">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-3">
+Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id6">
 <div class="code-block-caption"><span class="caption-text">Dynamically generating signature information for a custom type</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">Parameter</span><span class="p">,</span> <span class="n">Signature</span>
@@ -1793,6 +1796,7 @@ hello
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="flash_messages.html">Flash Messages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="problem_details.html">Problem Details</a></li>
 </ul>
 </div>
 </section>

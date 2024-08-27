@@ -213,6 +213,10 @@ Thus, in the following example, the middleware will only run against the route h
 .. literalinclude:: /examples/middleware/base.py
     :language: python
 
+.. danger::
+
+    Using ``/`` as an exclude pattern, will disable this middleware for all routes,
+    since, as a regex, it matches *every* path
 
 
 Using DefineMiddleware to pass arguments

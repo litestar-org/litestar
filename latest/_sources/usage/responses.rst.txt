@@ -80,8 +80,8 @@ this :ref:`custom responses <usage/responses:Custom Responses>`.
 You can also set an application media type string with the ``+json`` suffix
 defined in `RFC 6839 <https://datatracker.ietf.org/doc/html/rfc6839#section-3.1>`_
 as the ``media_type`` and it will be recognized and serialized as json.
-For example, you can use ``application/problem+json``
-(see `RFC 7807 <https://datatracker.ietf.org/doc/html/rfc7807#section-6.1>`_)
+
+For example, you can use ``application/vnd.example.resource+json``
 and it will work just like json but have the appropriate content-type header
 and show up in the generated OpenAPI schema.
 
@@ -497,7 +497,7 @@ in:
    Set-Cookie: router-cookie=router value; Path=/; SameSite=lax
    Set-Cookie: app-cookie=app value; Path=/; SameSite=lax
 
-You can easily override cookies declared in higher levels by re-declaring a cookie with the same key in a lower level,
+You can easily override cookies declared in higher levels by redeclaring a cookie with the same key in a lower level,
 e.g.:
 
 .. literalinclude:: /examples/responses/response_cookies_2.py

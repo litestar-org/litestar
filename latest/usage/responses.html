@@ -53,7 +53,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Security" href="security/index.html" />
-    <link rel="prev" title="Flash Messages" href="plugins/flash_messages.html" />
+    <link rel="prev" title="Problem Details" href="plugins/problem_details.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -1250,6 +1250,7 @@ document.write(`
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="plugins/flash_messages.html">Flash Messages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="plugins/problem_details.html">Problem Details</a></li>
 </ul>
 </li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">Responses</a></li>
@@ -1263,6 +1264,7 @@ document.write(`
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="static-files.html">Static files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom-types.html">Custom types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="stores.html">Stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="templating.html">Templating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="testing.html">Testing</a></li>
@@ -1360,6 +1362,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/params.html">params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
@@ -1600,9 +1603,8 @@ the value in the route handler function.</p>
 this <a class="reference internal" href="#custom-responses"><span class="std std-ref">custom responses</span></a>.</p>
 <p>You can also set an application media type string with the <code class="docutils literal notranslate"><span class="pre">+json</span></code> suffix
 defined in <a class="reference external" href="https://datatracker.ietf.org/doc/html/rfc6839#section-3.1">RFC 6839</a>
-as the <code class="docutils literal notranslate"><span class="pre">media_type</span></code> and it will be recognized and serialized as json.
-For example, you can use <code class="docutils literal notranslate"><span class="pre">application/problem+json</span></code>
-(see <a class="reference external" href="https://datatracker.ietf.org/doc/html/rfc7807#section-6.1">RFC 7807</a>)
+as the <code class="docutils literal notranslate"><span class="pre">media_type</span></code> and it will be recognized and serialized as json.</p>
+<p>For example, you can use <code class="docutils literal notranslate"><span class="pre">application/vnd.example.resource+json</span></code>
 and it will work just like json but have the appropriate content-type header
 and show up in the generated OpenAPI schema.</p>
 <div class="sd-tab-set docutils">
@@ -1615,7 +1617,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/resources&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="n">litestar</span><span class="o">.</span><span class="n">status_codes</span><span class="o">.</span><span class="n">HTTP_418_IM_A_TEAPOT</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="s2">&quot;application/problem+json&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span>
+    <span class="s2">&quot;/resources&quot;</span><span class="p">,</span>
+    <span class="n">status_code</span><span class="o">=</span><span class="n">litestar</span><span class="o">.</span><span class="n">status_codes</span><span class="o">.</span><span class="n">HTTP_418_IM_A_TEAPOT</span><span class="p">,</span>
+    <span class="n">media_type</span><span class="o">=</span><span class="s2">&quot;application/vnd.example.resource+json&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">retrieve_resource</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Server thinks it is a teapot&quot;</span><span class="p">,</span>
@@ -1629,15 +1635,19 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input checked="checked" id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-1">
-Python 3.10+</label><div class="sd-tab-content docutils">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-1">
+Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
 
 <span class="kn">import</span> <span class="nn">litestar.status_codes</span>
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/resources&quot;</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="n">litestar</span><span class="o">.</span><span class="n">status_codes</span><span class="o">.</span><span class="n">HTTP_418_IM_A_TEAPOT</span><span class="p">,</span> <span class="n">media_type</span><span class="o">=</span><span class="s2">&quot;application/problem+json&quot;</span><span class="p">)</span>
+<span class="nd">@get</span><span class="p">(</span>
+    <span class="s2">&quot;/resources&quot;</span><span class="p">,</span>
+    <span class="n">status_code</span><span class="o">=</span><span class="n">litestar</span><span class="o">.</span><span class="n">status_codes</span><span class="o">.</span><span class="n">HTTP_418_IM_A_TEAPOT</span><span class="p">,</span>
+    <span class="n">media_type</span><span class="o">=</span><span class="s2">&quot;application/vnd.example.resource+json&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">retrieve_resource</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
     <span class="k">return</span> <span class="p">{</span>
         <span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;Server thinks it is a teapot&quot;</span><span class="p">,</span>
@@ -1673,8 +1683,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-3">
-Python 3.10+</label><div class="sd-tab-content docutils">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-3">
+Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">MediaType</span>
 
 
@@ -2369,7 +2379,7 @@ Set-Cookie: router-cookie=router value; Path=/; SameSite=lax
 Set-Cookie: app-cookie=app value; Path=/; SameSite=lax
 </pre></div>
 </div>
-<p>You can easily override cookies declared in higher levels by re-declaring a cookie with the same key in a lower level,
+<p>You can easily override cookies declared in higher levels by redeclaring a cookie with the same key in a lower level,
 e.g.:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Controller</span><span class="p">,</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">MediaType</span><span class="p">,</span> <span class="n">get</span>
 <span class="kn">from</span> <span class="nn">litestar.datastructures</span> <span class="kn">import</span> <span class="n">Cookie</span>
@@ -2907,8 +2917,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input checked="checked" id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-9">
-Python 3.10+</label><div class="sd-tab-content docutils">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-9">
+Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id8">
 <div class="code-block-caption"><span class="caption-text">Background Task Passed into Response</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
@@ -2977,8 +2987,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input checked="checked" id="sd-tab-item-11" name="sd-tab-set-5" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-11">
-Python 3.10+</label><div class="sd-tab-content docutils">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-11">
+Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id10">
 <div class="code-block-caption"><span class="caption-text">Background Task Passed into Decorator</span><a class="headerlink" href="#id10" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
@@ -3055,8 +3065,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input checked="checked" id="sd-tab-item-13" name="sd-tab-set-6" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-13">
-Python 3.10+</label><div class="sd-tab-content docutils">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-13">
+Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id12">
 <div class="code-block-caption"><span class="caption-text">Multiple Background Tasks</span><a class="headerlink" href="#id12" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
@@ -3172,8 +3182,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input checked="checked" id="sd-tab-item-15" name="sd-tab-set-7" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-15">
-Python 3.10+</label><div class="sd-tab-content docutils">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-15">
+Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id14">
 <div class="code-block-caption"><span class="caption-text">Classic Pagination</span><a class="headerlink" href="#id14" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">polyfactory.factories.pydantic_factory</span> <span class="kn">import</span> <span class="n">ModelFactory</span>
@@ -3290,8 +3300,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input checked="checked" id="sd-tab-item-17" name="sd-tab-set-8" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-17">
-Python 3.10+</label><div class="sd-tab-content docutils">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-17">
+Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id16">
 <div class="code-block-caption"><span class="caption-text">Offset Pagination</span><a class="headerlink" href="#id16" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">islice</span>
@@ -3416,8 +3426,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 <input checked="checked" id="sd-tab-item-19" name="sd-tab-set-9" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-19">
-Python 3.10+</label><div class="sd-tab-content docutils">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-19">
+Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id18">
 <div class="code-block-caption"><span class="caption-text">Offset Pagination With SQLAlchemy</span><a class="headerlink" href="#id18" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">cast</span>
@@ -3535,11 +3545,61 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-21" name="sd-tab-set-10" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-21">
-Python 3.10+</label><div class="sd-tab-content docutils">
+<input id="sd-tab-item-21" name="sd-tab-set-10" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-21">
+Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id20">
 <div class="code-block-caption"><span class="caption-text">Cursor Pagination</span><a class="headerlink" href="#id20" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+
+<span class="kn">from</span> <span class="nn">polyfactory.factories.pydantic_factory</span> <span class="kn">import</span> <span class="n">ModelFactory</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.pagination</span> <span class="kn">import</span> <span class="n">AbstractSyncCursorPaginator</span><span class="p">,</span> <span class="n">CursorPagination</span>
+
+
+<span class="k">class</span> <span class="nc">Person</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+
+
+<span class="k">class</span> <span class="nc">PersonFactory</span><span class="p">(</span><span class="n">ModelFactory</span><span class="p">[</span><span class="n">Person</span><span class="p">]):</span>
+    <span class="n">__model__</span> <span class="o">=</span> <span class="n">Person</span>
+
+
+<span class="c1"># we will implement a paginator - the paginator must implement the method &#39;get_items&#39;.</span>
+
+
+<span class="k">class</span> <span class="nc">PersonCursorPaginator</span><span class="p">(</span><span class="n">AbstractSyncCursorPaginator</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Person</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">PersonFactory</span><span class="o">.</span><span class="n">batch</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cursor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">results_per_page</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Person</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+        <span class="n">results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[:</span><span class="n">results_per_page</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">results</span><span class="p">,</span> <span class="n">results</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">id</span>
+
+
+<span class="n">paginator</span> <span class="o">=</span> <span class="n">PersonCursorPaginator</span><span class="p">()</span>
+
+
+<span class="c1"># we now create a regular handler. The handler will receive a single query parameter - &#39;cursor&#39;, which</span>
+<span class="c1"># we will pass to the paginator.</span>
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/people&quot;</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">people_handler</span><span class="p">(</span><span class="n">cursor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">results_per_page</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CursorPagination</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Person</span><span class="p">]:</span>
+    <span class="k">return</span> <span class="n">paginator</span><span class="p">(</span><span class="n">cursor</span><span class="o">=</span><span class="n">cursor</span><span class="p">,</span> <span class="n">results_per_page</span><span class="o">=</span><span class="n">results_per_page</span><span class="p">)</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">people_handler</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<input checked="checked" id="sd-tab-item-22" name="sd-tab-set-10" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-22">
+Python 3.10+</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id21">
+<div class="code-block-caption"><span class="caption-text">Cursor Pagination</span><a class="headerlink" href="#id21" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">polyfactory.factories.pydantic_factory</span> <span class="kn">import</span> <span class="n">ModelFactory</span>
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
 
@@ -3604,12 +3664,12 @@ the <a class="reference internal" href="../reference/pagination.html#litestar.pa
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="plugins/flash_messages.html"
+       href="plugins/problem_details.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Flash Messages</p>
+        <p class="prev-next-title">Problem Details</p>
       </div>
     </a>
     <a class="right-next"

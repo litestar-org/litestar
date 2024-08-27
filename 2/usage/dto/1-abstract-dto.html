@@ -1250,6 +1250,7 @@ document.write(`
 </li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../plugins/index.html">Plugins</a><input class="toctree-checkbox" id="toctree-checkbox-9" name="toctree-checkbox-9" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-9"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../plugins/flash_messages.html">Flash Messages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../plugins/problem_details.html">Problem Details</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../responses.html">Responses</a></li>
@@ -1263,6 +1264,7 @@ document.write(`
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../static-files.html">Static files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../custom-types.html">Custom types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../stores.html">Stores</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../templating.html">Templating</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../testing.html">Testing</a></li>
@@ -1360,6 +1362,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../reference/params.html">params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
@@ -1547,7 +1550,7 @@ and from raw bytes.</p>
 <li><p><a class="reference internal" href="../../reference/dto/dataclass_dto.html#litestar.dto.dataclass_dto.DataclassDTO" title="litestar.dto.dataclass_dto.DataclassDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataclassDTO</span></code></a></p></li>
 <li><p><a class="reference internal" href="../../reference/dto/msgspec_dto.html#litestar.dto.msgspec_dto.MsgspecDTO" title="litestar.dto.msgspec_dto.MsgspecDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">MsgspecDTO</span></code></a></p></li>
 <li><p><a class="reference internal" href="../../reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticDTO" title="litestar.contrib.pydantic.PydanticDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">PydanticDTO</span></code></a></p></li>
-<li><p><a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span></code></a></p></li>
+<li><p><a class="reference internal" href="../../reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO" title="advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span></code></a></p></li>
 </ul>
 <section id="using-dto-factories">
 <h2>Using DTO Factories<a class="headerlink" href="#using-dto-factories" title="Permalink to this heading">#</a></h2>
@@ -1586,13 +1589,13 @@ a DTO for use with a SQLAlchemy model:</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;cf2e6167-160b-4601-a25f-558587ac7932&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;3bf80335-5a2c-4f64-ad3a-a82004669c78&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
 <p>Here we see that a SQLAlchemy model is used as both the <code class="docutils literal notranslate"><span class="pre">data</span></code> and return annotation for the handler, and while
 Litestar does not natively support encoding/decoding to/from SQLAlchemy models, through
-<a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/extensions/litestar/dto.html#advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span></code></a> we can do this.</p>
+<a class="reference internal" href="../../reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO" title="advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span></code></a> we can do this.</p>
 <p>However, we do have some issues with the above example. Firstly, the user’s password has been returned to them in the
 response from the handler. Secondly, the user is able to set the <code class="docutils literal notranslate"><span class="pre">created_at</span></code> field on the model, which should only
 ever be set once, and defined internally.</p>
@@ -1643,7 +1646,7 @@ configuration.</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;99ec88a5-e678-4b56-aa67-97c37cc5ddc0&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;a0e58059-9e9e-4b5b-ac72-d2e57fc3a83e&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -1721,78 +1724,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<input checked="checked" id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-1">
 Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="literal-block-wrapper docutils container" id="id5">
 <div class="code-block-caption"><span class="caption-text">Excluding fields</span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
-<span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span>
-<span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
-<span class="linenos"> 4</span>
-<span class="linenos"> 5</span><span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">ForeignKey</span>
-<span class="hll"><span class="linenos"> 6</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span><span class="p">,</span> <span class="n">relationship</span>
-</span><span class="linenos"> 7</span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span>
-<span class="linenos"> 8</span>
-<span class="linenos"> 9</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
-<span class="hll"><span class="linenos">10</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.dto</span> <span class="kn">import</span> <span class="n">SQLAlchemyDTO</span>
-</span><span class="linenos">11</span><span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">dto_field</span>
-<span class="linenos">12</span>
-<span class="linenos">13</span><span class="kn">from</span> <span class="nn">.my_lib</span> <span class="kn">import</span> <span class="n">Base</span>
-<span class="linenos">14</span>
-<span class="linenos">15</span>
-<span class="linenos">16</span><span class="k">class</span> <span class="nc">Address</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-<span class="linenos">17</span>    <span class="n">street</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-<span class="linenos">18</span>    <span class="n">city</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-<span class="linenos">19</span>    <span class="n">state</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-<span class="linenos">20</span>    <span class="nb">zip</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-<span class="linenos">21</span>
-<span class="linenos">22</span>
-<span class="linenos">23</span><span class="k">class</span> <span class="nc">Pets</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-<span class="linenos">24</span>    <span class="n">name</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-<span class="linenos">25</span>    <span class="n">user_id</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">UUID</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s2">&quot;user.id&quot;</span><span class="p">))</span>
-<span class="linenos">26</span>
-<span class="linenos">27</span>
-<span class="linenos">28</span><span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
-<span class="linenos">29</span>    <span class="n">name</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
-<span class="linenos">30</span>    <span class="n">password</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">info</span><span class="o">=</span><span class="n">dto_field</span><span class="p">(</span><span class="s2">&quot;private&quot;</span><span class="p">))</span>
-<span class="linenos">31</span>    <span class="n">created_at</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">datetime</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">info</span><span class="o">=</span><span class="n">dto_field</span><span class="p">(</span><span class="s2">&quot;read-only&quot;</span><span class="p">))</span>
-<span class="linenos">32</span>    <span class="n">address_id</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">UUID</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">ForeignKey</span><span class="p">(</span><span class="s2">&quot;address.id&quot;</span><span class="p">),</span> <span class="n">info</span><span class="o">=</span><span class="n">dto_field</span><span class="p">(</span><span class="s2">&quot;private&quot;</span><span class="p">))</span>
-<span class="linenos">33</span>    <span class="n">address</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">Address</span><span class="p">]</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">info</span><span class="o">=</span><span class="n">dto_field</span><span class="p">(</span><span class="s2">&quot;read-only&quot;</span><span class="p">))</span>
-<span class="linenos">34</span>    <span class="n">pets</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Pets</span><span class="p">]]</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">info</span><span class="o">=</span><span class="n">dto_field</span><span class="p">(</span><span class="s2">&quot;read-only&quot;</span><span class="p">))</span>
-<span class="linenos">35</span>
-<span class="linenos">36</span>
-<span class="hll"><span class="linenos">37</span><span class="n">UserDTO</span> <span class="o">=</span> <span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">User</span><span class="p">]</span>
-</span><span class="hll"><span class="linenos">38</span><span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span>
-</span><span class="hll"><span class="linenos">39</span>    <span class="n">exclude</span><span class="o">=</span><span class="p">{</span>
-</span><span class="hll"><span class="linenos">40</span>        <span class="s2">&quot;id&quot;</span><span class="p">,</span>
-</span><span class="hll"><span class="linenos">41</span>        <span class="s2">&quot;address.id&quot;</span><span class="p">,</span>
-</span><span class="hll"><span class="linenos">42</span>        <span class="s2">&quot;address.street&quot;</span><span class="p">,</span>
-</span><span class="hll"><span class="linenos">43</span>        <span class="s2">&quot;pets.0.id&quot;</span><span class="p">,</span>
-</span><span class="hll"><span class="linenos">44</span>        <span class="s2">&quot;pets.0.user_id&quot;</span><span class="p">,</span>
-</span><span class="hll"><span class="linenos">45</span>    <span class="p">}</span>
-</span><span class="hll"><span class="linenos">46</span><span class="p">)</span>
-</span><span class="linenos">47</span><span class="n">ReadUserDTO</span> <span class="o">=</span> <span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">config</span><span class="p">]]</span>
-<span class="linenos">48</span>
-<span class="hll"><span class="linenos">49</span>
-</span><span class="linenos">50</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">UserDTO</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="n">ReadUserDTO</span><span class="p">,</span> <span class="n">sync_to_thread</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="linenos">51</span><span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
-<span class="linenos">52</span>    <span class="n">data</span><span class="o">.</span><span class="n">created_at</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">min</span>
-<span class="linenos">53</span>    <span class="n">data</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">Address</span><span class="p">(</span><span class="n">street</span><span class="o">=</span><span class="s2">&quot;123 Main St&quot;</span><span class="p">,</span> <span class="n">city</span><span class="o">=</span><span class="s2">&quot;Anytown&quot;</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="s2">&quot;NY&quot;</span><span class="p">,</span> <span class="nb">zip</span><span class="o">=</span><span class="s2">&quot;12345&quot;</span><span class="p">)</span>
-<span class="linenos">54</span>    <span class="n">data</span><span class="o">.</span><span class="n">pets</span> <span class="o">=</span> <span class="p">[</span><span class="n">Pets</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Fido&quot;</span><span class="p">),</span> <span class="n">Pets</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Spot&quot;</span><span class="p">)]</span>
-<span class="linenos">55</span>    <span class="k">return</span> <span class="n">data</span>
-<span class="linenos">56</span>
-<span class="linenos">57</span>
-<span class="linenos">58</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">create_user</span><span class="p">])</span>
-</pre></div>
-</div>
-</div>
-</div>
-<input checked="checked" id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-2">
-Python 3.10+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">Excluding fields</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
 <span class="linenos"> 3</span>
@@ -1891,11 +1827,11 @@ type parameter of <code class="docutils literal notranslate"><span class="pre">a
 <p>Fields can be renamed using <a class="reference internal" href="../../reference/dto/config.html#litestar.dto.config.DTOConfig" title="litestar.dto.config.DTOConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">DTOConfig</span></code></a>. The following example uses the name
 <code class="docutils literal notranslate"><span class="pre">userName</span></code> client-side, and <code class="docutils literal notranslate"><span class="pre">user</span></code> internally.</p>
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-3">
+<input id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-2">
 Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">Renaming fields</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Renaming fields</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span>
@@ -1930,11 +1866,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-4" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-4">
+<input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-3">
 Python 3.9+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">Renaming fields</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">Renaming fields</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span>
@@ -1973,17 +1909,17 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;29d8a103-2207-4df4-8e9c-c665c9fd6376&quot;</span>,<span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;7f56f10d-cdce-416f-8fcf-cb80d91efd5f&quot;</span>,<span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
 <p>Fields can also be renamed using a renaming strategy that will be applied to all fields. The following example uses a pre-defined rename strategy that will convert all field names to camel case on client-side.</p>
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-5">
+<input id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-4">
 Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">Renaming fields</span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">Renaming fields</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span>
@@ -2020,11 +1956,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-6" name="sd-tab-set-2" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-6">
+<input checked="checked" id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-5">
 Python 3.9+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text">Renaming fields</span><a class="headerlink" href="#id10" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">Renaming fields</span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span>
@@ -2065,7 +2001,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;firstName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;createdAt&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;createdAt&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;7541a213-2514-4a87-af7c-8950e4a80544&quot;</span>,<span class="s2">&quot;firstName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;createdAt&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;e6c7e7e3-94c2-4d62-b4e1-b08e98a8bf31&quot;</span>,<span class="s2">&quot;firstName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -2077,8 +2013,8 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <p>Factories check that the types to which they are assigned are a subclass of the type provided as the generic type to the
 DTO factory. This means that if you have a handler that accepts a <code class="docutils literal notranslate"><span class="pre">User</span></code> model, and you assign a <code class="docutils literal notranslate"><span class="pre">UserDTO</span></code> factory
 to it, the DTO will only accept <code class="docutils literal notranslate"><span class="pre">User</span></code> types for “data” and return types.</p>
-<div class="literal-block-wrapper docutils container" id="id11">
-<div class="code-block-caption"><span class="caption-text">Type checking</span><a class="headerlink" href="#id11" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">Type checking</span><a class="headerlink" href="#id10" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span><span class="p">,</span> <span class="n">mapped_column</span>
@@ -2128,11 +2064,11 @@ However, we annotate the handler with the <code class="docutils literal notransl
 <p>In this example, we set <code class="docutils literal notranslate"><span class="pre">max_nested_depth=0</span></code> for the DTO that handles inbound client data, and leave it at the default
 of <code class="docutils literal notranslate"><span class="pre">1</span></code> for the return DTO.</p>
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-7">
+<input id="sd-tab-item-6" name="sd-tab-set-3" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-6">
 Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id12">
-<div class="code-block-caption"><span class="caption-text">Type checking</span><a class="headerlink" href="#id12" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text">Type checking</span><a class="headerlink" href="#id11" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
@@ -2180,11 +2116,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-8" name="sd-tab-set-3" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-8">
+<input checked="checked" id="sd-tab-item-7" name="sd-tab-set-3" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-7">
 Python 3.9+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id13">
-<div class="code-block-caption"><span class="caption-text">Type checking</span><a class="headerlink" href="#id13" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text">Type checking</span><a class="headerlink" href="#id12" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">UUID</span>
@@ -2246,6 +2182,88 @@ is injected for our data parameter (line 35).</p>
 return data can see that <code class="docutils literal notranslate"><span class="pre">b</span></code> is included in the response data, however <code class="docutils literal notranslate"><span class="pre">b.a</span></code> is not, due to the default
 <code class="docutils literal notranslate"><span class="pre">max_nested_depth</span></code> of <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
 </section>
+<section id="handling-unknown-fields">
+<h2>Handling unknown fields<a class="headerlink" href="#handling-unknown-fields" title="Permalink to this heading">#</a></h2>
+<p>By default, DTOs will silently ignore unknown fields in the source data. This behaviour
+can be configured using the <code class="docutils literal notranslate"><span class="pre">forbid_unknown_fields</span></code> parameter of the
+<a class="reference internal" href="../../reference/dto/config.html#litestar.dto.config.DTOConfig" title="litestar.dto.config.DTOConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">DTOConfig</span></code></a>. When set to <code class="docutils literal notranslate"><span class="pre">True</span></code> a validation
+error response will be returned if the data contains a field not defined on the model:</p>
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-8" name="sd-tab-set-4" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-8">
+Python 3.8+</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id13">
+<div class="code-block-caption"><span class="caption-text">Type checking</span><a class="headerlink" href="#id13" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Annotated</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+<span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DataclassDTO</span><span class="p">,</span> <span class="n">DTOConfig</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="nd">@dataclass</span>
+<span class="linenos">12</span><span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
+<span class="linenos">13</span>    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+<span class="linenos">14</span>
+<span class="linenos">15</span>
+<span class="linenos">16</span><span class="n">UserDTO</span> <span class="o">=</span> <span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">forbid_unknown_fields</span><span class="o">=</span><span class="kc">True</span><span class="p">)]]</span>
+<span class="linenos">17</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">UserDTO</span><span class="p">)</span>
+<span class="linenos">20</span><span class="k">async</span> <span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+<span class="linenos">21</span>    <span class="k">return</span> <span class="n">data</span>
+<span class="linenos">22</span>
+<span class="linenos">23</span>
+<span class="linenos">24</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">create_user</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<input checked="checked" id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-9">
+Python 3.9+</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id14">
+<div class="code-block-caption"><span class="caption-text">Type checking</span><a class="headerlink" href="#id14" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<span class="linenos"> 2</span>
+<span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="linenos"> 4</span>
+<span class="linenos"> 5</span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Annotated</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">post</span>
+<span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DataclassDTO</span><span class="p">,</span> <span class="n">DTOConfig</span>
+<span class="linenos"> 9</span>
+<span class="linenos">10</span>
+<span class="linenos">11</span><span class="nd">@dataclass</span>
+<span class="linenos">12</span><span class="k">class</span> <span class="nc">User</span><span class="p">:</span>
+<span class="linenos">13</span>    <span class="nb">id</span><span class="p">:</span> <span class="nb">str</span>
+<span class="linenos">14</span>
+<span class="linenos">15</span>
+<span class="linenos">16</span><span class="n">UserDTO</span> <span class="o">=</span> <span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">forbid_unknown_fields</span><span class="o">=</span><span class="kc">True</span><span class="p">)]]</span>
+<span class="linenos">17</span>
+<span class="linenos">18</span>
+<span class="linenos">19</span><span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/users&quot;</span><span class="p">,</span> <span class="n">dto</span><span class="o">=</span><span class="n">UserDTO</span><span class="p">)</span>
+<span class="linenos">20</span><span class="k">async</span> <span class="k">def</span> <span class="nf">create_user</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">User</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+<span class="linenos">21</span>    <span class="k">return</span> <span class="n">data</span>
+<span class="linenos">22</span>
+<span class="linenos">23</span>
+<span class="linenos">24</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">create_user</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="admonition">
+<p class="admonition-title">Run it</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;id&quot;</span>:<span class="w"> </span><span class="s2">&quot;1&quot;</span>,<span class="w"> </span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;Peter&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;status_code&quot;</span>:400,<span class="s2">&quot;detail&quot;</span>:<span class="s2">&quot;Object contains unknown field `name`&quot;</span><span class="o">}</span>
+</pre></div>
+</div>
+</div>
+</section>
 <section id="dto-data">
 <h2>DTO Data<a class="headerlink" href="#dto-data" title="Permalink to this heading">#</a></h2>
 <p>Sometimes we need to be able to access the data that has been parsed and validated by the DTO, but not converted into
@@ -2292,7 +2310,7 @@ handler.</p>
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;email&quot;</span>:<span class="w"> </span><span class="s2">&quot;peter@example.com&quot;</span>,<span class="w"> </span><span class="s2">&quot;age&quot;</span>:41<span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;email&quot;</span>:<span class="s2">&quot;peter@example.com&quot;</span>,<span class="s2">&quot;age&quot;</span>:41,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;5222ed54-d5d5-4bcd-9ace-da1907440c83&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;email&quot;</span>:<span class="s2">&quot;peter@example.com&quot;</span>,<span class="s2">&quot;age&quot;</span>:41,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;6501216e-9c83-474f-a7df-ecbd5ee99979&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -2337,7 +2355,7 @@ type of the data that it will contain, and provides useful methods for interacti
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="w"> </span><span class="s2">&quot;email&quot;</span>:<span class="w"> </span><span class="s2">&quot;peter@example.com&quot;</span>,<span class="w"> </span><span class="s2">&quot;age&quot;</span>:41<span class="o">}</span>
-<span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;email&quot;</span>:<span class="s2">&quot;peter@example.com&quot;</span>,<span class="s2">&quot;age&quot;</span>:41,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;3b620df9-e383-4e95-b7b0-2e94dc830820&quot;</span><span class="o">}</span>
+<span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Peter&quot;</span>,<span class="s2">&quot;email&quot;</span>:<span class="s2">&quot;peter@example.com&quot;</span>,<span class="s2">&quot;age&quot;</span>:41,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;6accd4e0-ccea-487e-ba53-48423cc60c33&quot;</span><span class="o">}</span>
 </pre></div>
 </div>
 </div>
@@ -2538,11 +2556,11 @@ parsed from client data, and will not be serialized into return data.</p>
 wrapper is used to deliver additional metadata about the response - in this case, a count of the number of items
 returned. Read on for an explanation of how to do this yourself.</p>
 <div class="sd-tab-set docutils">
-<input id="sd-tab-item-9" name="sd-tab-set-4" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-9">
+<input id="sd-tab-item-10" name="sd-tab-set-5" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-10">
 Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id14">
-<div class="code-block-caption"><span class="caption-text">Enveloping Return Data</span><a class="headerlink" href="#id14" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id15">
+<div class="code-block-caption"><span class="caption-text">Enveloping Return Data</span><a class="headerlink" href="#id15" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">TypeVar</span>
@@ -2594,11 +2612,11 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<input checked="checked" id="sd-tab-item-10" name="sd-tab-set-4" type="radio">
-</input><label class="sd-tab-label" data-sync-id="3.10" for="sd-tab-item-10">
-Python 3.10+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id15">
-<div class="code-block-caption"><span class="caption-text">Enveloping Return Data</span><a class="headerlink" href="#id15" title="Permalink to this code">#</a></div>
+<input checked="checked" id="sd-tab-item-11" name="sd-tab-set-5" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-11">
+Python 3.9+</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id16">
+<div class="code-block-caption"><span class="caption-text">Enveloping Return Data</span><a class="headerlink" href="#id16" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="linenos"> 2</span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Generic</span><span class="p">,</span> <span class="n">TypeVar</span>
@@ -2716,8 +2734,8 @@ generic wrapper that is a type supported by the DTO.</p></li>
 <section id="working-with-litestar-s-pagination-types">
 <h2>Working with Litestar’s Pagination Types<a class="headerlink" href="#working-with-litestar-s-pagination-types" title="Permalink to this heading">#</a></h2>
 <p>Litestar offers paginated response wrapper types, and DTO Factory types can handle this out of the box.</p>
-<div class="literal-block-wrapper docutils container" id="id16">
-<div class="code-block-caption"><span class="caption-text">Paginated Return Data</span><a class="headerlink" href="#id16" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id17">
+<div class="code-block-caption"><span class="caption-text">Paginated Return Data</span><a class="headerlink" href="#id17" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span>
@@ -2810,8 +2828,8 @@ by Litestar’s serialization process.</p>
 <section id="using-litestar-s-response-type-with-dto-factory">
 <h2>Using Litestar’s Response Type with DTO Factory<a class="headerlink" href="#using-litestar-s-response-type-with-dto-factory" title="Permalink to this heading">#</a></h2>
 <p>Litestar’s DTO (Data Transfer Object) Factory Types can handle data wrapped in a <code class="docutils literal notranslate"><span class="pre">Response</span></code> type.</p>
-<div class="literal-block-wrapper docutils container" id="id17">
-<div class="code-block-caption"><span class="caption-text">Response Wrapped Return Data</span><a class="headerlink" href="#id17" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id18">
+<div class="code-block-caption"><span class="caption-text">Response Wrapped Return Data</span><a class="headerlink" href="#id18" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="linenos"> 2</span>
 <span class="linenos"> 3</span><span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">Mapped</span>
@@ -2939,6 +2957,7 @@ response received by the client. In this case, we add a custom header.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#renaming-fields">Renaming fields</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#type-checking">Type checking</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#nested-fields">Nested fields</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#handling-unknown-fields">Handling unknown fields</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dto-data">DTO Data</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#providing-values-for-nested-data">Providing values for nested data</a></li>
 </ul>
