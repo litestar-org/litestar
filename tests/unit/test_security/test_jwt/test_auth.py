@@ -2,7 +2,7 @@ import dataclasses
 import secrets
 import string
 from datetime import datetime, timedelta, timezone
-from typing import TYPE_CHECKING, Any, Dict, Optional
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, Tuple
 from uuid import uuid4
 
 import jwt
@@ -10,12 +10,13 @@ import msgspec
 import pytest
 from hypothesis import given, settings
 from hypothesis.strategies import dictionaries, integers, none, one_of, sampled_from, text, timedeltas
+from typing_extensions import TypeAlias
 
 from litestar import Litestar, Request, Response, get
 from litestar.security.jwt import JWTAuth, JWTCookieAuth, OAuth2PasswordBearerAuth, Token
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_401_UNAUTHORIZED
 from litestar.stores.memory import MemoryStore
-from litestar.testing import create_test_client
+from litestar.testing import TestClient, create_test_client
 from tests.models import User, UserFactory
 
 if TYPE_CHECKING:
@@ -580,3 +581,262 @@ async def test_jwt_auth_validation_error_returns_not_authorized() -> None:
     with create_test_client(route_handlers=[handler]) as client:
         response = client.get("/", headers={"Authorization": header})
         assert response.status_code == 401
+
+
+@pytest.mark.parametrize(
+    "accepted_issuers, signing_issuer, expected_status_code",
+    [
+        (["issuer_a"], "issuer_a", 200),
+        (["issuer_a", "issuer_b"], "issuer_a", 200),
+        (["issuer_a", "issuer_b"], "issuer_b", 200),
+        (["issuer_b"], "issuer_a", 401),
+    ],
+)
+@pytest.mark.parametrize("auth_cls", [JWTAuth, JWTCookieAuth, OAuth2PasswordBearerAuth])
+async def test_jwt_auth_verify_issuer(
+    auth_cls: Any,
+    accepted_issuers: List[str],
+    signing_issuer: str,
+    expected_status_code: int,
+) -> None:
+    async def retrieve_user_handler(token: Token, _: "ASGIConnection") -> Any:
+        return object()
+
+    token_secret = secrets.token_hex()
+
+    if auth_cls is OAuth2PasswordBearerAuth:
+        jwt_auth = auth_cls(
+            token_secret=token_secret,
+            retrieve_user_handler=retrieve_user_handler,
+            token_url="http://testserver.local",
+            accepted_issuers=accepted_issuers,
+        )
+    else:
+        jwt_auth = auth_cls[Any](
+            token_secret=token_secret,
+            retrieve_user_handler=retrieve_user_handler,
+            accepted_issuers=accepted_issuers,
+        )
+
+    @get("/", middleware=[jwt_auth.middleware])
+    def handler() -> None:
+        return None
+
+    header = jwt_auth.format_auth_header(
+        jwt_auth.create_token(
+            identifier="foo",
+            token_issuer=signing_issuer,
+        ),
+    )
+
+    with create_test_client(route_handlers=[handler]) as client:
+        response = client.get("/", headers={"Authorization": header})
+        assert response.status_code == expected_status_code
+
+
+@pytest.mark.parametrize(
+    "accepted_audiences, token_audience, expected_status_code",
+    [
+        (["audience_a"], "audience_a", 200),
+        (["audience_a", "audience_b"], "audience_a", 200),
+        (["audience_a", "audience_b"], "audience_b", 200),
+        (["audience_b"], "audience_a", 401),
+    ],
+)
+@pytest.mark.parametrize("auth_cls", [JWTAuth, JWTCookieAuth, OAuth2PasswordBearerAuth])
+async def test_jwt_auth_verify_audience(
+    auth_cls: Any,
+    accepted_audiences: List[str],
+    token_audience: str,
+    expected_status_code: int,
+) -> None:
+    async def retrieve_user_handler(token: Token, _: "ASGIConnection") -> Any:
+        return object()
+
+    token_secret = secrets.token_hex()
+
+    if auth_cls is OAuth2PasswordBearerAuth:
+        jwt_auth = auth_cls(
+            token_secret=token_secret,
+            retrieve_user_handler=retrieve_user_handler,
+            token_url="http://testserver.local",
+            accepted_audiences=accepted_audiences,
+        )
+    else:
+        jwt_auth = auth_cls[Any](
+            token_secret=token_secret,
+            retrieve_user_handler=retrieve_user_handler,
+            accepted_audiences=accepted_audiences,
+        )
+
+    @get("/", middleware=[jwt_auth.middleware])
+    def handler() -> None:
+        return None
+
+    header = jwt_auth.format_auth_header(
+        jwt_auth.create_token(
+            identifier="foo",
+            token_audience=token_audience,
+        ),
+    )
+
+    with create_test_client(route_handlers=[handler]) as client:
+        response = client.get("/", headers={"Authorization": header})
+        assert response.status_code == expected_status_code
+
+
+CreateJWTApp: TypeAlias = Callable[..., Tuple[JWTAuth, TestClient]]
+
+
+@pytest.fixture()
+def create_jwt_app(auth_cls: Any, request: pytest.FixtureRequest) -> CreateJWTApp:
+    def create(**kwargs: Any) -> Tuple[JWTAuth, TestClient]:
+        async def retrieve_user_handler(token: Token, _: "ASGIConnection") -> Any:
+            return object()
+
+        if auth_cls is OAuth2PasswordBearerAuth:
+            jwt_auth = auth_cls(
+                token_secret=secrets.token_hex(),
+                retrieve_user_handler=retrieve_user_handler,
+                token_url="http://testserver.local",
+                **kwargs,
+            )
+        else:
+            jwt_auth = auth_cls[Any](
+                token_secret=secrets.token_hex(), retrieve_user_handler=retrieve_user_handler, **kwargs
+            )
+
+        @get("/", middleware=[jwt_auth.middleware])
+        def handler() -> None:
+            return None
+
+        client = create_test_client(route_handlers=[handler]).__enter__()
+        request.addfinalizer(client.__exit__)
+
+        return jwt_auth, client
+
+    return create
+
+
+@pytest.fixture(params=[JWTAuth, JWTCookieAuth, OAuth2PasswordBearerAuth])
+def auth_cls(request: pytest.FixtureRequest) -> Any:
+    return request.param
+
+
+@pytest.mark.parametrize(
+    "accepted_audiences, token_audience, expected_status_code",
+    [
+        (["audience_a"], "audience_a", 200),
+        ("audience_a", "audience_a", 200),
+        (["audience_a"], ["audience_a", "audience_b"], 401),
+        (["audience_b"], "audience_a", 401),
+    ],
+)
+async def test_jwt_auth_strict_audience(
+    accepted_audiences: List[str],
+    token_audience: str,
+    expected_status_code: int,
+    create_jwt_app: CreateJWTApp,
+) -> None:
+    jwt_auth, client = create_jwt_app(strict_audience=True, accepted_audiences=accepted_audiences)
+
+    header = jwt_auth.format_auth_header(
+        jwt_auth.create_token(
+            identifier="foo",
+            token_audience=token_audience,
+        ),
+    )
+
+    response = client.get("/", headers={"Authorization": header})
+    assert response.status_code == expected_status_code
+
+
+@pytest.mark.parametrize(
+    "require_claims, token_claims, expected_status_code",
+    [
+        (["aud"], {"token_audience": "foo"}, 200),
+        (["aud"], {}, 401),
+        ([], {}, 200),
+    ],
+)
+async def test_jwt_auth_require_claims(
+    require_claims: List[str],
+    token_claims: Dict[str, str],
+    expected_status_code: int,
+    create_jwt_app: CreateJWTApp,
+) -> None:
+    jwt_auth, client = create_jwt_app(require_claims=require_claims)
+
+    header = jwt_auth.format_auth_header(
+        jwt_auth.create_token(
+            identifier="foo",
+            **token_claims,  # type: ignore[arg-type]
+        ),
+    )
+
+    response = client.get("/", headers={"Authorization": header})
+    assert response.status_code == expected_status_code
+
+
+@pytest.mark.parametrize(
+    "token_expiration, verify_expiry, expected_status_code",
+    [
+        pytest.param((datetime.now(tz=timezone.utc) + timedelta(days=1)).timestamp(), True, 200, id="valid-verify"),
+        pytest.param((datetime.now(tz=timezone.utc) + timedelta(days=1)).timestamp(), False, 200, id="valid-no_verify"),
+        pytest.param(
+            (datetime.now(tz=timezone.utc) - timedelta(days=1)).timestamp(), False, 200, id="invalid-no_verify"
+        ),
+        pytest.param((datetime.now(tz=timezone.utc) - timedelta(days=1)).timestamp(), True, 401, id="invalid-verify"),
+    ],
+)
+async def test_jwt_auth_verify_exp(
+    token_expiration: datetime,
+    verify_expiry: bool,
+    expected_status_code: int,
+    create_jwt_app: CreateJWTApp,
+) -> None:
+    @dataclasses.dataclass
+    class CustomToken(Token):
+        def __post_init__(self) -> None:
+            pass
+
+    jwt_auth, client = create_jwt_app(verify_expiry=verify_expiry, token_cls=CustomToken)
+
+    header = jwt_auth.format_auth_header(
+        CustomToken(
+            sub="foo",
+            exp=token_expiration,
+        ).encode(jwt_auth.token_secret, jwt_auth.algorithm),
+    )
+
+    response = client.get("/", headers={"Authorization": header})
+    assert response.status_code == expected_status_code
+
+
+@pytest.mark.parametrize(
+    "token_nbf, verify_not_before, expected_status_code",
+    [
+        pytest.param((datetime.now(tz=timezone.utc) - timedelta(days=1)).timestamp(), True, 200, id="valid-verify"),
+        pytest.param((datetime.now(tz=timezone.utc) - timedelta(days=1)).timestamp(), False, 200, id="valid-no_verify"),
+        pytest.param(
+            (datetime.now(tz=timezone.utc) + timedelta(days=1)).timestamp(), False, 200, id="invalid-no_verify"
+        ),
+        pytest.param((datetime.now(tz=timezone.utc) + timedelta(days=1)).timestamp(), True, 401, id="invalid-verify"),
+    ],
+)
+async def test_jwt_auth_verify_nbf(
+    token_nbf: datetime,
+    verify_not_before: bool,
+    expected_status_code: int,
+    create_jwt_app: CreateJWTApp,
+) -> None:
+    @dataclasses.dataclass()
+    class CustomToken(Token):
+        nbf: Optional[float] = None
+
+    jwt_auth, client = create_jwt_app(verify_not_before=verify_not_before, token_cls=CustomToken)
+
+    header = jwt_auth.format_auth_header(jwt_auth.create_token("foo", nbf=token_nbf))
+
+    response = client.get("/", headers={"Authorization": header})
+    assert response.status_code == expected_status_code
