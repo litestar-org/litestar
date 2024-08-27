@@ -89,6 +89,7 @@ app = Litestar(route_handlers=[hello_world])
 - Support for `dataclasses`, `TypedDict`, [pydantic version 1 and version 2](https://docs.pydantic.dev/latest/),
   [msgspec](https://github.com/jcrist/msgspec) and [attrs](https://www.attrs.org/en/stable/)
 - Layered parameter declaration
+- Support for [RFC 9457](https://datatracker.ietf.org/doc/html/rfc9457) standardized "Problem Detail" error responses
 - [Automatic API documentation with](#redoc-swagger-ui-and-stoplight-elements-api-documentation):
   - [Scalar](https://github.com/scalar/scalar/)
   - [RapiDoc](https://github.com/rapi-doc/RapiDoc)
@@ -576,6 +577,7 @@ see [the contribution guide](CONTRIBUTING.rst).
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/abelkm99"><img src="https://avatars.githubusercontent.com/u/41730180?v=4?s=100" width="100px;" alt="Abel Kidanemariam"/><br /><sub><b>Abel Kidanemariam</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=abelkm99" title="Code">💻</a> <a href="https://github.com/litestar-org/litestar/commits?author=abelkm99" title="Tests">⚠️</a> <a href="https://github.com/litestar-org/litestar/commits?author=abelkm99" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://blog.trim21.me/"><img src="https://avatars.githubusercontent.com/u/13553903?v=4?s=100" width="100px;" alt="Trim21"/><br /><sub><b>Trim21</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=trim21" title="Code">💻</a> <a href="https://github.com/litestar-org/litestar/commits?author=trim21" title="Tests">⚠️</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://aarcex3.github.io"><img src="https://avatars.githubusercontent.com/u/59893355?v=4?s=100" width="100px;" alt="Agustin Arce"/><br /><sub><b>Agustin Arce</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=aarcex3" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/FarhanAliRaza"><img src="https://avatars.githubusercontent.com/u/62690310?v=4?s=100" width="100px;" alt="Farhan Ali Raza"/><br /><sub><b>Farhan Ali Raza</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=FarhanAliRaza" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>

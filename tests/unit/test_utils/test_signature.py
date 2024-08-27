@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import inspect
+import warnings
 from inspect import Parameter
 from types import ModuleType
 from typing import Any, Callable, Generic, List, Optional, TypeVar, Union
@@ -12,6 +13,7 @@ from typing_extensions import Annotated, NotRequired, Required, TypedDict, get_a
 
 from litestar import Controller, Router, post
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.exceptions.base_exceptions import LitestarWarning
 from litestar.file_system import BaseLocalFileSystem
 from litestar.static_files import StaticFiles
 from litestar.types.asgi_types import Receive, Scope, Send
@@ -156,16 +158,27 @@ def test_add_types_to_signature_namespace() -> None:
     assert ns == {"int": int, "str": str}
 
 
-def test_add_types_to_signature_namespace_with_existing_types() -> None:
+def test_add_types_to_signature_namespace_no_warn(monkeypatch: pytest.MonkeyPatch) -> None:
     """Test add_types_to_signature_namespace with existing types."""
-    ns = add_types_to_signature_namespace([str], {"int": int})
-    assert ns == {"int": int, "str": str}
-
-
-def test_add_types_to_signature_namespace_with_existing_types_raises() -> None:
-    """Test add_types_to_signature_namespace with existing types raises."""
-    with pytest.raises(ImproperlyConfiguredException):
+    monkeypatch.delenv("LITESTAR_WARN_SIGNATURE_NAMESPACE_OVERRIDE", raising=False)
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
         add_types_to_signature_namespace([int], {"int": int})
+
+
+def test_add_types_to_signature_namespace_with_existing_types_warn(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test add_types_to_signature_namespace with existing types raises."""
+    monkeypatch.delenv("LITESTAR_WARN_SIGNATURE_NAMESPACE_OVERRIDE", raising=False)
+    with pytest.warns(LitestarWarning):
+        add_types_to_signature_namespace([int], {"int": str})
+
+
+def test_add_types_to_signature_namespace_warn_disabled(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Test add_types_to_signature_namespace with existing types."""
+    monkeypatch.setenv("LITESTAR_WARN_SIGNATURE_NAMESPACE_OVERRIDE", "0")
+    with warnings.catch_warnings():
+        warnings.simplefilter("error")
+        add_types_to_signature_namespace([int], {"int": str})
 
 
 @pytest.mark.parametrize(

@@ -12,4 +12,4 @@ def test_json_suffix_responses() -> None:
             "type": "Server delusion",
             "status": 418,
         }
-        assert res.headers["content-type"] == "application/problem+json"
+        assert res.headers["content-type"] == "application/vnd.example.resource+json"
