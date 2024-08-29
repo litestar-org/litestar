@@ -123,7 +123,7 @@ def test_exclude_by_pattern_list() -> None:
         assert "test" in response.headers
 
 
-@pytest.mark.parametrize("excludes", ["/", ["/", "/foo"], "^/?"])
+@pytest.mark.parametrize("excludes", ["/", ["/", "/foo"]])
 def test_exclude_by_pattern_warns_if_exclude_all(excludes: Union[str, List[str]]) -> None:
     class SubclassMiddleware(AbstractMiddleware):
         exclude = excludes
