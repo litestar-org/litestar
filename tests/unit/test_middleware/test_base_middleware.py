@@ -134,6 +134,7 @@ def test_exclude_by_pattern_warns_if_exclude_all(excludes: Union[str, List[str]]
     with pytest.warns(LitestarWarning, match="Middleware 'SubclassMiddleware' exclude pattern"):
         create_test_client(middleware=[SubclassMiddleware])
 
+
 def test_exclude_doesnt_warn_on_non_greedy_pattern() -> None:
     class SubclassMiddleware(AbstractMiddleware):
         exclude = "^/$"
@@ -145,6 +146,7 @@ def test_exclude_doesnt_warn_on_non_greedy_pattern() -> None:
         create_test_client(middleware=[SubclassMiddleware])
 
     assert not record.list
+
 
 def test_exclude_by_opt_key() -> None:
     class SubclassMiddleware(AbstractMiddleware):
