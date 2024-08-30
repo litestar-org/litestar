@@ -32,11 +32,10 @@ def build_exclude_path_pattern(
         return None
 
     try:
-        exclude_list = [exclude] if isinstance(exclude, str) else exclude
-        for el in exclude_list:
-            if el == "/":
-                warn_middleware_excluded_on_all_routes(re.compile(el), middleware_cls=middleware_cls)
-        return re.compile("|".join(exclude)) if isinstance(exclude, list) else re.compile(exclude)
+        pattern = re.compile("|".join(exclude)) if isinstance(exclude, list) else re.compile(exclude)
+        if pattern.match("/"):
+            warn_middleware_excluded_on_all_routes(pattern, middleware_cls=middleware_cls)
+        return pattern
     except re.error as e:  # pragma: no cover
         raise ImproperlyConfiguredException(
             "Unable to compile exclude patterns for middleware. Please make sure you passed a valid regular expression."
