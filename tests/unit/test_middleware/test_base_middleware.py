@@ -1,4 +1,5 @@
 from typing import TYPE_CHECKING, List, Union
+from warnings import catch_warnings
 
 import pytest
 
@@ -123,7 +124,7 @@ def test_exclude_by_pattern_list() -> None:
         assert "test" in response.headers
 
 
-@pytest.mark.parametrize("excludes", ["/", ["/", "/foo"]])
+@pytest.mark.parametrize("excludes", ["/", ["/", "/foo"], "/*", "/.*"])
 def test_exclude_by_pattern_warns_if_exclude_all(excludes: Union[str, List[str]]) -> None:
     class SubclassMiddleware(AbstractMiddleware):
         exclude = excludes
@@ -133,6 +134,18 @@ def test_exclude_by_pattern_warns_if_exclude_all(excludes: Union[str, List[str]]
 
     with pytest.warns(LitestarWarning, match="Middleware 'SubclassMiddleware' exclude pattern"):
         create_test_client(middleware=[SubclassMiddleware])
+
+
+def test_exclude_doesnt_warn_on_non_greedy_pattern() -> None:
+    class SubclassMiddleware(AbstractMiddleware):
+        exclude = "^/$"
+
+        async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+            await self.app(scope, receive, send)
+
+    with catch_warnings(record=True) as warnings:
+        create_test_client(middleware=[SubclassMiddleware])
+        assert len(warnings) == 0
 
 
 def test_exclude_by_opt_key() -> None:
