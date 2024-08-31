@@ -33,7 +33,8 @@ def build_exclude_path_pattern(
 
     try:
         pattern = re.compile("|".join(exclude)) if isinstance(exclude, list) else re.compile(exclude)
-        if pattern.match("/") and exclude != "^/$":
+        if pattern.match("/") and pattern.match("/982c7064-6ac7-44b7-9be5-07a2ff6d8a92"):
+        # match a UUID to ensure that it matches paths greedily and not just a literal /
             warn_middleware_excluded_on_all_routes(pattern, middleware_cls=middleware_cls)
         return pattern
 
