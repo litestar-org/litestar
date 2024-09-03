@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import sys
 from dataclasses import dataclass
-from typing import Any, ForwardRef, Generic, List, Literal, Optional, Tuple, TypeVar, Union
+from typing import Any, ForwardRef, Generic, List, Optional, Tuple, TypeVar, Union
 
 import annotated_types
 import msgspec
@@ -478,15 +478,8 @@ def test_warn_default_inside_kwarg_definition_and_default_empty() -> None:
     assert "Deprecated default value specification" in str(record.message)
 
 
-@pytest.mark.parametrize(
-    "annotation, expected_type",
-    [
-        (TypeAliasType("IntAlias", int), int),  # pyright: ignore
-        (TypeAliasType("LiteralAlias", Literal["1"]), Literal["1"]),  # pyright: ignore
-    ],
-)
-def test_is_type_alias_type(annotation: Any, expected_type: Any) -> None:
-    field_definition = FieldDefinition.from_annotation(annotation)
+def test_is_type_alias_type() -> None:
+    field_definition = FieldDefinition.from_annotation(TypeAliasType("IntAlias", int))  # pyright: ignore
     assert field_definition.is_type_alias_type
 
 

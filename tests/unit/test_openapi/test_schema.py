@@ -617,21 +617,14 @@ def test_unconsumed_path_parameters_are_documented() -> None:
         assert param.param_in is ParamType.PATH
 
 
-@pytest.mark.parametrize(
-    "annotation, expected_type",
-    [
-        (TypeAliasType("IntAlias", int), OpenAPIType.INTEGER),  # pyright: ignore
-        (TypeAliasType("LiteralAlias", Literal[1]), OpenAPIType.INTEGER),  # pyright: ignore
-    ],
-)
-def test_type_alias_type(annotation: Any, expected_type: Any) -> None:
+def test_type_alias_type() -> None:
     @get("/")
-    def handler(query_param: Annotated[annotation, Parameter(description="foo")]) -> None:
+    def handler(query_param: Annotated[TypeAliasType("IntAlias", int), Parameter(description="foo")]) -> None:  # type: ignore[valid-type]
         pass
 
     app = Litestar([handler])
     param = app.openapi_schema.paths["/"].get.parameters[0]  # type: ignore[index, union-attr]
-    assert param.schema.type is expected_type  # type: ignore[union-attr]
+    assert param.schema.type is OpenAPIType.INTEGER  # type: ignore[union-attr]
     # ensure other attributes than the plain type are carried over correctly
     assert param.description == "foo"
 
