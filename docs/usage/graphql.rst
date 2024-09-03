@@ -36,7 +36,7 @@ Alternatively you can query your data by running the following in your terminal:
 
 .. code-block:: shell
 
-    curl 'http://localhost:8001/movies' -H 'content-type: application/json' --data '{ "query": "{ movies { title } }" }'
+    curl 'http://localhost:8000/movies' -H 'content-type: application/json' --data '{ "query": "{ movies { title } }" }'
 
 
 and see the following response:
@@ -70,7 +70,7 @@ also:
 
 .. code-block:: shell
     
-    curl 'http://localhost:8001/movies' -H 'content-type: application/json' --data '{ "query": "{ movies { director } }" }'
+    curl 'http://localhost:8000/movies' -H 'content-type: application/json' --data '{ "query": "{ movies { director } }" }'
 
 
 response:
