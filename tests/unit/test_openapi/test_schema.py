@@ -620,8 +620,8 @@ def test_unconsumed_path_parameters_are_documented() -> None:
 @pytest.mark.parametrize(
     "annotation, expected_type",
     [
-        (TypeAliasType("IntAlias", int), OpenAPIType.INTEGER),
-        (TypeAliasType("LiteralAlias", Literal[1]), OpenAPIType.INTEGER),
+        (TypeAliasType("IntAlias", int), OpenAPIType.INTEGER),  # pyright: ignore
+        (TypeAliasType("LiteralAlias", Literal[1]), OpenAPIType.INTEGER),  # pyright: ignore
     ],
 )
 def test_type_alias_type(annotation: Any, expected_type: Any) -> None:

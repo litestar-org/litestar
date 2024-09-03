@@ -481,8 +481,8 @@ def test_warn_default_inside_kwarg_definition_and_default_empty() -> None:
 @pytest.mark.parametrize(
     "annotation, expected_type",
     [
-        (TypeAliasType("IntAlias", int), int),
-        (TypeAliasType("LiteralAlias", Literal["1"]), Literal["1"]),
+        (TypeAliasType("IntAlias", int), int),  # pyright: ignore
+        (TypeAliasType("LiteralAlias", Literal["1"]), Literal["1"]),  # pyright: ignore
     ],
 )
 def test_is_type_alias_type(annotation: Any, expected_type: Any) -> None:
