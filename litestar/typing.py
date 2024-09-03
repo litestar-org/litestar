@@ -8,7 +8,17 @@ from inspect import Parameter, Signature
 from typing import Any, AnyStr, Callable, Collection, ForwardRef, Literal, Mapping, Protocol, Sequence, TypeVar, cast
 
 from msgspec import UnsetType
-from typing_extensions import NewType, NotRequired, Required, Self, get_args, get_origin, get_type_hints, is_typeddict
+from typing_extensions import (
+    NewType,
+    NotRequired,
+    Required,
+    Self,
+    TypeAliasType,
+    get_args,
+    get_origin,
+    get_type_hints,
+    is_typeddict,
+)
 
 from litestar.exceptions import ImproperlyConfiguredException, LitestarWarning
 from litestar.openapi.spec import Example
@@ -362,6 +372,11 @@ class FieldDefinition:
     @property
     def is_new_type(self) -> bool:
         return isinstance(self.annotation, NewType)
+
+    @property
+    def is_type_alias_type(self) -> bool:
+        """Whether the annotation is a ``TypeAliasType``"""
+        return isinstance(self.annotation, TypeAliasType)
 
     @property
     def is_type_var(self) -> bool:
