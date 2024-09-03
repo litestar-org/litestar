@@ -309,8 +309,7 @@ def test_annotated_types() -> None:
         constrained_lower_case: annotated_types.LowerCase[str]
         constrained_upper_case: annotated_types.UpperCase[str]
         constrained_is_ascii: annotated_types.IsAscii[str]
-        constrained_is_ascii: annotated_types.IsAscii[str]
-        constrained_is_digit: annotated_types.IsDigits[str]
+        constrained_is_digit: annotated_types.IsDigit[str]
 
     schema = get_schema_for_field_definition(FieldDefinition.from_kwarg(name="MyDataclass", annotation=MyDataclass))
 
