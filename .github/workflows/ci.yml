@@ -320,6 +320,7 @@ jobs:
         with:
           name: coverage-data
           path: .coverage.pydantic_v1
+          include-hidden-files: true
 
   upload-test-coverage:
     runs-on: ubuntu-latest
