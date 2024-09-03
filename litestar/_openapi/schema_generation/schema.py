@@ -328,6 +328,8 @@ class SchemaCreator:
 
         if field_definition.is_new_type:
             result = self.for_new_type(field_definition)
+        elif field_definition.is_type_alias_type:
+            result = self.for_type_alias_type(field_definition)
         elif plugin_for_annotation := self.get_plugin_for(field_definition):
             result = self.for_plugin(field_definition, plugin_for_annotation)
         elif _should_create_enum_schema(field_definition):
@@ -363,6 +365,16 @@ class SchemaCreator:
                 annotation=unwrap_new_type(field_definition.annotation),
                 name=field_definition.name,
                 default=field_definition.default,
+            )
+        )
+
+    def for_type_alias_type(self, field_definition: FieldDefinition) -> Schema | Reference:
+        return self.for_field_definition(
+            FieldDefinition.from_kwarg(
+                annotation=field_definition.annotation.__value__,
+                name=field_definition.name,
+                default=field_definition.default,
+                kwarg_definition=field_definition.kwarg_definition,
             )
         )
 
