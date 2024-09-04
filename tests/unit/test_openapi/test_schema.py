@@ -306,10 +306,10 @@ def test_annotated_types() -> None:
         constrained_int: Annotated[int, annotated_types.Gt(1), annotated_types.Lt(10)]
         constrained_float: Annotated[float, annotated_types.Ge(1), annotated_types.Le(10)]
         constrained_date: Annotated[date, annotated_types.Interval(gt=historical_date, lt=today)]
-        constrained_lower_case: Annotated[str, annotated_types.LowerCase]
-        constrained_upper_case: Annotated[str, annotated_types.UpperCase]
-        constrained_is_ascii: Annotated[str, annotated_types.IsAscii]
-        constrained_is_digit: Annotated[str, annotated_types.IsDigits]
+        constrained_lower_case: annotated_types.LowerCase[str]
+        constrained_upper_case: annotated_types.UpperCase[str]
+        constrained_is_ascii: annotated_types.IsAscii[str]
+        constrained_is_digit: annotated_types.IsDigit[str]
 
     schema = get_schema_for_field_definition(FieldDefinition.from_kwarg(name="MyDataclass", annotation=MyDataclass))
 

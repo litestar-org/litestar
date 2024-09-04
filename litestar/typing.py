@@ -26,7 +26,6 @@ from litestar.params import BodyKwarg, DependencyKwarg, KwargDefinition, Paramet
 from litestar.types import Empty
 from litestar.types.builtin_types import NoneType, UnionTypes
 from litestar.utils.predicates import (
-    is_annotated_type,
     is_any,
     is_class_and_subclass,
     is_generic,
@@ -150,13 +149,6 @@ def _traverse_metadata(
                     metadata=cast("Sequence[Any]", value), is_sequence_container=is_sequence_container, extra=extra
                 )
             )
-        elif is_annotated_type(value) and (type_args := [v for v in get_args(value) if v is not None]):
-            # annotated values can be nested inside other annotated values
-            # this behaviour is buggy in python 3.8, hence we need to guard here.
-            if len(type_args) > 1:
-                constraints.update(
-                    _traverse_metadata(metadata=type_args[1:], is_sequence_container=is_sequence_container, extra=extra)
-                )
         elif unpacked_predicate := _unpack_predicate(value):
             constraints.update(unpacked_predicate)
         else:
