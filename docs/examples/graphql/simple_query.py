@@ -32,7 +32,7 @@ schema = strawberry.Schema(Query)
 # Create a controller for the endopint
 GraphQLController = make_graphql_controller(
     schema,
-    path="/graphql/movies",
+    path="/movies",
 )
 
 app = Litestar(route_handlers=[GraphQLController])
