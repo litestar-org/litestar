@@ -32,19 +32,15 @@ def client() -> Iterator[TestClient[Litestar]]:
                         {"title": "Whispers in the Wind"},
                         {"title": "Echoes of Tomorrow"},
                         {"title": "Fading Horizons"},
-                        {"title": "Broken Dreams"}
+                        {"title": "Broken Dreams"},
                     ]
                 }
-            }
+            },
         )
-    ]
+    ],
 )
 def test_simple_query_get_titles(client: TestClient[Litestar], query: str, expected_response: str):
-    response = client.get(
-        "/movies",
-        params={"query": query.strip()},
-        headers={"content-type": "application/json"}
-    )
+    response = client.get("/movies", params={"query": query.strip()}, headers={"content-type": "application/json"})
     assert response.status_code == HTTP_200_OK
     assert response.json() == expected_response
 
@@ -67,18 +63,14 @@ def test_simple_query_get_titles(client: TestClient[Litestar], query: str, expec
                         {"director": "Daniel Brooks"},
                         {"director": "Sophia Rivera"},
                         {"director": "Lucas Mendes"},
-                        {"director": "Amara Patel"}
+                        {"director": "Amara Patel"},
                     ]
                 }
-            }
+            },
         )
-    ]
+    ],
 )
 def test_simple_query_get_directors(client: TestClient[Litestar], query: str, expected_response: dict):
-    response = client.get(
-        "/movies",
-        params={"query": query.strip()},
-        headers={"Content-Type": "application/json"}
-    )
+    response = client.get("/movies", params={"query": query.strip()}, headers={"Content-Type": "application/json"})
     assert response.status_code == HTTP_200_OK
     assert response.json() == expected_response
