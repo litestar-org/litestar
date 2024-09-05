@@ -8,7 +8,17 @@ from inspect import Parameter, Signature
 from typing import Any, AnyStr, Callable, Collection, ForwardRef, Literal, Mapping, Protocol, Sequence, TypeVar, cast
 
 from msgspec import UnsetType
-from typing_extensions import NewType, NotRequired, Required, Self, get_args, get_origin, get_type_hints, is_typeddict
+from typing_extensions import (
+    NewType,
+    NotRequired,
+    Required,
+    Self,
+    TypeAliasType,
+    get_args,
+    get_origin,
+    get_type_hints,
+    is_typeddict,
+)
 
 from litestar.exceptions import ImproperlyConfiguredException, LitestarWarning
 from litestar.openapi.spec import Example
@@ -16,7 +26,6 @@ from litestar.params import BodyKwarg, DependencyKwarg, KwargDefinition, Paramet
 from litestar.types import Empty
 from litestar.types.builtin_types import NoneType, UnionTypes
 from litestar.utils.predicates import (
-    is_annotated_type,
     is_any,
     is_class_and_subclass,
     is_generic,
@@ -140,13 +149,6 @@ def _traverse_metadata(
                     metadata=cast("Sequence[Any]", value), is_sequence_container=is_sequence_container, extra=extra
                 )
             )
-        elif is_annotated_type(value) and (type_args := [v for v in get_args(value) if v is not None]):
-            # annotated values can be nested inside other annotated values
-            # this behaviour is buggy in python 3.8, hence we need to guard here.
-            if len(type_args) > 1:
-                constraints.update(
-                    _traverse_metadata(metadata=type_args[1:], is_sequence_container=is_sequence_container, extra=extra)
-                )
         elif unpacked_predicate := _unpack_predicate(value):
             constraints.update(unpacked_predicate)
         else:
@@ -362,6 +364,11 @@ class FieldDefinition:
     @property
     def is_new_type(self) -> bool:
         return isinstance(self.annotation, NewType)
+
+    @property
+    def is_type_alias_type(self) -> bool:
+        """Whether the annotation is a ``TypeAliasType``"""
+        return isinstance(self.annotation, TypeAliasType)
 
     @property
     def is_type_var(self) -> bool:

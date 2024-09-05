@@ -21,7 +21,7 @@ import annotated_types
 import msgspec
 import pytest
 from msgspec import Struct
-from typing_extensions import Annotated, TypeAlias
+from typing_extensions import Annotated, TypeAlias, TypeAliasType
 
 from litestar import Controller, MediaType, get, post
 from litestar._openapi.schema_generation.plugins import openapi_schema_plugins
@@ -306,10 +306,10 @@ def test_annotated_types() -> None:
         constrained_int: Annotated[int, annotated_types.Gt(1), annotated_types.Lt(10)]
         constrained_float: Annotated[float, annotated_types.Ge(1), annotated_types.Le(10)]
         constrained_date: Annotated[date, annotated_types.Interval(gt=historical_date, lt=today)]
-        constrained_lower_case: Annotated[str, annotated_types.LowerCase]
-        constrained_upper_case: Annotated[str, annotated_types.UpperCase]
-        constrained_is_ascii: Annotated[str, annotated_types.IsAscii]
-        constrained_is_digit: Annotated[str, annotated_types.IsDigits]
+        constrained_lower_case: annotated_types.LowerCase[str]
+        constrained_upper_case: annotated_types.UpperCase[str]
+        constrained_is_ascii: annotated_types.IsAscii[str]
+        constrained_is_digit: annotated_types.IsDigit[str]
 
     schema = get_schema_for_field_definition(FieldDefinition.from_kwarg(name="MyDataclass", annotation=MyDataclass))
 
@@ -615,3 +615,32 @@ def test_unconsumed_path_parameters_are_documented() -> None:
         assert param.name == f"param{i}"
         assert param.required is True
         assert param.param_in is ParamType.PATH
+
+
+def test_type_alias_type() -> None:
+    @get("/")
+    def handler(query_param: Annotated[TypeAliasType("IntAlias", int), Parameter(description="foo")]) -> None:  # type: ignore[valid-type]
+        pass
+
+    app = Litestar([handler])
+    param = app.openapi_schema.paths["/"].get.parameters[0]  # type: ignore[index, union-attr]
+    assert param.schema.type is OpenAPIType.INTEGER  # type: ignore[union-attr]
+    # ensure other attributes than the plain type are carried over correctly
+    assert param.description == "foo"
+
+
+@pytest.mark.skipif(sys.version_info < (3, 12), reason="type keyword not available before 3.12")
+def test_type_alias_type_keyword() -> None:
+    ctx: Dict[str, Any] = {}
+    exec("type IntAlias = int", ctx, None)
+    annotation = ctx["IntAlias"]
+
+    @get("/")
+    def handler(query_param: Annotated[annotation, Parameter(description="foo")]) -> None:  # type: ignore[valid-type]
+        pass
+
+    app = Litestar([handler])
+    param = app.openapi_schema.paths["/"].get.parameters[0]  # type: ignore[union-attr, index]
+    assert param.schema.type is OpenAPIType.INTEGER  # type: ignore[union-attr]
+    # ensure other attributes than the plain type are carried over correctly
+    assert param.description == "foo"

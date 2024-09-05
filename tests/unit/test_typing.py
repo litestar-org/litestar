@@ -7,7 +7,7 @@ from typing import Any, ForwardRef, Generic, List, Optional, Tuple, TypeVar, Uni
 import annotated_types
 import msgspec
 import pytest
-from typing_extensions import Annotated, NotRequired, Required, TypedDict, get_type_hints
+from typing_extensions import Annotated, NotRequired, Required, TypeAliasType, TypedDict, get_type_hints
 
 from litestar import get
 from litestar.exceptions import LitestarWarning
@@ -476,3 +476,17 @@ def test_warn_default_inside_kwarg_definition_and_default_empty() -> None:
     (record,) = warnings
     assert record.category == DeprecationWarning
     assert "Deprecated default value specification" in str(record.message)
+
+
+def test_is_type_alias_type() -> None:
+    field_definition = FieldDefinition.from_annotation(TypeAliasType("IntAlias", int))  # pyright: ignore
+    assert field_definition.is_type_alias_type
+
+
+@pytest.mark.skipif(sys.version_info < (3, 12), reason="type keyword not available before 3.12")
+def test_unwrap_type_alias_type_keyword() -> None:
+    ctx: dict[str, Any] = {}
+    exec("type IntAlias = int", ctx, None)
+    annotation = ctx["IntAlias"]
+    field_definition = FieldDefinition.from_annotation(annotation)
+    assert field_definition.is_type_alias_type

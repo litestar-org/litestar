@@ -67,3 +67,4 @@ jobs:
         with:
           name: coverage-data
           path: .coverage.${{ inputs.python-version }}
+          include-hidden-files: true
