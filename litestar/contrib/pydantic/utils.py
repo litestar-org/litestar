@@ -1,10 +1,12 @@
 # mypy: strict-equality=False
+# pyright: reportGeneralTypeIssues=false
 from __future__ import annotations
 
 import datetime
+import re
 from dataclasses import dataclass
 from inspect import isclass
-from typing import TYPE_CHECKING, Any, Literal, Optional
+from typing import TYPE_CHECKING, Any, Literal, Optional, Protocol, Callable, cast
 
 from typing_extensions import Annotated, get_type_hints
 
@@ -250,13 +252,16 @@ class PydanticModelInfo:
     is_generic: bool = False
 
 
+_CreateFieldDefinition = Callable[..., FieldDefinition]
+
+
 def _create_field_definition_v1(  # noqa: C901
     field_annotation: Any,
     *,
     field_info: pydantic_v1.fields.FieldInfo | None = None,
-    **field_definition_kwargs,
+    **field_definition_kwargs: Any,
 ) -> FieldDefinition:
-    kwargs = {}
+    kwargs: dict[str, Any] = {}
     if field_info:
         if example := field_info.extra.get("example"):
             examples = [Example(value=example)]
@@ -285,17 +290,23 @@ def _create_field_definition_v1(  # noqa: C901
                 max_length=field_annotation.max_length,
                 lower_case=field_annotation.to_lower,
                 upper_case=field_annotation.to_upper,
-                pattern=field_annotation.regex,
+                pattern=field_annotation.regex.pattern
+                if isinstance(field_annotation.regex, re.Pattern)
+                else field_annotation.regex,
                 **kwargs,
             )
             field_definition_kwargs["raw"] = field_annotation
             field_annotation = str
         elif issubclass(field_annotation, pydantic_v1.ConstrainedDate):
+            # TODO: The typings of ParameterKwarg need fixing. Specifically, the
+            # gt/ge/lt/le fields need to be typed with protocols, such that they may
+            # accept any type that implements the respective comparisons
+
             kwarg_definition = ParameterKwarg(
-                gt=field_annotation.gt,
-                ge=field_annotation.ge,
-                lt=field_annotation.lt,
-                le=field_annotation.le,
+                gt=field_annotation.gt,  # type: ignore[arg-type]
+                ge=field_annotation.ge,  # type: ignore[arg-type]
+                lt=field_annotation.lt,  # type: ignore[arg-type]
+                le=field_annotation.le,  # type: ignore[arg-type]
                 **kwargs,
             )
             field_definition_kwargs["raw"] = field_annotation
@@ -305,11 +316,11 @@ def _create_field_definition_v1(  # noqa: C901
             (pydantic_v1.ConstrainedInt, pydantic_v1.ConstrainedFloat, pydantic_v1.ConstrainedDecimal),
         ):
             kwarg_definition = ParameterKwarg(
-                gt=field_annotation.gt,
-                ge=field_annotation.ge,
-                lt=field_annotation.lt,
-                le=field_annotation.le,
-                multiple_of=field_annotation.multiple_of,
+                gt=field_annotation.gt,  # type: ignore[arg-type]
+                ge=field_annotation.ge,  # type: ignore[arg-type]
+                lt=field_annotation.lt,  # type: ignore[arg-type]
+                le=field_annotation.le,  # type: ignore[arg-type]
+                multiple_of=field_annotation.multiple_of,  # type: ignore[arg-type]
                 **kwargs,
             )
             field_definition_kwargs["raw"] = field_annotation
@@ -343,18 +354,20 @@ def _create_field_definition_v2(  # noqa: C901
     field_annotation: Any,
     *,
     field_info: pydantic_v2.fields.FieldInfo | None = None,
-    **field_definition_kwargs,
+    **field_definition_kwargs: Any,
 ) -> FieldDefinition:
-    kwargs = {}
-    examples = []
-    field_meta = []
+    kwargs: dict[str, Any] = {}
+    examples: list[Any] = []
+    field_meta: list[Any] = []
 
     if field_info:
         if json_schema_extra := field_info.json_schema_extra:
+            if callable(json_schema_extra):
+                raise ValueError("Callable not supported for examples")
             if json_schema_example := json_schema_extra.get("example"):
                 examples.append(json_schema_example)
             if json_schema_examples := json_schema_extra.get("examples"):
-                examples.extend(json_schema_examples)
+                examples.extend(json_schema_examples)  # type: ignore[arg-type]
         if field_examples := field_info.examples:
             examples.extend(field_examples)
 
@@ -415,8 +428,8 @@ def get_model_info(
         example = model_config.get("example")
         is_v2_model = True
     else:
-        model_config = model.__config__
-        model_field_info = model.__fields__
+        model_config = model.__config__  # type: ignore[assignment, union-attr]
+        model_field_info = model.__fields__  # type: ignore[assignment]
         title = getattr(model_config, "title", None)
         example = getattr(model_config, "example", None)
         is_v2_model = False
@@ -431,7 +444,7 @@ def get_model_info(
         # if there's a default factory, we wrap the field in 'Optional', to signal
         # that it is not required
         model_annotations = {
-            k: Optional[field_info.annotation] if field_info.default_factory else field_info.annotation
+            k: Optional[field_info.annotation] if field_info.default_factory else field_info.annotation  # type: ignore[union-attr]
             for k, field_info in model_fields.items()
         }
 
@@ -439,7 +452,7 @@ def get_model_info(
         # pydantic v1 requires some workarounds here
         model_annotations = {
             k: f.outer_type_ if f.required or f.default else Optional[f.outer_type_]
-            for k, f in model.__fields__.items()
+            for k, f in model.__fields__.items()  # type: ignore[union-attr]
         }
 
     if is_generic_model:
@@ -450,7 +463,9 @@ def get_model_info(
             annotation, model_annotations=model_annotations, include_extras=True
         )
 
-    create_field_definition = _create_field_definition_v2 if is_v2_model else _create_field_definition_v1
+    create_field_definition: _CreateFieldDefinition = (
+        _create_field_definition_v2 if is_v2_model else _create_field_definition_v1  # type: ignore[assignment]
+    )
 
     property_fields = {
         field_info.alias if field_info.alias and prefer_alias else k: create_field_definition(

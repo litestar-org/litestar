@@ -150,33 +150,6 @@ class FieldDefinition:
     def __hash__(self) -> int:
         return hash((self.name, self.raw, self.annotation, self.origin, self.inner_types))
 
-    @classmethod
-    def _extract_metadata(
-        cls,
-        *,
-        annotation: Any,
-        name: str | None,
-        default: Any,
-        metadata: tuple[Any, ...],
-        extra: dict[str, Any] | None,
-        return_kwargs: bool = False,
-    ) -> tuple[KwargDefinition | None, dict[str, Any]]:
-        model = BodyKwarg if name == "data" else ParameterKwarg
-
-        if any(isinstance(arg, KwargDefinition) for arg in get_args(annotation)):
-            return next(arg for arg in get_args(annotation) if isinstance(arg, KwargDefinition)), extra or {}
-
-        if metadata:
-            kwargs = {}
-            is_sequence_container = is_non_string_sequence(annotation)
-            for meta in metadata:
-                kwargs.update(_annotated_types_extractor(meta, is_sequence_container=is_sequence_container))
-            if return_kwargs:
-                return kwargs, {}
-            return model(**kwargs), {}
-
-        return None, {}
-
     @property
     def has_default(self) -> bool:
         """Check if the field has a default value.

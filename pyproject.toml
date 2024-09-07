@@ -270,6 +270,10 @@ module = ["tests.unit.test_contrib.test_repository"]
 strict_equality = false
 
 [[tool.mypy.overrides]]
+module = ["tests.unit.test_contrib.test_pydantic.test_openapi"]
+disable_error_code = "index, union-attr"
+
+[[tool.mypy.overrides]]
 ignore_missing_imports = true
 module = [
   "brotli.*",

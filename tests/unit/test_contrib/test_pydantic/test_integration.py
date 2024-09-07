@@ -391,7 +391,7 @@ def test_v2_strict_validate(
 def test_model_defaults(pydantic_version: PydanticVersion) -> None:
     lib = pydantic_v1 if pydantic_version == "v1" else pydantic_v2
 
-    class Model(lib.BaseModel):
+    class Model(lib.BaseModel):  # type: ignore[misc, name-defined]
         a: int
         b: int = lib.Field(default=1)
         c: int = lib.Field(default_factory=lambda: 3)

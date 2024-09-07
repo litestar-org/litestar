@@ -117,8 +117,8 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
             field_definition = downtype_for_data_transfer(field_definition)
             dto_field = extract_dto_field(field_definition, field_definition.extra)
 
-            default = Empty
-            default_factory = None
+            default: Any = Empty
+            default_factory: Any = None
             if field_info := model_fields.get(field_name):
                 # field_info might not exist, since FieldInfo isn't provided by pydantic
                 # for computed fields, but we still generate a FieldDefinition for them

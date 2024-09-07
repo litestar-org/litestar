@@ -20,8 +20,7 @@ class StructSchemaPlugin(OpenAPISchemaPlugin):
     def is_plugin_supported_field(self, field_definition: FieldDefinition) -> bool:
         return not field_definition.is_union and field_definition.is_subclass_of(Struct)
 
-    @classmethod
-    def to_openapi_schema(cls, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:
+    def to_openapi_schema(self, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:
         def is_field_required(field: msgspec.inspect.Field) -> bool:
             return field.required or field.default_factory is Empty
 

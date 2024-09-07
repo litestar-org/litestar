@@ -31,6 +31,7 @@ class MsgspecDTO(AbstractDTO[T], Generic[T]):
     def generate_field_definitions(cls, model_type: type[Struct]) -> Generator[DTOFieldDefinition, None, None]:
         msgspec_fields = {f.name: f for f in structs.fields(model_type)}
 
+        # TODO: Move out of here
         def default_or_empty(value: Any) -> Any:
             return Empty if value is NODEFAULT else value
 
@@ -38,7 +39,7 @@ class MsgspecDTO(AbstractDTO[T], Generic[T]):
             return None if value is NODEFAULT else value
 
         inspect_fields: dict[str, msgspec.inspect.Field] = {
-            field.name: field for field in msgspec.inspect.type_info(model_type).fields
+            field.name: field for field in msgspec.inspect.type_info(model_type).fields  # type: ignore[attr-defined]
         }
 
         for key, field_definition in cls.get_model_type_hints(model_type).items():

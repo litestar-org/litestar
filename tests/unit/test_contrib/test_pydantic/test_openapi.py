@@ -1,7 +1,8 @@
+# pyright: reportOptionalSubscript=false, reportGeneralTypeIssues=false
 from datetime import date, timedelta
 from decimal import Decimal
 from types import ModuleType
-from typing import Any, Callable, Dict, Pattern, Type, Union, cast
+from typing import Any, Callable, Dict, Pattern, Type, Union, cast, Optional
 
 import annotated_types
 import pydantic as pydantic_v2
@@ -160,14 +161,14 @@ def test_create_collection_constrained_field_schema_pydantic_v1(
     ],
 )
 def test_create_collection_constrained_field_schema_pydantic_v2(
-    make_constraint,
-    min_length,
-    max_length,
+    make_constraint: Callable[..., Any],
+    min_length: Optional[int],
+    max_length: Optional[int],
     schema_creator: SchemaCreator,
     plugin: PydanticSchemaPlugin,
 ) -> None:
     class Model(pydantic_v2.BaseModel):
-        field: make_constraint(int, min_length=min_length, max_length=max_length)
+        field: make_constraint(int, min_length=min_length, max_length=max_length)  # type: ignore[valid-type]
 
     schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]
 
@@ -197,15 +198,15 @@ def test_create_collection_constrained_field_schema_sub_fields(
     if pydantic_version == "v1":
 
         class Modelv1(pydantic_v1.BaseModel):
-            set_field: conset(Union[str, int], min_items=1, max_items=10)
-            list_field: conlist(Union[str, int], min_items=1, max_items=10)
+            set_field: conset(Union[str, int], min_items=1, max_items=10)  # type: ignore[valid-type]
+            list_field: conlist(Union[str, int], min_items=1, max_items=10)  # type: ignore[valid-type]
 
         model_schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Modelv1), plugin)
     else:
 
         class Modelv2(pydantic_v2.BaseModel):
-            set_field: conset(Union[str, int], min_length=1, max_length=10)
-            list_field: conlist(Union[str, int], min_length=1, max_length=10)
+            set_field: conset(Union[str, int], min_length=1, max_length=10)  # type: ignore[valid-type]
+            list_field: conlist(Union[str, int], min_length=1, max_length=10)  # type: ignore[valid-type]
 
         model_schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Modelv2), plugin)
 
@@ -344,7 +345,7 @@ def test_create_numerical_constrained_field_schema_pydantic_v2(
     annotation = make_constraint(**constraint_kwargs)
 
     class Model(pydantic_v1.BaseModel):
-        field: annotation
+        field: annotation  # type: ignore[valid-type]
 
     schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]
 
@@ -370,13 +371,13 @@ def test_create_date_constrained_field_schema_pydantic_v1(
     assert schema.type == OpenAPIType.STRING
     assert schema.format == OpenAPIFormat.DATE
     if gt := annotation.gt:
-        assert date.fromtimestamp(schema.exclusive_minimum) == gt
+        assert date.fromtimestamp(schema.exclusive_minimum) == gt  # type: ignore[arg-type]
     if ge := annotation.ge:
-        assert date.fromtimestamp(schema.minimum) == ge
+        assert date.fromtimestamp(schema.minimum) == ge  # type: ignore[arg-type]
     if lt := annotation.lt:
-        assert date.fromtimestamp(schema.exclusive_maximum) == lt
+        assert date.fromtimestamp(schema.exclusive_maximum) == lt  # type: ignore[arg-type]
     if le := annotation.le:
-        assert date.fromtimestamp(schema.maximum) == le
+        assert date.fromtimestamp(schema.maximum) == le  # type: ignore[arg-type]
 
 
 @pytest.mark.parametrize(
@@ -394,20 +395,20 @@ def test_create_date_constrained_field_schema_pydantic_v2(
     plugin: PydanticSchemaPlugin,
 ) -> None:
     class Model(pydantic_v2.BaseModel):
-        field: pydantic_v2.condate(**constraints)
+        field: pydantic_v2.condate(**constraints)  # type: ignore[valid-type]
 
     schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]
     assert schema.type == OpenAPIType.STRING
     assert schema.format == OpenAPIFormat.DATE
 
     if gt := constraints.get("gt"):
-        assert date.fromtimestamp(schema.exclusive_minimum) == gt
+        assert date.fromtimestamp(schema.exclusive_minimum) == gt  # type: ignore[arg-type]
     if ge := constraints.get("ge"):
-        assert date.fromtimestamp(schema.minimum) == ge
+        assert date.fromtimestamp(schema.minimum) == ge  # type: ignore[arg-type]
     if lt := constraints.get("lt"):
-        assert date.fromtimestamp(schema.exclusive_maximum) == lt
+        assert date.fromtimestamp(schema.exclusive_maximum) == lt  # type: ignore[arg-type]
     if le := constraints.get("le"):
-        assert date.fromtimestamp(schema.maximum) == le
+        assert date.fromtimestamp(schema.maximum) == le  # type: ignore[arg-type]
 
 
 @pytest.mark.parametrize(
@@ -447,7 +448,7 @@ def test_create_constrained_field_schema_v2(
     class Model(pydantic_v2.BaseModel):
         field: annotation
 
-    assert schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]
+    assert schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]  # type: ignore[index, union-attr]
 
 
 @pytest.mark.parametrize("cls", (PydanticPerson, PydanticDataclassPerson, PydanticV1Person, PydanticV1DataclassPerson))

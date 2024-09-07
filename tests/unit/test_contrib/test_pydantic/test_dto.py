@@ -102,7 +102,7 @@ app = Litestar(route_handlers=[get_user])
     component_schema = schema.components.schemas["GetUserUserResponseBody"]
     assert component_schema.properties is not None
     assert component_schema.properties["id"].description == "This is a test (id description)."
-    assert component_schema.properties["id"].exclusive_minimum == 1
+    assert component_schema.properties["id"].exclusive_minimum == 1  # type: ignore[union-attr]
 
 
 @pytest.mark.parametrize(

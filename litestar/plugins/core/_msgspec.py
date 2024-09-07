@@ -35,20 +35,21 @@ class MsgspecDIPlugin(DIPlugin):
 
 
 def kwarg_definition_from_field(field: msgspec.inspect.Field) -> tuple[ParameterKwarg | None, dict[str, Any]]:
-    extra = {}
-    kwargs = {}
+    extra: dict[str, Any] = {}
+    kwargs: dict[str, Any] = {}
     if isinstance(field.type, msgspec.inspect.Metadata):
         meta = field.type
+        field_type = meta.type
         if extra_json_schema := meta.extra_json_schema:
             kwargs["title"] = extra_json_schema.get("title")
             kwargs["description"] = extra_json_schema.get("description")
             if examples := extra_json_schema.get("examples"):
                 kwargs["examples"] = [Example(value=e) for e in examples]
             kwargs["schema_extra"] = extra_json_schema.get("extra")
-        extra = meta.extra
+        extra = meta.extra or {}
     else:
-        meta = field
-    field_type = meta.type
+        field_type = field.type
+
     if isinstance(
         field_type,
         (
@@ -72,9 +73,8 @@ def kwarg_definition_from_field(field: msgspec.inspect.Field) -> tuple[Parameter
     ):
         kwargs["min_length"] = field_type.min_length
         kwargs["max_length"] = field_type.max_length
-        kwargs["pattern"] = field_type.pattern
-    elif isinstance(field_type, msgspec.inspect.StrType):
-        kwargs["pattern"] = field_type.pattern
+        if isinstance(field_type, msgspec.inspect.StrType):
+            kwargs["pattern"] = field_type.pattern
 
     parameter_defaults = {
         f.name: default for f in dataclasses.fields(ParameterKwarg) if (default := f.default) is not dataclasses.MISSING
