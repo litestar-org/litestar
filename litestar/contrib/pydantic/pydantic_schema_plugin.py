@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime
+import sys
 from dataclasses import dataclass
 from inspect import isclass
 from typing import TYPE_CHECKING, Any, Literal, Optional
@@ -23,6 +24,7 @@ from litestar.plugins import OpenAPISchemaPlugin
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
 from litestar.utils import is_class_and_subclass, is_generic, is_undefined_sentinel
+from litestar.utils.typing import get_instantiable_origin, get_safe_generic_origin
 
 try:
     import pydantic as _  # noqa: F401
@@ -329,7 +331,9 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
                     max_items=field_annotation.max_items, min_items=field_annotation.min_items, **kwargs
                 )
                 field_definition_kwargs["raw"] = field_annotation
-                field_annotation = field_annotation.__origin__[field_annotation.item_type]
+                # on < 3.9, these builtins are not generic
+                origin = get_safe_generic_origin(None, field_annotation.__origin__)
+                field_annotation = origin[field_annotation.item_type]
 
         if kwarg_definition is None and kwargs:
             kwarg_definition = ParameterKwarg(**kwargs)
