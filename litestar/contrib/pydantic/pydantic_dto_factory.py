@@ -7,7 +7,7 @@ from warnings import warn
 
 from typing_extensions import Annotated, TypeAlias, override
 
-from litestar.contrib.pydantic.utils import is_pydantic_2_model, is_pydantic_undefined, is_pydantic_v2, get_model_info
+from litestar.contrib.pydantic.utils import get_model_info, is_pydantic_2_model, is_pydantic_undefined, is_pydantic_v2
 from litestar.dto.base_dto import AbstractDTO
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.dto.field import DTO_FIELD_META_KEY, extract_dto_field
@@ -109,7 +109,6 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
     def generate_field_definitions(
         cls, model_type: type[pydantic_v1.BaseModel | pydantic_v2.BaseModel]
     ) -> Generator[DTOFieldDefinition, None, None]:
-
         model_info = get_model_info(model_type)
         model_fields = model_info.model_fields
         model_field_definitions = model_info.field_definitions
@@ -117,7 +116,6 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
         for field_name, field_definition in model_field_definitions.items():
             field_definition = downtype_for_data_transfer(field_definition)
             dto_field = extract_dto_field(field_definition, field_definition.extra)
-
 
             default = Empty
             default_factory = None

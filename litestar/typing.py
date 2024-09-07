@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import dataclasses
 import warnings
-from collections import abc, deque
+from collections import abc
 from copy import deepcopy
 from dataclasses import dataclass, is_dataclass, replace
 from inspect import Parameter, Signature
-from typing import Any, AnyStr, Callable, Collection, ForwardRef, Literal, Mapping, Protocol, Sequence, TypeVar, cast
+from typing import Any, AnyStr, Callable, Collection, ForwardRef, Literal, Mapping, TypeVar, cast
 
 import annotated_types
 from msgspec import UnsetType
@@ -23,7 +23,6 @@ from typing_extensions import (
 )
 
 from litestar.exceptions import ImproperlyConfiguredException, LitestarWarning
-from litestar.openapi.spec import Example
 from litestar.params import BodyKwarg, DependencyKwarg, KwargDefinition, ParameterKwarg
 from litestar.types import Empty
 from litestar.types.builtin_types import NoneType, UnionTypes
@@ -48,9 +47,7 @@ __all__ = ("FieldDefinition",)
 T = TypeVar("T", bound=KwargDefinition)
 
 
-
-
-def _annotated_types_extractor(meta: Any, is_sequence_container: bool) -> dict[str, Any]:
+def _annotated_types_extractor(meta: Any, is_sequence_container: bool) -> dict[str, Any]:  # noqa: C901
     kwargs = {}
     if isinstance(meta, annotated_types.GroupedMetadata):
         for sub_meta in meta:
@@ -170,7 +167,6 @@ class FieldDefinition:
             return next(arg for arg in get_args(annotation) if isinstance(arg, KwargDefinition)), extra or {}
 
         if metadata:
-            # return _create_metadata_from_type(metadata=metadata, model=model, annotation=annotation, extra=extra)
             kwargs = {}
             is_sequence_container = is_non_string_sequence(annotation)
             for meta in metadata:
@@ -469,14 +465,6 @@ class FieldDefinition:
                 metadata = tuple(v for v in metadata if not isinstance(v, (KwargDefinition, DependencyKwarg)))
             elif (extra := kwargs.get("extra", {})) and "kwarg_definition" in extra:
                 kwargs["kwarg_definition"] = extra.pop("kwarg_definition")
-            # else:
-            #     kwargs["kwarg_definition"], kwargs["extra"] = cls._extract_metadata(
-            #         annotation=annotation,
-            #         name=kwargs.get("name", ""),
-            #         default=kwargs.get("default", Empty),
-            #         metadata=metadata,
-            #         extra=kwargs.get("extra"),
-            #     )
 
         # there might be additional metadata
         if metadata:

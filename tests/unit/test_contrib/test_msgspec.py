@@ -16,7 +16,6 @@ if TYPE_CHECKING:
     from typing import Callable
 
 
-
 @pytest.fixture
 def expected_field_defs(int_factory: Callable[[], int]) -> list[DTOFieldDefinition]:
     return [
@@ -91,7 +90,6 @@ def expected_field_defs(int_factory: Callable[[], int]) -> list[DTOFieldDefiniti
             kwarg_definition=ANY,
         ),
     ]
-
 
 
 def test_field_definition_generation(

@@ -5,15 +5,15 @@ from typing import TYPE_CHECKING
 import msgspec
 from msgspec import Struct
 
-from litestar.openapi.spec import Schema
 from litestar.plugins import OpenAPISchemaPlugin
+from litestar.plugins.core._msgspec import kwarg_definition_from_field
 from litestar.types.empty import Empty
 from litestar.typing import FieldDefinition
 from litestar.utils.predicates import is_optional_union
-from litestar.plugins.core._msgspec import kwarg_definition_from_field
 
 if TYPE_CHECKING:
     from litestar._openapi.schema_generation import SchemaCreator
+    from litestar.openapi.spec import Schema
 
 
 class StructSchemaPlugin(OpenAPISchemaPlugin):

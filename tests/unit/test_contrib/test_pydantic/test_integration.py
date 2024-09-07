@@ -47,7 +47,6 @@ def test_pydantic_v1_validation_error_raises_400(meta: Any) -> None:
     with create_test_client(route_handlers=handler) as client:
         kws = {"data": model_json} if meta else {"json": model_json}
         response = client.post("/", **kws)  # type: ignore[arg-type]
-        # breakpoint()
         extra = response.json()["extra"]
 
         assert response.status_code == 400
@@ -389,20 +388,20 @@ def test_v2_strict_validate(
         assert res.status_code == 400 if expect_error else 201
 
 
-
 def test_model_defaults(pydantic_version: PydanticVersion) -> None:
     lib = pydantic_v1 if pydantic_version == "v1" else pydantic_v2
+
     class Model(lib.BaseModel):
         a: int
         b: int = lib.Field(default=1)
-        c: int = lib.Field(default_factory=lambda : 3)
+        c: int = lib.Field(default_factory=lambda: 3)
 
     @post("/")
     async def handler(data: Model) -> Dict[str, int]:
         return {"a": data.a, "b": data.b, "c": data.c}
 
     with create_test_client([handler]) as client:
-        schema =  client.app.openapi_schema.components.schemas["test_model_defaults.Model"]
+        schema = client.app.openapi_schema.components.schemas["test_model_defaults.Model"]
         res = client.post("/", json={"a": 5})
         assert res.status_code == 201
         assert res.json() == {"a": 5, "b": 1, "c": 3}
@@ -433,7 +432,7 @@ def test_v2_computed_fields(with_dto: bool) -> None:
     component_name = "HandlerModelResponseBody" if with_dto else "test_v2_computed_fields.Model"
 
     with create_test_client([handler]) as client:
-        schema =  client.app.openapi_schema.components.schemas[component_name]
+        schema = client.app.openapi_schema.components.schemas[component_name]
         res = client.get("/")
         assert list(schema.properties.keys()) == ["foo", "bar", "baz"]
         assert schema.properties["baz"].title == "this is computed"

@@ -11,7 +11,6 @@ from typing_extensions import Annotated
 
 from litestar.contrib.pydantic import PydanticDTO
 from litestar.dto import DTOField, DTOFieldDefinition, Mark, dto_field
-from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.typing import FieldDefinition
 
 from . import PydanticVersion

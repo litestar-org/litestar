@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from contextlib import suppress
 from functools import partial
-from inspect import isclass
 from typing import TYPE_CHECKING, Any, Callable, TypeVar, cast
 from uuid import UUID
 
@@ -12,9 +11,7 @@ from typing_extensions import Buffer, TypeGuard
 from litestar._signature.types import ExtendedMsgSpecValidationError
 from litestar.contrib.pydantic.utils import is_pydantic_v2
 from litestar.exceptions import MissingDependencyException
-from litestar.params import KwargDefinition
 from litestar.plugins import InitPluginProtocol
-from litestar.types import Empty
 from litestar.utils import is_class_and_subclass
 
 try:

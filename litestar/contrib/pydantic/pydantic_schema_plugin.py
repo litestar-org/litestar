@@ -3,16 +3,15 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from litestar.contrib.pydantic.utils import (
+    get_model_info,
     is_pydantic_constrained_field,
     is_pydantic_model_class,
     is_pydantic_undefined,
     is_pydantic_v2,
-    get_model_info,
 )
 from litestar.exceptions import MissingDependencyException
 from litestar.openapi.spec import OpenAPIFormat, OpenAPIType, Schema
 from litestar.plugins import OpenAPISchemaPlugin
-from litestar.typing import FieldDefinition
 from litestar.utils import is_class_and_subclass
 
 try:
@@ -34,6 +33,7 @@ except ImportError:
 
 if TYPE_CHECKING:
     from litestar._openapi.schema_generation.schema import SchemaCreator
+    from litestar.typing import FieldDefinition
 
 PYDANTIC_TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
     pydantic_v1.ByteSize: Schema(type=OpenAPIType.INTEGER),

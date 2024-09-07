@@ -11,5 +11,3 @@ if TYPE_CHECKING:
 @pytest.fixture
 def int_factory() -> Callable[[], int]:
     return lambda: 2
-
-

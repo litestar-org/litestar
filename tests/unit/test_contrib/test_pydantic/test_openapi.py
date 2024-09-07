@@ -1,7 +1,7 @@
 from datetime import date, timedelta
 from decimal import Decimal
 from types import ModuleType
-from typing import Any, Callable, Pattern, Type, Union, cast, Dict
+from typing import Any, Callable, Dict, Pattern, Type, Union, cast
 
 import annotated_types
 import pydantic as pydantic_v2
@@ -322,17 +322,17 @@ def test_create_numerical_constrained_field_schema_pydantic_v1(
 @pytest.mark.parametrize(
     "make_constraint, constraint_kwargs",
     [
-        (pydantic_v2.conint, dict(gt=10, lt=100)),
-        (pydantic_v2.conint, dict(ge=10, le=100)),
-        (pydantic_v2.conint, dict(ge=10, le=100, multiple_of=7)),
-        (pydantic_v2.confloat, dict(gt=10, lt=100)),
-        (pydantic_v2.confloat, dict(ge=10, le=100)),
-        (pydantic_v2.confloat, dict(ge=10, le=100, multiple_of=4.2)),
-        (pydantic_v2.confloat, dict(gt=10, lt=100, multiple_of=10)),
-        (pydantic_v2.condecimal, dict(gt=Decimal("10"), lt=Decimal("100"))),
-        (pydantic_v2.condecimal, dict(ge=Decimal("10"), le=Decimal("100"))),
-        (pydantic_v2.condecimal, dict(gt=Decimal("10"), lt=Decimal("100"), multiple_of=Decimal("5"))),
-        (pydantic_v2.condecimal, dict(ge=Decimal("10"), le=Decimal("100"), multiple_of=Decimal("2"))),
+        (pydantic_v2.conint, {"gt": 10, "lt": 100}),
+        (pydantic_v2.conint, {"ge": 10, "le": 100}),
+        (pydantic_v2.conint, {"ge": 10, "le": 100, "multiple_of": 7}),
+        (pydantic_v2.confloat, {"gt": 10, "lt": 100}),
+        (pydantic_v2.confloat, {"ge": 10, "le": 100}),
+        (pydantic_v2.confloat, {"ge": 10, "le": 100, "multiple_of": 4.2}),
+        (pydantic_v2.confloat, {"gt": 10, "lt": 100, "multiple_of": 10}),
+        (pydantic_v2.condecimal, {"gt": Decimal("10"), "lt": Decimal("100")}),
+        (pydantic_v2.condecimal, {"ge": Decimal("10"), "le": Decimal("100")}),
+        (pydantic_v2.condecimal, {"gt": Decimal("10"), "lt": Decimal("100"), "multiple_of": Decimal("5")}),
+        (pydantic_v2.condecimal, {"ge": Decimal("10"), "le": Decimal("100"), "multiple_of": Decimal("2")}),
     ],
 )
 def test_create_numerical_constrained_field_schema_pydantic_v2(
@@ -382,10 +382,10 @@ def test_create_date_constrained_field_schema_pydantic_v1(
 @pytest.mark.parametrize(
     "constraints",
     [
-        dict(gt=date.today() - timedelta(days=10), lt=date.today() + timedelta(days=100)),
-        dict(ge=date.today() - timedelta(days=10), le=date.today() + timedelta(days=100)),
-        dict(gt=date.today() - timedelta(days=10), lt=date.today() + timedelta(days=100)),
-        dict(ge=date.today() - timedelta(days=10), le=date.today() + timedelta(days=100)),
+        {"gt": date.today() - timedelta(days=10), "lt": date.today() + timedelta(days=100)},
+        {"ge": date.today() - timedelta(days=10), "le": date.today() + timedelta(days=100)},
+        {"gt": date.today() - timedelta(days=10), "lt": date.today() + timedelta(days=100)},
+        {"ge": date.today() - timedelta(days=10), "le": date.today() + timedelta(days=100)},
     ],
 )
 def test_create_date_constrained_field_schema_pydantic_v2(
@@ -789,5 +789,3 @@ def test_create_for_computed_field(prefer_alias: bool) -> None:
     assert property_two.description == "a description"
     assert property_two.title == "a title"
     assert property_two.read_only
-
-

@@ -9,7 +9,6 @@ import msgspec
 
 from litestar.openapi.spec import Example
 from litestar.params import ParameterKwarg
-
 from litestar.plugins import DIPlugin
 
 __all__ = ("MsgspecDIPlugin", "kwarg_definition_from_field")

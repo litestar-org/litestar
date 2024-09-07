@@ -13,12 +13,12 @@ from litestar.params import KwargDefinition, ParameterKwarg
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
 from litestar.utils import deprecated, is_class_and_subclass, is_generic, is_undefined_sentinel
-from litestar.utils.predicates import is_generic
 from litestar.utils.typing import (
     _substitute_typevars,
     get_origin_or_inner_type,
+    get_safe_generic_origin,
     get_type_hints_with_generics_resolved,
-    normalize_type_annotation, get_safe_generic_origin,
+    normalize_type_annotation,
 )
 
 # isort: off
@@ -250,7 +250,7 @@ class PydanticModelInfo:
     is_generic: bool = False
 
 
-def _create_field_definition_v1(
+def _create_field_definition_v1(  # noqa: C901
     field_annotation: Any,
     *,
     field_info: pydantic_v1.fields.FieldInfo | None = None,
@@ -339,7 +339,7 @@ def _create_field_definition_v1(
     )
 
 
-def _create_field_definition_v2(
+def _create_field_definition_v2(  # noqa: C901
     field_annotation: Any,
     *,
     field_info: pydantic_v2.fields.FieldInfo | None = None,
@@ -386,7 +386,6 @@ def _create_field_definition_v2(
 
     if field_meta:
         field_definition_kwargs["raw"] = field_annotation
-        # field_annotation = Annotated[field_annotation, *field_meta]
         for meta in field_meta:
             field_annotation = Annotated[field_annotation, meta]
 
@@ -438,11 +437,8 @@ def get_model_info(
 
     else:
         # pydantic v1 requires some workarounds here
-        # breakpoint()
         model_annotations = {
             k: f.outer_type_ if f.required or f.default else Optional[f.outer_type_]
-            # k: f.annotation
-            # k: f.outer_type_
             for k, f in model.__fields__.items()
         }
 
