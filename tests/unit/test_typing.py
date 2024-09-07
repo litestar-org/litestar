@@ -440,20 +440,6 @@ def test_field_definition_get_type_hints_dont_resolve_generics(
     )
 
 
-@pytest.mark.parametrize(
-    "predicate, expected_meta",
-    [
-        (annotated_types.LowerCase.__metadata__[0], {"lower_case": True}),  # pyright: ignore
-        (annotated_types.UpperCase.__metadata__[0], {"upper_case": True}),  # pyright: ignore
-        (annotated_types.IsAscii.__metadata__[0], {"pattern": "[[:ascii:]]"}),  # pyright: ignore
-        (annotated_types.IsDigits.__metadata__[0], {"pattern": "[[:digit:]]"}),  # pyright: ignore
-        (object(), {}),
-    ],
-)
-def test_unpack_predicate(predicate: Any, expected_meta: dict[str, Any]) -> None:
-    assert _unpack_predicate(predicate) == expected_meta
-
-
 def test_warn_ambiguous_default_values() -> None:
     with pytest.warns(LitestarWarning, match="Ambiguous default values"):
         FieldDefinition.from_annotation(Annotated[int, Parameter(default=1)], default=2)

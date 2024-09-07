@@ -347,10 +347,12 @@ class SchemaCreator:
             result = self.for_union_field(field_definition)
         elif field_definition.is_type_var:
             result = self.for_typevar()
-        elif field_definition.inner_types and not field_definition.is_generic:
-            result = self.for_object_type(field_definition)
         elif self.is_constrained_field(field_definition):
             result = self.for_constrained_field(field_definition)
+        elif field_definition.inner_types and not field_definition.is_generic:
+            # this case does not recurse for all base cases, so it needs to happen
+            # after all non-concrete cases
+            result = self.for_object_type(field_definition)
         elif field_definition.is_subclass_of(UploadFile):
             result = self.for_upload_file(field_definition)
         else:
@@ -564,12 +566,7 @@ class SchemaCreator:
         if field_definition.inner_types:
             items = list(map(item_creator.for_field_definition, field_definition.inner_types))
             schema.items = Schema(one_of=items) if len(items) > 1 else items[0]
-        else:
-            schema.items = item_creator.for_field_definition(
-                FieldDefinition.from_kwarg(
-                    field_definition.annotation.item_type, f"{field_definition.annotation.__name__}Field"
-                )
-            )
+        # INFO: Removed because it was only for pydantic constrained collections
         return schema
 
     def process_schema_result(self, field: FieldDefinition, schema: Schema) -> Schema | Reference:

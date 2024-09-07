@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import dataclasses
 from dataclasses import replace
 from typing import TYPE_CHECKING, Generic, TypeVar
 
+import msgspec.inspect
 from msgspec import NODEFAULT, Struct, structs
 
 from litestar.dto.base_dto import AbstractDTO
@@ -26,6 +28,8 @@ class MsgspecDTO(AbstractDTO[T], Generic[T]):
 
     @classmethod
     def generate_field_definitions(cls, model_type: type[Struct]) -> Generator[DTOFieldDefinition, None, None]:
+        from litestar._openapi.schema_generation.plugins import StructSchemaPlugin
+
         msgspec_fields = {f.name: f for f in structs.fields(model_type)}
 
         def default_or_empty(value: Any) -> Any:
@@ -34,10 +38,17 @@ class MsgspecDTO(AbstractDTO[T], Generic[T]):
         def default_or_none(value: Any) -> Any:
             return None if value is NODEFAULT else value
 
+        inspect_fields: dict[str, msgspec.inspect.Field] = {
+            field.name: field for field in msgspec.inspect.type_info(model_type).fields
+        }
+
         for key, field_definition in cls.get_model_type_hints(model_type).items():
-            msgspec_field = msgspec_fields[key]
+            kwarg_definition, extra = StructSchemaPlugin._get_field_extras(inspect_fields[key])
+            field_definition = dataclasses.replace(field_definition, kwarg_definition=kwarg_definition)
+            field_definition.extra.update(extra)
             dto_field = extract_dto_field(field_definition, field_definition.extra)
             field_definition.extra.pop(DTO_FIELD_META_KEY, None)
+            msgspec_field = msgspec_fields[key]
 
             yield replace(
                 DTOFieldDefinition.from_field_definition(

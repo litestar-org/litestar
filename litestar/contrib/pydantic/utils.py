@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any
 
 from typing_extensions import Annotated, get_type_hints
 
+from litestar.openapi.spec import Example
 from litestar.params import KwargDefinition
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
@@ -208,7 +209,13 @@ def create_field_definitions_for_computed_fields(
         (name := get_name(k, dec)): FieldDefinition.from_annotation(
             Annotated[
                 dec.info.return_type,
-                KwargDefinition(title=dec.info.title, description=dec.info.description, read_only=True),
+                KwargDefinition(
+                    title=dec.info.title,
+                    description=dec.info.description,
+                    read_only=True,
+                    examples=[Example(value=v) for v in examples] if (examples := dec.info.examples) else None,
+                    schema_extra=dec.info.json_schema_extra,
+                ),
             ],
             name=name,
         )

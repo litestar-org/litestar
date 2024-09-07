@@ -8,6 +8,7 @@ from pydantic import v1 as pydantic_v1
 from pydantic.v1.generics import GenericModel
 from typing_extensions import Annotated
 
+from litestar import Litestar, post
 from litestar._openapi.schema_generation import SchemaCreator
 from litestar.contrib.pydantic.pydantic_schema_plugin import PydanticSchemaPlugin
 from litestar.openapi.spec import OpenAPIType
@@ -127,3 +128,21 @@ def test_exclude_private_fields(model_class: Type[Union[pydantic_v1.BaseModel, p
         FieldDefinition.from_annotation(model_class), schema_creator=SchemaCreator(plugins=[PydanticSchemaPlugin()])
     )
     assert not schema.properties
+
+
+def test_v1_constrained_str_with_default_factory_does_not_generate_title() -> None:
+    # https://github.com/litestar-org/litestar/issues/3710
+    class Model(pydantic_v1.BaseModel):
+        test_str: str = pydantic_v1.Field(default_factory=str, max_length=600)
+
+    @post(path="/")
+    async def test(data: Model) -> str:
+        return "success"
+
+    schema = Litestar(route_handlers=[test]).openapi_schema.to_schema()
+    assert (
+        "title"
+        not in schema["components"]["schemas"][
+            "test_v1_constrained_str_with_default_factory_does_not_generate_title.Model"
+        ]["properties"]["test_str"]["oneOf"][1]
+    )

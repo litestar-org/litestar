@@ -6,7 +6,7 @@ from typing import Any
 
 import msgspec
 
-from litestar.plugins import DIPlugin
+from litestar.plugins import DIPlugin, OpenAPISchemaPlugin
 
 __all__ = ("MsgspecDIPlugin",)
 
@@ -29,3 +29,4 @@ class MsgspecDIPlugin(DIPlugin):
                 )
             )
         return inspect.Signature(parameters), type_hints
+

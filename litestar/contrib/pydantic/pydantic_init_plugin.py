@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from contextlib import suppress
 from functools import partial
+from inspect import isclass
 from typing import TYPE_CHECKING, Any, Callable, TypeVar, cast
 from uuid import UUID
 
@@ -11,7 +12,9 @@ from typing_extensions import Buffer, TypeGuard
 from litestar._signature.types import ExtendedMsgSpecValidationError
 from litestar.contrib.pydantic.utils import is_pydantic_constrained_field, is_pydantic_v2
 from litestar.exceptions import MissingDependencyException
+from litestar.params import BodyKwarg, ParameterKwarg, KwargDefinition
 from litestar.plugins import InitPluginProtocol
+from litestar.types import Empty
 from litestar.typing import _KWARG_META_EXTRACTORS
 from litestar.utils import is_class_and_subclass
 
@@ -114,14 +117,55 @@ def is_pydantic_v2_model_class(annotation: Any) -> TypeGuard[type[pydantic_v2.Ba
     return is_class_and_subclass(annotation, pydantic_v2.BaseModel)
 
 
-class ConstrainedFieldMetaExtractor:
-    @staticmethod
-    def matches(annotation: Any, name: str | None, default: Any) -> bool:
-        return is_pydantic_constrained_field(annotation)
+def _extract_constrained_field_metadata(
+    annotation: Any, name: str | None, default: Any, kwarg_definition_cls: type[KwargDefinition]
+) -> tuple[KwargDefinition, dict[str, Any]] | None:
 
-    @staticmethod
-    def extract(annotation: Any, default: Any) -> Any:
-        return [annotation]
+    if pydantic_v1 is Empty:  # pragma: no cover
+        return None
+    if not isclass(annotation):
+        return None
+
+    if issubclass(annotation, pydantic_v1.ConstrainedBytes):
+        return kwarg_definition_cls(
+            min_length=annotation.min_length,
+            max_length=annotation.max_length,
+            lower_case=annotation.to_lower,
+            upper_case=annotation.to_upper,
+        ), {}
+    if issubclass(annotation, pydantic_v1.ConstrainedStr):
+        return kwarg_definition_cls(
+            min_length=annotation.min_length,
+            max_length=annotation.max_length,
+            lower_case=annotation.to_lower,
+            upper_case=annotation.to_upper,
+            pattern=annotation.regex,
+        ), {}
+    if issubclass(annotation, pydantic_v1.ConstrainedDate):
+        return kwarg_definition_cls(
+            gt=annotation.gt,
+            ge=annotation.ge,
+            lt=annotation.lt,
+            le=annotation.le,
+        ), {}
+    if issubclass(
+        annotation, (pydantic_v1.ConstrainedInt, pydantic_v1.ConstrainedFloat, pydantic_v1.ConstrainedDecimal)
+    ):
+        return kwarg_definition_cls(
+            gt=annotation.gt,
+            ge=annotation.ge,
+            lt=annotation.lt,
+            le=annotation.le,
+            multiple_of=annotation.multiple_of,
+        ), {}
+    if issubclass(
+        annotation, (pydantic_v1.ConstrainedList, pydantic_v1.ConstrainedSet, pydantic_v1.ConstrainedFrozenSet)
+    ):
+        return kwarg_definition_cls(
+            max_items=annotation.max_items,
+            min_items=annotation.min_items,
+        ), {}
+    return None
 
 
 class PydanticInitPlugin(InitPluginProtocol):
@@ -292,5 +336,5 @@ class PydanticInitPlugin(InitPluginProtocol):
             *(app_config.type_decoders or []),
         ]
 
-        _KWARG_META_EXTRACTORS.add(ConstrainedFieldMetaExtractor)
+        # _KWARG_META_EXTRACTORS.add(_extract_constrained_field_metadata)
         return app_config
