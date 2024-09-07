@@ -7,7 +7,7 @@ from warnings import warn
 
 from typing_extensions import Annotated, TypeAlias, override
 
-from litestar.contrib.pydantic.utils import is_pydantic_2_model, is_pydantic_undefined, is_pydantic_v2
+from litestar.contrib.pydantic.utils import is_pydantic_2_model, is_pydantic_undefined, is_pydantic_v2, get_model_info
 from litestar.dto.base_dto import AbstractDTO
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.dto.field import DTO_FIELD_META_KEY, extract_dto_field
@@ -109,20 +109,8 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
     def generate_field_definitions(
         cls, model_type: type[pydantic_v1.BaseModel | pydantic_v2.BaseModel]
     ) -> Generator[DTOFieldDefinition, None, None]:
-        from litestar.contrib.pydantic import PydanticSchemaPlugin
 
-        #
-        # model_field_definitions = cls.get_model_type_hints(model_type)
-        #
-        # model_fields: dict[str, pydantic_v1.fields.FieldInfo | pydantic_v2.fields.FieldInfo]
-        # try:
-        #     model_fields = dict(model_type.model_fields)  # type: ignore[union-attr]
-        # except AttributeError:
-        #     model_fields = {
-        #         k: model_field.field_info
-        #         for k, model_field in model_type.__fields__.items()  # type: ignore[union-attr]
-        #     }
-        model_info = PydanticSchemaPlugin.get_model_info(model_type)
+        model_info = get_model_info(model_type)
         model_fields = model_info.model_fields
         model_field_definitions = model_info.field_definitions
 
