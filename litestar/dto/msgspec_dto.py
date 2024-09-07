@@ -10,6 +10,7 @@ from msgspec import NODEFAULT, Struct, structs
 from litestar.dto.base_dto import AbstractDTO
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.dto.field import DTO_FIELD_META_KEY, extract_dto_field
+from litestar.plugins.core._msgspec import kwarg_definition_from_field
 from litestar.types.empty import Empty
 
 if TYPE_CHECKING:
@@ -28,8 +29,6 @@ class MsgspecDTO(AbstractDTO[T], Generic[T]):
 
     @classmethod
     def generate_field_definitions(cls, model_type: type[Struct]) -> Generator[DTOFieldDefinition, None, None]:
-        from litestar._openapi.schema_generation.plugins import StructSchemaPlugin
-
         msgspec_fields = {f.name: f for f in structs.fields(model_type)}
 
         def default_or_empty(value: Any) -> Any:
@@ -43,7 +42,7 @@ class MsgspecDTO(AbstractDTO[T], Generic[T]):
         }
 
         for key, field_definition in cls.get_model_type_hints(model_type).items():
-            kwarg_definition, extra = StructSchemaPlugin._get_field_extras(inspect_fields[key])
+            kwarg_definition, extra = kwarg_definition_from_field(inspect_fields[key])
             field_definition = dataclasses.replace(field_definition, kwarg_definition=kwarg_definition)
             field_definition.extra.update(extra)
             dto_field = extract_dto_field(field_definition, field_definition.extra)

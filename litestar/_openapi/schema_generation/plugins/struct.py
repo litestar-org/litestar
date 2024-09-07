@@ -1,80 +1,24 @@
 from __future__ import annotations
 
-import dataclasses
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 import msgspec
 from msgspec import Struct
 
-from litestar.openapi.spec import Example, Schema
-from litestar.params import ParameterKwarg
+from litestar.openapi.spec import Schema
 from litestar.plugins import OpenAPISchemaPlugin
 from litestar.types.empty import Empty
 from litestar.typing import FieldDefinition
 from litestar.utils.predicates import is_optional_union
+from litestar.plugins.core._msgspec import kwarg_definition_from_field
 
 if TYPE_CHECKING:
-
     from litestar._openapi.schema_generation import SchemaCreator
 
 
 class StructSchemaPlugin(OpenAPISchemaPlugin):
     def is_plugin_supported_field(self, field_definition: FieldDefinition) -> bool:
         return not field_definition.is_union and field_definition.is_subclass_of(Struct)
-
-    @classmethod
-    def _get_field_extras(cls, field: msgspec.inspect.Field) -> tuple[ParameterKwarg | None, dict[str, Any]]:
-        extra = {}
-        kwargs = {}
-        if isinstance(field.type, msgspec.inspect.Metadata):
-            meta = field.type
-            if extra_json_schema := meta.extra_json_schema:
-                kwargs["title"] = extra_json_schema.get("title")
-                kwargs["description"] = extra_json_schema.get("description")
-                if examples := extra_json_schema.get("examples"):
-                    kwargs["examples"] = [Example(value=e) for e in examples]
-                kwargs["schema_extra"] = extra_json_schema.get("extra")
-            extra = meta.extra
-        else:
-            meta = field
-        field_type = meta.type
-        if isinstance(
-            field_type,
-            (
-                msgspec.inspect.IntType,
-                msgspec.inspect.FloatType,
-            ),
-        ):
-            kwargs["gt"] = field_type.gt
-            kwargs["ge"] = field_type.ge
-            kwargs["lt"] = field_type.lt
-            kwargs["le"] = field_type.le
-            kwargs["multiple_of"] = field_type.multiple_of
-        elif isinstance(
-            field_type,
-            (
-                msgspec.inspect.StrType,
-                msgspec.inspect.BytesType,
-                msgspec.inspect.ByteArrayType,
-                msgspec.inspect.MemoryViewType,
-            ),
-        ):
-            kwargs["min_length"] = field_type.min_length
-            kwargs["max_length"] = field_type.max_length
-            kwargs["pattern"] = field_type.pattern
-        elif isinstance(field_type, msgspec.inspect.StrType):
-            kwargs["pattern"] = field_type.pattern
-
-        parameter_defaults = {
-            f.name: default
-            for f in dataclasses.fields(ParameterKwarg)
-            if (default := f.default) is not dataclasses.MISSING
-        }
-        kwargs_without_defaults = {k: v for k, v in kwargs.items() if v != parameter_defaults[k]}
-
-        if kwargs_without_defaults:
-            return ParameterKwarg(**kwargs_without_defaults), extra
-        return None, extra
 
     @classmethod
     def to_openapi_schema(cls, field_definition: FieldDefinition, schema_creator: SchemaCreator) -> Schema:
@@ -88,14 +32,14 @@ class StructSchemaPlugin(OpenAPISchemaPlugin):
         property_fields = {}
         for field in struct_fields:
             field_definition_kwargs = {}
-            if kwarg_definition := cls._get_field_extras(field)[0]:
+            if kwarg_definition := kwarg_definition_from_field(field)[0]:
                 field_definition_kwargs["kwarg_definition"] = kwarg_definition
 
             property_fields[field.encode_name] = FieldDefinition.from_annotation(
                 annotation=type_hints[field.name],
                 name=field.encode_name,
                 default=field.default if field.default not in {msgspec.NODEFAULT, msgspec.UNSET} else Empty,
-                **field_definition_kwargs
+                **field_definition_kwargs,
             )
 
         return schema_creator.create_component_schema(
@@ -108,13 +52,4 @@ class StructSchemaPlugin(OpenAPISchemaPlugin):
                 ]
             ),
             property_fields=property_fields,
-            # property_fields={
-            #     field.encode_name: FieldDefinition.from_annotation(
-            #         annotation=type_hints[field.name],
-            #         name=field.encode_name,
-            #         default=field.default if field.default not in {msgspec.NODEFAULT, msgspec.UNSET} else Empty,
-            #         kwarg_definition=cls._get_field_extras(field)[0],
-            #     )
-            #     for field in struct_fields
-            # },
         )
