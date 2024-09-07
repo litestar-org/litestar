@@ -78,6 +78,7 @@ class DTOFieldDefinition(FieldDefinition):
     dto_field: DTOField
     """DTO field configuration."""
     passthrough_constraints: bool
+    """Pass constraints of the source annotation to be validated by the DTO backend"""
 
     @classmethod
     def from_field_definition(
@@ -95,6 +96,7 @@ class DTOFieldDefinition(FieldDefinition):
             model_name: The name of the model.
             default_factory: Default factory function, if any.
             dto_field: DTOField instance.
+            passthrough_constraints: Pass constraints of the source annotation to be validated by the DTO backend
 
         Returns:
             A :class:`FieldDefinition` instance.

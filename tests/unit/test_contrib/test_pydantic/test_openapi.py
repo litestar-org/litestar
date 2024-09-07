@@ -2,7 +2,7 @@
 from datetime import date, timedelta
 from decimal import Decimal
 from types import ModuleType
-from typing import Any, Callable, Dict, Pattern, Type, Union, cast, Optional
+from typing import Any, Callable, Dict, Optional, Pattern, Type, Union, cast
 
 import annotated_types
 import pydantic as pydantic_v2

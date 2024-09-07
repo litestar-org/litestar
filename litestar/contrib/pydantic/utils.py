@@ -6,7 +6,7 @@ import datetime
 import re
 from dataclasses import dataclass
 from inspect import isclass
-from typing import TYPE_CHECKING, Any, Literal, Optional, Protocol, Callable, cast
+from typing import TYPE_CHECKING, Any, Callable, Literal, Optional
 
 from typing_extensions import Annotated, get_type_hints
 

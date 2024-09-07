@@ -39,7 +39,8 @@ class MsgspecDTO(AbstractDTO[T], Generic[T]):
             return None if value is NODEFAULT else value
 
         inspect_fields: dict[str, msgspec.inspect.Field] = {
-            field.name: field for field in msgspec.inspect.type_info(model_type).fields  # type: ignore[attr-defined]
+            field.name: field
+            for field in msgspec.inspect.type_info(model_type).fields  # type: ignore[attr-defined]
         }
 
         for key, field_definition in cls.get_model_type_hints(model_type).items():
