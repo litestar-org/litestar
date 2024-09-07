@@ -6,7 +6,6 @@ from collections import abc, deque
 from copy import deepcopy
 from dataclasses import dataclass, is_dataclass, replace
 from inspect import Parameter, Signature
-from keyword import kwlist
 from typing import Any, AnyStr, Callable, Collection, ForwardRef, Literal, Mapping, Protocol, Sequence, TypeVar, cast
 
 import annotated_types

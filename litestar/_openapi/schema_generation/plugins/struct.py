@@ -1,24 +1,19 @@
 from __future__ import annotations
 
 import dataclasses
-from bdb import Breakpoint
 from typing import TYPE_CHECKING, Any
 
 import msgspec
 from msgspec import Struct
-from msgspec.inspect import IntType
-from msgspec.structs import fields
-import msgspec
 
+from litestar.openapi.spec import Example, Schema
 from litestar.params import ParameterKwarg
 from litestar.plugins import OpenAPISchemaPlugin
 from litestar.types.empty import Empty
 from litestar.typing import FieldDefinition
 from litestar.utils.predicates import is_optional_union
-from litestar.openapi.spec import Schema, Example
 
 if TYPE_CHECKING:
-    from msgspec.structs import FieldInfo
 
     from litestar._openapi.schema_generation import SchemaCreator
 

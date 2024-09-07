@@ -3,10 +3,8 @@ from __future__ import annotations
 import datetime
 from dataclasses import dataclass
 from inspect import isclass
-from typing import TYPE_CHECKING, Any, Optional, Annotated, Literal
-import decimal
-
-import annotated_types
+from typing import TYPE_CHECKING, Any, Literal, Optional
+from typing_extensions import Annotated
 
 from litestar.contrib.pydantic.utils import (
     create_field_definitions_for_computed_fields,
@@ -19,7 +17,7 @@ from litestar.contrib.pydantic.utils import (
     pydantic_unwrap_and_get_origin,
 )
 from litestar.exceptions import MissingDependencyException
-from litestar.openapi.spec import OpenAPIFormat, OpenAPIType, Schema, Example
+from litestar.openapi.spec import Example, OpenAPIFormat, OpenAPIType, Schema
 from litestar.params import KwargDefinition, ParameterKwarg
 from litestar.plugins import OpenAPISchemaPlugin
 from litestar.types import Empty
@@ -394,7 +392,9 @@ class PydanticSchemaPlugin(OpenAPISchemaPlugin):
 
         if field_meta:
             field_definition_kwargs["raw"] = field_annotation
-            field_annotation = Annotated[field_annotation, *field_meta]
+            # field_annotation = Annotated[field_annotation, *field_meta]
+            for meta in field_meta:
+                field_annotation = Annotated[field_annotation, meta]
 
         return FieldDefinition.from_annotation(
             annotation=field_annotation,

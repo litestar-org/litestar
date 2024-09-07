@@ -4,7 +4,6 @@ import sys
 from dataclasses import dataclass
 from typing import Any, ForwardRef, Generic, List, Optional, Tuple, TypeVar, Union
 
-import annotated_types
 import msgspec
 import pytest
 from typing_extensions import Annotated, NotRequired, Required, TypeAliasType, TypedDict, get_type_hints
@@ -12,7 +11,7 @@ from typing_extensions import Annotated, NotRequired, Required, TypeAliasType, T
 from litestar import get
 from litestar.exceptions import LitestarWarning
 from litestar.params import DependencyKwarg, KwargDefinition, Parameter, ParameterKwarg
-from litestar.typing import FieldDefinition, _unpack_predicate
+from litestar.typing import FieldDefinition
 
 from .test_utils.test_signature import T, _check_field_definition, field_definition_int, test_type_hints
 

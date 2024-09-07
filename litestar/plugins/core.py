@@ -6,7 +6,7 @@ from typing import Any
 
 import msgspec
 
-from litestar.plugins import DIPlugin, OpenAPISchemaPlugin
+from litestar.plugins import DIPlugin
 
 __all__ = ("MsgspecDIPlugin",)
 

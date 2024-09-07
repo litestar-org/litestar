@@ -8,7 +8,7 @@ import pytest
 from msgspec import Meta, Struct, field
 from typing_extensions import Annotated
 
-from litestar.dto import DTOField, MsgspecDTO, dto_field, Mark
+from litestar.dto import DTOField, Mark, MsgspecDTO, dto_field
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.typing import FieldDefinition
 

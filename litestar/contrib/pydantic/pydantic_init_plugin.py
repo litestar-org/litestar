@@ -10,12 +10,11 @@ from msgspec import ValidationError
 from typing_extensions import Buffer, TypeGuard
 
 from litestar._signature.types import ExtendedMsgSpecValidationError
-from litestar.contrib.pydantic.utils import is_pydantic_constrained_field, is_pydantic_v2
+from litestar.contrib.pydantic.utils import is_pydantic_v2
 from litestar.exceptions import MissingDependencyException
-from litestar.params import BodyKwarg, ParameterKwarg, KwargDefinition
+from litestar.params import KwargDefinition
 from litestar.plugins import InitPluginProtocol
 from litestar.types import Empty
-from litestar.typing import _KWARG_META_EXTRACTORS
 from litestar.utils import is_class_and_subclass
 
 try:

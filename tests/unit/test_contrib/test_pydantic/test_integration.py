@@ -6,7 +6,7 @@ import pytest
 from pydantic import v1 as pydantic_v1
 from typing_extensions import Annotated
 
-from litestar import post, Litestar, get
+from litestar import get, post
 from litestar.contrib.pydantic import PydanticInitPlugin, PydanticPlugin
 from litestar.contrib.pydantic.pydantic_dto_factory import PydanticDTO
 from litestar.enums import RequestEncodingType
@@ -398,7 +398,7 @@ def test_model_defaults(pydantic_version: PydanticVersion) -> None:
         c: int = lib.Field(default_factory=lambda : 3)
 
     @post("/")
-    async def handler(data: Model) -> dict[str, int]:
+    async def handler(data: Model) -> Dict[str, int]:
         return {"a": data.a, "b": data.b, "c": data.c}
 
     with create_test_client([handler]) as client:

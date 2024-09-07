@@ -1,7 +1,7 @@
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, timedelta
 from decimal import Decimal
 from types import ModuleType
-from typing import Any, Callable, Pattern, Type, Union, cast
+from typing import Any, Callable, Pattern, Type, Union, cast, Dict
 
 import annotated_types
 import pydantic as pydantic_v2
@@ -26,6 +26,7 @@ from tests.unit.test_contrib.test_pydantic.models import (
     PydanticV1DataclassPerson,
     PydanticV1Person,
 )
+
 from . import PydanticVersion
 
 AnyBaseModelType = Type[Union[pydantic_v1.BaseModel, pydantic_v2.BaseModel]]
@@ -336,7 +337,7 @@ def test_create_numerical_constrained_field_schema_pydantic_v1(
 )
 def test_create_numerical_constrained_field_schema_pydantic_v2(
     make_constraint: Any,
-    constraint_kwargs: dict[str, Any],
+    constraint_kwargs: Dict[str, Any],
     schema_creator: SchemaCreator,
     plugin: PydanticSchemaPlugin,
 ) -> None:
@@ -388,7 +389,7 @@ def test_create_date_constrained_field_schema_pydantic_v1(
     ],
 )
 def test_create_date_constrained_field_schema_pydantic_v2(
-    constraints: dict[str, Any],
+    constraints: Dict[str, Any],
     schema_creator: SchemaCreator,
     plugin: PydanticSchemaPlugin,
 ) -> None:
