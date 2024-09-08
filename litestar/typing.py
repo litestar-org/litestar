@@ -80,7 +80,7 @@ def _annotated_types_extractor(meta: Any, is_sequence_container: bool) -> dict[s
             kwargs["upper_case"] = True
         elif meta.func == str.isascii:
             kwargs["pattern"] = "[[:ascii:]]"
-        elif meta.func == str.isdigit:
+        elif meta.func == str.isdigit:  # pragma: no cover  # coverage quirk: It expects a jump here for branch coverage
             kwargs["pattern"] = "[[:digit:]]"
     return kwargs
 
