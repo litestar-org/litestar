@@ -22,7 +22,7 @@ HTMX client.
     from pathlib import Path
 
 
-    @get(path="/form")
+    @get(path="/form", request_class=HTMXRequest)
     def get_form(request: HTMXRequest) -> Template:
         htmx = request.htmx  #  if true will return HTMXDetails class object
         if htmx:
@@ -63,7 +63,7 @@ an :class:`HTMXTemplate <litestar.contrib.htmx.response.HTMXTemplate>` response:
     from litestar.response import Template
 
 
-    @get(path="/form")
+    @get(path="/form", request_class=HTMXRequest)
     def get_form(
         request: HTMXRequest,
     ) -> Template:  # Return type is Template and not HTMXTemplate.
