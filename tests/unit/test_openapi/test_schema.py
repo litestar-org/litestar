@@ -296,16 +296,27 @@ class Foo(TypedDict):
 
 def test_create_schema_from_msgspec_annotated_type() -> None:
     class Lookup(msgspec.Struct):
-        id: Annotated[str, msgspec.Meta(max_length=16, examples=["example"], description="description", title="title")]
+        str_field: Annotated[
+            str,
+            msgspec.Meta(max_length=16, examples=["example"], description="description", title="title", pattern=r"\w+"),
+        ]
+        bytes_field: Annotated[bytes, msgspec.Meta(max_length=2, min_length=1)]
+        default_field: Annotated[str, msgspec.Meta(min_length=1)] = "a"
 
     schema = get_schema_for_field_definition(FieldDefinition.from_kwarg(name="Lookup", annotation=Lookup))
 
-    assert schema.properties["id"].type == OpenAPIType.STRING  # type: ignore[index, union-attr]
-    assert schema.properties["id"].examples == ["example"]  # type: ignore[index, union-attr]
-    assert schema.properties["id"].description == "description"  # type: ignore[index]
-    assert schema.properties["id"].title == "title"  # type: ignore[index, union-attr]
-    assert schema.properties["id"].max_length == 16  # type: ignore[index, union-attr]
-    assert schema.required == ["id"]
+    assert schema.properties["str_field"].type == OpenAPIType.STRING  # type: ignore[index, union-attr]
+    assert schema.properties["str_field"].examples == ["example"]  # type: ignore[index, union-attr]
+    assert schema.properties["str_field"].description == "description"  # type: ignore[index]
+    assert schema.properties["str_field"].title == "title"  # type: ignore[index, union-attr]
+    assert schema.properties["str_field"].max_length == 16  # type: ignore[index, union-attr]
+    assert sorted(schema.required) == sorted(["str_field", "bytes_field"])
+    assert schema.properties["bytes_field"].to_schema() == {
+        "contentEncoding": "utf-8",
+        "maxLength": 2,
+        "minLength": 1,
+        "type": "string",
+    }
 
 
 def test_annotated_types() -> None:
