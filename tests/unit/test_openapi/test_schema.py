@@ -310,8 +310,8 @@ def test_create_schema_from_msgspec_annotated_type() -> None:
     assert schema.properties["str_field"].description == "description"  # type: ignore[index]
     assert schema.properties["str_field"].title == "title"  # type: ignore[index, union-attr]
     assert schema.properties["str_field"].max_length == 16  # type: ignore[index, union-attr]
-    assert sorted(schema.required) == sorted(["str_field", "bytes_field"])
-    assert schema.properties["bytes_field"].to_schema() == {
+    assert sorted(schema.required) == sorted(["str_field", "bytes_field"])  # type: ignore[arg-type]
+    assert schema.properties["bytes_field"].to_schema() == {  # type: ignore[index]
         "contentEncoding": "utf-8",
         "maxLength": 2,
         "minLength": 1,
