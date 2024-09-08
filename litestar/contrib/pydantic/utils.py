@@ -365,7 +365,7 @@ def _create_field_definition_v2(  # noqa: C901
 
     if json_schema_extra := field_info.json_schema_extra:
         if callable(json_schema_extra):
-            raise ValueError("Callable not supported for json_schema_extra")
+            raise ValueError("Callables not supported for json_schema_extra")
         if json_schema_example := json_schema_extra.get("example"):
             del json_schema_extra["example"]
             examples.append(json_schema_example)

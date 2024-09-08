@@ -585,6 +585,19 @@ def test_create_examples(pydantic_version: PydanticVersion) -> None:
     assert lookup_schema["bar"]["examples"]
 
 
+def test_v2_json_schema_extra_callable_raises() -> None:
+    class Model(pydantic_v2.BaseModel):
+        field: str = pydantic_v2.Field(json_schema_extra=lambda e: None)
+
+    @get("/example")
+    def handler() -> Model:
+        return Model(field="1")
+
+    app = Litestar([handler])
+    with pytest.raises(ValueError, match="Callables not supported"):
+        app.openapi_schema
+
+
 def test_schema_by_alias(base_model: AnyBaseModelType, pydantic_version: PydanticVersion) -> None:
     class RequestWithAlias(base_model):  # type: ignore[misc, valid-type]
         first: str = (pydantic_v1.Field if pydantic_version == "v1" else pydantic_v2.Field)(alias="second")  # type: ignore[operator]
