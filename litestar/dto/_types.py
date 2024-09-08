@@ -101,7 +101,6 @@ class TransferDTOFieldDefinition(DTOFieldDefinition):
         "serialization_name",
         "transfer_type",
         "unique_name",
-        "passthrough_constraints",
     )
 
     transfer_type: TransferType
@@ -112,7 +111,6 @@ class TransferDTOFieldDefinition(DTOFieldDefinition):
     """Whether the field is optional for transfer."""
     is_excluded: bool
     """Whether the field should be excluded from transfer."""
-    passthrough_constraints: bool
 
     @classmethod
     def from_dto_field_definition(
