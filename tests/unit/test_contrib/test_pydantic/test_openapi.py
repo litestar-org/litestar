@@ -10,13 +10,12 @@ import pytest
 from pydantic import v1 as pydantic_v1
 from typing_extensions import Annotated
 
-from litestar import Litestar, post
+from litestar import Litestar, get, post
 from litestar._openapi.schema_generation.schema import SchemaCreator
 from litestar.contrib.pydantic import PydanticPlugin, PydanticSchemaPlugin
 from litestar.openapi import OpenAPIConfig
 from litestar.openapi.spec import Reference, Schema
 from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
-from litestar.status_codes import HTTP_200_OK
 from litestar.testing import TestClient, create_test_client
 from litestar.typing import FieldDefinition
 from litestar.utils import is_class_and_subclass
@@ -491,8 +490,7 @@ def test_spec_generation(cls: Any) -> None:
         }
 
 
-@pytest.mark.parametrize("create_examples", (True, False))
-def test_schema_generation_v1(create_examples: bool) -> None:
+def test_schema_generation_v1() -> None:
     class Lookup(pydantic_v1.BaseModel):
         id: Annotated[
             str,
@@ -501,35 +499,30 @@ def test_schema_generation_v1(create_examples: bool) -> None:
                 max_length=16,
                 description="A unique identifier",
                 example="e4eaaaf2-d142-11e1-b3e4-080027620cdd",  # pyright: ignore
+                examples=["31", "32"],
             ),
         ]
+        with_title: str = pydantic_v1.Field(title="WITH_title")
 
     @post("/example")
     async def example_route() -> Lookup:
-        return Lookup(id="1234567812345678")
+        return Lookup(id="1234567812345678", with_title="1")
 
-    with create_test_client(
-        route_handlers=[example_route],
-        openapi_config=OpenAPIConfig(
-            title="Example API",
-            version="1.0.0",
-            create_examples=create_examples,
-        ),
-        signature_namespace={"Lookup": Lookup},
-    ) as client:
-        response = client.get("/schema/openapi.json")
-        assert response.status_code == HTTP_200_OK
-        assert response.json()["components"]["schemas"]["test_schema_generation_v1.Lookup"]["properties"]["id"] == {
-            "description": "A unique identifier",
-            "examples": ["e4eaaaf2-d142-11e1-b3e4-080027620cdd"],
-            "maxLength": 16,
-            "minLength": 12,
-            "type": "string",
-        }
+    app = Litestar([example_route])
+    schema = app.openapi_schema.to_schema()
+    lookup_schema = schema["components"]["schemas"]["test_schema_generation_v1.Lookup"]["properties"]
+
+    assert lookup_schema["id"] == {
+        "description": "A unique identifier",
+        "examples": ["e4eaaaf2-d142-11e1-b3e4-080027620cdd", "31", "32"],
+        "maxLength": 16,
+        "minLength": 12,
+        "type": "string",
+    }
+    assert lookup_schema["with_title"] == {"title": "WITH_title", "type": "string"}
 
 
-@pytest.mark.parametrize("create_examples", (True, False))
-def test_schema_generation_v2(create_examples: bool) -> None:
+def test_schema_generation_v2() -> None:
     class Lookup(pydantic_v2.BaseModel):
         id: Annotated[
             str,
@@ -537,32 +530,59 @@ def test_schema_generation_v2(create_examples: bool) -> None:
                 min_length=12,
                 max_length=16,
                 description="A unique identifier",
-                json_schema_extra={"example": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"},
+                # we expect these examples to be merged
+                json_schema_extra={"example": "e4eaaaf2-d142-11e1-b3e4-080027620cdd", "examples": ["31"]},
+                examples=["32"],
             ),
         ]
+        # title should work if given on the field
+        with_title: str = pydantic_v2.Field(title="WITH_title")
+        # or as an extra
+        with_extra_title: str = pydantic_v2.Field(json_schema_extra={"title": "WITH_extra"})
 
     @post("/example")
     async def example_route() -> Lookup:
-        return Lookup(id="1234567812345678")
+        return Lookup(id="1234567812345678", with_title="1", with_extra_title="2")
 
-    with create_test_client(
-        route_handlers=[example_route],
+    app = Litestar([example_route])
+    schema = app.openapi_schema.to_schema()
+    lookup_schema = schema["components"]["schemas"]["test_schema_generation_v2.Lookup"]["properties"]
+
+    assert lookup_schema["id"] == {
+        "description": "A unique identifier",
+        "examples": ["e4eaaaf2-d142-11e1-b3e4-080027620cdd", "31", "32"],
+        "maxLength": 16,
+        "minLength": 12,
+        "type": "string",
+    }
+    assert lookup_schema["with_title"] == {"title": "WITH_title", "type": "string"}
+    assert lookup_schema["with_extra_title"] == {"title": "WITH_extra", "type": "string"}
+
+
+def test_create_examples(pydantic_version: PydanticVersion) -> None:
+    lib = pydantic_v1 if pydantic_version == "v1" else pydantic_v2
+
+    class Model(lib.BaseModel):  # type: ignore[name-defined, misc]
+        foo: str = lib.Field(examples=["32"])
+        bar: str
+
+    @get("/example")
+    async def handler() -> Model:
+        return Model(foo="1", bar="2")
+
+    app = Litestar(
+        [handler],
         openapi_config=OpenAPIConfig(
-            title="Example API",
-            version="1.0.0",
-            create_examples=create_examples,
+            title="Test",
+            version="0",
+            create_examples=True,
         ),
-        signature_namespace={"Lookup": Lookup},
-    ) as client:
-        response = client.get("/schema/openapi.json")
-        assert response.status_code == HTTP_200_OK
-        assert response.json()["components"]["schemas"]["test_schema_generation_v2.Lookup"]["properties"]["id"] == {
-            "description": "A unique identifier",
-            "examples": ["e4eaaaf2-d142-11e1-b3e4-080027620cdd"],
-            "maxLength": 16,
-            "minLength": 12,
-            "type": "string",
-        }
+    )
+    schema = app.openapi_schema.to_schema()
+    lookup_schema = schema["components"]["schemas"]["test_create_examples.Model"]["properties"]
+
+    assert lookup_schema["foo"]["examples"] == ["32"]
+    assert lookup_schema["bar"]["examples"]
 
 
 def test_schema_by_alias(base_model: AnyBaseModelType, pydantic_version: PydanticVersion) -> None:

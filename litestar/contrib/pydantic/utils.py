@@ -162,7 +162,7 @@ def pydantic_get_type_hints_with_generics_resolved(
 
 
 @deprecated(version="2.6.2")
-def pydantic_get_unwrapped_annotation_and_type_hints(annotation: Any) -> tuple[Any, dict[str, Any]]:  # pragma:  pver
+def pydantic_get_unwrapped_annotation_and_type_hints(annotation: Any) -> tuple[Any, dict[str, Any]]:  # pragma: no cover
     """Get the unwrapped annotation and the type hints after resolving generics.
 
     Args:
@@ -258,18 +258,21 @@ _CreateFieldDefinition = Callable[..., FieldDefinition]
 def _create_field_definition_v1(  # noqa: C901
     field_annotation: Any,
     *,
-    field_info: pydantic_v1.fields.FieldInfo | None = None,
+    field_info: pydantic_v1.fields.FieldInfo,
     **field_definition_kwargs: Any,
 ) -> FieldDefinition:
     kwargs: dict[str, Any] = {}
-    if field_info:
-        if example := field_info.extra.get("example"):
-            examples = [Example(value=example)]
-            kwargs["examples"] = examples
-        if title := field_info.title:
-            kwargs["title"] = title
-        if description := field_info.description:
-            kwargs["description"] = description
+    examples: list[Any] = []
+    if example := field_info.extra.get("example"):
+        examples.append(example)
+    if extra_examples := field_info.extra.get("examples"):
+        examples.extend(extra_examples)
+    if examples:
+        kwargs["examples"] = [Example(value=e) for e in examples]
+    if title := field_info.title:
+        kwargs["title"] = title
+    if description := field_info.description:
+        kwargs["description"] = description
 
     kwarg_definition: KwargDefinition | None = None
 
@@ -353,49 +356,55 @@ def _create_field_definition_v1(  # noqa: C901
 def _create_field_definition_v2(  # noqa: C901
     field_annotation: Any,
     *,
-    field_info: pydantic_v2.fields.FieldInfo | None = None,
+    field_info: pydantic_v2.fields.FieldInfo,
     **field_definition_kwargs: Any,
 ) -> FieldDefinition:
     kwargs: dict[str, Any] = {}
     examples: list[Any] = []
     field_meta: list[Any] = []
 
-    if field_info:
-        if json_schema_extra := field_info.json_schema_extra:
-            if callable(json_schema_extra):
-                raise ValueError("Callable not supported for examples")
-            if json_schema_example := json_schema_extra.get("example"):
-                examples.append(json_schema_example)
-            if json_schema_examples := json_schema_extra.get("examples"):
-                examples.extend(json_schema_examples)  # type: ignore[arg-type]
-        if field_examples := field_info.examples:
-            examples.extend(field_examples)
+    if json_schema_extra := field_info.json_schema_extra:
+        if callable(json_schema_extra):
+            raise ValueError("Callable not supported for json_schema_extra")
+        if json_schema_example := json_schema_extra.get("example"):
+            del json_schema_extra["example"]
+            examples.append(json_schema_example)
+        if json_schema_examples := json_schema_extra.get("examples"):
+            del json_schema_extra["examples"]
+            examples.extend(json_schema_examples)  # type: ignore[arg-type]
+    if field_examples := field_info.examples:
+        examples.extend(field_examples)
 
-        if examples:
-            kwargs["examples"] = [Example(value=e) for e in examples]
+    if examples:
+        if not json_schema_extra:
+            json_schema_extra = {}
+        json_schema_extra["examples"] = examples
 
-        if description := field_info.description:
-            kwargs["description"] = description
+    if description := field_info.description:
+        kwargs["description"] = description
 
-        if title := field_info.title:
-            kwargs["title"] = title
+    if title := field_info.title:
+        kwargs["title"] = title
 
-        for meta in field_info.metadata:
-            if isinstance(meta, pydantic_v2.types.StringConstraints):
-                kwargs["min_length"] = meta.min_length
-                kwargs["max_length"] = meta.max_length
-                kwargs["pattern"] = meta.pattern
-                kwargs["lower_case"] = meta.to_lower
-                kwargs["upper_case"] = meta.to_upper
-            # forward other metadata
-            else:
-                field_meta.append(meta)
+    for meta in field_info.metadata:
+        if isinstance(meta, pydantic_v2.types.StringConstraints):
+            kwargs["min_length"] = meta.min_length
+            kwargs["max_length"] = meta.max_length
+            kwargs["pattern"] = meta.pattern
+            kwargs["lower_case"] = meta.to_lower
+            kwargs["upper_case"] = meta.to_upper
+        # forward other metadata
+        else:
+            field_meta.append(meta)
 
-        kwargs = {k: v for k, v in kwargs.items() if v is not None}
+    if json_schema_extra:
+        kwargs["schema_extra"] = json_schema_extra
 
-        if kwargs:
-            kwarg_definition = ParameterKwarg(**kwargs)
-            field_meta.append(kwarg_definition)
+    kwargs = {k: v for k, v in kwargs.items() if v is not None}
+
+    if kwargs:
+        kwarg_definition = ParameterKwarg(**kwargs)
+        field_meta.append(kwarg_definition)
 
     if field_meta:
         field_definition_kwargs["raw"] = field_annotation
