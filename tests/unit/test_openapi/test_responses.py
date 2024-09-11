@@ -361,6 +361,7 @@ def test_create_additional_responses(create_factory: CreateFactoryFixture) -> No
             401: ResponseSpec(data_container=AuthenticationError, description="Authentication error"),
             500: ResponseSpec(data_container=ServerError, generate_examples=False, media_type=MediaType.TEXT),
             505: ResponseSpec(data_container=UnknownError),
+            900: ResponseSpec(data_container=UnknownError, media_type="application/vnd.custom"),
         }
     )
     def handler() -> DataclassPerson:
@@ -397,6 +398,13 @@ def test_create_additional_responses(create_factory: CreateFactoryFixture) -> No
     third_response = next(responses)
     assert third_response[0] == "505"
     assert third_response[1].description == "Additional response"
+
+    fourth_response = next(responses)
+    assert fourth_response[0] == "900"
+    assert fourth_response[1].description == "Additional response"
+    custom_media_type_content = fourth_response[1].content.get("application/vnd.custom")  # type: ignore[union-attr]
+    assert custom_media_type_content
+    assert isinstance(custom_media_type_content, OpenAPIMediaType)
 
     with pytest.raises(StopIteration):
         next(responses)
