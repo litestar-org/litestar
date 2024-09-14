@@ -40,7 +40,6 @@ from litestar._openapi.schema_generation.constrained_fields import (
     create_string_constrained_field_schema,
 )
 from litestar._openapi.schema_generation.utils import (
-    _get_normalized_schema_key,
     _should_create_enum_schema,
     _should_create_literal_schema,
     _type_or_first_not_none_inner_type,
@@ -508,8 +507,7 @@ class SchemaCreator:
         Returns:
             A schema instance.
         """
-        key = _get_normalized_schema_key(field_definition.annotation)
-        if (ref := self.schema_registry.get_reference_for_key(key)) is not None:
+        if (ref := self.schema_registry.get_reference_for_field_definition(field_definition)) is not None:
             return ref
 
         schema = plugin.to_openapi_schema(field_definition=field_definition, schema_creator=self)
@@ -612,8 +610,7 @@ class SchemaCreator:
             schema.examples = get_json_schema_formatted_examples(create_examples_for_field(field))
 
         if schema.title and schema.type == OpenAPIType.OBJECT:
-            key = _get_normalized_schema_key(field.annotation)
-            return self.schema_registry.get_reference_for_key(key) or schema
+            return self.schema_registry.get_reference_for_field_definition(field) or schema
         return schema
 
     def create_component_schema(
@@ -644,7 +641,7 @@ class SchemaCreator:
         Returns:
             A schema instance.
         """
-        schema = self.schema_registry.get_schema_for_key(_get_normalized_schema_key(type_.annotation))
+        schema = self.schema_registry.get_schema_for_field_definition(type_)
         schema.title = title or _get_type_schema_name(type_)
         schema.required = required
         schema.type = openapi_type
