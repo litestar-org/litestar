@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import weakref
 from collections import defaultdict
 from typing import TYPE_CHECKING, Iterator, Sequence, _GenericAlias  # type: ignore[attr-defined]
 
@@ -97,10 +96,7 @@ class SchemaRegistry:
         self._schema_key_map: dict[tuple[str, ...], RegisteredSchema] = {}
         self._schema_reference_map: dict[int, RegisteredSchema] = {}
         self._model_name_groups: defaultdict[str, list[RegisteredSchema]] = defaultdict(list)
-        # no need to hold onto transient FieldDefinitions here so we're using weakrefs
-        self._component_type_map: weakref.WeakValueDictionary[tuple[str, ...], FieldDefinition] = (
-            weakref.WeakValueDictionary()
-        )
+        self._component_type_map: dict[str, FieldDefinition] = {}
 
     def get_schema_for_field_definition(self, field: FieldDefinition) -> Schema:
         """Get a registered schema by its key.

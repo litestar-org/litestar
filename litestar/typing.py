@@ -185,7 +185,6 @@ class FieldDefinition:
         "raw",
         "safe_generic_origin",
         "type_wrappers",
-        "__weakref__",
     )
 
     raw: Any
