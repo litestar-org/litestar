@@ -6,7 +6,7 @@
     function setColorMode(t){let e=document.documentElement;e.setAttribute("data-color-mode",t);let a=window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches,s=t;"auto"===t&&(s=a?"dark":"light"),"light"===s?(e.classList.remove("dark"),e.classList.add("light")):(e.classList.remove("light"),e.classList.add("dark"))}
     setColorMode(localStorage._theme||"auto");
   </script><link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=397bb51e" />
-    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=5117e564" />
+    <link rel="stylesheet" type="text/css" href="../_static/shibuya.css?v=36d120a7" />
     <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
     <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
@@ -116,10 +116,10 @@
     <div class="nav-versions-choices"><ul><li><a href="/latest">latest</a></li><li><a href="/main">development</a></li><li><a href="/3-dev">v3</a></li><li><a href="/2">v2</a></li><li><a href="/1">v1</a></li></ul></div>
   </div><div class="sy-head-socials">
 <a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)">
-  <i class="i-simpleicons x-twitter"></i>
+  <iconify-icon icon="prime:twitter"></iconify-icon>
 </a>
   <a href="https://discord.gg/litestar" aria-label="Discord">
-    <i class="i-simpleicons discord"></i>
+    <iconify-icon icon="simple-icons:discord"></iconify-icon>
   </a></div></div>
     </div>
     <div class="sy-head-actions flex items-center shrink-0 print:hidden"><button class="js-theme theme-switch flex items-center"
@@ -494,17 +494,17 @@ data-aria-dark="Switch to auto color mode">
 </div><a class="js-repo-stats repo-stats flex items-center" href="https://github.com/litestar-org/litestar"
   data-type="github" data-user="litestar-org" data-repo="litestar">
   <span class="w-8 flex items-center justify-around shrink-0 text-3xl">
-    <i class="i-simpleicons github"></i>
+    <iconify-icon icon="simple-icons:github"></iconify-icon>
   </span>
   <span class="flex-grow px-2 break-all">
     <span>litestar-org/litestar</span>
     <span class="flex text-sm repo-stats-count">
       <span class="flex items-center pr-3">
-        <i class="i-lucide star"></i>
+        <iconify-icon icon="lucide:star"></iconify-icon>
         <strong class="js-repo-stars ml-1">0</strong>
       </span>
       <span class="flex items-center">
-        <i class="i-lucide git-fork"></i>
+        <iconify-icon icon="lucide:git-fork"></iconify-icon>
         <strong class="js-repo-forks ml-1">0</strong>
       </span>
     </span>
@@ -1184,7 +1184,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;0ca47996-1b7e-4e3d-8ca0-21a2ac41811c&quot;</span>,<span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;45d9403d-ff6d-4983-8de2-92f219259d6e&quot;</span>,<span class="s2">&quot;userName&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -1369,7 +1369,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <div class="admonition">
 <p class="admonition-title">Run it</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span data-line="1">&gt;<span class="w"> </span>curl<span class="w"> </span>http://127.0.0.1:8000/users<span class="w"> </span>-H<span class="w"> </span>Content-Type:<span class="w"> </span>application/json<span class="w"> </span>-d<span class="w"> </span><span class="o">{</span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span>,<span class="s2">&quot;password&quot;</span>:<span class="s2">&quot;xyz&quot;</span>,<span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;2023-04-24T00:00:00Z&quot;</span><span class="o">}</span>
-</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;cbd68672-806d-4a97-91d3-0480287a69cb&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
+</span><span data-line="2"><span class="o">{</span><span class="s2">&quot;created_at&quot;</span>:<span class="s2">&quot;0001-01-01T00:00:00&quot;</span>,<span class="s2">&quot;id&quot;</span>:<span class="s2">&quot;2b711f03-0a41-4d4f-bb3a-65184cac6ccf&quot;</span>,<span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;Litestar User&quot;</span><span class="o">}</span>
 </span></pre></div>
 </div>
 </div>
@@ -1754,9 +1754,15 @@ low-level, and lack the utility of the higher-level response types.</p>
   </p>
 </div>
       <div class="sy-foot-socials">
-<a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)"><i class="i-simpleicons x-twitter"></i></a>
-<a href="https://discord.gg/litestar" aria-label="Discord"><i class="i-simpleicons discord"></i></a>
-<a href="https://www.reddit.com/r/LitestarAPI" aria-label="Reddit"><i class="i-simpleicons reddit"></i></a></div>
+<a href="https://twitter.com/LitestarAPI" aria-label="X (Twitter)">
+  <iconify-icon icon="prime:twitter"></iconify-icon>
+</a>
+<a href="https://discord.gg/litestar" aria-label="Discord">
+  <iconify-icon icon="simple-icons:discord"></iconify-icon>
+</a>
+<a href="https://www.reddit.com/r/LitestarAPI" aria-label="Reddit">
+  <iconify-icon icon="simple-icons:reddit"></iconify-icon>
+</a></div>
     </div>
   </div>
 </footer>
@@ -1772,6 +1778,6 @@ low-level, and lack the utility of the higher-level response types.</p>
       <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
       <script src="../_static/design-tabs.js?v=36754332"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-      <script src="../_static/shibuya.js?v=3cc430e2"></script>
+      <script src="../_static/shibuya.js?v=c5fc9e80"></script>
       <script src="../_static/versioning.js?v=bc681eff"></script></body>
 </html>
