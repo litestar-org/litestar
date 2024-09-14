@@ -201,7 +201,7 @@ skip = 'pdm.lock,docs/examples/contrib/sqlalchemy/us_state_lookup.json'
 
 [tool.coverage.run]
 concurrency = ["multiprocessing", "thread"]
-omit = ["*/tests/*", "*/litestar/plugins/sqlalchemy.py", "*litestar/_kwargs/types.py"]
+omit = ["*/tests/*", "*/litestar/plugins/sqlalchemy.py", "*/litestar/_kwargs/types.py"]
 parallel = true
 plugins = ["covdefaults"]
 source = ["litestar"]
