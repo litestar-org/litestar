@@ -118,6 +118,9 @@ class CSRFMiddleware(MiddlewareProtocol):
             form = await request.form()
             existing_csrf_token = form.get("_csrf_token", None)
 
+        if not existing_csrf_token and self.config.cookie_httponly:
+            existing_csrf_token = csrf_cookie
+
         connection_state = ScopeState.from_scope(scope)
         if request.method in self.config.safe_methods:
             token = connection_state.csrf_token = csrf_cookie or generate_csrf_token(secret=self.config.secret)
