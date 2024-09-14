@@ -194,3 +194,13 @@ Removal of deprecated ``litestar.middleware.exceptions`` module and ``ExceptionH
 The deprecated ``litestar.middleware.exceptions`` module and the
 ``ExceptionHandlerMiddleware`` have been removed. Since ``ExceptionHandlerMiddleware``
 has been applied automatically behind the scenes if necessary, no action is required.
+
+
+Update MessagePack media type to ``application/vnd.msgpack``
+------------------------------------------------------------
+
+Change the media type of :attr:`~enums.MediaType.MESSAGEPACK` and
+:attr:`~enums.RequestEncodingType.MESSAGEPACK` from ``application/x-msgpack`` to the
+newly introduced official ``application/vnd.msgpack``.
+
+https://www.iana.org/assignments/media-types/application/vnd.msgpack
