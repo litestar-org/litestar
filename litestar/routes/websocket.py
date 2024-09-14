@@ -69,7 +69,7 @@ class WebSocketRoute(BaseRoute):
         cleanup_group: DependencyCleanupGroup | None = None
 
         if self.handler_parameter_model.has_kwargs and self.route_handler.signature_model:
-            parsed_kwargs = self.handler_parameter_model.to_kwargs(connection=websocket)
+            parsed_kwargs = await self.handler_parameter_model.to_kwargs(connection=websocket)
 
             if self.handler_parameter_model.dependency_batches:
                 cleanup_group = await self.handler_parameter_model.resolve_dependencies(websocket, parsed_kwargs)
