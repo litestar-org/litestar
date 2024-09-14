@@ -88,7 +88,7 @@ class V1ModelWithPrivateFields(pydantic_v1.BaseModel):
 
     _field: str = pydantic_v1.PrivateAttr()
     # include an invalid annotation here to ensure we never touch those fields
-    _underscore_field: "foo"  # type: ignore[name-defined]  # noqa: F821
+    _underscore_field: str = "foo"
 
 
 class V1GenericModelWithPrivateFields(pydantic_v1.generics.GenericModel, Generic[T]):  # pyright: ignore
@@ -97,19 +97,19 @@ class V1GenericModelWithPrivateFields(pydantic_v1.generics.GenericModel, Generic
 
     _field: str = pydantic_v1.PrivateAttr()
     # include an invalid annotation here to ensure we never touch those fields
-    _underscore_field: "foo"  # type: ignore[name-defined]  # noqa: F821
+    _underscore_field: str = "foo"
 
 
 class V2ModelWithPrivateFields(pydantic_v2.BaseModel):
     _field: str = pydantic_v2.PrivateAttr()
     # include an invalid annotation here to ensure we never touch those fields
-    _underscore_field: "foo"  # type: ignore[name-defined] # noqa: F821
+    _underscore_field: str = "foo"
 
 
 class V2GenericModelWithPrivateFields(pydantic_v2.BaseModel, Generic[T]):
     _field: str = pydantic_v2.PrivateAttr()
     # include an invalid annotation here to ensure we never touch those fields
-    _underscore_field: "foo"  # type: ignore[name-defined] # noqa: F821
+    _underscore_field: str = "foo"
 
 
 @pytest.mark.parametrize(
