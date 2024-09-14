@@ -1,4 +1,3 @@
-# pragma: no cover
 from __future__ import annotations
 
 from typing import Any, Awaitable, Callable, Dict
