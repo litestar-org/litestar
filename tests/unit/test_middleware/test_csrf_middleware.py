@@ -69,6 +69,7 @@ def test_csrf_successful_flow(get_handler: HTTPRouteHandler, post_handler: HTTPR
         response = client.post("/", headers={"x-csrftoken": csrf_token})
         assert response.status_code == HTTP_201_CREATED
 
+
 def test_csrf_httponly_flow(get_handler: HTTPRouteHandler, post_handler: HTTPRouteHandler) -> None:
     with create_test_client(
         route_handlers=[get_handler, post_handler], csrf_config=CSRFConfig(secret="secret", cookie_httponly=True)
@@ -80,8 +81,9 @@ def test_csrf_httponly_flow(get_handler: HTTPRouteHandler, post_handler: HTTPRou
         assert csrf_token is not None
         assert "set-cookie" in response.headers
         if csrf_token:
-          response = client.post("/" )
-          assert response.status_code == HTTP_201_CREATED
+            response = client.post("/")
+            assert response.status_code == HTTP_201_CREATED
+
 
 @pytest.mark.parametrize(
     "method",
