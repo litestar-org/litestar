@@ -1,8 +1,9 @@
 from typing import Optional, Type
 
 import pytest
+from typing_extensions import Annotated
 
-from litestar import get
+from litestar import get, post
 from litestar.params import Parameter, ParameterKwarg
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
@@ -36,3 +37,13 @@ def test_cookie_params(t_type: Type, param_dict: dict, param: ParameterKwarg, ex
         client.cookies = param_dict  # type: ignore[assignment]
         response = client.get(test_path)
         assert response.status_code == expected_code, response.json()
+
+
+def test_cookie_param_with_post() -> None:
+    # https://github.com/litestar-org/litestar/issues/3734
+    @post()
+    async def handler(data: str, secret: Annotated[str, Parameter(cookie="x-secret")]) -> None:
+        return None
+
+    with create_test_client([handler], raise_server_exceptions=True) as client:
+        assert client.post("/", json={}).status_code == 400

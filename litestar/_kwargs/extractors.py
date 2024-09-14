@@ -23,6 +23,7 @@ from litestar.utils.scope.state import ScopeState
 if TYPE_CHECKING:
     from litestar._kwargs import KwargsModel
     from litestar._kwargs.parameter_definition import ParameterDefinition
+    from litestar._kwargs.types import Extractor
     from litestar.connection import ASGIConnection, Request
     from litestar.dto import AbstractDTO
     from litestar.typing import FieldDefinition
@@ -83,7 +84,7 @@ def create_connection_value_extractor(
     connection_key: str,
     expected_params: set[ParameterDefinition],
     parser: Callable[[ASGIConnection, KwargsModel], Mapping[str, Any]] | None = None,
-) -> Callable[[dict[str, Any], ASGIConnection], None]:
+) -> Extractor:
     """Create a kwargs extractor function.
 
     Args:
@@ -98,7 +99,7 @@ def create_connection_value_extractor(
 
     alias_and_key_tuples, alias_defaults, alias_to_params = _create_param_mappings(expected_params)
 
-    def extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
+    async def extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
         data = parser(connection, kwargs_model) if parser else getattr(connection, connection_key, {})
 
         try:
@@ -178,7 +179,7 @@ def parse_connection_headers(connection: ASGIConnection, _: KwargsModel) -> Head
     return Headers.from_scope(connection.scope)
 
 
-def state_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
+async def state_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
     """Extract the app state from the connection and insert it to the kwargs injected to the handler.
 
     Args:
@@ -191,7 +192,7 @@ def state_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
     values["state"] = connection.app.state._state
 
 
-def headers_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
+async def headers_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
     """Extract the headers from the connection and insert them to the kwargs injected to the handler.
 
     Args:
@@ -206,7 +207,7 @@ def headers_extractor(values: dict[str, Any], connection: ASGIConnection) -> Non
     values["headers"] = dict(connection.headers.items())
 
 
-def cookies_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
+async def cookies_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
     """Extract the cookies from the connection and insert them to the kwargs injected to the handler.
 
     Args:
@@ -219,7 +220,7 @@ def cookies_extractor(values: dict[str, Any], connection: ASGIConnection) -> Non
     values["cookies"] = connection.cookies
 
 
-def query_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
+async def query_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
     """Extract the query params from the connection and insert them to the kwargs injected to the handler.
 
     Args:
@@ -232,7 +233,7 @@ def query_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
     values["query"] = connection.query_params
 
 
-def scope_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
+async def scope_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
     """Extract the scope from the connection and insert it into the kwargs injected to the handler.
 
     Args:
@@ -245,7 +246,7 @@ def scope_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
     values["scope"] = connection.scope
 
 
-def request_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
+async def request_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
     """Set the connection instance as the 'request' value in the kwargs injected to the handler.
 
     Args:
@@ -258,7 +259,7 @@ def request_extractor(values: dict[str, Any], connection: ASGIConnection) -> Non
     values["request"] = connection
 
 
-def socket_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
+async def socket_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
     """Set the connection instance as the 'socket' value in the kwargs injected to the handler.
 
     Args:
@@ -271,7 +272,7 @@ def socket_extractor(values: dict[str, Any], connection: ASGIConnection) -> None
     values["socket"] = connection
 
 
-def body_extractor(
+async def body_extractor(
     values: dict[str, Any],
     connection: Request[Any, Any, Any],
 ) -> None:
@@ -287,7 +288,7 @@ def body_extractor(
     Returns:
         The Body value.
     """
-    values["body"] = connection.body()
+    values["body"] = await connection.body()
 
 
 async def json_extractor(connection: Request[Any, Any, Any]) -> Any:
@@ -441,7 +442,7 @@ def create_url_encoded_data_extractor(
     )
 
 
-def create_data_extractor(kwargs_model: KwargsModel) -> Callable[[dict[str, Any], ASGIConnection], None]:
+def create_data_extractor(kwargs_model: KwargsModel) -> Extractor:
     """Create an extractor for a request's body.
 
     Args:
@@ -476,11 +477,11 @@ def create_data_extractor(kwargs_model: KwargsModel) -> Callable[[dict[str, Any]
             "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", json_extractor
         )
 
-    def extractor(
+    async def extractor(
         values: dict[str, Any],
         connection: ASGIConnection[Any, Any, Any, Any],
     ) -> None:
-        values["data"] = data_extractor(connection)
+        values["data"] = await data_extractor(connection)
 
     return extractor
 
