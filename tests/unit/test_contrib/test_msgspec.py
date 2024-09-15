@@ -8,6 +8,7 @@ import pytest
 from msgspec import Meta, Struct, field
 from typing_extensions import Annotated
 
+from litestar import Litestar, post
 from litestar.dto import DTOField, Mark, MsgspecDTO, dto_field
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.typing import FieldDefinition
@@ -131,3 +132,24 @@ def test_msgspec_dto_annotated_dto_field() -> None:
     fields = list(dto_type.generate_field_definitions(Model))
     assert fields[0].dto_field == DTOField("read-only")
     assert fields[1].dto_field == DTOField("read-only")
+
+
+def test_tag_field_included_in_schema() -> None:
+    class Model(Struct, tag_field="foo", tag="bar"):
+        regular_field: str
+
+    @post("/", signature_types=[Model])
+    def handler(data: Model) -> Model:
+        return data
+
+    assert Litestar([handler]).openapi_schema.components.schemas[
+        "test_tag_field_included_in_schema.Model"
+    ].to_schema() == {
+        "properties": {
+            "regular_field": {"type": "string"},
+            "foo": {"type": "string", "const": "bar"},
+        },
+        "type": "object",
+        "required": ["foo", "regular_field"],
+        "title": "Model",
+    }
