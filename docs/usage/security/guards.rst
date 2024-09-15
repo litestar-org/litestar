@@ -1,8 +1,7 @@
 Guards
 ======
 
-Guards are :term:`callables <python:callable>` that receive two arguments - ``connection``, which is the
-:class:`~.connection.ASGIConnection` instance, and ``route_handler``, which is a copy of the
+Guards are :term:`callables <python:callable>` that receive two arguments - ``connection``, which is the :class:`Request <.connection.Request>` or :class:`WebSocket <.connection.WebSocket>` instance (both sub-classes of :class:`~.connection.ASGIConnection`), and ``route_handler``, which is a copy of the
 :class:`~.handlers.BaseRouteHandler`. Their role is to *authorize* the request by verifying that
 the connection is allowed to reach the endpoint handler in question. If verification fails, the guard should raise an
 :exc:`HTTPException`, usually a :class:`~.exceptions.NotAuthorizedException` with a
