@@ -6,7 +6,7 @@ import logging
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from dataclasses import fields
-from typing import TYPE_CHECKING, Callable, List, Tuple, Any
+from typing import TYPE_CHECKING, Any, Callable, List, Tuple
 from unittest.mock import MagicMock, Mock, PropertyMock
 
 import pytest

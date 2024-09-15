@@ -63,7 +63,6 @@ def create_factory() -> CreateFactoryFixture:
     return _create_factory
 
 
-
 def get_registered_route_handler(handler: HTTPRouteHandler | type[Controller], name: str) -> HTTPRouteHandler:
     app = Litestar(route_handlers=[handler])
     return app.asgi_router.route_handler_index[name]  # type: ignore[return-value]
