@@ -146,7 +146,7 @@ class SchemaRegistry:
                 f"Schema component keys must be unique. While obtaining a reference for the type '{field.raw!r}', the "
                 f"generated key {'_'.join(key)!r} was already associated with a different type '{existing_type.raw!r}'. "
             )
-            if key_override := _get_component_key_override(field):  # pragma: no cover
+            if key_override := _get_component_key_override(field):  # pragma: no branch
                 # Currently, this can never not be true, however, in the future we might
                 # decide to do a stricter equality check as lined out above, in which
                 # case there can be other cases than overrides that cause this error
