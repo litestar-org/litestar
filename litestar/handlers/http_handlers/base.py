@@ -737,21 +737,16 @@ class HTTPRouteHandler(BaseRouteHandler):
         parameter_model = self._get_kwargs_model_for_route(request.scope["path_params"].keys())
 
         if parameter_model.has_kwargs and self.signature_model:
-            kwargs = parameter_model.to_kwargs(connection=request)
+            try:
+                kwargs = await parameter_model.to_kwargs(connection=request)
+            except SerializationException as e:
+                raise ClientException(str(e)) from e
 
             if "data" in kwargs:
-                try:
-                    data = await kwargs["data"]
-                except SerializationException as e:
-                    raise ClientException(str(e)) from e
+                data = kwargs["data"]
 
                 if data is Empty:
                     del kwargs["data"]
-                else:
-                    kwargs["data"] = data
-
-            if "body" in kwargs:
-                kwargs["body"] = await kwargs["body"]
 
             if parameter_model.dependency_batches:
                 cleanup_group = await parameter_model.resolve_dependencies(request, kwargs)
