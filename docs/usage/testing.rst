@@ -279,12 +279,24 @@ But also this:
             assert response.text == "healthy"
 
 
-Creating an external test app
-------------------------------
+Running a live server
+---------------------
 
-The test clients make use of the capability to directly load an ASGI app into an httpx Client without having to run an actual server like uvicorn. For most test cases, this is sufficient but there are some situations where this will not work. For example, when using server-sent events with an infinite generator, due to the way HTTPX (which the Litestar test clients are built upon) works internally with ASGI applications, it will lock up the test client, since it tries to first exhaust the generator and then return to the test function.
+The test clients make use of HTTPX's ability to directly call into an ASGI app, without
+having to run an actual server. In most cases this is sufficient but there are some
+exceptions where this won't work, due to the limitations of the emulated client-server
+communication.
 
-Litestar offers two helper functions, :func:`~litestar.testing.client.subprocess_client.subprocess_sync_client` and :func:`~litestar.testing.client.subprocess_client.subprocess_async_client` that will launch a Litestar instance with in a subprocess and set up an httpx client for running tests. You can either load your actual app file or create subsets from it as you would with the regular test client setup. An example is shown below.
+For example, when using server-sent events with an infinite generator, it will lock up
+the test client, since HTTPX tries to consume the full response before returning a
+request.
+
+Litestar offers two helper functions,
+:func:`~litestar.testing.client.subprocess_client.subprocess_sync_client` and
+:func:`~litestar.testing.client.subprocess_client.subprocess_async_client` that will
+launch a Litestar instance with in a subprocess and set up an httpx client for running
+tests. You can either load your actual app file or create subsets from it as you would
+with the regular test client setup:
 
 .. literalinclude:: /examples/testing/subprocess_sse_app.py
     :language: python
