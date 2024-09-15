@@ -1,12 +1,14 @@
 from pathlib import Path
 from types import ModuleType
-from typing import Callable, Dict
+from typing import Any, Callable, Dict, List
 
 import pytest
+from typing_extensions import Annotated
 
-from litestar import HttpMethod, Litestar, WebSocket, delete, get, route
+from litestar import HttpMethod, Litestar, WebSocket, delete, get, patch, post, put, route
 from litestar.exceptions import ImproperlyConfiguredException, ValidationException
 from litestar.handlers.http_handlers import HTTPRouteHandler
+from litestar.params import Body
 from litestar.response import File, Redirect
 from litestar.status_codes import (
     HTTP_100_CONTINUE,
@@ -144,3 +146,22 @@ def no_response_handler() -> {return_annotation}:
         return
 
     Litestar(route_handlers=[module.no_response_handler])
+
+
+@pytest.mark.parametrize("decorator", [post, put, patch])
+def test_body_param_with_non_bytes_annotation_raises(decorator: Callable[..., Any]) -> None:
+    def handler_fn(body: List[str]) -> None:
+        pass
+
+    with pytest.raises(ImproperlyConfiguredException, match="Invalid type annotation for 'body' parameter"):
+        Litestar([decorator()(handler_fn)])
+
+
+@pytest.mark.parametrize("decorator", [post, put, patch])
+def test_body_param_with_metadata_allowed(decorator: Callable[..., Any]) -> None:
+    def handler_fn(body: Annotated[bytes, Body(title="something")]) -> None:
+        pass
+
+    # we expect no error here, even though the type isn't directly 'bytes' but has
+    # metadata attached to it
+    Litestar([decorator()(handler_fn)])
