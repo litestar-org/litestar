@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 
 class WebsocketRouteHandler(BaseRouteHandler):
-    __slots__ = ("websocket_class", "_kwargs_model")
+    __slots__ = ("_kwargs_model", "websocket_class")
 
     def __init__(
         self,
@@ -130,7 +130,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
         cleanup_group: DependencyCleanupGroup | None = None
 
         if handler_parameter_model.has_kwargs and self.signature_model:
-            parsed_kwargs = handler_parameter_model.to_kwargs(connection=connection)
+            parsed_kwargs = await handler_parameter_model.to_kwargs(connection=connection)
 
             if handler_parameter_model.dependency_batches:
                 cleanup_group = await handler_parameter_model.resolve_dependencies(connection, parsed_kwargs)
