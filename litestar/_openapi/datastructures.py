@@ -96,7 +96,7 @@ class SchemaRegistry:
         self._schema_key_map: dict[tuple[str, ...], RegisteredSchema] = {}
         self._schema_reference_map: dict[int, RegisteredSchema] = {}
         self._model_name_groups: defaultdict[str, list[RegisteredSchema]] = defaultdict(list)
-        self._component_type_map: dict[str, FieldDefinition] = {}
+        self._component_type_map: dict[tuple[str, ...], FieldDefinition] = {}
 
     def get_schema_for_field_definition(self, field: FieldDefinition) -> Schema:
         """Get a registered schema by its key.
@@ -146,7 +146,10 @@ class SchemaRegistry:
                 f"Schema component keys must be unique. While obtaining a reference for the type '{field.raw!r}', the "
                 f"generated key {'_'.join(key)!r} was already associated with a different type '{existing_type.raw!r}'. "
             )
-            if key_override := _get_component_key_override(field):
+            if key_override := _get_component_key_override(field):  # pragma: no cover
+                # Currently, this can never not be true, however, in the future we might
+                # decide to do a stricter equality check as lined out above, in which
+                # case there can be other cases than overrides that cause this error
                 msg += f"Hint: Both types are defining a 'schema_component_key' with the value of {key_override!r}"
             raise ImproperlyConfiguredException(msg)
 
