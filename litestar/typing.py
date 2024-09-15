@@ -1,12 +1,14 @@
 from __future__ import annotations
 
+import dataclasses
 import warnings
-from collections import abc, deque
+from collections import abc
 from copy import deepcopy
 from dataclasses import dataclass, is_dataclass, replace
 from inspect import Parameter, Signature
-from typing import Any, AnyStr, Callable, Collection, ForwardRef, Literal, Mapping, Protocol, Sequence, TypeVar, cast
+from typing import Any, AnyStr, Callable, Collection, ForwardRef, Literal, Mapping, TypeVar, cast
 
+import annotated_types
 from msgspec import UnsetType
 from typing_extensions import (
     NewType,
@@ -21,7 +23,6 @@ from typing_extensions import (
 )
 
 from litestar.exceptions import ImproperlyConfiguredException, LitestarWarning
-from litestar.openapi.spec import Example
 from litestar.params import BodyKwarg, DependencyKwarg, KwargDefinition, ParameterKwarg
 from litestar.types import Empty
 from litestar.types.builtin_types import NoneType, UnionTypes
@@ -46,125 +47,42 @@ __all__ = ("FieldDefinition",)
 T = TypeVar("T", bound=KwargDefinition)
 
 
-class _KwargMetaExtractor(Protocol):
-    @staticmethod
-    def matches(annotation: Any, name: str | None, default: Any) -> bool: ...
-
-    @staticmethod
-    def extract(annotation: Any, default: Any) -> Any: ...
-
-
-_KWARG_META_EXTRACTORS: set[_KwargMetaExtractor] = set()
-
-
-def _unpack_predicate(value: Any) -> dict[str, Any]:
-    try:
-        from annotated_types import Predicate
-
-        if isinstance(value, Predicate):
-            if value.func == str.islower:
-                return {"lower_case": True}
-            if value.func == str.isupper:
-                return {"upper_case": True}
-            if value.func == str.isascii:
-                return {"pattern": "[[:ascii:]]"}
-            if value.func == str.isdigit:
-                return {"pattern": "[[:digit:]]"}
-    except ImportError:
-        pass
-
-    return {}
-
-
-def _parse_metadata(value: Any, is_sequence_container: bool, extra: dict[str, Any] | None) -> dict[str, Any]:
-    """Parse metadata from a value.
-
-    Args:
-        value: A metadata value from annotation, namely anything stored under Annotated[x, metadata...]
-        is_sequence_container: Whether the type is a sequence container (list, tuple etc...)
-        extra: Extra key values to parse.
-
-    Returns:
-        A dictionary of constraints, which fulfill the kwargs of a KwargDefinition class.
-    """
-    extra = {
-        **cast("dict[str, Any]", extra or getattr(value, "extra", None) or {}),
-        **(getattr(value, "json_schema_extra", None) or {}),
-    }
-    example_list: list[Any] | None
-    if example := extra.pop("example", None):
-        example_list = [Example(value=example)]
-    elif examples := (extra.pop("examples", None) or getattr(value, "examples", None)):
-        example_list = [Example(value=example) for example in cast("list[str]", examples)]
-    else:
-        example_list = None
-
-    return {
-        k: v
-        for k, v in {
-            "gt": getattr(value, "gt", None),
-            "ge": getattr(value, "ge", None),
-            "lt": getattr(value, "lt", None),
-            "le": getattr(value, "le", None),
-            "multiple_of": getattr(value, "multiple_of", None),
-            "min_length": None if is_sequence_container else getattr(value, "min_length", None),
-            "max_length": None if is_sequence_container else getattr(value, "max_length", None),
-            "description": getattr(value, "description", None),
-            "examples": example_list,
-            "title": getattr(value, "title", None),
-            "lower_case": getattr(value, "to_lower", None),
-            "upper_case": getattr(value, "to_upper", None),
-            "pattern": getattr(value, "regex", getattr(value, "pattern", None)),
-            "min_items": getattr(value, "min_items", getattr(value, "min_length", None))
-            if is_sequence_container
-            else None,
-            "max_items": getattr(value, "max_items", getattr(value, "max_length", None))
-            if is_sequence_container
-            else None,
-            "const": getattr(value, "const", None) is not None,
-            **extra,
-        }.items()
-        if v is not None
-    }
-
-
-def _traverse_metadata(
-    metadata: Sequence[Any], is_sequence_container: bool, extra: dict[str, Any] | None
-) -> dict[str, Any]:
-    """Recursively traverse metadata from a value.
-
-    Args:
-        metadata: A list of metadata values from annotation, namely anything stored under Annotated[x, metadata...]
-        is_sequence_container: Whether the container is a sequence container (list, tuple etc...)
-        extra: Extra key values to parse.
-
-    Returns:
-        A dictionary of constraints, which fulfill the kwargs of a KwargDefinition class.
-    """
-    constraints: dict[str, Any] = {}
-    for value in metadata:
-        if isinstance(value, (list, set, frozenset, deque)):
-            constraints.update(
-                _traverse_metadata(
-                    metadata=cast("Sequence[Any]", value), is_sequence_container=is_sequence_container, extra=extra
-                )
-            )
-        elif unpacked_predicate := _unpack_predicate(value):
-            constraints.update(unpacked_predicate)
+def _annotated_types_extractor(meta: Any, is_sequence_container: bool) -> dict[str, Any]:  # noqa: C901
+    kwargs = {}
+    if isinstance(meta, annotated_types.GroupedMetadata):
+        for sub_meta in meta:
+            kwargs.update(_annotated_types_extractor(sub_meta, is_sequence_container=is_sequence_container))
+        return kwargs
+    if isinstance(meta, annotated_types.Gt):
+        kwargs["gt"] = meta.gt
+    elif isinstance(meta, annotated_types.Ge):
+        kwargs["ge"] = meta.ge
+    elif isinstance(meta, annotated_types.Lt):
+        kwargs["lt"] = meta.lt
+    elif isinstance(meta, annotated_types.Le):
+        kwargs["le"] = meta.le
+    elif isinstance(meta, annotated_types.MultipleOf):
+        kwargs["multiple_of"] = meta.multiple_of
+    elif isinstance(meta, annotated_types.MinLen):
+        if is_sequence_container:
+            kwargs["min_items"] = meta.min_length
         else:
-            constraints.update(_parse_metadata(value=value, is_sequence_container=is_sequence_container, extra=extra))
-    return constraints
-
-
-def _create_metadata_from_type(
-    metadata: Sequence[Any], model: type[T], annotation: Any, extra: dict[str, Any] | None
-) -> tuple[T | None, dict[str, Any]]:
-    is_sequence_container = is_non_string_sequence(annotation)
-    result = _traverse_metadata(metadata=metadata, is_sequence_container=is_sequence_container, extra=extra)
-
-    constraints = {k: v for k, v in result.items() if k in dir(model)}
-    extra = {k: v for k, v in result.items() if k not in constraints}
-    return model(**constraints) if constraints else None, extra
+            kwargs["min_length"] = meta.min_length
+    elif isinstance(meta, annotated_types.MaxLen):
+        if is_sequence_container:
+            kwargs["max_items"] = meta.max_length
+        else:
+            kwargs["max_length"] = meta.max_length
+    elif isinstance(meta, annotated_types.Predicate):
+        if meta.func == str.islower:
+            kwargs["lower_case"] = True
+        elif meta.func == str.isupper:
+            kwargs["upper_case"] = True
+        elif meta.func == str.isascii:
+            kwargs["pattern"] = "[[:ascii:]]"
+        elif meta.func == str.isdigit:  # pragma: no cover  # coverage quirk: It expects a jump here for branch coverage
+            kwargs["pattern"] = "[[:digit:]]"
+    return kwargs
 
 
 @dataclass(frozen=True)
@@ -231,29 +149,6 @@ class FieldDefinition:
 
     def __hash__(self) -> int:
         return hash((self.name, self.raw, self.annotation, self.origin, self.inner_types))
-
-    @classmethod
-    def _extract_metadata(
-        cls, annotation: Any, name: str | None, default: Any, metadata: tuple[Any, ...], extra: dict[str, Any] | None
-    ) -> tuple[KwargDefinition | None, dict[str, Any]]:
-        model = BodyKwarg if name == "data" else ParameterKwarg
-
-        for extractor in _KWARG_META_EXTRACTORS:
-            if extractor.matches(annotation=annotation, name=name, default=default):
-                return _create_metadata_from_type(
-                    extractor.extract(annotation=annotation, default=default),
-                    model=model,
-                    annotation=annotation,
-                    extra=extra,
-                )
-
-        if any(isinstance(arg, KwargDefinition) for arg in get_args(annotation)):
-            return next(arg for arg in get_args(annotation) if isinstance(arg, KwargDefinition)), extra or {}
-
-        if metadata:
-            return _create_metadata_from_type(metadata=metadata, model=model, annotation=annotation, extra=extra)
-
-        return None, {}
 
     @property
     def has_default(self) -> bool:
@@ -511,7 +406,7 @@ class FieldDefinition:
         unwrapped, metadata, wrappers = unwrap_annotation(annotation if annotation is not Empty else Any)
         origin = get_origin(unwrapped)
 
-        args = () if origin is abc.Callable else get_args(unwrapped)
+        annotation_args = () if origin is abc.Callable else get_args(unwrapped)
 
         if not kwargs.get("kwarg_definition"):
             if isinstance(kwargs.get("default"), (KwargDefinition, DependencyKwarg)):
@@ -543,20 +438,31 @@ class FieldDefinition:
                 metadata = tuple(v for v in metadata if not isinstance(v, (KwargDefinition, DependencyKwarg)))
             elif (extra := kwargs.get("extra", {})) and "kwarg_definition" in extra:
                 kwargs["kwarg_definition"] = extra.pop("kwarg_definition")
-            else:
-                kwargs["kwarg_definition"], kwargs["extra"] = cls._extract_metadata(
-                    annotation=annotation,
-                    name=kwargs.get("name", ""),
-                    default=kwargs.get("default", Empty),
-                    metadata=metadata,
-                    extra=kwargs.get("extra"),
+
+        # there might be additional metadata
+        if metadata:
+            kwarg_definition_merge_args = {}
+            is_sequence_container = is_non_string_sequence(annotation)
+            # extract metadata into KwargDefinition attributes
+            for meta in metadata:
+                kwarg_definition_merge_args.update(
+                    _annotated_types_extractor(meta, is_sequence_container=is_sequence_container)
                 )
+            # if we already have a KwargDefinition, merge it with the additional metadata
+            if existing_kwargs_definition := kwargs.get("kwarg_definition"):
+                kwargs["kwarg_definition"] = dataclasses.replace(
+                    existing_kwargs_definition, **kwarg_definition_merge_args
+                )
+            # if not, create a new KwargDefinition
+            else:
+                model = BodyKwarg if kwargs.get("name") == "data" else ParameterKwarg
+                kwargs["kwarg_definition"] = model(**kwarg_definition_merge_args)
 
         kwargs.setdefault("annotation", unwrapped)
-        kwargs.setdefault("args", args)
+        kwargs.setdefault("args", annotation_args)
         kwargs.setdefault("default", Empty)
         kwargs.setdefault("extra", {})
-        kwargs.setdefault("inner_types", tuple(FieldDefinition.from_annotation(arg) for arg in args))
+        kwargs.setdefault("inner_types", tuple(FieldDefinition.from_annotation(arg) for arg in annotation_args))
         kwargs.setdefault("instantiable_origin", get_instantiable_origin(origin, unwrapped))
         kwargs.setdefault("kwarg_definition", None)
         kwargs.setdefault("metadata", metadata)
