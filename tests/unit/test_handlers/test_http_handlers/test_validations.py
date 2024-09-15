@@ -159,5 +159,9 @@ def test_body_param_with_non_bytes_annotation_raises(decorator: Callable[..., An
 
 @pytest.mark.parametrize("decorator", [post, put, patch])
 def test_body_param_with_metadata_allowed(decorator: Callable[..., Any]) -> None:
-    def handler_fn(body: Annotated[str, Body(title="something")]) -> None:
+    def handler_fn(body: Annotated[bytes, Body(title="something")]) -> None:
         pass
+
+    # we expect no error here, even though the type isn't directly 'bytes' but has
+    # metadata attached to it
+    Litestar([decorator()(handler_fn)])
