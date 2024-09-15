@@ -589,7 +589,8 @@ def patch(
     name: str | None = None,
     opt: Mapping[str, Any] | None = None,
     request_class: type[Request] | None = None,
-    request_max_body_size: int | None | EmptyType = Empty,response_class: type[Response] | None = None,
+    request_max_body_size: int | None | EmptyType = Empty,
+    response_class: type[Response] | None = None,
     response_cookies: ResponseCookies | None = None,
     response_headers: ResponseHeaders | None = None,
     return_dto: type[AbstractDTO] | None | EmptyType = Empty,
@@ -652,7 +653,8 @@ def patch(
         request_class: A custom subclass of :class:`Request <.connection.Request>` to be used as route handler's
             default request.
         request_max_body_size: Maximum allowed size of the request body in bytes. If this size is exceeded,
-                a '413 - Request Entity Too Large' error response is returned.response_class: A custom subclass of :class:`Response <.response.Response>` to be used as route handler's
+                a '413 - Request Entity Too Large' error response is returned.
+        response_class: A custom subclass of :class:`Response <.response.Response>` to be used as route handler's
             default response.
         response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>` instances.
         response_headers: A string keyed mapping of :class:`ResponseHeader <.datastructures.ResponseHeader>`
@@ -759,7 +761,8 @@ def post(
     name: str | None = None,
     opt: Mapping[str, Any] | None = None,
     request_class: type[Request] | None = None,
-    request_max_body_size: int | None | EmptyType = Empty,response_class: type[Response] | None = None,
+    request_max_body_size: int | None | EmptyType = Empty,
+    response_class: type[Response] | None = None,
     response_cookies: ResponseCookies | None = None,
     response_headers: ResponseHeaders | None = None,
     return_dto: type[AbstractDTO] | None | EmptyType = Empty,
@@ -822,7 +825,8 @@ def post(
         request_class: A custom subclass of :class:`Request <.connection.Request>` to be used as route handler's
             default request.
         request_max_body_size: Maximum allowed size of the request body in bytes. If this size is exceeded,
-                a '413 - Request Entity Too Large' error response is returned.response_class: A custom subclass of :class:`Response <.response.Response>` to be used as route handler's
+                a '413 - Request Entity Too Large' error response is returned.
+        response_class: A custom subclass of :class:`Response <.response.Response>` to be used as route handler's
             default response.
         response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>` instances.
         response_headers: A string keyed mapping of :class:`ResponseHeader <.datastructures.ResponseHeader>`
@@ -929,7 +933,8 @@ def put(
     name: str | None = None,
     opt: Mapping[str, Any] | None = None,
     request_class: type[Request] | None = None,
-    request_max_body_size: int | None | EmptyType = Empty,response_class: type[Response] | None = None,
+    request_max_body_size: int | None | EmptyType = Empty,
+    response_class: type[Response] | None = None,
     response_cookies: ResponseCookies | None = None,
     response_headers: ResponseHeaders | None = None,
     return_dto: type[AbstractDTO] | None | EmptyType = Empty,
@@ -992,7 +997,8 @@ def put(
         request_class: A custom subclass of :class:`Request <.connection.Request>` to be used as route handler's
             default request.
         request_max_body_size: Maximum allowed size of the request body in bytes. If this size is exceeded,
-                a '413 - Request Entity Too Large' error response is returned.response_class: A custom subclass of :class:`Response <.response.Response>` to be used as route handler's
+                a '413 - Request Entity Too Large' error response is returned.
+        response_class: A custom subclass of :class:`Response <.response.Response>` to be used as route handler's
             default response.
         response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>` instances.
         response_headers: A string keyed mapping of :class:`ResponseHeader <.datastructures.ResponseHeader>`
