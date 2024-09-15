@@ -43,7 +43,7 @@ async def test_subprocess_async_client(async_client: httpx.AsyncClient) -> None:
             break
 
 
-def test_subprocess_sync_client(sync_client: httpx.AsyncClient) -> None:
+def test_subprocess_sync_client(sync_client: httpx.Client) -> None:
     """Demonstrates functionality of the async client with an infinite SSE source that cannot be tested with the
     regular async test client.
     """
