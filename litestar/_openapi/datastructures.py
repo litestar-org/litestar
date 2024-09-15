@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from collections import defaultdict
 from typing import TYPE_CHECKING, Iterator, Sequence, _GenericAlias  # type: ignore[attr-defined]
 
@@ -11,6 +12,9 @@ if TYPE_CHECKING:
     from litestar.openapi import OpenAPIConfig
     from litestar.plugins import OpenAPISchemaPluginProtocol
     from litestar.typing import FieldDefinition
+
+
+INVALID_KEY_CHARACTER_PATTERN = re.compile(r"[^a-zA-Z0-9._-]+")
 
 
 def _longest_common_prefix(tuples_: list[tuple[str, ...]]) -> tuple[str, ...]:
@@ -61,7 +65,7 @@ def _get_normalized_schema_key(field_definition: FieldDefinition) -> tuple[str, 
     module = getattr(annotation, "__module__", "")
     name = str(annotation)[len(module) + 1 :] if isinstance(annotation, _GenericAlias) else annotation.__qualname__
     name = name.replace(".<locals>.", ".")
-    return *module.split("."), name
+    return *module.split("."), re.sub(INVALID_KEY_CHARACTER_PATTERN, "_", name)
 
 
 class RegisteredSchema:

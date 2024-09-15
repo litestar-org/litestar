@@ -72,13 +72,13 @@ def test_get_normalized_schema_key() -> None:
     builtin_dict = Dict[str, List[int]]
     assert _get_normalized_schema_key(FieldDefinition.from_annotation(builtin_dict)) == (
         "typing",
-        "Dict[str, typing.List[int]]",
+        "Dict_str_typing.List_int_",
     )
 
     builtin_with_custom = Dict[str, DataclassPerson]
     assert _get_normalized_schema_key(FieldDefinition.from_annotation(builtin_with_custom)) == (
         "typing",
-        "Dict[str, tests.models.DataclassPerson]",
+        "Dict_str_tests.models.DataclassPerson_",
     )
 
     class LocalGeneric(Generic[T]):
@@ -100,7 +100,7 @@ def test_get_normalized_schema_key() -> None:
         "unit",
         "test_openapi",
         "test_datastructures",
-        "test_get_normalized_schema_key.LocalGeneric[int]",
+        "test_get_normalized_schema_key.LocalGeneric_int_",
     )
 
     assert _get_normalized_schema_key(FieldDefinition.from_annotation(generic_str)) == (
@@ -108,7 +108,7 @@ def test_get_normalized_schema_key() -> None:
         "unit",
         "test_openapi",
         "test_datastructures",
-        "test_get_normalized_schema_key.LocalGeneric[str]",
+        "test_get_normalized_schema_key.LocalGeneric_str_",
     )
 
     assert _get_normalized_schema_key(FieldDefinition.from_annotation(generic_int)) != _get_normalized_schema_key(
