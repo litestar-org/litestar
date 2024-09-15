@@ -119,6 +119,11 @@ class KwargDefinition:
 
     .. versionadded:: 2.8.0
     """
+    schema_component_key: str | None = None
+    """
+    Use as the key for the reference when creating a component for this type
+    .. versionadded:: 2.12.0
+    """
 
     @property
     def is_constrained(self) -> bool:
@@ -195,6 +200,7 @@ def Parameter(
     required: bool | None = None,
     title: str | None = None,
     schema_extra: dict[str, Any] | None = None,
+    schema_component_key: str | None = None,
 ) -> Any:
     """Create an extended parameter kwarg definition.
 
@@ -239,6 +245,8 @@ def Parameter(
             schema.
 
             .. versionadded:: 2.8.0
+        schema_component_key: Use this as the key for the reference when creating a component for this type
+            .. versionadded:: 2.12.0
     """
     return ParameterKwarg(
         annotation=annotation,
@@ -264,6 +272,7 @@ def Parameter(
         max_length=max_length,
         pattern=pattern,
         schema_extra=schema_extra,
+        schema_component_key=schema_component_key,
     )
 
 
@@ -308,6 +317,7 @@ def Body(
     pattern: str | None = None,
     title: str | None = None,
     schema_extra: dict[str, Any] | None = None,
+    schema_component_key: str | None = None,
 ) -> Any:
     """Create an extended request body kwarg definition.
 
@@ -349,6 +359,8 @@ def Body(
             schema.
 
             .. versionadded:: 2.8.0
+        schema_component_key: Use this as the key for the reference when creating a component for this type
+            .. versionadded:: 2.12.0
     """
     return BodyKwarg(
         media_type=media_type,
@@ -371,6 +383,7 @@ def Body(
         pattern=pattern,
         multipart_form_part_limit=multipart_form_part_limit,
         schema_extra=schema_extra,
+        schema_component_key=schema_component_key,
     )
 
 
