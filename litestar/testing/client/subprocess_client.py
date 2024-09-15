@@ -28,21 +28,21 @@ def _get_available_port() -> int:
 def run_app(workdir: pathlib.Path, app: str) -> Iterator[str]:
     """Launch a litestar application in a subprocess with a random available port."""
     port = _get_available_port()
-    proc = subprocess.Popen(
+    with subprocess.Popen(
         args=["litestar", "--app", app, "run", "--port", str(port)],
         stderr=subprocess.PIPE,
         stdout=subprocess.PIPE,
         cwd=workdir,
-    )
-    url = f"http://127.0.0.1:{port}"
-    for _ in range(100):
-        try:
-            httpx.get(url, timeout=0.1)
-            break
-        except httpx.TransportError:
-            time.sleep(1)
-    yield url
-    proc.kill()
+    ) as proc:
+        url = f"http://127.0.0.1:{port}"
+        for _ in range(100):
+            try:
+                httpx.get(url, timeout=0.1)
+                break
+            except httpx.TransportError:
+                time.sleep(1)
+        yield url
+        proc.kill()
 
 
 @asynccontextmanager
