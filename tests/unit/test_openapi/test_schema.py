@@ -2,7 +2,7 @@ import sys
 from dataclasses import dataclass
 from datetime import date, datetime, timezone
 from enum import Enum, auto
-from typing import (  # type: ignore[attr-defined]
+from typing import (
     TYPE_CHECKING,
     Any,
     Dict,
@@ -13,8 +13,7 @@ from typing import (  # type: ignore[attr-defined]
     Tuple,
     TypedDict,
     TypeVar,
-    Union,
-    _GenericAlias,  # pyright: ignore
+    Union,  # pyright: ignore
 )
 
 import annotated_types
@@ -29,7 +28,7 @@ from litestar._openapi.schema_generation.schema import (
     KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP,
     SchemaCreator,
 )
-from litestar._openapi.schema_generation.utils import _get_normalized_schema_key, _type_or_first_not_none_inner_type
+from litestar._openapi.schema_generation.utils import _get_normalized_schema_key
 from litestar.app import DEFAULT_OPENAPI_CONFIG, Litestar
 from litestar.di import Provide
 from litestar.enums import ParamType
@@ -40,7 +39,6 @@ from litestar.openapi.spec.schema import Schema
 from litestar.pagination import ClassicPagination, CursorPagination, OffsetPagination
 from litestar.params import KwargDefinition, Parameter, ParameterKwarg
 from litestar.testing import create_test_client
-from litestar.types.builtin_types import NoneType
 from litestar.typing import FieldDefinition
 from litestar.utils.helpers import get_name
 from tests.helpers import get_schema_for_field_definition
@@ -452,12 +450,26 @@ def test_schema_tuple_with_union() -> None:
 def test_optional_enum() -> None:
     class Foo(Enum):
         A = 1
-        B = 2
+        B = "b"
 
-    schema = get_schema_for_field_definition(FieldDefinition.from_annotation(Optional[Foo]))
-    assert schema.type is not None
-    assert set(schema.type) == {OpenAPIType.INTEGER, OpenAPIType.NULL}
-    assert schema.enum == [1, 2, None]
+    creator = SchemaCreator(plugins=openapi_schema_plugins)
+    schema = creator.for_field_definition(FieldDefinition.from_annotation(Optional[Foo]))
+    assert isinstance(schema, Schema)
+    assert schema.type is None
+    assert schema.one_of is not None
+    null_schema = schema.one_of[0]
+    assert isinstance(null_schema, Schema)
+    assert null_schema.type is not None
+    assert null_schema.type is OpenAPIType.NULL
+    enum_ref = schema.one_of[1]
+    assert isinstance(enum_ref, Reference)
+    assert enum_ref.ref == "#/components/schemas/tests_unit_test_openapi_test_schema_test_optional_enum.Foo"
+    enum_schema = creator.schema_registry.from_reference(enum_ref).schema
+    assert enum_schema.type
+    assert set(enum_schema.type) == {OpenAPIType.INTEGER, OpenAPIType.STRING}
+    assert enum_schema.enum
+    assert enum_schema.enum[0] == 1
+    assert enum_schema.enum[1] == "b"
 
 
 def test_optional_literal() -> None:
@@ -465,24 +477,6 @@ def test_optional_literal() -> None:
     assert schema.type is not None
     assert set(schema.type) == {OpenAPIType.INTEGER, OpenAPIType.NULL}
     assert schema.enum == [1, None]
-
-
-@pytest.mark.parametrize(
-    ("in_type", "out_type"),
-    [
-        (FieldDefinition.from_annotation(Optional[int]), int),
-        (FieldDefinition.from_annotation(Union[None, int]), int),
-        (FieldDefinition.from_annotation(int), int),
-        # hack to create a union of NoneType, NoneType to hit a branch for coverage
-        (FieldDefinition.from_annotation(_GenericAlias(Union, (NoneType, NoneType))), ValueError),
-    ],
-)
-def test_type_or_first_not_none_inner_type_utility(in_type: Any, out_type: Any) -> None:
-    if out_type is ValueError:
-        with pytest.raises(out_type):
-            _type_or_first_not_none_inner_type(in_type)
-    else:
-        assert _type_or_first_not_none_inner_type(in_type) == out_type
 
 
 def test_not_generating_examples_property() -> None:
