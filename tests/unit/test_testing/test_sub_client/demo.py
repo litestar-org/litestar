@@ -11,7 +11,7 @@ from litestar.response import ServerSentEvent
 
 @get("/notify/{topic:str}")
 async def get_notified(topic: str) -> ServerSentEvent:
-    async def generator() -> AsyncIterator[bytes]:
+    async def generator() -> AsyncIterator[str]:
         yield topic
         while True:
             await asyncio.sleep(0.1)
