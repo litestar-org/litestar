@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Literal
 import msgspec
 from msgspec import Struct
 
-from litestar.exceptions import ImproperlyConfiguredException
 from litestar.plugins import OpenAPISchemaPlugin
 from litestar.plugins.core._msgspec import kwarg_definition_from_field
 from litestar.types.empty import Empty
@@ -55,10 +54,8 @@ class StructSchemaPlugin(OpenAPISchemaPlugin):
         # have any type annotation associated with them, so we create a FieldDefinition
         # manually
         if struct_info.tag_field:
-            if not (tag := struct_info.tag):
-                raise ImproperlyConfiguredException()
             # using a Literal here will set these as a const in the schema
-            property_fields[struct_info.tag_field] = FieldDefinition.from_annotation(Literal[tag])  # pyright: ignore
+            property_fields[struct_info.tag_field] = FieldDefinition.from_annotation(Literal[struct_info.tag])  # pyright: ignore
             required.append(struct_info.tag_field)
 
         return schema_creator.create_component_schema(
