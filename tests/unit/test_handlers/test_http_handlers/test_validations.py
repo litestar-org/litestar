@@ -1,8 +1,9 @@
 from pathlib import Path
 from types import ModuleType
-from typing import Annotated, Any, Callable, Dict
+from typing import Any, Callable, Dict, List
 
 import pytest
+from typing_extensions import Annotated
 
 from litestar import HttpMethod, Litestar, WebSocket, delete, get, patch, post, put, route
 from litestar.exceptions import ImproperlyConfiguredException, ValidationException
@@ -149,7 +150,7 @@ def no_response_handler() -> {return_annotation}:
 
 @pytest.mark.parametrize("decorator", [post, put, patch])
 def test_body_param_with_non_bytes_annotation_raises(decorator: Callable[..., Any]) -> None:
-    def handler_fn(body: list[str]) -> None:
+    def handler_fn(body: List[str]) -> None:
         pass
 
     with pytest.raises(ImproperlyConfiguredException, match="Invalid type annotation for 'body' parameter"):
