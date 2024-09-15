@@ -9,7 +9,6 @@ from litestar.datastructures import State
 from litestar.di import Provide
 from litestar.exceptions import WebSocketDisconnect
 from litestar.testing import create_test_client
-from litestar.types.builtin_types import EmptyDict
 
 
 def router_first_dependency() -> bool:
@@ -21,12 +20,12 @@ async def router_second_dependency() -> bool:
     return False
 
 
-def controller_first_dependency(headers: Dict[str, Any]) -> EmptyDict:
+def controller_first_dependency(headers: Dict[str, Any]) -> Dict[Any, Any]:
     assert headers
     return {}
 
 
-async def controller_second_dependency(socket: WebSocket[Any, Any, Any]) -> EmptyDict:
+async def controller_second_dependency(socket: WebSocket[Any, Any, Any]) -> Dict[Any, Any]:
     assert socket
     await sleep(0)
     return {}
@@ -117,7 +116,7 @@ def test_dependency_isolation() -> None:
         path = "/second"
 
         @websocket()
-        async def test_method(self, socket: WebSocket[Any, Any, Any], _: EmptyDict) -> None:
+        async def test_method(self, socket: WebSocket[Any, Any, Any], _: Dict[Any, Any]) -> None:
             await socket.accept()
 
     client = create_test_client([FirstController, SecondController])

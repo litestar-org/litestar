@@ -7,7 +7,6 @@ from litestar import Controller, get
 from litestar.di import Provide
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
-from litestar.types.builtin_types import EmptyDict
 
 if TYPE_CHECKING:
     from litestar.connection import Request
@@ -23,12 +22,12 @@ async def router_second_dependency() -> bool:
     return False
 
 
-def controller_first_dependency(headers: Dict[str, Any]) -> EmptyDict:
+def controller_first_dependency(headers: Dict[str, Any]) -> Dict[Any, Any]:
     assert headers
     return {}
 
 
-async def controller_second_dependency(request: "Request[Any, Any, State]") -> EmptyDict:
+async def controller_second_dependency(request: "Request[Any, Any, State]") -> Dict[Any, Any]:
     assert request
     await sleep(0)
     return {}
