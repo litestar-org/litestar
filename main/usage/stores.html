@@ -1551,7 +1551,7 @@ third party integration (for example plugins).</p>
 <dl class="simple">
 <dt><a class="reference internal" href="../reference/stores/memory.html#litestar.stores.memory.MemoryStore" title="litestar.stores.memory.MemoryStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryStore</span></code></a></dt><dd><p>A simple in-memory store, using a dictionary to hold data. This store offers no persistence and is not thread or multiprocess safe,
 but it is suitable for basic applications such as caching and has generally the lowest overhead. This is the default store used by
-Litestar internally. If you plan to enable <a class="reference internal" href="cli.html#cli-run-options"><span class="std std-ref">multiple web workers</span></a> and you need inter-process communication
+Litestar internally. If you plan to enable <a class="reference internal" href="../reference/cli.html"><span class="doc">multiple web workers</span></a> and you need inter-process communication
 across multiple worker processes, you should use one of the other non-memory stores instead.</p>
 </dd>
 <dt><a class="reference internal" href="../reference/stores/file.html#litestar.stores.file.FileStore" title="litestar.stores.file.FileStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">FileStore</span></code></a></dt><dd><p>A store that saves data as files on disk. Persistence is built in, and data is easy to extract and back up.

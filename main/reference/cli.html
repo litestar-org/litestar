@@ -1588,11 +1588,11 @@ document.write(`
 <section id="litestar-run">
 <h3>run<a class="headerlink" href="#litestar-run" title="Permalink to this heading">#</a></h3>
 <p>Run a Litestar app; requires <code class="docutils literal notranslate"><span class="pre">uvicorn</span></code>.</p>
-<p>The app can be either passed as a module path in the form of &lt;module name&gt;.&lt;submodule&gt;:&lt;app instance or factory&gt;,
-set as an environment variable LITESTAR_APP with the same format or automatically discovered from one of these
-canonical paths: app.py, asgi.py, application.py or app/__init__.py. When auto-discovering application factories,
-functions with the name <code class="docutils literal notranslate"><span class="pre">create_app</span></code> are considered, or functions that are annotated as returning a <code class="docutils literal notranslate"><span class="pre">Litestar</span></code>
-instance.</p>
+<p>The app can be either passed as a module path in the form of <code class="docutils literal notranslate"><span class="pre">&lt;module</span> <span class="pre">name&gt;.&lt;submodule&gt;:&lt;app</span> <span class="pre">instance</span> <span class="pre">or</span> <span class="pre">factory&gt;</span></code>
+set as an environment variable <code class="docutils literal notranslate"><span class="pre">LITESTAR_APP</span></code> with the same format or automatically discovered from one of these
+canonical paths: <code class="docutils literal notranslate"><span class="pre">app.py</span></code>, <code class="docutils literal notranslate"><span class="pre">asgi.py</span></code>, <code class="docutils literal notranslate"><span class="pre">application.py</span></code> or <code class="docutils literal notranslate"><span class="pre">app/__init__.py</span></code>.
+When auto-discovering application factories, functions with the name <code class="docutils literal notranslate"><span class="pre">create_app</span></code> are considered,
+or functions that are annotated as returning a <code class="docutils literal notranslate"><span class="pre">Litestar</span></code> instance.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>litestar<span class="w"> </span>run<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
 </pre></div>
 </div>
