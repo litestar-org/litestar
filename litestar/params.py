@@ -317,7 +317,7 @@ def Body(
     pattern: str | None = None,
     title: str | None = None,
     schema_extra: dict[str, Any] | None = None,
-        schema_component_key: str | None = None,
+    schema_component_key: str | None = None,
 ) -> Any:
     """Create an extended request body kwarg definition.
 
