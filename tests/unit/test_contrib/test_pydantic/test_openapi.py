@@ -1,26 +1,21 @@
-from datetime import date, datetime, timedelta, timezone
+# pyright: reportOptionalSubscript=false, reportGeneralTypeIssues=false
+from datetime import date, timedelta
 from decimal import Decimal
 from types import ModuleType
-from typing import Any, Callable, Pattern, Type, Union, cast
+from typing import Any, Callable, Dict, Optional, Pattern, Type, Union, cast
 
+import annotated_types
 import pydantic as pydantic_v2
 import pytest
 from pydantic import v1 as pydantic_v1
 from typing_extensions import Annotated
 
-from litestar import Litestar, post
-from litestar._openapi.schema_generation.constrained_fields import (
-    create_date_constrained_field_schema,
-    create_numerical_constrained_field_schema,
-    create_string_constrained_field_schema,
-)
+from litestar import Litestar, get, post
 from litestar._openapi.schema_generation.schema import SchemaCreator
 from litestar.contrib.pydantic import PydanticPlugin, PydanticSchemaPlugin
 from litestar.openapi import OpenAPIConfig
 from litestar.openapi.spec import Reference, Schema
 from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
-from litestar.params import KwargDefinition
-from litestar.status_codes import HTTP_200_OK
 from litestar.testing import TestClient, create_test_client
 from litestar.typing import FieldDefinition
 from litestar.utils import is_class_and_subclass
@@ -60,6 +55,9 @@ constrained_string_v2 = [
     pydantic_v2.constr(min_length=1),
     pydantic_v2.constr(min_length=10),
     pydantic_v2.constr(min_length=10, max_length=100),
+]
+
+constrained_bytes_v2 = [
     pydantic_v2.conbytes(min_length=1),
     pydantic_v2.conbytes(min_length=10),
     pydantic_v2.conbytes(min_length=10, max_length=100),
@@ -124,23 +122,59 @@ constrained_dates_v2 = [
 ]
 
 
+@pytest.fixture()
+def schema_creator(plugin: PydanticSchemaPlugin) -> SchemaCreator:
+    return SchemaCreator(plugins=[plugin])
+
+
+@pytest.fixture()
+def plugin() -> PydanticSchemaPlugin:
+    return PydanticSchemaPlugin()
+
+
 @pytest.mark.parametrize("annotation", constrained_collection_v1)
-def test_create_collection_constrained_field_schema_pydantic_v1(annotation: Any) -> None:
-    schema = SchemaCreator().for_collection_constrained_field(FieldDefinition.from_annotation(annotation))
+def test_create_collection_constrained_field_schema_pydantic_v1(
+    annotation: Any,
+    schema_creator: SchemaCreator,
+    plugin: PydanticSchemaPlugin,
+) -> None:
+    class Model(pydantic_v1.BaseModel):
+        field: annotation
+
+    schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]
+
     assert schema.type == OpenAPIType.ARRAY
     assert schema.items.type == OpenAPIType.INTEGER  # type: ignore[union-attr]
     assert schema.min_items == annotation.min_items
     assert schema.max_items == annotation.max_items
 
 
-@pytest.mark.parametrize("annotation", constrained_collection_v2)
-def test_create_collection_constrained_field_schema_pydantic_v2(annotation: Any) -> None:
-    field_definition = FieldDefinition.from_annotation(annotation)
-    schema = SchemaCreator().for_collection_constrained_field(field_definition)
+@pytest.mark.parametrize("make_constraint", [pydantic_v2.conlist, pydantic_v2.conset, pydantic_v2.confrozenset])
+@pytest.mark.parametrize(
+    "min_length, max_length",
+    [
+        (None, None),
+        (1, None),
+        (1, 1),
+        (None, 1),
+    ],
+)
+def test_create_collection_constrained_field_schema_pydantic_v2(
+    make_constraint: Callable[..., Any],
+    min_length: Optional[int],
+    max_length: Optional[int],
+    schema_creator: SchemaCreator,
+    plugin: PydanticSchemaPlugin,
+) -> None:
+    class Model(pydantic_v2.BaseModel):
+        field: make_constraint(int, min_length=min_length, max_length=max_length)  # type: ignore[valid-type]
+
+    schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]
+
     assert schema.type == OpenAPIType.ARRAY
     assert schema.items.type == OpenAPIType.INTEGER  # type: ignore[union-attr]
-    assert any(getattr(m, "min_length", None) == schema.min_items for m in field_definition.metadata if m)
-    assert any(getattr(m, "max_length", None) == schema.max_items for m in field_definition.metadata if m)
+    assert schema.min_items == min_length
+    assert schema.max_items == max_length
 
 
 @pytest.fixture()
@@ -154,39 +188,59 @@ def conlist(pydantic_version: PydanticVersion) -> Any:
 
 
 def test_create_collection_constrained_field_schema_sub_fields(
-    pydantic_version: PydanticVersion, conset: Any, conlist: Any
+    pydantic_version: PydanticVersion,
+    conset: Any,
+    conlist: Any,
+    schema_creator: SchemaCreator,
+    plugin: PydanticSchemaPlugin,
 ) -> None:
-    for pydantic_fn in [conset, conlist]:
-        if pydantic_version == "v1":
-            annotation = pydantic_fn(Union[str, int], min_items=1, max_items=10)
-        else:
-            annotation = pydantic_fn(Union[str, int], min_length=1, max_length=10)
-        field_definition = FieldDefinition.from_annotation(annotation)
-        schema = SchemaCreator().for_collection_constrained_field(field_definition)
+    if pydantic_version == "v1":
+
+        class Modelv1(pydantic_v1.BaseModel):
+            set_field: conset(Union[str, int], min_items=1, max_items=10)  # type: ignore[valid-type]
+            list_field: conlist(Union[str, int], min_items=1, max_items=10)  # type: ignore[valid-type]
+
+        model_schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Modelv1), plugin)
+    else:
+
+        class Modelv2(pydantic_v2.BaseModel):
+            set_field: conset(Union[str, int], min_length=1, max_length=10)  # type: ignore[valid-type]
+            list_field: conlist(Union[str, int], min_length=1, max_length=10)  # type: ignore[valid-type]
+
+        model_schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Modelv2), plugin)
+
+    def _get_schema_type(s: Any) -> OpenAPIType:
+        assert isinstance(s, Schema)
+        assert isinstance(s.type, OpenAPIType)
+        return s.type
+
+    for field_name in ["set_field", "list_field"]:
+        schema = model_schema.properties[field_name]
+
         assert schema.type == OpenAPIType.ARRAY
         assert schema.max_items == 10
         assert schema.min_items == 1
         assert isinstance(schema.items, Schema)
         assert schema.items.one_of is not None
 
-        def _get_schema_type(s: Any) -> OpenAPIType:
-            assert isinstance(s, Schema)
-            assert isinstance(s.type, OpenAPIType)
-            return s.type
-
         # https://github.com/litestar-org/litestar/pull/2570#issuecomment-1788122570
         assert {_get_schema_type(s) for s in schema.items.one_of} == {OpenAPIType.STRING, OpenAPIType.INTEGER}
-        if pydantic_fn is conset:
-            # set should have uniqueItems always
-            assert schema.unique_items
+
+    # set should have uniqueItems always
+    assert model_schema.properties["set_field"].unique_items
 
 
 @pytest.mark.parametrize("annotation", constrained_string_v1)
-def test_create_string_constrained_field_schema_pydantic_v1(annotation: Any) -> None:
-    field_definition = FieldDefinition.from_annotation(annotation)
+def test_create_string_constrained_field_schema_pydantic_v1(
+    annotation: Any,
+    schema_creator: SchemaCreator,
+    plugin: PydanticSchemaPlugin,
+) -> None:
+    class Model(pydantic_v1.BaseModel):
+        field: annotation
 
-    assert isinstance(field_definition.kwarg_definition, KwargDefinition)
-    schema = create_string_constrained_field_schema(field_definition.annotation, field_definition.kwarg_definition)
+    schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]
+
     assert schema.type == OpenAPIType.STRING
 
     assert schema.min_length == annotation.min_length
@@ -200,31 +254,61 @@ def test_create_string_constrained_field_schema_pydantic_v1(annotation: Any) -> 
 
 
 @pytest.mark.parametrize("annotation", constrained_string_v2)
-def test_create_string_constrained_field_schema_pydantic_v2(annotation: Any) -> None:
-    field_definition = FieldDefinition.from_annotation(annotation)
+def test_create_string_constrained_field_schema_pydantic_v2(
+    annotation: Any,
+    schema_creator: SchemaCreator,
+    plugin: PydanticSchemaPlugin,
+) -> None:
+    constraint: pydantic_v2.types.StringConstraints = annotation.__metadata__[0]
 
-    assert isinstance(field_definition.kwarg_definition, KwargDefinition)
-    schema = create_string_constrained_field_schema(field_definition.annotation, field_definition.kwarg_definition)
+    class Model(pydantic_v2.BaseModel):
+        field: annotation
+
+    schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]
+
     assert schema.type == OpenAPIType.STRING
+    assert schema.min_length == constraint.min_length
+    assert schema.max_length == constraint.max_length
+    assert schema.pattern == constraint.pattern
+    if constraint.to_upper:
+        assert schema.description == "must be in upper case"
+    if constraint.to_lower:
+        assert schema.description == "must be in lower case"
 
-    assert any(getattr(m, "min_length", None) == schema.min_length for m in field_definition.metadata if m)
-    assert any(getattr(m, "max_length", None) == schema.max_length for m in field_definition.metadata if m)
-    if pattern := getattr(annotation, "regex", getattr(annotation, "pattern", None)):
-        assert schema.pattern == pattern.pattern if isinstance(pattern, Pattern) else pattern
-    if any(getattr(m, "to_lower", getattr(m, "to_upper", None)) for m in field_definition.metadata if m):
-        assert schema.description
+
+@pytest.mark.parametrize("annotation", constrained_bytes_v2)
+def test_create_byte_constrained_field_schema_pydantic_v2(
+    annotation: Any,
+    schema_creator: SchemaCreator,
+    plugin: PydanticSchemaPlugin,
+) -> None:
+    constraint: annotated_types.Len = annotation.__metadata__[1]
+
+    class Model(pydantic_v2.BaseModel):
+        field: annotation
+
+    schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]
+
+    assert schema.type == OpenAPIType.STRING
+    assert schema.min_length == constraint.min_length
+    assert schema.max_length == constraint.max_length
 
 
 @pytest.mark.parametrize("annotation", constrained_numbers_v1)
-def test_create_numerical_constrained_field_schema_pydantic_v1(annotation: Any) -> None:
+def test_create_numerical_constrained_field_schema_pydantic_v1(
+    annotation: Any,
+    schema_creator: SchemaCreator,
+    plugin: PydanticSchemaPlugin,
+) -> None:
     from pydantic.v1.types import ConstrainedDecimal, ConstrainedFloat, ConstrainedInt
 
     annotation = cast(Union[ConstrainedInt, ConstrainedFloat, ConstrainedDecimal], annotation)
 
-    field_definition = FieldDefinition.from_annotation(annotation)
+    class Model(pydantic_v1.BaseModel):
+        field: annotation
 
-    assert isinstance(field_definition.kwarg_definition, KwargDefinition)
-    schema = create_numerical_constrained_field_schema(field_definition.annotation, field_definition.kwarg_definition)
+    schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]
+
     assert (
         schema.type == OpenAPIType.INTEGER if is_class_and_subclass(annotation, ConstrainedInt) else OpenAPIType.NUMBER
     )
@@ -235,102 +319,95 @@ def test_create_numerical_constrained_field_schema_pydantic_v1(annotation: Any) 
     assert schema.multiple_of == annotation.multiple_of
 
 
-@pytest.mark.parametrize("annotation", constrained_numbers_v2)
-def test_create_numerical_constrained_field_schema_pydantic_v2(annotation: Any) -> None:
-    field_definition = FieldDefinition.from_annotation(annotation)
+@pytest.mark.parametrize(
+    "make_constraint, constraint_kwargs",
+    [
+        (pydantic_v2.conint, {"gt": 10, "lt": 100}),
+        (pydantic_v2.conint, {"ge": 10, "le": 100}),
+        (pydantic_v2.conint, {"ge": 10, "le": 100, "multiple_of": 7}),
+        (pydantic_v2.confloat, {"gt": 10, "lt": 100}),
+        (pydantic_v2.confloat, {"ge": 10, "le": 100}),
+        (pydantic_v2.confloat, {"ge": 10, "le": 100, "multiple_of": 4.2}),
+        (pydantic_v2.confloat, {"gt": 10, "lt": 100, "multiple_of": 10}),
+        (pydantic_v2.condecimal, {"gt": Decimal("10"), "lt": Decimal("100")}),
+        (pydantic_v2.condecimal, {"ge": Decimal("10"), "le": Decimal("100")}),
+        (pydantic_v2.condecimal, {"gt": Decimal("10"), "lt": Decimal("100"), "multiple_of": Decimal("5")}),
+        (pydantic_v2.condecimal, {"ge": Decimal("10"), "le": Decimal("100"), "multiple_of": Decimal("2")}),
+    ],
+)
+def test_create_numerical_constrained_field_schema_pydantic_v2(
+    make_constraint: Any,
+    constraint_kwargs: Dict[str, Any],
+    schema_creator: SchemaCreator,
+    plugin: PydanticSchemaPlugin,
+) -> None:
+    annotation = make_constraint(**constraint_kwargs)
 
-    assert isinstance(field_definition.kwarg_definition, KwargDefinition)
-    schema = create_numerical_constrained_field_schema(field_definition.annotation, field_definition.kwarg_definition)
+    class Model(pydantic_v1.BaseModel):
+        field: annotation  # type: ignore[valid-type]
+
+    schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]
+
     assert schema.type == OpenAPIType.INTEGER if is_class_and_subclass(annotation, int) else OpenAPIType.NUMBER
-    assert any(getattr(m, "gt", None) == schema.exclusive_minimum for m in field_definition.metadata if m)
-    assert any(getattr(m, "ge", None) == schema.minimum for m in field_definition.metadata if m)
-    assert any(getattr(m, "lt", None) == schema.exclusive_maximum for m in field_definition.metadata if m)
-    assert any(getattr(m, "le", None) == schema.maximum for m in field_definition.metadata if m)
-    assert any(getattr(m, "multiple_of", None) == schema.multiple_of for m in field_definition.metadata if m)
+    assert schema.exclusive_minimum == constraint_kwargs.get("gt")
+    assert schema.minimum == constraint_kwargs.get("ge")
+    assert schema.exclusive_maximum == constraint_kwargs.get("lt")
+    assert schema.maximum == constraint_kwargs.get("le")
+    assert schema.multiple_of == constraint_kwargs.get("multiple_of")
 
 
 @pytest.mark.parametrize("annotation", constrained_dates_v1)
-def test_create_date_constrained_field_schema_pydantic_v1(annotation: Any) -> None:
-    field_definition = FieldDefinition.from_annotation(annotation)
+def test_create_date_constrained_field_schema_pydantic_v1(
+    annotation: Any,
+    schema_creator: SchemaCreator,
+    plugin: PydanticSchemaPlugin,
+) -> None:
+    class Model(pydantic_v1.BaseModel):
+        field: annotation
 
-    assert isinstance(field_definition.kwarg_definition, KwargDefinition)
-    schema = create_date_constrained_field_schema(field_definition.annotation, field_definition.kwarg_definition)
+    schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]
+
     assert schema.type == OpenAPIType.STRING
     assert schema.format == OpenAPIFormat.DATE
-    assert (
-        datetime.fromtimestamp(schema.exclusive_minimum, tz=timezone.utc) if schema.exclusive_minimum else None
-    ) == (
-        datetime.fromordinal(annotation.gt.toordinal()).replace(tzinfo=timezone.utc)
-        if annotation.gt is not None
-        else None
-    )
-    assert (datetime.fromtimestamp(schema.minimum, tz=timezone.utc) if schema.minimum else None) == (
-        datetime.fromordinal(annotation.ge.toordinal()).replace(tzinfo=timezone.utc)
-        if annotation.ge is not None
-        else None
-    )
-    assert (
-        datetime.fromtimestamp(schema.exclusive_maximum, tz=timezone.utc) if schema.exclusive_maximum else None
-    ) == (
-        datetime.fromordinal(annotation.lt.toordinal()).replace(tzinfo=timezone.utc)
-        if annotation.lt is not None
-        else None
-    )
-    assert (datetime.fromtimestamp(schema.maximum, tz=timezone.utc) if schema.maximum else None) == (
-        datetime.fromordinal(annotation.le.toordinal()).replace(tzinfo=timezone.utc)
-        if annotation.le is not None
-        else None
-    )
+    if gt := annotation.gt:
+        assert date.fromtimestamp(schema.exclusive_minimum) == gt  # type: ignore[arg-type]
+    if ge := annotation.ge:
+        assert date.fromtimestamp(schema.minimum) == ge  # type: ignore[arg-type]
+    if lt := annotation.lt:
+        assert date.fromtimestamp(schema.exclusive_maximum) == lt  # type: ignore[arg-type]
+    if le := annotation.le:
+        assert date.fromtimestamp(schema.maximum) == le  # type: ignore[arg-type]
 
 
-@pytest.mark.parametrize("annotation", constrained_dates_v2)
-def test_create_date_constrained_field_schema_pydantic_v2(annotation: Any) -> None:
-    field_definition = FieldDefinition.from_annotation(annotation)
+@pytest.mark.parametrize(
+    "constraints",
+    [
+        {"gt": date.today() - timedelta(days=10), "lt": date.today() + timedelta(days=100)},
+        {"ge": date.today() - timedelta(days=10), "le": date.today() + timedelta(days=100)},
+        {"gt": date.today() - timedelta(days=10), "lt": date.today() + timedelta(days=100)},
+        {"ge": date.today() - timedelta(days=10), "le": date.today() + timedelta(days=100)},
+    ],
+)
+def test_create_date_constrained_field_schema_pydantic_v2(
+    constraints: Dict[str, Any],
+    schema_creator: SchemaCreator,
+    plugin: PydanticSchemaPlugin,
+) -> None:
+    class Model(pydantic_v2.BaseModel):
+        field: pydantic_v2.condate(**constraints)  # type: ignore[valid-type]
 
-    assert isinstance(field_definition.kwarg_definition, KwargDefinition)
-    schema = create_date_constrained_field_schema(field_definition.annotation, field_definition.kwarg_definition)
+    schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]
     assert schema.type == OpenAPIType.STRING
     assert schema.format == OpenAPIFormat.DATE
-    assert any(
-        (
-            datetime.fromordinal(getattr(m, "gt", None).toordinal()).replace(tzinfo=timezone.utc)  # type: ignore[union-attr]
-            if getattr(m, "gt", None) is not None
-            else None
-        )
-        == (datetime.fromtimestamp(schema.exclusive_minimum, tz=timezone.utc) if schema.exclusive_minimum else None)
-        for m in field_definition.metadata
-        if m
-    )
-    assert any(
-        (
-            datetime.fromordinal(getattr(m, "ge", None).toordinal()).replace(tzinfo=timezone.utc)  # type: ignore[union-attr]
-            if getattr(m, "ge", None) is not None
-            else None
-        )
-        == (datetime.fromtimestamp(schema.minimum, tz=timezone.utc) if schema.minimum else None)
-        for m in field_definition.metadata
-        if m
-    )
-    assert any(
-        (
-            datetime.fromordinal(getattr(m, "lt", None).toordinal()).replace(tzinfo=timezone.utc)  # type: ignore[union-attr]
-            if getattr(m, "lt", None) is not None
-            else None
-        )
-        == (datetime.fromtimestamp(schema.exclusive_maximum, tz=timezone.utc) if schema.exclusive_maximum else None)
-        for m in field_definition.metadata
-        if m
-    )
-    assert any(
-        (
-            datetime.fromordinal(getattr(m, "le", None).toordinal()).replace(tzinfo=timezone.utc)  # type: ignore[union-attr]
-            if getattr(m, "le", None) is not None
-            else None
-        )
-        == (datetime.fromtimestamp(schema.maximum, tz=timezone.utc) if schema.maximum else None)
-        for m in field_definition.metadata
-        if m
-    )
+
+    if gt := constraints.get("gt"):
+        assert date.fromtimestamp(schema.exclusive_minimum) == gt  # type: ignore[arg-type]
+    if ge := constraints.get("ge"):
+        assert date.fromtimestamp(schema.minimum) == ge  # type: ignore[arg-type]
+    if lt := constraints.get("lt"):
+        assert date.fromtimestamp(schema.exclusive_maximum) == lt  # type: ignore[arg-type]
+    if le := constraints.get("le"):
+        assert date.fromtimestamp(schema.maximum) == le  # type: ignore[arg-type]
 
 
 @pytest.mark.parametrize(
@@ -340,15 +417,37 @@ def test_create_date_constrained_field_schema_pydantic_v2(annotation: Any) -> No
         *constrained_collection_v1,
         *constrained_string_v1,
         *constrained_dates_v1,
+    ],
+)
+def test_create_constrained_field_schema_v1(
+    annotation: Any,
+    schema_creator: SchemaCreator,
+    plugin: PydanticSchemaPlugin,
+) -> None:
+    class Model(pydantic_v1.BaseModel):
+        field: annotation
+
+    assert schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]
+
+
+@pytest.mark.parametrize(
+    "annotation",
+    [
         *constrained_numbers_v2,
         *constrained_collection_v2,
         *constrained_string_v2,
         *constrained_dates_v2,
     ],
 )
-def test_create_constrained_field_schema(annotation: Any) -> None:
-    schema = SchemaCreator().for_constrained_field(FieldDefinition.from_annotation(annotation))
-    assert schema
+def test_create_constrained_field_schema_v2(
+    annotation: Any,
+    schema_creator: SchemaCreator,
+    plugin: PydanticSchemaPlugin,
+) -> None:
+    class Model(pydantic_v2.BaseModel):
+        field: annotation
+
+    assert schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]  # type: ignore[index, union-attr]
 
 
 @pytest.mark.parametrize("cls", (PydanticPerson, PydanticDataclassPerson, PydanticV1Person, PydanticV1DataclassPerson))
@@ -391,8 +490,7 @@ def test_spec_generation(cls: Any) -> None:
         }
 
 
-@pytest.mark.parametrize("create_examples", (True, False))
-def test_schema_generation_v1(create_examples: bool) -> None:
+def test_schema_generation_v1() -> None:
     class Lookup(pydantic_v1.BaseModel):
         id: Annotated[
             str,
@@ -401,35 +499,30 @@ def test_schema_generation_v1(create_examples: bool) -> None:
                 max_length=16,
                 description="A unique identifier",
                 example="e4eaaaf2-d142-11e1-b3e4-080027620cdd",  # pyright: ignore
+                examples=["31", "32"],
             ),
         ]
+        with_title: str = pydantic_v1.Field(title="WITH_title")
 
     @post("/example")
     async def example_route() -> Lookup:
-        return Lookup(id="1234567812345678")
+        return Lookup(id="1234567812345678", with_title="1")
 
-    with create_test_client(
-        route_handlers=[example_route],
-        openapi_config=OpenAPIConfig(
-            title="Example API",
-            version="1.0.0",
-            create_examples=create_examples,
-        ),
-        signature_namespace={"Lookup": Lookup},
-    ) as client:
-        response = client.get("/schema/openapi.json")
-        assert response.status_code == HTTP_200_OK
-        assert response.json()["components"]["schemas"]["test_schema_generation_v1.Lookup"]["properties"]["id"] == {
-            "description": "A unique identifier",
-            "examples": ["e4eaaaf2-d142-11e1-b3e4-080027620cdd"],
-            "maxLength": 16,
-            "minLength": 12,
-            "type": "string",
-        }
+    app = Litestar([example_route])
+    schema = app.openapi_schema.to_schema()
+    lookup_schema = schema["components"]["schemas"]["test_schema_generation_v1.Lookup"]["properties"]
+
+    assert lookup_schema["id"] == {
+        "description": "A unique identifier",
+        "examples": ["e4eaaaf2-d142-11e1-b3e4-080027620cdd", "31", "32"],
+        "maxLength": 16,
+        "minLength": 12,
+        "type": "string",
+    }
+    assert lookup_schema["with_title"] == {"title": "WITH_title", "type": "string"}
 
 
-@pytest.mark.parametrize("create_examples", (True, False))
-def test_schema_generation_v2(create_examples: bool) -> None:
+def test_schema_generation_v2() -> None:
     class Lookup(pydantic_v2.BaseModel):
         id: Annotated[
             str,
@@ -437,32 +530,72 @@ def test_schema_generation_v2(create_examples: bool) -> None:
                 min_length=12,
                 max_length=16,
                 description="A unique identifier",
-                json_schema_extra={"example": "e4eaaaf2-d142-11e1-b3e4-080027620cdd"},
+                # we expect these examples to be merged
+                json_schema_extra={"example": "e4eaaaf2-d142-11e1-b3e4-080027620cdd", "examples": ["31"]},
+                examples=["32"],
             ),
         ]
+        # title should work if given on the field
+        with_title: str = pydantic_v2.Field(title="WITH_title")
+        # or as an extra
+        with_extra_title: str = pydantic_v2.Field(json_schema_extra={"title": "WITH_extra"})
 
     @post("/example")
     async def example_route() -> Lookup:
-        return Lookup(id="1234567812345678")
+        return Lookup(id="1234567812345678", with_title="1", with_extra_title="2")
 
-    with create_test_client(
-        route_handlers=[example_route],
+    app = Litestar([example_route])
+    schema = app.openapi_schema.to_schema()
+    lookup_schema = schema["components"]["schemas"]["test_schema_generation_v2.Lookup"]["properties"]
+
+    assert lookup_schema["id"] == {
+        "description": "A unique identifier",
+        "examples": ["e4eaaaf2-d142-11e1-b3e4-080027620cdd", "31", "32"],
+        "maxLength": 16,
+        "minLength": 12,
+        "type": "string",
+    }
+    assert lookup_schema["with_title"] == {"title": "WITH_title", "type": "string"}
+    assert lookup_schema["with_extra_title"] == {"title": "WITH_extra", "type": "string"}
+
+
+def test_create_examples(pydantic_version: PydanticVersion) -> None:
+    lib = pydantic_v1 if pydantic_version == "v1" else pydantic_v2
+
+    class Model(lib.BaseModel):  # type: ignore[name-defined, misc]
+        foo: str = lib.Field(examples=["32"])
+        bar: str
+
+    @get("/example")
+    async def handler() -> Model:
+        return Model(foo="1", bar="2")
+
+    app = Litestar(
+        [handler],
         openapi_config=OpenAPIConfig(
-            title="Example API",
-            version="1.0.0",
-            create_examples=create_examples,
+            title="Test",
+            version="0",
+            create_examples=True,
         ),
-        signature_namespace={"Lookup": Lookup},
-    ) as client:
-        response = client.get("/schema/openapi.json")
-        assert response.status_code == HTTP_200_OK
-        assert response.json()["components"]["schemas"]["test_schema_generation_v2.Lookup"]["properties"]["id"] == {
-            "description": "A unique identifier",
-            "examples": ["e4eaaaf2-d142-11e1-b3e4-080027620cdd"],
-            "maxLength": 16,
-            "minLength": 12,
-            "type": "string",
-        }
+    )
+    schema = app.openapi_schema.to_schema()
+    lookup_schema = schema["components"]["schemas"]["test_create_examples.Model"]["properties"]
+
+    assert lookup_schema["foo"]["examples"] == ["32"]
+    assert lookup_schema["bar"]["examples"]
+
+
+def test_v2_json_schema_extra_callable_raises() -> None:
+    class Model(pydantic_v2.BaseModel):
+        field: str = pydantic_v2.Field(json_schema_extra=lambda e: None)
+
+    @get("/example")
+    def handler() -> Model:
+        return Model(field="1")
+
+    app = Litestar([handler])
+    with pytest.raises(ValueError, match="Callables not supported"):
+        app.openapi_schema
 
 
 def test_schema_by_alias(base_model: AnyBaseModelType, pydantic_version: PydanticVersion) -> None:
@@ -581,7 +714,7 @@ def test_create_schema_for_field_v2() -> None:
     assert value.examples == ["example"]
 
 
-def test_create_schema_for_field_v2__examples() -> None:
+def test_create_schema_for_field_v2_examples() -> None:
     class Model(pydantic_v2.BaseModel):
         value: str = pydantic_v2.Field(
             title="title", description="description", max_length=16, json_schema_extra={"examples": ["example"]}

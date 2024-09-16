@@ -201,7 +201,7 @@ skip = 'pdm.lock,docs/examples/contrib/sqlalchemy/us_state_lookup.json'
 
 [tool.coverage.run]
 concurrency = ["multiprocessing", "thread"]
-omit = ["*/tests/*", "*/litestar/plugins/sqlalchemy.py"]
+omit = ["*/tests/*", "*/litestar/plugins/sqlalchemy.py", "*/litestar/_kwargs/types.py"]
 parallel = true
 plugins = ["covdefaults"]
 source = ["litestar"]
@@ -268,6 +268,10 @@ module = ["tests.unit.test_kwargs.test_reserved_kwargs_injection"]
 [[tool.mypy.overrides]]
 module = ["tests.unit.test_contrib.test_repository"]
 strict_equality = false
+
+[[tool.mypy.overrides]]
+module = ["tests.unit.test_contrib.test_pydantic.test_openapi"]
+disable_error_code = "index, union-attr"
 
 [[tool.mypy.overrides]]
 ignore_missing_imports = true

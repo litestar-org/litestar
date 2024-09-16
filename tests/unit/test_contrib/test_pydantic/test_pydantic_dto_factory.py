@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from dataclasses import replace
+from typing import TYPE_CHECKING, Callable, Optional
+from unittest.mock import ANY
 
 import pydantic as pydantic_v2
 import pytest
@@ -8,14 +10,95 @@ from pydantic import v1 as pydantic_v1
 from typing_extensions import Annotated
 
 from litestar.contrib.pydantic import PydanticDTO
-from litestar.dto import DTOField, dto_field
-from litestar.dto.data_structures import DTOFieldDefinition
+from litestar.dto import DTOField, DTOFieldDefinition, Mark, dto_field
 from litestar.typing import FieldDefinition
 
 from . import PydanticVersion
 
 if TYPE_CHECKING:
     from typing import Callable
+
+
+@pytest.fixture
+def expected_field_defs(int_factory: Callable[[], int]) -> list[DTOFieldDefinition]:
+    return [
+        DTOFieldDefinition.from_field_definition(
+            field_definition=FieldDefinition.from_kwarg(
+                annotation=int,
+                name="a",
+            ),
+            model_name=ANY,
+            default_factory=None,
+            dto_field=DTOField(),
+            passthrough_constraints=False,
+        ),
+        replace(
+            DTOFieldDefinition.from_field_definition(
+                field_definition=FieldDefinition.from_kwarg(
+                    annotation=int,
+                    name="b",
+                ),
+                model_name=ANY,
+                default_factory=None,
+                dto_field=DTOField(mark=Mark.READ_ONLY),
+            ),
+            metadata=ANY,
+            type_wrappers=ANY,
+            raw=ANY,
+            kwarg_definition=ANY,
+            passthrough_constraints=False,
+        ),
+        replace(
+            DTOFieldDefinition.from_field_definition(
+                field_definition=FieldDefinition.from_kwarg(
+                    annotation=int,
+                    name="c",
+                ),
+                model_name=ANY,
+                default_factory=None,
+                dto_field=DTOField(),
+            ),
+            metadata=ANY,
+            type_wrappers=ANY,
+            raw=ANY,
+            kwarg_definition=ANY,
+            passthrough_constraints=False,
+        ),
+        replace(
+            DTOFieldDefinition.from_field_definition(
+                field_definition=FieldDefinition.from_kwarg(
+                    annotation=int,
+                    name="d",
+                    default=1,
+                ),
+                model_name=ANY,
+                default_factory=None,
+                dto_field=DTOField(),
+            ),
+            metadata=ANY,
+            type_wrappers=ANY,
+            raw=ANY,
+            kwarg_definition=ANY,
+            passthrough_constraints=False,
+        ),
+        replace(
+            DTOFieldDefinition.from_field_definition(
+                field_definition=FieldDefinition.from_kwarg(
+                    annotation=Optional[int],
+                    name="e",
+                ),
+                model_name=ANY,
+                default_factory=int_factory,
+                dto_field=DTOField(),
+            ),
+            default=None,
+            metadata=ANY,
+            type_wrappers=ANY,
+            raw=ANY,
+            kwarg_definition=ANY,
+            passthrough_constraints=False,
+        ),
+    ]
 
 
 def test_field_definition_generation_v1(

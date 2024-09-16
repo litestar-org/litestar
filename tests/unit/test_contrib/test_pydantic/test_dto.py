@@ -83,7 +83,7 @@ from typing_extensions import Annotated
 class User(BaseModel):
     id: Annotated[
         int,
-        Field(description="This is a test (id description)."),
+        Field(description="This is a test (id description).", gt=1),
     ]
 
 class DataCollectionDTO(PydanticDTO[User]):
@@ -102,6 +102,7 @@ app = Litestar(route_handlers=[get_user])
     component_schema = schema.components.schemas["GetUserUserResponseBody"]
     assert component_schema.properties is not None
     assert component_schema.properties["id"].description == "This is a test (id description)."
+    assert component_schema.properties["id"].exclusive_minimum == 1  # type: ignore[union-attr]
 
 
 @pytest.mark.parametrize(

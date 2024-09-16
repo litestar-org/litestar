@@ -29,10 +29,11 @@ from litestar._openapi.schema_generation.schema import (
     KWARG_DEFINITION_ATTRIBUTE_TO_OPENAPI_PROPERTY_MAP,
     SchemaCreator,
 )
-from litestar._openapi.schema_generation.utils import _get_normalized_schema_key, _type_or_first_not_none_inner_type
+from litestar._openapi.schema_generation.utils import _type_or_first_not_none_inner_type
 from litestar.app import DEFAULT_OPENAPI_CONFIG, Litestar
 from litestar.di import Provide
 from litestar.enums import ParamType
+from litestar.exceptions import ImproperlyConfiguredException
 from litestar.openapi.spec import ExternalDocumentation, OpenAPIType, Reference
 from litestar.openapi.spec.example import Example
 from litestar.openapi.spec.parameter import Parameter as OpenAPIParameter
@@ -88,58 +89,68 @@ def test_process_schema_result() -> None:
             assert getattr(schema, schema_key) == getattr(kwarg_definition, signature_key)
 
 
-def test_get_normalized_schema_key() -> None:
-    class LocalClass(msgspec.Struct):
-        id: str
-
-    # replace each of the long strings with underscores with a tuple of strings split at each underscore
-    assert (
-        "tests",
-        "unit",
-        "test_openapi",
-        "test_schema",
-        "test_get_normalized_schema_key.LocalClass",
-    ) == _get_normalized_schema_key(LocalClass)
-
-    assert ("tests", "models", "DataclassPerson") == _get_normalized_schema_key(DataclassPerson)
-
-    builtin_dict = Dict[str, List[int]]
-    assert ("typing", "Dict[str, typing.List[int]]") == _get_normalized_schema_key(builtin_dict)
-
-    builtin_with_custom = Dict[str, DataclassPerson]
-    assert ("typing", "Dict[str, tests.models.DataclassPerson]") == _get_normalized_schema_key(builtin_with_custom)
-
-    class LocalGeneric(Generic[T]):
+def test_override_schema_component_key() -> None:
+    @dataclass
+    class Data:
         pass
 
-    assert (
-        "tests",
-        "unit",
-        "test_openapi",
-        "test_schema",
-        "test_get_normalized_schema_key.LocalGeneric",
-    ) == _get_normalized_schema_key(LocalGeneric)
+    @post("/")
+    def handler(
+        data: Data,
+    ) -> Annotated[Data, Parameter(schema_component_key="not_data")]:
+        return Data()
 
-    generic_int = LocalGeneric[int]
-    generic_str = LocalGeneric[str]
+    @get("/")
+    def handler_2() -> Annotated[Data, Parameter(schema_component_key="not_data")]:
+        return Data()
 
-    assert (
-        "tests",
-        "unit",
-        "test_openapi",
-        "test_schema",
-        "test_get_normalized_schema_key.LocalGeneric[int]",
-    ) == _get_normalized_schema_key(generic_int)
+    app = Litestar([handler, handler_2])
+    schema = app.openapi_schema.to_schema()
+    # we expect the annotated / non-annotated to generate independent components
+    assert schema["paths"]["/"]["post"]["requestBody"]["content"]["application/json"] == {
+        "schema": {"$ref": "#/components/schemas/test_override_schema_component_key.Data"}
+    }
+    assert schema["paths"]["/"]["post"]["responses"]["201"]["content"] == {
+        "application/json": {"schema": {"$ref": "#/components/schemas/not_data"}}
+    }
+    # a response with the same type and the same name should reference the same component
+    assert schema["paths"]["/"]["get"]["responses"]["200"]["content"] == {
+        "application/json": {"schema": {"$ref": "#/components/schemas/not_data"}}
+    }
+    assert app.openapi_schema.to_schema()["components"] == {
+        "schemas": {
+            "not_data": {"properties": {}, "type": "object", "required": [], "title": "Data"},
+            "test_override_schema_component_key.Data": {
+                "properties": {},
+                "type": "object",
+                "required": [],
+                "title": "Data",
+            },
+        }
+    }
 
-    assert (
-        "tests",
-        "unit",
-        "test_openapi",
-        "test_schema",
-        "test_get_normalized_schema_key.LocalGeneric[str]",
-    ) == _get_normalized_schema_key(generic_str)
 
-    assert _get_normalized_schema_key(generic_int) != _get_normalized_schema_key(generic_str)
+def test_override_schema_component_key_raise_if_keys_are_not_unique() -> None:
+    @dataclass
+    class Data:
+        pass
+
+    @dataclass
+    class Data2:
+        pass
+
+    @post("/")
+    def handler(
+        data: Data,
+    ) -> Annotated[Data, Parameter(schema_component_key="not_data")]:
+        return Data()
+
+    @get("/")
+    def handler_2() -> Annotated[Data2, Parameter(schema_component_key="not_data")]:
+        return Data2()
+
+    with pytest.raises(ImproperlyConfiguredException, match="Schema component keys must be unique"):
+        Litestar([handler, handler_2]).openapi_schema.to_schema()
 
 
 def test_dependency_schema_generation() -> None:
@@ -285,16 +296,27 @@ class Foo(TypedDict):
 
 def test_create_schema_from_msgspec_annotated_type() -> None:
     class Lookup(msgspec.Struct):
-        id: Annotated[str, msgspec.Meta(max_length=16, examples=["example"], description="description", title="title")]
+        str_field: Annotated[
+            str,
+            msgspec.Meta(max_length=16, examples=["example"], description="description", title="title", pattern=r"\w+"),
+        ]
+        bytes_field: Annotated[bytes, msgspec.Meta(max_length=2, min_length=1)]
+        default_field: Annotated[str, msgspec.Meta(min_length=1)] = "a"
 
     schema = get_schema_for_field_definition(FieldDefinition.from_kwarg(name="Lookup", annotation=Lookup))
 
-    assert schema.properties["id"].type == OpenAPIType.STRING  # type: ignore[index, union-attr]
-    assert schema.properties["id"].examples == ["example"]  # type: ignore[index, union-attr]
-    assert schema.properties["id"].description == "description"  # type: ignore[index]
-    assert schema.properties["id"].title == "title"  # type: ignore[index, union-attr]
-    assert schema.properties["id"].max_length == 16  # type: ignore[index, union-attr]
-    assert schema.required == ["id"]
+    assert schema.properties["str_field"].type == OpenAPIType.STRING  # type: ignore[index, union-attr]
+    assert schema.properties["str_field"].examples == ["example"]  # type: ignore[index, union-attr]
+    assert schema.properties["str_field"].description == "description"  # type: ignore[index]
+    assert schema.properties["str_field"].title == "title"  # type: ignore[index, union-attr]
+    assert schema.properties["str_field"].max_length == 16  # type: ignore[index, union-attr]
+    assert sorted(schema.required) == sorted(["str_field", "bytes_field"])  # type: ignore[arg-type]
+    assert schema.properties["bytes_field"].to_schema() == {  # type: ignore[index]
+        "contentEncoding": "utf-8",
+        "maxLength": 2,
+        "minLength": 1,
+        "type": "string",
+    }
 
 
 def test_annotated_types() -> None:

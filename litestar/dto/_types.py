@@ -142,4 +142,5 @@ class TransferDTOFieldDefinition(DTOFieldDefinition):
             transfer_type=transfer_type,
             type_wrappers=field_definition.type_wrappers,
             model_name=field_definition.model_name,
+            passthrough_constraints=field_definition.passthrough_constraints,
         )

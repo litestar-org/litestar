@@ -5,8 +5,8 @@ on:
     types:
       - closed
     branches:
-      - develop
       - main
+      - v3.0
 
 jobs:
   close_and_notify:
@@ -19,6 +19,9 @@ jobs:
           script: |
             const prNumber = context.payload.number
             const branch = context.baseRef
+            # TODO: `develop` no longer exists. Need a new way to determine if the
+            # change will be introduced in a major, minor, or patch release.
+            # possibly conventional commit standards in the PR title or by labels?
             const isDevelop = branch === "develop"
             const commentBody = `<!--closing-comment-->\nThis issue has been closed in #${prNumber}. The change will be included in the upcoming ${isDevelop ? "minor" : "patch"} release.`
 

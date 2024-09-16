@@ -599,5 +599,12 @@ class HTTPRouteHandler(BaseRouteHandler):
         if "data" in self.parsed_fn_signature.parameters and "GET" in self.http_methods:
             raise ImproperlyConfiguredException("'data' kwarg is unsupported for 'GET' request handlers")
 
+        if (body_param := self.parsed_fn_signature.parameters.get("body")) and not body_param.is_subclass_of(bytes):
+            raise ImproperlyConfiguredException(
+                f"Invalid type annotation for 'body' parameter in route handler {self}. 'body' will always receive the "
+                f"raw request body as bytes but was annotated with '{body_param.raw!r}'. If you want to receive "
+                "processed request data, use the 'data' parameter."
+            )
+
 
 route = HTTPRouteHandler

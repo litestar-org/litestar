@@ -6,7 +6,7 @@ import pytest
 from pydantic import v1 as pydantic_v1
 from typing_extensions import Annotated
 
-from litestar import post
+from litestar import get, post
 from litestar.contrib.pydantic import PydanticInitPlugin, PydanticPlugin
 from litestar.contrib.pydantic.pydantic_dto_factory import PydanticDTO
 from litestar.enums import RequestEncodingType
@@ -215,8 +215,6 @@ class V2ModelWithPrivateFields(pydantic_v2.BaseModel):
         underscore_fields_are_private = True
 
     _field: str = pydantic_v2.PrivateAttr()
-    # include an invalid annotation here to ensure we never touch those fields
-    _underscore_field: "foo"  # type: ignore[name-defined] # noqa: F821
     bar: str
 
 
@@ -388,3 +386,55 @@ def test_v2_strict_validate(
     with create_test_client([handler], plugins=plugins) as client:
         res = client.post("/", json={"test_bool": "YES"})
         assert res.status_code == 400 if expect_error else 201
+
+
+def test_model_defaults(pydantic_version: PydanticVersion) -> None:
+    lib = pydantic_v1 if pydantic_version == "v1" else pydantic_v2
+
+    class Model(lib.BaseModel):  # type: ignore[misc, name-defined]
+        a: int
+        b: int = lib.Field(default=1)
+        c: int = lib.Field(default_factory=lambda: 3)
+
+    @post("/")
+    async def handler(data: Model) -> Dict[str, int]:
+        return {"a": data.a, "b": data.b, "c": data.c}
+
+    with create_test_client([handler]) as client:
+        schema = client.app.openapi_schema.components.schemas["test_model_defaults.Model"]
+        res = client.post("/", json={"a": 5})
+        assert res.status_code == 201
+        assert res.json() == {"a": 5, "b": 1, "c": 3}
+        assert schema.required == ["a"]
+        assert schema.properties["b"].default == 1
+        assert schema.properties["c"].default is None
+
+
+@pytest.mark.parametrize("with_dto", [True, False])
+def test_v2_computed_fields(with_dto: bool) -> None:
+    # https://github.com/litestar-org/litestar/issues/3656
+
+    class Model(pydantic_v2.BaseModel):
+        foo: int = 1
+
+        @pydantic_v2.computed_field
+        def bar(self) -> int:
+            return 2
+
+        @pydantic_v2.computed_field(examples=[1], json_schema_extra={"title": "this is computed"})
+        def baz(self) -> int:
+            return 3
+
+    @get("/", return_dto=PydanticDTO[Model] if with_dto else None)
+    async def handler() -> Model:
+        return Model()
+
+    component_name = "HandlerModelResponseBody" if with_dto else "test_v2_computed_fields.Model"
+
+    with create_test_client([handler]) as client:
+        schema = client.app.openapi_schema.components.schemas[component_name]
+        res = client.get("/")
+        assert list(schema.properties.keys()) == ["foo", "bar", "baz"]
+        assert schema.properties["baz"].title == "this is computed"
+        assert schema.properties["baz"].examples == [1]
+        assert res.json() == {"foo": 1, "bar": 2, "baz": 3}

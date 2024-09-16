@@ -4,7 +4,6 @@ import sys
 from dataclasses import dataclass
 from typing import Any, ForwardRef, Generic, List, Optional, Tuple, TypeVar, Union
 
-import annotated_types
 import msgspec
 import pytest
 from typing_extensions import Annotated, NotRequired, Required, TypeAliasType, TypedDict, get_type_hints
@@ -12,7 +11,7 @@ from typing_extensions import Annotated, NotRequired, Required, TypeAliasType, T
 from litestar import get
 from litestar.exceptions import LitestarWarning
 from litestar.params import DependencyKwarg, KwargDefinition, Parameter, ParameterKwarg
-from litestar.typing import FieldDefinition, _unpack_predicate
+from litestar.typing import FieldDefinition
 
 from .test_utils.test_signature import T, _check_field_definition, field_definition_int, test_type_hints
 
@@ -438,20 +437,6 @@ def test_field_definition_get_type_hints_dont_resolve_generics(
         FieldDefinition.from_annotation(annotation).get_type_hints(include_extras=True, resolve_generics=False)
         == expected_type_hints
     )
-
-
-@pytest.mark.parametrize(
-    "predicate, expected_meta",
-    [
-        (annotated_types.LowerCase.__metadata__[0], {"lower_case": True}),  # pyright: ignore
-        (annotated_types.UpperCase.__metadata__[0], {"upper_case": True}),  # pyright: ignore
-        (annotated_types.IsAscii.__metadata__[0], {"pattern": "[[:ascii:]]"}),  # pyright: ignore
-        (annotated_types.IsDigits.__metadata__[0], {"pattern": "[[:digit:]]"}),  # pyright: ignore
-        (object(), {}),
-    ],
-)
-def test_unpack_predicate(predicate: Any, expected_meta: dict[str, Any]) -> None:
-    assert _unpack_predicate(predicate) == expected_meta
 
 
 def test_warn_ambiguous_default_values() -> None:
