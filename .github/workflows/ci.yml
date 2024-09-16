@@ -245,6 +245,7 @@ jobs:
           path: |
             docs/_build/html
             .pr_number
+          include-hidden-files: true
 
   test_minimal_app:
     name: Test Minimal Application with Base Dependencies
