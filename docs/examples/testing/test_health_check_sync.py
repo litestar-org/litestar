@@ -15,13 +15,6 @@ def health_check() -> str:
 app = Litestar(route_handlers=[health_check])
 
 
-def test_health_check() -> None:
-    with TestClient(app=app) as client:
-        response = client.get("/health-check")
-        assert response.status_code == HTTP_200_OK
-        assert response.text == "healthy"
-
-
 @pytest.fixture(scope="function")
 def test_client() -> Iterator[TestClient[Litestar]]:
     with TestClient(app=app) as client:

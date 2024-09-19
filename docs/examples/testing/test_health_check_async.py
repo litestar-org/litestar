@@ -15,13 +15,6 @@ def health_check() -> str:
 app = Litestar(route_handlers=[health_check])
 
 
-async def test_health_check() -> None:
-    async with AsyncTestClient(app=app) as client:
-        response = await client.get("/health-check")
-        assert response.status_code == HTTP_200_OK
-        assert response.text == "healthy"
-
-
 @pytest.fixture(scope="function")
 async def test_client() -> AsyncIterator[AsyncTestClient[Litestar]]:
     async with AsyncTestClient(app=app) as client:
