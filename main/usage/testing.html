@@ -1747,13 +1747,6 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">health_check</span><span class="p">])</span>
 
 
-<span class="k">def</span> <span class="nf">test_health_check</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/health-check&quot;</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">HTTP_200_OK</span>
-        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s2">&quot;healthy&quot;</span>
-
-
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">TestClient</span><span class="p">[</span><span class="n">Litestar</span><span class="p">]]:</span>
     <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
@@ -1788,13 +1781,6 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">health_check</span><span class="p">])</span>
-
-
-<span class="k">def</span> <span class="nf">test_health_check</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/health-check&quot;</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">HTTP_200_OK</span>
-        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s2">&quot;healthy&quot;</span>
 
 
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">)</span>
@@ -1839,13 +1825,6 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">health_check</span><span class="p">])</span>
 
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_health_check</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="k">async</span> <span class="k">with</span> <span class="n">AsyncTestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/health-check&quot;</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">HTTP_200_OK</span>
-        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s2">&quot;healthy&quot;</span>
-
-
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">test_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">AsyncTestClient</span><span class="p">[</span><span class="n">Litestar</span><span class="p">]]:</span>
     <span class="k">async</span> <span class="k">with</span> <span class="n">AsyncTestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
@@ -1880,13 +1859,6 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">health_check</span><span class="p">])</span>
-
-
-<span class="k">async</span> <span class="k">def</span> <span class="nf">test_health_check</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="k">async</span> <span class="k">with</span> <span class="n">AsyncTestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/health-check&quot;</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="n">HTTP_200_OK</span>
-        <span class="k">assert</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span> <span class="o">==</span> <span class="s2">&quot;healthy&quot;</span>
 
 
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">)</span>
