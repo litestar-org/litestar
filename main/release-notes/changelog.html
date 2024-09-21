@@ -1533,6 +1533,20 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.12.1">
+<h2>2.12.1<a class="headerlink" href="#2.12.1" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2024-09-21<section id="2.12.1-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.12.1-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Fix base package requiring <code class="docutils literal notranslate"><span class="pre">annotated_types</span></code> dependency<a class="headerlink reference internal" href="#2.12.1-fix base package requiring" id="2.12.1-fix base package requiring">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug introduced in #3721 that was released with <code class="docutils literal notranslate"><span class="pre">2.12.0</span></code> caused an
+<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ImportError" title="(in Python v3.12)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ImportError</span></code></a> when the <code class="docutils literal notranslate"><span class="pre">annotated_types</span></code> package was not installed.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3749">litestar-org/litestar#3749</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3750">litestar-org/litestar#3750</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.12.0">
 <h2>2.12.0<a class="headerlink" href="#2.12.0" title="Permalink to this heading">#</a></h2>
 <strong>Released: </strong>2024-09-21<section id="2.12.0-feature">
@@ -6641,6 +6655,10 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.12.1">2.12.1</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.12.1-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.12.0">2.12.0</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.12.0-feature">Features</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.12.0-bugfix">Bugfixes</a></li>
