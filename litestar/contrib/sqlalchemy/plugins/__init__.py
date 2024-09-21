@@ -1,18 +1,8 @@
 from __future__ import annotations
 
-from advanced_alchemy.extensions.litestar.plugins import SQLAlchemyPlugin
+from typing import TYPE_CHECKING
 
-from .init import (
-    AsyncSessionConfig,
-    EngineConfig,
-    GenericSessionConfig,
-    GenericSQLAlchemyConfig,
-    SQLAlchemyAsyncConfig,
-    SQLAlchemyInitPlugin,
-    SQLAlchemySyncConfig,
-    SyncSessionConfig,
-)
-from .serialization import SQLAlchemySerializationPlugin
+from litestar.utils import warn_deprecation
 
 __all__ = (
     "AsyncSessionConfig",
@@ -26,3 +16,51 @@ __all__ = (
     "SQLAlchemySyncConfig",
     "SyncSessionConfig",
 )
+
+def __getattr__(attr_name: str) -> object:
+    if attr_name in __all__:
+
+
+        if attr_name in (    "GenericSQLAlchemyConfig",    "GenericSessionConfig"):
+            module = "litestar.plugins.sqlalchemy.config"
+            from advanced_alchemy.config import (  # pyright: ignore[reportMissingImports]
+                GenericSessionConfig,
+                GenericSQLAlchemyConfig, 
+            )
+            value = globals()[attr_name] = locals()[attr_name]
+        else:
+            module = "litestar.plugins.sqlalchemy" 
+            from advanced_alchemy.extensions.litestar import (  # pyright: ignore[reportMissingImports]
+                AsyncSessionConfig,
+                EngineConfig,
+                SQLAlchemyPlugin,
+                SQLAlchemySerializationPlugin,
+                SQLAlchemyAsyncConfig,
+                SQLAlchemyInitPlugin,
+                SQLAlchemySyncConfig,
+                SyncSessionConfig,
+            )
+            value = globals()[attr_name] = locals()[attr_name]
+        warn_deprecation(
+            deprecated_name=f"litestar.contrib.sqlalchemy.plugins.{attr_name}",
+            version="2.11",
+            kind="import",
+            removal_in="3.0",
+            info=f"importing {attr_name} from 'litestar.contrib.sqlalchemy.plugins' is deprecated, please "
+            f"import it from '{module}' instead",
+        )
+        return value
+
+    raise AttributeError(f"module {__name__!r} has no attribute {attr_name!r}")
+
+if TYPE_CHECKING:
+    from advanced_alchemy.extensions.litestar import (SQLAlchemyPlugin, SQLAlchemySerializationPlugin,         AsyncSessionConfig,
+        EngineConfig, 
+        SQLAlchemyAsyncConfig,
+        SQLAlchemyInitPlugin,
+        SQLAlchemySyncConfig,
+        SyncSessionConfig,)
+    from advanced_alchemy.config import (
+        GenericSessionConfig,
+        GenericSQLAlchemyConfig 
+    )
