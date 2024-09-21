@@ -377,6 +377,7 @@ lint.ignore = [
   "PLW2901", # pylint - for loop variable overwritten by assignment target
   "RUF012", # Ruff-specific rule - annotated with classvar
   "ISC001", # Ruff formatter incompatible
+  "CPY001", # ruff - copyright notice at the top of the file
 ]
 src = ["litestar", "tests", "docs/examples"]
 target-version = "py38"

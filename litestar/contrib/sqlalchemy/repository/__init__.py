@@ -1,7 +1,8 @@
-from ._async import SQLAlchemyAsyncRepository
-from ._sync import SQLAlchemySyncRepository
-from ._util import wrap_sqlalchemy_exception
-from .types import ModelT
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from litestar.utils import warn_deprecation
 
 __all__ = (
     "SQLAlchemyAsyncRepository",
@@ -9,3 +10,30 @@ __all__ = (
     "ModelT",
     "wrap_sqlalchemy_exception",
 )
+
+def __getattr__(attr_name: str) -> object:
+    if attr_name in __all__:
+        if attr_name in ("SQLAlchemyAsyncRepository", "SQLAlchemySyncRepository", "ModelT"):
+            module = "litestar.plugins.sqlalchemy.repository"
+            from advanced_alchemy.extensions.litestar import repository  # type: ignore[import-not-found] # pyright: ignore[reportMissingImports]
+            value = globals()[attr_name] = getattr(repository, attr_name)
+        elif attr_name == "wrap_sqlalchemy_exception":
+            module = "litestar.plugins.sqlalchemy.exceptions"
+            from advanced_alchemy.extensions.litestar import exceptions  # type: ignore[import-not-found] # pyright: ignore[reportMissingImports]
+            value = globals()[attr_name] = getattr(exceptions, attr_name)
+        
+        warn_deprecation(
+            deprecated_name=f"litestar.contrib.sqlalchemy.repository.{attr_name}",
+            version="2.11",
+            kind="import",
+            removal_in="3.0",
+            info=f"importing {attr_name} from 'litestar.contrib.sqlalchemy.repository' is deprecated, please "
+            f"import it from '{module}' instead",
+        )
+        return value
+
+    raise AttributeError(f"module {__name__!r} has no attribute {attr_name!r}")
+
+if TYPE_CHECKING:
+    from advanced_alchemy.extensions.litestar.repository import SQLAlchemyAsyncRepository, SQLAlchemySyncRepository, ModelT  # type: ignore[import-not-found] # pyright: ignore[reportMissingImports]
+    from advanced_alchemy.extensions.litestar.exceptions import wrap_sqlalchemy_exception  # type: ignore[import-not-found] # pyright: ignore[reportMissingImports]
