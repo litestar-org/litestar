@@ -226,6 +226,25 @@ class RapidocRenderPlugin(OpenAPIRenderPlugin):
             A rendered html string.
         """
 
+        def create_request_interceptor(csrf_config: CSRFConfig) -> str:
+            if csrf_config.cookie_httponly:
+                return ""
+
+            return f"""
+            <script>
+              window.addEventListener('DOMContentLoaded', (event) => {{
+                const rapidocEl = document.getElementsByTagName("rapi-doc")[0];
+
+                rapidocEl.addEventListener('before-try', (e) => {{
+                  const csrf_token = {_get_cookie_value_or_undefined(csrf_config.cookie_name)};
+
+                  if (csrf_token !== undefined) {{
+                    e.detail.request.headers.append('{csrf_config.header_name}', csrf_token);
+                  }}
+                }});
+              }});
+            </script>"""
+
         head = f"""
           <head>
             <title>{openapi_schema["info"]["title"]}</title>
@@ -240,6 +259,7 @@ class RapidocRenderPlugin(OpenAPIRenderPlugin):
         body = f"""
           <body>
             <rapi-doc spec-url="{self.get_openapi_json_route(request)}" />
+            {create_request_interceptor(request.app.csrf_config) if request.app.csrf_config else ""}
           </body>
         """
 
