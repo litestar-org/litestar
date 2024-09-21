@@ -1533,6 +1533,163 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.12.0">
+<h2>2.12.0<a class="headerlink" href="#2.12.0" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2024-09-21<section id="2.12.0-feature">
+<h3>Features<a class="headerlink" href="#2.12.0-feature" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Support strings in <code class="docutils literal notranslate"><span class="pre">media_type</span></code> for <code class="docutils literal notranslate"><span class="pre">ResponseSpec</span></code><a class="headerlink reference internal" href="#2.12.0-support strings in" id="2.12.0-support strings in">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Accept strings for the <code class="docutils literal notranslate"><span class="pre">media_type</span></code> parameter of <a class="reference internal" href="../reference/openapi/openapi.html#litestar.openapi.ResponseSpec" title="litestar.openapi.datastructures.ResponseSpec"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResponseSpec</span></code></a>,
+making it behave the same way as <a class="reference internal" href="../reference/response/index.html#litestar.response.Response.params.media_type" title="litestar.response.Response"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">media_type</span></code></a>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3728">litestar-org/litestar#3728</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3729">litestar-org/litestar#3729</a></span></p>
+</div>
+</dd>
+<dt>OpenAPI: Allow customizing schema component keys<a class="headerlink reference internal" href="#2.12.0-openapi: allow customizing schema component keys" id="2.12.0-openapi: allow customizing schema component keys">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Allow customizing the schema key used for a component in the OpenAPI schema.
+The supplied keys are enforced to be unique, and it is checked that they won’t
+be reused across different types.</p>
+<p>The keys can be set with the newly introduced <code class="docutils literal notranslate"><span class="pre">schema_component_key</span></code> parameter,
+which is available on <a class="reference internal" href="../reference/params.html#litestar.params.KwargDefinition" title="litestar.params.KwargDefinition"><code class="xref py py-class docutils literal notranslate"><span class="pre">KwargDefinition</span></code></a>,
+<a class="reference internal" href="../reference/params.html#litestar.params.Body" title="litestar.params.Body"><code class="xref py py-func docutils literal notranslate"><span class="pre">Body()</span></code></a> and <a class="reference internal" href="../reference/params.html#litestar.params.Parameter" title="litestar.params.Parameter"><code class="xref py py-func docutils literal notranslate"><span class="pre">Parameter()</span></code></a>.</p>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">Two components will be generated: <code class="docutils literal notranslate"><span class="pre">Data</span></code> and <code class="docutils literal notranslate"><span class="pre">not_data</span></code></span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Data</span><span class="p">:</span>
+    <span class="k">pass</span>
+
+<span class="nd">@post</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handler</span><span class="p">(</span>
+    <span class="n">data</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">Data</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">schema_component_key</span><span class="o">=</span><span class="s2">&quot;not_data&quot;</span><span class="p">)],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Data</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">Data</span><span class="p">()</span>
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handler_2</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">Data</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">schema_component_key</span><span class="o">=</span><span class="s2">&quot;not_data&quot;</span><span class="p">)]:</span>
+    <span class="k">return</span> <span class="n">Data</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3738">litestar-org/litestar#3738</a></span></p>
+</div>
+</dd>
+<dt>Raise exception when body parameter is annotated with non-bytes type<a class="headerlink reference internal" href="#2.12.0-raise exception when body parameter is annotated with non-bytes type" id="2.12.0-raise exception when body parameter is annotated with non-bytes type">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Add an informative error message to help avoid the common mistake of attempting
+to use the <code class="docutils literal notranslate"><span class="pre">body</span></code> parameter to receive validated / structured data by
+annotating it with a type such as <code class="docutils literal notranslate"><span class="pre">list[str]</span></code>, instead of <code class="docutils literal notranslate"><span class="pre">bytes</span></code>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3740">litestar-org/litestar#3740</a></span></p>
+</div>
+</dd>
+<dt>OpenAPI: Default to <code class="docutils literal notranslate"><span class="pre">latest</span></code> scalar version<a class="headerlink reference internal" href="#2.12.0-openapi: default to" id="2.12.0-openapi: default to">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Change the default version of the scalar OpenAPI renderer to <code class="docutils literal notranslate"><span class="pre">latest</span></code></p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3747">litestar-org/litestar#3747</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+<section id="2.12.0-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.12.0-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Fix overzealous warning for greedy middleware <code class="docutils literal notranslate"><span class="pre">exclude</span></code> pattern<a class="headerlink reference internal" href="#2.12.0-fix overzealous warning for greedy middleware" id="2.12.0-fix overzealous warning for greedy middleware">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug introduced in <code class="docutils literal notranslate"><span class="pre">2.11.0</span></code> (<a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3700">litestar-org/litestar#3700</a>),
+where the added warning for a greedy pattern use for the middleware <code class="docutils literal notranslate"><span class="pre">exclude</span></code>
+parameter was itself greedy, and would warn for non-greedy patterns, e.g.
+<code class="docutils literal notranslate"><span class="pre">^/$</span></code>.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3712">litestar-org/litestar#3712</a></span></p>
+</div>
+</dd>
+<dt>Fix dangling coroutines in request extraction handling cleanup<a class="headerlink reference internal" href="#2.12.0-fix dangling coroutines in request extraction handling cleanup" id="2.12.0-fix dangling coroutines in request extraction handling cleanup">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug where, when a required header parameter was defined for a request that
+also expects a request body, failing to provide the header resulted in a
+<a class="reference external" href="https://docs.python.org/3/library/exceptions.html#RuntimeWarning" title="(in Python v3.12)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">RuntimeWarning</span></code></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@post</span><span class="p">()</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">secret</span><span class="p">:</span> <span class="n">Annotated</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Parameter</span><span class="p">(</span><span class="n">header</span><span class="o">=</span><span class="s2">&quot;x-secret&quot;</span><span class="p">)])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">return</span> <span class="kc">None</span>
+</pre></div>
+</div>
+<p>If the <code class="docutils literal notranslate"><span class="pre">x-secret</span></code> header was not provided, warning like this would be seen:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ne">RuntimeWarning</span><span class="p">:</span> <span class="n">coroutine</span> <span class="s1">&#39;json_extractor&#39;</span> <span class="n">was</span> <span class="n">never</span> <span class="n">awaited</span>
+</pre></div>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3734">litestar-org/litestar#3734</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3735">litestar-org/litestar#3735</a></span></p>
+</div>
+</dd>
+<dt>OpenAPI: Correctly handle <code class="docutils literal notranslate"><span class="pre">type</span></code> keyword<a class="headerlink reference internal" href="#2.12.0-openapi: correctly handle" id="2.12.0-openapi: correctly handle">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug where a type alias created with the <code class="docutils literal notranslate"><span class="pre">type</span></code> keyword would create an
+empty OpenAPI schema entry for that parameter</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3714">litestar-org/litestar#3714</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3715">litestar-org/litestar#3715</a></span></p>
+</div>
+</dd>
+<dt>OpenAPI: Ensure valid schema keys<a class="headerlink reference internal" href="#2.12.0-openapi: ensure valid schema keys" id="2.12.0-openapi: ensure valid schema keys">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Ensure that generated schema component keys are always valid according to
+<a class="reference external" href="https://spec.openapis.org/oas/latest.html#fixed-fields-5">§ 4.8.7.1</a> of the
+OpenAPI specification.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3630">litestar-org/litestar#3630</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3635">litestar-org/litestar#3635</a></span></p>
+</div>
+</dd>
+<dt>OpenAPI: Correctly handle <code class="docutils literal notranslate"><span class="pre">msgspec.Struct</span></code> tagged unions<a class="headerlink reference internal" href="#2.12.0-openapi: correctly handle" id="2.12.0-openapi: correctly handle">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug where the OpenAPI schema would not include the struct fields
+implicitly generated by msgspec for its
+<a class="reference external" href="https://jcristharif.com/msgspec/structs.html#tagged-unions">tagged union</a>
+support.</p>
+<p>The tag field of the struct will now be added as a <code class="docutils literal notranslate"><span class="pre">const</span></code> of the appropriate
+type to the schema.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3659">litestar-org/litestar#3659</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3742">litestar-org/litestar#3742</a></span></p>
+</div>
+</dd>
+<dt>OpenAPI: Fix Pydantic 1 constrained string with default factory<a class="headerlink reference internal" href="#2.12.0-openapi: fix pydantic 1 constrained string with default factory" id="2.12.0-openapi: fix pydantic 1 constrained string with default factory">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug where using a Pydantic model with a <code class="docutils literal notranslate"><span class="pre">default_factory</span></code> set for a
+constrained string field would raise a <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.SerializationException" title="litestar.exceptions.SerializationException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">SerializationException</span></code></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Model</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">field</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">600</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3710">litestar-org/litestar#3710</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3721">litestar-org/litestar#3721</a></span></p>
+</div>
+</dd>
+<dt>OpenAPI/DTO: Fix missing Pydantic 2 computed fields<a class="headerlink reference internal" href="#2.12.0-openapi/dto: fix missing pydantic 2 computed fields" id="2.12.0-openapi/dto: fix missing pydantic 2 computed fields">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug that would lead to Pydantic computed fields to be ignored during
+schema generation when the model was using a
+<a class="reference internal" href="../reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticDTO" title="litestar.contrib.pydantic.PydanticDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">PydanticDTO</span></code></a>.</p>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">Only the <code class="docutils literal notranslate"><span class="pre">foo</span></code> field would be included in the schema</span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">foo</span><span class="p">:</span> <span class="nb">int</span>
+
+    <span class="nd">@computed_field</span>
+    <span class="k">def</span> <span class="nf">bar</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">123</span>
+
+<span class="nd">@get</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">return_dto</span><span class="o">=</span><span class="n">PydanticDTO</span><span class="p">[</span><span class="n">MyModel</span><span class="p">])</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">MyModel</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">MyModel</span><span class="o">.</span><span class="n">model_validate</span><span class="p">({</span><span class="s2">&quot;foo&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3656">litestar-org/litestar#3656</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3721">litestar-org/litestar#3721</a></span></p>
+</div>
+</dd>
+<dt>OpenAPI: Fix Pydantic <code class="docutils literal notranslate"><span class="pre">json_schema_extra</span></code> overrides only being merged partially<a class="headerlink reference internal" href="#2.12.0-openapi: fix pydantic" id="2.12.0-openapi: fix pydantic">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug where <code class="docutils literal notranslate"><span class="pre">json_schema_extra</span></code> were not reliably extracted from Pydantic
+models and included in the OpenAPI schema.</p>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">Only the title set directly on the field would be used for the schema</span><a class="headerlink" href="#id10" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Model</span><span class="p">(</span><span class="n">pydantic</span><span class="o">.</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">with_title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">&quot;new_title&quot;</span><span class="p">)</span>
+    <span class="n">with_extra_title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">Field</span><span class="p">(</span><span class="n">json_schema_extra</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;title&quot;</span><span class="p">:</span> <span class="s2">&quot;more_new_title&quot;</span><span class="p">})</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/example&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">example_route</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Model</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">Model</span><span class="p">(</span><span class="n">with_title</span><span class="o">=</span><span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="n">with_extra_title</span><span class="o">=</span><span class="s2">&quot;2&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3656">litestar-org/litestar#3656</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3721">litestar-org/litestar#3721</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.11.0">
 <h2>2.11.0<a class="headerlink" href="#2.11.0" title="Permalink to this heading">#</a></h2>
 <strong>Released: </strong>2024-08-27<section id="2.11.0-feature">
@@ -4099,16 +4256,16 @@ dedicated class method.</p>
 <p><a class="reference internal" href="../reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO" title="advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be
 configured using a separate config object. This can be set using both
 class inheritance and <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Annotated">Annotated</a>:</p>
-<div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text"><a class="reference internal" href="../reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO" title="advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be configured using a separate config object using <code class="docutils literal notranslate"><span class="pre">config</span></code> object.</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text"><a class="reference internal" href="../reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO" title="advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be configured using a separate config object using <code class="docutils literal notranslate"><span class="pre">config</span></code> object.</span><a class="headerlink" href="#id11" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyModelDTO</span><span class="p">(</span><span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">MyModel</span><span class="p">]):</span>
     <span class="n">config</span> <span class="o">=</span> <span class="n">SQLAlchemyDTOConfig</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <p>or</p>
-<div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text"><a class="reference internal" href="../reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO" title="advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be configured using a separate config object using <code class="docutils literal notranslate"><span class="pre">Annotated</span></code>.</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text"><a class="reference internal" href="../reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO" title="advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyDTO</span> <span class="pre">(Advanced</span> <span class="pre">Alchemy)</span></code></a> can now be configured using a separate config object using <code class="docutils literal notranslate"><span class="pre">Annotated</span></code>.</span><a class="headerlink" href="#id12" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span> <span class="n">MyModelDTO</span> <span class="o">=</span> <span class="n">SQLAlchemyDTO</span><span class="p">[</span><span class="n">Annotated</span><span class="p">[</span><span class="n">MyModel</span><span class="p">,</span> <span class="n">SQLAlchemyDTOConfig</span><span class="p">()]]</span>
 </pre></div>
 </div>
@@ -4755,8 +4912,8 @@ available.</p>
 where the originated.</p>
 <p>An optional <code class="docutils literal notranslate"><span class="pre">source</span></code> key has been added, signifying whether the value is from
 the body, a cookie, a header, or a query param.</p>
-<div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">before</span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id13">
+<div class="code-block-caption"><span class="caption-text">before</span><a class="headerlink" href="#id13" title="Permalink to this code">#</a></div>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;status_code&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">400</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;detail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Validation failed for POST http://localhost:8000/some-route&quot;</span><span class="p">,</span>
@@ -4770,8 +4927,8 @@ the body, a cookie, a header, or a query param.</p>
 </pre></div>
 </div>
 </div>
-<div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text">after</span><a class="headerlink" href="#id10" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id14">
+<div class="code-block-caption"><span class="caption-text">after</span><a class="headerlink" href="#id14" title="Permalink to this code">#</a></div>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
 <span class="w">  </span><span class="nt">&quot;status_code&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">400</span><span class="p">,</span>
 <span class="w">  </span><span class="nt">&quot;detail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Validation failed for POST http://localhost:8000/some-route&quot;</span><span class="p">,</span>
@@ -6484,6 +6641,11 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.12.0">2.12.0</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.12.0-feature">Features</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.12.0-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.11.0">2.11.0</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.11.0-feature">Features</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.11.0-bugfix">Bugfixes</a></li>
