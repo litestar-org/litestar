@@ -3,19 +3,6 @@
 2.x Changelog
 =============
 
-
-.. changelog:: 2.12.1
-    :date: 2024-09-21
-
-    .. change:: Fix base package requiring ``annotated_types`` dependency
-        :type: bugfix
-        :pr: 3750
-        :issue: 3749
-
-        Fix a bug introduced in #3721 that was released with ``2.12.0`` caused an
-        :exc:`ImportError` when the ``annotated_types`` package was not installed.
-
-
 .. changelog:: 2.12.0
     :date: 2024-09-21
 
