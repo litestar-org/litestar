@@ -8,7 +8,13 @@ from dataclasses import dataclass, is_dataclass, replace
 from inspect import Parameter, Signature
 from typing import Any, AnyStr, Callable, Collection, ForwardRef, Literal, Mapping, TypeVar, cast
 
-import annotated_types
+from litestar.types import Empty
+
+try:
+    import annotated_types
+except ImportError:
+    annotated_types = Empty  # type: ignore[assignment]
+
 from msgspec import UnsetType
 from typing_extensions import (
     NewType,
@@ -24,7 +30,6 @@ from typing_extensions import (
 
 from litestar.exceptions import ImproperlyConfiguredException, LitestarWarning
 from litestar.params import BodyKwarg, DependencyKwarg, KwargDefinition, ParameterKwarg
-from litestar.types import Empty
 from litestar.types.builtin_types import NoneType, UnionTypes
 from litestar.utils.predicates import (
     is_any,
@@ -48,6 +53,9 @@ T = TypeVar("T", bound=KwargDefinition)
 
 
 def _annotated_types_extractor(meta: Any, is_sequence_container: bool) -> dict[str, Any]:  # noqa: C901
+    if annotated_types is Empty:  # type: ignore[comparison-overlap]  # pragma: no branch
+        return {}  # type: ignore[unreachable]  # pragma: no cover
+
     kwargs = {}
     if isinstance(meta, annotated_types.GroupedMetadata):
         for sub_meta in meta:
