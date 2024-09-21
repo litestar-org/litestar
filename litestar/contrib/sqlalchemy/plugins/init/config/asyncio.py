@@ -1,3 +1,4 @@
+# ruff: noqa: TCH004
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -16,11 +17,12 @@ __all__ = (
 def __getattr__(attr_name: str) -> object:
     if attr_name in __all__:
         if attr_name == "SQLAlchemyAsyncConfig":
-            from litestar.contrib.sqlalchemy.plugins.init.config.compat import _CreateEngineMixin
-            from sqlalchemy.ext.asyncio import AsyncEngine
             from advanced_alchemy.extensions.litestar.plugins.init.config.asyncio import (
                 SQLAlchemyAsyncConfig as _SQLAlchemyAsyncConfig,
             )
+            from sqlalchemy.ext.asyncio import AsyncEngine
+
+            from litestar.contrib.sqlalchemy.plugins.init.config.compat import _CreateEngineMixin
 
             class SQLAlchemyAsyncConfig(_SQLAlchemyAsyncConfig, _CreateEngineMixin[AsyncEngine]): ...
 
@@ -28,20 +30,12 @@ def __getattr__(attr_name: str) -> object:
             value = globals()[attr_name] = SQLAlchemyAsyncConfig
         elif attr_name in {"default_before_send_handler", "autocommit_before_send_handler"}:
             module = "litestar.plugins.sqlalchemy.plugins.init.config.asyncio"
-            from advanced_alchemy.extensions.litestar.plugins.init.config.asyncio import (
-                default_before_send_handler,
-                autocommit_before_send_handler,
-            )
 
             value = globals()[attr_name] = locals()[attr_name]
         else:
             module = "litestar.plugins.sqlalchemy"
-            from advanced_alchemy.extensions.litestar.plugins.init.config.asyncio import (
-                AlembicAsyncConfig,
-                AsyncSessionConfig,
-            )
 
-            value = globals()[attr_name] = autocommit_before_send_handler
+            value = globals()[attr_name] = locals()[attr_name]
 
         warn_deprecation(
             deprecated_name=f"litestar.contrib.sqlalchemy.plugins.init.config.asyncio.{attr_name}",
@@ -58,14 +52,12 @@ def __getattr__(attr_name: str) -> object:
 
 
 if TYPE_CHECKING:
-    from sqlalchemy.ext.asyncio import AsyncEngine
-    from litestar.contrib.sqlalchemy.plugins.init.config.compat import _CreateEngineMixin
     from advanced_alchemy.extensions.litestar import (
-        SQLAlchemyAsyncConfig,
         AlembicAsyncConfig,
-        AsyncSessionConfig, 
+        AsyncSessionConfig,
+        SQLAlchemyAsyncConfig,
     )
     from advanced_alchemy.extensions.litestar.plugins.init.config.asyncio import (
-        default_before_send_handler,
         autocommit_before_send_handler,
+        default_before_send_handler,
     )

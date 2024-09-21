@@ -1,3 +1,4 @@
+# ruff: noqa: TCH004
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -12,18 +13,14 @@ __all__ = (
     "GenericAlembicConfig",
 )
 
+
 def __getattr__(attr_name: str) -> object:
     if attr_name in __all__:
         if attr_name in ("GenericSQLAlchemyConfig", "GenericSessionConfig", "GenericAlembicConfig"):
-            from advanced_alchemy.config.common import GenericAlembicConfig, GenericSessionConfig, GenericSQLAlchemyConfig
-            module = 'litestar.plugins.sqlalchemy.config'
+            module = "litestar.plugins.sqlalchemy.config"
         else:
-            module = 'litestar.plugins.sqlalchemy.plugins.init.config.common'
-            from advanced_alchemy.extensions.litestar.plugins.init.config.common import (
-                SESSION_SCOPE_KEY,
-                SESSION_TERMINUS_ASGI_EVENTS,
-            )
-        
+            module = "litestar.plugins.sqlalchemy.plugins.init.config.common"
+
         warn_deprecation(
             deprecated_name=f"litestar.contrib.sqlalchemy.plugins.init.config.common.{attr_name}",
             version="2.11",
@@ -36,6 +33,7 @@ def __getattr__(attr_name: str) -> object:
         return value
 
     raise AttributeError(f"module {__name__!r} has no attribute {attr_name!r}")
+
 
 if TYPE_CHECKING:
     from advanced_alchemy.config.common import GenericAlembicConfig, GenericSessionConfig, GenericSQLAlchemyConfig

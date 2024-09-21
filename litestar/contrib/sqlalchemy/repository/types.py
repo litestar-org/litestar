@@ -1,3 +1,4 @@
+# ruff: noqa: TCH004
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -12,15 +13,8 @@ __all__ = (
     "SQLAlchemyAsyncRepositoryT",
 )
 
-def __getattr__(attr_name: str) -> object:
-    from advanced_alchemy.extensions.litestar.repository.typing import (  # type: ignore[import-not-found] # pyright: ignore[reportMissingImports]
-        ModelT,
-        RowT,
-        SelectT,
-        SQLAlchemyAsyncRepositoryT,
-        SQLAlchemySyncRepositoryT,
-    )
 
+def __getattr__(attr_name: str) -> object:
     if attr_name in __all__:
         warn_deprecation(
             deprecated_name=f"litestar.contrib.sqlalchemy.repository.types.{attr_name}",
@@ -35,8 +29,9 @@ def __getattr__(attr_name: str) -> object:
 
     raise AttributeError(f"module {__name__!r} has no attribute {attr_name!r}")
 
+
 if TYPE_CHECKING:
-    from advanced_alchemy.extensions.litestar.repository.typing import (  # pyright: ignore[reportMissingImports]
+    from advanced_alchemy.extensions.litestar.repository.typing import (  # type: ignore[import-not-found] # pyright: ignore[reportMissingImports]
         ModelT,
         RowT,
         SelectT,

@@ -1,5 +1,6 @@
 """SQLAlchemy DTO configuration."""
 
+# ruff: noqa: TCH004
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -10,8 +11,6 @@ __all__ = ("SQLAlchemyDTO", "SQLAlchemyDTOConfig")
 
 
 def __getattr__(attr_name: str) -> object:
-    from advanced_alchemy.extensions.litestar.dto import SQLAlchemyDTO, SQLAlchemyDTOConfig  # pyright: ignore[reportMissingImports]
-
     if attr_name in __all__:
         warn_deprecation(
             deprecated_name=f"litestar.contrib.sqlalchemy.{attr_name}",
@@ -28,4 +27,7 @@ def __getattr__(attr_name: str) -> object:
 
 
 if TYPE_CHECKING:
-    from advanced_alchemy.extensions.litestar.dto import SQLAlchemyDTO, SQLAlchemyDTOConfig  # pyright: ignore[reportMissingImports]
+    from advanced_alchemy.extensions.litestar.dto import (  # pyright: ignore[reportMissingImports]
+        SQLAlchemyDTO,
+        SQLAlchemyDTOConfig,
+    )

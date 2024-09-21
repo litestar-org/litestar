@@ -284,6 +284,13 @@ module = [
   "exceptiongroup",
 ]
 
+[[tool.mypy.overrides]]
+warn_unused_ignores = true
+module = [
+  "litestar.contrib.sqlalchemy.*",
+  "tests.unit.test_contrib.test_sqlalchemy",
+]
+
 [tool.pydantic-mypy]
 init_forbid_extra = true
 init_typed = true
