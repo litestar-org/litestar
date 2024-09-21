@@ -1,3 +1,5 @@
+# ruff: noqa: TCH004
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -12,32 +14,27 @@ __all__ = (
     "autocommit_before_send_handler",
 )
 
+
 def __getattr__(attr_name: str) -> object:
     if attr_name in __all__:
         if attr_name == "SQLAlchemySyncConfig":
-            from litestar.contrib.sqlalchemy.plugins.init.config.compat import _CreateEngineMixin
-            from sqlalchemy import Engine
             from advanced_alchemy.extensions.litestar.plugins.init.config.sync import (
                 SQLAlchemySyncConfig as _SQLAlchemySyncConfig,
             )
+            from sqlalchemy import Engine
+
+            from litestar.contrib.sqlalchemy.plugins.init.config.compat import _CreateEngineMixin
 
             class SQLAlchemySyncConfig(_SQLAlchemySyncConfig, _CreateEngineMixin[Engine]): ...
 
+            module = "litestar.plugins.sqlalchemy"
             value = globals()[attr_name] = SQLAlchemySyncConfig
         elif attr_name in {"default_before_send_handler", "autocommit_before_send_handler"}:
             module = "litestar.plugins.sqlalchemy.plugins.init.config.sync"
-            from advanced_alchemy.extensions.litestar.plugins.init.config.sync import (
-                default_before_send_handler,
-                autocommit_before_send_handler,
-            )
 
             value = globals()[attr_name] = locals()[attr_name]
         else:
             module = "litestar.plugins.sqlalchemy"
-            from advanced_alchemy.extensions.litestar.plugins.init.config.sync import (
-                AlembicSyncConfig,
-                SyncSessionConfig, 
-            )
             value = globals()[attr_name] = locals()[attr_name]
 
         warn_deprecation(
@@ -52,13 +49,14 @@ def __getattr__(attr_name: str) -> object:
 
     raise AttributeError(f"module {__name__!r} has no attribute {attr_name!r}")
 
+
 if TYPE_CHECKING:
     from advanced_alchemy.extensions.litestar import (
-        SQLAlchemySyncConfig,
         AlembicSyncConfig,
-        SyncSessionConfig, 
+        SQLAlchemySyncConfig,
+        SyncSessionConfig,
     )
     from advanced_alchemy.extensions.litestar.plugins.init.config.sync import (
-        default_before_send_handler,
         autocommit_before_send_handler,
+        default_before_send_handler,
     )

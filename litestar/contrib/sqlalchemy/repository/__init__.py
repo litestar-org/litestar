@@ -1,3 +1,4 @@
+# ruff: noqa: TCH004
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -11,17 +12,24 @@ __all__ = (
     "wrap_sqlalchemy_exception",
 )
 
+
 def __getattr__(attr_name: str) -> object:
     if attr_name in __all__:
         if attr_name in ("SQLAlchemyAsyncRepository", "SQLAlchemySyncRepository", "ModelT"):
             module = "litestar.plugins.sqlalchemy.repository"
-            from advanced_alchemy.extensions.litestar import repository  # type: ignore[import-not-found] # pyright: ignore[reportMissingImports]
+            from advanced_alchemy.extensions.litestar import (
+                repository,  # type: ignore[import-not-found] # pyright: ignore[reportMissingImports]
+            )
+
             value = globals()[attr_name] = getattr(repository, attr_name)
         elif attr_name == "wrap_sqlalchemy_exception":
             module = "litestar.plugins.sqlalchemy.exceptions"
-            from advanced_alchemy.extensions.litestar import exceptions  # type: ignore[import-not-found] # pyright: ignore[reportMissingImports]
+            from advanced_alchemy.extensions.litestar import (
+                exceptions,  # type: ignore[import-not-found] # pyright: ignore[reportMissingImports]
+            )
+
             value = globals()[attr_name] = getattr(exceptions, attr_name)
-        
+
         warn_deprecation(
             deprecated_name=f"litestar.contrib.sqlalchemy.repository.{attr_name}",
             version="2.11",
@@ -34,6 +42,13 @@ def __getattr__(attr_name: str) -> object:
 
     raise AttributeError(f"module {__name__!r} has no attribute {attr_name!r}")
 
+
 if TYPE_CHECKING:
-    from advanced_alchemy.extensions.litestar.repository import SQLAlchemyAsyncRepository, SQLAlchemySyncRepository, ModelT  # type: ignore[import-not-found] # pyright: ignore[reportMissingImports]
-    from advanced_alchemy.extensions.litestar.exceptions import wrap_sqlalchemy_exception  # type: ignore[import-not-found] # pyright: ignore[reportMissingImports]
+    from advanced_alchemy.extensions.litestar.exceptions import (  # type: ignore[import-not-found] # pyright: ignore[reportMissingImports]
+        wrap_sqlalchemy_exception,
+    )
+    from advanced_alchemy.extensions.litestar.repository import (  # type: ignore[import-not-found] # pyright: ignore[reportMissingImports]
+        ModelT,
+        SQLAlchemyAsyncRepository,
+        SQLAlchemySyncRepository,
+    )

@@ -1,5 +1,6 @@
 """Application ORM configuration."""
 
+# ruff: noqa: TCH004
 from __future__ import annotations
 
 from typing import TYPE_CHECKING

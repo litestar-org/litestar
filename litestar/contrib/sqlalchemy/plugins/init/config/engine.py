@@ -1,3 +1,4 @@
+# ruff: noqa: TCH004
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -6,11 +7,13 @@ from litestar.utils import warn_deprecation
 
 __all__ = ("EngineConfig",)
 
+
 def __getattr__(attr_name: str) -> object:
     if attr_name in __all__:
         from advanced_alchemy.extensions.litestar import EngineConfig
-        module = 'litestar.plugins.sqlalchemy'
-        
+
+        module = "litestar.plugins.sqlalchemy"
+
         warn_deprecation(
             deprecated_name=f"litestar.contrib.sqlalchemy.plugins.init.config.engine.{attr_name}",
             version="2.11",
@@ -23,6 +26,7 @@ def __getattr__(attr_name: str) -> object:
         return value
 
     raise AttributeError(f"module {__name__!r} has no attribute {attr_name!r}")
+
 
 if TYPE_CHECKING:
     from advanced_alchemy.extensions.litestar import EngineConfig

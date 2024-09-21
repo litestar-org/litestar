@@ -1,3 +1,4 @@
+# ruff: noqa: TCH004
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -9,11 +10,8 @@ __all__ = (
     "get_instrumented_attr",
 )
 
+
 def __getattr__(attr_name: str) -> object:
-    from advanced_alchemy.extensions.litestar.exceptions import wrap_sqlalchemy_exception # type: ignore[import-not-found] # pyright: ignore[reportMissingImports]
-
-    from advanced_alchemy.extensions.litestar.repository import get_instrumented_attr # type: ignore[import-not-found] # pyright: ignore[reportMissingImports]
-
     if attr_name in __all__:
         warn_deprecation(
             deprecated_name=f"litestar.contrib.sqlalchemy.repository.{attr_name}",
@@ -28,7 +26,11 @@ def __getattr__(attr_name: str) -> object:
 
     raise AttributeError(f"module {__name__!r} has no attribute {attr_name!r}")
 
-if TYPE_CHECKING:
-    from advanced_alchemy.extensions.litestar.exceptions import wrap_sqlalchemy_exception # pyright: ignore[reportMissingImports]
 
-    from advanced_alchemy.extensions.litestar.repository import get_instrumented_attr # pyright: ignore[reportMissingImports]
+if TYPE_CHECKING:
+    from advanced_alchemy.extensions.litestar.exceptions import (  # type: ignore[import-not-found] # pyright: ignore[reportMissingImports]
+        wrap_sqlalchemy_exception,
+    )
+    from advanced_alchemy.extensions.litestar.repository import (  # type: ignore[import-not-found] # pyright: ignore[reportMissingImports]
+        get_instrumented_attr,
+    )

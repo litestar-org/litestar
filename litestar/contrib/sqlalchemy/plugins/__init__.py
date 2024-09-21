@@ -1,3 +1,4 @@
+# ruff: noqa: TCH004, F401
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -17,29 +18,30 @@ __all__ = (
     "SyncSessionConfig",
 )
 
+
 def __getattr__(attr_name: str) -> object:
     if attr_name in __all__:
-
-
-        if attr_name in (    "GenericSQLAlchemyConfig",    "GenericSessionConfig"):
+        if attr_name in ("GenericSQLAlchemyConfig", "GenericSessionConfig"):
             module = "litestar.plugins.sqlalchemy.config"
             from advanced_alchemy.config import (  # pyright: ignore[reportMissingImports]
                 GenericSessionConfig,
-                GenericSQLAlchemyConfig, 
+                GenericSQLAlchemyConfig,
             )
+
             value = globals()[attr_name] = locals()[attr_name]
         else:
-            module = "litestar.plugins.sqlalchemy" 
+            module = "litestar.plugins.sqlalchemy"
             from advanced_alchemy.extensions.litestar import (  # pyright: ignore[reportMissingImports]
                 AsyncSessionConfig,
                 EngineConfig,
-                SQLAlchemyPlugin,
-                SQLAlchemySerializationPlugin,
                 SQLAlchemyAsyncConfig,
                 SQLAlchemyInitPlugin,
+                SQLAlchemyPlugin,
+                SQLAlchemySerializationPlugin,
                 SQLAlchemySyncConfig,
                 SyncSessionConfig,
             )
+
             value = globals()[attr_name] = locals()[attr_name]
         warn_deprecation(
             deprecated_name=f"litestar.contrib.sqlalchemy.plugins.{attr_name}",
@@ -53,14 +55,16 @@ def __getattr__(attr_name: str) -> object:
 
     raise AttributeError(f"module {__name__!r} has no attribute {attr_name!r}")
 
+
 if TYPE_CHECKING:
-    from advanced_alchemy.extensions.litestar import (SQLAlchemyPlugin, SQLAlchemySerializationPlugin,         AsyncSessionConfig,
-        EngineConfig, 
+    from advanced_alchemy.config import GenericSessionConfig, GenericSQLAlchemyConfig
+    from advanced_alchemy.extensions.litestar import (
+        AsyncSessionConfig,
+        EngineConfig,
         SQLAlchemyAsyncConfig,
         SQLAlchemyInitPlugin,
+        SQLAlchemyPlugin,
+        SQLAlchemySerializationPlugin,
         SQLAlchemySyncConfig,
-        SyncSessionConfig,)
-    from advanced_alchemy.config import (
-        GenericSessionConfig,
-        GenericSQLAlchemyConfig 
+        SyncSessionConfig,
     )

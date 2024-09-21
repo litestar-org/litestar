@@ -1,3 +1,4 @@
+# ruff: noqa: TCH004
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -12,9 +13,8 @@ __all__ = (
     "JsonB",
 )
 
-def __getattr__(attr_name: str) -> object:
-    from advanced_alchemy.extensions.litestar.types import GUID, ORA_JSONB, BigIntIdentity, DateTimeUTC, JsonB # type: ignore[import-not-found] # pyright: ignore[reportMissingImports]
 
+def __getattr__(attr_name: str) -> object:
     if attr_name in __all__:
         warn_deprecation(
             deprecated_name=f"litestar.contrib.sqlalchemy.{attr_name}",
@@ -29,5 +29,12 @@ def __getattr__(attr_name: str) -> object:
 
     raise AttributeError(f"module {__name__!r} has no attribute {attr_name!r}")
 
+
 if TYPE_CHECKING:
-    from advanced_alchemy.extensions.litestar.types import GUID, ORA_JSONB, BigIntIdentity, DateTimeUTC, JsonB # pyright: ignore[reportMissingImports]
+    from advanced_alchemy.extensions.litestar.types import (  # type: ignore[import-not-found] # pyright: ignore[reportMissingImports]
+        GUID,
+        ORA_JSONB,
+        BigIntIdentity,
+        DateTimeUTC,
+        JsonB,
+    )
