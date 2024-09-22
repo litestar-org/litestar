@@ -333,7 +333,7 @@ class ScalarRenderPlugin(OpenAPIRenderPlugin):
     def __init__(
         self,
         *,
-        version: str = "1.19.5",
+        version: str = "latest",
         js_url: str | None = None,
         css_url: str | None = None,
         path: str | Sequence[str] = "/scalar",

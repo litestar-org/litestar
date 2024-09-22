@@ -23,7 +23,7 @@ PY_OBJ = "py:obj"
 PY_FUNC = "py:func"
 
 project = "Litestar"
-copyright = "2023, Litestar-Org"
+copyright = "2024, Litestar-Org"
 author = "Litestar-Org"
 release = os.getenv("_LITESTAR_DOCS_BUILD_VERSION", importlib.metadata.version("litestar").rsplit(".")[0])
 

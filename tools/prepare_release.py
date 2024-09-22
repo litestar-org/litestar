@@ -313,7 +313,7 @@ def build_changelog_entry(release_info: ReleaseInfo, interactive: bool = False) 
         for prs in release_info.pull_requests.values():
             for pr in prs:
                 cc_type = pr.cc_type
-                if cc_type in change_types or (interactive and click.confirm(f"Ignore PR #{pr.number} {pr.title!r}?")):
+                if cc_type in change_types or (interactive and click.confirm(f"Include PR #{pr.number} {pr.title!r}?")):
                     doc.add_change(pr)
                 else:
                     click.secho(f"Ignoring change with type {cc_type}", fg="yellow")
