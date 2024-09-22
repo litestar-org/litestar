@@ -1,4 +1,5 @@
 # ruff: noqa: TCH004, F401
+# pyright: reportUnusedImport=false
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -33,16 +34,16 @@ def __getattr__(attr_name: str) -> object:
         elif attr_name in {"default_before_send_handler", "autocommit_before_send_handler"}:
             module = "litestar.plugins.sqlalchemy.plugins.init.config.asyncio"
             from advanced_alchemy.extensions.litestar.plugins.init.config.asyncio import (
-                autocommit_before_send_handler,  # pyright: ignore[reportUnusedImport]
-                default_before_send_handler,  # pyright: ignore[reportUnusedImport]
+                autocommit_before_send_handler,
+                default_before_send_handler,
             )
 
             value = globals()[attr_name] = locals()[attr_name]
         else:
             module = "litestar.plugins.sqlalchemy"
             from advanced_alchemy.extensions.litestar import (
-                AlembicAsyncConfig,  # pyright: ignore[reportUnusedImport]
-                AsyncSessionConfig,  # pyright: ignore[reportUnusedImport]
+                AlembicAsyncConfig,
+                AsyncSessionConfig,
             )
 
             value = globals()[attr_name] = locals()[attr_name]

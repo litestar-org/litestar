@@ -166,11 +166,11 @@ class PydanticInitPlugin(InitPluginProtocol):
             **_base_encoders,
             **cls._create_pydantic_v1_encoders(
                 prefer_alias=prefer_alias,
-                exclude=exclude,  # type: ignore[arg-type]
+                exclude=exclude,
                 exclude_defaults=exclude_defaults,
                 exclude_none=exclude_none,
                 exclude_unset=exclude_unset,
-                include=include,  # type: ignore[arg-type]
+                include=include,
             ),
         }
         if pydantic_v2 is not None:  # pragma: no cover

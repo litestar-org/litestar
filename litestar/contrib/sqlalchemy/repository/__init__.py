@@ -30,7 +30,7 @@ def __getattr__(attr_name: str) -> object:
                 wrap_sqlalchemy_exception,  # type: ignore[import-not-found] # pyright: ignore[reportMissingImport]
             )
 
-        value = globals()[attr_name] = attr_name
+        value = globals()[attr_name] = locals()[attr_name]
         warn_deprecation(
             deprecated_name=f"litestar.contrib.sqlalchemy.repository.{attr_name}",
             version="2.12",
