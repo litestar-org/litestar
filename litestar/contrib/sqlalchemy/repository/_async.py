@@ -25,7 +25,7 @@ def __getattr__(attr_name: str) -> object:
         value = globals()[attr_name] = locals()[attr_name]
         return value
 
-    raise AttributeError(f"module {__name__!r} has no attribute {attr_name!r}")
+    raise AttributeError(f"module {__name__!r} has no attribute {attr_name!r}")  # pragma: no cover
 
 
 if TYPE_CHECKING:
