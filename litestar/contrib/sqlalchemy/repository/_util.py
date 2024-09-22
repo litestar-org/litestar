@@ -21,11 +21,11 @@ def __getattr__(attr_name: str) -> object:
         )
 
         warn_deprecation(
-            deprecated_name=f"litestar.contrib.sqlalchemy.repository.{attr_name}",
+            deprecated_name=f"litestar.contrib.sqlalchemy.repository._util.{attr_name}",
             version="2.12",
             kind="import",
             removal_in="3.0",
-            info=f"importing {attr_name} from 'litestar.contrib.sqlalchemy.repository' is deprecated, please "
+            info=f"importing {attr_name} from 'litestar.contrib.sqlalchemy.repository._util' is deprecated, please "
             f"import it from 'litestar.plugins.sqlalchemy.repository' instead",
         )
         value = globals()[attr_name] = locals()[attr_name]

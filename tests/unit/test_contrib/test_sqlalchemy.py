@@ -357,3 +357,19 @@ def test_deprecated_sqlalchemy_plugins_init_config_sync_handlers() -> None:
         match="importing autocommit_before_send_handler from 'litestar.contrib.sqlalchemy.plugins.init.config.sync' is deprecated",
     ):
         from litestar.contrib.sqlalchemy.plugins.init.config.sync import autocommit_before_send_handler
+
+
+def test_deprecated_sqlalchemy_repository_util_imports() -> None:
+    purge_module(["litestar.contrib.sqlalchemy.repository._util"], __file__)
+    with pytest.warns(
+        DeprecationWarning,
+        match="importing wrap_sqlalchemy_exception from 'litestar.contrib.sqlalchemy.repository._util' is deprecated",
+    ):
+        from litestar.contrib.sqlalchemy.repository._util import wrap_sqlalchemy_exception
+
+    purge_module(["litestar.contrib.sqlalchemy.repository._util"], __file__)
+    with pytest.warns(
+        DeprecationWarning,
+        match="importing get_instrumented_attr from 'litestar.contrib.sqlalchemy.repository._util' is deprecated",
+    ):
+        from litestar.contrib.sqlalchemy.repository._util import get_instrumented_attr
