@@ -32,6 +32,7 @@ _default_style = "<style>body { margin: 0; padding: 0 }</style>"
 
 
 def _get_cookie_value_or_undefined(cookie_name: str) -> str:
+    """Javascript code as a string to get the value of a cookie by name or undefined."""
     return f"document.cookie.split('; ').find((row) => row.startsWith('{cookie_name}='))?.split('=')[1];"
 
 
