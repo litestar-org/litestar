@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Mapped
 
 from litestar import Litestar, websocket_listener
-from litestar.plugins.sqlalchemy import SQLAlchemyDTO, base 
+from litestar.plugins.sqlalchemy import SQLAlchemyDTO, base
 
 
 class User(base.UUIDBase):
