@@ -10,15 +10,19 @@ from sqlalchemy import ForeignKey, select
 from sqlalchemy.orm import Mapped, mapped_column, relationship, selectinload
 
 from litestar import Litestar, get
-from litestar.contrib.sqlalchemy.base import UUIDAuditBase, UUIDBase
-from litestar.contrib.sqlalchemy.plugins import AsyncSessionConfig, SQLAlchemyAsyncConfig, SQLAlchemyInitPlugin
-from litestar.contrib.sqlalchemy.repository import SQLAlchemyAsyncRepository
 from litestar.controller import Controller
 from litestar.di import Provide
 from litestar.handlers.http_handlers.decorators import delete, patch, post
 from litestar.pagination import OffsetPagination
 from litestar.params import Parameter
-from litestar.repository.filters import LimitOffset
+from litestar.plugins.sqlalchemy import (
+    AsyncSessionConfig,
+    SQLAlchemyAsyncConfig,
+    SQLAlchemyInitPlugin,
+    base,
+    filters,
+    repository,
+)
 
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
@@ -32,7 +36,7 @@ class BaseModel(_BaseModel):
 
 # the SQLAlchemy base includes a declarative model for you to use in your models.
 # The `Base` class includes a `UUID` based primary key (`id`)
-class AuthorModel(UUIDBase):
+class AuthorModel(base.UUIDBase):
     # we can optionally provide the table name instead of auto-generating it
     __tablename__ = "author"  #  type: ignore[assignment]
     name: Mapped[str]
@@ -43,7 +47,7 @@ class AuthorModel(UUIDBase):
 # The `AuditBase` class includes the same UUID` based primary key (`id`) and 2
 # additional columns: `created` and `updated`. `created` is a timestamp of when the
 # record created, and `updated` is the last time the record was modified.
-class BookModel(UUIDAuditBase):
+class BookModel(base.UUIDAuditBase):
     __tablename__ = "book"  #  type: ignore[assignment]
     title: Mapped[str]
     author_id: Mapped[UUID] = mapped_column(ForeignKey("author.id"))
@@ -69,7 +73,7 @@ class AuthorUpdate(BaseModel):
     dob: date | None = None
 
 
-class AuthorRepository(SQLAlchemyAsyncRepository[AuthorModel]):
+class AuthorRepository(repository.SQLAlchemyAsyncRepository[AuthorModel]):
     """Author repository."""
 
     model_type = AuthorModel
@@ -98,7 +102,7 @@ def provide_limit_offset_pagination(
         default=10,
         required=False,
     ),
-) -> LimitOffset:
+) -> filters.LimitOffset:
     """Add offset/limit pagination.
 
     Return type consumed by `Repository.apply_limit_offset_pagination()`.
@@ -110,7 +114,7 @@ def provide_limit_offset_pagination(
     page_size : int
         OFFSET to apply to select.
     """
-    return LimitOffset(page_size, page_size * (current_page - 1))
+    return filters.LimitOffset(page_size, page_size * (current_page - 1))
 
 
 class AuthorController(Controller):
@@ -122,7 +126,7 @@ class AuthorController(Controller):
     async def list_authors(
         self,
         authors_repo: AuthorRepository,
-        limit_offset: LimitOffset,
+        limit_offset: filters.LimitOffset,
     ) -> OffsetPagination[Author]:
         """List authors."""
         results, total = await authors_repo.list_and_count(limit_offset)
@@ -205,7 +209,7 @@ sqlalchemy_plugin = SQLAlchemyInitPlugin(config=sqlalchemy_config)
 async def on_startup() -> None:
     """Initializes the database."""
     async with sqlalchemy_config.get_engine().begin() as conn:
-        await conn.run_sync(UUIDBase.metadata.create_all)
+        await conn.run_sync(base.UUIDBase.metadata.create_all)
 
 
 app = Litestar(

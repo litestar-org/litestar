@@ -1,4 +1,4 @@
-# ruff: noqa: TCH004
+# ruff: noqa: TCH004, F401
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -10,6 +10,10 @@ __all__ = ("SQLAlchemyAsyncRepository",)
 
 def __getattr__(attr_name: str) -> object:
     if attr_name in __all__:
+        from advanced_alchemy.repository import (
+            SQLAlchemyAsyncRepository,  # type: ignore[import-not-found]  # pyright: ignore[reportMissingImports,reportUnusedImport]
+        )
+
         warn_deprecation(
             deprecated_name=f"litestar.contrib.sqlalchemy.repository.{attr_name}",
             version="2.12",
@@ -25,6 +29,6 @@ def __getattr__(attr_name: str) -> object:
 
 
 if TYPE_CHECKING:
-    from advanced_alchemy.extensions.litestar.repository import (  # type: ignore[import-not-found]  # pyright: ignore[reportMissingImports]
+    from advanced_alchemy.repository import (  # type: ignore[import-not-found]  # pyright: ignore[reportMissingImports]
         SQLAlchemyAsyncRepository,
     )

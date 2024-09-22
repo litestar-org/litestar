@@ -1,4 +1,4 @@
-# ruff: noqa: TCH004
+# ruff: noqa: TCH004, F401
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -22,7 +22,9 @@ def __getattr__(attr_name: str) -> object:
             )
             from sqlalchemy.ext.asyncio import AsyncEngine
 
-            from litestar.contrib.sqlalchemy.plugins.init.config.compat import _CreateEngineMixin
+            from litestar.contrib.sqlalchemy.plugins.init.config.compat import (
+                _CreateEngineMixin,  # pyright: ignore[reportPrivateUsage]
+            )
 
             class SQLAlchemyAsyncConfig(_SQLAlchemyAsyncConfig, _CreateEngineMixin[AsyncEngine]): ...
 
@@ -30,10 +32,18 @@ def __getattr__(attr_name: str) -> object:
             value = globals()[attr_name] = SQLAlchemyAsyncConfig
         elif attr_name in {"default_before_send_handler", "autocommit_before_send_handler"}:
             module = "litestar.plugins.sqlalchemy.plugins.init.config.asyncio"
+            from advanced_alchemy.extensions.litestar.plugins.init.config.asyncio import (
+                autocommit_before_send_handler,  # pyright: ignore[reportUnusedImport]
+                default_before_send_handler,  # pyright: ignore[reportUnusedImport]
+            )
 
             value = globals()[attr_name] = locals()[attr_name]
         else:
             module = "litestar.plugins.sqlalchemy"
+            from advanced_alchemy.extensions.litestar import (
+                AlembicAsyncConfig,  # pyright: ignore[reportUnusedImport]
+                AsyncSessionConfig,  # pyright: ignore[reportUnusedImport]
+            )
 
             value = globals()[attr_name] = locals()[attr_name]
 

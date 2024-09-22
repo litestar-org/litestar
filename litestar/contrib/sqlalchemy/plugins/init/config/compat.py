@@ -16,7 +16,7 @@ class HasGetEngine(Protocol[EngineT_co]):
     def get_engine(self) -> EngineT_co: ...
 
 
-class _CreateEngineMixin(Generic[EngineT_co]):
+class _CreateEngineMixin(Generic[EngineT_co]):  # pyright: ignore[reportUnusedClass]
     @deprecated(version="2.1.1", removal_in="3.0.0", alternative="get_engine()")
     def create_engine(self: HasGetEngine[EngineT_co]) -> EngineT_co:
         return self.get_engine()

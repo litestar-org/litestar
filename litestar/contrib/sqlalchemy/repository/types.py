@@ -1,4 +1,5 @@
-# ruff: noqa: TCH004
+# ruff: noqa: TCH004, F401
+# pyright: reportUnusedImport=false
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -16,6 +17,14 @@ __all__ = (
 
 def __getattr__(attr_name: str) -> object:
     if attr_name in __all__:
+        from advanced_alchemy.repository.typing import (  # type: ignore[import-not-found] # pyright: ignore[reportMissingImports]
+            ModelT,
+            RowT,
+            SelectT,
+            SQLAlchemyAsyncRepositoryT,
+            SQLAlchemySyncRepositoryT,
+        )
+
         warn_deprecation(
             deprecated_name=f"litestar.contrib.sqlalchemy.repository.types.{attr_name}",
             version="2.12",
@@ -31,7 +40,7 @@ def __getattr__(attr_name: str) -> object:
 
 
 if TYPE_CHECKING:
-    from advanced_alchemy.extensions.litestar.repository.typing import (  # type: ignore[import-not-found] # pyright: ignore[reportMissingImports]
+    from advanced_alchemy.repository.typing import (  # type: ignore[import-not-found] # pyright: ignore[reportMissingImports]
         ModelT,
         RowT,
         SelectT,

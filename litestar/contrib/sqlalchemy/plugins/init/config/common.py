@@ -1,4 +1,4 @@
-# ruff: noqa: TCH004
+# ruff: noqa: TCH004, F401
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -18,7 +18,17 @@ def __getattr__(attr_name: str) -> object:
     if attr_name in __all__:
         if attr_name in ("GenericSQLAlchemyConfig", "GenericSessionConfig", "GenericAlembicConfig"):
             module = "litestar.plugins.sqlalchemy.config"
+            from advanced_alchemy.config.common import (  # pyright: ignore[reportMissingImports]
+                GenericAlembicConfig,  # pyright: ignore[reportUnusedImport]
+                GenericSessionConfig,  # pyright: ignore[reportUnusedImport]
+                GenericSQLAlchemyConfig,  # pyright: ignore[reportUnusedImport]
+            )
         else:
+            from advanced_alchemy.extensions.litestar.plugins.init.config.common import (  # pyright: ignore[reportMissingImports]
+                SESSION_SCOPE_KEY,  # pyright: ignore[reportUnusedImport]
+                SESSION_TERMINUS_ASGI_EVENTS,  # pyright: ignore[reportUnusedImport]
+            )
+
             module = "litestar.plugins.sqlalchemy.plugins.init.config.common"
 
         warn_deprecation(

@@ -1,4 +1,4 @@
-# ruff: noqa: TCH004
+# ruff: noqa: TCH004, F401
 
 from __future__ import annotations
 
@@ -23,7 +23,9 @@ def __getattr__(attr_name: str) -> object:
             )
             from sqlalchemy import Engine
 
-            from litestar.contrib.sqlalchemy.plugins.init.config.compat import _CreateEngineMixin
+            from litestar.contrib.sqlalchemy.plugins.init.config.compat import (
+                _CreateEngineMixin,  # pyright: ignore[reportPrivateUsage]
+            )
 
             class SQLAlchemySyncConfig(_SQLAlchemySyncConfig, _CreateEngineMixin[Engine]): ...
 
@@ -31,10 +33,19 @@ def __getattr__(attr_name: str) -> object:
             value = globals()[attr_name] = SQLAlchemySyncConfig
         elif attr_name in {"default_before_send_handler", "autocommit_before_send_handler"}:
             module = "litestar.plugins.sqlalchemy.plugins.init.config.sync"
+            from advanced_alchemy.extensions.litestar.plugins.init.config.sync import (
+                autocommit_before_send_handler,  # pyright: ignore[reportUnusedImport]
+                default_before_send_handler,  # pyright: ignore[reportUnusedImport]
+            )
 
             value = globals()[attr_name] = locals()[attr_name]
         else:
             module = "litestar.plugins.sqlalchemy"
+            from advanced_alchemy.extensions.litestar import (
+                AlembicSyncConfig,  # pyright: ignore[reportUnusedImport]
+                SyncSessionConfig,  # pyright: ignore[reportUnusedImport]
+            )
+
             value = globals()[attr_name] = locals()[attr_name]
 
         warn_deprecation(

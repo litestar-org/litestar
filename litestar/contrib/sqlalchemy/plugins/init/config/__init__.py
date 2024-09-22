@@ -21,19 +21,19 @@ def __getattr__(attr_name: str) -> object:
         if attr_name in ("GenericSQLAlchemyConfig", "GenericSessionConfig"):
             module = "litestar.plugins.sqlalchemy.config"
             from advanced_alchemy.config import (  # pyright: ignore[reportMissingImports]
-                GenericSessionConfig,
-                GenericSQLAlchemyConfig,
+                GenericSessionConfig,  #  pyright: ignore[reportUnusedImport]
+                GenericSQLAlchemyConfig,  #  pyright: ignore[reportUnusedImport]
             )
 
             value = globals()[attr_name] = locals()[attr_name]
         else:
             module = "litestar.plugins.sqlalchemy"
             from advanced_alchemy.extensions.litestar import (  # pyright: ignore[reportMissingImports]
-                AsyncSessionConfig,
-                EngineConfig,
-                SQLAlchemyAsyncConfig,
-                SQLAlchemySyncConfig,
-                SyncSessionConfig,
+                AsyncSessionConfig,  #  pyright: ignore[reportUnusedImport]
+                EngineConfig,  #  pyright: ignore[reportUnusedImport]
+                SQLAlchemyAsyncConfig,  #  pyright: ignore[reportUnusedImport]
+                SQLAlchemySyncConfig,  #  pyright: ignore[reportUnusedImport]
+                SyncSessionConfig,  #  pyright: ignore[reportUnusedImport]
             )
 
             value = globals()[attr_name] = locals()[attr_name]

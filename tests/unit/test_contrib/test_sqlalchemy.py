@@ -1,3 +1,4 @@
+# ruff: noqa: TCH004, F401
 from __future__ import annotations
 
 import pytest
@@ -68,20 +69,20 @@ def test_deprecated_sqlalchemy_imports() -> None:
     with pytest.warns(
         DeprecationWarning, match="importing SQLAlchemyAsyncRepository from 'litestar.contrib.sqlalchemy' is deprecated"
     ):
-        pass
+        from litestar.contrib.sqlalchemy import SQLAlchemyAsyncRepository
 
     with pytest.warns(
         DeprecationWarning, match="importing SQLAlchemySyncRepository from 'litestar.contrib.sqlalchemy' is deprecated"
     ):
-        pass
+        from litestar.contrib.sqlalchemy import SQLAlchemySyncRepository
 
     with pytest.warns(DeprecationWarning, match="importing ModelT from 'litestar.contrib.sqlalchemy' is deprecated"):
-        pass
+        from litestar.contrib.sqlalchemy import ModelT
 
     with pytest.warns(
         DeprecationWarning, match="importing wrap_sqlalchemy_exception from 'litestar.contrib.sqlalchemy' is deprecated"
     ):
-        pass
+        from litestar.contrib.sqlalchemy import wrap_sqlalchemy_exception
 
 
 def test_deprecated_sqlalchemy_plugins_imports() -> None:
@@ -89,30 +90,30 @@ def test_deprecated_sqlalchemy_plugins_imports() -> None:
         DeprecationWarning,
         match="importing AsyncSessionConfig from 'litestar.contrib.sqlalchemy.plugins' is deprecated",
     ):
-        pass
+        from litestar.contrib.sqlalchemy.plugins import AsyncSessionConfig
 
     with pytest.warns(
         DeprecationWarning, match="importing EngineConfig from 'litestar.contrib.sqlalchemy.plugins' is deprecated"
     ):
-        pass
+        from litestar.contrib.sqlalchemy.plugins import EngineConfig
 
     with pytest.warns(
         DeprecationWarning,
         match="importing GenericSQLAlchemyConfig from 'litestar.contrib.sqlalchemy.plugins' is deprecated",
     ):
-        pass
+        from litestar.contrib.sqlalchemy.plugins import GenericSQLAlchemyConfig
 
     with pytest.warns(
         DeprecationWarning,
         match="importing SQLAlchemyAsyncConfig from 'litestar.contrib.sqlalchemy.plugins' is deprecated",
     ):
-        pass
+        from litestar.contrib.sqlalchemy.plugins import SQLAlchemyAsyncConfig
 
     with pytest.warns(
         DeprecationWarning,
         match="importing SQLAlchemyInitPlugin from 'litestar.contrib.sqlalchemy.plugins' is deprecated",
     ):
-        pass
+        from litestar.contrib.sqlalchemy.plugins import SQLAlchemyInitPlugin
 
 
 def test_deprecated_sqlalchemy_plugins_init_imports() -> None:
@@ -120,24 +121,24 @@ def test_deprecated_sqlalchemy_plugins_init_imports() -> None:
         DeprecationWarning,
         match="importing AsyncSessionConfig from 'litestar.contrib.sqlalchemy.plugins.init' is deprecated",
     ):
-        pass
+        from litestar.contrib.sqlalchemy.plugins.init import AsyncSessionConfig
 
     with pytest.warns(
         DeprecationWarning, match="importing EngineConfig from 'litestar.contrib.sqlalchemy.plugins.init' is deprecated"
     ):
-        pass
+        from litestar.contrib.sqlalchemy.plugins.init import EngineConfig
 
     with pytest.warns(
         DeprecationWarning,
         match="importing GenericSQLAlchemyConfig from 'litestar.contrib.sqlalchemy.plugins.init' is deprecated",
     ):
-        pass
+        from litestar.contrib.sqlalchemy.plugins.init import GenericSQLAlchemyConfig
 
     with pytest.warns(
         DeprecationWarning,
         match="importing SQLAlchemyAsyncConfig from 'litestar.contrib.sqlalchemy.plugins.init' is deprecated",
     ):
-        pass
+        from litestar.contrib.sqlalchemy.plugins.init import SQLAlchemyAsyncConfig
 
 
 def test_deprecated_sqlalchemy_plugins_init_config_imports() -> None:
@@ -145,25 +146,25 @@ def test_deprecated_sqlalchemy_plugins_init_config_imports() -> None:
         DeprecationWarning,
         match="importing AsyncSessionConfig from 'litestar.contrib.sqlalchemy.plugins.init.config' is deprecated",
     ):
-        pass
+        from litestar.contrib.sqlalchemy.plugins.init.config import AsyncSessionConfig
 
     with pytest.warns(
         DeprecationWarning,
         match="importing EngineConfig from 'litestar.contrib.sqlalchemy.plugins.init.config' is deprecated",
     ):
-        pass
+        from litestar.contrib.sqlalchemy.plugins.init.config import EngineConfig
 
     with pytest.warns(
         DeprecationWarning,
         match="importing GenericSQLAlchemyConfig from 'litestar.contrib.sqlalchemy.plugins.init.config' is deprecated",
     ):
-        pass
+        from litestar.contrib.sqlalchemy.plugins.init.config import GenericSQLAlchemyConfig
 
     with pytest.warns(
         DeprecationWarning,
         match="importing SQLAlchemyAsyncConfig from 'litestar.contrib.sqlalchemy.plugins.init.config' is deprecated",
     ):
-        pass
+        from litestar.contrib.sqlalchemy.plugins.init.config import SQLAlchemyAsyncConfig
 
 
 def test_deprecated_sqlalchemy_plugins_init_config_common_imports() -> None:
@@ -171,19 +172,19 @@ def test_deprecated_sqlalchemy_plugins_init_config_common_imports() -> None:
         DeprecationWarning,
         match="importing SESSION_SCOPE_KEY from 'litestar.contrib.sqlalchemy.plugins.init.config.common' is deprecated",
     ):
-        pass
+        from litestar.contrib.sqlalchemy.plugins.init.config.common import SESSION_SCOPE_KEY
 
     with pytest.warns(
         DeprecationWarning,
         match="importing SESSION_TERMINUS_ASGI_EVENTS from 'litestar.contrib.sqlalchemy.plugins.init.config.common' is deprecated",
     ):
-        pass
+        from litestar.contrib.sqlalchemy.plugins.init.config.common import SESSION_TERMINUS_ASGI_EVENTS
 
     with pytest.warns(
         DeprecationWarning,
         match="importing GenericSQLAlchemyConfig from 'litestar.contrib.sqlalchemy.plugins.init.config.common' is deprecated",
     ):
-        pass
+        from litestar.contrib.sqlalchemy.plugins.init.config.common import GenericSQLAlchemyConfig
 
 
 def test_deprecated_sqlalchemy_plugins_init_config_sync_imports() -> None:
@@ -191,19 +192,19 @@ def test_deprecated_sqlalchemy_plugins_init_config_sync_imports() -> None:
         DeprecationWarning,
         match="importing SQLAlchemySyncConfig from 'litestar.contrib.sqlalchemy.plugins.init.config.sync' is deprecated",
     ):
-        pass
+        from litestar.contrib.sqlalchemy.plugins.init.config.sync import SQLAlchemySyncConfig
 
     with pytest.warns(
         DeprecationWarning,
         match="importing AlembicSyncConfig from 'litestar.contrib.sqlalchemy.plugins.init.config.sync' is deprecated",
     ):
-        pass
+        from litestar.contrib.sqlalchemy.plugins.init.config.sync import AlembicSyncConfig
 
     with pytest.warns(
         DeprecationWarning,
         match="importing SyncSessionConfig from 'litestar.contrib.sqlalchemy.plugins.init.config.sync' is deprecated",
     ):
-        pass
+        from litestar.contrib.sqlalchemy.plugins.init.config.sync import SyncSessionConfig
 
 
 def test_deprecated_sqlalchemy_plugins_init_config_asyncio_imports() -> None:
@@ -211,16 +212,16 @@ def test_deprecated_sqlalchemy_plugins_init_config_asyncio_imports() -> None:
         DeprecationWarning,
         match="importing SQLAlchemyAsyncConfig from 'litestar.contrib.sqlalchemy.plugins.init.config.asyncio' is deprecated",
     ):
-        pass
+        from litestar.contrib.sqlalchemy.plugins.init.config.asyncio import SQLAlchemyAsyncConfig
 
     with pytest.warns(
         DeprecationWarning,
         match="importing AlembicAsyncConfig from 'litestar.contrib.sqlalchemy.plugins.init.config.asyncio' is deprecated",
     ):
-        pass
+        from litestar.contrib.sqlalchemy.plugins.init.config.asyncio import AlembicAsyncConfig
 
     with pytest.warns(
         DeprecationWarning,
         match="importing AsyncSessionConfig from 'litestar.contrib.sqlalchemy.plugins.init.config.asyncio' is deprecated",
     ):
-        pass
+        from litestar.contrib.sqlalchemy.plugins.init.config.asyncio import AsyncSessionConfig
