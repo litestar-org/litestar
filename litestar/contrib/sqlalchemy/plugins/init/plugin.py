@@ -1,4 +1,5 @@
-# ruff: noqa: TCH004
+# ruff: noqa: TCH004, F401
+# pyright: reportUnusedImport=false
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -20,7 +21,7 @@ def __getattr__(attr_name: str) -> object:
         )
         from advanced_alchemy.extensions.litestar import SQLAlchemyInitPlugin
 
-        value = globals()[attr_name] = SQLAlchemyInitPlugin
+        value = globals()[attr_name] = locals()[attr_name]
         return value
 
     raise AttributeError(f"module {__name__!r} has no attribute {attr_name!r}")

@@ -249,3 +249,111 @@ def test_deprecated_sqlalchemy_plugins_init_config_asyncio_imports() -> None:
         match="importing AsyncSessionConfig from 'litestar.contrib.sqlalchemy.plugins.init.config.asyncio' is deprecated",
     ):
         from litestar.contrib.sqlalchemy.plugins.init.config.asyncio import AsyncSessionConfig
+
+
+def test_deprecated_sqlalchemy_plugins_init_config_engine_imports() -> None:
+    purge_module(["litestar.contrib.sqlalchemy.plugins.init.config.engine"], __file__)
+    with pytest.warns(
+        DeprecationWarning,
+        match="importing EngineConfig from 'litestar.contrib.sqlalchemy.plugins.init.config.engine' is deprecated",
+    ):
+        from litestar.contrib.sqlalchemy.plugins.init.config.engine import EngineConfig
+
+
+def test_deprecated_sqlalchemy_dto_imports() -> None:
+    purge_module(["litestar.contrib.sqlalchemy.dto"], __file__)
+    with pytest.warns(
+        DeprecationWarning,
+        match="importing SQLAlchemyDTOConfig from 'litestar.contrib.sqlalchemy.dto' is deprecated",
+    ):
+        from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTOConfig
+
+
+def test_deprecated_sqlalchemy_plugins_init_plugin_imports() -> None:
+    purge_module(["litestar.contrib.sqlalchemy.plugins.init.plugin"], __file__)
+    with pytest.warns(
+        DeprecationWarning,
+        match="importing SQLAlchemyInitPlugin from 'litestar.contrib.sqlalchemy.plugins.init' is deprecated",
+    ):
+        from litestar.contrib.sqlalchemy.plugins.init.plugin import SQLAlchemyInitPlugin
+
+
+def test_deprecated_sqlalchemy_plugins_serialization_imports() -> None:
+    purge_module(["litestar.contrib.sqlalchemy.plugins.serialization"], __file__)
+    with pytest.warns(
+        DeprecationWarning,
+        match="importing SQLAlchemySerializationPlugin from 'litestar.contrib.sqlalchemy.plugins.serialization' is deprecated",
+    ):
+        from litestar.contrib.sqlalchemy.plugins.serialization import SQLAlchemySerializationPlugin
+
+
+def test_deprecated_sqlalchemy_repository_async_imports() -> None:
+    purge_module(["litestar.contrib.sqlalchemy.repository._async"], __file__)
+    with pytest.warns(
+        DeprecationWarning,
+        match="importing SQLAlchemyAsyncRepository from 'litestar.contrib.sqlalchemy.repository._async' is deprecated",
+    ):
+        from litestar.contrib.sqlalchemy.repository._async import SQLAlchemyAsyncRepository
+
+
+def test_deprecated_sqlalchemy_repository_sync_imports() -> None:
+    purge_module(["litestar.contrib.sqlalchemy.repository._sync"], __file__)
+    with pytest.warns(
+        DeprecationWarning,
+        match="importing SQLAlchemySyncRepository from 'litestar.contrib.sqlalchemy.repository._sync' is deprecated",
+    ):
+        from litestar.contrib.sqlalchemy.repository._sync import SQLAlchemySyncRepository
+
+
+def test_deprecated_sqlalchemy_base_imports() -> None:
+    purge_module(["litestar.contrib.sqlalchemy.base"], __file__)
+    with pytest.warns(
+        DeprecationWarning,
+        match="from 'litestar.contrib.sqlalchemy.base' is deprecated",
+    ):
+        from litestar.contrib.sqlalchemy.base import (
+            AuditColumns,
+            BigIntAuditBase,
+            BigIntBase,
+            BigIntPrimaryKey,
+            CommonTableAttributes,
+            ModelProtocol,
+            UUIDAuditBase,
+            UUIDBase,
+            UUIDPrimaryKey,
+            create_registry,
+            orm_registry,
+            touch_updated_timestamp,
+        )
+
+
+def test_deprecated_sqlalchemy_plugins_init_config_asyncio_handlers() -> None:
+    purge_module(["litestar.contrib.sqlalchemy.plugins.init.config.asyncio"], __file__)
+    with pytest.warns(
+        DeprecationWarning,
+        match="importing default_before_send_handler from 'litestar.contrib.sqlalchemy.plugins.init.config.asyncio' is deprecated",
+    ):
+        from litestar.contrib.sqlalchemy.plugins.init.config.asyncio import default_before_send_handler
+
+    purge_module(["litestar.contrib.sqlalchemy.plugins.init.config.asyncio"], __file__)
+    with pytest.warns(
+        DeprecationWarning,
+        match="importing autocommit_before_send_handler from 'litestar.contrib.sqlalchemy.plugins.init.config.asyncio' is deprecated",
+    ):
+        from litestar.contrib.sqlalchemy.plugins.init.config.asyncio import autocommit_before_send_handler
+
+
+def test_deprecated_sqlalchemy_plugins_init_config_sync_handlers() -> None:
+    purge_module(["litestar.contrib.sqlalchemy.plugins.init.config.sync"], __file__)
+    with pytest.warns(
+        DeprecationWarning,
+        match="importing default_before_send_handler from 'litestar.contrib.sqlalchemy.plugins.init.config.sync' is deprecated",
+    ):
+        from litestar.contrib.sqlalchemy.plugins.init.config.sync import default_before_send_handler
+
+    purge_module(["litestar.contrib.sqlalchemy.plugins.init.config.sync"], __file__)
+    with pytest.warns(
+        DeprecationWarning,
+        match="importing autocommit_before_send_handler from 'litestar.contrib.sqlalchemy.plugins.init.config.sync' is deprecated",
+    ):
+        from litestar.contrib.sqlalchemy.plugins.init.config.sync import autocommit_before_send_handler

@@ -11,11 +11,11 @@ __all__ = ("SQLAlchemySerializationPlugin",)
 def __getattr__(attr_name: str) -> object:
     if attr_name in __all__:
         warn_deprecation(
-            deprecated_name=f"litestar.contrib.sqlalchemy.plugins.{attr_name}",
+            deprecated_name=f"litestar.contrib.sqlalchemy.plugins.serialization.{attr_name}",
             version="2.12",
             kind="import",
             removal_in="3.0",
-            info=f"importing {attr_name} from 'litestar.contrib.sqlalchemy.plugins' is deprecated, please "
+            info=f"importing {attr_name} from 'litestar.contrib.sqlalchemy.plugins.serialization' is deprecated, please "
             f"import it from 'litstar.plugins.sqlalchemy' instead",
         )
         from advanced_alchemy.extensions.litestar import SQLAlchemySerializationPlugin

@@ -19,7 +19,7 @@ def __getattr__(attr_name: str) -> object:
             version="2.12",
             kind="import",
             removal_in="3.0",
-            info=f"importing {attr_name} from 'litestar.contrib.sqlalchemy.repository' is deprecated, please "
+            info=f"importing {attr_name} from 'litestar.contrib.sqlalchemy.repository._async' is deprecated, please "
             f"import it from 'litestar.plugins.sqlalchemy.repository' instead",
         )
         value = globals()[attr_name] = locals()[attr_name]
