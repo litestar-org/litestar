@@ -24,7 +24,7 @@ repos:
       - id: unasyncd
         additional_dependencies: ["ruff"]
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.6.2"
+    rev: "v0.6.7"
     hooks:
       - id: ruff
         args: ["--fix"]
@@ -43,7 +43,7 @@ repos:
         exclude: "test*|examples*|tools"
         args: ["--use-tuple"]
   - repo: https://github.com/sphinx-contrib/sphinx-lint
-    rev: "v0.9.1"
+    rev: "v1.0.0"
     hooks:
       - id: sphinx-lint
   - repo: local
