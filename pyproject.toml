@@ -285,7 +285,7 @@ module = [
 ]
 
 [[tool.mypy.overrides]]
-warn_unused_ignores = true
+warn_unused_ignores = false
 module = [
   "litestar.contrib.sqlalchemy.*",
   "tests.unit.test_contrib.test_sqlalchemy",

@@ -115,7 +115,7 @@ def test_deprecated_sqlalchemy_plugins_imports() -> None:
         pass
 
 
-def test_deprecated_sqlalchemy_plugins_init_imports():
+def test_deprecated_sqlalchemy_plugins_init_imports() -> None:
     with pytest.warns(
         DeprecationWarning,
         match="importing AsyncSessionConfig from 'litestar.contrib.sqlalchemy.plugins.init' is deprecated",

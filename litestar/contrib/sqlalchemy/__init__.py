@@ -31,7 +31,7 @@ def __getattr__(attr_name: str) -> object:
             value = globals()[attr_name] = getattr(exceptions, attr_name)
         warn_deprecation(
             deprecated_name=f"litestar.contrib.sqlalchemy.{attr_name}",
-            version="2.11",
+            version="2.12",
             kind="import",
             removal_in="3.0",
             info=f"importing {attr_name} from 'litestar.contrib.sqlalchemy' is deprecated, please "
