@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy.orm import Mapped
 
 from litestar import Litestar, post
-from litestar.contrib.sqlalchemy.dto import SQLAlchemyDTO
+from litestar.plugins.sqlalchemy import SQLAlchemyDTO
 
 from .my_lib import Base
 

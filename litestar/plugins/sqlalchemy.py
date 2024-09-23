@@ -1,37 +1,8 @@
+# ruff: noqa: TCH004, F401
+# pyright: reportUnusedImport=false
 from __future__ import annotations
 
-from advanced_alchemy.extensions.litestar import (
-    AlembicAsyncConfig,
-    AlembicCommands,
-    AlembicSyncConfig,
-    AsyncSessionConfig,
-    EngineConfig,
-    SQLAlchemyAsyncConfig,
-    SQLAlchemyDTO,
-    SQLAlchemyDTOConfig,
-    SQLAlchemyInitPlugin,
-    SQLAlchemyPlugin,
-    SQLAlchemySerializationPlugin,
-    SQLAlchemySyncConfig,
-    SyncSessionConfig,
-    async_autocommit_before_send_handler,
-    async_autocommit_handler_maker,
-    async_default_before_send_handler,
-    async_default_handler_maker,
-    base,
-    exceptions,
-    filters,
-    mixins,
-    operations,
-    repository,
-    service,
-    sync_autocommit_before_send_handler,
-    sync_autocommit_handler_maker,
-    sync_default_before_send_handler,
-    sync_default_handler_maker,
-    types,
-    utils,
-)
+from typing import TYPE_CHECKING
 
 from litestar.utils import warn_deprecation
 
@@ -66,11 +37,21 @@ __all__ = (
     "SQLAlchemySerializationPlugin",
     "SQLAlchemySyncConfig",
     "EngineConfig",
+    # deprecated
+    "AuditColumns",
+    "BigIntAuditBase",
+    "BigIntBase",
+    "BigIntPrimaryKey",
+    "CommonTableAttributes",
+    "UUIDAuditBase",
+    "UUIDBase",
+    "UUIDPrimaryKey",
+    "orm_registry",
 )
 
 
 def __getattr__(attr_name: str) -> object:
-    if attr_name in {
+    _deprecated_attrs = {
         "AuditColumns",
         "BigIntAuditBase",
         "BigIntBase",
@@ -80,7 +61,21 @@ def __getattr__(attr_name: str) -> object:
         "UUIDBase",
         "UUIDPrimaryKey",
         "orm_registry",
-    }:
+    }
+
+    if attr_name in _deprecated_attrs:
+        from advanced_alchemy.base import (
+            AuditColumns,
+            BigIntAuditBase,
+            BigIntBase,
+            BigIntPrimaryKey,
+            CommonTableAttributes,
+            UUIDAuditBase,
+            UUIDBase,
+            UUIDPrimaryKey,
+            orm_registry,
+        )
+
         warn_deprecation(
             deprecated_name=f"litestar.plugins.sqlalchemy.{attr_name}",
             version="2.9.0",
@@ -89,8 +84,92 @@ def __getattr__(attr_name: str) -> object:
             info=f"importing {attr_name} from 'litestar.plugins.sqlalchemy' is deprecated, please"
             f"import it from 'litestar.plugins.sqlalchemy.base.{attr_name}' instead",
         )
-        value = globals()[attr_name] = getattr(base, attr_name)
+        value = globals()[attr_name] = locals()[attr_name]
         return value
-    if attr_name in __all__:
-        return getattr(attr_name, attr_name)
+    if attr_name in set(__all__).difference(_deprecated_attrs):
+        from advanced_alchemy import (
+            base,
+            exceptions,
+            filters,
+            mixins,
+            operations,
+            repository,
+            service,
+            types,
+            utils,
+        )
+        from advanced_alchemy.extensions.litestar import (
+            AlembicAsyncConfig,
+            AlembicCommands,
+            AlembicSyncConfig,
+            AsyncSessionConfig,
+            EngineConfig,
+            SQLAlchemyAsyncConfig,
+            SQLAlchemyDTO,
+            SQLAlchemyDTOConfig,
+            SQLAlchemyInitPlugin,
+            SQLAlchemyPlugin,
+            SQLAlchemySerializationPlugin,
+            SQLAlchemySyncConfig,
+            SyncSessionConfig,
+            async_autocommit_before_send_handler,
+            async_autocommit_handler_maker,
+            async_default_before_send_handler,
+            async_default_handler_maker,
+            sync_autocommit_before_send_handler,
+            sync_autocommit_handler_maker,
+            sync_default_before_send_handler,
+            sync_default_handler_maker,
+        )
+
+        value = globals()[attr_name] = locals()[attr_name]
+        return value
     raise AttributeError(f"module {__name__!r} has no attribute {attr_name!r}")
+
+
+if TYPE_CHECKING:
+    from advanced_alchemy import (
+        base,
+        exceptions,
+        filters,
+        mixins,
+        operations,
+        repository,
+        service,
+        types,
+        utils,
+    )
+    from advanced_alchemy.base import (
+        AuditColumns,
+        BigIntAuditBase,
+        BigIntBase,
+        BigIntPrimaryKey,
+        CommonTableAttributes,
+        UUIDAuditBase,
+        UUIDBase,
+        UUIDPrimaryKey,
+        orm_registry,
+    )
+    from advanced_alchemy.extensions.litestar import (
+        AlembicAsyncConfig,
+        AlembicCommands,
+        AlembicSyncConfig,
+        AsyncSessionConfig,
+        EngineConfig,
+        SQLAlchemyAsyncConfig,
+        SQLAlchemyDTO,
+        SQLAlchemyDTOConfig,
+        SQLAlchemyInitPlugin,
+        SQLAlchemyPlugin,
+        SQLAlchemySerializationPlugin,
+        SQLAlchemySyncConfig,
+        SyncSessionConfig,
+        async_autocommit_before_send_handler,
+        async_autocommit_handler_maker,
+        async_default_before_send_handler,
+        async_default_handler_maker,
+        sync_autocommit_before_send_handler,
+        sync_autocommit_handler_maker,
+        sync_default_before_send_handler,
+        sync_default_handler_maker,
+    )

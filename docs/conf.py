@@ -153,6 +153,10 @@ nitpick_ignore = [
     (PY_CLASS, "litestar.response.RedirectResponse"),
     (PY_CLASS, "litestar.response_containers.Redirect"),
     (PY_CLASS, "litestar.response_containers.Template"),
+    (PY_CLASS, "litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin"),
+    (PY_CLASS, "litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin"),
+    (PY_CLASS, "litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin"),
+    (PY_CLASS, "litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO"),
     (PY_CLASS, "litestar.contrib.sqlalchemy.types.BigIntIdentity"),
     (PY_CLASS, "litestar.contrib.sqlalchemy.types.JsonB"),
     (PY_CLASS, "litestar.typing.ParsedType"),
@@ -165,6 +169,8 @@ nitpick_ignore = [
     (PY_CLASS, "advanced_alchemy.extensions.litestar.plugins._slots_base.SlotsBase"),
     (PY_CLASS, "advanced_alchemy.config.EngineConfig"),
     (PY_CLASS, "advanced_alchemy.config.common.GenericAlembicConfig"),
+    (PY_CLASS, "advanced_alchemy.extensions.litestar.SQLAlchemyDTO"),
+    (PY_CLASS, "advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO"),
     (PY_CLASS, "advanced_alchemy.extensions.litestar.plugins.SQLAlchemyPlugin"),
     (PY_CLASS, "advanced_alchemy.extensions.litestar.plugins.SQLAlchemySerializationPlugin"),
     (PY_CLASS, "advanced_alchemy.extensions.litestar.plugins.SQLAlchemyInitPlugin"),
@@ -349,11 +355,11 @@ def delayed_setup(app: Sphinx) -> None:
         return
 
     app.setup_extension("pydata_sphinx_theme")
-    app.connect("html-page-context", update_html_context)
+    app.connect("html-page-context", update_html_context)  # type: ignore
 
 
 def setup(app: Sphinx) -> dict[str, bool]:
-    app.connect("builder-inited", delayed_setup, priority=0)
+    app.connect("builder-inited", delayed_setup, priority=0)  # type: ignore
 
     app.setup_extension("litestar_sphinx_theme")
 

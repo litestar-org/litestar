@@ -284,6 +284,13 @@ module = [
   "exceptiongroup",
 ]
 
+[[tool.mypy.overrides]]
+warn_unused_ignores = false
+module = [
+  "litestar.contrib.sqlalchemy.*",
+  "tests.unit.test_contrib.test_sqlalchemy",
+]
+
 [tool.pydantic-mypy]
 init_forbid_extra = true
 init_typed = true
@@ -377,6 +384,7 @@ lint.ignore = [
   "PLW2901", # pylint - for loop variable overwritten by assignment target
   "RUF012", # Ruff-specific rule - annotated with classvar
   "ISC001", # Ruff formatter incompatible
+  "CPY001", # ruff - copyright notice at the top of the file
 ]
 src = ["litestar", "tests", "docs/examples"]
 target-version = "py38"

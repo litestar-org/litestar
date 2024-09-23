@@ -10,8 +10,8 @@ from sqlalchemy import ForeignKey, select
 from sqlalchemy.orm import Mapped, mapped_column, relationship, selectinload
 
 from litestar import Litestar, get
+from litestar.contrib.sqlalchemy import SQLAlchemyInitPlugin, SQLAlchemySyncConfig
 from litestar.contrib.sqlalchemy.base import UUIDAuditBase, UUIDBase
-from litestar.contrib.sqlalchemy.plugins.init import SQLAlchemyInitPlugin, SQLAlchemySyncConfig
 from litestar.contrib.sqlalchemy.repository import SQLAlchemySyncRepository
 from litestar.controller import Controller
 from litestar.di import Provide
