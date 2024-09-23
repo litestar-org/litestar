@@ -1072,7 +1072,9 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/57007485?v=4",
       "profile": "https://github.com/floxay",
       "contributions": [
-        "doc"
+        "doc",
+        "code",
+        "test"
       ]
     },
     {
