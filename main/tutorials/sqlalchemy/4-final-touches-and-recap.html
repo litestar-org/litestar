@@ -1542,10 +1542,10 @@ document.write(`
   <section id="final-touches-and-recap">
 <h1>Final touches and recap<a class="headerlink" href="#final-touches-and-recap" title="Permalink to this heading">#</a></h1>
 <p>There is one more improvement that we can make to our application. Currently, we utilize both the
-<a class="reference internal" href="../../reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin" title="litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyInitPlugin</span></code></a> and the
-<a class="reference internal" href="../../reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin" title="litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemySerializationPlugin</span></code></a>, but there
+<code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyInitPlugin</span></code> and the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemySerializationPlugin</span></code>, but there
 is a shortcut for this configuration: the
-<a class="reference internal" href="../../reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin" title="litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyPlugin</span></code></a> is a combination of the two, so we
+<code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyPlugin</span></code> is a combination of the two, so we
 can simplify our configuration by using it instead.</p>
 <p>Here is our final application:</p>
 <div class="sd-tab-set docutils">
@@ -1891,7 +1891,7 @@ handlers via the <code class="docutils literal notranslate"><span class="pre">tr
 </pre></div>
 </div>
 <p>Finally, we define our application, using the
-<a class="reference internal" href="../../reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin" title="litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyPlugin</span></code></a> to configure SQLAlchemy and manage the
+<code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyPlugin</span></code> to configure SQLAlchemy and manage the
 engine and session lifecycle, and register our <code class="docutils literal notranslate"><span class="pre">transaction</span></code> dependency.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
 <span class="linenos">2</span>    <span class="p">[</span><span class="n">get_list</span><span class="p">,</span> <span class="n">add_item</span><span class="p">,</span> <span class="n">update_item</span><span class="p">],</span>

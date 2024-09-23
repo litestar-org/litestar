@@ -1542,7 +1542,7 @@ document.write(`
   <section id="using-the-serialization-plugin">
 <h1>Using the serialization plugin<a class="headerlink" href="#using-the-serialization-plugin" title="Permalink to this heading">#</a></h1>
 <p>Our next improvement is to leverage the
-<a class="reference internal" href="../../reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin" title="litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemySerializationPlugin</span></code></a>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemySerializationPlugin</span></code>
 so that we can receive and return our SQLAlchemy models directly to and from our handlers.</p>
 <p>Here’s the code:</p>
 <div class="sd-tab-set docutils">
@@ -1947,7 +1947,7 @@ Before</label><div class="sd-tab-content docutils">
 <h2>Next steps<a class="headerlink" href="#next-steps" title="Permalink to this heading">#</a></h2>
 <p>In our application, we’ve had to build a bit of scaffolding to integrate SQLAlchemy with our application. We’ve had to
 define the <code class="docutils literal notranslate"><span class="pre">db_connection()</span></code> lifespan context manager, and the <code class="docutils literal notranslate"><span class="pre">provide_transaction()</span></code> dependency provider.</p>
-<p>Next we’ll look at how the <a class="reference internal" href="../../reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin" title="litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyInitPlugin</span></code></a> can
+<p>Next we’ll look at how the <code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyInitPlugin</span></code> can
 help us.</p>
 </section>
 </section>
