@@ -335,10 +335,6 @@ class WebsocketListener(ABC):
     """A sequence of :class:`Guard <.types.Guard>` callables."""
     middleware: list[Middleware] | None = None
     """A sequence of :class:`Middleware <.types.Middleware>`."""
-    on_accept: AnyCallable | None = None
-    """Called after a :class:`WebSocket <.connection.WebSocket>` connection has been accepted. Can receive any dependencies"""
-    on_disconnect: AnyCallable | None = None
-    """Called after a :class:`WebSocket <.connection.WebSocket>` connection has been disconnected. Can receive any dependencies"""
     receive_mode: WebSocketMode = "text"
     """:class:`WebSocket <.connection.WebSocket>` mode to receive data in, either ``text`` or ``binary``."""
     send_mode: WebSocketMode = "text"
@@ -380,6 +376,9 @@ class WebsocketListener(ABC):
         self._owner = owner
 
     def to_handler(self) -> WebsocketListenerRouteHandler:
+        on_accept = self.on_accept if self.on_accept != WebsocketListener.on_accept else None
+        on_disconnect = self.on_disconnect if self.on_disconnect != WebsocketListener.on_disconnect else None
+
         handler = WebsocketListenerRouteHandler(
             dependencies=self.dependencies,
             dto=self.dto,
@@ -389,8 +388,8 @@ class WebsocketListener(ABC):
             send_mode=self.send_mode,
             receive_mode=self.receive_mode,
             name=self.name,
-            on_accept=self.on_accept,
-            on_disconnect=self.on_disconnect,
+            on_accept=on_accept,
+            on_disconnect=on_disconnect,
             opt=self.opt,
             path=self.path,
             return_dto=self.return_dto,
@@ -401,6 +400,16 @@ class WebsocketListener(ABC):
         )(self.on_receive)
         handler.owner = self._owner
         return handler
+
+    def on_accept(self, *args: Any, **kwargs: Any) -> Any:
+        """Called after a :class:`WebSocket <.connection.WebSocket>` connection
+        has been accepted. Can receive any dependencies
+        """
+
+    def on_disconnect(self, *args: Any, **kwargs: Any) -> Any:
+        """Called after a :class:`WebSocket <.connection.WebSocket>` connection
+        has been disconnected. Can receive any dependencies
+        """
 
     @abstractmethod
     def on_receive(self, *args: Any, **kwargs: Any) -> Any:
