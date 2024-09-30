@@ -591,7 +591,9 @@ class SchemaCreator:
                         setattr(schema, schema_key, value)
 
             if isinstance(field.kwarg_definition, KwargDefinition) and (extra := field.kwarg_definition.schema_extra):
+                field_aliases = schema.field_aliases()
                 for schema_key, value in extra.items():
+                    schema_key = field_aliases.get(schema_key, schema_key)
                     if not hasattr(schema, schema_key):
                         raise ValueError(
                             f"`schema_extra` declares key `{schema_key}` which does not exist in `Schema` object"

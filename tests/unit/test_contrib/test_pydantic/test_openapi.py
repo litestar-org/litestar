@@ -2,7 +2,7 @@
 from datetime import date, timedelta
 from decimal import Decimal
 from types import ModuleType
-from typing import Any, Callable, Dict, Optional, Pattern, Type, Union, cast
+from typing import Any, Callable, Dict, List, Optional, Pattern, Type, Union, cast
 
 import annotated_types
 import pydantic as pydantic_v2
@@ -539,10 +539,12 @@ def test_schema_generation_v2() -> None:
         with_title: str = pydantic_v2.Field(title="WITH_title")
         # or as an extra
         with_extra_title: str = pydantic_v2.Field(json_schema_extra={"title": "WITH_extra"})
+        # moreover, we allow json_schema_extra to use names that exactly match the JSONSchema spec
+        without_duplicates: List[str] = pydantic_v2.Field(json_schema_extra={"uniqueItems": True})
 
     @post("/example")
     async def example_route() -> Lookup:
-        return Lookup(id="1234567812345678", with_title="1", with_extra_title="2")
+        return Lookup(id="1234567812345678", with_title="1", with_extra_title="2", without_duplicates=[])
 
     app = Litestar([example_route])
     schema = app.openapi_schema.to_schema()
@@ -557,6 +559,7 @@ def test_schema_generation_v2() -> None:
     }
     assert lookup_schema["with_title"] == {"title": "WITH_title", "type": "string"}
     assert lookup_schema["with_extra_title"] == {"title": "WITH_extra", "type": "string"}
+    assert lookup_schema["without_duplicates"] == {"type": "array", "items": {"type": "string"}, "uniqueItems": True}
 
 
 def test_create_examples(pydantic_version: PydanticVersion) -> None:
