@@ -1,7 +1,7 @@
 Graphql
 #######
 
-Litestar does not support ``graphql`` out of the box. This can be done through third party packages. 
+Litestar does not support ``graphql`` out of the box. This can be done through third party packages.
 
 .. note::
     Currently the only library that supports Litestar is `Strawberry <https://strawberry.rocks/docs/integrations/litestar#litestar>`_.
