@@ -16,6 +16,7 @@ Usage
     dto/index
     events
     exceptions
+    graphql
     htmx
     lifecycle-hooks
     logging
