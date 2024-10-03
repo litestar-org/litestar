@@ -28,33 +28,46 @@ async def test_rate_limiting(unit: DurationUnit) -> None:
     def handler() -> None:
         return None
 
-    config = RateLimitConfig(rate_limit=(unit, 1))
+    config = RateLimitConfig(rate_limit=(unit, 2))
     cache_key = "RateLimitMiddleware::testclient"
     app = Litestar(route_handlers=[handler], middleware=[config.middleware])
     store = app.stores.get("rate_limit")
 
     with travel(datetime.utcnow, tick=False) as frozen_time, TestClient(app=app) as client:
         response = client.get("/")
-        assert response.status_code == HTTP_200_OK
+
         cached_value = await store.get(cache_key)
         assert cached_value
         cache_object = CacheObject(**decode_json(value=cached_value))
         assert len(cache_object.history) == 1
 
-        assert response.headers.get(config.rate_limit_policy_header_key) == f"1; w={DURATION_VALUES[unit]}"
-        assert response.headers.get(config.rate_limit_limit_header_key) == "1"
-        assert response.headers.get(config.rate_limit_remaining_header_key) == "0"
-        assert response.headers.get(config.rate_limit_reset_header_key) == str(int(time()) - cache_object.reset)
+        assert response.status_code == HTTP_200_OK
+        assert response.headers.get(config.rate_limit_policy_header_key) == f"2; w={DURATION_VALUES[unit]}"
+        assert response.headers.get(config.rate_limit_limit_header_key) == "2"
+        assert response.headers.get(config.rate_limit_remaining_header_key) == "1"
+        # Since the time is frozen, no time has passed.
+        # Therefore, the remaining seconds for the current quota window should be the same as the entire window length.
+        assert response.headers.get(config.rate_limit_reset_header_key) == str(DURATION_VALUES[unit])
 
+        # Move time one second before the end of the quota window for the next request
         frozen_time.shift(DURATION_VALUES[unit] - 1)
+        response = client.get("/")
+
+        assert response.status_code == HTTP_200_OK
+        assert response.headers.get(config.rate_limit_policy_header_key) == f"2; w={DURATION_VALUES[unit]}"
+        assert response.headers.get(config.rate_limit_limit_header_key) == "2"
+        assert response.headers.get(config.rate_limit_remaining_header_key) == "0"
+        assert response.headers.get(config.rate_limit_reset_header_key) == "1"
 
         response = client.get("/")
-        assert response.status_code == HTTP_429_TOO_MANY_REQUESTS
-        assert response.headers.get(config.rate_limit_policy_header_key) == f"1; w={DURATION_VALUES[unit]}"
-        assert response.headers.get(config.rate_limit_limit_header_key) == "1"
-        assert response.headers.get(config.rate_limit_remaining_header_key) == "0"
-        assert response.headers.get(config.rate_limit_reset_header_key) == str(int(time()) - cache_object.reset)
 
+        assert response.status_code == HTTP_429_TOO_MANY_REQUESTS
+        assert response.headers.get(config.rate_limit_policy_header_key) == f"2; w={DURATION_VALUES[unit]}"
+        assert response.headers.get(config.rate_limit_limit_header_key) == "2"
+        assert response.headers.get(config.rate_limit_remaining_header_key) == "0"
+        assert response.headers.get(config.rate_limit_reset_header_key) == "1"
+
+        # Move time one second so that a new quota window starts
         frozen_time.shift(1)
 
         response = client.get("/")
