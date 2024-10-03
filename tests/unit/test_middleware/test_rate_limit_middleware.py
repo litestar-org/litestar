@@ -44,8 +44,11 @@ async def test_rate_limiting(unit: DurationUnit) -> None:
         assert response.headers.get(config.rate_limit_policy_header_key) == f"1; w={DURATION_VALUES[unit]}"
         assert response.headers.get(config.rate_limit_limit_header_key) == "1"
         assert response.headers.get(config.rate_limit_remaining_header_key) == "0"
-        assert response.headers.get(config.rate_limit_reset_header_key) == str(int(time()) - cache_object.reset)
+        # Since the time is frozen, no time has passed.
+        # Hence the remaining seconds for the current quota window should be the same as the whole window length.
+        assert response.headers.get(config.rate_limit_reset_header_key) == str(DURATION_VALUES[unit])
 
+        # Move time one second before the end of the quota window
         frozen_time.shift(DURATION_VALUES[unit] - 1)
 
         response = client.get("/")
@@ -53,8 +56,9 @@ async def test_rate_limiting(unit: DurationUnit) -> None:
         assert response.headers.get(config.rate_limit_policy_header_key) == f"1; w={DURATION_VALUES[unit]}"
         assert response.headers.get(config.rate_limit_limit_header_key) == "1"
         assert response.headers.get(config.rate_limit_remaining_header_key) == "0"
-        assert response.headers.get(config.rate_limit_reset_header_key) == str(int(time()) - cache_object.reset)
+        assert response.headers.get(config.rate_limit_reset_header_key) == "1"
 
+        # Move time one second so that a new quota window starts
         frozen_time.shift(1)
 
         response = client.get("/")
