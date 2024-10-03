@@ -578,6 +578,7 @@ see [the contribution guide](CONTRIBUTING.rst).
       <td align="center" valign="top" width="14.28%"><a href="https://blog.trim21.me/"><img src="https://avatars.githubusercontent.com/u/13553903?v=4?s=100" width="100px;" alt="Trim21"/><br /><sub><b>Trim21</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=trim21" title="Code">💻</a> <a href="https://github.com/litestar-org/litestar/commits?author=trim21" title="Tests">⚠️</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://aarcex3.github.io"><img src="https://avatars.githubusercontent.com/u/59893355?v=4?s=100" width="100px;" alt="Agustin Arce"/><br /><sub><b>Agustin Arce</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=aarcex3" title="Documentation">📖</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/FarhanAliRaza"><img src="https://avatars.githubusercontent.com/u/62690310?v=4?s=100" width="100px;" alt="Farhan Ali Raza"/><br /><sub><b>Farhan Ali Raza</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=FarhanAliRaza" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/pogopaule"><img src="https://avatars.githubusercontent.com/u/576949?v=4?s=100" width="100px;" alt="Fabian"/><br /><sub><b>Fabian</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=pogopaule" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
