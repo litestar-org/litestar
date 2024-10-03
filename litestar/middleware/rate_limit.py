@@ -205,7 +205,7 @@ class RateLimitMiddleware(AbstractMiddleware):
             self.config.rate_limit_policy_header_key: f"{self.max_requests}; w={DURATION_VALUES[self.unit]}",
             self.config.rate_limit_limit_header_key: str(self.max_requests),
             self.config.rate_limit_remaining_header_key: remaining_requests,
-            self.config.rate_limit_reset_header_key: str(int(time()) - cache_object.reset),
+            self.config.rate_limit_reset_header_key: str(cache_object.reset - int(time())),
         }
 
 
