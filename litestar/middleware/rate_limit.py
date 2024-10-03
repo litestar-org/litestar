@@ -198,7 +198,7 @@ class RateLimitMiddleware(AbstractMiddleware):
             A dict of http headers.
         """
         remaining_requests = str(
-            len(cache_object.history) - self.max_requests if len(cache_object.history) <= self.max_requests else 0
+            self.max_requests - len(cache_object.history) if len(cache_object.history) <= self.max_requests else 0
         )
 
         return {
