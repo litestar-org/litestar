@@ -83,22 +83,17 @@ def test_parsing_of_dependency_as_default() -> None:
         assert response.text == "null"
 
 
-@pytest.mark.parametrize(
-    "dependency, expected",
-    [
-        (Dependency(), None),
-        (Dependency(default=None), None),
-        (Dependency(default=13), 13),
-    ],
-)
-def test_dependency_defaults(dependency: Any, expected: Optional[int]) -> None:
+@pytest.mark.parametrize(("default",), [(None,), (13,)])
+def test_dependency_defaults(default: Any) -> None:
     @get("/")
-    def handler(value: Optional[int] = dependency) -> Dict[str, Optional[int]]:
-        return {"value": value}
+    def handler(
+        value_1: Optional[int] = Dependency(default=default), value_2: Annotated[Optional[int], Dependency()] = default
+    ) -> Dict[str, Optional[int]]:
+        return {"value_1": value_1, "value_2": value_2}
 
     with create_test_client(route_handlers=[handler]) as client:
         resp = client.get("/")
-        assert resp.json() == {"value": expected}
+        assert resp.json() == {"value_1": default, "value_2": default}
 
 
 def test_dependency_non_optional_with_default() -> None:
@@ -238,8 +233,10 @@ def optional_no_default_client_fixture() -> Generator[TestClient, None, None]:
 def test_optional_query_parameter_consistency_no_default_queried_without_param(
     optional_no_default_client: TestClient,
 ) -> None:
-    assert optional_no_default_client.get("/optional-no-default", params={}).json() == {"key": None}
-    assert optional_no_default_client.get("/optional-annotated-no-default", params={}).json() == {"key": None}
+    assert optional_no_default_client.get("/optional-no-default", params={}).status_code == HTTP_400_BAD_REQUEST
+    assert (
+        optional_no_default_client.get("/optional-annotated-no-default", params={}).status_code == HTTP_400_BAD_REQUEST
+    )
 
 
 def test_optional_query_parameter_consistency_no_default_queried_with_expected_param(
@@ -252,10 +249,14 @@ def test_optional_query_parameter_consistency_no_default_queried_with_expected_p
 def test_optional_query_parameter_consistency_no_default_queried_with_other_param(
     optional_no_default_client: TestClient,
 ) -> None:
-    assert optional_no_default_client.get("/optional-no-default", params={"param": "a"}).json() == {"key": None}
-    assert optional_no_default_client.get("/optional-annotated-no-default", params={"param": "a"}).json() == {
-        "key": None
-    }
+    assert (
+        optional_no_default_client.get("/optional-no-default", params={"param": "a"}).status_code
+        == HTTP_400_BAD_REQUEST
+    )
+    assert (
+        optional_no_default_client.get("/optional-annotated-no-default", params={"param": "a"}).status_code
+        == HTTP_400_BAD_REQUEST
+    )
 
 
 @pytest.fixture(name="optional_default_client")

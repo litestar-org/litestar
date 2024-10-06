@@ -9,12 +9,10 @@ from litestar.enums import MediaType
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.response.base import ASGIResponse, Response
 from litestar.status_codes import HTTP_200_OK
-from litestar.utils.deprecation import warn_deprecation
 from litestar.utils.empty import value_or_default
 from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
-    from litestar.app import Litestar
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
     from litestar.connection import Request
     from litestar.datastructures import Cookie
@@ -99,7 +97,6 @@ class Template(Response[bytes]):
 
     def to_asgi_response(
         self,
-        app: Litestar | None,
         request: Request,
         *,
         background: BackgroundTask | BackgroundTasks | None = None,
@@ -111,15 +108,6 @@ class Template(Response[bytes]):
         status_code: int | None = None,
         type_encoders: TypeEncodersMap | None = None,
     ) -> ASGIResponse:
-        if app is not None:
-            warn_deprecation(
-                version="2.1",
-                deprecated_name="app",
-                kind="parameter",
-                removal_in="3.0.0",
-                alternative="request.app",
-            )
-
         if not (template_engine := request.app.template_engine):
             raise ImproperlyConfiguredException("Template engine is not configured")
 
