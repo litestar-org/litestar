@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, fields, is_dataclass
-from typing import TYPE_CHECKING, Any, Hashable, Mapping, Sequence
+from dataclasses import dataclass, field, fields, is_dataclass
+from typing import TYPE_CHECKING, Any, Hashable, Mapping, Sequence, cast
 
 from litestar.openapi.spec.base import BaseSchemaObject
 from litestar.utils.predicates import is_non_string_sequence
@@ -55,14 +55,14 @@ class Schema(BaseSchemaObject):
     `JSON Schema Core <https://tools.ietf.org/html/draft-wright-json-schema-00>`_ and follow the same specifications.
     """
 
-    all_of: Sequence[Reference | Schema] | None = None
+    all_of: Sequence[Reference | Schema] | None = field(default=None, metadata={"alias": "allOf"})
     """This keyword's value MUST be a non-empty array.  Each item of the array MUST be a valid JSON Schema.
 
     An instance validates successfully against this keyword if it validates successfully against all schemas defined by
     this keyword's value.
     """
 
-    any_of: Sequence[Reference | Schema] | None = None
+    any_of: Sequence[Reference | Schema] | None = field(default=None, metadata={"alias": "anyOf"})
     """This keyword's value MUST be a non-empty array. Each item of the array MUST be a valid JSON Schema.
 
     An instance validates successfully against this keyword if it validates successfully against at least one schema
@@ -70,21 +70,21 @@ class Schema(BaseSchemaObject):
     that annotations are collected from each subschema that validates successfully.
     """
 
-    one_of: Sequence[Reference | Schema] | None = None
+    one_of: Sequence[Reference | Schema] | None = field(default=None, metadata={"alias": "oneOf"})
     """This keyword's value MUST be a non-empty array.  Each item of the array MUST be a valid JSON Schema.
 
     An instance validates successfully against this keyword if it validates successfully against exactly one schema
     defined by this keyword's value.
     """
 
-    schema_not: Reference | Schema | None = None
+    schema_not: Reference | Schema | None = field(default=None, metadata={"alias": "not"})
     """This keyword's value MUST be a valid JSON Schema.
 
     An instance is valid against this keyword if it fails to validate successfully against the schema defined by this
     keyword.
     """
 
-    schema_if: Reference | Schema | None = None
+    schema_if: Reference | Schema | None = field(default=None, metadata={"alias": "if"})
     """This keyword's value MUST be a valid JSON Schema.
 
     This validation outcome of this keyword's subschema has no direct effect on the overall validation result. Rather,
@@ -111,7 +111,7 @@ class Schema(BaseSchemaObject):
     purposes, in such cases.
     """
 
-    schema_else: Reference | Schema | None = None
+    schema_else: Reference | Schema | None = field(default=None, metadata={"alias": "else"})
     """This keyword's value MUST be a valid JSON Schema.
 
     When "if" is present, and the instance fails to validate against its subschema, then validation succeeds against
@@ -122,7 +122,9 @@ class Schema(BaseSchemaObject):
     purposes, in such cases.
     """
 
-    dependent_schemas: dict[str, Reference | Schema] | None = None
+    dependent_schemas: dict[str, Reference | Schema] | None = field(
+        default=None, metadata={"alias": "dependentSchemas"}
+    )
     """This keyword specifies subschemas that are evaluated if the instance is
     an object and contains a certain property.
 
@@ -134,7 +136,7 @@ class Schema(BaseSchemaObject):
     Omitting this keyword has the same behavior as an empty object.
     """
 
-    prefix_items: Sequence[Reference | Schema] | None = None
+    prefix_items: Sequence[Reference | Schema] | None = field(default=None, metadata={"alias": "prefixItems"})
     """The value of "prefixItems" MUST be a non-empty array of valid JSON Schemas.
 
     Validation succeeds if each element of the instance validates against the schema at the same position, if any.
@@ -194,7 +196,9 @@ class Schema(BaseSchemaObject):
     Omitting this keyword has the same assertion behavior as an empty object.
     """
 
-    pattern_properties: dict[str, Reference | Schema] | None = None
+    pattern_properties: dict[str, Reference | Schema] | None = field(
+        default=None, metadata={"alias": "patternProperties"}
+    )
     """The value of "patternProperties" MUST be an object.  Each property name of this object SHOULD be a valid
     regular expression, according to the ECMA-262 regular expression dialect.  Each property value of this object
     MUST be a valid JSON Schema.
@@ -208,7 +212,9 @@ class Schema(BaseSchemaObject):
     Omitting this keyword has the same assertion behavior as an empty object.
     """
 
-    additional_properties: Reference | Schema | bool | None = None
+    additional_properties: Reference | Schema | bool | None = field(
+        default=None, metadata={"alias": "additionalProperties"}
+    )
     """The value of "additionalProperties" MUST be a valid JSON Schema.
 
     The behavior of this keyword depends on the presence and annotation results of "properties" and "patternProperties"
@@ -227,7 +233,7 @@ class Schema(BaseSchemaObject):
     property set. Implementations that do not support annotation collection MUST do so.
     """
 
-    property_names: Reference | Schema | None = None
+    property_names: Reference | Schema | None = field(default=None, metadata={"alias": "propertyNames"})
     """The value of "propertyNames" MUST be a valid JSON Schema.
 
     If the instance is an object, this keyword validates if every property name in the instance validates against the
@@ -236,7 +242,7 @@ class Schema(BaseSchemaObject):
     Omitting this keyword has the same behavior as an empty schema.
     """
 
-    unevaluated_items: Reference | Schema | None = None
+    unevaluated_items: Reference | Schema | None = field(default=None, metadata={"alias": "unevaluatedItems"})
     """The value of "unevaluatedItems" MUST be a valid JSON Schema.
 
     The behavior of this keyword depends on the annotation results of adjacent keywords that apply to the instance
@@ -261,7 +267,7 @@ class Schema(BaseSchemaObject):
     Omitting this keyword has the same assertion behavior as an empty schema.
     """
 
-    unevaluated_properties: Reference | Schema | None = None
+    unevaluated_properties: Reference | Schema | None = field(default=None, metadata={"alias": "unevaluatedProperties"})
     """The value of "unevaluatedProperties" MUST be a valid JSON Schema.
 
     The behavior of this keyword depends on the annotation results of adjacent keywords that apply to the instance
@@ -319,7 +325,7 @@ class Schema(BaseSchemaObject):
     An instance validates successfully against this keyword if its value is equal to the value of the keyword.
     """
 
-    multiple_of: float | None = None
+    multiple_of: float | None = field(default=None, metadata={"alias": "multipleOf"})
     """The value of "multipleOf" MUST be a number, strictly greater than 0.
 
     A numeric instance is only valid if division by this keyword's value results in an integer.
@@ -346,14 +352,14 @@ class Schema(BaseSchemaObject):
     "minimum".
     """
 
-    exclusive_minimum: float | None = None
+    exclusive_minimum: float | None = field(default=None, metadata={"alias": "exclusiveMinimum"})
     """The value of "exclusiveMinimum" MUST be a number, representing an exclusive lower limit for a numeric instance.
 
     If the instance is a number, then the instance is valid only if it has a value strictly greater than (not equal to)
     "exclusiveMinimum".
     """
 
-    max_length: int | None = None
+    max_length: int | None = field(default=None, metadata={"alias": "maxLength"})
     """The value of this keyword MUST be a non-negative integer.
 
     A string instance is valid against this keyword if its length is less than, or equal to, the value of this keyword.
@@ -361,7 +367,7 @@ class Schema(BaseSchemaObject):
     The length of a string instance is defined as the number of its characters as defined by :rfc:`8259`.
     """
 
-    min_length: int | None = None
+    min_length: int | None = field(default=None, metadata={"alias": "minLength"})
     """The value of this keyword MUST be a non-negative integer.
 
     A string instance is valid against this keyword if its length is greater than, or equal to, the value of this
@@ -380,13 +386,13 @@ class Schema(BaseSchemaObject):
     expressions are not implicitly anchored.
     """
 
-    max_items: int | None = None
+    max_items: int | None = field(default=None, metadata={"alias": "maxItems"})
     """The value of this keyword MUST be a non-negative integer.
 
     An array instance is valid against "maxItems" if its size is less than, or equal to, the value of this keyword.
     """
 
-    min_items: int | None = None
+    min_items: int | None = field(default=None, metadata={"alias": "minItems"})
     """The value of this keyword MUST be a non-negative integer.
 
     An array instance is valid against "minItems" if its size is greater than, or equal to, the value of this keyword.
@@ -394,7 +400,7 @@ class Schema(BaseSchemaObject):
     Omitting this keyword has the same behavior as a value of 0.
     """
 
-    unique_items: bool | None = None
+    unique_items: bool | None = field(default=None, metadata={"alias": "uniqueItems"})
     """The value of this keyword MUST be a boolean.
 
     If this keyword has boolean value false, the instance validates successfully.  If it has boolean value true, the
@@ -403,7 +409,7 @@ class Schema(BaseSchemaObject):
     Omitting this keyword has the same behavior as a value of false.
     """
 
-    max_contains: int | None = None
+    max_contains: int | None = field(default=None, metadata={"alias": "maxContains"})
     """The value of this keyword MUST be a non-negative integer.
 
     If "contains" is not present within the same schema object, then this keyword has no effect.
@@ -414,7 +420,7 @@ class Schema(BaseSchemaObject):
     boolean "true" and the instance array length is less than r equal to the "maxContains" value.
     """
 
-    min_contains: int | None = None
+    min_contains: int | None = field(default=None, metadata={"alias": "minContains"})
     """The value of this keyword MUST be a non-negative integer.
 
     If "contains" is not present within the same schema object, then this keyword has no effect.
@@ -430,14 +436,14 @@ class Schema(BaseSchemaObject):
     Omitting this keyword has the same behavior as a value of 1.
     """
 
-    max_properties: int | None = None
+    max_properties: int | None = field(default=None, metadata={"alias": "maxProperties"})
     """The value of this keyword MUST be a non-negative integer.
 
     An object instance is valid against "maxProperties" if its number of properties is less than, or equal to, the value
     of this keyword.
     """
 
-    min_properties: int | None = None
+    min_properties: int | None = field(default=None, metadata={"alias": "minProperties"})
     """The value of this keyword MUST be a non-negative integer.
 
     An object instance is valid against "minProperties" if its number of properties is greater than, or equal to, the
@@ -454,7 +460,7 @@ class Schema(BaseSchemaObject):
     Omitting this keyword has the same behavior as an empty array.
     """
 
-    dependent_required: dict[str, Sequence[str]] | None = None
+    dependent_required: dict[str, Sequence[str]] | None = field(default=None, metadata={"alias": "dependentRequired"})
     """The value of this keyword MUST be an object.  Properties in this object, f any, MUST be arrays.  Elements in each
     array, if any, MUST be strings, and MUST be unique.
 
@@ -490,7 +496,7 @@ class Schema(BaseSchemaObject):
     only applying to integers.  ]]
     """
 
-    content_encoding: str | None = None
+    content_encoding: str | None = field(default=None, metadata={"alias": "contentEncoding"})
     """If the instance value is a string, this property defines that the string SHOULD be interpreted as binary data and
     decoded using the encoding named by this property.
 
@@ -504,14 +510,14 @@ class Schema(BaseSchemaObject):
     encoding, meaning that no transformation was needed in order to represent the content in a UTF-8 string.
     """
 
-    content_media_type: str | None = None
+    content_media_type: str | None = field(default=None, metadata={"alias": "contentMediaType"})
     """If the instance is a string, this property indicates the media type of the contents of the string. If
     "contentEncoding" is present, this property describes the decoded string.
 
     The value of this property MUST be a string, which MUST be a media type, as defined by :rfc:`2046`
     """
 
-    content_schema: Reference | Schema | None = None
+    content_schema: Reference | Schema | None = field(default=None, metadata={"alias": "contentSchema"})
     """If the instance is a string, and if "contentMediaType" is present, this property contains a schema which
     describes the structure of the string.
 
@@ -565,7 +571,7 @@ class Schema(BaseSchemaObject):
     Omitting this keyword has the same behavior as a value of false.
     """
 
-    read_only: bool | None = None
+    read_only: bool | None = field(default=None, metadata={"alias": "readOnly"})
     """The value of "readOnly" MUST be a boolean.  When multiple occurrences of this keyword are applicable to a single
     sub-instance, the resulting behavior SHOULD be as for a true value if any occurrence specifies a true value, and
     SHOULD be as for a false value otherwise.
@@ -586,7 +592,7 @@ class Schema(BaseSchemaObject):
     Omitting these keywords has the same behavior as values of false.
     """
 
-    write_only: bool | None = None
+    write_only: bool | None = field(default=None, metadata={"alias": "writeOnly"})
     """The value of "writeOnly" MUST be a boolean.  When multiple occurrences of this keyword are applicable to a
     single sub-instance, the resulting behavior SHOULD be as for a true value if any occurrence specifies a true value,
     and SHOULD be as for a false value otherwise.
@@ -626,7 +632,7 @@ class Schema(BaseSchemaObject):
     It has no effect on root schemas. Adds additional metadata to describe the XML representation of this property.
     """
 
-    external_docs: ExternalDocumentation | None = None
+    external_docs: ExternalDocumentation | None = field(default=None, metadata={"alias": "externalDocs"})
     """Additional external documentation for this schema."""
 
     example: Any | None = None
@@ -640,6 +646,17 @@ class Schema(BaseSchemaObject):
 
     def __hash__(self) -> int:
         return _recursive_hash(self)
+
+    @classmethod
+    def field_aliases(cls) -> dict[str, str]:
+        if hasattr(cls, "_field_aliases"):
+            return cast("dict[str, str]", cls._field_aliases)
+        retval = {}
+        for field_def in fields(cls):
+            if field_def.metadata is not None and (field_alias := field_def.metadata.get("alias")):
+                retval[field_alias] = field_def.name
+        cls._field_aliases = retval  # type: ignore[attr-defined]
+        return retval
 
 
 @dataclass
