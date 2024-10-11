@@ -20,7 +20,9 @@ def clear_collectors() -> None:
 @pytest.mark.parametrize(
     "group_path, route_path, route_template, expected_path",
     [
-        (True, "/test/litestar", "test/{name:str}", "/test/{name}"),
+        (True, "/test", "test", "/test"),
+        (True, "/test/litestar", "test/litestar", "/test/litestar"),
+        (False, "/test/litestar", "test/litestar", "/test/litestar"),
         (True, "/test/litestar", "test/{name:str}", "/test/{name}"),
         (False, "/test/litestar", "test/{name:str}", "/test/litestar"),
         (
