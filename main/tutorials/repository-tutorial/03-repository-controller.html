@@ -1719,8 +1719,8 @@ Synchronous Repository (click to expand)<div class="sd-summary-down docutils">
 <span class="linenos"> 30</span>    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;from_attributes&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
 <span class="linenos"> 31</span>
 <span class="linenos"> 32</span>
-<span class="linenos"> 33</span><span class="c1"># the SQLAlchemy base includes a declarative model for you to use in your models.</span>
-<span class="linenos"> 34</span><span class="c1"># The `Base` class includes a `UUID` based primary key (`id`)</span>
+<span class="linenos"> 33</span><span class="c1"># The SQLAlchemy base includes a declarative model for you to use in your models.</span>
+<span class="linenos"> 34</span><span class="c1"># The `UUIDBase` class includes a `UUID` based primary key (`id`)</span>
 <span class="linenos"> 35</span><span class="k">class</span> <span class="nc">AuthorModel</span><span class="p">(</span><span class="n">UUIDBase</span><span class="p">):</span>
 <span class="linenos"> 36</span>    <span class="c1"># we can optionally provide the table name instead of auto-generating it</span>
 <span class="linenos"> 37</span>    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;author&quot;</span>  <span class="c1">#  type: ignore[assignment]</span>
@@ -1729,9 +1729,9 @@ Synchronous Repository (click to expand)<div class="sd-summary-down docutils">
 <span class="linenos"> 40</span>    <span class="n">books</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">BookModel</span><span class="p">]]</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">back_populates</span><span class="o">=</span><span class="s2">&quot;author&quot;</span><span class="p">,</span> <span class="n">lazy</span><span class="o">=</span><span class="s2">&quot;noload&quot;</span><span class="p">)</span>
 <span class="linenos"> 41</span>
 <span class="linenos"> 42</span>
-<span class="linenos"> 43</span><span class="c1"># The `AuditBase` class includes the same UUID` based primary key (`id`) and 2</span>
-<span class="linenos"> 44</span><span class="c1"># additional columns: `created` and `updated`. `created` is a timestamp of when the</span>
-<span class="linenos"> 45</span><span class="c1"># record created, and `updated` is the last time the record was modified.</span>
+<span class="linenos"> 43</span><span class="c1"># The `UUIDAuditBase` class includes the same UUID` based primary key (`id`) and 2</span>
+<span class="linenos"> 44</span><span class="c1"># additional columns: `created_at` and `updated_at`. `created_at` is a timestamp of when the</span>
+<span class="linenos"> 45</span><span class="c1"># record created, and `updated_at` is the last time the record was modified.</span>
 <span class="linenos"> 46</span><span class="k">class</span> <span class="nc">BookModel</span><span class="p">(</span><span class="n">UUIDAuditBase</span><span class="p">):</span>
 <span class="linenos"> 47</span>    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;book&quot;</span>  <span class="c1">#  type: ignore[assignment]</span>
 <span class="linenos"> 48</span>    <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
@@ -1959,8 +1959,8 @@ Full Code (click to expand)<div class="sd-summary-down docutils">
 <span class="linenos"> 34</span>    <span class="n">model_config</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;from_attributes&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
 <span class="linenos"> 35</span>
 <span class="linenos"> 36</span>
-<span class="linenos"> 37</span><span class="c1"># the SQLAlchemy base includes a declarative model for you to use in your models.</span>
-<span class="linenos"> 38</span><span class="c1"># The `Base` class includes a `UUID` based primary key (`id`)</span>
+<span class="linenos"> 37</span><span class="c1"># The SQLAlchemy base includes a declarative model for you to use in your models.</span>
+<span class="linenos"> 38</span><span class="c1"># The `UUIDBase` class includes a `UUID` based primary key (`id`)</span>
 <span class="linenos"> 39</span><span class="k">class</span> <span class="nc">AuthorModel</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">UUIDBase</span><span class="p">):</span>
 <span class="linenos"> 40</span>    <span class="c1"># we can optionally provide the table name instead of auto-generating it</span>
 <span class="linenos"> 41</span>    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;author&quot;</span>  <span class="c1">#  type: ignore[assignment]</span>
@@ -1969,9 +1969,9 @@ Full Code (click to expand)<div class="sd-summary-down docutils">
 <span class="linenos"> 44</span>    <span class="n">books</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">BookModel</span><span class="p">]]</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">back_populates</span><span class="o">=</span><span class="s2">&quot;author&quot;</span><span class="p">,</span> <span class="n">lazy</span><span class="o">=</span><span class="s2">&quot;noload&quot;</span><span class="p">)</span>
 <span class="linenos"> 45</span>
 <span class="linenos"> 46</span>
-<span class="linenos"> 47</span><span class="c1"># The `AuditBase` class includes the same UUID` based primary key (`id`) and 2</span>
-<span class="linenos"> 48</span><span class="c1"># additional columns: `created` and `updated`. `created` is a timestamp of when the</span>
-<span class="linenos"> 49</span><span class="c1"># record created, and `updated` is the last time the record was modified.</span>
+<span class="linenos"> 47</span><span class="c1"># The `UUIDAuditBase` class includes the same UUID` based primary key (`id`) and 2</span>
+<span class="linenos"> 48</span><span class="c1"># additional columns: `created_at` and `updated_at`. `created_at` is a timestamp of when the</span>
+<span class="linenos"> 49</span><span class="c1"># record created, and `updated_at` is the last time the record was modified.</span>
 <span class="linenos"> 50</span><span class="k">class</span> <span class="nc">BookModel</span><span class="p">(</span><span class="n">base</span><span class="o">.</span><span class="n">UUIDAuditBase</span><span class="p">):</span>
 <span class="linenos"> 51</span>    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;book&quot;</span>  <span class="c1">#  type: ignore[assignment]</span>
 <span class="linenos"> 52</span>    <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
