@@ -1699,13 +1699,13 @@ This means that every time a new instance of this store is created, it will star
 </section>
 <section id="what-can-be-stored">
 <h3>What can be stored<a class="headerlink" href="#what-can-be-stored" title="Permalink to this heading">#</a></h3>
-<p>Stores generally operate on <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>; They accept bytes to store, and will return bytes. For convenience, the
+<p>Stores generally operate on <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>; They accept bytes to store, and will return bytes. For convenience, the
 <a class="reference internal" href="../reference/stores/base.html#litestar.stores.base.Store.set" title="litestar.stores.base.Store.set"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set</span></code></a> method also allows to pass in strings, which will be UTF-8 encoded before being stored.
 This means that <a class="reference internal" href="../reference/stores/base.html#litestar.stores.base.Store.get" title="litestar.stores.base.Store.get"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get</span></code></a> will return bytes even when a string has been passed to
 <a class="reference internal" href="../reference/stores/base.html#litestar.stores.base.Store.set" title="litestar.stores.base.Store.set"><code class="xref py py-meth docutils literal notranslate"><span class="pre">set</span></code></a>.</p>
 <p>The reason for this limitation is simple: Different backends used to store the data offer vastly different encoding,
 storage, and (de)serialization capacities. Since stores are designed to be interchangeable, this means settling for a
-common denominator, a type that all backends will support. <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> meet these requirements and make it possible
+common denominator, a type that all backends will support. <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> meet these requirements and make it possible
 to store a very wide variety of data.</p>
 <div class="admonition-technical-details admonition">
 <p class="admonition-title">Technical details</p>
@@ -1802,7 +1802,7 @@ its store internally via <code class="docutils literal notranslate"><span class=
 <h3>The default factory<a class="headerlink" href="#the-default-factory" title="Permalink to this heading">#</a></h3>
 <p>The pattern above is made possible by using the registry’s default factory; A callable that gets invoked
 every time a store is requested that hasn’t been registered yet. It’s similar to the <code class="docutils literal notranslate"><span class="pre">default</span></code> argument to
-<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict.get" title="(in Python v3.12)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dict.get()</span></code></a>.</p>
+<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict.get" title="(in Python v3.13)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">dict.get()</span></code></a>.</p>
 <p>By default, the default factory is a function that returns a new
 <a class="reference internal" href="../reference/stores/memory.html#litestar.stores.memory.MemoryStore" title="litestar.stores.memory.MemoryStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">MemoryStore</span></code></a> instance. This behaviour can be changed by supplying a
 custom <code class="docutils literal notranslate"><span class="pre">default_factory</span></code> method to the registry.</p>

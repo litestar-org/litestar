@@ -1684,13 +1684,13 @@ had <code class="docutils literal notranslate"><span class="pre">**kwargs</span>
 <h3>Creating Event Emitters<a class="headerlink" href="#creating-event-emitters" title="Permalink to this heading">#</a></h3>
 <p>An “event emitter” is a class that inherits from
 <a class="reference internal" href="../reference/events.html#litestar.events.BaseEventEmitterBackend" title="litestar.events.BaseEventEmitterBackend"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseEventEmitterBackend</span></code></a>, which
-itself inherits from <a class="reference external" href="https://docs.python.org/3/library/contextlib.html#contextlib.AbstractAsyncContextManager" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contextlib.AbstractAsyncContextManager</span></code></a>.</p>
+itself inherits from <a class="reference external" href="https://docs.python.org/3/library/contextlib.html#contextlib.AbstractAsyncContextManager" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contextlib.AbstractAsyncContextManager</span></code></a>.</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../reference/events.html#litestar.events.BaseEventEmitterBackend.emit" title="litestar.events.BaseEventEmitterBackend.emit"><code class="xref py py-meth docutils literal notranslate"><span class="pre">emit</span></code></a>: This is the method that performs the actual emitting
 logic.</p></li>
 </ul>
 <p>Additionally, the abstract <code class="docutils literal notranslate"><span class="pre">__aenter__</span></code> and <code class="docutils literal notranslate"><span class="pre">__aexit__</span></code> methods from
-<a class="reference external" href="https://docs.python.org/3/library/contextlib.html#contextlib.AbstractAsyncContextManager" title="(in Python v3.12)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contextlib.AbstractAsyncContextManager</span></code></a> must be implemented, allowing the
+<a class="reference external" href="https://docs.python.org/3/library/contextlib.html#contextlib.AbstractAsyncContextManager" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">contextlib.AbstractAsyncContextManager</span></code></a> must be implemented, allowing the
 emitter to be used as an async context manager.</p>
 <p>By default Litestar uses the
 <a class="reference internal" href="../reference/events.html#litestar.events.SimpleEventEmitter" title="litestar.events.SimpleEventEmitter"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimpleEventEmitter</span></code></a>, which offers an

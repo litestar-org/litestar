@@ -1542,7 +1542,7 @@ document.write(`
   <section id="implementing-custom-authentication">
 <h1>Implementing Custom Authentication<a class="headerlink" href="#implementing-custom-authentication" title="Permalink to this heading">#</a></h1>
 <p>Litestar exports <a class="reference internal" href="../../reference/middleware/index.html#litestar.middleware.AbstractAuthenticationMiddleware" title="litestar.middleware.authentication.AbstractAuthenticationMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractAuthenticationMiddleware</span></code></a>, which is an
-<a class="reference external" href="https://docs.python.org/3/glossary.html#term-abstract-base-class" title="(in Python v3.12)"><span class="xref std std-term">abstract base class</span></a> (ABC) that implements the <a class="reference internal" href="../../reference/middleware/index.html#litestar.middleware.MiddlewareProtocol" title="litestar.middleware.base.MiddlewareProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">MiddlewareProtocol</span></code></a>.
+<a class="reference external" href="https://docs.python.org/3/glossary.html#term-abstract-base-class" title="(in Python v3.13)"><span class="xref std std-term">abstract base class</span></a> (ABC) that implements the <a class="reference internal" href="../../reference/middleware/index.html#litestar.middleware.MiddlewareProtocol" title="litestar.middleware.base.MiddlewareProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">MiddlewareProtocol</span></code></a>.
 To add authentication to your app using this class as a basis, subclass it and implement the abstract method
 <a class="reference internal" href="../../reference/middleware/authentication.html#litestar.middleware.authentication.AbstractAuthenticationMiddleware.authenticate_request" title="litestar.middleware.authentication.AbstractAuthenticationMiddleware.authenticate_request"><code class="xref py py-meth docutils literal notranslate"><span class="pre">authenticate_request()</span></code></a>:</p>
 <div class="literal-block-wrapper docutils container" id="id1">
@@ -1566,7 +1566,7 @@ To add authentication to your app using this class as a basis, subclass it and i
 </div>
 <p>As you can see, <code class="docutils literal notranslate"><span class="pre">authenticate_request</span></code> is an async function that receives a connection instance and is supposed to return
 an <a class="reference internal" href="../../reference/middleware/index.html#litestar.middleware.AuthenticationResult" title="litestar.middleware.authentication.AuthenticationResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">AuthenticationResult</span></code></a> instance, which is a
-<a class="reference external" href="https://docs.python.org/3/library/dataclasses.html" title="(in Python v3.12)"><span class="xref std std-doc">dataclass</span></a> that has two attributes:</p>
+<a class="reference external" href="https://docs.python.org/3/library/dataclasses.html" title="(in Python v3.13)"><span class="xref std std-doc">dataclass</span></a> that has two attributes:</p>
 <ol class="arabic simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">user</span></code>: a non-optional value representing a user. It is typed as <code class="docutils literal notranslate"><span class="pre">Any</span></code> so it receives any value,
 including <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>

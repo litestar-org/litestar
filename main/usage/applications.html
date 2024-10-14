@@ -1546,7 +1546,7 @@ document.write(`
 class. Typically, this code will be placed in a file called <code class="docutils literal notranslate"><span class="pre">main.py</span></code>, <code class="docutils literal notranslate"><span class="pre">app.py</span></code>, <code class="docutils literal notranslate"><span class="pre">asgi.py</span></code> or similar
 at the project’s root directory.</p>
 <p>These entry points are also used during <a class="reference internal" href="cli.html#autodiscovery"><span class="std std-ref">CLI autodiscovery</span></a></p>
-<p>Creating an app is straightforward – the only required <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">args</span></a> is a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>
+<p>Creating an app is straightforward – the only required <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.13)"><span class="xref std std-term">args</span></a> is a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>
 of <a class="reference internal" href="../reference/controller.html#litestar.controller.Controller" title="litestar.controller.Controller"><code class="xref py py-class docutils literal notranslate"><span class="pre">Controllers</span></code></a>, <a class="reference internal" href="../reference/router.html#litestar.router.Router" title="litestar.router.Router"><code class="xref py py-class docutils literal notranslate"><span class="pre">Routers</span></code></a>,
 or <a class="reference internal" href="../reference/handlers.html#litestar.handlers.BaseRouteHandler" title="litestar.handlers.BaseRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">Route</span> <span class="pre">handlers</span></code></a>:</p>
 <div class="literal-block-wrapper docutils container" id="id4">
@@ -1586,9 +1586,9 @@ and <a class="reference internal" href="../reference/handlers.html#litestar.hand
 </section>
 <section id="startup-and-shutdown">
 <h2>Startup and Shutdown<a class="headerlink" href="#startup-and-shutdown" title="Permalink to this heading">#</a></h2>
-<p>You can pass a list of <a class="reference external" href="https://docs.python.org/3/glossary.html#term-callable" title="(in Python v3.12)"><span class="xref std std-term">callables</span></a> - either sync or async functions, methods, or class instances
+<p>You can pass a list of <a class="reference external" href="https://docs.python.org/3/glossary.html#term-callable" title="(in Python v3.13)"><span class="xref std std-term">callables</span></a> - either sync or async functions, methods, or class instances
 - to the <a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.on_startup" title="litestar.app.Litestar"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">on_startup</span></code></a> / <a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.on_shutdown" title="litestar.app.Litestar"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">on_shutdown</span></code></a>
-<a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">kwargs</span></a> of the <a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">app</span></code></a> instance. Those will be called in
+<a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.13)"><span class="xref std std-term">kwargs</span></a> of the <a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">app</span></code></a> instance. Those will be called in
 order, once the ASGI server such as <a class="reference external" href="https://www.uvicorn.org/">uvicorn</a>,
 <a class="reference external" href="https://hypercorn.readthedocs.io/en/latest/#/">Hypercorn</a>, <a class="reference external" href="https://github.com/emmett-framework/granian/">Granian</a>,
 <a class="reference external" href="https://github.com/django/daphne/">Daphne</a>, etc. emits the respective event.</p>
@@ -1637,7 +1637,7 @@ async<span class="w"> </span>def<span class="w"> </span>close_db_connection<span
 <section id="lifespan-context-managers">
 <span id="id1"></span><h2>Lifespan context managers<a class="headerlink" href="#lifespan-context-managers" title="Permalink to this heading">#</a></h2>
 <p>In addition to the lifespan hooks, Litestar also supports managing the lifespan of an application using an
-<a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-context-manager" title="(in Python v3.12)"><span class="xref std std-term">asynchronous context manager</span></a>. This can be useful when dealing with long running tasks, or those that need to
+<a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-context-manager" title="(in Python v3.13)"><span class="xref std std-term">asynchronous context manager</span></a>. This can be useful when dealing with long running tasks, or those that need to
 keep a certain context object, such as a connection, around.</p>
 <div class="literal-block-wrapper docutils container" id="id6">
 <div class="code-block-caption"><span class="caption-text">Handling a database connection</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
@@ -1670,12 +1670,12 @@ async<span class="w"> </span>def<span class="w"> </span>db_connection<span class
 <section id="order-of-execution">
 <h2>Order of execution<a class="headerlink" href="#order-of-execution" title="Permalink to this heading">#</a></h2>
 <p>When multiple lifespan context managers and <a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.on_shutdown" title="litestar.app.Litestar"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">on_shutdown</span></code></a>  hooks are specified,
-Litestar will invoke the <a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-context-manager" title="(in Python v3.12)"><span class="xref std std-term">context managers</span></a> in inverse order before the
+Litestar will invoke the <a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-context-manager" title="(in Python v3.13)"><span class="xref std std-term">context managers</span></a> in inverse order before the
 shutdown hooks are invoked.</p>
 <p>Consider the case where there are two lifespan context managers <code class="docutils literal notranslate"><span class="pre">ctx_a</span></code> and <code class="docutils literal notranslate"><span class="pre">ctx_b</span></code> as well as two shutdown hooks
 <code class="docutils literal notranslate"><span class="pre">hook_a</span></code> and <code class="docutils literal notranslate"><span class="pre">hook_b</span></code> as shown in the following code:</p>
 <div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">Example of multiple <a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-context-manager" title="(in Python v3.12)"><span class="xref std std-term">context managers</span></a> and shutdown hooks</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Example of multiple <a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-context-manager" title="(in Python v3.13)"><span class="xref std std-term">context managers</span></a> and shutdown hooks</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">lifespan</span><span class="o">=</span><span class="p">[</span><span class="n">ctx_a</span><span class="p">,</span> <span class="n">ctx_b</span><span class="p">],</span> <span class="n">on_shutdown</span><span class="o">=</span><span class="p">[</span><span class="n">hook_a</span><span class="p">,</span> <span class="n">hook_b</span><span class="p">])</span>
 </pre></div>
 </div>
@@ -1684,13 +1684,13 @@ shutdown hooks are invoked.</p>
 <div class="mermaid">
             flowchart LR
     ctx_b --&gt; ctx_a --&gt; hook_a --&gt; hook_b
-        </div><p>As seen, the <a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-context-manager" title="(in Python v3.12)"><span class="xref std std-term">context managers</span></a> are invoked in inverse order.
+        </div><p>As seen, the <a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-context-manager" title="(in Python v3.13)"><span class="xref std std-term">context managers</span></a> are invoked in inverse order.
 On the other hand, the shutdown hooks are invoked in their specified order.</p>
 </section>
 <section id="using-application-state">
 <span id="application-state"></span><h2>Using Application State<a class="headerlink" href="#using-application-state" title="Permalink to this heading">#</a></h2>
-<p>As seen in the examples for the <a class="reference external" href="#startup-and-shutdown">on_startup / on_shutdown</a>, <a class="reference external" href="https://docs.python.org/3/glossary.html#term-callable" title="(in Python v3.12)"><span class="xref std std-term">callables</span></a>
-passed to these hooks can receive an optional <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">kwarg</span></a> called <code class="docutils literal notranslate"><span class="pre">app</span></code>, through which the application’s
+<p>As seen in the examples for the <a class="reference external" href="#startup-and-shutdown">on_startup / on_shutdown</a>, <a class="reference external" href="https://docs.python.org/3/glossary.html#term-callable" title="(in Python v3.13)"><span class="xref std std-term">callables</span></a>
+passed to these hooks can receive an optional <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.13)"><span class="xref std std-term">kwarg</span></a> called <code class="docutils literal notranslate"><span class="pre">app</span></code>, through which the application’s
 state object and other properties can be accessed. The advantage of using application <a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.state" title="litestar.app.Litestar"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">state</span></code></a>,
 is that it can be accessed during multiple stages of the connection, and it can be injected into dependencies and
 route handlers.</p>
@@ -1776,9 +1776,9 @@ def<span class="w"> </span>handler<span class="o">(</span>state:<span class="w">
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.State" title="litestar.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a> can be initialized with a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dictionary</span></code></a>, an instance of
+<p><a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.State" title="litestar.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a> can be initialized with a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dictionary</span></code></a>, an instance of
 <a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.ImmutableState" title="litestar.datastructures.state.ImmutableState"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImmutableState</span></code></a> or <a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.State" title="litestar.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a>,
-or a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuples</span></code></a> containing key/value pairs.</p>
+or a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuples</span></code></a> containing key/value pairs.</p>
 </div>
 <p>You may instruct <a class="reference internal" href="../reference/datastructures/index.html#litestar.datastructures.State" title="litestar.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a> to deep copy initialized data to prevent mutation from outside
 the application context.</p>
@@ -1831,13 +1831,13 @@ def<span class="w"> </span>handler<span class="o">(</span>state:<span class="w">
 <section id="application-hooks">
 <h2>Application Hooks<a class="headerlink" href="#application-hooks" title="Permalink to this heading">#</a></h2>
 <p>Litestar includes several application level hooks that allow users to run their own sync or async
-<a class="reference external" href="https://docs.python.org/3/glossary.html#term-callable" title="(in Python v3.12)"><span class="xref std std-term">callables</span></a>. While you are free to use these hooks as you see fit, the design intention
+<a class="reference external" href="https://docs.python.org/3/glossary.html#term-callable" title="(in Python v3.13)"><span class="xref std std-term">callables</span></a>. While you are free to use these hooks as you see fit, the design intention
 behind them is to allow for easy instrumentation for observability (monitoring, tracing, logging, etc.).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>All application hook kwargs detailed below receive either a single <a class="reference external" href="https://docs.python.org/3/glossary.html#term-callable" title="(in Python v3.12)"><span>callable</span></a> or a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>
-of <a class="reference external" href="https://docs.python.org/3/glossary.html#term-callable" title="(in Python v3.12)"><span class="xref std std-term">callables</span></a>.
-If a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> is provided, it is called in the order it is given.</p>
+<p>All application hook kwargs detailed below receive either a single <a class="reference external" href="https://docs.python.org/3/glossary.html#term-callable" title="(in Python v3.13)"><span>callable</span></a> or a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>
+of <a class="reference external" href="https://docs.python.org/3/glossary.html#term-callable" title="(in Python v3.13)"><span class="xref std std-term">callables</span></a>.
+If a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> is provided, it is called in the order it is given.</p>
 </div>
 <section id="after-exception">
 <h3>After Exception<a class="headerlink" href="#after-exception" title="Permalink to this heading">#</a></h3>
@@ -1947,7 +1947,7 @@ and in turn, each will receive an instance of <a class="reference internal" href
 develop third-party application configuration systems.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p><a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.on_app_init" title="litestar.app.Litestar"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">on_app_init</span></code></a> handlers cannot be <a class="reference external" href="https://docs.python.org/3/reference/compound_stmts.html#async-def" title="(in Python v3.12)"><span>Coroutine function definition</span></a> functions, as they are
+<p><a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.on_app_init" title="litestar.app.Litestar"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">on_app_init</span></code></a> handlers cannot be <a class="reference external" href="https://docs.python.org/3/reference/compound_stmts.html#async-def" title="(in Python v3.13)"><span>Coroutine function definition</span></a> functions, as they are
 called within <a class="reference internal" href="../reference/app.html#litestar.app.Litestar.params.__init__" title="litestar.app.Litestar"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">__init__</span></code></a>, outside of an async context.</p>
 </div>
 <div class="literal-block-wrapper docutils container" id="id14">
@@ -1989,7 +1989,7 @@ def<span class="w"> </span>receive_app_config<span class="o">(</span>app_config:
 <li><p><a class="reference internal" href="../reference/controller.html#litestar.controller.Controller" title="litestar.controller.Controller"><code class="xref py py-class docutils literal notranslate"><span class="pre">Controllers</span></code></a></p></li>
 <li><p><a class="reference internal" href="../reference/handlers.html#litestar.handlers.BaseRouteHandler" title="litestar.handlers.BaseRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">Handlers</span></code></a></p></li>
 </ol>
-<p>There are many <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.12)"><span class="xref std std-term">parameters</span></a> that can be defined on every layer, in which case the <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.12)"><span class="xref std std-term">parameter</span></a>
+<p>There are many <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.13)"><span class="xref std std-term">parameters</span></a> that can be defined on every layer, in which case the <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.13)"><span class="xref std std-term">parameter</span></a>
 defined on the layer <strong>closest to the handler</strong> takes precedence. This allows for maximum
 flexibility and simplicity when configuring complex applications and enables transparent
 overriding of parameters.</p>

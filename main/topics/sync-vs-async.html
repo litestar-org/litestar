@@ -1598,7 +1598,7 @@ don’t spend a significant amount of time waiting.</p>
 <h3>Asynchronous CPU-bound tasks<a class="headerlink" href="#asynchronous-cpu-bound-tasks" title="Permalink to this heading">#</a></h3>
 <p>In some cases, CPU bound tasks can be made asynchronous, by introducing points for the
 event loop to switch to other tasks. An example of this would be an inner loop which
-awaits <a class="reference external" href="https://docs.python.org/3/library/asyncio-task.html#asyncio.sleep" title="(in Python v3.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">asyncio.sleep(0)</span></code></a> at the beginning of each iteration.</p>
+awaits <a class="reference external" href="https://docs.python.org/3/library/asyncio-task.html#asyncio.sleep" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">asyncio.sleep(0)</span></code></a> at the beginning of each iteration.</p>
 <p>This technique is mostly useful for long-running tasks, where each individual step does
 not block for an extended period of time.</p>
 </section>
@@ -1638,7 +1638,7 @@ necessary.</p>
 non-blocking way, it does not speed up its execution. Computationally intensive tasks
 that are performed regularly should be offloaded into a different process, to make use
 of multiple CPU cores.</p>
-<p>This can for example be achieve by using <a class="reference external" href="https://anyio.readthedocs.io/en/stable/api.html#anyio.to_process.run_sync" title="(in AnyIO v4.6.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">anyio.to_process.run_sync()</span></code></a>.</p>
+<p>This can for example be achieve by using <a class="reference external" href="https://anyio.readthedocs.io/en/stable/api.html#anyio.to_process.run_sync" title="(in AnyIO v0.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">anyio.to_process.run_sync()</span></code></a>.</p>
 </section>
 </section>
 <section id="warnings-about-the-mode-of-execution">

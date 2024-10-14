@@ -1590,14 +1590,14 @@ the value in the route handler function.</p>
 <h3>JSON responses<a class="headerlink" href="#json-responses" title="Permalink to this heading">#</a></h3>
 <p>As previously mentioned, the default <code class="docutils literal notranslate"><span class="pre">media_type</span></code> is <code class="docutils literal notranslate"><span class="pre">MediaType.JSON</span></code>. which supports the following values:</p>
 <ul class="simple">
-<li><p><a class="reference external" href="https://docs.python.org/3/library/dataclasses.html" title="(in Python v3.12)"><span class="xref std std-doc">dataclasses</span></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/dataclasses.html" title="(in Python v3.13)"><span class="xref std std-doc">dataclasses</span></a></p></li>
 <li><p><a class="reference external" href="https://docs.pydantic.dev/usage/dataclasses/">pydantic dataclasses</a></p></li>
 <li><p><a class="reference external" href="https://docs.pydantic.dev/usage/models/">pydantic models</a></p></li>
 <li><p>models from libraries that extend pydantic models</p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUIDs</span></code></a></p></li>
-<li><p><a class="reference external" href="https://docs.python.org/3/library/datetime.html" title="(in Python v3.12)"><span class="xref std std-doc">datetime objects</span></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUIDs</span></code></a></p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/datetime.html" title="(in Python v3.13)"><span class="xref std std-doc">datetime objects</span></a></p></li>
 <li><p><a class="reference external" href="https://jcristharif.com/msgspec/structs.html">msgspec.Struct</a></p></li>
-<li><p>container types such as <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> containing supported types</p></li>
+<li><p>container types such as <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> containing supported types</p></li>
 </ul>
 <p>If you need to return other values and would like to extend serialization you can do
 this <a class="reference internal" href="#custom-responses"><span class="std std-ref">custom responses</span></a>.</p>
@@ -1698,7 +1698,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </section>
 <section id="plaintext-responses">
 <h3>Plaintext responses<a class="headerlink" href="#plaintext-responses" title="Permalink to this heading">#</a></h3>
-<p>For <code class="docutils literal notranslate"><span class="pre">MediaType.TEXT</span></code>, route handlers should return a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> value:</p>
+<p>For <code class="docutils literal notranslate"><span class="pre">MediaType.TEXT</span></code>, route handlers should return a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> value:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">MediaType</span>
 
 
@@ -1710,7 +1710,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </section>
 <section id="html-responses">
 <h3>HTML responses<a class="headerlink" href="#html-responses" title="Permalink to this heading">#</a></h3>
-<p>For <code class="docutils literal notranslate"><span class="pre">MediaType.HTML</span></code>, route handlers should return a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> value that contains HTML:</p>
+<p>For <code class="docutils literal notranslate"><span class="pre">MediaType.HTML</span></code>, route handlers should return a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> value that contains HTML:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">MediaType</span>
 
 
@@ -1813,7 +1813,7 @@ This though might not be the case in your implementation - so take care of setti
 <p class="admonition-title">Tip</p>
 <p>While you can write integers as the value for <code class="docutils literal notranslate"><span class="pre">status_code</span></code>, e.g. <code class="docutils literal notranslate"><span class="pre">200</span></code>, it’s best practice to use constants (also in
 tests). Litestar includes easy to use statuses that are exported from <code class="docutils literal notranslate"><span class="pre">litestar.status_codes</span></code>, e.g. <code class="docutils literal notranslate"><span class="pre">HTTP_200_OK</span></code>
-and <code class="docutils literal notranslate"><span class="pre">HTTP_201_CREATED</span></code>. Another option is the <a class="reference external" href="https://docs.python.org/3/library/http.html#http.HTTPStatus" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">http.HTTPStatus</span></code></a> enum from the standard library, which also offers
+and <code class="docutils literal notranslate"><span class="pre">HTTP_201_CREATED</span></code>. Another option is the <a class="reference external" href="https://docs.python.org/3/library/http.html#http.HTTPStatus" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">http.HTTPStatus</span></code></a> enum from the standard library, which also offers
 extra functionality.</p>
 </div>
 </section>
@@ -1889,7 +1889,7 @@ to type this argument even when returning an empty or <code class="docutils lite
 <section id="what-is-an-asgi-application">
 <h4>What is an ASGI Application?<a class="headerlink" href="#what-is-an-asgi-application" title="Permalink to this heading">#</a></h4>
 <p>An ASGI application in this context is any async callable (function, class method or simply a class that implements
-that special <a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#object.__call__" title="(in Python v3.12)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">object.__call__()</span></code></a> dunder method) that accepts the three ASGI arguments: <code class="docutils literal notranslate"><span class="pre">scope</span></code>, <code class="docutils literal notranslate"><span class="pre">receive</span></code>, and
+that special <a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#object.__call__" title="(in Python v3.13)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">object.__call__()</span></code></a> dunder method) that accepts the three ASGI arguments: <code class="docutils literal notranslate"><span class="pre">scope</span></code>, <code class="docutils literal notranslate"><span class="pre">receive</span></code>, and
 <code class="docutils literal notranslate"><span class="pre">send</span></code>.</p>
 <p>For example, all the following examples are ASGI applications:</p>
 <section id="function-asgi-application">
@@ -2408,8 +2408,8 @@ e.g.:</p>
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>If all you need for your cookies are key and value, you can supply them using a <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping[str,</span> <span class="pre">str]</span></code></a>
-- like a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> - instead:</p>
+<p>If all you need for your cookies are key and value, you can supply them using a <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Mapping" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mapping[str,</span> <span class="pre">str]</span></code></a>
+- like a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a> - instead:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="n">response_cookies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;my-cookie&quot;</span><span class="p">:</span> <span class="s2">&quot;cookie-value&quot;</span><span class="p">})</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span> <span class="o">...</span>
 </pre></div>
@@ -2881,7 +2881,7 @@ class on multiple layers, the layer closest to the route handler will take prece
 <a class="reference internal" href="../reference/background_tasks.html#litestar.background_tasks.BackgroundTask" title="litestar.background_tasks.BackgroundTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundTask</span></code></a> or an instance of
 <a class="reference internal" href="../reference/background_tasks.html#litestar.background_tasks.BackgroundTasks" title="litestar.background_tasks.BackgroundTasks"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundTasks</span></code></a>, which wraps an iterable of
 <a class="reference internal" href="../reference/background_tasks.html#litestar.background_tasks.BackgroundTask" title="litestar.background_tasks.BackgroundTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundTask</span></code></a> instances.</p>
-<p>A background task is a sync or async callable (function, method, or class that implements the <a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#object.__call__" title="(in Python v3.12)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">object.__call__()</span></code></a>
+<p>A background task is a sync or async callable (function, method, or class that implements the <a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#object.__call__" title="(in Python v3.13)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">object.__call__()</span></code></a>
 dunder method) that will be called after the response finishes sending the data.</p>
 <p>Thus, in the following example the passed in background task will be executed after the response sends:</p>
 <div class="sd-tab-set docutils">
@@ -2953,7 +2953,7 @@ the <a class="reference internal" href="../reference/background_tasks.html#lites
 <p class="admonition-title">Note</p>
 <p>In the above example <code class="docutils literal notranslate"><span class="pre">&quot;greeter&quot;</span></code> is an arg and <code class="docutils literal notranslate"><span class="pre">message=f&quot;was</span> <span class="pre">called</span> <span class="pre">with</span> <span class="pre">name</span> <span class="pre">{name}&quot;</span></code> is a kwarg.
 The function signature of <code class="docutils literal notranslate"><span class="pre">logging_task</span></code> allows for this, so this should pose no problem.
-<a class="reference internal" href="../reference/background_tasks.html#litestar.background_tasks.BackgroundTask" title="litestar.background_tasks.BackgroundTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundTask</span></code></a> is typed with <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ParamSpec" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParamSpec</span></code></a>,
+<a class="reference internal" href="../reference/background_tasks.html#litestar.background_tasks.BackgroundTask" title="litestar.background_tasks.BackgroundTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundTask</span></code></a> is typed with <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ParamSpec" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParamSpec</span></code></a>,
 enabling correct type checking for arguments and keyword arguments passed to it.</p>
 </div>
 <p>Route decorators (e.g. <code class="docutils literal notranslate"><span class="pre">&#64;get</span></code>, <code class="docutils literal notranslate"><span class="pre">&#64;post</span></code>, etc.) also allow passing in a background task with the <code class="docutils literal notranslate"><span class="pre">background</span></code> kwarg:</p>
@@ -3021,7 +3021,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <section id="executing-multiple-background-tasks">
 <h3>Executing Multiple Background Tasks<a class="headerlink" href="#executing-multiple-background-tasks" title="Permalink to this heading">#</a></h3>
 <p>You can also use the <a class="reference internal" href="../reference/background_tasks.html#litestar.background_tasks.BackgroundTasks" title="litestar.background_tasks.BackgroundTasks"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundTasks</span></code></a> class and pass to it an iterable
-(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>, etc.) of <a class="reference internal" href="../reference/background_tasks.html#litestar.background_tasks.BackgroundTask" title="litestar.background_tasks.BackgroundTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundTask</span></code></a> instances:</p>
+(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a>, etc.) of <a class="reference internal" href="../reference/background_tasks.html#litestar.background_tasks.BackgroundTask" title="litestar.background_tasks.BackgroundTask"><code class="xref py py-class docutils literal notranslate"><span class="pre">BackgroundTask</span></code></a> instances:</p>
 <div class="sd-tab-set docutils">
 <input id="sd-tab-item-12" name="sd-tab-set-6" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-12">
