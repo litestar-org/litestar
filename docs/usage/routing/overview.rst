@@ -251,6 +251,7 @@ requests addressed to a given path.
 .. dropdown:: Click to see an example of mounting an ASGI app
 
     .. literalinclude:: /examples/routing/mount_custom_app.py
+        :language: python
         :caption: Mounting an ASGI App
 
 The handler function will receive all requests with an url that begins with ``/some/sub-path``, e.g, ``/some/sub-path``,
@@ -270,6 +271,7 @@ party libraries. The following example is identical in principle to the one abov
 .. dropdown:: Click to see an example of mounting a Starlette app
 
     .. literalinclude:: /examples/routing/mounting_starlette_app.py
+       :language: python
        :caption: Mounting a Starlette App
 
 .. admonition:: Why Litestar uses radix based routing

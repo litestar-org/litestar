@@ -15,6 +15,7 @@ of :class:`Controllers <.controller.Controller>`, :class:`Routers <.router.Route
 or :class:`Route handlers <.handlers.BaseRouteHandler>`:
 
 .. literalinclude:: /examples/hello_world.py
+    :language: python
     :caption: A simple Hello World Litestar app
 
 The app instance is the root level of the app - it has the base path of ``/`` and all root level
@@ -49,6 +50,7 @@ For example, let us create a database connection using the async engine from
 establish the connection, and another to close it, and then pass them to the :class:`~litestar.app.Litestar` constructor:
 
 .. literalinclude:: /examples/startup_and_shutdown.py
+    :language: python
     :caption: Startup and Shutdown
 
 .. _lifespan-context-managers:
@@ -61,6 +63,7 @@ In addition to the lifespan hooks, Litestar also supports managing the lifespan 
 keep a certain context object, such as a connection, around.
 
 .. literalinclude:: /examples/application_hooks/lifespan_manager.py
+    :language: python
     :caption: Handling a database connection
 
 Order of execution
@@ -116,6 +119,7 @@ Therefore, :paramref:`~.app.Litestar.state` offers an easy way to share contextu
 of the application, as seen below:
 
 .. literalinclude:: /examples/application_state/using_application_state.py
+    :language: python
     :caption: Using Application State
 
 .. _Initializing Application State:
@@ -127,6 +131,7 @@ To seed application state, you can pass a :class:`~.datastructures.state.State` 
 :paramref:`~.app.Litestar.state` parameter of the Litestar constructor:
 
 .. literalinclude:: /examples/application_state/passing_initial_state.py
+    :language: python
     :caption: Using Application State
 
 .. note:: :class:`~.datastructures.state.State` can be initialized with a :class:`dictionary <dict>`, an instance of
@@ -166,6 +171,7 @@ To discourage its use, Litestar also offers a builtin :class:`~.datastructures.s
 You can use this class to type state and ensure that no mutation of state is allowed:
 
 .. literalinclude:: /examples/application_state/using_immutable_state.py
+    :language: python
     :caption: Using Custom State to ensure immutability
 
 Application Hooks
@@ -187,6 +193,7 @@ The :paramref:`~litestar.app.Litestar.after_exception` hook takes a
 the ``exception`` that occurred and the ASGI ``scope`` of the request or websocket connection.
 
 .. literalinclude:: /examples/application_hooks/after_exception_hook.py
+    :language: python
     :caption: After Exception Hook
 
 .. attention:: This hook is not meant to handle exceptions - it just receives them to allow for side effects.
@@ -200,6 +207,7 @@ The :paramref:`~litestar.app.Litestar.before_send` hook takes a
 sent. The hook receives the message instance and the ASGI ``scope``.
 
 .. literalinclude:: /examples/application_hooks/before_send_hook.py
+    :language: python
     :caption: Before Send Hook
 
 Initialization
@@ -218,6 +226,7 @@ develop third-party application configuration systems.
     called within :paramref:`~litestar.app.Litestar.__init__`, outside of an async context.
 
 .. literalinclude:: /examples/application_hooks/on_app_init.py
+    :language: python
     :caption: Example usage of the ``on_app_init`` hook to modify the application configuration.
 
 .. _layered-architecture:
