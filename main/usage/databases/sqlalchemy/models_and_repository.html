@@ -1582,7 +1582,7 @@ implementations:</p>
 <li><p><a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/base.html#advanced_alchemy.base.UUIDAuditBase" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUIDAuditBase</span></code></a></p></li>
 </ul>
 <p>Both include a <code class="docutils literal notranslate"><span class="pre">UUID</span></code> based primary key
-and <code class="docutils literal notranslate"><span class="pre">UUIDAuditBase</span></code> includes an <code class="docutils literal notranslate"><span class="pre">updated_at</span></code> and <code class="docutils literal notranslate"><span class="pre">created_at</span></code> timestamp column.</p>
+and <code class="docutils literal notranslate"><span class="pre">UUIDAuditBase</span></code> includes <code class="docutils literal notranslate"><span class="pre">updated_at</span></code> and <code class="docutils literal notranslate"><span class="pre">created_at</span></code> timestamp columns.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">UUID</span></code> will be a native <code class="docutils literal notranslate"><span class="pre">UUID</span></code>/<code class="docutils literal notranslate"><span class="pre">GUID</span></code> type on databases that support it such as Postgres.  For other engines without
 a native UUID data type, the UUID is stored as a 16-byte <code class="docutils literal notranslate"><span class="pre">BYTES</span></code> or <code class="docutils literal notranslate"><span class="pre">RAW</span></code> field.</p>
 <ul class="simple">
@@ -1590,7 +1590,7 @@ a native UUID data type, the UUID is stored as a 16-byte <code class="docutils l
 <li><p><a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/base.html#advanced_alchemy.base.BigIntAuditBase" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BigIntAuditBase</span></code></a></p></li>
 </ul>
 <p>Both include a <code class="docutils literal notranslate"><span class="pre">BigInteger</span></code> based primary key
-and <code class="docutils literal notranslate"><span class="pre">BigIntAuditBase</span></code> includes an <code class="docutils literal notranslate"><span class="pre">updated_at</span></code> and <code class="docutils literal notranslate"><span class="pre">created_at</span></code> timestamp column.</p>
+and <code class="docutils literal notranslate"><span class="pre">BigIntAuditBase</span></code> includes <code class="docutils literal notranslate"><span class="pre">updated_at</span></code> and <code class="docutils literal notranslate"><span class="pre">created_at</span></code> timestamp columns.</p>
 <p>Models using these bases also include the following enhancements:</p>
 <ul class="simple">
 <li><p>Auto-generated snake-case table name from class name</p></li>
