@@ -276,6 +276,7 @@ Please follow the next guidelines when adding a new example:
    :caption: An example of how to use literal includes of external files
 
    .. literalinclude:: /examples/test_thing.py
+      :language: python
       :caption: All includes should have a descriptive caption
 
 Automatically execute examples

@@ -20,6 +20,7 @@ It sends the JWT token using a header - and it expects requests to send the JWT 
 .. dropdown:: Click to see the code
 
     .. literalinclude:: /examples/security/jwt/using_jwt_auth.py
+        :language: python
         :caption: Using JWT Auth
 
 :class:`JWT Cookie Auth <.security.jwt.JWTCookieAuth>` Backend
@@ -31,6 +32,7 @@ that instead of using a header for the JWT Token, it uses a cookie.
 .. dropdown:: Click to see the code
 
     .. literalinclude:: /examples/security/jwt/using_jwt_cookie_auth.py
+        :language: python
         :caption: Using JWT Cookie Auth
 
 :class:`OAuth2 Bearer <.security.jwt.auth.OAuth2PasswordBearerAuth>` Password Flow
@@ -43,6 +45,7 @@ OAuth 2.0 Bearer password flows.
 .. dropdown:: Click to see the code
 
     .. literalinclude:: /examples/security/jwt/using_oauth2_password_bearer.py
+       :language: python
        :caption: Using OAUTH2 Bearer Password
 
 
@@ -53,6 +56,7 @@ The token class used can be customized with arbitrary fields, by creating a subc
 :class:`~.security.jwt.Token`, and specifying it on the backend:
 
 .. literalinclude:: /examples/security/jwt/custom_token_cls.py
+   :language: python
    :caption: Using a custom token
 
 
@@ -79,6 +83,7 @@ a :exc:`NotAuthorizedException` will be raised, returning a response with a
 
 
 .. literalinclude:: /examples/security/jwt/verify_issuer_audience.py
+   :language: python
    :caption: Verifying issuer and audience
 
 
@@ -93,4 +98,5 @@ dictionary representing the decoded payload, which will then used by
 
 
 .. literalinclude:: /examples/security/jwt/custom_decode_payload.py
+   :language: python
    :caption: Customizing payload decoding
