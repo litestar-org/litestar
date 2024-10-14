@@ -17,7 +17,7 @@ The type of ``data`` can be any supported type, including
 * :class:`TypedDicts <typing.TypedDict>`
 * Pydantic models
 * Arbitrary stdlib types
-* Typed supported via :doc:`plugins </usage/plugins/index>`
+* Types supported via :doc:`plugins </usage/plugins/index>`
 
 .. literalinclude:: /examples/request_data/request_data_2.py
     :language: python
