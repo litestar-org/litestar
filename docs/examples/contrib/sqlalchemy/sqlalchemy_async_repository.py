@@ -34,8 +34,8 @@ class BaseModel(_BaseModel):
     model_config = {"from_attributes": True}
 
 
-# the SQLAlchemy base includes a declarative model for you to use in your models.
-# The `Base` class includes a `UUID` based primary key (`id`)
+# The SQLAlchemy base includes a declarative model for you to use in your models.
+# The `UUIDBase` class includes a `UUID` based primary key (`id`)
 class AuthorModel(base.UUIDBase):
     # we can optionally provide the table name instead of auto-generating it
     __tablename__ = "author"  #  type: ignore[assignment]
@@ -44,9 +44,9 @@ class AuthorModel(base.UUIDBase):
     books: Mapped[list[BookModel]] = relationship(back_populates="author", lazy="noload")
 
 
-# The `AuditBase` class includes the same UUID` based primary key (`id`) and 2
-# additional columns: `created` and `updated`. `created` is a timestamp of when the
-# record created, and `updated` is the last time the record was modified.
+# The `UUIDAuditBase` class includes the same UUID` based primary key (`id`) and 2
+# additional columns: `created_at` and `updated_at`. `created_at` is a timestamp of when the
+# record created, and `updated_at` is the last time the record was modified.
 class BookModel(base.UUIDAuditBase):
     __tablename__ = "book"  #  type: ignore[assignment]
     title: Mapped[str]
