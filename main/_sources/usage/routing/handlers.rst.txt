@@ -576,18 +576,21 @@ However, this approach can get tedious; as an alternative, Litestar accepts a ``
 every :ref:`layer <layered-architecture>` of the application, as demonstrated in the following example:
 
 .. literalinclude:: /examples/signature_namespace/domain.py
+    :language: python
     :caption: This module defines our domain type in some central place.
 
 This module defines our controller, note that we do not import ``Model`` into the runtime :term:`namespace`,
 nor do we require any directives to control behavior of linters.
 
 .. literalinclude:: /examples/signature_namespace/controller.py
+    :language: python
     :caption: This module defines our controller without importing ``Model`` into the runtime namespace.
 
 Finally, we ensure that our application knows that when it encounters the name "Model" when parsing signatures, that it
 should reference our domain ``Model`` type.
 
 .. literalinclude:: /examples/signature_namespace/app.py
+    :language: python
     :caption: Ensuring the application knows how to resolve the ``Model`` type when parsing signatures.
 
 .. tip:: If you want to map your type to a name that is different from its ``__name__`` attribute,

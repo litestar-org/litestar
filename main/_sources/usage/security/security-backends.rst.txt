@@ -20,6 +20,7 @@ middleware.
 .. dropdown:: Click to see an example of using the session auth backend
 
     .. literalinclude:: /examples/security/using_session_auth.py
+        :language: python
         :caption: Using Session Auth
 
 JWT Auth
