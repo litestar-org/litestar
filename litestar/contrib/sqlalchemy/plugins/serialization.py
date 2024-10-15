@@ -16,7 +16,7 @@ def __getattr__(attr_name: str) -> object:
             kind="import",
             removal_in="3.0",
             info=f"importing {attr_name} from 'litestar.contrib.sqlalchemy.plugins.serialization' is deprecated, please "
-            f"import it from 'litstar.plugins.sqlalchemy' instead",
+            "import it from 'litestar.plugins.sqlalchemy' instead",
         )
         from advanced_alchemy.extensions.litestar import SQLAlchemySerializationPlugin
 
