@@ -116,7 +116,7 @@ Enabling the backend
 --------------------
 
 .. note:: This is a historical document meant for Litestar versions prior to 2.8.0
-    This backend was enabled bu default since 2.8.0
+    This backend was enabled by default since 2.8.0
 
 .. warning:: ``ExperimentalFeatures.DTO_CODEGEN`` is deprecated and will be removed in 3.0.0
 
