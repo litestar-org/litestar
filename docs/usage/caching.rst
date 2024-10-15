@@ -35,7 +35,7 @@ sentinel instead:
     :language: python
     :caption: Caching the response indefinitely by setting the :paramref:`~litestar.handlers.HTTPRouteHandler.cache`
       parameter to :class:`~litestar.config.response_cache.CACHE_FOREVER`.
-    :lines: 1, 3, 14-18
+    :lines: 1-3, 14-18
     :emphasize-lines: 5
 
 Configuration
