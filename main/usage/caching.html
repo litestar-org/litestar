@@ -1576,11 +1576,12 @@ sentinel instead:</p>
 <div class="code-block-caption"><span class="caption-text">Caching the response indefinitely by setting the <a class="reference internal" href="../reference/handlers.html#litestar.handlers.HTTPRouteHandler.params.cache" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">cache</span></code></a>
 parameter to <a class="reference internal" href="../reference/config.html#litestar.config.response_cache.CACHE_FOREVER" title="litestar.config.response_cache.CACHE_FOREVER"><code class="xref py py-class docutils literal notranslate"><span class="pre">CACHE_FOREVER</span></code></a>.</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.config.response_cache</span> <span class="kn">import</span> <span class="n">CACHE_FOREVER</span>
 
 
-<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/cached-forever&quot;</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="n">CACHE_FOREVER</span><span class="p">)</span>
-<span class="hll"><span class="k">async</span> <span class="k">def</span> <span class="nf">my_cached_handler_forever</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-</span>    <span class="k">return</span> <span class="s2">&quot;cached forever&quot;</span>
+<span class="hll"><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/cached-forever&quot;</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="n">CACHE_FOREVER</span><span class="p">)</span>
+</span><span class="k">async</span> <span class="k">def</span> <span class="nf">my_cached_handler_forever</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="s2">&quot;cached forever&quot;</span>
 </pre></div>
 </div>
 </div>
