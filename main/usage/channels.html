@@ -1720,8 +1720,10 @@ different contexts.</p>
 <p>It is also possible to unsubscribe from individual channels, which may be desirable if
 subscriptions need to be managed dynamically.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">subscriber</span> <span class="o">=</span> <span class="k">await</span> <span class="n">channels</span><span class="o">.</span><span class="n">subscribe</span><span class="p">([</span><span class="s2">&quot;foo&quot;</span><span class="p">,</span> <span class="s2">&quot;bar&quot;</span><span class="p">])</span>
-<span class="o">...</span>  <span class="c1"># do some stuff here</span>
-<span class="k">await</span> <span class="n">channels</span><span class="o">.</span><span class="n">unsubscribe</span><span class="p">(</span><span class="n">subscriber</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;foo&quot;</span><span class="p">])</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="o">...</span>  <span class="c1"># do some stuff here</span>
+<span class="k">finally</span><span class="p">:</span>
+    <span class="k">await</span> <span class="n">channels</span><span class="o">.</span><span class="n">unsubscribe</span><span class="p">(</span><span class="n">subscriber</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;foo&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>Or, using the context manager</p>
