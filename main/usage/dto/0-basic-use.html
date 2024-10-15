@@ -1705,10 +1705,10 @@ the <code class="docutils literal notranslate"><span class="pre">delete()</span>
 <h2>Improving performance with the codegen backend<a class="headerlink" href="#improving-performance-with-the-codegen-backend" title="Permalink to this heading">#</a></h2>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>This feature was introduced in <code class="docutils literal notranslate"><span class="pre">2.2.0</span></code> and hidden behind the <code class="docutils literal notranslate"><span class="pre">DTO_CODEGEN</span></code>
-feature flag. As of <code class="docutils literal notranslate"><span class="pre">2.8.0</span></code> it is considered stable and enabled by default. It can
-still be disabled selectively by using the
-<code class="docutils literal notranslate"><span class="pre">DTOConfig(experimental_codegen_backend=True)</span></code> override.</p>
+<p>This feature was introduced in <code class="docutils literal notranslate"><span class="pre">2.2.0</span></code> and was hidden behind the <code class="docutils literal notranslate"><span class="pre">DTO_CODEGEN</span></code>
+feature flag. As of <code class="docutils literal notranslate"><span class="pre">2.8.0</span></code> it is considered stable and is enabled by default.
+It can still be disabled selectively by using the
+<code class="docutils literal notranslate"><span class="pre">DTOConfig(experimental_codegen_backend=False)</span></code> override.</p>
 </div>
 <p>The DTO backend is the part that does the heavy lifting for all the DTO features. It
 is responsible for the transforming, validation and parsing. Because of this,
@@ -1716,31 +1716,10 @@ it is also the part with the most significant performance impact. To reduce the 
 introduced by the DTOs, the DTO codegen backend was introduced; A DTO backend that
 increases efficiency by generating optimized Python code at runtime to perform all the
 necessary operations.</p>
-<section id="enabling-the-backend">
-<h3>Enabling the backend<a class="headerlink" href="#enabling-the-backend" title="Permalink to this heading">#</a></h3>
-<p>You can enable this backend globally for all DTOs by passing the appropriate feature
-flag to your Litestar application:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-<span class="kn">from</span> <span class="nn">litestar.config.app</span> <span class="kn">import</span> <span class="n">ExperimentalFeatures</span>
-
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">experimental_features</span><span class="o">=</span><span class="p">[</span><span class="n">ExperimentalFeatures</span><span class="o">.</span><span class="n">DTO_CODEGEN</span><span class="p">])</span>
-</pre></div>
-</div>
-<p>or selectively for individual DTOs:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">DataclassDTO</span>
-
-
-<span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
-    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
-
-
-<span class="k">class</span> <span class="nc">FooDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Foo</span><span class="p">]):</span>
-    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">experimental_codegen_backend</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>The same flag can be used to disable the backend selectively:</p>
+<section id="disabling-the-backend">
+<h3>Disabling the backend<a class="headerlink" href="#disabling-the-backend" title="Permalink to this heading">#</a></h3>
+<p>You can use <code class="docutils literal notranslate"><span class="pre">experimental_codegen_backend=False</span></code>
+to disable the codegen backend selectively:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">DataclassDTO</span>
 
@@ -1755,6 +1734,62 @@ flag to your Litestar application:</p>
 </pre></div>
 </div>
 </section>
+<section id="enabling-the-backend">
+<h3>Enabling the backend<a class="headerlink" href="#enabling-the-backend" title="Permalink to this heading">#</a></h3>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is a historical document meant for Litestar versions prior to 2.8.0
+This backend was enabled by default since 2.8.0</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><code class="docutils literal notranslate"><span class="pre">ExperimentalFeatures.DTO_CODEGEN</span></code> is deprecated and will be removed in 3.0.0</p>
+</div>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-git-pull-request-closed" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M10.72 1.227a.75.75 0 011.06 0l.97.97.97-.97a.75.75 0 111.06 1.061l-.97.97.97.97a.75.75 0 01-1.06 1.06l-.97-.97-.97.97a.75.75 0 11-1.06-1.06l.97-.97-.97-.97a.75.75 0 010-1.06zM12.75 6.5a.75.75 0 00-.75.75v3.378a2.251 2.251 0 101.5 0V7.25a.75.75 0 00-.75-.75zm0 5.5a.75.75 0 100 1.5.75.75 0 000-1.5zM2.5 3.25a.75.75 0 111.5 0 .75.75 0 01-1.5 0zM3.25 1a2.25 2.25 0 00-.75 4.372v5.256a2.251 2.251 0 101.5 0V5.372A2.25 2.25 0 003.25 1zm0 11a.75.75 0 100 1.5.75.75 0 000-1.5z"></path></svg></span>Enabling DTO codegen backend<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">You can enable this backend globally for all DTOs by passing the appropriate feature
+flag to your Litestar application:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+<span class="kn">from</span> <span class="nn">litestar.config.app</span> <span class="kn">import</span> <span class="n">ExperimentalFeatures</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">experimental_features</span><span class="o">=</span><span class="p">[</span><span class="n">ExperimentalFeatures</span><span class="o">.</span><span class="n">DTO_CODEGEN</span><span class="p">])</span>
+</pre></div>
+</div>
+<p class="sd-card-text">or selectively for individual DTOs:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">DataclassDTO</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+
+
+<span class="k">class</span> <span class="nc">FooDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Foo</span><span class="p">]):</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">experimental_codegen_backend</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="sd-card-text">The same flag can be used to disable the backend selectively:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">DataclassDTO</span>
+
+
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Foo</span><span class="p">:</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+
+
+<span class="k">class</span> <span class="nc">FooDTO</span><span class="p">(</span><span class="n">DataclassDTO</span><span class="p">[</span><span class="n">Foo</span><span class="p">]):</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">DTOConfig</span><span class="p">(</span><span class="n">experimental_codegen_backend</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details></section>
 <section id="performance-improvements">
 <h3>Performance improvements<a class="headerlink" href="#performance-improvements" title="Permalink to this heading">#</a></h3>
 <p>These are some preliminary numbers showing the performance increase for certain
@@ -1848,6 +1883,7 @@ operations:</p>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#defining-dtos-on-layers">Defining DTOs on layers</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#improving-performance-with-the-codegen-backend">Improving performance with the codegen backend</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#disabling-the-backend">Disabling the backend</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#enabling-the-backend">Enabling the backend</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#performance-improvements">Performance improvements</a></li>
 </ul>
