@@ -219,8 +219,10 @@ subscriptions need to be managed dynamically.
 .. code-block:: python
 
     subscriber = await channels.subscribe(["foo", "bar"])
-    ...  # do some stuff here
-    await channels.unsubscribe(subscriber, ["foo"])
+    try:
+        ...  # do some stuff here
+    finally:
+        await channels.unsubscribe(subscriber, ["foo"])
 
 
 Or, using the context manager
