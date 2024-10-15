@@ -1604,8 +1604,10 @@ this is that using a synchronous function which perform blocking operations, suc
 as I/O or computationally intensive tasks, can potentially block the main thread
 running the event loop, and in turn block the whole application.</p>
 <p>To mitigate this, the <code class="docutils literal notranslate"><span class="pre">sync_to_thread</span></code> parameter can be set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, which
-will result in the function being run in a thread pool. Should the function be
-non-blocking, <code class="docutils literal notranslate"><span class="pre">sync_to_thread</span></code> should be set to <code class="docutils literal notranslate"><span class="pre">False</span></code> instead.</p>
+will result in the function being run in a thread pool.</p>
+<p>If a synchronous function is non-blocking, setting <code class="docutils literal notranslate"><span class="pre">sync_to_thread</span></code> to <code class="docutils literal notranslate"><span class="pre">False</span></code>
+will tell Litestar that the user is sure about its behavior
+and the function can be treated as non-blocking.</p>
 <p>If a synchronous function is passed, without setting an explicit <code class="docutils literal notranslate"><span class="pre">sync_to_thread</span></code>
 value, a warning will be raised.</p>
 <div class="admonition seealso">
