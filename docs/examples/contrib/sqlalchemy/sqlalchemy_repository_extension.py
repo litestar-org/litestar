@@ -96,9 +96,9 @@ class SQLAlchemyAsyncSlugRepository(SQLAlchemyAsyncRepository[ModelT]):
         return await self.get_one_or_none(slug=slug) is None
 
 
-# The `AuditBase` class includes the same UUID` based primary key (`id`) and 2
-# additional columns: `created` and `updated`. `created` is a timestamp of when the
-# record created, and `updated` is the last time the record was modified.
+# The `UUIDAuditBase` class includes the same UUID` based primary key (`id`) and 2
+# additional columns: `created_at` and `updated_at`. `created_at` is a timestamp of when the
+# record created, and `updated_at` is the last time the record was modified.
 class BlogPost(UUIDAuditBase, SlugKey):
     title: Mapped[str]
     content: Mapped[str]
