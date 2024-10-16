@@ -251,7 +251,7 @@ attributes in the client payload, which requires some special handling internall
 
 .. literalinclude:: /examples/data_transfer_objects/factory/patch_requests.py
     :language: python
-    :emphasize-lines: 7,20,29,30,32
+    :emphasize-lines: 7,20,27,28,30
     :linenos:
 
 The ``PatchDTO`` class is defined for the ``Person`` class. The ``config`` attribute of ``PatchDTO`` is set to exclude the
