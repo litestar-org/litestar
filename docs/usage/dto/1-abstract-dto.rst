@@ -193,7 +193,7 @@ handler.
     :emphasize-lines: 18-21,27
     :linenos:
 
-Notice that we our `User` model has a model-level ``default_factory=uuid4``
+Notice that our `User` model has a model-level ``default_factory=uuid4``
 for ``id`` field. That's why we can decode the client data into this model.
 
 However, in some cases there's no clear way to provide a default this way.
