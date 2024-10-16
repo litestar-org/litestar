@@ -247,6 +247,7 @@ enable_error_code = [
   "truthy-iterable",
   "unused-awaitable",
   "ignore-without-code",
+  "possibly-undefined",
   "redundant-self",
 ]
 python_version = "3.8"
