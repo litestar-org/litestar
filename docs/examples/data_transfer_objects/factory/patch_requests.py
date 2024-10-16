@@ -21,9 +21,7 @@ class PatchDTO(DataclassDTO[Person]):
 
 
 peter_uuid = UUID("f32ff2ce-e32f-4537-9dc0-26e7599f1380")
-database = {
-    peter_uuid: Person(id=peter_uuid, name="Peter", age=40)
-}
+database = {peter_uuid: Person(id=peter_uuid, name="Peter", age=40)}
 
 
 @patch("/person/{person_id:uuid}", dto=PatchDTO, return_dto=None, sync_to_thread=False)
