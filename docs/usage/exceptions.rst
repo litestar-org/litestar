@@ -4,7 +4,7 @@ Exceptions and exception handling
 Litestar define a base exception called :class:`LitestarException <litestar.exceptions.LitestarException>` which serves
 as a base class for all other exceptions, see :mod:`API Reference <litestar.exceptions>`.
 
-In general, Litestar has two scenarions for exception handling:
+In general, Litestar has two scenarios for exception handling:
 
 - Exceptions that are raised during application configuration, startup, and initialization, which are handled like regular Python exceptions
 - Exceptions that are raised as part of the request handling, i.e.
