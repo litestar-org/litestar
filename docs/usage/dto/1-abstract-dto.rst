@@ -230,7 +230,7 @@ nested model with excluded fields.
 
 .. literalinclude:: /examples/data_transfer_objects/factory/providing_values_for_nested_data.py
     :language: python
-    :emphasize-lines: 10,11,12,13,21,29,35
+    :emphasize-lines: 9-12,20,28,34
     :linenos:
 
 The double-underscore syntax ``address__id`` passed as a keyword argument to the
@@ -239,7 +239,7 @@ nested attribute. In this case, it's used to provide a value for the ``id`` attr
 within the ``Person`` instance.
 
 This is a common convention in Python for dealing with nested structures. The double underscore can be interpreted as
-"traverse through", so ``address__id`` means "traverse through address to get to id".
+"traverse through", so ``address__id`` means "traverse through address to get to its id".
 
 In the context of this script, ``create_instance(id=1, address__id=2)`` is saying "create a new ``Person`` instance from
 the client data given an id of ``1``, and supplement the client address data with an id of ``2``".
