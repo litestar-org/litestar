@@ -182,10 +182,10 @@ DTO Data
 Sometimes we need to be able to access the data that has been parsed and validated by the DTO, but not converted into
 an instance of our data model.
 
-In the following example, we create a ``Person`` model, that is a :func:`dataclass <dataclasses.dataclass>` with 3
-required fields, ``id``, ``name``, and ``age``.
+In the following example, we create a ``User`` model, that is a :func:`dataclass <dataclasses.dataclass>` with 3
+required fields: ``id``, ``name``, and ``age``.
 
-We also create a DTO that doesn't allow clients to set the ``id`` field on the ``Person`` model and set it on the
+We also create a DTO that doesn't allow clients to set the ``id`` field on the ``User`` model and set it on the
 handler.
 
 .. literalinclude:: /examples/data_transfer_objects/factory/dto_data_problem_statement.py
@@ -193,10 +193,12 @@ handler.
     :emphasize-lines: 18-21,27
     :linenos:
 
-Notice that we get a ``500`` response from the handler - this is because the DTO has attempted to convert the request
-data into a ``Person`` object and failed because it has no value for the required ``id`` field.
+Notice that our `User` model has a model-level ``default_factory=uuid4``
+for ``id`` field. That's why we can decode the client data into this model.
 
-One way to handle this is to create different models, e.g., we might create a ``CreatePerson`` model that has no ``id``
+However, in some cases there's no clear way to provide a default this way.
+
+One way to handle this is to create different models, e.g., we might create a ``UserCreate`` model that has no ``id``
 field, and decode the client data into that. However, this method can become quite cumbersome when we have a lot of
 variability in the data that we accept from clients, for example,
 `PATCH <https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/PATCH>`_ requests.
@@ -206,11 +208,11 @@ type of the data that it will contain, and provides useful methods for interacti
 
 .. literalinclude:: /examples/data_transfer_objects/factory/dto_data_usage.py
     :language: python
-    :emphasize-lines: 7,25,27
+    :emphasize-lines: 5,23,25
     :linenos:
 
 In the above example, we've injected an instance of :class:`DTOData <litestar.dto.data_structures.DTOData>` into our handler,
-and have used that to create our ``Person`` instance, after augmenting the client data with a server generated ``id``
+and have used that to create our ``User`` instance, after augmenting the client data with a server generated ``id``
 value.
 
 Consult the :class:`Reference Docs <litestar.dto.data_structures.DTOData>` for more information on the methods available.
