@@ -243,11 +243,17 @@ xfail_strict = true
 [tool.mypy]
 packages = ["litestar", "tests"]
 plugins = ["pydantic.mypy"]
+enable_error_code = [
+  "truthy-iterable",
+  "unused-awaitable",
+  "ignore-without-code",
+  "possibly-undefined",
+  "redundant-self",
+]
 python_version = "3.8"
 
 disallow_any_generics = false
 disallow_untyped_decorators = true
-enable_error_code = "ignore-without-code"
 implicit_reexport = false
 show_error_codes = true
 strict = true
@@ -256,6 +262,7 @@ warn_return_any = true
 warn_unreachable = true
 warn_unused_configs = true
 warn_unused_ignores = true
+local_partial_types = true
 
 [[tool.mypy.overrides]]
 ignore_errors = true

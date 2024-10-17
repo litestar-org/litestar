@@ -30,6 +30,9 @@ def __getattr__(attr_name: str) -> object:
                 wrap_sqlalchemy_exception,  # type: ignore[import-not-found] # pyright: ignore[reportMissingImport]
             )
 
+        else:  # pragma: no cover
+            raise RuntimeError(f"Unhandled module attribute: {attr_name!r}")
+
         value = globals()[attr_name] = locals()[attr_name]
         warn_deprecation(
             deprecated_name=f"litestar.contrib.sqlalchemy.repository.{attr_name}",

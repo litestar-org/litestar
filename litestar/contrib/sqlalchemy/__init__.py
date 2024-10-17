@@ -29,6 +29,10 @@ def __getattr__(attr_name: str) -> object:
             )
 
             value = globals()[attr_name] = getattr(exceptions, attr_name)
+
+        else:  # pragma: no cover
+            raise RuntimeError(f"Unhandled module attribute: {attr_name!r}")
+
         warn_deprecation(
             deprecated_name=f"litestar.contrib.sqlalchemy.{attr_name}",
             version="2.12",
