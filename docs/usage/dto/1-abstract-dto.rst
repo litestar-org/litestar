@@ -253,17 +253,17 @@ attributes in the client payload, which requires some special handling internall
 
 .. literalinclude:: /examples/data_transfer_objects/factory/patch_requests.py
     :language: python
-    :emphasize-lines: 7,21,32,34
+    :emphasize-lines: 7,20,27,28,30
     :linenos:
 
-The ``PatchDTO`` class is defined for the Person class. The ``config`` attribute of ``PatchDTO`` is set to exclude the
-id field, preventing clients from setting it when updating a person, and the ``partial`` attribute is set to ``True``,
+The ``PatchDTO`` class is defined for the ``Person`` class. The ``config`` attribute of ``PatchDTO`` is set to exclude the
+``id`` field, preventing clients from setting it when updating a person, and the ``partial`` attribute is set to ``True``,
 which allows the DTO to accept a subset of the model attributes.
 
 Inside the handler, the :meth:`DTOData.update_instance <litestar.dto.data_structures.DTOData.update_instance>` method is called
 to update the instance of ``Person`` before returning it.
 
-In our request, we set only the ``name`` property of the ``Person``, from ``"Peter"`` to ``"Peter Pan"`` and received
+In our request, we update only the ``name`` property of the ``Person``, from ``"Peter"`` to ``"Peter Pan"`` and receive
 the full object - with the modified name - back in the response.
 
 Implicit Private Fields
