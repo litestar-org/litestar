@@ -98,7 +98,7 @@ The following is an example using `httpx.Client <https://www.python-httpx.org/ap
         csrf = get_response.cookies["csrftoken"]
 
         # "x-csrftoken" is the default header name
-        post_response_using_header = client.post("http://localhost:8000/", headers={"x-csrftoken": csrf})
+        post_response_using_header = client.post("http://localhost:8000/1", headers={"x-csrftoken": csrf})
         assert post_response_using_header.status_code == 201
 
         # "_csrf_token" is the default *non* configurable form-data key
