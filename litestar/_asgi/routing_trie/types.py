@@ -34,9 +34,9 @@ class RouteTrieNode:
         "children",
         "is_asgi",
         "is_mount",
-        "is_static",
         "is_path_param_node",
         "is_path_type",
+        "is_static",
         "path_parameters",
         "path_template",
     )
@@ -68,7 +68,7 @@ class RouteTrieNode:
     """The path template string used to lower prometheus cardinality when group_path enabled"""
 
 
-def create_node(path_template: str = "") -> RouteTrieNode:
+def create_node() -> RouteTrieNode:
     """Create a RouteMapNode instance.
 
     Returns:
@@ -85,5 +85,5 @@ def create_node(path_template: str = "") -> RouteTrieNode:
         is_static=False,
         is_path_type=False,
         path_parameters={},
-        path_template=path_template,
+        path_template="",
     )
