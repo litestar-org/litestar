@@ -6,7 +6,7 @@ CORS
 
 `CORS (Cross-Origin Resource Sharing) <https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS>`_ is a common security
 mechanism that is often implemented using middleware. To enable CORS in a litestar application simply pass an instance
-of :class:`CORSConfig <.config.cors.CORSConfig>` to :class:`~litestar.app.Litestar`:
+of :class:`~litestar.config.cors.CORSConfig` to :class:`~litestar.app.Litestar`:
 
 .. code-block:: python
 
@@ -170,7 +170,7 @@ through the built-in Starlette classes, and brotli support can be added by insta
 
 You can enable either backend by passing an instance of
 :class:`~litestar.config.compression.CompressionConfig` to ``compression_config`` of
-:class:`~litestar.litestar.app.Litestar`.
+:class:`~litestar.app.Litestar`.
 
 GZIP
 ^^^^
@@ -248,14 +248,14 @@ Logging Middleware
 ------------------
 
 Litestar ships with a robust logging middleware that allows logging HTTP request and responses while building on
-the Litestar's :ref:`logging configuration <logging>`:
+the Litestar's :ref:`logging configuration <logging-usage>`:
 
 .. literalinclude:: /examples/middleware/logging_middleware.py
     :language: python
 
 
 The logging middleware uses the logger configuration defined on the application level, which allows for using any supported logging tool, depending on the configuration used
-(see :ref:`logging configuration <logging>` for more details).
+(see :ref:`logging configuration <logging-usage>` for more details).
 
 Obfuscating Logging Output
 ^^^^^^^^^^^^^^^^^^^^^^^^^^

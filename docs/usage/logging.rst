@@ -1,4 +1,4 @@
-.. _logging:
+.. _logging-usage:
 
 Logging
 =======
