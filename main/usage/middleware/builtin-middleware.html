@@ -1557,7 +1557,7 @@ of <a class="reference internal" href="../../reference/config.html#litestar.conf
 </section>
 <section id="csrf">
 <h2>CSRF<a class="headerlink" href="#csrf" title="Permalink to this heading">#</a></h2>
-<p>CSRF (Cross-site request forgery) is a type of attack where unauthorized commands are submitted from a user that the web
+<p><a class="reference external" href="https://owasp.org/www-community/attacks/csrf">CSRF (Cross-site request forgery)</a> is a type of attack where unauthorized commands are submitted from a user that the web
 application trusts. This attack often uses social engineering that tricks the victim into clicking a URL that contains a
 maliciously crafted, unauthorized request for a particular Web application. The user’s browser then sends this
 maliciously crafted request to the targeted Web application. If the user is in an active session with the Web application,
@@ -1600,18 +1600,18 @@ amount=1000usd&amp;to=attacker@evil.com
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">get_resource</span><span class="p">,</span> <span class="n">create_resource</span><span class="p">],</span> <span class="n">csrf_config</span><span class="o">=</span><span class="n">csrf_config</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The following snippet demonstrates how to change the cookie name to “some-cookie-name” and header name to “some-header-name”.</p>
+<p>The following snippet demonstrates how to change the cookie name to <code class="docutils literal notranslate"><span class="pre">&quot;some-cookie-name&quot;</span></code> and header name to <code class="docutils literal notranslate"><span class="pre">&quot;some-header-name&quot;</span></code>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">csrf_config</span> <span class="o">=</span> <span class="n">CSRFConfig</span><span class="p">(</span><span class="n">secret</span><span class="o">=</span><span class="s2">&quot;my-secret&quot;</span><span class="p">,</span> <span class="n">cookie_name</span><span class="o">=</span><span class="s1">&#39;some-cookie-name&#39;</span><span class="p">,</span> <span class="n">header_name</span><span class="o">=</span><span class="s1">&#39;some-header-name&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>A CSRF protected route can be accessed by any client that can make a request with either the header or form-data key.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The form-data key can not be currently configured. It should only be passed via the key “_csrf_token”</p>
+<p>The form-data key can not be currently configured. It should only be passed via the key <code class="docutils literal notranslate"><span class="pre">&quot;_csrf_token&quot;</span></code></p>
 </div>
 <p>In Python, any client such as <a class="reference external" href="https://github.com/psf/requests">requests</a> or <a class="reference external" href="https://github.com/encode/httpx">httpx</a> can be used.
 The usage of clients or sessions is recommended due to the cookie persistence it offers across requests.
-The following is an example using <code class="docutils literal notranslate"><span class="pre">httpx.Client</span></code>.</p>
+The following is an example using <a class="reference external" href="https://www.python-httpx.org/api/#client">httpx.Client</a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">httpx</span>
 
 
@@ -1622,7 +1622,7 @@ The following is an example using <code class="docutils literal notranslate"><sp
     <span class="n">csrf</span> <span class="o">=</span> <span class="n">get_response</span><span class="o">.</span><span class="n">cookies</span><span class="p">[</span><span class="s2">&quot;csrftoken&quot;</span><span class="p">]</span>
 
     <span class="c1"># &quot;x-csrftoken&quot; is the default header name</span>
-    <span class="n">post_response_using_header</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;http://localhost:8000/&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x-csrftoken&quot;</span><span class="p">:</span> <span class="n">csrf</span><span class="p">})</span>
+    <span class="n">post_response_using_header</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;http://localhost:8000/1&quot;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;x-csrftoken&quot;</span><span class="p">:</span> <span class="n">csrf</span><span class="p">})</span>
     <span class="k">assert</span> <span class="n">post_response_using_header</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">201</span>
 
     <span class="c1"># &quot;_csrf_token&quot; is the default *non* configurable form-data key</span>
@@ -1656,7 +1656,7 @@ patterns to skip in the middleware.</p>
 </section>
 <section id="allowed-hosts">
 <h2>Allowed Hosts<a class="headerlink" href="#allowed-hosts" title="Permalink to this heading">#</a></h2>
-<p>Another common security mechanism is to require that each incoming request has a “Host” or “X-Forwarded-Host” header,
+<p>Another common security mechanism is to require that each incoming request has a <code class="docutils literal notranslate"><span class="pre">&quot;Host&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;X-Forwarded-Host&quot;</span></code> header,
 and then to restrict hosts to a specific set of domains - what’s called “allowed hosts”.</p>
 <p>Litestar includes an <a class="reference internal" href="../../reference/middleware/allowed_hosts.html#litestar.middleware.allowed_hosts.AllowedHostsMiddleware" title="litestar.middleware.allowed_hosts.AllowedHostsMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">AllowedHostsMiddleware</span></code></a> class that can be
 easily enabled by either passing an instance of <a class="reference internal" href="../../reference/config.html#litestar.config.allowed_hosts.AllowedHostsConfig" title="litestar.config.allowed_hosts.AllowedHostsConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AllowedHostsConfig</span></code></a> or a
@@ -1717,34 +1717,34 @@ the <code class="docutils literal notranslate"><span class="pre">backend</span><
 </section>
 <section id="brotli">
 <h3>Brotli<a class="headerlink" href="#brotli" title="Permalink to this heading">#</a></h3>
-<p>The Brotli package is required to run this middleware. It is available as an extras to litestar with the <code class="docutils literal notranslate"><span class="pre">brotli</span></code>
+<p>The <a class="reference external" href="https://pypi.org/project/Brotli">Brotli</a> package is required to run this middleware. It is available as an extras to litestar with the <code class="docutils literal notranslate"><span class="pre">brotli</span></code>
 extra (<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[brotli]</span></code>).</p>
 <p>You can enable brotli compression of responses by passing an instance of
 <a class="reference internal" href="../../reference/config.html#litestar.config.compression.CompressionConfig" title="litestar.config.compression.CompressionConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">CompressionConfig</span></code></a> with the <code class="docutils literal notranslate"><span class="pre">backend</span></code> parameter set to <code class="docutils literal notranslate"><span class="pre">&quot;brotli&quot;</span></code>.</p>
 <p>You can configure the following additional brotli-specific values:</p>
 <ul class="simple">
 <li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">minimum_size</span></code>: the minimum threshold for response size to enable compression. Smaller responses will not be</dt><dd><p>compressed. Defaults is <code class="docutils literal notranslate"><span class="pre">500</span></code>, i.e. half a kilobyte.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">minimum_size</span></code>: the minimum threshold for response size to enable compression. Smaller responses will not be</dt><dd><p>compressed. Default is 500, i.e. half a kilobyte</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">brotli_quality</span></code>: Range [0-11], Controls the compression-speed vs compression-density tradeoff. The higher the</dt><dd><p>quality, the slower the compression.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">brotli_quality</span></code>: Range [0-11], Controls the compression-speed vs compression-density tradeoff. The higher the</dt><dd><p>quality, the slower the compression. Defaults to 5</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">brotli_mode</span></code>: The compression mode can be MODE_GENERIC (default), MODE_TEXT (for UTF-8 format text input), or</dt><dd><p>MODE_FONT (for WOFF 2.0).</p>
+<dt><code class="docutils literal notranslate"><span class="pre">brotli_mode</span></code>: The compression mode can be <code class="docutils literal notranslate"><span class="pre">&quot;generic&quot;</span></code> (for mixed content), <code class="docutils literal notranslate"><span class="pre">&quot;text&quot;</span></code> (for UTF-8 format text input), or</dt><dd><p><code class="docutils literal notranslate"><span class="pre">&quot;font&quot;</span></code> (for WOFF 2.0). Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;text&quot;</span></code></p>
 </dd>
 </dl>
 </li>
-<li><p><code class="docutils literal notranslate"><span class="pre">brotli_lgwin</span></code>: Base 2 logarithm of size. Range is 10 to 24. Defaults to 22.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">brotli_lgwin</span></code>: Base 2 logarithm of size. Range [10-24]. Defaults to 22.</p></li>
 <li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">brotli_lgblock</span></code>: Base 2 logarithm of the maximum input block size. Range is 16 to 24. If set to 0, the value will</dt><dd><p>be set based on the quality. Defaults to 0.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">brotli_lgblock</span></code>: Base 2 logarithm of the maximum input block size. Range [16-24]. If set to 0, the value will</dt><dd><p>be set based on the quality. Defaults to 0</p>
 </dd>
 </dl>
 </li>
-<li><p><code class="docutils literal notranslate"><span class="pre">brotli_gzip_fallback</span></code>: a boolean to indicate if gzip should be used if brotli is not supported.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">brotli_gzip_fallback</span></code>: a boolean to indicate if gzip should be used if brotli is not supported</p></li>
 </ul>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
 <span class="kn">from</span> <span class="nn">litestar.config.compression</span> <span class="kn">import</span> <span class="n">CompressionConfig</span>
@@ -1777,13 +1777,13 @@ the <a class="reference external" href="https://datatracker.ietf.org/doc/draft-i
 <span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">handler</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">rate_limit_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
 </pre></div>
 </div>
-<p>The only required configuration kwarg is <code class="docutils literal notranslate"><span class="pre">rate_limit</span></code>, which expects a tuple containing a time-unit (<code class="docutils literal notranslate"><span class="pre">second</span></code>,
-<code class="docutils literal notranslate"><span class="pre">minute</span></code>, <code class="docutils literal notranslate"><span class="pre">hour</span></code>, <code class="docutils literal notranslate"><span class="pre">day</span></code>) and a value for the request quota (integer).</p>
+<p>The only required configuration kwarg is <code class="docutils literal notranslate"><span class="pre">rate_limit</span></code>, which expects a tuple containing a time-unit (<code class="docutils literal notranslate"><span class="pre">&quot;second&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;minute&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;hour&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;day&quot;</span></code>) and a value for the request quota (integer).</p>
 </section>
 <section id="logging-middleware">
 <h2>Logging Middleware<a class="headerlink" href="#logging-middleware" title="Permalink to this heading">#</a></h2>
 <p>Litestar ships with a robust logging middleware that allows logging HTTP request and responses while building on
-the <a class="reference internal" href="../logging.html"><span class="doc">logging configuration</span></a>:</p>
+the Litestar’s <a class="reference internal" href="../logging.html#logging-usage"><span class="std std-ref">logging configuration</span></a>:</p>
 <div class="sd-tab-set docutils">
 <input id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-0">
@@ -1834,9 +1834,8 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<p>The logging middleware uses the logger configuration defined on the application level, which allows for using both stdlib
-logging or <a class="reference external" href="https://www.structlog.org/en/stable/index.html">structlog</a> , depending on the configuration used
-(see <a class="reference internal" href="../logging.html"><span class="doc">logging configuration</span></a> for more details).</p>
+<p>The logging middleware uses the logger configuration defined on the application level, which allows for using any supported logging tool, depending on the configuration used
+(see <a class="reference internal" href="../logging.html#logging-usage"><span class="std std-ref">logging configuration</span></a> for more details).</p>
 <section id="obfuscating-logging-output">
 <h3>Obfuscating Logging Output<a class="headerlink" href="#obfuscating-logging-output" title="Permalink to this heading">#</a></h3>
 <p>Sometimes certain data, e.g. request or response headers, needs to be obfuscated. This is supported by the middleware
@@ -1883,8 +1882,8 @@ add its middleware to your application’s middleware stack:</p>
 <input id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-2">
 Python 3.8+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id1">
-<div class="code-block-caption"><span class="caption-text">Hello World</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Hello World</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">urandom</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 
@@ -1928,8 +1927,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-3">
 Python 3.9+</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">Hello World</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">Hello World</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">urandom</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">delete</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span>
@@ -1986,8 +1985,8 @@ which offers strong AES-CGM encryption security best practices while support coo
 <p><code class="docutils literal notranslate"><span class="pre">ClientSideSessionBackend</span></code> requires the <a class="reference external" href="https://cryptography.io/en/latest/">cryptography</a> library,
 which can be installed together with litestar as an extra using <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">litestar[cryptography]</span></code></p>
 </div>
-<div class="literal-block-wrapper docutils container" id="id3">
-<div class="code-block-caption"><span class="caption-text">cookie_backend.py</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">cookie_backend.py</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">os</span> <span class="kn">import</span> <span class="n">urandom</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
