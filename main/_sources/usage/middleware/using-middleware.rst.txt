@@ -1,3 +1,5 @@
+.. _using-middleware:
+
 Using Middleware
 ================
 

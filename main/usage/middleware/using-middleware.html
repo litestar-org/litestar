@@ -1542,7 +1542,7 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section id="using-middleware">
-<h1>Using Middleware<a class="headerlink" href="#using-middleware" title="Permalink to this heading">#</a></h1>
+<span id="id1"></span><h1>Using Middleware<a class="headerlink" href="#using-middleware" title="Permalink to this heading">#</a></h1>
 <p>A middleware in Litestar is any callable that receives at least one kwarg called <code class="docutils literal notranslate"><span class="pre">app</span></code> and returns an
 <a class="reference internal" href="../../reference/types.html#litestar.types.ASGIApp" title="litestar.types.ASGIApp"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIApp</span></code></a>. An <code class="docutils literal notranslate"><span class="pre">ASGIApp</span></code> is nothing but an async function that receives the ASGI
 primitives <code class="docutils literal notranslate"><span class="pre">scope</span></code> , <code class="docutils literal notranslate"><span class="pre">receive</span></code> and <code class="docutils literal notranslate"><span class="pre">send</span></code> , and either calls the next <code class="docutils literal notranslate"><span class="pre">ASGIApp</span></code> or returns a response / handles
