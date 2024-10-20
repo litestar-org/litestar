@@ -57,7 +57,7 @@ if TYPE_CHECKING:
     from litestar.openapi.datastructures import ResponseSpec
     from litestar.openapi.spec import SecurityRequirement
     from litestar.types.callable_types import AsyncAnyCallable, OperationIDCreator
-    from litestar.types.composite_types import TypeDecodersSequence
+    from litestar.types.composite_types import MediaTypeEncodersMap, TypeDecodersSequence
 
 __all__ = ("HTTPRouteHandler", "route")
 
@@ -78,6 +78,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         "_resolved_before_request",
         "_response_handler_mapping",
         "_resolved_include_in_schema",
+        "_resolved_media_type_encoders",
         "_resolved_response_class",
         "_resolved_request_class",
         "_resolved_tags",
@@ -98,6 +99,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         "http_methods",
         "include_in_schema",
         "media_type",
+        "media_type_encoders",
         "operation_class",
         "operation_id",
         "raises",
@@ -135,6 +137,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         guards: Sequence[Guard] | None = None,
         http_method: HttpMethod | Method | Sequence[HttpMethod | Method],
         media_type: MediaType | str | None = None,
+        media_type_encoders: MediaTypeEncodersMap | None = None,
         middleware: Sequence[Middleware] | None = None,
         name: str | None = None,
         opt: Mapping[str, Any] | None = None,
@@ -268,6 +271,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.cache_key_builder = cache_key_builder
         self.etag = etag
         self.media_type: MediaType | str = media_type or ""
+        self.media_type_encoders = media_type_encoders
         self.request_class = request_class
         self.response_class = response_class
         self.response_cookies: Sequence[Cookie] | None = narrow_response_cookies(response_cookies)
@@ -293,6 +297,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self._resolved_before_request: AsyncAnyCallable | None | EmptyType = Empty
         self._response_handler_mapping: ResponseHandlerMap = {"default_handler": Empty, "response_type_handler": Empty}
         self._resolved_include_in_schema: bool | EmptyType = Empty
+        self._resolved_media_type_encoders: MediaTypeEncodersMap | EmptyType = Empty
         self._resolved_response_class: type[Response] | EmptyType = Empty
         self._resolved_request_class: type[Request] | EmptyType = Empty
         self._resolved_security: list[SecurityRequirement] | EmptyType = Empty
@@ -473,6 +478,23 @@ class HTTPRouteHandler(BaseRouteHandler):
 
         return self._resolved_tags
 
+    def resolve_media_type_encoders(self) -> MediaTypeEncodersMap:
+        """Return a media_type_encoders mapping.
+
+        This method is memoized so the computation occurs only once.
+
+        Returns:
+            A dict of type encoders
+        """
+        if self._resolved_media_type_encoders is Empty:
+            self._resolved_type_encoders = {}
+
+            for layer in self.ownership_layers:
+                if media_type_encoders := getattr(layer, "media_type_encoders", None):
+                    self._resolved_type_encoders.update(media_type_encoders)
+
+        return cast("MediaTypeEncodersMap", self._resolved_media_type_encoders)
+
     def get_response_handler(self, is_response_type_data: bool = False) -> Callable[[Any], Awaitable[ASGIApp]]:
         """Resolve the response_handler function for the route handler.
 
@@ -561,6 +583,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         super().on_registration(app)
         self.resolve_after_response()
         self.resolve_include_in_schema()
+        self.resolve_media_type_encoders()
         self.has_sync_callable = not is_async_callable(self.fn)
 
         if self.has_sync_callable and self.sync_to_thread:

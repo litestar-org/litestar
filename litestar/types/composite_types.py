@@ -18,6 +18,7 @@ from typing import (
 __all__ = (
     "Dependencies",
     "ExceptionHandlersMap",
+    "MediaTypeEncodersMap",
     "Middleware",
     "ParametersMap",
     "PathType",
@@ -47,6 +48,7 @@ if TYPE_CHECKING:
 Dependencies: TypeAlias = "Mapping[str, Union[Provide, AnyCallable]]"
 ExceptionHandlersMap: TypeAlias = "MutableMapping[Union[int, Type[Exception]], ExceptionHandler]"
 Middleware: TypeAlias = "Union[Callable[..., ASGIApp], DefineMiddleware, Iterator[Tuple[ASGIApp, Dict[str, Any]]], Type[MiddlewareProtocol]]"
+MediaTypeEncodersMap: TypeAlias = "Mapping[Any, Callable[[Any], Any]]"
 ParametersMap: TypeAlias = "Mapping[str, ParameterKwarg]"
 PathType: TypeAlias = "Union[Path, PathLike, str]"
 ResponseCookies: TypeAlias = "Union[Sequence[Cookie], Mapping[str, str]]"
