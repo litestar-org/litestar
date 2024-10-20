@@ -1,17 +1,13 @@
 from __future__ import annotations
 
-import contextlib
-import threading
 import warnings
 from math import inf
 from typing import TYPE_CHECKING, Generic, Optional, TypeVar, cast
 
-import anyio
 from anyio import create_memory_object_stream
 from anyio.streams.stapled import StapledObjectStream
 
 from litestar.testing.client.base import BaseTestClient
-from litestar.utils import warn_deprecation
 
 if TYPE_CHECKING:
     from litestar.types import (

@@ -22,6 +22,5 @@ async def test_wait_shutdown_invalid_event() -> None:
         await send({"type": "lifespan.shutdown.something_unexpected"})  # type: ignore[typeddict-item]
 
     with LifeSpanHandler(TestClient(app)) as handler:
-
         with pytest.raises(RuntimeError, match="Received unexpected ASGI message type"):
             await handler.wait_shutdown()
