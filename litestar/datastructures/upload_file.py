@@ -1,3 +1,4 @@
+# ruff: noqa: SIM115
 from __future__ import annotations
 
 from tempfile import SpooledTemporaryFile
