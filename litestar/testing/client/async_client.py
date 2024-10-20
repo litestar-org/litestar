@@ -86,6 +86,7 @@ class AsyncTestClient(AsyncClient, BaseTestClient, Generic[T]):  # type: ignore[
         async with AsyncExitStack() as stack:
             self.blocking_portal = portal = stack.enter_context(self.portal())
             self.lifespan_handler = LifeSpanHandler(client=self)
+            stack.enter_context(self.lifespan_handler)
 
             @stack.callback
             def reset_portal() -> None:

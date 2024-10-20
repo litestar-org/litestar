@@ -1,12 +1,17 @@
 from __future__ import annotations
 
+import contextlib
+import threading
+import warnings
 from math import inf
 from typing import TYPE_CHECKING, Generic, Optional, TypeVar, cast
 
+import anyio
 from anyio import create_memory_object_stream
 from anyio.streams.stapled import StapledObjectStream
 
 from litestar.testing.client.base import BaseTestClient
+from litestar.utils import warn_deprecation
 
 if TYPE_CHECKING:
     from litestar.types import (
@@ -20,24 +25,64 @@ T = TypeVar("T", bound=BaseTestClient)
 
 
 class LifeSpanHandler(Generic[T]):
-    __slots__ = "stream_send", "stream_receive", "client", "task"
+    __slots__ = (
+        "stream_send",
+        "stream_receive",
+        "client",
+        "task",
+        "_startup_done",
+    )
 
     def __init__(self, client: T) -> None:
         self.client = client
         self.stream_send = StapledObjectStream[Optional["LifeSpanSendMessage"]](*create_memory_object_stream(inf))  # type: ignore[arg-type]
         self.stream_receive = StapledObjectStream["LifeSpanReceiveMessage"](*create_memory_object_stream(inf))  # type: ignore[arg-type]
+        self._startup_done = False
 
+    def _ensure_setup(self, is_safe: bool = False):
+        if self._startup_done:
+            return
+
+        if not is_safe:
+            warnings.warn(
+                "LifeSpanHandler used with implicit startup; Use LifeSpanHandler as a context manager instead. "
+                "Implicit startup will be deprecated in version 3.0.",
+                category=DeprecationWarning,
+                stacklevel=2,
+            )
+
+        self._startup_done = True
         with self.client.portal() as portal:
             self.task = portal.start_task_soon(self.lifespan)
             portal.call(self.wait_startup)
 
+    def _teardown(self):
+        with self.client.portal() as portal:
+            portal.call(self.stream_send.aclose)
+            portal.call(self.stream_receive.aclose)
+
+    def __enter__(self) -> LifeSpanHandler:
+        try:
+            self._ensure_setup()
+        except Exception as exc:
+            self._teardown()
+            raise exc
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._teardown()
+
     async def receive(self) -> LifeSpanSendMessage:
+        self._ensure_setup()
+
         message = await self.stream_send.receive()
         if message is None:
             self.task.result()
         return cast("LifeSpanSendMessage", message)
 
     async def wait_startup(self) -> None:
+        self._ensure_setup()
+
         event: LifeSpanStartupEvent = {"type": "lifespan.startup"}
         await self.stream_receive.send(event)
 
@@ -54,6 +99,8 @@ class LifeSpanHandler(Generic[T]):
             await self.receive()
 
     async def wait_shutdown(self) -> None:
+        self._ensure_setup()
+
         async with self.stream_send:
             lifespan_shutdown_event: LifeSpanShutdownEvent = {"type": "lifespan.shutdown"}
             await self.stream_receive.send(lifespan_shutdown_event)
@@ -71,6 +118,8 @@ class LifeSpanHandler(Generic[T]):
                 await self.receive()
 
     async def lifespan(self) -> None:
+        self._ensure_setup()
+
         scope = {"type": "lifespan"}
         try:
             await self.client.app(scope, self.stream_receive.receive, self.stream_send.send)
