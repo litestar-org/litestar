@@ -278,17 +278,7 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
 
                 self._connection_state.form = form_data
 
-            # form_data is a dict[str, list[str] | str | UploadFile]. Convert it to a
-            # list[tuple[str, str | UploadFile]] before passing it to FormMultiDict so
-            # multi-keys can be accessed properly
-            items = []
-            for k, v in form_data.items():
-                if isinstance(v, list):
-                    for sv in v:
-                        items.append((k, sv))
-                else:
-                    items.append((k, v))
-            self._form = FormMultiDict(items)
+            self._form = FormMultiDict.from_form_data(cast("dict[str, Any]", form_data))
 
         return self._form
 

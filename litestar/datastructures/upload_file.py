@@ -94,6 +94,8 @@ class UploadFile:
         Returns:
             None.
         """
+        if self.file.closed:
+            return None
         if self.rolled_to_disk:
             return await sync_to_thread(self.file.close)
         return self.file.close()
