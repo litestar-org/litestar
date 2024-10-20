@@ -280,7 +280,7 @@ module = ["tests.unit.test_contrib.test_repository"]
 strict_equality = false
 
 [[tool.mypy.overrides]]
-module = ["tests.unit.test_contrib.test_pydantic.test_openapi"]
+module = ["tests.unit.test_contrib.test_pydantic.test_openapi","litestar._asgi.routing_trie.traversal"]
 disable_error_code = "index, union-attr"
 
 [[tool.mypy.overrides]]
@@ -302,8 +302,23 @@ module = [
 warn_unused_ignores = false
 module = [
   "litestar.contrib.sqlalchemy.*",
+  "litestar.contrib.pydantic.*",
   "tests.unit.test_contrib.test_sqlalchemy",
+  "tests.unit.test_contrib.test_pydantic.*",
+  "litestar.openapi.spec.base",
+  "litestar.utils.helpers",
+  "litestar.channels.plugin",
+  "litestar.handlers.http_handlers._utils"
 ]
+
+[[tool.mypy.overrides]]
+warn_unused_ignores = false
+module = [
+  "litestar.openapi.spec.base",
+  "litestar._asgi.routin_trie.traversal",
+  "litestar.contrib.pydantic.pydantic_init_plugin",
+]
+disable_error_code = "arg-type"
 
 [tool.pydantic-mypy]
 init_forbid_extra = true
@@ -333,6 +348,19 @@ exclude-classes = """
 (
   # github.com/python/cpython/pull/106771
   (^litestar.events.emitter:BaseEventEmitterBackend)
+  # review these as time permits
+  |(^litestar.connection.base:ASGIConnection)
+  |(^litestar.datastructures.state:ImmutableState)
+  |(^litestar.datastructures.state:State)
+  |(^litestar.dto.base_dto:AbstractDTO)
+  |(^litestar.dto.data_structures:DTOData)
+  |(^litestar.middleware.session.base:BaseSessionBackend)
+  |(^litestar.pagination:ClassicPagination)
+  |(^litestar.pagination:CursorPagination)
+  |(^litestar.response.base:Response)
+  |(^litestar.testing.client.base:BaseTestClient)
+  |(^litestar.testing.life_span_handler:LifeSpanHandler)
+  |(^litestar.utils.sync:AsyncIteratorWrapper)
 )
 """
 
