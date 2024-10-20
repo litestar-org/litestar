@@ -10,6 +10,8 @@ from anyio.streams.stapled import StapledObjectStream
 from litestar.testing.client.base import BaseTestClient
 
 if TYPE_CHECKING:
+    from types import TracebackType
+
     from litestar.types import (
         LifeSpanReceiveMessage,  # noqa: F401
         LifeSpanSendMessage,
@@ -35,7 +37,7 @@ class LifeSpanHandler(Generic[T]):
         self.stream_receive = StapledObjectStream["LifeSpanReceiveMessage"](*create_memory_object_stream(inf))  # type: ignore[arg-type]
         self._startup_done = False
 
-    def _ensure_setup(self, is_safe: bool = False):
+    def _ensure_setup(self, is_safe: bool = False) -> None:
         if self._startup_done:
             return
 
@@ -52,7 +54,7 @@ class LifeSpanHandler(Generic[T]):
             self.task = portal.start_task_soon(self.lifespan)
             portal.call(self.wait_startup)
 
-    def close(self):
+    def close(self) -> None:
         with self.client.portal() as portal:
             portal.call(self.stream_send.aclose)
             portal.call(self.stream_receive.aclose)
@@ -65,7 +67,12 @@ class LifeSpanHandler(Generic[T]):
             raise exc
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
         self.close()
 
     async def receive(self) -> LifeSpanSendMessage:
