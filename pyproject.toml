@@ -44,6 +44,8 @@ dependencies = [
     "click",
     "rich>=13.0.0",
     "rich-click",
+    # default litestar plugins
+    "litestar-htmx>=0.2.1"
 ]
 description = "Litestar - A production-ready, highly performant, extensible ASGI API Framework"
 keywords = ["api", "rest", "asgi", "litestar", "starlite"]
@@ -76,6 +78,7 @@ Twitter = "https://twitter.com/LitestarAPI"
 [project.optional-dependencies]
 annotated-types = ["annotated-types"]
 attrs = ["attrs"]
+htmx = ["litestar-htmx>=0.2.1"]
 brotli = ["brotli"]
 cli = ["jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0; sys_platform != 'win32'"]
 cryptography = ["cryptography"]
@@ -279,6 +282,10 @@ strict_equality = false
 [[tool.mypy.overrides]]
 module = ["tests.unit.test_contrib.test_pydantic.test_openapi"]
 disable_error_code = "index, union-attr"
+
+[[tool.mypy.overrides]]
+module = ["tests.unit.test_channels.test_subscriber", "tests.unit.test_response.test_streaming_response"]
+disable_error_code = "arg-type, comparison-overlap, unreachable"
 
 [[tool.mypy.overrides]]
 ignore_missing_imports = true
