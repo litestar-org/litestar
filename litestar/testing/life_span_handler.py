@@ -52,21 +52,21 @@ class LifeSpanHandler(Generic[T]):
             self.task = portal.start_task_soon(self.lifespan)
             portal.call(self.wait_startup)
 
-    def _teardown(self):
+    def close(self):
         with self.client.portal() as portal:
             portal.call(self.stream_send.aclose)
             portal.call(self.stream_receive.aclose)
 
     def __enter__(self) -> LifeSpanHandler:
         try:
-            self._ensure_setup()
+            self._ensure_setup(is_safe=True)
         except Exception as exc:
-            self._teardown()
+            self.close()
             raise exc
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        self._teardown()
+        self.close()
 
     async def receive(self) -> LifeSpanSendMessage:
         self._ensure_setup()
