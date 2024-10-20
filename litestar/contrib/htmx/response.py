@@ -34,10 +34,10 @@ __all__ = (
 
 def __getattr__(attr_name: str) -> object:
     if attr_name in __all__:
-        from litestar_htmx import _utils as utils
+        import litestar_htmx
 
         module = "litestar.plugins.htmx"
-        value = globals()[attr_name] = getattr(utils, attr_name)
+        value = globals()[attr_name] = getattr(litestar_htmx, attr_name)
 
         warn_deprecation(
             deprecated_name=f"litestar.contrib.htmx.response.{attr_name}",
