@@ -5,7 +5,7 @@
 groups = ["default", "annotated-types", "attrs", "brotli", "cli", "cryptography", "dev", "dev-contrib", "docs", "full", "htmx", "jinja", "jwt", "linting", "mako", "minijinja", "opentelemetry", "piccolo", "picologging", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "test"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:7007c231002b8178dface123299b490c4ecd27e3fc00dc213ee5cc7a3fc2aa8a"
+content_hash = "sha256:50a1dda60c649831173720ebfbdbc1252b4cb25bcb6f0b5db285bf0582469dba"
 
 [[metadata.targets]]
 requires_python = "~=3.8"
@@ -1235,7 +1235,7 @@ files = [
 
 [[package]]
 name = "faker"
-version = "30.6.0"
+version = "30.8.0"
 requires_python = ">=3.8"
 summary = "Faker is a Python package that generates fake data for you."
 groups = ["default"]
@@ -1244,8 +1244,8 @@ dependencies = [
     "typing-extensions",
 ]
 files = [
-    {file = "Faker-30.6.0-py3-none-any.whl", hash = "sha256:37b5ab951f7367ea93edb865120e9717a7a649d6a4b223f1e4a47a8a20d9e85f"},
-    {file = "faker-30.6.0.tar.gz", hash = "sha256:be0e548352c1be6f6d9c982003848a0d305868f160bb1fb7f945acffc347e676"},
+    {file = "Faker-30.8.0-py3-none-any.whl", hash = "sha256:4cd0c5ea4bc1e4c902967f6e662f5f5da69f1674d9a94f54e516d27f3c2a6a16"},
+    {file = "faker-30.8.0.tar.gz", hash = "sha256:3608c7fcac2acde0eaa6da28dae97628f18f14d54eaa2a92b96ae006f1621bd7"},
 ]
 
 [[package]]
@@ -1286,13 +1286,13 @@ files = [
 
 [[package]]
 name = "fsspec"
-version = "2024.9.0"
+version = "2024.10.0"
 requires_python = ">=3.8"
 summary = "File-system specification"
 groups = ["dev"]
 files = [
-    {file = "fsspec-2024.9.0-py3-none-any.whl", hash = "sha256:a0947d552d8a6efa72cc2c730b12c41d043509156966cca4fb157b0f2a0c574b"},
-    {file = "fsspec-2024.9.0.tar.gz", hash = "sha256:4b0afb90c2f21832df142f292649035d80b421f60a9e1c027802e5a0da2b04e8"},
+    {file = "fsspec-2024.10.0-py3-none-any.whl", hash = "sha256:03b9a6785766a4de40368b88906366755e2819e758b83705c88cd7cb5fe81871"},
+    {file = "fsspec-2024.10.0.tar.gz", hash = "sha256:eda2d8a4116d4f2429db8550f2457da57279247dd930bb12f821b58391359493"},
 ]
 
 [[package]]
@@ -1908,7 +1908,7 @@ files = [
 
 [[package]]
 name = "litestar-htmx"
-version = "0.2.1"
+version = "0.2.2"
 requires_python = "<4.0,>=3.8"
 summary = "HTMX Integration for Litesstar"
 groups = ["default", "htmx"]
@@ -1916,8 +1916,8 @@ dependencies = [
     "litestar",
 ]
 files = [
-    {file = "litestar_htmx-0.2.1-py3-none-any.whl", hash = "sha256:1a502c1c4afbc29025207e64c61f7efddabf7fcf23738fd90aaeffa7008bbd68"},
-    {file = "litestar_htmx-0.2.1.tar.gz", hash = "sha256:336f6888c257e51e37ada639d03fdd080155728661428c541767c505881d756b"},
+    {file = "litestar_htmx-0.2.2-py3-none-any.whl", hash = "sha256:07ae864f92674d5974f5bc617b962f22609d6813eec4f0b302649a0e6af5d70f"},
+    {file = "litestar_htmx-0.2.2.tar.gz", hash = "sha256:40d842329f93c55b1d97cefa719816f11815858f38d67e8f71fb259a8368584f"},
 ]
 
 [[package]]
