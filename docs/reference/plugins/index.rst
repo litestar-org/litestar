@@ -10,6 +10,7 @@ plugins
     :hidden:
 
     flash_messages
+    htmx
     problem_details
     structlog
     sqlalchemy

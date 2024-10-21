@@ -45,7 +45,7 @@ dependencies = [
     "rich>=13.0.0",
     "rich-click",
     # default litestar plugins
-    "litestar-htmx>=0.2.1"
+    "litestar-htmx>=0.2.2"
 ]
 description = "Litestar - A production-ready, highly performant, extensible ASGI API Framework"
 keywords = ["api", "rest", "asgi", "litestar", "starlite"]
@@ -78,7 +78,7 @@ Twitter = "https://twitter.com/LitestarAPI"
 [project.optional-dependencies]
 annotated-types = ["annotated-types"]
 attrs = ["attrs"]
-htmx = ["litestar-htmx>=0.2.1"]
+htmx = ["litestar-htmx>=0.2.2"]
 brotli = ["brotli"]
 cli = ["jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0; sys_platform != 'win32'"]
 cryptography = ["cryptography"]
