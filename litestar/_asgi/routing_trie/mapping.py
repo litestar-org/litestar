@@ -111,7 +111,7 @@ def add_route_to_trie(
                 next_node_key = component
 
             if next_node_key not in current_node.children:
-                current_node.children[next_node_key] = create_node(path_template=route.path_format)
+                current_node.children[next_node_key] = create_node()
 
             current_node.child_keys = set(current_node.children.keys())
             current_node = current_node.children[next_node_key]
@@ -140,6 +140,7 @@ def configure_node(
     """
     from litestar.routes import HTTPRoute, WebSocketRoute
 
+    node.path_template = route.path_format
     if not node.path_parameters:
         node.path_parameters = {}
 
