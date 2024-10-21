@@ -134,7 +134,7 @@ def parse_path_to_route(
     try:
         if path in plain_routes:
             asgi_app, handler = parse_node_handlers(node=root_node.children[path], method=method)
-            return asgi_app, handler, path, {}, root_node.path_template
+            return asgi_app, handler, path, {}, path
 
         if mount_paths_regex and (match := mount_paths_regex.match(path)):
             mount_path = path[: match.end()]

@@ -1,7 +1,7 @@
 types
 =====
 
-.. py:currentmodule:: litestar.types
+.. module:: litestar.types
 
 
 
@@ -58,15 +58,15 @@ ASGI Application Parameters
 ASGI Scopes
 ~~~~~~~~~~~~
 
-.. autodata:: litestar.types.ASGIVersion
+.. autoclass:: litestar.types.ASGIVersion
 
-.. autodata:: litestar.types.BaseScope
+.. autoclass:: litestar.types.BaseScope
 
-.. autodata:: litestar.types.HTTPScope
+.. autoclass:: litestar.types.HTTPScope
 
-.. autodata:: litestar.types.LifeSpanScope
+.. autoclass:: litestar.types.LifeSpanScope
 
-.. autodata:: litestar.types.WebSocketScope
+.. autoclass:: litestar.types.WebSocketScope
 
 
 ASGI Events
