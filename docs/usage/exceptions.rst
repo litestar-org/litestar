@@ -62,8 +62,7 @@ Litestar also offers several pre-configured ``HTTPException`` subclasses with pr
 
 .. :currentmodule:: None
 
-When a value fails ``pydantic`` validation, the result will be a :class:`~litestar.exceptions.http_exceptions.ValidationException` with the ``extra`` key set to the
-``pydantic`` validation error message.
+When a value fails validation, the result will be a :class:`~litestar.exceptions.http_exceptions.ValidationException` with the ``extra`` key set to the validation error message.
 
 .. warning:: All validation error messages will be made available for the API consumers by default.
     If this is not your intent, adjust the exception contents.
@@ -114,7 +113,6 @@ and ``405 Method Not Allowed`` are handled only by exception handlers defined on
 these exceptions, you will need to pass the exception handlers for them to the Litestar constructor and cannot use other
 layers for this purpose.
 
-While it does not make much sense to have different functions with a top-level exception handling,
 Litestar supports defining exception handlers on all layers of the app, with the lower layers overriding layer above
 them. In the following example, the exception handler for the route handler function will only handle
 the ``ValidationException`` occurring within that route handler:
