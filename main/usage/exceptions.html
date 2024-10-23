@@ -1539,18 +1539,18 @@ document.write(`
   <section id="exceptions-and-exception-handling">
 <h1>Exceptions and exception handling<a class="headerlink" href="#exceptions-and-exception-handling" title="Permalink to this heading">#</a></h1>
 <p>Litestar define a base exception called <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.LitestarException" title="litestar.exceptions.LitestarException"><code class="xref py py-class docutils literal notranslate"><span class="pre">LitestarException</span></code></a> which serves
-as a basis to all other exceptions.</p>
-<p>In general, Litestar will raise two types of exceptions:</p>
+as a base class for all other exceptions, see <a class="reference internal" href="../reference/exceptions.html#module-litestar.exceptions" title="litestar.exceptions"><code class="xref py py-mod docutils literal notranslate"><span class="pre">API</span> <span class="pre">Reference</span></code></a>.</p>
+<p>In general, Litestar has two scenarios for exception handling:</p>
 <ul class="simple">
-<li><p>Exceptions that arise during application init, which fall</p></li>
-<li><p>Exceptions that are raised as part of the normal application flow, i.e.
-exceptions in route handlers, dependencies, and middleware, that should be serialized in some fashion.</p></li>
+<li><p>Exceptions that are raised during application configuration, startup, and initialization, which are handled like regular Python exceptions</p></li>
+<li><p>Exceptions that are raised as part of the request handling, i.e.
+exceptions in route handlers, dependencies, and middleware, that should be returned as a response to the end user</p></li>
 </ul>
 <section id="configuration-exceptions">
 <h2>Configuration Exceptions<a class="headerlink" href="#configuration-exceptions" title="Permalink to this heading">#</a></h2>
 <p>For missing extra dependencies, Litestar will raise either
 <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.MissingDependencyException" title="litestar.exceptions.MissingDependencyException"><code class="xref py py-class docutils literal notranslate"><span class="pre">MissingDependencyException</span></code></a>. For example, if you try to use the
-<a class="reference internal" href="databases/sqlalchemy/plugins/index.html"><span class="doc">SQLAlchemyPlugin</span></a> without having SQLAlchemy installed, this will be raised when you
+<a class="reference internal" href="plugins/index.html#plugins"><span class="std std-ref">SQLAlchemyPlugin</span></a> without having SQLAlchemy installed, this will be raised when you
 start the application.</p>
 <p>For other configuration issues, Litestar will raise
 <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.ImproperlyConfiguredException" title="litestar.exceptions.ImproperlyConfiguredException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImproperlyConfiguredException</span></code></a> with a message explaining the
@@ -1568,7 +1568,7 @@ into a JSON response of the following schema:</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<p>Litestar also offers several pre-configured exception subclasses with pre-set error codes that you can use, such as:</p>
+<p>Litestar also offers several pre-configured <code class="docutils literal notranslate"><span class="pre">HTTPException</span></code> subclasses with pre-set error codes that you can use, such as:</p>
 <table class="table">
 <thead>
 <tr class="row-odd"><th class="head"><p>Exception</p></th>
@@ -1577,38 +1577,42 @@ into a JSON response of the following schema:</p>
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.ImproperlyConfiguredException" title="litestar.exceptions.http_exceptions.ImproperlyConfiguredException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImproperlyConfiguredException</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.ImproperlyConfiguredException" title="litestar.exceptions.ImproperlyConfiguredException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ImproperlyConfiguredException</span></code></a></p></td>
 <td><p>500</p></td>
 <td><p>Used internally for configuration errors</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.ValidationException" title="litestar.exceptions.http_exceptions.ValidationException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValidationException</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.ValidationException" title="litestar.exceptions.ValidationException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValidationException</span></code></a></p></td>
 <td><p>400</p></td>
 <td><p>Raised when validation or parsing failed</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.NotFoundException" title="litestar.exceptions.http_exceptions.NotFoundException"><code class="xref py py-class docutils literal notranslate"><span class="pre">NotFoundException</span></code></a></p></td>
-<td><p>404</p></td>
-<td><p>HTTP status code 404</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.NotAuthorizedException" title="litestar.exceptions.http_exceptions.NotAuthorizedException"><code class="xref py py-class docutils literal notranslate"><span class="pre">NotAuthorizedException</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.NotAuthorizedException" title="litestar.exceptions.NotAuthorizedException"><code class="xref py py-class docutils literal notranslate"><span class="pre">NotAuthorizedException</span></code></a></p></td>
 <td><p>401</p></td>
 <td><p>HTTP status code 401</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.PermissionDeniedException" title="litestar.exceptions.http_exceptions.PermissionDeniedException"><code class="xref py py-class docutils literal notranslate"><span class="pre">PermissionDeniedException</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.PermissionDeniedException" title="litestar.exceptions.PermissionDeniedException"><code class="xref py py-class docutils literal notranslate"><span class="pre">PermissionDeniedException</span></code></a></p></td>
 <td><p>403</p></td>
 <td><p>HTTP status code 403</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.InternalServerException" title="litestar.exceptions.http_exceptions.InternalServerException"><code class="xref py py-class docutils literal notranslate"><span class="pre">InternalServerException</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.NotFoundException" title="litestar.exceptions.NotFoundException"><code class="xref py py-class docutils literal notranslate"><span class="pre">NotFoundException</span></code></a></p></td>
+<td><p>404</p></td>
+<td><p>HTTP status code 404</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.InternalServerException" title="litestar.exceptions.InternalServerException"><code class="xref py py-class docutils literal notranslate"><span class="pre">InternalServerException</span></code></a></p></td>
 <td><p>500</p></td>
 <td><p>HTTP status code 500</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.ServiceUnavailableException" title="litestar.exceptions.http_exceptions.ServiceUnavailableException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServiceUnavailableException</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.ServiceUnavailableException" title="litestar.exceptions.ServiceUnavailableException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServiceUnavailableException</span></code></a></p></td>
 <td><p>503</p></td>
 <td><p>HTTP status code 503</p></td>
 </tr>
 </tbody>
 </table>
-<p>When a value fails <code class="docutils literal notranslate"><span class="pre">pydantic</span></code> validation, the result will be a <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.ValidationException" title="litestar.exceptions.http_exceptions.ValidationException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValidationException</span></code></a> with the <code class="docutils literal notranslate"><span class="pre">extra</span></code> key set to the
-pydantic validation errors. Thus, this data will be made available for the API consumers by default.</p>
+<p>When a value fails validation, the result will be a <a class="reference internal" href="../reference/exceptions.html#litestar.exceptions.ValidationException" title="litestar.exceptions.http_exceptions.ValidationException"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValidationException</span></code></a> with the <code class="docutils literal notranslate"><span class="pre">extra</span></code> key set to the validation error message.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>All validation error messages will be made available for the API consumers by default.
+If this is not your intent, adjust the exception contents.</p>
+</div>
 </section>
 <section id="exception-handling">
 <h2>Exception handling<a class="headerlink" href="#exception-handling" title="Permalink to this heading">#</a></h2>
@@ -1722,8 +1726,22 @@ value<span class="w"> </span>error:<span class="w"> </span>this<span class="w"> 
 </div>
 <p>The choice whether to use a single function that has switching logic inside it, or multiple functions depends on your
 specific needs.</p>
-<p>While it does not make much sense to have different functions with a top-level exception handling,
-Litestar supports defining exception handlers on all layers of the app, with the lower layers overriding layer above
+<section id="exception-handling-layers">
+<h3>Exception handling layers<a class="headerlink" href="#exception-handling-layers" title="Permalink to this heading">#</a></h3>
+<p>Since Litestar allows users to define both exception handlers and middlewares in a layered fashion, i.e. on individual
+route handlers, controllers, routers, or the app layer, multiple layers of exception handlers are required to ensure that
+exceptions are handled correctly:</p>
+<figure class="align-default" id="id1">
+<a class="reference internal image-reference" href="../_images/exception-handlers.jpg"><img alt="../_images/exception-handlers.jpg" src="../_images/exception-handlers.jpg" style="width: 400px;" /></a>
+<figcaption>
+<p><span class="caption-text">Exception Handlers</span><a class="headerlink" href="#id1" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+<p>As a result of the above structure, the exceptions raised by the ASGI Router itself, namely <code class="docutils literal notranslate"><span class="pre">404</span> <span class="pre">Not</span> <span class="pre">Found</span></code>
+and <code class="docutils literal notranslate"><span class="pre">405</span> <span class="pre">Method</span> <span class="pre">Not</span> <span class="pre">Allowed</span></code> are handled only by exception handlers defined on the app layer. Thus, if you want to affect
+these exceptions, you will need to pass the exception handlers for them to the Litestar constructor and cannot use other
+layers for this purpose.</p>
+<p>Litestar supports defining exception handlers on all layers of the app, with the lower layers overriding layer above
 them. In the following example, the exception handler for the route handler function will only handle
 the <code class="docutils literal notranslate"><span class="pre">ValidationException</span></code> occurring within that route handler:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">Response</span><span class="p">,</span> <span class="n">get</span>
@@ -1777,21 +1795,6 @@ the <code class="docutils literal notranslate"><span class="pre">ValidationExcep
 </pre></div>
 </div>
 </div>
-<section id="exception-handling-layers">
-<h3>Exception handling layers<a class="headerlink" href="#exception-handling-layers" title="Permalink to this heading">#</a></h3>
-<p>Since Litestar allows users to define both exception handlers and middlewares in a layered fashion, i.e. on individual
-route handlers, controllers, routers, or the app layer, multiple layers of exception handlers are required to ensure that
-exceptions are handled correctly:</p>
-<figure class="align-default" id="id1">
-<a class="reference internal image-reference" href="../_images/exception-handlers.jpg"><img alt="../_images/exception-handlers.jpg" src="../_images/exception-handlers.jpg" style="width: 400px;" /></a>
-<figcaption>
-<p><span class="caption-text">Exception Handlers</span><a class="headerlink" href="#id1" title="Permalink to this image">#</a></p>
-</figcaption>
-</figure>
-<p>As a result of the above structure, the exceptions raised by the ASGI Router itself, namely <code class="docutils literal notranslate"><span class="pre">404</span> <span class="pre">Not</span> <span class="pre">Found</span></code>
-and <code class="docutils literal notranslate"><span class="pre">405</span> <span class="pre">Method</span> <span class="pre">Not</span> <span class="pre">Allowed</span></code> are handled only by exception handlers defined on the app layer. Thus, if you want to affect
-these exceptions, you will need to pass the exception handlers for them to the Litestar constructor and cannot use other
-layers for this purpose.</p>
 </section>
 </section>
 </section>
