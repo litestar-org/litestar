@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, cast
 
 from msgspec.msgpack import decode as _decode_msgpack_plain
 
-from litestar.datastructures.upload_file import UploadFile
+from litestar.datastructures.multi_dicts import FormMultiDict
 from litestar.enums import HttpMethod, MediaType, ScopeType
 from litestar.exceptions import ClientException, ImproperlyConfiguredException, SerializationException
 from litestar.handlers.http_handlers import HTTPRouteHandler
@@ -86,8 +86,10 @@ class HTTPRoute(BaseRoute):
         if after_response_handler := route_handler.resolve_after_response():
             await after_response_handler(request)
 
+        if request._form is not Empty:
+            await request._form.close()
         if form_data := scope.get("_form", {}):
-            await self._cleanup_temporary_files(form_data=cast("dict[str, Any]", form_data))
+            await FormMultiDict.from_form_data(cast("dict[str, Any]", form_data)).close()
 
     def create_handler_map(self) -> None:
         """Parse the ``router_handlers`` of this route and return a mapping of
@@ -258,9 +260,3 @@ class HTTPRoute(BaseRoute):
             include_in_schema=False,
             sync_to_thread=False,
         )(options_handler)
-
-    @staticmethod
-    async def _cleanup_temporary_files(form_data: dict[str, Any]) -> None:
-        for v in form_data.values():
-            if isinstance(v, UploadFile) and not v.file.closed:
-                await v.close()
