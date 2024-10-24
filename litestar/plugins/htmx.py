@@ -6,6 +6,7 @@ from litestar_htmx import (
     ClientRedirect,
     ClientRefresh,
     EventAfterType,
+    HTMXConfig,
     HTMXDetails,
     HTMXHeaders,
     HtmxHeaderType,
@@ -28,6 +29,7 @@ from litestar_htmx import (
 
 __all__ = (
     "HTMXPlugin",
+    "HTMXConfig",
     "HTMXDetails",
     "HTMXHeaders",
     "HTMXRequest",
