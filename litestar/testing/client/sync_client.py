@@ -87,6 +87,7 @@ class TestClient(Client, BaseTestClient, Generic[T]):  # type: ignore[misc]
         with ExitStack() as stack:
             self.blocking_portal = portal = stack.enter_context(self.portal())
             self.lifespan_handler = LifeSpanHandler(client=self)
+            stack.enter_context(self.lifespan_handler)
 
             @stack.callback
             def reset_portal() -> None:

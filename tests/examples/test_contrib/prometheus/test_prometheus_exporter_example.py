@@ -3,7 +3,7 @@ from typing import Any, Dict
 import pytest
 from prometheus_client import REGISTRY
 
-from litestar import get
+from litestar import Controller, Litestar, Request, get
 from litestar.contrib.prometheus import PrometheusMiddleware
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import TestClient
@@ -60,3 +60,25 @@ def test_prometheus_exporter_example(
         assert metrics_exporter_response.status_code == HTTP_200_OK
         metrics = metrics_exporter_response.content.decode()
         assert expected_path in metrics
+
+
+def test_correct_population_path_template() -> None:
+    class TestController(Controller):
+        path = "/prefix"
+
+        @get("/{id_:int}")
+        async def b(self, request: Request, id_: int) -> str:
+            return request.scope["path_template"]
+
+        @get("/{id_:int}/postfix")
+        async def a(self, request: Request, id_: int) -> str:
+            return request.scope["path_template"]
+
+    app = Litestar([TestController])
+
+    with TestClient(app) as client:
+        without_postfix_resp = client.get("/prefix/1")
+        with_postfix_resp = client.get("/prefix/1/postfix")
+
+        assert without_postfix_resp.content.decode() == "/prefix/{id_}"
+        assert with_postfix_resp.content.decode() == "/prefix/{id_}/postfix"
