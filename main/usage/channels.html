@@ -47,8 +47,14 @@
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/litestar-theme.js?v=ab2dcc9e"></script>
     <script src="../_static/design-tabs.js?v=36754332"></script>
-    <script src="https://unpkg.com/mermaid@10.2.0/dist/mermaid.min.js"></script>
-    <script>mermaid.initialize({startOnLoad:true});</script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
+    <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs";mermaid.registerLayoutLoaders(elkLayouts);mermaid.initialize({startOnLoad:false});</script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+    <script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";
+window.addEventListener("load", () => mermaid.run());
+</script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'usage/channels';</script>
     <script src="../_static/versioning.js?v=68b42869"></script>
     <link rel="icon" href="../_static/favicon.png"/>
@@ -1364,6 +1370,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/params.html">params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/htmx.html">htmx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
@@ -1588,20 +1595,20 @@ publishing data to the backend</p>
 <section id="flowcharts">
 <h3>Flowcharts<a class="headerlink" href="#flowcharts" title="Permalink to this heading">#</a></h3>
 <figure class="align-center" id="id1">
-<div class="mermaid">
-            flowchart LR
+<pre  class="mermaid">
+        flowchart LR
     Backend(Backend) --&gt; Broker[(Broker)]
 
     Plugin{{Plugin}} --&gt; Backend
 
     Application[[Application]] --&gt; Plugin
-        </div><figcaption>
+    </pre><figcaption>
 <p><span class="caption-text">Publishing flow from the application to the <a class="reference internal" href="#term-broker"><span class="xref std std-term">broker</span></a></span><a class="headerlink" href="#id1" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
 <figure class="align-center" id="id2">
-<div class="mermaid">
-            flowchart TD
+<pre  class="mermaid">
+        flowchart TD
     Broker[(Broker)]
 
     Broker --&gt; Backend_1(Backend)
@@ -1617,7 +1624,7 @@ publishing data to the backend</p>
     Plugin_2 --&gt; Subscriber_4[Subscriber]
     Plugin_2 --&gt; Subscriber_5[Subscriber]
     Plugin_2 --&gt; Subscriber_6[Subscriber]
-        </div><figcaption>
+    </pre><figcaption>
 <p><span class="caption-text">Fanout flow of data from the <a class="reference internal" href="#term-broker"><span class="xref std std-term">broker</span></a> to the sockets, showing multiple plugin instances</span><a class="headerlink" href="#id2" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>

@@ -1362,6 +1362,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/params.html">params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/htmx.html">htmx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
@@ -1542,12 +1543,36 @@ document.write(`
 <p>HTMX is a JavaScript library that gives you access to AJAX, CSS Transitions, WebSockets and Server Sent Events directly in HTML, using attributes, so you can build modern user interfaces with the simplicity and power of hypertext.</p>
 <p>This section assumes that you have prior knowledge of HTMX.
 If you want to learn HTMX, we recommend consulting their <a class="reference external" href="https://htmx.org/docs">official tutorial</a>.</p>
+<section id="htmxplugin">
+<h2>HTMXPlugin<a class="headerlink" href="#htmxplugin" title="Permalink to this heading">#</a></h2>
+<p>a Litestar plugin <code class="docutils literal notranslate"><span class="pre">HTMXPlugin</span></code> is available to easily configure the default request class for all Litestar routes.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.plugins.htmx</span> <span class="kn">import</span> <span class="n">HTMXPlugin</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+
+<span class="kn">from</span> <span class="nn">litestar.contrib.jinja</span> <span class="kn">import</span> <span class="n">JinjaTemplateEngine</span>
+<span class="kn">from</span> <span class="nn">litestar.template.config</span> <span class="kn">import</span> <span class="n">TemplateConfig</span>
+
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span>
+    <span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_form</span><span class="p">],</span>
+    <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">HTMXPlugin</span><span class="p">()],</span>
+    <span class="n">template_config</span><span class="o">=</span><span class="n">TemplateConfig</span><span class="p">(</span>
+        <span class="n">directory</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="s2">&quot;litestar_htmx/templates&quot;</span><span class="p">),</span>
+        <span class="n">engine</span><span class="o">=</span><span class="n">JinjaTemplateEngine</span><span class="p">,</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="../reference/plugins/htmx.html#litestar.plugins.htmx.HTMXDetails" title="litestar.plugins.htmx.HTMXDetails"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTMXDetails</span></code></a> for a full list of
+available properties.</p>
+</section>
 <section id="htmxrequest">
 <h2>HTMXRequest<a class="headerlink" href="#htmxrequest" title="Permalink to this heading">#</a></h2>
 <p>A special <a class="reference internal" href="../reference/connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> class, providing interaction with the
-HTMX client.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.contrib.htmx.request</span> <span class="kn">import</span> <span class="n">HTMXRequest</span>
-<span class="kn">from</span> <span class="nn">litestar.contrib.htmx.response</span> <span class="kn">import</span> <span class="n">HTMXTemplate</span>
+HTMX client.  You can configure this globally by using the <code class="docutils literal notranslate"><span class="pre">HTMXPlugin</span></code> or by setting the <cite>request_class</cite> setting on any route, controller, router, or application.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.plugins.htmx</span> <span class="kn">import</span> <span class="n">HTMXRequest</span><span class="p">,</span> <span class="n">HTMXTemplate</span>
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">Litestar</span>
 <span class="kn">from</span> <span class="nn">litestar.response</span> <span class="kn">import</span> <span class="n">Template</span>
 
@@ -1576,7 +1601,7 @@ HTMX client.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>See <a class="reference internal" href="../reference/contrib/htmx.html#litestar.contrib.htmx.request.HTMXDetails" title="litestar.contrib.htmx.request.HTMXDetails"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTMXDetails</span></code></a> for a full list of
+<p>See <a class="reference internal" href="../reference/plugins/htmx.html#litestar.plugins.htmx.HTMXDetails" title="litestar.plugins.htmx.HTMXDetails"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTMXDetails</span></code></a> for a full list of
 available properties.</p>
 </section>
 <section id="htmx-response-classes">
@@ -1584,8 +1609,8 @@ available properties.</p>
 <section id="htmxtemplate-response-classes">
 <h3>HTMXTemplate Response Classes<a class="headerlink" href="#htmxtemplate-response-classes" title="Permalink to this heading">#</a></h3>
 <p>The most common  use-case for HTMX to render an html page or html snippet. Litestar makes this easy by providing
-an <a class="reference internal" href="../reference/contrib/htmx.html#litestar.contrib.htmx.response.HTMXTemplate" title="litestar.contrib.htmx.response.HTMXTemplate"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTMXTemplate</span></code></a> response:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.contrib.htmx.response</span> <span class="kn">import</span> <span class="n">HTMXTemplate</span>
+an <a class="reference internal" href="../reference/plugins/htmx.html#litestar.plugins.htmx.HTMXTemplate" title="litestar.plugins.htmx.HTMXTemplate"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTMXTemplate</span></code></a> response:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.plugins.htmx</span> <span class="kn">import</span> <span class="n">HTMXTemplate</span>
 <span class="kn">from</span> <span class="nn">litestar.response</span> <span class="kn">import</span> <span class="n">Template</span>
 
 
@@ -1621,21 +1646,21 @@ Litestar supports both of these:</p>
 </section>
 <section id="responses-that-don-t-make-any-changes-to-dom">
 <h3>1 - Responses that don’t make any changes to DOM<a class="headerlink" href="#responses-that-don-t-make-any-changes-to-dom" title="Permalink to this heading">#</a></h3>
-<p>Use <a class="reference internal" href="../reference/contrib/htmx.html#litestar.contrib.htmx.response.HXStopPolling" title="litestar.contrib.htmx.response.HXStopPolling"><code class="xref py py-class docutils literal notranslate"><span class="pre">HXStopPolling</span></code></a> to stop polling for a response.</p>
+<p>Use <a class="reference internal" href="../reference/plugins/htmx.html#litestar.plugins.htmx.HXStopPolling" title="litestar.plugins.htmx.HXStopPolling"><code class="xref py py-class docutils literal notranslate"><span class="pre">HXStopPolling</span></code></a> to stop polling for a response.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">HXStopPolling</span><span class="p">:</span>
     <span class="o">...</span>
     <span class="k">return</span> <span class="n">HXStopPolling</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Use <a class="reference internal" href="../reference/contrib/htmx.html#litestar.contrib.htmx.response.ClientRedirect" title="litestar.contrib.htmx.response.ClientRedirect"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientRedirect</span></code></a> to redirect with a page reload.</p>
+<p>Use <a class="reference internal" href="../reference/plugins/htmx.html#litestar.plugins.htmx.ClientRedirect" title="litestar.plugins.htmx.ClientRedirect"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientRedirect</span></code></a> to redirect with a page reload.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">ClientRedirect</span><span class="p">:</span>
     <span class="o">...</span>
     <span class="k">return</span> <span class="n">ClientRedirect</span><span class="p">(</span><span class="n">redirect_to</span><span class="o">=</span><span class="s2">&quot;/contact-us&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Use <a class="reference internal" href="../reference/contrib/htmx.html#litestar.contrib.htmx.response.ClientRefresh" title="litestar.contrib.htmx.response.ClientRefresh"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientRefresh</span></code></a> to force a full page refresh.</p>
+<p>Use <a class="reference internal" href="../reference/plugins/htmx.html#litestar.plugins.htmx.ClientRefresh" title="litestar.plugins.htmx.ClientRefresh"><code class="xref py py-class docutils literal notranslate"><span class="pre">ClientRefresh</span></code></a> to force a full page refresh.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">ClientRefresh</span><span class="p">:</span>
     <span class="o">...</span>
@@ -1645,7 +1670,7 @@ Litestar supports both of these:</p>
 </section>
 <section id="responses-that-may-change-dom">
 <h3>2 - Responses that may change DOM<a class="headerlink" href="#responses-that-may-change-dom" title="Permalink to this heading">#</a></h3>
-<p>Use <a class="reference internal" href="../reference/contrib/htmx.html#litestar.contrib.htmx.response.HXLocation" title="litestar.contrib.htmx.response.HXLocation"><code class="xref py py-class docutils literal notranslate"><span class="pre">HXLocation</span></code></a> to redirect to a new location without page reload.</p>
+<p>Use <a class="reference internal" href="../reference/plugins/htmx.html#litestar.plugins.htmx.HXLocation" title="litestar.plugins.htmx.HXLocation"><code class="xref py py-class docutils literal notranslate"><span class="pre">HXLocation</span></code></a> to redirect to a new location without page reload.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>This class provides the ability to change <code class="docutils literal notranslate"><span class="pre">target</span></code>, <code class="docutils literal notranslate"><span class="pre">swapping</span></code> method, the sent <code class="docutils literal notranslate"><span class="pre">values</span></code>, and the <code class="docutils literal notranslate"><span class="pre">headers</span></code>.</p>
@@ -1665,7 +1690,7 @@ Litestar supports both of these:</p>
     <span class="p">)</span>  <span class="c1"># values to submit with response.</span>
 </pre></div>
 </div>
-<p>Use <a class="reference internal" href="../reference/contrib/htmx.html#litestar.contrib.htmx.response.PushUrl" title="litestar.contrib.htmx.response.PushUrl"><code class="xref py py-class docutils literal notranslate"><span class="pre">PushUrl</span></code></a> to carry a response and push a url to the browser, optionally updating the <code class="docutils literal notranslate"><span class="pre">history</span></code> stack.</p>
+<p>Use <a class="reference internal" href="../reference/plugins/htmx.html#litestar.plugins.htmx.PushUrl" title="litestar.plugins.htmx.PushUrl"><code class="xref py py-class docutils literal notranslate"><span class="pre">PushUrl</span></code></a> to carry a response and push a url to the browser, optionally updating the <code class="docutils literal notranslate"><span class="pre">history</span></code> stack.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If the value for <code class="docutils literal notranslate"><span class="pre">push_url</span></code> is set to <code class="docutils literal notranslate"><span class="pre">False</span></code> it will prevent updating browser history.</p>
@@ -1676,7 +1701,7 @@ Litestar supports both of these:</p>
     <span class="k">return</span> <span class="n">PushUrl</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s2">&quot;Success!&quot;</span><span class="p">,</span> <span class="n">push_url</span><span class="o">=</span><span class="s2">&quot;/about&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Use <a class="reference internal" href="../reference/contrib/htmx.html#litestar.contrib.htmx.response.ReplaceUrl" title="litestar.contrib.htmx.response.ReplaceUrl"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReplaceUrl</span></code></a> to carry a response and replace the url in the browser’s <code class="docutils literal notranslate"><span class="pre">location</span></code> bar.</p>
+<p>Use <a class="reference internal" href="../reference/plugins/htmx.html#litestar.plugins.htmx.ReplaceUrl" title="litestar.plugins.htmx.ReplaceUrl"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReplaceUrl</span></code></a> to carry a response and replace the url in the browser’s <code class="docutils literal notranslate"><span class="pre">location</span></code> bar.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If the value to <code class="docutils literal notranslate"><span class="pre">replace_url</span></code> is set to <code class="docutils literal notranslate"><span class="pre">False</span></code> it will prevent updating the browser’s location.</p>
@@ -1687,21 +1712,21 @@ Litestar supports both of these:</p>
     <span class="k">return</span> <span class="n">ReplaceUrl</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s2">&quot;Success!&quot;</span><span class="p">,</span> <span class="n">replace_url</span><span class="o">=</span><span class="s2">&quot;/contact-us&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Use <a class="reference internal" href="../reference/contrib/htmx.html#litestar.contrib.htmx.response.Reswap" title="litestar.contrib.htmx.response.Reswap"><code class="xref py py-class docutils literal notranslate"><span class="pre">Reswap</span></code></a> to carry a response with a possible swap.</p>
+<p>Use <a class="reference internal" href="../reference/plugins/htmx.html#litestar.plugins.htmx.Reswap" title="litestar.plugins.htmx.Reswap"><code class="xref py py-class docutils literal notranslate"><span class="pre">Reswap</span></code></a> to carry a response with a possible swap.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/contact-us&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Reswap</span><span class="p">:</span>
     <span class="o">...</span>
     <span class="k">return</span> <span class="n">Reswap</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s2">&quot;Success!&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;beforebegin&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Use <a class="reference internal" href="../reference/contrib/htmx.html#litestar.contrib.htmx.response.Retarget" title="litestar.contrib.htmx.response.Retarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">Retarget</span></code></a> to carry a response and change the target element.</p>
+<p>Use <a class="reference internal" href="../reference/plugins/htmx.html#litestar.plugins.htmx.Retarget" title="litestar.plugins.htmx.Retarget"><code class="xref py py-class docutils literal notranslate"><span class="pre">Retarget</span></code></a> to carry a response and change the target element.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/contact-us&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Retarget</span><span class="p">:</span>
     <span class="o">...</span>
     <span class="k">return</span> <span class="n">Retarget</span><span class="p">(</span><span class="n">content</span><span class="o">=</span><span class="s2">&quot;Success!&quot;</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s2">&quot;#new-target&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Use <a class="reference internal" href="../reference/contrib/htmx.html#litestar.contrib.htmx.response.TriggerEvent" title="litestar.contrib.htmx.response.TriggerEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">TriggerEvent</span></code></a> to carry a response and trigger an event.</p>
+<p>Use <a class="reference internal" href="../reference/plugins/htmx.html#litestar.plugins.htmx.TriggerEvent" title="litestar.plugins.htmx.TriggerEvent"><code class="xref py py-class docutils literal notranslate"><span class="pre">TriggerEvent</span></code></a> to carry a response and trigger an event.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/contact-us&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">handler</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">TriggerEvent</span><span class="p">:</span>
     <span class="o">...</span>
@@ -1761,6 +1786,7 @@ Litestar supports both of these:</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#htmxplugin">HTMXPlugin</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#htmxrequest">HTMXRequest</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#htmx-response-classes">HTMX Response Classes</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#htmxtemplate-response-classes">HTMXTemplate Response Classes</a></li>

@@ -47,8 +47,14 @@
     <script src="../_static/copybutton.js?v=f281be69"></script>
     <script src="../_static/litestar-theme.js?v=ab2dcc9e"></script>
     <script src="../_static/design-tabs.js?v=36754332"></script>
-    <script src="https://unpkg.com/mermaid@10.2.0/dist/mermaid.min.js"></script>
-    <script>mermaid.initialize({startOnLoad:true});</script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
+    <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs";mermaid.registerLayoutLoaders(elkLayouts);mermaid.initialize({startOnLoad:false});</script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+    <script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";
+window.addEventListener("load", () => mermaid.run());
+</script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'usage/applications';</script>
     <script src="../_static/versioning.js?v=68b42869"></script>
     <link rel="icon" href="../_static/favicon.png"/>
@@ -1364,6 +1370,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/params.html">params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/htmx.html">htmx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/problem_details.html">problem details</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
@@ -1617,11 +1624,11 @@ and <a class="reference internal" href="../reference/handlers.html#litestar.hand
 order, once the ASGI server such as <a class="reference external" href="https://www.uvicorn.org/">uvicorn</a>,
 <a class="reference external" href="https://hypercorn.readthedocs.io/en/latest/#/">Hypercorn</a>, <a class="reference external" href="https://github.com/emmett-framework/granian/">Granian</a>,
 <a class="reference external" href="https://github.com/django/daphne/">Daphne</a>, etc. emits the respective event.</p>
-<div class="mermaid">
-            flowchart LR
+<pre  class="mermaid">
+        flowchart LR
     Startup[ASGI-Event: lifespan.startup] --&gt; on_startup
     Shutdown[ASGI-Event: lifespan.shutdown] --&gt; on_shutdown
-        </div><p>A classic use case for this is database connectivity. Often, we want to establish a database connection on application
+    </pre><p>A classic use case for this is database connectivity. Often, we want to establish a database connection on application
 startup, and then close it gracefully upon shutdown.</p>
 <p>For example, let us create a database connection using the async engine from
 <a class="reference external" href="https://docs.sqlalchemy.org/en/latest/orm/extensions/asyncio.html">SQLAlchemy</a>. We create two functions, one to get or
@@ -1743,10 +1750,10 @@ shutdown hooks are invoked.</p>
 </div>
 </div>
 <p>During shutdown, they are executed in the following order:</p>
-<div class="mermaid">
-            flowchart LR
+<pre  class="mermaid">
+        flowchart LR
     ctx_b --&gt; ctx_a --&gt; hook_a --&gt; hook_b
-        </div><p>As seen, the <a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-context-manager" title="(in Python v3.13)"><span class="xref std std-term">context managers</span></a> are invoked in inverse order.
+    </pre><p>As seen, the <a class="reference external" href="https://docs.python.org/3/glossary.html#term-asynchronous-context-manager" title="(in Python v3.13)"><span class="xref std std-term">context managers</span></a> are invoked in inverse order.
 On the other hand, the shutdown hooks are invoked in their specified order.</p>
 </section>
 <section id="using-application-state">
