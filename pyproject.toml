@@ -460,6 +460,7 @@ known-first-party = ["litestar", "tests", "examples"]
 "litestar/_openapi/schema_generation/schema.py" = ["C901"]
 "litestar/exceptions/*.*" = ["N818"]
 "litestar/handlers/**/*.*" = ["N801"]
+"litestar/handlers/websocket_handlers/listener.py" = ["B027"]
 "litestar/params.py" = ["N802"]
 "test_apps/**/*.*" = ["D", "TRY", "EM", "S", "PTH"]
 "tests/**/*.*" = [
