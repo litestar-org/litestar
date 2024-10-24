@@ -159,6 +159,7 @@ nitpick_ignore = [
     (PY_CLASS, "litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO"),
     (PY_CLASS, "litestar.contrib.sqlalchemy.types.BigIntIdentity"),
     (PY_CLASS, "litestar.contrib.sqlalchemy.types.JsonB"),
+    (PY_CLASS, "litestar.contrib.htmx.request.HTMXRequest"),
     (PY_CLASS, "litestar.typing.ParsedType"),
     (PY_METH, "litestar.dto.factory.DTOData.create_instance"),
     (PY_METH, "litestar.dto.interface.DTOInterface.data_to_encodable_type"),
