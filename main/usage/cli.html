@@ -1589,7 +1589,7 @@ or by creating a plugin that conforms to the <a class="reference internal" href=
 <section id="using-entry-points">
 <h3>Using entry points<a class="headerlink" href="#using-entry-points" title="Permalink to this heading">#</a></h3>
 <p>Entry points for the CLI can be added under the <code class="docutils literal notranslate"><span class="pre">litestar.commands</span></code> group. These
-entries should point to a <a class="reference external" href="https://click.palletsprojects.com/en/8.1.x/api/#click.Command" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Command</span></code></a> or <a class="reference external" href="https://click.palletsprojects.com/en/8.1.x/api/#click.Group" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Group</span></code></a>:</p>
+entries should point to a <a class="reference external" href="https://click.palletsprojects.com/en/stable/api/#click.Command" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Command</span></code></a> or <a class="reference external" href="https://click.palletsprojects.com/en/stable/api/#click.Group" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Group</span></code></a>:</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" for="sd-tab-item-0">
@@ -1642,7 +1642,7 @@ Poetry</label><div class="sd-tab-content docutils">
 <h3>Using a plugin<a class="headerlink" href="#using-a-plugin" title="Permalink to this heading">#</a></h3>
 <p>A plugin extending the CLI can be created using the <a class="reference internal" href="../reference/plugins/index.html#litestar.plugins.CLIPluginProtocol" title="litestar.plugins.CLIPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">CLIPluginProtocol</span></code></a>.
 Its <a class="reference internal" href="../reference/plugins/index.html#litestar.plugins.CLIPluginProtocol.on_cli_init" title="litestar.plugins.CLIPluginProtocol.on_cli_init"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_cli_init()</span></code></a> will be called during the initialization of the CLI,
-and receive the root <a class="reference external" href="https://click.palletsprojects.com/en/8.1.x/api/#click.Group" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Group</span></code></a> as its first argument, which can then be used to add or override commands:</p>
+and receive the root <a class="reference external" href="https://click.palletsprojects.com/en/stable/api/#click.Group" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Group</span></code></a> as its first argument, which can then be used to add or override commands:</p>
 <div class="literal-block-wrapper docutils container" id="id6">
 <div class="code-block-caption"><span class="caption-text">Creating a CLI plugin</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
