@@ -51,7 +51,12 @@ def _dec_pydantic_v2(model_type: type[pydantic_v2.BaseModel], value: Any, strict
     try:
         return model_type.model_validate(value, strict=strict)
     except pydantic_v2.ValidationError as e:
-        raise ExtendedMsgSpecValidationError(errors=cast("list[dict[str, Any]]", e.errors())) from e
+        hide_input = False
+        if isinstance(model_config := getattr(model_type, "model_config", None), dict):
+            hide_input = bool(model_config.get("hide_input_in_errors"))
+        raise ExtendedMsgSpecValidationError(
+            errors=cast("list[dict[str, Any]]", e.errors(include_input=not hide_input))
+        ) from e
 
 
 def _dec_pydantic_uuid(
