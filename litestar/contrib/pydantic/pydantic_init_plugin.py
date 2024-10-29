@@ -33,8 +33,12 @@ except ImportError:
 
 
 if TYPE_CHECKING:
+    import pydantic as pydantic_v2_mandatory
+
     from litestar.config.app import AppConfig
     from litestar.types.serialization import PydanticV1FieldsListType, PydanticV2FieldsListType
+else:
+    pydantic_v2_mandatory = pydantic_v2
 
 
 T = TypeVar("T")
@@ -47,11 +51,16 @@ def _dec_pydantic_v1(model_type: type[pydantic_v1.BaseModel], value: Any) -> pyd
         raise ExtendedMsgSpecValidationError(errors=cast("list[dict[str, Any]]", e.errors())) from e
 
 
-def _dec_pydantic_v2(model_type: type[pydantic_v2.BaseModel], value: Any, strict: bool) -> pydantic_v2.BaseModel:  # pyright: ignore[reportInvalidTypeForm]
+def _dec_pydantic_v2(
+    model_type: type[pydantic_v2_mandatory.BaseModel], value: Any, strict: bool
+) -> pydantic_v2_mandatory.BaseModel:
     try:
         return model_type.model_validate(value, strict=strict)
-    except pydantic_v2.ValidationError as e:
-        raise ExtendedMsgSpecValidationError(errors=cast("list[dict[str, Any]]", e.errors())) from e
+    except pydantic_v2_mandatory.ValidationError as e:
+        hide_input = model_type.model_config.get("hide_input_in_errors", False)
+        raise ExtendedMsgSpecValidationError(
+            errors=cast("list[dict[str, Any]]", e.errors(include_input=not hide_input))
+        ) from e
 
 
 def _dec_pydantic_uuid(
