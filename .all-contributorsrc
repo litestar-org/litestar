@@ -1886,6 +1886,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "charles-dyfis-net",
+      "name": "Charles Duffy",
+      "avatar_url": "https://avatars.githubusercontent.com/u/22370?v=4",
+      "profile": "https://keybase.io/charlesdyfisnet",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
