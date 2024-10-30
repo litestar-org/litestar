@@ -227,7 +227,7 @@ class LoggingMiddleware(AbstractMiddleware):
                 connection_state.log_context[HTTP_RESPONSE_BODY] = message
                 self.log_response(scope=scope)
 
-                if not message["more_body"]:
+                if not message.get("more_body"):
                     connection_state.log_context.clear()
 
             await send(message)
