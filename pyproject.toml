@@ -170,7 +170,6 @@ linting = [
   "pyright==1.1.344",
   "asyncpg-stubs",
   "types-beautifulsoup4",
-  "types-python-jose",
   "types-pyyaml",
   "types-redis",
   "types-psutil",
