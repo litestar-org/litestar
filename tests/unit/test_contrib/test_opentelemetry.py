@@ -97,6 +97,7 @@ def test_open_telemetry_middleware_with_http_route(
         }
 
         metric_data = reader.get_metrics_data()
+        assert metric_data
         assert metric_data.resource_metrics
 
         resource_metrics = metric_data.resource_metrics[0]

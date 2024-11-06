@@ -65,7 +65,7 @@ example here let us say it is a `SQLAlchemy <https://docs.sqlalchemy.org/>`_ mod
         # ... other fields follow, but we only require id for this example
 
 We will also need some utility methods to encode and decode tokens. To this end we will use
-the `python-jose <https://github.com/mpdavis/python-jose>`_ library. We will also create a Pydantic model representing a
+the `pyjwt <https://pyjwt.readthedocs.io/en/stable/>`_ library. We will also create a Pydantic model representing a
 JWT Token:
 
 .. dropdown:: Click to see the JWT utility methods and Token model
