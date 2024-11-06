@@ -2,7 +2,7 @@ JWT Security Backends
 =====================
 
 Litestar offers optional JWT based security backends. To use these make sure to install the
-`python-jose <https://github.com/mpdavis/python-jose>`_ and `cryptography <https://github.com/pyca/cryptography>`_
+`pyjwt <https://pyjwt.readthedocs.io/en/stable/>`_ and `cryptography <https://github.com/pyca/cryptography>`_
 packages, or simply install Litestar with the ``jwt``
 `extra <https://packaging.python.org/en/latest/specifications/dependency-specifiers/#extras>`_:
 
