@@ -602,11 +602,11 @@ def test_v2_json_schema_extra_callable_raises() -> None:
 
 
 def test_schema_by_alias(base_model: AnyBaseModelType, pydantic_version: PydanticVersion) -> None:
-    class RequestWithAlias(base_model):  # type: ignore[valid-type]
-        first: str = (pydantic_v1.Field if pydantic_version == "v1" else pydantic_v2.Field)(alias="second")  # type: ignore[operator]
+    class RequestWithAlias(base_model):  # type: ignore[valid-type,misc]
+        first: str = (pydantic_v1.Field if pydantic_version == "v1" else pydantic_v2.Field)(alias="second")
 
-    class ResponseWithAlias(base_model):  # type: ignore[valid-type]
-        first: str = (pydantic_v1.Field if pydantic_version == "v1" else pydantic_v2.Field)(alias="second")  # type: ignore[operator]
+    class ResponseWithAlias(base_model):  # type: ignore[valid-type,misc]
+        first: str = (pydantic_v1.Field if pydantic_version == "v1" else pydantic_v2.Field)(alias="second")
 
     @post("/", signature_types=[RequestWithAlias, ResponseWithAlias])
     def handler(data: RequestWithAlias) -> ResponseWithAlias:
@@ -638,10 +638,10 @@ def test_schema_by_alias(base_model: AnyBaseModelType, pydantic_version: Pydanti
 
 def test_schema_by_alias_plugin_override(base_model: AnyBaseModelType, pydantic_version: PydanticVersion) -> None:
     class RequestWithAlias(base_model):  # type: ignore[misc, valid-type]
-        first: str = (pydantic_v1.Field if pydantic_version == "v1" else pydantic_v2.Field)(alias="second")  # type: ignore[operator]
+        first: str = (pydantic_v1.Field if pydantic_version == "v1" else pydantic_v2.Field)(alias="second")
 
     class ResponseWithAlias(base_model):  # type: ignore[misc, valid-type]
-        first: str = (pydantic_v1.Field if pydantic_version == "v1" else pydantic_v2.Field)(alias="second")  # type: ignore[operator]
+        first: str = (pydantic_v1.Field if pydantic_version == "v1" else pydantic_v2.Field)(alias="second")
 
     @post("/", signature_types=[RequestWithAlias, ResponseWithAlias])
     def handler(data: RequestWithAlias) -> ResponseWithAlias:
