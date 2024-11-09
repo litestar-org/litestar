@@ -192,6 +192,16 @@ nitpick_ignore = [
     (PY_CLASS, "litestar.template.Template"),
     (PY_CLASS, "litestar.middleware.compression.gzip_facade.GzipCompression"),
     (PY_CLASS, "litestar.handlers.http_handlers.decorators._subclass_warning"),
+    (PY_CLASS, "litestar.background_tasks.P"),
+    (PY_CLASS, "P.args"),
+    (PY_CLASS, "P.kwargs"),
+    (PY_CLASS, "litestar.contrib.jinja.P"),
+    (PY_CLASS, "litestar.contrib.mako.P"),
+    (PY_CLASS, "JWTDecodeOptions"),
+    (PY_CLASS, "litestar.template.base.P"),
+    (PY_CLASS, "litestar.contrib.pydantic.PydanticDTO"),
+    (PY_CLASS, "litestar.contrib.pydantic.PydanticPlugin"),
+    (PY_CLASS, "typing.Self"),
 ]
 
 nitpick_ignore_regex = [
