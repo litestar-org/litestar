@@ -141,12 +141,12 @@ def test_create_collection_constrained_field_schema_pydantic_v1(
     class Model(pydantic_v1.BaseModel):
         field: annotation
 
-    schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"] # pyright: ignore[reportAttributeAccessIssue]
+    schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]  # pyright: ignore[reportAttributeAccessIssue]
 
-    assert schema.type == OpenAPIType.ARRAY # pyright: ignore[reportAttributeAccessIssue]
+    assert schema.type == OpenAPIType.ARRAY  # pyright: ignore[reportAttributeAccessIssue]
     assert schema.items.type == OpenAPIType.INTEGER  # type: ignore[union-attr] # pyright: ignore[reportAttributeAccessIssue]
-    assert schema.min_items == annotation.min_items # pyright: ignore[reportAttributeAccessIssue]
-    assert schema.max_items == annotation.max_items # pyright: ignore[reportAttributeAccessIssue]
+    assert schema.min_items == annotation.min_items  # pyright: ignore[reportAttributeAccessIssue]
+    assert schema.max_items == annotation.max_items  # pyright: ignore[reportAttributeAccessIssue]
 
 
 @pytest.mark.parametrize("make_constraint", [pydantic_v2.conlist, pydantic_v2.conset, pydantic_v2.confrozenset])
@@ -169,12 +169,12 @@ def test_create_collection_constrained_field_schema_pydantic_v2(
     class Model(pydantic_v2.BaseModel):
         field: make_constraint(int, min_length=min_length, max_length=max_length)  # type: ignore[valid-type]
 
-    schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"] # pyright: ignore[reportAttributeAccessIssue]
+    schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]  # pyright: ignore[reportAttributeAccessIssue]
 
-    assert schema.type == OpenAPIType.ARRAY # pyright: ignore[reportAttributeAccessIssue]
+    assert schema.type == OpenAPIType.ARRAY  # pyright: ignore[reportAttributeAccessIssue]
     assert schema.items.type == OpenAPIType.INTEGER  # type: ignore[union-attr]
-    assert schema.min_items == min_length # pyright: ignore[reportAttributeAccessIssue]
-    assert schema.max_items == max_length # pyright: ignore[reportAttributeAccessIssue]
+    assert schema.min_items == min_length  # pyright: ignore[reportAttributeAccessIssue]
+    assert schema.max_items == max_length  # pyright: ignore[reportAttributeAccessIssue]
 
 
 @pytest.fixture()
@@ -215,19 +215,19 @@ def test_create_collection_constrained_field_schema_sub_fields(
         return s.type
 
     for field_name in ["set_field", "list_field"]:
-        schema = model_schema.properties[field_name] # pyright: ignore[reportAttributeAccessIssue]
+        schema = model_schema.properties[field_name]  # pyright: ignore[reportAttributeAccessIssue]
 
-        assert schema.type == OpenAPIType.ARRAY # pyright: ignore[reportAttributeAccessIssue]
-        assert schema.max_items == 10 # pyright: ignore[reportAttributeAccessIssue]
-        assert schema.min_items == 1 # pyright: ignore[reportAttributeAccessIssue]
-        assert isinstance(schema.items, Schema) # pyright: ignore[reportAttributeAccessIssue]
-        assert schema.items.one_of is not None # pyright: ignore[reportAttributeAccessIssue]
+        assert schema.type == OpenAPIType.ARRAY  # pyright: ignore[reportAttributeAccessIssue]
+        assert schema.max_items == 10  # pyright: ignore[reportAttributeAccessIssue]
+        assert schema.min_items == 1  # pyright: ignore[reportAttributeAccessIssue]
+        assert isinstance(schema.items, Schema)  # pyright: ignore[reportAttributeAccessIssue]
+        assert schema.items.one_of is not None  # pyright: ignore[reportAttributeAccessIssue]
 
         # https://github.com/litestar-org/litestar/pull/2570#issuecomment-1788122570
-        assert {_get_schema_type(s) for s in schema.items.one_of} == {OpenAPIType.STRING, OpenAPIType.INTEGER} # pyright: ignore[reportAttributeAccessIssue]
+        assert {_get_schema_type(s) for s in schema.items.one_of} == {OpenAPIType.STRING, OpenAPIType.INTEGER}  # pyright: ignore[reportAttributeAccessIssue]
 
     # set should have uniqueItems always
-    assert model_schema.properties["set_field"].unique_items # pyright: ignore[reportAttributeAccessIssue]
+    assert model_schema.properties["set_field"].unique_items  # pyright: ignore[reportAttributeAccessIssue]
 
 
 @pytest.mark.parametrize("annotation", constrained_string_v1)
@@ -239,14 +239,14 @@ def test_create_string_constrained_field_schema_pydantic_v1(
     class Model(pydantic_v1.BaseModel):
         field: annotation
 
-    schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"] # pyright: ignore[reportAttributeAccessIssue]
+    schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]  # pyright: ignore[reportAttributeAccessIssue]
 
-    assert schema.type == OpenAPIType.STRING # pyright: ignore[reportAttributeAccessIssue]
+    assert schema.type == OpenAPIType.STRING  # pyright: ignore[reportAttributeAccessIssue]
 
-    assert schema.min_length == annotation.min_length # pyright: ignore[reportAttributeAccessIssue]
-    assert schema.max_length == annotation.max_length # pyright: ignore[reportAttributeAccessIssue]
+    assert schema.min_length == annotation.min_length  # pyright: ignore[reportAttributeAccessIssue]
+    assert schema.max_length == annotation.max_length  # pyright: ignore[reportAttributeAccessIssue]
     if pattern := getattr(annotation, "regex", None):
-        assert schema.pattern == pattern.pattern if isinstance(pattern, Pattern) else pattern # pyright: ignore[reportAttributeAccessIssue]
+        assert schema.pattern == pattern.pattern if isinstance(pattern, Pattern) else pattern  # pyright: ignore[reportAttributeAccessIssue]
     if annotation.to_lower:
         assert schema.description
     if annotation.to_upper:
@@ -264,12 +264,12 @@ def test_create_string_constrained_field_schema_pydantic_v2(
     class Model(pydantic_v2.BaseModel):
         field: annotation
 
-    schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"] # pyright: ignore[reportAttributeAccessIssue]
+    schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]  # pyright: ignore[reportAttributeAccessIssue]
 
-    assert schema.type == OpenAPIType.STRING # pyright: ignore[reportAttributeAccessIssue]
-    assert schema.min_length == constraint.min_length # pyright: ignore[reportAttributeAccessIssue]
-    assert schema.max_length == constraint.max_length # pyright: ignore[reportAttributeAccessIssue]
-    assert schema.pattern == constraint.pattern # pyright: ignore[reportAttributeAccessIssue]
+    assert schema.type == OpenAPIType.STRING  # pyright: ignore[reportAttributeAccessIssue]
+    assert schema.min_length == constraint.min_length  # pyright: ignore[reportAttributeAccessIssue]
+    assert schema.max_length == constraint.max_length  # pyright: ignore[reportAttributeAccessIssue]
+    assert schema.pattern == constraint.pattern  # pyright: ignore[reportAttributeAccessIssue]
     if constraint.to_upper:
         assert schema.description == "must be in upper case"
     if constraint.to_lower:
@@ -287,11 +287,11 @@ def test_create_byte_constrained_field_schema_pydantic_v2(
     class Model(pydantic_v2.BaseModel):
         field: annotation
 
-    schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"] # pyright: ignore[reportAttributeAccessIssue]
+    schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]  # pyright: ignore[reportAttributeAccessIssue]
 
-    assert schema.type == OpenAPIType.STRING # pyright: ignore[reportAttributeAccessIssue]
-    assert schema.min_length == constraint.min_length # pyright: ignore[reportAttributeAccessIssue]
-    assert schema.max_length == constraint.max_length # pyright: ignore[reportAttributeAccessIssue]
+    assert schema.type == OpenAPIType.STRING  # pyright: ignore[reportAttributeAccessIssue]
+    assert schema.min_length == constraint.min_length  # pyright: ignore[reportAttributeAccessIssue]
+    assert schema.max_length == constraint.max_length  # pyright: ignore[reportAttributeAccessIssue]
 
 
 @pytest.mark.parametrize("annotation", constrained_numbers_v1)
@@ -307,16 +307,16 @@ def test_create_numerical_constrained_field_schema_pydantic_v1(
     class Model(pydantic_v1.BaseModel):
         field: annotation
 
-    schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"] # pyright: ignore[reportAttributeAccessIssue]
+    schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]  # pyright: ignore[reportAttributeAccessIssue]
 
     assert (
-        schema.type == OpenAPIType.INTEGER if is_class_and_subclass(annotation, ConstrainedInt) else OpenAPIType.NUMBER # pyright: ignore[reportAttributeAccessIssue]
+        schema.type == OpenAPIType.INTEGER if is_class_and_subclass(annotation, ConstrainedInt) else OpenAPIType.NUMBER  # pyright: ignore[reportAttributeAccessIssue]
     )
-    assert schema.exclusive_minimum == annotation.gt # pyright: ignore[reportAttributeAccessIssue]
-    assert schema.minimum == annotation.ge # pyright: ignore[reportAttributeAccessIssue]
-    assert schema.exclusive_maximum == annotation.lt # pyright: ignore[reportAttributeAccessIssue]
-    assert schema.maximum == annotation.le # pyright: ignore[reportAttributeAccessIssue]
-    assert schema.multiple_of == annotation.multiple_of # pyright: ignore[reportAttributeAccessIssue]
+    assert schema.exclusive_minimum == annotation.gt  # pyright: ignore[reportAttributeAccessIssue]
+    assert schema.minimum == annotation.ge  # pyright: ignore[reportAttributeAccessIssue]
+    assert schema.exclusive_maximum == annotation.lt  # pyright: ignore[reportAttributeAccessIssue]
+    assert schema.maximum == annotation.le  # pyright: ignore[reportAttributeAccessIssue]
+    assert schema.multiple_of == annotation.multiple_of  # pyright: ignore[reportAttributeAccessIssue]
 
 
 @pytest.mark.parametrize(
@@ -346,14 +346,14 @@ def test_create_numerical_constrained_field_schema_pydantic_v2(
     class Model(pydantic_v1.BaseModel):
         field: annotation  # type: ignore[valid-type]
 
-    schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"] # pyright: ignore[reportAttributeAccessIssue]
+    schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]  # pyright: ignore[reportAttributeAccessIssue]
 
-    assert schema.type == OpenAPIType.INTEGER if is_class_and_subclass(annotation, int) else OpenAPIType.NUMBER # pyright: ignore[reportAttributeAccessIssue]
-    assert schema.exclusive_minimum == constraint_kwargs.get("gt") # pyright: ignore[reportAttributeAccessIssue]
-    assert schema.minimum == constraint_kwargs.get("ge") # pyright: ignore[reportAttributeAccessIssue]
-    assert schema.exclusive_maximum == constraint_kwargs.get("lt") # pyright: ignore[reportAttributeAccessIssue]
-    assert schema.maximum == constraint_kwargs.get("le") # pyright: ignore[reportAttributeAccessIssue]
-    assert schema.multiple_of == constraint_kwargs.get("multiple_of") # pyright: ignore[reportAttributeAccessIssue]
+    assert schema.type == OpenAPIType.INTEGER if is_class_and_subclass(annotation, int) else OpenAPIType.NUMBER  # pyright: ignore[reportAttributeAccessIssue]
+    assert schema.exclusive_minimum == constraint_kwargs.get("gt")  # pyright: ignore[reportAttributeAccessIssue]
+    assert schema.minimum == constraint_kwargs.get("ge")  # pyright: ignore[reportAttributeAccessIssue]
+    assert schema.exclusive_maximum == constraint_kwargs.get("lt")  # pyright: ignore[reportAttributeAccessIssue]
+    assert schema.maximum == constraint_kwargs.get("le")  # pyright: ignore[reportAttributeAccessIssue]
+    assert schema.multiple_of == constraint_kwargs.get("multiple_of")  # pyright: ignore[reportAttributeAccessIssue]
 
 
 @pytest.mark.parametrize("annotation", constrained_dates_v1)
@@ -365,10 +365,10 @@ def test_create_date_constrained_field_schema_pydantic_v1(
     class Model(pydantic_v1.BaseModel):
         field: annotation
 
-    schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"] # pyright: ignore[reportAttributeAccessIssue]
+    schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]  # pyright: ignore[reportAttributeAccessIssue]
 
-    assert schema.type == OpenAPIType.STRING # pyright: ignore[reportAttributeAccessIssue]
-    assert schema.format == OpenAPIFormat.DATE # pyright: ignore[reportAttributeAccessIssue]
+    assert schema.type == OpenAPIType.STRING  # pyright: ignore[reportAttributeAccessIssue]
+    assert schema.format == OpenAPIFormat.DATE  # pyright: ignore[reportAttributeAccessIssue]
     if gt := annotation.gt:
         assert date.fromtimestamp(schema.exclusive_minimum) == gt  # type: ignore[arg-type] # pyright: ignore[reportArgumentType]
     if ge := annotation.ge:
@@ -396,9 +396,9 @@ def test_create_date_constrained_field_schema_pydantic_v2(
     class Model(pydantic_v2.BaseModel):
         field: pydantic_v2.condate(**constraints)  # type: ignore[valid-type]
 
-    schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"] # pyright: ignore[reportAttributeAccessIssue]
-    assert schema.type == OpenAPIType.STRING # pyright: ignore[reportAttributeAccessIssue]
-    assert schema.format == OpenAPIFormat.DATE # pyright: ignore[reportAttributeAccessIssue]
+    schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]  # pyright: ignore[reportAttributeAccessIssue]
+    assert schema.type == OpenAPIType.STRING  # pyright: ignore[reportAttributeAccessIssue]
+    assert schema.format == OpenAPIFormat.DATE  # pyright: ignore[reportAttributeAccessIssue]
 
     if gt := constraints.get("gt"):
         assert date.fromtimestamp(schema.exclusive_minimum) == gt  # type: ignore[arg-type]
@@ -427,7 +427,7 @@ def test_create_constrained_field_schema_v1(
     class Model(pydantic_v1.BaseModel):
         field: annotation
 
-    assert schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"] # pyright: ignore[reportAttributeAccessIssue]
+    assert schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"]  # pyright: ignore[reportAttributeAccessIssue]
 
 
 @pytest.mark.parametrize(

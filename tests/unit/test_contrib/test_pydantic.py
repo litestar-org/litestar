@@ -18,9 +18,7 @@ def purge_module(module_names: list[str], path: str | Path) -> None:
 
 def test_deprecated_pydantic_imports() -> None:
     purge_module(["litestar.contrib.pydantic"], __file__)
-    with pytest.warns(
-        DeprecationWarning, match="importing PydanticDTO from 'litestar.contrib.pydantic' is deprecated"
-    ):
+    with pytest.warns(DeprecationWarning, match="importing PydanticDTO from 'litestar.contrib.pydantic' is deprecated"):
         from litestar.contrib.pydantic import PydanticDTO
 
     purge_module(["litestar.contrib.pydantic"], __file__)
@@ -52,36 +50,36 @@ def test_deprecated_pydantic_dto_factory_imports() -> None:
     purge_module(["litestar.contrib.pydantic.pydantic_dto_factory"], __file__)
     with pytest.warns(
         DeprecationWarning,
-        match="importing PydanticDTO from 'litestar.contrib.pydantic.pydantic_dto_factory' is deprecated",
+        match="importing PydanticDTO from 'litestar.contrib.pydantic' is deprecated",
     ):
-        from litestar.contrib.pydantic.pydantic_dto_factory import PydanticDTO
+        from litestar.contrib.pydantic import PydanticDTO
 
 
 def test_deprecated_pydantic_init_plugin_imports() -> None:
     purge_module(["litestar.contrib.pydantic.pydantic_init_plugin"], __file__)
     with pytest.warns(
         DeprecationWarning,
-        match="importing PydanticInitPlugin from 'litestar.contrib.pydantic.pydantic_init_plugin' is deprecated",
+        match="importing PydanticInitPlugin from 'litestar.contrib.pydantic' is deprecated",
     ):
-        from litestar.contrib.pydantic.pydantic_init_plugin import PydanticInitPlugin
+        from litestar.contrib.pydantic import PydanticInitPlugin
 
 
 def test_deprecated_pydantic_schema_plugin_imports() -> None:
     purge_module(["litestar.contrib.pydantic.pydantic_schema_plugin"], __file__)
     with pytest.warns(
         DeprecationWarning,
-        match="importing PydanticSchemaPlugin from 'litestar.contrib.pydantic.pydantic_schema_plugin' is deprecated",
+        match="importing PydanticSchemaPlugin from 'litestar.contrib.pydantic' is deprecated",
     ):
-        from litestar.contrib.pydantic.pydantic_schema_plugin import PydanticSchemaPlugin
+        from litestar.contrib.pydantic import PydanticSchemaPlugin
 
 
 def test_deprecated_pydantic_di_plugin_imports() -> None:
     purge_module(["litestar.contrib.pydantic.pydantic_di_plugin"], __file__)
     with pytest.warns(
         DeprecationWarning,
-        match="importing PydanticDIPlugin from 'litestar.contrib.pydantic.pydantic_di_plugin' is deprecated",
+        match="importing PydanticDIPlugin from 'litestar.contrib.pydantic' is deprecated",
     ):
-        from litestar.contrib.pydantic.pydantic_di_plugin import PydanticDIPlugin
+        from litestar.contrib.pydantic import PydanticDIPlugin
 
 
 def test_deprecated_pydantic_utils_imports() -> None:

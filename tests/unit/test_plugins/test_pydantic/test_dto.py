@@ -61,7 +61,7 @@ def test_field_definition_implicit_optional_default(base_model: type[BaseModel])
 
 
 def test_detect_nested_field_pydantic_v1(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr("litestar.plugins.pydantic.pydantic_dto_factory.pydantic_v2", Empty)
+    monkeypatch.setattr("litestar.plugins.pydantic.dto.pydantic_v2", Empty)
 
     class Model(pydantic_v1.BaseModel):
         a: str

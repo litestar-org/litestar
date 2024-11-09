@@ -157,7 +157,7 @@ def model(pydantic_version: PydanticVersion) -> ModelV1 | ModelV2:
         )
     return ModelV2(
         path=Path("example"),
-        email_str=pydantic_v2.parse_obj_as(pydantic_v2.EmailStr, "info@example.org"), # pyright: ignore[reportArgumentType]
+        email_str=pydantic_v2.parse_obj_as(pydantic_v2.EmailStr, "info@example.org"),  # pyright: ignore[reportArgumentType]
         name_email=pydantic_v2.NameEmail("info", "info@example.org"),
         color=ColorV2("rgb(255, 255, 255)"),
         bytesize=pydantic_v2.ByteSize(100),

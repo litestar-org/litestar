@@ -1,11 +1,18 @@
 from __future__ import annotations
 
+from typing import Callable
+
 import pydantic
 import pytest
 from pydantic import v1 as pydantic_v1
 from pytest import FixtureRequest
 
 from . import PydanticVersion
+
+
+@pytest.fixture
+def int_factory() -> Callable[[], int]:
+    return lambda: 2
 
 
 @pytest.fixture(params=["v1", "v2"])
