@@ -13,9 +13,8 @@ from pydantic import v1 as pydantic_v1
 from pydantic.v1.color import Color as ColorV1
 from pydantic_extra_types.color import Color as ColorV2
 
-from litestar.plugins.pydantic import _model_dump, _model_dump_json
-from litestar.plugins.pydantic import PydanticInitPlugin
 from litestar.exceptions import SerializationException
+from litestar.plugins.pydantic import PydanticInitPlugin, _model_dump, _model_dump_json
 from litestar.serialization import (
     decode_json,
     decode_msgpack,

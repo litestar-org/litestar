@@ -3,8 +3,9 @@ from __future__ import annotations
 
 import importlib
 import sys
-from pathlib import Path
 from importlib.util import cache_from_source
+from pathlib import Path
+
 import pytest
 
 
@@ -21,25 +22,25 @@ def test_deprecated_pydantic_imports() -> None:
         DeprecationWarning, match="importing PydanticDTO from 'litestar.contrib.pydantic' is deprecated"
     ):
         from litestar.contrib.pydantic import PydanticDTO
-    
+
     purge_module(["litestar.contrib.pydantic"], __file__)
     with pytest.warns(
         DeprecationWarning, match="importing PydanticInitPlugin from 'litestar.contrib.pydantic' is deprecated"
     ):
         from litestar.contrib.pydantic import PydanticInitPlugin
-    
+
     purge_module(["litestar.contrib.pydantic"], __file__)
     with pytest.warns(
         DeprecationWarning, match="importing PydanticSchemaPlugin from 'litestar.contrib.pydantic' is deprecated"
     ):
         from litestar.contrib.pydantic import PydanticSchemaPlugin
-    
+
     purge_module(["litestar.contrib.pydantic"], __file__)
     with pytest.warns(
         DeprecationWarning, match="importing PydanticPlugin from 'litestar.contrib.pydantic' is deprecated"
     ):
         from litestar.contrib.pydantic import PydanticPlugin
-    
+
     purge_module(["litestar.contrib.pydantic"], __file__)
     with pytest.warns(
         DeprecationWarning, match="importing PydanticDIPlugin from 'litestar.contrib.pydantic' is deprecated"

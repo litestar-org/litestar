@@ -8,8 +8,8 @@ from pydantic import v1 as pydantic_v1
 from typing_extensions import Annotated, Literal
 
 from litestar import Request, post
-from litestar.plugins.pydantic import PydanticDTO, _model_dump_json
 from litestar.dto import DTOConfig
+from litestar.plugins.pydantic import PydanticDTO, _model_dump_json
 from litestar.testing import create_test_client
 from litestar.types import Empty
 from litestar.typing import FieldDefinition

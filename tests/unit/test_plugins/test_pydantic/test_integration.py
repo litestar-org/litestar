@@ -7,10 +7,9 @@ from pydantic import v1 as pydantic_v1
 from typing_extensions import Annotated
 
 from litestar import get, post
-from litestar.plugins.pydantic import PydanticInitPlugin, PydanticPlugin
-from litestar.plugins.pydantic import PydanticDTO
 from litestar.enums import RequestEncodingType
 from litestar.params import Body, Parameter
+from litestar.plugins.pydantic import PydanticDTO, PydanticInitPlugin, PydanticPlugin
 from litestar.status_codes import HTTP_400_BAD_REQUEST
 from litestar.testing import create_test_client
 from tests.unit.test_plugins.test_pydantic.models import PydanticPerson, PydanticV1Person

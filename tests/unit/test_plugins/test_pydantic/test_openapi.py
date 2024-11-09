@@ -12,10 +12,10 @@ from typing_extensions import Annotated
 
 from litestar import Litestar, get, post
 from litestar._openapi.schema_generation.schema import SchemaCreator
-from litestar.plugins.pydantic import PydanticPlugin, PydanticSchemaPlugin
 from litestar.openapi import OpenAPIConfig
 from litestar.openapi.spec import Reference, Schema
 from litestar.openapi.spec.enums import OpenAPIFormat, OpenAPIType
+from litestar.plugins.pydantic import PydanticPlugin, PydanticSchemaPlugin
 from litestar.testing import TestClient, create_test_client
 from litestar.typing import FieldDefinition
 from litestar.utils import is_class_and_subclass
@@ -143,7 +143,7 @@ def test_create_collection_constrained_field_schema_pydantic_v1(
 
     schema = schema_creator.for_plugin(FieldDefinition.from_annotation(Model), plugin).properties["field"] # pyright: ignore[reportAttributeAccessIssue]
 
-    assert schema.type == OpenAPIType.ARRAY # pyright: ignore[reportAttributeAccessIssue]   
+    assert schema.type == OpenAPIType.ARRAY # pyright: ignore[reportAttributeAccessIssue]
     assert schema.items.type == OpenAPIType.INTEGER  # type: ignore[union-attr] # pyright: ignore[reportAttributeAccessIssue]
     assert schema.min_items == annotation.min_items # pyright: ignore[reportAttributeAccessIssue]
     assert schema.max_items == annotation.max_items # pyright: ignore[reportAttributeAccessIssue]
@@ -218,7 +218,7 @@ def test_create_collection_constrained_field_schema_sub_fields(
         schema = model_schema.properties[field_name] # pyright: ignore[reportAttributeAccessIssue]
 
         assert schema.type == OpenAPIType.ARRAY # pyright: ignore[reportAttributeAccessIssue]
-        assert schema.max_items == 10 # pyright: ignore[reportAttributeAccessIssue] 
+        assert schema.max_items == 10 # pyright: ignore[reportAttributeAccessIssue]
         assert schema.min_items == 1 # pyright: ignore[reportAttributeAccessIssue]
         assert isinstance(schema.items, Schema) # pyright: ignore[reportAttributeAccessIssue]
         assert schema.items.one_of is not None # pyright: ignore[reportAttributeAccessIssue]
