@@ -74,7 +74,7 @@ def test_deprecated_pydantic_schema_plugin_imports() -> None:
 
 
 def test_deprecated_pydantic_di_plugin_imports() -> None:
-    purge_module(["litestar.contrib.pydantic.pydantic_di_plugin"], __file__)
+    purge_module(["litestar.contrib.pydantic"], __file__)
     with pytest.warns(
         DeprecationWarning,
         match="importing PydanticDIPlugin from 'litestar.contrib.pydantic' is deprecated",
