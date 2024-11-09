@@ -9,9 +9,9 @@ from msgspec import ValidationError
 from typing_extensions import Buffer, TypeGuard
 
 from litestar._signature.types import ExtendedMsgSpecValidationError
-from litestar.contrib.pydantic.utils import is_pydantic_v2
 from litestar.exceptions import MissingDependencyException
 from litestar.plugins import InitPluginProtocol
+from litestar.plugins.pydantic.utils import is_pydantic_v2
 from litestar.utils import is_class_and_subclass
 
 try:
@@ -86,7 +86,7 @@ def _dec_pydantic_uuid(
     if not isinstance(value, uuid_type):
         raise ValidationError(f"Invalid UUID: {value!r}")
 
-    if value._required_version != value.version:
+    if value._required_version != value.version:  # pyright: ignore[reportAttributeAccessIssue]
         raise ValidationError(f"Invalid UUID version: {value!r}")
 
     return cast(
@@ -118,8 +118,8 @@ def is_pydantic_v1_model_class(annotation: Any) -> TypeGuard[type[pydantic_v1.Ba
     return is_class_and_subclass(annotation, pydantic_v1.BaseModel)
 
 
-def is_pydantic_v2_model_class(annotation: Any) -> TypeGuard[type[pydantic_v2.BaseModel]]:
-    return is_class_and_subclass(annotation, pydantic_v2.BaseModel)
+def is_pydantic_v2_model_class(annotation: Any) -> TypeGuard[type[pydantic_v2.BaseModel]]:  # pyright: ignore[reportInvalidTypeForm]
+    return is_class_and_subclass(annotation, pydantic_v2.BaseModel)  # pyright: ignore[reportOptionalMemberAccess]
 
 
 class PydanticInitPlugin(InitPluginProtocol):
@@ -186,11 +186,11 @@ class PydanticInitPlugin(InitPluginProtocol):
             encoders.update(
                 cls._create_pydantic_v2_encoders(
                     prefer_alias=prefer_alias,
-                    exclude=exclude,
+                    exclude=exclude,  # type: ignore[arg-type]
                     exclude_defaults=exclude_defaults,
                     exclude_none=exclude_none,
                     exclude_unset=exclude_unset,
-                    include=include,
+                    include=include,  # type: ignore[arg-type]
                 )
             )
         return encoders
@@ -236,7 +236,7 @@ class PydanticInitPlugin(InitPluginProtocol):
             },
             pydantic_v1.SecretField: str,
             pydantic_v1.StrictBool: int,
-            pydantic_v1.color.Color: str,
+            pydantic_v1.color.Color: str,  # pyright: ignore[reportAttributeAccessIssue]
             pydantic_v1.ConstrainedBytes: lambda val: val.decode("utf-8"),
             pydantic_v1.ConstrainedDate: lambda val: val.isoformat(),
             pydantic_v1.AnyUrl: str,
@@ -252,7 +252,7 @@ class PydanticInitPlugin(InitPluginProtocol):
         prefer_alias: bool = False,
     ) -> dict[Any, Callable[[Any], Any]]:
         encoders: dict[Any, Callable[[Any], Any]] = {
-            pydantic_v2.BaseModel: lambda model: model.model_dump(
+            pydantic_v2.BaseModel: lambda model: model.model_dump(  # pyright: ignore[reportOptionalMemberAccess]
                 by_alias=prefer_alias,
                 exclude=exclude,
                 exclude_defaults=exclude_defaults,
@@ -261,9 +261,9 @@ class PydanticInitPlugin(InitPluginProtocol):
                 include=include,
                 mode="json",
             ),
-            pydantic_v2.types.SecretStr: lambda val: "**********" if val else "",
-            pydantic_v2.types.SecretBytes: lambda val: "**********" if val else "",
-            pydantic_v2.AnyUrl: str,
+            pydantic_v2.types.SecretStr: lambda val: "**********" if val else "",  # pyright: ignore[reportOptionalMemberAccess]
+            pydantic_v2.types.SecretBytes: lambda val: "**********" if val else "",  # pyright: ignore[reportOptionalMemberAccess]
+            pydantic_v2.AnyUrl: str,  # pyright: ignore[reportOptionalMemberAccess]
         }
 
         with suppress(ImportError):

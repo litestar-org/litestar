@@ -7,11 +7,11 @@ from warnings import warn
 
 from typing_extensions import Annotated, TypeAlias, override
 
-from litestar.contrib.pydantic.utils import get_model_info, is_pydantic_2_model, is_pydantic_undefined, is_pydantic_v2
 from litestar.dto.base_dto import AbstractDTO
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.dto.field import DTO_FIELD_META_KEY, extract_dto_field
 from litestar.exceptions import MissingDependencyException, ValidationException
+from litestar.plugins.pydantic.utils import get_model_info, is_pydantic_2_model, is_pydantic_undefined, is_pydantic_v2
 from litestar.types.empty import Empty
 from litestar.typing import FieldDefinition
 
@@ -36,7 +36,7 @@ try:
     from pydantic import v1 as pydantic_v1
     from pydantic.v1 import ValidationError as ValidationErrorV1
 
-    ModelType: TypeAlias = "pydantic_v1.BaseModel | pydantic_v2.BaseModel"
+    ModelType: TypeAlias = "pydantic_v1.BaseModel | pydantic_v2.BaseModel"  # pyright: ignore[reportInvalidTypeForm,reportGeneralTypeIssues]
 
 except ImportError:
     import pydantic as pydantic_v1  # type: ignore[no-redef]
@@ -72,11 +72,11 @@ if pydantic_v2 is not Empty:  # type: ignore[comparison-overlap]  # pragma: no c
     )
 
 
-def convert_validation_error(validation_error: ValidationErrorV1 | ValidationErrorV2) -> list[dict[str, Any]]:
+def convert_validation_error(validation_error: ValidationErrorV1 | ValidationErrorV2) -> list[dict[str, Any]]:  # pyright: ignore[reportInvalidTypeForm,reportGeneralTypeIssues]
     error_list = validation_error.errors()
     for error in error_list:
         if isinstance(exception := error.get("ctx", {}).get("error"), Exception):
-            error["ctx"]["error"] = type(exception).__name__
+            error["ctx"]["error"] = type(exception).__name__  # pyright: ignore[reportTypedDictNotRequiredAccess]
     return error_list  # type: ignore[return-value]
 
 
@@ -107,7 +107,8 @@ class PydanticDTO(AbstractDTO[T], Generic[T]):
 
     @classmethod
     def generate_field_definitions(
-        cls, model_type: type[pydantic_v1.BaseModel | pydantic_v2.BaseModel]
+        cls,
+        model_type: type[pydantic_v1.BaseModel | pydantic_v2.BaseModel],  # pyright: ignore[reportInvalidTypeForm,reportGeneralTypeIssues]
     ) -> Generator[DTOFieldDefinition, None, None]:
         model_info = get_model_info(model_type)
         model_fields = model_info.model_fields

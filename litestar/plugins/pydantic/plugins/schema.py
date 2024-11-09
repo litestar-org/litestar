@@ -2,16 +2,16 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from litestar.contrib.pydantic.utils import (
+from litestar.exceptions import MissingDependencyException
+from litestar.openapi.spec import OpenAPIFormat, OpenAPIType, Schema
+from litestar.plugins import OpenAPISchemaPlugin
+from litestar.plugins.pydantic.utils import (
     get_model_info,
     is_pydantic_constrained_field,
     is_pydantic_model_class,
     is_pydantic_undefined,
     is_pydantic_v2,
 )
-from litestar.exceptions import MissingDependencyException
-from litestar.openapi.spec import OpenAPIFormat, OpenAPIType, Schema
-from litestar.plugins import OpenAPISchemaPlugin
 from litestar.utils import is_class_and_subclass
 
 try:

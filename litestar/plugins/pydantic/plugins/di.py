@@ -4,8 +4,8 @@ import inspect
 from inspect import Signature
 from typing import Any
 
-from litestar.contrib.pydantic.utils import is_pydantic_model_class
 from litestar.plugins import DIPlugin
+from litestar.plugins.pydantic.utils import is_pydantic_model_class
 
 
 class PydanticDIPlugin(DIPlugin):

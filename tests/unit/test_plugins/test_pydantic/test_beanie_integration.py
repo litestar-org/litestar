@@ -5,7 +5,7 @@ import beanie
 if TYPE_CHECKING:
     from pydantic import BaseModel
 
-from litestar.contrib.pydantic import PydanticDTO
+from litestar.plugins.pydantic import PydanticDTO
 
 
 def test_generate_field_definitions_from_beanie_models(base_model: "Type[BaseModel]") -> None:

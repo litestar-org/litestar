@@ -24,7 +24,7 @@ repos:
       - id: unasyncd
         additional_dependencies: ["ruff"]
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.7.0"
+    rev: "v0.7.3"
     hooks:
       - id: ruff
         args: ["--fix"]

@@ -10,7 +10,7 @@ from typing_extensions import Annotated
 
 from litestar import Litestar, post
 from litestar._openapi.schema_generation import SchemaCreator
-from litestar.contrib.pydantic.pydantic_schema_plugin import PydanticSchemaPlugin
+from litestar.plugins.pydantic import PydanticSchemaPlugin
 from litestar.openapi.spec import OpenAPIType
 from litestar.openapi.spec.schema import Schema
 from litestar.typing import FieldDefinition

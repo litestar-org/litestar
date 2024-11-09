@@ -199,7 +199,7 @@ These are used exactly like :func:`@route() <.handlers.route>` with the sole exc
 
         from litestar import delete, get, patch, post, put, head
         from litestar.dto import DTOConfig, DTOData
-        from litestar.contrib.pydantic import PydanticDTO
+        from litestar.plugins.pydantic import PydanticDTO
 
         from pydantic import BaseModel
 

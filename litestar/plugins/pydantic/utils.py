@@ -246,7 +246,7 @@ def is_pydantic_v2(module: ModuleType) -> bool:
 class PydanticModelInfo:
     pydantic_version: Literal["1", "2"]
     field_definitions: dict[str, FieldDefinition]
-    model_fields: dict[str, pydantic_v1.fields.FieldInfo | pydantic_v2.fields.FieldInfo]
+    model_fields: dict[str, pydantic_v1.fields.FieldInfo | pydantic_v2.fields.FieldInfo]  # pyright: ignore[reportInvalidTypeForm,reportGeneralTypeIssues]
     title: str | None = None
     example: Any | None = None
     is_generic: bool = False
@@ -258,7 +258,7 @@ _CreateFieldDefinition = Callable[..., FieldDefinition]
 def _create_field_definition_v1(  # noqa: C901
     field_annotation: Any,
     *,
-    field_info: pydantic_v1.fields.FieldInfo,
+    field_info: pydantic_v1.fields.FieldInfo,  # pyright: ignore[reportInvalidTypeForm,reportGeneralTypeIssues]
     **field_definition_kwargs: Any,
 ) -> FieldDefinition:
     kwargs: dict[str, Any] = {}
@@ -277,7 +277,7 @@ def _create_field_definition_v1(  # noqa: C901
     kwarg_definition: KwargDefinition | None = None
 
     if isclass(field_annotation):
-        if issubclass(field_annotation, pydantic_v1.ConstrainedBytes):
+        if issubclass(field_annotation, pydantic_v1.ConstrainedBytes):  # pyright: ignore[reportArgumentType,reportAttributeAccessIssue]
             kwarg_definition = ParameterKwarg(
                 min_length=field_annotation.min_length,
                 max_length=field_annotation.max_length,
@@ -287,7 +287,7 @@ def _create_field_definition_v1(  # noqa: C901
             )
             field_definition_kwargs["raw"] = field_annotation
             field_annotation = bytes
-        elif issubclass(field_annotation, pydantic_v1.ConstrainedStr):
+        elif issubclass(field_annotation, pydantic_v1.ConstrainedStr):  # pyright: ignore[reportArgumentType,reportAttributeAccessIssue]
             kwarg_definition = ParameterKwarg(
                 min_length=field_annotation.min_length,
                 max_length=field_annotation.max_length,
@@ -300,7 +300,7 @@ def _create_field_definition_v1(  # noqa: C901
             )
             field_definition_kwargs["raw"] = field_annotation
             field_annotation = str
-        elif issubclass(field_annotation, pydantic_v1.ConstrainedDate):
+        elif issubclass(field_annotation, pydantic_v1.ConstrainedDate):  # pyright: ignore[reportArgumentType,reportAttributeAccessIssue]
             # TODO: The typings of ParameterKwarg need fixing. Specifically, the
             # gt/ge/lt/le fields need to be typed with protocols, such that they may
             # accept any type that implements the respective comparisons
@@ -316,7 +316,7 @@ def _create_field_definition_v1(  # noqa: C901
             field_annotation = datetime.date
         elif issubclass(
             field_annotation,
-            (pydantic_v1.ConstrainedInt, pydantic_v1.ConstrainedFloat, pydantic_v1.ConstrainedDecimal),
+            (pydantic_v1.ConstrainedInt, pydantic_v1.ConstrainedFloat, pydantic_v1.ConstrainedDecimal),  # pyright: ignore[reportArgumentType,reportAttributeAccessIssue]
         ):
             kwarg_definition = ParameterKwarg(
                 gt=field_annotation.gt,  # type: ignore[arg-type]
@@ -330,7 +330,7 @@ def _create_field_definition_v1(  # noqa: C901
             field_annotation = field_annotation.mro()[2]
         elif issubclass(
             field_annotation,
-            (pydantic_v1.ConstrainedList, pydantic_v1.ConstrainedSet, pydantic_v1.ConstrainedFrozenSet),
+            (pydantic_v1.ConstrainedList, pydantic_v1.ConstrainedSet, pydantic_v1.ConstrainedFrozenSet),  # pyright: ignore[reportArgumentType,reportAttributeAccessIssue]
         ):
             kwarg_definition = ParameterKwarg(
                 max_items=field_annotation.max_items, min_items=field_annotation.min_items, **kwargs
@@ -356,7 +356,7 @@ def _create_field_definition_v1(  # noqa: C901
 def _create_field_definition_v2(  # noqa: C901
     field_annotation: Any,
     *,
-    field_info: pydantic_v2.fields.FieldInfo,
+    field_info: pydantic_v2.fields.FieldInfo,  # pyright: ignore[reportInvalidTypeForm,reportGeneralTypeIssues]
     **field_definition_kwargs: Any,
 ) -> FieldDefinition:
     kwargs: dict[str, Any] = {}
@@ -387,7 +387,7 @@ def _create_field_definition_v2(  # noqa: C901
         kwargs["title"] = title
 
     for meta in field_info.metadata:
-        if isinstance(meta, pydantic_v2.types.StringConstraints):
+        if isinstance(meta, pydantic_v2.types.StringConstraints):  # pyright: ignore[reportAttributeAccessIssue]
             kwargs["min_length"] = meta.min_length
             kwargs["max_length"] = meta.max_length
             kwargs["pattern"] = meta.pattern
@@ -421,7 +421,7 @@ def get_model_info(
     annotation: Any,
     prefer_alias: bool = False,
 ) -> PydanticModelInfo:
-    model: type[pydantic_v1.BaseModel | pydantic_v2.BaseModel]
+    model: type[pydantic_v1.BaseModel | pydantic_v2.BaseModel]  # pyright: ignore[reportInvalidTypeForm,reportGeneralTypeIssues]
 
     if is_generic(annotation):
         is_generic_model = True
@@ -443,7 +443,7 @@ def get_model_info(
         example = getattr(model_config, "example", None)
         is_v2_model = False
 
-    model_fields: dict[str, pydantic_v1.fields.FieldInfo | pydantic_v2.fields.FieldInfo] = {  # pyright: ignore
+    model_fields: dict[str, pydantic_v1.fields.FieldInfo | pydantic_v2.fields.FieldInfo] = {  # pyright: ignore[reportInvalidTypeForm,reportGeneralTypeIssues]
         k: getattr(f, "field_info", f) for k, f in model_field_info.items()
     }
 

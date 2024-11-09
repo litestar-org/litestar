@@ -538,7 +538,7 @@ class Litestar(Router):
         plugins.append(MsgspecDIPlugin())
 
         with suppress(MissingDependencyException):
-            from litestar.contrib.pydantic import (
+            from litestar.plugins.pydantic import (
                 PydanticDIPlugin,
                 PydanticInitPlugin,
                 PydanticPlugin,

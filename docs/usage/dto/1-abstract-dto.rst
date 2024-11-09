@@ -10,7 +10,7 @@ The following factories are currently available:
 
 - :class:`DataclassDTO <litestar.dto.dataclass_dto.DataclassDTO>`
 - :class:`MsgspecDTO <litestar.dto.msgspec_dto.MsgspecDTO>`
-- :class:`PydanticDTO <litestar.contrib.pydantic.PydanticDTO>`
+- :class:`PydanticDTO <litestar.plugins.pydantic.PydanticDTO>`
 - :class:`SQLAlchemyDTO <advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO>`
 
 Using DTO Factories
