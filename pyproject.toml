@@ -332,8 +332,10 @@ exclude = [
   "docs",
   "tests/examples",
   "tests/docker_service_fixtures.py",
-  "litestar/contrib/pydantic/pydantic_dto_factory.py",
-  "litestar/contrib/pydantic/pydantic_init_plugin.py",
+  "litestar/plugins/pydantic/plugins/di.py",
+  "litestar/plugins/pydantic/plugins/init.py",
+  "litestar/plugins/pydantic/plugins/schema.py",
+  "litestar/plugins/pydantic/dto_factory.py",
   "tests/unit/test_contrib/test_sqlalchemy.py",
 ]
 include = ["litestar", "tests"]
