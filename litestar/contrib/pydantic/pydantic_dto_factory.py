@@ -8,7 +8,7 @@ from litestar.utils import warn_deprecation
 __all__ = ("PydanticDTO",)
 
 
-def __getattr__(attr_name: str) -> object:
+def __getattr__(attr_name: str) -> object:  # pragma: no cover
     if attr_name in __all__:
         from litestar.plugins.pydantic.dto import PydanticDTO
 

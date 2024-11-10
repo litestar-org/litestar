@@ -8,7 +8,7 @@ from litestar.utils import warn_deprecation
 __all__ = ("PydanticSchemaPlugin",)
 
 
-def __getattr__(attr_name: str) -> object:
+def __getattr__(attr_name: str) -> object:  # pragma: no cover
     if attr_name in __all__:
         from litestar.plugins.pydantic.plugins.schema import PydanticSchemaPlugin
 
