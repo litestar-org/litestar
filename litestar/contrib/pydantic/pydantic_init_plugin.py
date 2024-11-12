@@ -1,11 +1,11 @@
 # ruff: noqa: TCH004, F401
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING  # pragma: no cover
 
-from litestar.utils import warn_deprecation
+from litestar.utils import warn_deprecation  # pragma: no cover
 
-__all__ = ("PydanticInitPlugin",)
+__all__ = ("PydanticInitPlugin",)  # pragma: no cover
 
 
 def __getattr__(attr_name: str) -> object:  # pragma: no cover
