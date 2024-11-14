@@ -581,6 +581,7 @@ see [the contribution guide](CONTRIBUTING.rst).
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/mohammedbabelly20"><img src="https://avatars.githubusercontent.com/u/104768048?v=4?s=100" width="100px;" alt="Mohammed Babelly"/><br /><sub><b>Mohammed Babelly</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=mohammedbabelly20" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://keybase.io/charlesdyfisnet"><img src="https://avatars.githubusercontent.com/u/22370?v=4?s=100" width="100px;" alt="Charles Duffy"/><br /><sub><b>Charles Duffy</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=charles-dyfis-net" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/RenameMe1"><img src="https://avatars.githubusercontent.com/u/165988121?v=4?s=100" width="100px;" alt="Evgeny Demchenko"/><br /><sub><b>Evgeny Demchenko</b></sub></a><br /><a href="https://github.com/litestar-org/litestar/commits?author=RenameMe1" title="Documentation">📖</a></td>
     </tr>
   </tbody>
 </table>
