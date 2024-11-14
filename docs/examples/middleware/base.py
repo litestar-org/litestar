@@ -21,7 +21,7 @@ class MyMiddleware(AbstractMiddleware):
                 process_time = time.monotonic() - start_time
                 headers = MutableScopeHeaders.from_message(message=message)
                 headers["X-Process-Time"] = str(process_time)
-                await send(message)
+            await send(message)
 
         await self.app(scope, receive, send_wrapper)
 
