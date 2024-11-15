@@ -11,8 +11,7 @@ from litestar.testing import AsyncTestClient
 def health_check() -> str:
     return "healthy"
 
-
-app = Litestar(route_handlers=[health_check])
+app = Litestar(route_handlers=[health_check], debug=True)
 
 
 @pytest.fixture(scope="function")

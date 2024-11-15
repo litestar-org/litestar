@@ -42,6 +42,8 @@ We would then test it using the test client like so:
 
             from my_app.main import app
 
+            app.debug = True
+
 
             def test_health_check():
                 with TestClient(app=app) as client:
@@ -59,6 +61,8 @@ We would then test it using the test client like so:
             from litestar.testing import AsyncTestClient
 
             from my_app.main import app
+
+            app.debug = True
 
 
             async def test_health_check():
