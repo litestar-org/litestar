@@ -94,6 +94,8 @@ Since we would probably need to use the client in multiple places, it's better t
             if TYPE_CHECKING:
                 from litestar import Litestar
 
+            app.debug = True
+
 
             @pytest.fixture(scope="function")
             def test_client() -> Iterator[TestClient[Litestar]]:
@@ -117,6 +119,8 @@ Since we would probably need to use the client in multiple places, it's better t
 
             if TYPE_CHECKING:
                 from litestar import Litestar
+
+            app.debug = True
 
 
             @pytest.fixture(scope="function")
