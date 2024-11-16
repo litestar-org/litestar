@@ -20,7 +20,8 @@ if TYPE_CHECKING:
     from litestar._openapi.schema_generation import SchemaCreator
     from litestar.openapi.spec import Schema
 
-__all__ = ("AttrsSchemaPlugin","is_attrs_class")
+__all__ = ("AttrsSchemaPlugin", "is_attrs_class")
+
 
 class AttrsSchemaPlugin(OpenAPISchemaPluginProtocol):
     @staticmethod

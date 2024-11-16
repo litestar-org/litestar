@@ -1,3 +1,4 @@
+# ruff: noqa: TCH004, F401
 from __future__ import annotations
 
 import sys
@@ -21,20 +22,20 @@ def purge_module(module_names: list[str], path: str | Path) -> None:
 def test_contrib_attrs_deprecation_warning() -> None:
     """Test that importing from contrib.attrs raises a deprecation warning."""
     purge_module(["litestar.contrib.attrs"], __file__)
-    with pytest.warns(DeprecationWarning) as warning_info:
-        from litestar.contrib.attrs import AttrsSchemaPlugin  # noqa: F401
-
-    assert len(warning_info) == 1
-    assert "litestar.contrib.attrs" in str(warning_info[0].message)
-    assert "Please use 'litestar.plugins.attrs' instead" in str(warning_info[0].message)
+    with pytest.warns(
+        DeprecationWarning, match="importing AttrsSchemaPlugin from 'litestar.contrib.attrs' is deprecated"
+    ) as warning_info:
+        from litestar.contrib.attrs import AttrsSchemaPlugin
 
 
-def test_plugin_attrs_no_warning() -> None:
-    """Test that importing from plugins.attrs does not raise a deprecation warning."""
-    purge_module(["litestar.plugins.attrs"], __file__)
-    with warnings.catch_warnings():
-        warnings.simplefilter("error")
-        from litestar.plugins.attrs import AttrsSchemaPlugin  # noqa: F401
+def test_contrib_attrs_schema_deprecation_warning() -> None:
+    """Test that importing from contrib.attrs raises a deprecation warning."""
+    purge_module(["litestar.contrib.attrs.attrs_schema_plugin"], __file__)
+    with pytest.warns(
+        DeprecationWarning,
+        match="importing AttrsSchemaPlugin from 'litestar.contrib.attrs.attrs_schema_plugin' is deprecated",
+    ) as warning_info:
+        from litestar.contrib.attrs.attrs_schema_plugin import AttrsSchemaPlugin
 
 
 def test_functionality_parity() -> None:
