@@ -9,8 +9,8 @@ import pytest
 from pydantic import v1 as pydantic_v1
 from typing_extensions import Annotated
 
-from litestar.contrib.pydantic import PydanticDTO
 from litestar.dto import DTOField, DTOFieldDefinition, Mark, dto_field
+from litestar.plugins.pydantic import PydanticDTO
 from litestar.typing import FieldDefinition
 
 from . import PydanticVersion

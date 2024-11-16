@@ -8,8 +8,8 @@ from pydantic import v1 as pydantic_v1
 from typing_extensions import Annotated, Literal
 
 from litestar import Request, post
-from litestar.contrib.pydantic import PydanticDTO, _model_dump_json
 from litestar.dto import DTOConfig
+from litestar.plugins.pydantic import PydanticDTO, _model_dump_json
 from litestar.testing import create_test_client
 from litestar.types import Empty
 from litestar.typing import FieldDefinition
@@ -61,7 +61,7 @@ def test_field_definition_implicit_optional_default(base_model: type[BaseModel])
 
 
 def test_detect_nested_field_pydantic_v1(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr("litestar.contrib.pydantic.pydantic_dto_factory.pydantic_v2", Empty)
+    monkeypatch.setattr("litestar.plugins.pydantic.dto.pydantic_v2", Empty)
 
     class Model(pydantic_v1.BaseModel):
         a: str
@@ -75,7 +75,7 @@ def test_pydantic_field_descriptions(create_module: Callable[[str], ModuleType])
     module = create_module(
         """
 from litestar import Litestar, get
-from litestar.contrib.pydantic import PydanticDTO
+from litestar.plugins.pydantic import PydanticDTO
 from litestar.dto import DTOConfig
 from pydantic import BaseModel, Field
 from typing_extensions import Annotated

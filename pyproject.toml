@@ -278,7 +278,7 @@ module = ["tests.unit.test_contrib.test_repository"]
 strict_equality = false
 
 [[tool.mypy.overrides]]
-module = ["tests.unit.test_contrib.test_pydantic.test_openapi","litestar._asgi.routing_trie.traversal"]
+module = ["tests.unit.test_plugins.test_pydantic.test_openapi","litestar._asgi.routing_trie.traversal"]
 disable_error_code = "index, union-attr"
 
 [[tool.mypy.overrides]]
@@ -300,7 +300,7 @@ module = [
 warn_unused_ignores = false
 module = [
   "litestar.contrib.sqlalchemy.*",
-  "litestar.contrib.pydantic.*",
+  "litestar.plugins.pydantic.*",
   "tests.unit.test_contrib.test_sqlalchemy",
   "tests.unit.test_contrib.test_pydantic.*",
   "litestar.openapi.spec.base",
@@ -314,7 +314,7 @@ warn_unused_ignores = false
 module = [
   "litestar.openapi.spec.base",
   "litestar._asgi.routin_trie.traversal",
-  "litestar.contrib.pydantic.pydantic_init_plugin",
+  "litestar.plugins.pydantic.plugins.int",
 ]
 disable_error_code = "arg-type"
 
@@ -332,8 +332,10 @@ exclude = [
   "docs",
   "tests/examples",
   "tests/docker_service_fixtures.py",
-  "litestar/contrib/pydantic/pydantic_dto_factory.py",
-  "litestar/contrib/pydantic/pydantic_init_plugin.py",
+  "litestar/plugins/pydantic/plugins/di.py",
+  "litestar/plugins/pydantic/plugins/init.py",
+  "litestar/plugins/pydantic/plugins/schema.py",
+  "litestar/plugins/pydantic/dto_factory.py",
   "tests/unit/test_contrib/test_sqlalchemy.py",
 ]
 include = ["litestar", "tests"]
