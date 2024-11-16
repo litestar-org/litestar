@@ -5,7 +5,7 @@
 groups = ["default", "annotated-types", "attrs", "brotli", "cli", "cryptography", "dev", "dev-contrib", "docs", "full", "htmx", "jinja", "jwt", "linting", "mako", "minijinja", "opentelemetry", "piccolo", "picologging", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "test"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:083a083d64061356b4e5aad0cffc8e258d7b1a5c25073d9509545b2f0d2b168d"
+content_hash = "sha256:d6d74488471897d371e051c950094895797e899ccb4942ab1039ba687e221b77"
 
 [[metadata.targets]]
 requires_python = "~=3.8"
@@ -103,7 +103,7 @@ name = "anyio"
 version = "4.5.2"
 requires_python = ">=3.8"
 summary = "High level compatibility layer for multiple asynchronous event loop implementations"
-groups = ["default", "cli", "dev", "full", "linting", "standard"]
+groups = ["default", "cli", "dev", "full", "htmx", "linting", "standard"]
 dependencies = [
     "exceptiongroup>=1.0.2; python_version < \"3.11\"",
     "idna>=2.8",
@@ -577,7 +577,7 @@ name = "certifi"
 version = "2024.8.30"
 requires_python = ">=3.6"
 summary = "Python package for providing Mozilla's CA Bundle."
-groups = ["default", "docs", "linting"]
+groups = ["default", "docs", "htmx", "linting"]
 files = [
     {file = "certifi-2024.8.30-py3-none-any.whl", hash = "sha256:922820b53db7a7257ffbda3f597266d435245903d80737e34f8a45ff3e3230d8"},
     {file = "certifi-2024.8.30.tar.gz", hash = "sha256:bec941d2aa8195e248a60b31ff9f0558284cf01a52591ceda73ea9afffd69fd9"},
@@ -780,7 +780,7 @@ name = "click"
 version = "8.1.7"
 requires_python = ">=3.7"
 summary = "Composable command line interface toolkit"
-groups = ["default", "cli", "dev", "docs", "full", "linting", "piccolo", "standard"]
+groups = ["default", "cli", "dev", "docs", "full", "htmx", "linting", "piccolo", "standard"]
 dependencies = [
     "colorama; platform_system == \"Windows\"",
     "importlib-metadata; python_version < \"3.8\"",
@@ -818,7 +818,7 @@ name = "colorama"
 version = "0.4.6"
 requires_python = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,!=3.5.*,!=3.6.*,>=2.7"
 summary = "Cross-platform colored terminal text."
-groups = ["default", "cli", "dev", "docs", "full", "linting", "piccolo", "standard", "test"]
+groups = ["default", "cli", "dev", "docs", "full", "htmx", "linting", "piccolo", "standard", "test"]
 files = [
     {file = "colorama-0.4.6-py2.py3-none-any.whl", hash = "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6"},
     {file = "colorama-0.4.6.tar.gz", hash = "sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44"},
@@ -1215,7 +1215,7 @@ name = "exceptiongroup"
 version = "1.2.2"
 requires_python = ">=3.7"
 summary = "Backport of PEP 654 (exception groups)"
-groups = ["default", "cli", "dev", "full", "linting", "standard", "test"]
+groups = ["default", "cli", "dev", "full", "htmx", "linting", "standard", "test"]
 marker = "python_version < \"3.11\""
 files = [
     {file = "exceptiongroup-1.2.2-py3-none-any.whl", hash = "sha256:3111b9d131c238bec2f8f516e123e14ba243563fb135d3fe885990585aa7795b"},
@@ -1238,7 +1238,7 @@ name = "faker"
 version = "30.8.0"
 requires_python = ">=3.8"
 summary = "Faker is a Python package that generates fake data for you."
-groups = ["default"]
+groups = ["default", "htmx"]
 dependencies = [
     "python-dateutil>=2.4",
     "typing-extensions",
@@ -1373,7 +1373,7 @@ name = "h11"
 version = "0.14.0"
 requires_python = ">=3.7"
 summary = "A pure-Python, bring-your-own-I/O implementation of HTTP/1.1"
-groups = ["default", "cli", "dev", "full", "linting", "standard"]
+groups = ["default", "cli", "dev", "full", "htmx", "linting", "standard"]
 dependencies = [
     "typing-extensions; python_version < \"3.8\"",
 ]
@@ -1531,7 +1531,7 @@ name = "httpcore"
 version = "0.16.3"
 requires_python = ">=3.7"
 summary = "A minimal low-level HTTP client."
-groups = ["default", "linting"]
+groups = ["default", "htmx", "linting"]
 dependencies = [
     "anyio<5.0,>=3.0",
     "certifi",
@@ -1600,7 +1600,7 @@ name = "httpx"
 version = "0.23.3"
 requires_python = ">=3.7"
 summary = "The next generation HTTP client."
-groups = ["default", "linting"]
+groups = ["default", "htmx", "linting"]
 dependencies = [
     "certifi",
     "httpcore<0.17.0,>=0.15.0",
@@ -1702,7 +1702,7 @@ name = "idna"
 version = "3.10"
 requires_python = ">=3.6"
 summary = "Internationalized Domain Names in Applications (IDNA)"
-groups = ["default", "cli", "dev", "docs", "full", "linting", "piccolo", "pydantic", "standard"]
+groups = ["default", "cli", "dev", "docs", "full", "htmx", "linting", "piccolo", "pydantic", "standard"]
 files = [
     {file = "idna-3.10-py3-none-any.whl", hash = "sha256:946d195a0d259cbba61165e88e65941f16e9b36ea6ddb97f00452bae8b1287d3"},
     {file = "idna-3.10.tar.gz", hash = "sha256:12f65c9b470abda6dc35cf8e63cc574b1c52b11df2c86030af0ac09b01b13ea9"},
@@ -1803,7 +1803,7 @@ name = "importlib-metadata"
 version = "8.4.0"
 requires_python = ">=3.8"
 summary = "Read metadata from Python packages"
-groups = ["default", "dev-contrib", "docs", "full", "opentelemetry", "sqlalchemy"]
+groups = ["default", "dev-contrib", "docs", "full", "htmx", "opentelemetry", "sqlalchemy"]
 dependencies = [
     "typing-extensions>=3.6.4; python_version < \"3.8\"",
     "zipp>=0.5",
@@ -1818,7 +1818,7 @@ name = "importlib-resources"
 version = "6.4.5"
 requires_python = ">=3.8"
 summary = "Read resources from Python packages"
-groups = ["default", "docs", "full", "sqlalchemy"]
+groups = ["default", "docs", "full", "htmx", "sqlalchemy"]
 marker = "python_version < \"3.9\""
 dependencies = [
     "zipp>=3.1.0; python_version < \"3.10\"",
@@ -1966,7 +1966,7 @@ name = "markdown-it-py"
 version = "3.0.0"
 requires_python = ">=3.8"
 summary = "Python port of markdown-it. Markdown parsing, done right!"
-groups = ["default"]
+groups = ["default", "htmx"]
 dependencies = [
     "mdurl~=0.1",
 ]
@@ -2040,7 +2040,7 @@ name = "mdurl"
 version = "0.1.2"
 requires_python = ">=3.7"
 summary = "Markdown URL utilities"
-groups = ["default"]
+groups = ["default", "htmx"]
 files = [
     {file = "mdurl-0.1.2-py3-none-any.whl", hash = "sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8"},
     {file = "mdurl-0.1.2.tar.gz", hash = "sha256:bb413d29f5eea38f31dd4754dd7377d4465116fb207585f97bf925588687c1ba"},
@@ -2166,7 +2166,7 @@ name = "msgspec"
 version = "0.18.6"
 requires_python = ">=3.8"
 summary = "A fast serialization and validation library, with builtin support for JSON, MessagePack, YAML, and TOML."
-groups = ["default"]
+groups = ["default", "htmx"]
 files = [
     {file = "msgspec-0.18.6-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:77f30b0234eceeff0f651119b9821ce80949b4d667ad38f3bfed0d0ebf9d6d8f"},
     {file = "msgspec-0.18.6-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:1a76b60e501b3932782a9da039bd1cd552b7d8dec54ce38332b87136c64852dd"},
@@ -2211,7 +2211,7 @@ name = "multidict"
 version = "6.1.0"
 requires_python = ">=3.8"
 summary = "multidict implementation"
-groups = ["default"]
+groups = ["default", "htmx"]
 dependencies = [
     "typing-extensions>=4.1.0; python_version < \"3.11\"",
 ]
@@ -2608,7 +2608,7 @@ name = "polyfactory"
 version = "2.17.0"
 requires_python = "<4.0,>=3.8"
 summary = "Mock data generation factories"
-groups = ["default"]
+groups = ["default", "htmx"]
 dependencies = [
     "faker",
     "typing-extensions>=4.6.0",
@@ -3072,7 +3072,7 @@ name = "pygments"
 version = "2.18.0"
 requires_python = ">=3.8"
 summary = "Pygments is a syntax highlighting package written in Python."
-groups = ["default", "docs"]
+groups = ["default", "docs", "htmx"]
 files = [
     {file = "pygments-2.18.0-py3-none-any.whl", hash = "sha256:b8e6aca0523f3ab76fee51799c488e38782ac06eafcf95e7ba832985c8e7b13a"},
     {file = "pygments-2.18.0.tar.gz", hash = "sha256:786ff802f32e91311bff3889f6e9a86e81505fe99f2735bb6d60ae0c5004f199"},
@@ -3315,7 +3315,7 @@ name = "python-dateutil"
 version = "2.9.0.post0"
 requires_python = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
 summary = "Extensions to the standard Python datetime module"
-groups = ["default", "test"]
+groups = ["default", "htmx", "test"]
 dependencies = [
     "six>=1.5",
 ]
@@ -3351,7 +3351,7 @@ name = "pyyaml"
 version = "6.0.2"
 requires_python = ">=3.8"
 summary = "YAML parser and emitter for Python"
-groups = ["default", "cli", "docs", "full", "linting", "standard"]
+groups = ["default", "cli", "docs", "full", "htmx", "linting", "standard"]
 files = [
     {file = "PyYAML-6.0.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:0a9a2848a5b7feac301353437eb7d5957887edbf81d56e903999a75a3d743086"},
     {file = "PyYAML-6.0.2-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:29717114e51c84ddfba879543fb232a6ed60086602313ca38cce623c1d62cfbf"},
@@ -3578,7 +3578,7 @@ files = [
 name = "rfc3986"
 version = "1.5.0"
 summary = "Validating URI References per RFC 3986"
-groups = ["default", "linting"]
+groups = ["default", "htmx", "linting"]
 files = [
     {file = "rfc3986-1.5.0-py2.py3-none-any.whl", hash = "sha256:a86d6e1f5b1dc238b218b012df0aa79409667bb209e58da56d0b94704e712a97"},
     {file = "rfc3986-1.5.0.tar.gz", hash = "sha256:270aaf10d87d0d4e095063c65bf3ddbc6ee3d0b226328ce21e036f946e421835"},
@@ -3589,7 +3589,7 @@ name = "rfc3986"
 version = "1.5.0"
 extras = ["idna2008"]
 summary = "Validating URI References per RFC 3986"
-groups = ["default", "linting"]
+groups = ["default", "htmx", "linting"]
 dependencies = [
     "idna",
     "rfc3986==1.5.0",
@@ -3604,7 +3604,7 @@ name = "rich"
 version = "13.9.3"
 requires_python = ">=3.8.0"
 summary = "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal"
-groups = ["default"]
+groups = ["default", "htmx"]
 dependencies = [
     "markdown-it-py>=2.2.0",
     "pygments<3.0.0,>=2.13.0",
@@ -3620,7 +3620,7 @@ name = "rich-click"
 version = "1.8.3"
 requires_python = ">=3.7"
 summary = "Format click help output nicely with rich"
-groups = ["default"]
+groups = ["default", "htmx"]
 dependencies = [
     "click>=7",
     "importlib-metadata; python_version < \"3.8\"",
@@ -3757,7 +3757,7 @@ name = "six"
 version = "1.16.0"
 requires_python = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 summary = "Python 2 and 3 compatibility utilities"
-groups = ["default", "cli", "docs", "full", "standard", "test"]
+groups = ["default", "cli", "docs", "full", "htmx", "standard", "test"]
 files = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
     {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
@@ -3785,7 +3785,7 @@ name = "sniffio"
 version = "1.3.1"
 requires_python = ">=3.7"
 summary = "Sniff out which async library your code is running under"
-groups = ["default", "cli", "dev", "full", "linting", "standard"]
+groups = ["default", "cli", "dev", "full", "htmx", "linting", "standard"]
 files = [
     {file = "sniffio-1.3.1-py3-none-any.whl", hash = "sha256:2f6da418d1f1e0fddd844478f41680e794e6051915791a034ff65e5f100525a2"},
     {file = "sniffio-1.3.1.tar.gz", hash = "sha256:f4324edc670a0f49750a81b895f35c3adb843cca46f0530f79fc1babb23789dc"},
@@ -4625,17 +4625,6 @@ files = [
 ]
 
 [[package]]
-name = "types-pyasn1"
-version = "0.6.0.20240913"
-requires_python = ">=3.8"
-summary = "Typing stubs for pyasn1"
-groups = ["linting"]
-files = [
-    {file = "types-pyasn1-0.6.0.20240913.tar.gz", hash = "sha256:a1da054db13d3d4ccfa69c515678154014336ad3d9f9ade01845f9edb1a2bc71"},
-    {file = "types_pyasn1-0.6.0.20240913-py3-none-any.whl", hash = "sha256:95f3cb1fbd63ff91cd0410945f8aeae6b0be359533c00f39d8e17124884157af"},
-]
-
-[[package]]
 name = "types-pyopenssl"
 version = "24.1.0.20240722"
 requires_python = ">=3.8"
@@ -4648,20 +4637,6 @@ dependencies = [
 files = [
     {file = "types-pyOpenSSL-24.1.0.20240722.tar.gz", hash = "sha256:47913b4678a01d879f503a12044468221ed8576263c1540dcb0484ca21b08c39"},
     {file = "types_pyOpenSSL-24.1.0.20240722-py3-none-any.whl", hash = "sha256:6a7a5d2ec042537934cfb4c9d4deb0e16c4c6250b09358df1f083682fe6fda54"},
-]
-
-[[package]]
-name = "types-python-jose"
-version = "3.3.4.20240106"
-requires_python = ">=3.8"
-summary = "Typing stubs for python-jose"
-groups = ["linting"]
-dependencies = [
-    "types-pyasn1",
-]
-files = [
-    {file = "types-python-jose-3.3.4.20240106.tar.gz", hash = "sha256:b18cf8c5080bbfe1ef7c3b707986435d9efca3e90889acb6a06f65e06bc3405a"},
-    {file = "types_python_jose-3.3.4.20240106-py3-none-any.whl", hash = "sha256:b515a6c0c61f5e2a53bc93e3a2b024cbd42563e2e19cbde9fd1c2cc2cfe77ccc"},
 ]
 
 [[package]]
@@ -4706,7 +4681,7 @@ name = "typing-extensions"
 version = "4.12.2"
 requires_python = ">=3.8"
 summary = "Backported and Experimental Type Hints for Python 3.8+"
-groups = ["default", "annotated-types", "cli", "dev", "dev-contrib", "docs", "full", "linting", "opentelemetry", "piccolo", "pydantic", "sqlalchemy", "standard"]
+groups = ["default", "annotated-types", "cli", "dev", "dev-contrib", "docs", "full", "htmx", "linting", "opentelemetry", "piccolo", "pydantic", "sqlalchemy", "standard"]
 files = [
     {file = "typing_extensions-4.12.2-py3-none-any.whl", hash = "sha256:04e5ca0351e0f3f85c6853954072df659d0d13fac324d0072316b67d7794700d"},
     {file = "typing_extensions-4.12.2.tar.gz", hash = "sha256:1a7ead55c7e559dd4dee8856e3a88b41225abfe1ce8df57b7c13915fe121ffb8"},
@@ -5117,7 +5092,7 @@ name = "zipp"
 version = "3.20.2"
 requires_python = ">=3.8"
 summary = "Backport of pathlib-compatible object wrapper for zip files"
-groups = ["default", "dev-contrib", "docs", "full", "opentelemetry", "sqlalchemy"]
+groups = ["default", "dev-contrib", "docs", "full", "htmx", "opentelemetry", "sqlalchemy"]
 files = [
     {file = "zipp-3.20.2-py3-none-any.whl", hash = "sha256:a817ac80d6cf4b23bf7f2828b7cabf326f15a001bea8b1f9b49631780ba28350"},
     {file = "zipp-3.20.2.tar.gz", hash = "sha256:bc9eb26f4506fda01b81bcde0ca78103b6e62f991b381fec825435c836edbc29"},
