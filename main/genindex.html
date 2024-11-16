@@ -1365,6 +1365,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="reference/plugins/flash_messages.html">flash</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/plugins/htmx.html">htmx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/plugins/problem_details.html">problem details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
@@ -2133,12 +2134,6 @@ document.write(`
 </li>
         <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryPlugin.__init__">(litestar.contrib.opentelemetry.OpenTelemetryPlugin method)</a>
 </li>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticInitPlugin.__init__">(litestar.contrib.pydantic.PydanticInitPlugin method)</a>
-</li>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticPlugin.__init__">(litestar.contrib.pydantic.PydanticPlugin method)</a>
-</li>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticSchemaPlugin.__init__">(litestar.contrib.pydantic.PydanticSchemaPlugin method)</a>
-</li>
         <li><a href="reference/controller.html#litestar.controller.Controller.__init__">(litestar.controller.Controller method)</a>
 </li>
         <li><a href="reference/data_extractors.html#litestar.data_extractors.ConnectionDataExtractor.__init__">(litestar.data_extractors.ConnectionDataExtractor method)</a>
@@ -2412,6 +2407,12 @@ document.write(`
         <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsException.__init__">(litestar.plugins.problem_details.ProblemDetailsException method)</a>
 </li>
         <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsPlugin.__init__">(litestar.plugins.problem_details.ProblemDetailsPlugin method)</a>
+</li>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticInitPlugin.__init__">(litestar.plugins.pydantic.PydanticInitPlugin method)</a>
+</li>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticPlugin.__init__">(litestar.plugins.pydantic.PydanticPlugin method)</a>
+</li>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticSchemaPlugin.__init__">(litestar.plugins.pydantic.PydanticSchemaPlugin method)</a>
 </li>
         <li><a href="reference/plugins/index.html#litestar.plugins.SerializationPluginProtocol.__init__">(litestar.plugins.SerializationPluginProtocol method)</a>
 </li>
@@ -2927,10 +2928,6 @@ document.write(`
       <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryPlugin.on_app_init.params.app_config">app_config (litestar.contrib.opentelemetry.OpenTelemetryPlugin.on_app_init parameter)</a>
 
       <ul>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticInitPlugin.on_app_init.params.app_config">(litestar.contrib.pydantic.PydanticInitPlugin.on_app_init parameter)</a>
-</li>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticPlugin.on_app_init.params.app_config">(litestar.contrib.pydantic.PydanticPlugin.on_app_init parameter)</a>
-</li>
         <li><a href="reference/plugins/flash_messages.html#litestar.plugins.flash.FlashPlugin.on_app_init.params.app_config">(litestar.plugins.flash.FlashPlugin.on_app_init parameter)</a>
 </li>
         <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXPlugin.on_app_init.params.app_config">(litestar.plugins.htmx.HTMXPlugin.on_app_init parameter)</a>
@@ -2938,6 +2935,10 @@ document.write(`
         <li><a href="reference/plugins/index.html#litestar.plugins.InitPluginProtocol.on_app_init.params.app_config">(litestar.plugins.InitPluginProtocol.on_app_init parameter)</a>
 </li>
         <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsPlugin.on_app_init.params.app_config">(litestar.plugins.problem_details.ProblemDetailsPlugin.on_app_init parameter)</a>
+</li>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticInitPlugin.on_app_init.params.app_config">(litestar.plugins.pydantic.PydanticInitPlugin.on_app_init parameter)</a>
+</li>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticPlugin.on_app_init.params.app_config">(litestar.plugins.pydantic.PydanticPlugin.on_app_init parameter)</a>
 </li>
         <li><a href="reference/plugins/structlog.html#litestar.plugins.structlog.StructlogPlugin.on_app_init.params.app_config">(litestar.plugins.structlog.StructlogPlugin.on_app_init parameter)</a>
 </li>
@@ -4158,16 +4159,16 @@ document.write(`
 </li>
       <li><a href="reference/security/jwt.html#litestar.security.jwt.Token.decode">decode() (litestar.security.jwt.Token class method)</a>
 </li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticDTO.decode_builtins">decode_builtins() (litestar.contrib.pydantic.PydanticDTO method)</a>
+      <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.decode_builtins">decode_builtins() (litestar.dto.base_dto.AbstractDTO method)</a>
 
       <ul>
-        <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.decode_builtins">(litestar.dto.base_dto.AbstractDTO method)</a>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticDTO.decode_builtins">(litestar.plugins.pydantic.PydanticDTO method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticDTO.decode_bytes">decode_bytes() (litestar.contrib.pydantic.PydanticDTO method)</a>
+      <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.decode_bytes">decode_bytes() (litestar.dto.base_dto.AbstractDTO method)</a>
 
       <ul>
-        <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.decode_bytes">(litestar.dto.base_dto.AbstractDTO method)</a>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticDTO.decode_bytes">(litestar.plugins.pydantic.PydanticDTO method)</a>
 </li>
       </ul></li>
       <li><a href="reference/serialization.html#litestar.serialization.decode_json">decode_json() (in module litestar.serialization)</a>
@@ -4479,13 +4480,13 @@ document.write(`
       <li><a href="reference/contrib/piccolo.html#litestar.contrib.piccolo.PiccoloDTO.detect_nested_field">detect_nested_field() (litestar.contrib.piccolo.PiccoloDTO class method)</a>
 
       <ul>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticDTO.detect_nested_field">(litestar.contrib.pydantic.PydanticDTO class method)</a>
-</li>
         <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.detect_nested_field">(litestar.dto.base_dto.AbstractDTO class method)</a>
 </li>
         <li><a href="reference/dto/dataclass_dto.html#litestar.dto.dataclass_dto.DataclassDTO.detect_nested_field">(litestar.dto.dataclass_dto.DataclassDTO class method)</a>
 </li>
         <li><a href="reference/dto/msgspec_dto.html#litestar.dto.msgspec_dto.MsgspecDTO.detect_nested_field">(litestar.dto.msgspec_dto.MsgspecDTO class method)</a>
+</li>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticDTO.detect_nested_field">(litestar.plugins.pydantic.PydanticDTO class method)</a>
 </li>
       </ul></li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.Cookie.dict">dict (litestar.datastructures.Cookie property)</a>
@@ -4973,10 +4974,6 @@ document.write(`
 </li>
         <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryConfig.exclude">(litestar.contrib.opentelemetry.OpenTelemetryConfig attribute)</a>
 </li>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticInitPlugin.params.exclude">(litestar.contrib.pydantic.PydanticInitPlugin parameter)</a>
-</li>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticPlugin.params.exclude">(litestar.contrib.pydantic.PydanticPlugin parameter)</a>
-</li>
         <li><a href="reference/dto/config.html#litestar.dto.config.DTOConfig.exclude">(litestar.dto.config.DTOConfig attribute)</a>
 </li>
         <li><a href="reference/middleware/index.html#litestar.middleware.AbstractAuthenticationMiddleware.params.exclude">(litestar.middleware.AbstractAuthenticationMiddleware parameter)</a>
@@ -4995,6 +4992,10 @@ document.write(`
 </li>
         <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionConfig.exclude">(litestar.middleware.session.server_side.ServerSideSessionConfig attribute)</a>
 </li>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticInitPlugin.params.exclude">(litestar.plugins.pydantic.PydanticInitPlugin parameter)</a>
+</li>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticPlugin.params.exclude">(litestar.plugins.pydantic.PydanticPlugin parameter)</a>
+</li>
         <li><a href="reference/security/index.html#litestar.security.AbstractSecurityConfig.exclude">(litestar.security.AbstractSecurityConfig attribute)</a>
 </li>
         <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTAuth.exclude">(litestar.security.jwt.JWTAuth attribute)</a>
@@ -5012,10 +5013,10 @@ document.write(`
         <li><a href="reference/security/session_auth.html#litestar.security.session_auth.SessionAuth.exclude">(litestar.security.session_auth.SessionAuth attribute)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticInitPlugin.params.exclude_defaults">exclude_defaults (litestar.contrib.pydantic.PydanticInitPlugin parameter)</a>
+      <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticInitPlugin.params.exclude_defaults">exclude_defaults (litestar.plugins.pydantic.PydanticInitPlugin parameter)</a>
 
       <ul>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticPlugin.params.exclude_defaults">(litestar.contrib.pydantic.PydanticPlugin parameter)</a>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticPlugin.params.exclude_defaults">(litestar.plugins.pydantic.PydanticPlugin parameter)</a>
 </li>
       </ul></li>
       <li><a href="reference/middleware/index.html#litestar.middleware.AbstractAuthenticationMiddleware.params.exclude_from_auth_key">exclude_from_auth_key (litestar.middleware.AbstractAuthenticationMiddleware parameter)</a>
@@ -5040,10 +5041,10 @@ document.write(`
         <li><a href="reference/security/session_auth.html#litestar.security.session_auth.middleware.SessionAuthMiddleware.params.exclude_http_methods">(litestar.security.session_auth.middleware.SessionAuthMiddleware parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticInitPlugin.params.exclude_none">exclude_none (litestar.contrib.pydantic.PydanticInitPlugin parameter)</a>
+      <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticInitPlugin.params.exclude_none">exclude_none (litestar.plugins.pydantic.PydanticInitPlugin parameter)</a>
 
       <ul>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticPlugin.params.exclude_none">(litestar.contrib.pydantic.PydanticPlugin parameter)</a>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticPlugin.params.exclude_none">(litestar.plugins.pydantic.PydanticPlugin parameter)</a>
 </li>
       </ul></li>
       <li><a href="reference/config.html#litestar.config.allowed_hosts.AllowedHostsConfig.exclude_opt_key">exclude_opt_key (litestar.config.allowed_hosts.AllowedHostsConfig attribute)</a>
@@ -5082,10 +5083,10 @@ document.write(`
         <li><a href="reference/security/session_auth.html#litestar.security.session_auth.SessionAuth.exclude_opt_key">(litestar.security.session_auth.SessionAuth attribute)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticInitPlugin.params.exclude_unset">exclude_unset (litestar.contrib.pydantic.PydanticInitPlugin parameter)</a>
+      <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticInitPlugin.params.exclude_unset">exclude_unset (litestar.plugins.pydantic.PydanticInitPlugin parameter)</a>
 
       <ul>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticPlugin.params.exclude_unset">(litestar.contrib.pydantic.PydanticPlugin parameter)</a>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticPlugin.params.exclude_unset">(litestar.plugins.pydantic.PydanticPlugin parameter)</a>
 </li>
       </ul></li>
       <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryConfig.exclude_urls_env_key">exclude_urls_env_key (litestar.contrib.opentelemetry.OpenTelemetryConfig attribute)</a>
@@ -5317,12 +5318,6 @@ document.write(`
       <li><a href="reference/contrib/piccolo.html#litestar.contrib.piccolo.PiccoloDTO.detect_nested_field.params.field_definition">field_definition (litestar.contrib.piccolo.PiccoloDTO.detect_nested_field parameter)</a>
 
       <ul>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticDTO.detect_nested_field.params.field_definition">(litestar.contrib.pydantic.PydanticDTO.detect_nested_field parameter)</a>
-</li>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticSchemaPlugin.for_pydantic_model.params.field_definition">(litestar.contrib.pydantic.PydanticSchemaPlugin.for_pydantic_model parameter)</a>
-</li>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticSchemaPlugin.to_openapi_schema.params.field_definition">(litestar.contrib.pydantic.PydanticSchemaPlugin.to_openapi_schema parameter)</a>
-</li>
         <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.create_for_field_definition.params.field_definition">(litestar.dto.base_dto.AbstractDTO.create_for_field_definition parameter)</a>
 </li>
         <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.create_openapi_schema.params.field_definition">(litestar.dto.base_dto.AbstractDTO.create_openapi_schema parameter)</a>
@@ -5348,6 +5343,12 @@ document.write(`
         <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin.is_plugin_supported_field.params.field_definition">(litestar.plugins.OpenAPISchemaPlugin.is_plugin_supported_field parameter)</a>
 </li>
         <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema.params.field_definition">(litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema parameter)</a>
+</li>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticDTO.detect_nested_field.params.field_definition">(litestar.plugins.pydantic.PydanticDTO.detect_nested_field parameter)</a>
+</li>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticSchemaPlugin.for_pydantic_model.params.field_definition">(litestar.plugins.pydantic.PydanticSchemaPlugin.for_pydantic_model parameter)</a>
+</li>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticSchemaPlugin.to_openapi_schema.params.field_definition">(litestar.plugins.pydantic.PydanticSchemaPlugin.to_openapi_schema parameter)</a>
 </li>
         <li><a href="reference/plugins/index.html#litestar.plugins.SerializationPluginProtocol.create_dto_for_type.params.field_definition">(litestar.plugins.SerializationPluginProtocol.create_dto_for_type parameter)</a>
 </li>
@@ -5454,7 +5455,7 @@ document.write(`
         <li><a href="reference/testing.html#litestar.testing.TestClient.websocket_connect.params.follow_redirects">(litestar.testing.TestClient.websocket_connect parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticSchemaPlugin.for_pydantic_model">for_pydantic_model() (litestar.contrib.pydantic.PydanticSchemaPlugin class method)</a>
+      <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticSchemaPlugin.for_pydantic_model">for_pydantic_model() (litestar.plugins.pydantic.PydanticSchemaPlugin class method)</a>
 </li>
       <li><a href="reference/dto/config.html#litestar.dto.config.DTOConfig.forbid_unknown_fields">forbid_unknown_fields (litestar.dto.config.DTOConfig attribute)</a>
 </li>
@@ -5533,13 +5534,13 @@ document.write(`
       <li><a href="reference/contrib/piccolo.html#litestar.contrib.piccolo.PiccoloDTO.generate_field_definitions">generate_field_definitions() (litestar.contrib.piccolo.PiccoloDTO class method)</a>
 
       <ul>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticDTO.generate_field_definitions">(litestar.contrib.pydantic.PydanticDTO class method)</a>
-</li>
         <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.generate_field_definitions">(litestar.dto.base_dto.AbstractDTO class method)</a>
 </li>
         <li><a href="reference/dto/dataclass_dto.html#litestar.dto.dataclass_dto.DataclassDTO.generate_field_definitions">(litestar.dto.dataclass_dto.DataclassDTO class method)</a>
 </li>
         <li><a href="reference/dto/msgspec_dto.html#litestar.dto.msgspec_dto.MsgspecDTO.generate_field_definitions">(litestar.dto.msgspec_dto.MsgspecDTO class method)</a>
+</li>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticDTO.generate_field_definitions">(litestar.plugins.pydantic.PydanticDTO class method)</a>
 </li>
       </ul></li>
       <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionBackend.generate_session_id">generate_session_id() (litestar.middleware.session.server_side.ServerSideSessionBackend method)</a>
@@ -5574,10 +5575,10 @@ document.write(`
       </ul></li>
       <li><a href="reference/concurrency.html#litestar.concurrency.get_asyncio_executor">get_asyncio_executor() (in module litestar.concurrency)</a>
 </li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticDTO.get_config_for_model_type">get_config_for_model_type() (litestar.contrib.pydantic.PydanticDTO class method)</a>
+      <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.get_config_for_model_type">get_config_for_model_type() (litestar.dto.base_dto.AbstractDTO class method)</a>
 
       <ul>
-        <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.get_config_for_model_type">(litestar.dto.base_dto.AbstractDTO class method)</a>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticDTO.get_config_for_model_type">(litestar.plugins.pydantic.PydanticDTO class method)</a>
 </li>
       </ul></li>
       <li><a href="reference/middleware/session/client_side.html#litestar.middleware.session.client_side.ClientSideSessionBackend.get_cookie_key_set">get_cookie_key_set() (litestar.middleware.session.client_side.ClientSideSessionBackend method)</a>
@@ -5716,10 +5717,10 @@ document.write(`
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.get_type_hints">get_type_hints() (litestar.typing.FieldDefinition method)</a>
 </li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticDIPlugin.get_typed_init">get_typed_init() (litestar.contrib.pydantic.PydanticDIPlugin method)</a>
+      <li><a href="reference/plugins/index.html#litestar.plugins.DIPlugin.get_typed_init">get_typed_init() (litestar.plugins.DIPlugin method)</a>
 
       <ul>
-        <li><a href="reference/plugins/index.html#litestar.plugins.DIPlugin.get_typed_init">(litestar.plugins.DIPlugin method)</a>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticDIPlugin.get_typed_init">(litestar.plugins.pydantic.PydanticDIPlugin method)</a>
 </li>
       </ul></li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.MutableScopeHeaders.getall">getall() (litestar.datastructures.MutableScopeHeaders method)</a>
@@ -5850,10 +5851,10 @@ document.write(`
 </li>
       <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.OpenAPIRenderPlugin.has_path">has_path() (litestar.openapi.plugins.OpenAPIRenderPlugin method)</a>
 </li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticDIPlugin.has_typed_init">has_typed_init() (litestar.contrib.pydantic.PydanticDIPlugin method)</a>
+      <li><a href="reference/plugins/index.html#litestar.plugins.DIPlugin.has_typed_init">has_typed_init() (litestar.plugins.DIPlugin method)</a>
 
       <ul>
-        <li><a href="reference/plugins/index.html#litestar.plugins.DIPlugin.has_typed_init">(litestar.plugins.DIPlugin method)</a>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticDIPlugin.has_typed_init">(litestar.plugins.pydantic.PydanticDIPlugin method)</a>
 </li>
       </ul></li>
       <li><a href="reference/handlers.html#litestar.handlers.head">head (class in litestar.handlers)</a>
@@ -6252,12 +6253,12 @@ document.write(`
 </li>
       <li><a href="reference/exceptions.html#litestar.exceptions.ImproperlyConfiguredException">ImproperlyConfiguredException</a>
 </li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticInitPlugin.params.include">include (litestar.contrib.pydantic.PydanticInitPlugin parameter)</a>
+      <li><a href="reference/dto/config.html#litestar.dto.config.DTOConfig.include">include (litestar.dto.config.DTOConfig attribute)</a>
 
       <ul>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticPlugin.params.include">(litestar.contrib.pydantic.PydanticPlugin parameter)</a>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticInitPlugin.params.include">(litestar.plugins.pydantic.PydanticInitPlugin parameter)</a>
 </li>
-        <li><a href="reference/dto/config.html#litestar.dto.config.DTOConfig.include">(litestar.dto.config.DTOConfig attribute)</a>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticPlugin.params.include">(litestar.plugins.pydantic.PydanticPlugin parameter)</a>
 </li>
       </ul></li>
       <li><a href="reference/middleware/logging.html#litestar.middleware.logging.LoggingMiddlewareConfig.include_compressed_body">include_compressed_body (litestar.middleware.logging.LoggingMiddlewareConfig attribute)</a>
@@ -6352,10 +6353,10 @@ document.write(`
 </li>
       <li><a href="reference/params.html#litestar.params.KwargDefinition.is_constrained">is_constrained (litestar.params.KwargDefinition property)</a>
 </li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticSchemaPlugin.is_constrained_field">is_constrained_field() (litestar.contrib.pydantic.PydanticSchemaPlugin static method)</a>
+      <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin.is_constrained_field">is_constrained_field() (litestar.plugins.OpenAPISchemaPlugin static method)</a>
 
       <ul>
-        <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin.is_constrained_field">(litestar.plugins.OpenAPISchemaPlugin static method)</a>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticSchemaPlugin.is_constrained_field">(litestar.plugins.pydantic.PydanticSchemaPlugin static method)</a>
 </li>
       </ul></li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_dataclass_type">is_dataclass_type (litestar.typing.FieldDefinition property)</a>
@@ -6420,12 +6421,12 @@ document.write(`
 </li>
       <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin.is_plugin_supported_field">is_plugin_supported_field() (litestar.plugins.OpenAPISchemaPlugin method)</a>
 </li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticSchemaPlugin.is_plugin_supported_type">is_plugin_supported_type() (litestar.contrib.pydantic.PydanticSchemaPlugin static method)</a>
+      <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin.is_plugin_supported_type">is_plugin_supported_type() (litestar.plugins.OpenAPISchemaPlugin static method)</a>
 
       <ul>
-        <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin.is_plugin_supported_type">(litestar.plugins.OpenAPISchemaPlugin static method)</a>
-</li>
         <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPluginProtocol.is_plugin_supported_type">(litestar.plugins.OpenAPISchemaPluginProtocol static method)</a>
+</li>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticSchemaPlugin.is_plugin_supported_type">(litestar.plugins.pydantic.PydanticSchemaPlugin static method)</a>
 </li>
       </ul></li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_required">is_required (litestar.typing.FieldDefinition property)</a>
@@ -6450,10 +6451,10 @@ document.write(`
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_typeddict_type">is_typeddict_type (litestar.typing.FieldDefinition property)</a>
 </li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticSchemaPlugin.is_undefined_sentinel">is_undefined_sentinel() (litestar.contrib.pydantic.PydanticSchemaPlugin static method)</a>
+      <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin.is_undefined_sentinel">is_undefined_sentinel() (litestar.plugins.OpenAPISchemaPlugin static method)</a>
 
       <ul>
-        <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin.is_undefined_sentinel">(litestar.plugins.OpenAPISchemaPlugin static method)</a>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticSchemaPlugin.is_undefined_sentinel">(litestar.plugins.pydantic.PydanticSchemaPlugin static method)</a>
 </li>
       </ul></li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_union">is_union (litestar.typing.FieldDefinition property)</a>
@@ -7363,6 +7364,13 @@ document.write(`
 </li>
       </ul></li>
       <li>
+    litestar.plugins.pydantic
+
+      <ul>
+        <li><a href="reference/plugins/pydantic.html#module-litestar.plugins.pydantic">module</a>
+</li>
+      </ul></li>
+      <li>
     litestar.plugins.sqlalchemy
 
       <ul>
@@ -8112,6 +8120,8 @@ document.write(`
 </li>
         <li><a href="reference/plugins/problem_details.html#module-litestar.plugins.problem_details">litestar.plugins.problem_details</a>
 </li>
+        <li><a href="reference/plugins/pydantic.html#module-litestar.plugins.pydantic">litestar.plugins.pydantic</a>
+</li>
         <li><a href="reference/plugins/sqlalchemy.html#module-litestar.plugins.sqlalchemy">litestar.plugins.sqlalchemy</a>
 </li>
         <li><a href="reference/plugins/structlog.html#module-litestar.plugins.structlog">litestar.plugins.structlog</a>
@@ -8398,10 +8408,6 @@ document.write(`
 </li>
         <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryPlugin.on_app_init">(litestar.contrib.opentelemetry.OpenTelemetryPlugin method)</a>
 </li>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticInitPlugin.on_app_init">(litestar.contrib.pydantic.PydanticInitPlugin method)</a>
-</li>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticPlugin.on_app_init">(litestar.contrib.pydantic.PydanticPlugin method)</a>
-</li>
         <li><a href="reference/plugins/flash_messages.html#litestar.plugins.flash.FlashPlugin.on_app_init">(litestar.plugins.flash.FlashPlugin method)</a>
 </li>
         <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXPlugin.on_app_init">(litestar.plugins.htmx.HTMXPlugin method)</a>
@@ -8409,6 +8415,10 @@ document.write(`
         <li><a href="reference/plugins/index.html#litestar.plugins.InitPluginProtocol.on_app_init">(litestar.plugins.InitPluginProtocol method)</a>
 </li>
         <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsPlugin.on_app_init">(litestar.plugins.problem_details.ProblemDetailsPlugin method)</a>
+</li>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticInitPlugin.on_app_init">(litestar.plugins.pydantic.PydanticInitPlugin method)</a>
+</li>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticPlugin.on_app_init">(litestar.plugins.pydantic.PydanticPlugin method)</a>
 </li>
         <li><a href="reference/plugins/structlog.html#litestar.plugins.structlog.StructlogPlugin.on_app_init">(litestar.plugins.structlog.StructlogPlugin method)</a>
 </li>
@@ -9013,10 +9023,10 @@ document.write(`
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.match_predicate_recursively.params.predicate">predicate (litestar.typing.FieldDefinition.match_predicate_recursively parameter)</a>
 </li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticInitPlugin.params.prefer_alias">prefer_alias (litestar.contrib.pydantic.PydanticInitPlugin parameter)</a>
+      <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticInitPlugin.params.prefer_alias">prefer_alias (litestar.plugins.pydantic.PydanticInitPlugin parameter)</a>
 
       <ul>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticPlugin.params.prefer_alias">(litestar.contrib.pydantic.PydanticPlugin parameter)</a>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticPlugin.params.prefer_alias">(litestar.plugins.pydantic.PydanticPlugin parameter)</a>
 </li>
       </ul></li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.XML.prefix">prefix (litestar.openapi.spec.XML attribute)</a>
@@ -9093,15 +9103,15 @@ document.write(`
 </li>
       <li><a href="reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.put_subscriber_history">put_subscriber_history() (litestar.channels.plugin.ChannelsPlugin method)</a>
 </li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticDIPlugin">PydanticDIPlugin (class in litestar.contrib.pydantic)</a>
+      <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticDIPlugin">PydanticDIPlugin (class in litestar.plugins.pydantic)</a>
 </li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticDTO">PydanticDTO (class in litestar.contrib.pydantic)</a>
+      <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticDTO">PydanticDTO (class in litestar.plugins.pydantic)</a>
 </li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticInitPlugin">PydanticInitPlugin (class in litestar.contrib.pydantic)</a>
+      <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticInitPlugin">PydanticInitPlugin (class in litestar.plugins.pydantic)</a>
 </li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticPlugin">PydanticPlugin (class in litestar.contrib.pydantic)</a>
+      <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticPlugin">PydanticPlugin (class in litestar.plugins.pydantic)</a>
 </li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticSchemaPlugin">PydanticSchemaPlugin (class in litestar.contrib.pydantic)</a>
+      <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticSchemaPlugin">PydanticSchemaPlugin (class in litestar.plugins.pydantic)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -10088,14 +10098,14 @@ document.write(`
         <li><a href="reference/params.html#litestar.params.Parameter.params.schema_component_key">(litestar.params.Parameter parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticSchemaPlugin.for_pydantic_model.params.schema_creator">schema_creator (litestar.contrib.pydantic.PydanticSchemaPlugin.for_pydantic_model parameter)</a>
+      <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.create_openapi_schema.params.schema_creator">schema_creator (litestar.dto.base_dto.AbstractDTO.create_openapi_schema parameter)</a>
 
       <ul>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticSchemaPlugin.to_openapi_schema.params.schema_creator">(litestar.contrib.pydantic.PydanticSchemaPlugin.to_openapi_schema parameter)</a>
-</li>
-        <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.create_openapi_schema.params.schema_creator">(litestar.dto.base_dto.AbstractDTO.create_openapi_schema parameter)</a>
-</li>
         <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema.params.schema_creator">(litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema parameter)</a>
+</li>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticSchemaPlugin.for_pydantic_model.params.schema_creator">(litestar.plugins.pydantic.PydanticSchemaPlugin.for_pydantic_model parameter)</a>
+</li>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticSchemaPlugin.to_openapi_schema.params.schema_creator">(litestar.plugins.pydantic.PydanticSchemaPlugin.to_openapi_schema parameter)</a>
 </li>
       </ul></li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.schema_else">schema_else (litestar.openapi.spec.Schema attribute)</a>
@@ -11331,12 +11341,12 @@ document.write(`
       </ul></li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.Headers.to_header_list">to_header_list() (litestar.datastructures.Headers method)</a>
 </li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticSchemaPlugin.to_openapi_schema">to_openapi_schema() (litestar.contrib.pydantic.PydanticSchemaPlugin method)</a>
+      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.to_openapi_schema">to_openapi_schema() (litestar.openapi.OpenAPIConfig method)</a>
 
       <ul>
-        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.to_openapi_schema">(litestar.openapi.OpenAPIConfig method)</a>
-</li>
         <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema">(litestar.plugins.OpenAPISchemaPluginProtocol method)</a>
+</li>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticSchemaPlugin.to_openapi_schema">(litestar.plugins.pydantic.PydanticSchemaPlugin method)</a>
 </li>
       </ul></li>
       <li><a href="reference/exceptions.html#litestar.exceptions.responses.ExceptionResponseContent.to_response">to_response() (litestar.exceptions.responses.ExceptionResponseContent method)</a>
@@ -11755,10 +11765,10 @@ document.write(`
 </li>
       <li><a href="reference/controller.html#litestar.controller.Controller.validate_route_handlers">validate_route_handlers() (litestar.controller.Controller method)</a>
 </li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticInitPlugin.params.validate_strict">validate_strict (litestar.contrib.pydantic.PydanticInitPlugin parameter)</a>
+      <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticInitPlugin.params.validate_strict">validate_strict (litestar.plugins.pydantic.PydanticInitPlugin parameter)</a>
 
       <ul>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticPlugin.params.validate_strict">(litestar.contrib.pydantic.PydanticPlugin parameter)</a>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticPlugin.params.validate_strict">(litestar.plugins.pydantic.PydanticPlugin parameter)</a>
 </li>
       </ul></li>
       <li><a href="reference/exceptions.html#litestar.exceptions.ValidationException">ValidationException</a>
@@ -11767,8 +11777,6 @@ document.write(`
 
       <ul>
         <li><a href="reference/connection.html#litestar.connection.ASGIConnection.set_session.params.value">(litestar.connection.ASGIConnection.set_session parameter)</a>
-</li>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticSchemaPlugin.is_plugin_supported_type.params.value">(litestar.contrib.pydantic.PydanticSchemaPlugin.is_plugin_supported_type parameter)</a>
 </li>
         <li><a href="reference/datastructures/index.html#litestar.datastructures.Cookie.value">(litestar.datastructures.Cookie attribute)</a>
 </li>
@@ -11791,6 +11799,8 @@ document.write(`
         <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin.is_plugin_supported_type.params.value">(litestar.plugins.OpenAPISchemaPlugin.is_plugin_supported_type parameter)</a>
 </li>
         <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPluginProtocol.is_plugin_supported_type.params.value">(litestar.plugins.OpenAPISchemaPluginProtocol.is_plugin_supported_type parameter)</a>
+</li>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticSchemaPlugin.is_plugin_supported_type.params.value">(litestar.plugins.pydantic.PydanticSchemaPlugin.is_plugin_supported_type parameter)</a>
 </li>
         <li><a href="reference/response/base.html#litestar.response.base.Response.set_cookie.params.value">(litestar.response.base.Response.set_cookie parameter)</a>
 </li>

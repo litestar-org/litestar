@@ -1362,6 +1362,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/flash_messages.html">flash</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/htmx.html">htmx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/problem_details.html">problem details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
@@ -1664,7 +1665,7 @@ constrained string field would raise a <a class="reference internal" href="../re
 <dt>OpenAPI/DTO: Fix missing Pydantic 2 computed fields<a class="headerlink reference internal" href="#2.12.0-openapi/dto: fix missing pydantic 2 computed fields" id="2.12.0-openapi/dto: fix missing pydantic 2 computed fields">#</a></dt><dd><div class="changelog-change docutils container">
 <p>Fix a bug that would lead to Pydantic computed fields to be ignored during
 schema generation when the model was using a
-<a class="reference internal" href="../reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticDTO" title="litestar.contrib.pydantic.PydanticDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">PydanticDTO</span></code></a>.</p>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">PydanticDTO</span></code>.</p>
 <div class="literal-block-wrapper docutils container" id="id9">
 <div class="code-block-caption"><span class="caption-text">Only the <code class="docutils literal notranslate"><span class="pre">foo</span></code> field would be included in the schema</span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyModel</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
@@ -4085,7 +4086,7 @@ compatibility, but as of <code class="docutils literal notranslate"><span class=
 </div>
 </dd>
 <dt>Customization of Pydantic integration via <code class="docutils literal notranslate"><span class="pre">PydanticPlugin</span></code><a class="headerlink reference internal" href="#2.2.0-customization of pydantic integration via" id="2.2.0-customization of pydantic integration via">#</a></dt><dd><div class="changelog-change docutils container">
-<p>A new <a class="reference internal" href="../reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticPlugin" title="litestar.contrib.pydantic.PydanticPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">PydanticPlugin</span></code></a> has been added, which
+<p>A new <code class="xref py py-class docutils literal notranslate"><span class="pre">PydanticPlugin</span></code> has been added, which
 can be used to configure Pydantic behaviour. Currently it supports setting a
 <code class="docutils literal notranslate"><span class="pre">prefer_alias</span></code> option, which will pass the <code class="docutils literal notranslate"><span class="pre">by_alias=True</span></code> flag to Pydantic
 when exporting models, as well as generate schemas accordingly.</p>
@@ -5160,7 +5161,7 @@ value, which defaults to <code class="docutils literal notranslate"><span class=
 <a class="reference external" href="https://docs.pydantic.dev/latest/">Pydantic</a> have been added:</p>
 <ul class="simple">
 <li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">MsgspecDTO</span></code></p></li>
-<li><p><a class="reference internal" href="../reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticDTO" title="litestar.contrib.pydantic.PydanticDTO"><code class="xref py py-class docutils literal notranslate"><span class="pre">PydanticDTO</span></code></a></p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">PydanticDTO</span></code></p></li>
 </ul>
 <p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/1531,">litestar-org/litestar#1531,</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/1532">litestar-org/litestar#1532</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/1712">litestar-org/litestar#1712</a></span></p>
 </div>

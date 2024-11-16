@@ -1364,6 +1364,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/flash_messages.html">flash</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/htmx.html">htmx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/problem_details.html">problem details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
@@ -1778,7 +1779,7 @@ Click to see the predefined route handlers<div class="sd-summary-down docutils">
 <div class="code-block-caption"><span class="caption-text">Predefined <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.13)"><span class="xref std std-term">decorators</span></a> for HTTP route handlers</span><a class="headerlink" href="#id11" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">delete</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">put</span><span class="p">,</span> <span class="n">head</span>
 <span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">DTOData</span>
-<span class="kn">from</span> <span class="nn">litestar.contrib.pydantic</span> <span class="kn">import</span> <span class="n">PydanticDTO</span>
+<span class="kn">from</span> <span class="nn">litestar.plugins.pydantic</span> <span class="kn">import</span> <span class="n">PydanticDTO</span>
 
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
 

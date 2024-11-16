@@ -12,5 +12,6 @@ plugins
     flash_messages
     htmx
     problem_details
+    pydantic
     structlog
     sqlalchemy
