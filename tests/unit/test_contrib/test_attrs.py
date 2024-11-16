@@ -24,7 +24,7 @@ def test_contrib_attrs_deprecation_warning() -> None:
     purge_module(["litestar.contrib.attrs"], __file__)
     with pytest.warns(
         DeprecationWarning, match="importing AttrsSchemaPlugin from 'litestar.contrib.attrs' is deprecated"
-    ) as warning_info:
+    ):
         from litestar.contrib.attrs import AttrsSchemaPlugin
 
 
@@ -34,7 +34,7 @@ def test_contrib_attrs_schema_deprecation_warning() -> None:
     with pytest.warns(
         DeprecationWarning,
         match="importing AttrsSchemaPlugin from 'litestar.contrib.attrs.attrs_schema_plugin' is deprecated",
-    ) as warning_info:
+    ):
         from litestar.contrib.attrs.attrs_schema_plugin import AttrsSchemaPlugin
 
 
