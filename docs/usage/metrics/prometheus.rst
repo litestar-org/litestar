@@ -26,4 +26,3 @@ You can also customize the configuration:
 .. literalinclude:: /examples/plugins/prometheus/using_prometheus_exporter_with_extra_configs.py
     :language: python
     :caption: Configuring the Prometheus Exporter
-

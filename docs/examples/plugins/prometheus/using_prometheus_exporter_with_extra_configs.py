@@ -38,7 +38,7 @@ prometheus_config = PrometheusConfig(
     app_name="litestar-example",
     prefix="litestar",
     labels=extra_labels,
-    buckets=buckets, # pyright: ignore[reportArgumentType]
+    buckets=buckets,  # pyright: ignore[reportArgumentType]
     exemplars=custom_exemplar,
     excluded_http_methods=["POST"],
 )
