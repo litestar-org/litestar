@@ -3,11 +3,11 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Callable, Mapping, Sequence
 
+from litestar.exceptions import MissingDependencyException
+from litestar.middleware.base import DefineMiddleware
 from litestar.plugins.prometheus.middleware import (
     PrometheusMiddleware,
 )
-from litestar.exceptions import MissingDependencyException
-from litestar.middleware.base import DefineMiddleware
 
 __all__ = ("PrometheusConfig",)
 
