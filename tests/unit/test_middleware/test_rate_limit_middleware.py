@@ -238,3 +238,22 @@ async def test_rate_limiting_works_with_mounted_apps(tmpdir: "Path") -> None:
         response = client.get("/src/static/test.css")
         assert response.status_code == HTTP_200_OK
         assert response.text == "styles content"
+
+
+async def test_rate_limiting_works_with_cache() -> None:
+    @get("/", cache=True)
+    def handler() -> None:
+        return None
+
+    config = RateLimitConfig(rate_limit=("minute", 2))
+    app = Litestar(route_handlers=[handler], middleware=[config.middleware])
+
+    with TestClient(app=app) as client:
+        response = client.get("/")
+        assert response.headers.get(config.rate_limit_remaining_header_key) == "1"
+
+        response = client.get("/")
+        assert response.headers.get(config.rate_limit_remaining_header_key) == "0"
+
+        response = client.get("/")
+        assert response.status_code == HTTP_429_TOO_MANY_REQUESTS

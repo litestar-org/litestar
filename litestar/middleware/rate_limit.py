@@ -109,7 +109,7 @@ class RateLimitMiddleware(AbstractMiddleware):
                 message.setdefault("headers", [])
                 headers = MutableScopeHeaders(message)
                 for key, value in self.create_response_headers(cache_object=cache_object).items():
-                    headers.add(key, value)
+                    headers[key] = value
             await send(message)
 
         return send_wrapper

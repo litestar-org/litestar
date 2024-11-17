@@ -3,7 +3,7 @@ from typing import Any, Dict, Generic, Tuple, TypeVar
 import pytest
 from pydantic import BaseModel
 
-from litestar.contrib.pydantic.utils import pydantic_get_type_hints_with_generics_resolved
+from litestar.plugins.pydantic.utils import pydantic_get_type_hints_with_generics_resolved
 
 T = TypeVar("T")
 

@@ -44,6 +44,8 @@ dependencies = [
     "click",
     "rich>=13.0.0",
     "rich-click",
+    # default litestar plugins
+    "litestar-htmx>=0.3.0"
 ]
 description = "Litestar - A production-ready, highly performant, extensible ASGI API Framework"
 keywords = ["api", "rest", "asgi", "litestar", "starlite"]
@@ -76,6 +78,7 @@ Twitter = "https://twitter.com/LitestarAPI"
 [project.optional-dependencies]
 annotated-types = ["annotated-types"]
 attrs = ["attrs"]
+htmx = ["litestar-htmx>=0.3.0"]
 brotli = ["brotli"]
 cli = ["jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0; sys_platform != 'win32'"]
 cryptography = ["cryptography"]
@@ -167,7 +170,6 @@ linting = [
   "pyright==1.1.344",
   "asyncpg-stubs",
   "types-beautifulsoup4",
-  "types-python-jose",
   "types-pyyaml",
   "types-redis",
   "types-psutil",
@@ -244,6 +246,7 @@ xfail_strict = true
 packages = ["litestar", "tests"]
 plugins = ["pydantic.mypy"]
 enable_error_code = [
+  "truthy-bool",
   "truthy-iterable",
   "unused-awaitable",
   "ignore-without-code",
@@ -253,20 +256,18 @@ enable_error_code = [
 python_version = "3.8"
 
 disallow_any_generics = false
-disallow_untyped_decorators = true
-implicit_reexport = false
 show_error_codes = true
 strict = true
-warn_redundant_casts = true
-warn_return_any = true
 warn_unreachable = true
-warn_unused_configs = true
-warn_unused_ignores = true
 local_partial_types = true
 
 [[tool.mypy.overrides]]
 ignore_errors = true
 module = ["tests.examples.*", "tests.docker_service_fixtures"]
+
+[[tool.mypy.overrides]]
+module = ["tests.*"]
+disable_error_code = ["truthy-bool"]
 
 [[tool.mypy.overrides]]
 disallow_untyped_decorators = false
@@ -277,8 +278,12 @@ module = ["tests.unit.test_contrib.test_repository"]
 strict_equality = false
 
 [[tool.mypy.overrides]]
-module = ["tests.unit.test_contrib.test_pydantic.test_openapi"]
+module = ["tests.unit.test_plugins.test_pydantic.test_openapi","litestar._asgi.routing_trie.traversal"]
 disable_error_code = "index, union-attr"
+
+[[tool.mypy.overrides]]
+module = ["tests.unit.test_channels.test_subscriber", "tests.unit.test_response.test_streaming_response"]
+disable_error_code = "arg-type, comparison-overlap, unreachable"
 
 [[tool.mypy.overrides]]
 ignore_missing_imports = true
@@ -295,8 +300,23 @@ module = [
 warn_unused_ignores = false
 module = [
   "litestar.contrib.sqlalchemy.*",
+  "litestar.plugins.pydantic.*",
   "tests.unit.test_contrib.test_sqlalchemy",
+  "tests.unit.test_contrib.test_pydantic.*",
+  "litestar.openapi.spec.base",
+  "litestar.utils.helpers",
+  "litestar.channels.plugin",
+  "litestar.handlers.http_handlers._utils"
 ]
+
+[[tool.mypy.overrides]]
+warn_unused_ignores = false
+module = [
+  "litestar.openapi.spec.base",
+  "litestar._asgi.routin_trie.traversal",
+  "litestar.plugins.pydantic.plugins.int",
+]
+disable_error_code = "arg-type"
 
 [tool.pydantic-mypy]
 init_forbid_extra = true
@@ -312,8 +332,10 @@ exclude = [
   "docs",
   "tests/examples",
   "tests/docker_service_fixtures.py",
-  "litestar/contrib/pydantic/pydantic_dto_factory.py",
-  "litestar/contrib/pydantic/pydantic_init_plugin.py",
+  "litestar/plugins/pydantic/plugins/di.py",
+  "litestar/plugins/pydantic/plugins/init.py",
+  "litestar/plugins/pydantic/plugins/schema.py",
+  "litestar/plugins/pydantic/dto_factory.py",
   "tests/unit/test_contrib/test_sqlalchemy.py",
 ]
 include = ["litestar", "tests"]
@@ -326,6 +348,19 @@ exclude-classes = """
 (
   # github.com/python/cpython/pull/106771
   (^litestar.events.emitter:BaseEventEmitterBackend)
+  # review these as time permits
+  |(^litestar.connection.base:ASGIConnection)
+  |(^litestar.datastructures.state:ImmutableState)
+  |(^litestar.datastructures.state:State)
+  |(^litestar.dto.base_dto:AbstractDTO)
+  |(^litestar.dto.data_structures:DTOData)
+  |(^litestar.middleware.session.base:BaseSessionBackend)
+  |(^litestar.pagination:ClassicPagination)
+  |(^litestar.pagination:CursorPagination)
+  |(^litestar.response.base:Response)
+  |(^litestar.testing.client.base:BaseTestClient)
+  |(^litestar.testing.life_span_handler:LifeSpanHandler)
+  |(^litestar.utils.sync:AsyncIteratorWrapper)
 )
 """
 

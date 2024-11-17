@@ -137,7 +137,7 @@ Their purpose is to allow users to utilize Python OOP for better code organizati
     .. code-block:: python
         :caption: Registering a :class:`~.controller.Controller`
 
-        from litestar.contrib.pydantic import PydanticDTO
+        from litestar.plugins.pydantic import PydanticDTO
         from litestar.controller import Controller
         from litestar.dto import DTOConfig, DTOData
         from litestar.handlers import get, post, patch, delete

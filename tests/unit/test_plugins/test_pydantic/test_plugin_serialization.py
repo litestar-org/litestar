@@ -13,9 +13,8 @@ from pydantic import v1 as pydantic_v1
 from pydantic.v1.color import Color as ColorV1
 from pydantic_extra_types.color import Color as ColorV2
 
-from litestar.contrib.pydantic import _model_dump, _model_dump_json
-from litestar.contrib.pydantic.pydantic_init_plugin import PydanticInitPlugin
 from litestar.exceptions import SerializationException
+from litestar.plugins.pydantic import PydanticInitPlugin, _model_dump, _model_dump_json
 from litestar.serialization import (
     decode_json,
     decode_msgpack,
@@ -158,7 +157,7 @@ def model(pydantic_version: PydanticVersion) -> ModelV1 | ModelV2:
         )
     return ModelV2(
         path=Path("example"),
-        email_str=pydantic_v2.parse_obj_as(pydantic_v2.EmailStr, "info@example.org"),
+        email_str=pydantic_v2.parse_obj_as(pydantic_v2.EmailStr, "info@example.org"),  # pyright: ignore[reportArgumentType]
         name_email=pydantic_v2.NameEmail("info", "info@example.org"),
         color=ColorV2("rgb(255, 255, 255)"),
         bytesize=pydantic_v2.ByteSize(100),
