@@ -4,7 +4,7 @@ import pytest
 from prometheus_client import REGISTRY
 
 from litestar import Controller, Litestar, Request, get
-from litestar.contrib.prometheus import PrometheusMiddleware
+from litestar.plugins.prometheus import PrometheusMiddleware
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import TestClient
 
@@ -41,7 +41,7 @@ def clear_collectors() -> None:
 def test_prometheus_exporter_example(
     group_path: bool, route_path: str, route_template: str, expected_path: str
 ) -> None:
-    from docs.examples.contrib.prometheus.using_prometheus_exporter import create_app
+    from docs.examples.plugins.prometheus.using_prometheus_exporter import create_app
 
     app = create_app(group_path=group_path)
 

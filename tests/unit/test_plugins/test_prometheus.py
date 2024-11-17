@@ -208,8 +208,8 @@ def test_procdir(monkeypatch: MonkeyPatch, tmp_path: Path, mocker: MockerFixture
     proc_dir.mkdir()
     monkeypatch.setenv(env_var, str(proc_dir))
     config = create_config()
-    mock_registry = mocker.patch("litestar.contrib.prometheus.controller.CollectorRegistry")
-    mock_collector = mocker.patch("litestar.contrib.prometheus.controller.multiprocess.MultiProcessCollector")
+    mock_registry = mocker.patch("litestar.plugins.prometheus.controller.CollectorRegistry")
+    mock_collector = mocker.patch("litestar.plugins.prometheus.controller.multiprocess.MultiProcessCollector")
 
     with create_test_client([PrometheusController], middleware=[config.middleware]) as client:
         client.get("/metrics")

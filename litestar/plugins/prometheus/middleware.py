@@ -23,7 +23,7 @@ from prometheus_client import Counter, Gauge, Histogram
 if TYPE_CHECKING:
     from prometheus_client.metrics import MetricWrapperBase
 
-    from litestar.contrib.prometheus import PrometheusConfig
+    from litestar.plugins.prometheus import PrometheusConfig
     from litestar.types import ASGIApp, Message, Receive, Scope, Send
 
 

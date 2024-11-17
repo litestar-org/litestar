@@ -58,7 +58,7 @@ class PrometheusConfig:
     def middleware(self) -> DefineMiddleware:
         """Create an instance of :class:`DefineMiddleware <litestar.middleware.base.DefineMiddleware>` that wraps with.
 
-        [PrometheusMiddleware][litestar.contrib.prometheus.PrometheusMiddleware]. or a subclass
+        [PrometheusMiddleware][litestar.plugins.prometheus.PrometheusMiddleware]. or a subclass
         of this middleware.
 
         Returns:

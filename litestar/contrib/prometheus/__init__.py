@@ -18,7 +18,7 @@ def __getattr__(attr_name: str) -> object:
 
         warn_deprecation(
             deprecated_name=f"litestar.contrib.prometheus.{attr_name}",
-            version="2.12",
+            version="2.12.1",
             kind="import",
             removal_in="3.0",
             info=f"importing {attr_name} from 'litestar.contrib.prometheus' is deprecated, please "
