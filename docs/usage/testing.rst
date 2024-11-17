@@ -42,6 +42,8 @@ We would then test it using the test client like so:
 
             from my_app.main import app
 
+            app.debug = True
+
 
             def test_health_check():
                 with TestClient(app=app) as client:
@@ -59,6 +61,8 @@ We would then test it using the test client like so:
             from litestar.testing import AsyncTestClient
 
             from my_app.main import app
+
+            app.debug = True
 
 
             async def test_health_check():
@@ -90,6 +94,8 @@ Since we would probably need to use the client in multiple places, it's better t
             if TYPE_CHECKING:
                 from litestar import Litestar
 
+            app.debug = True
+
 
             @pytest.fixture(scope="function")
             def test_client() -> Iterator[TestClient[Litestar]]:
@@ -113,6 +119,8 @@ Since we would probably need to use the client in multiple places, it's better t
 
             if TYPE_CHECKING:
                 from litestar import Litestar
+
+            app.debug = True
 
 
             @pytest.fixture(scope="function")
