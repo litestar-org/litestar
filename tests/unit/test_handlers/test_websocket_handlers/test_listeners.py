@@ -394,10 +394,10 @@ def test_websocket_listener_class_hook_dependencies() -> None:
     class Listener(WebsocketListener):
         path = "/{name: str}"
 
-        def on_accept(self, name: str, state: State, query: dict, some: str) -> None:  # type: ignore[override]
+        def on_accept(self, name: str, state: State, query: dict, some: str) -> None:  # pyright: ignore
             on_accept_mock(name=name, state=state, query=query, some=some)
 
-        def on_disconnect(self, name: str, state: State, query: dict, some: str) -> None:  # type: ignore[override]
+        def on_disconnect(self, name: str, state: State, query: dict, some: str) -> None:  # pyright: ignore
             on_disconnect_mock(name=name, state=state, query=query, some=some)
 
         def on_receive(self, data: bytes) -> None:  # pyright: ignore
