@@ -2155,18 +2155,6 @@ a Response instance or an arbitrary value.</p></li>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.handlers.WebsocketListener.on_accept">
-<span class="sig-name descname"><span class="pre">on_accept</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="types.html#litestar.types.AnyCallable" title="litestar.types.AnyCallable"><span class="pre">AnyCallable</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#litestar.handlers.WebsocketListener.on_accept" title="Permalink to this definition">#</a></dt>
-<dd><p>Called after a <a class="reference internal" href="connection.html#litestar.connection.WebSocket" title="litestar.connection.WebSocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocket</span></code></a> connection has been accepted. Can receive any dependencies</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.handlers.WebsocketListener.on_disconnect">
-<span class="sig-name descname"><span class="pre">on_disconnect</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="types.html#litestar.types.AnyCallable" title="litestar.types.AnyCallable"><span class="pre">AnyCallable</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#litestar.handlers.WebsocketListener.on_disconnect" title="Permalink to this definition">#</a></dt>
-<dd><p>Called after a <a class="reference internal" href="connection.html#litestar.connection.WebSocket" title="litestar.connection.WebSocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocket</span></code></a> connection has been disconnected. Can receive any dependencies</p>
-</dd></dl>
-
-<dl class="py attribute">
 <dt class="sig sig-object py" id="litestar.handlers.WebsocketListener.receive_mode">
 <span class="sig-name descname"><span class="pre">receive_mode</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">WebSocketMode</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'text'</span></em><a class="headerlink" href="#litestar.handlers.WebsocketListener.receive_mode" title="Permalink to this definition">#</a></dt>
 <dd><p><a class="reference internal" href="connection.html#litestar.connection.WebSocket" title="litestar.connection.WebSocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocket</span></code></a> mode to receive data in, either <code class="docutils literal notranslate"><span class="pre">text</span></code> or <code class="docutils literal notranslate"><span class="pre">binary</span></code>.</p>
@@ -2247,6 +2235,20 @@ default websocket class.</p>
 <dd class="field-odd"><p><span class="target" id="litestar.handlers.WebsocketListener.params.owner"></span><strong>owner</strong><a class="paramlink headerlink reference internal" href="#litestar.handlers.WebsocketListener.params.owner">¶</a> – The <a class="reference internal" href="router.html#litestar.router.Router" title="litestar.router.Router"><code class="xref py py-class docutils literal notranslate"><span class="pre">Router</span></code></a> instance that owns this listener.</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.handlers.WebsocketListener.on_accept">
+<span class="sig-name descname"><span class="pre">on_accept</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></span><a class="headerlink" href="#litestar.handlers.WebsocketListener.on_accept" title="Permalink to this definition">#</a></dt>
+<dd><p>Called after a <a class="reference internal" href="connection.html#litestar.connection.WebSocket" title="litestar.connection.WebSocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocket</span></code></a> connection
+has been accepted. Can receive any dependencies</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.handlers.WebsocketListener.on_disconnect">
+<span class="sig-name descname"><span class="pre">on_disconnect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></span><a class="headerlink" href="#litestar.handlers.WebsocketListener.on_disconnect" title="Permalink to this definition">#</a></dt>
+<dd><p>Called after a <a class="reference internal" href="connection.html#litestar.connection.WebSocket" title="litestar.connection.WebSocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocket</span></code></a> connection
+has been disconnected. Can receive any dependencies</p>
 </dd></dl>
 
 <dl class="py method">
@@ -3082,8 +3084,6 @@ hook for deserialization.</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.handlers.WebsocketListener.exception_handlers"><code class="docutils literal notranslate"><span class="pre">WebsocketListener.exception_handlers</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.handlers.WebsocketListener.guards"><code class="docutils literal notranslate"><span class="pre">WebsocketListener.guards</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.handlers.WebsocketListener.middleware"><code class="docutils literal notranslate"><span class="pre">WebsocketListener.middleware</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.handlers.WebsocketListener.on_accept"><code class="docutils literal notranslate"><span class="pre">WebsocketListener.on_accept</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.handlers.WebsocketListener.on_disconnect"><code class="docutils literal notranslate"><span class="pre">WebsocketListener.on_disconnect</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.handlers.WebsocketListener.receive_mode"><code class="docutils literal notranslate"><span class="pre">WebsocketListener.receive_mode</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.handlers.WebsocketListener.send_mode"><code class="docutils literal notranslate"><span class="pre">WebsocketListener.send_mode</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.handlers.WebsocketListener.name"><code class="docutils literal notranslate"><span class="pre">WebsocketListener.name</span></code></a></li>
@@ -3094,6 +3094,8 @@ hook for deserialization.</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.handlers.WebsocketListener.type_encoders"><code class="docutils literal notranslate"><span class="pre">WebsocketListener.type_encoders</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.handlers.WebsocketListener.websocket_class"><code class="docutils literal notranslate"><span class="pre">WebsocketListener.websocket_class</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.handlers.WebsocketListener.__init__"><code class="docutils literal notranslate"><span class="pre">WebsocketListener.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.handlers.WebsocketListener.on_accept"><code class="docutils literal notranslate"><span class="pre">WebsocketListener.on_accept()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.handlers.WebsocketListener.on_disconnect"><code class="docutils literal notranslate"><span class="pre">WebsocketListener.on_disconnect()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.handlers.WebsocketListener.on_receive"><code class="docutils literal notranslate"><span class="pre">WebsocketListener.on_receive()</span></code></a></li>
 </ul>
 </li>
