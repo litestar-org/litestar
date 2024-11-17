@@ -12,6 +12,7 @@ plugins
     flash_messages
     htmx
     problem_details
+    prometheus
     pydantic
     structlog
     sqlalchemy
