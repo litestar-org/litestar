@@ -1904,6 +1904,16 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "olzhasar",
+      "name": "Olzhas Arystanov",
+      "avatar_url": "https://avatars.githubusercontent.com/u/12471703?v=4",
+      "profile": "https://olzhasar.com",
+      "contributions": [
+        "bug",
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
