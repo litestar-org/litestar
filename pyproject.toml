@@ -44,8 +44,9 @@ dependencies = [
     "click",
     "rich>=13.0.0",
     "rich-click",
+    "multipart@git+https://github.com/defnull/multipart.git",
     # default litestar plugins
-    "litestar-htmx>=0.3.0"
+    "litestar-htmx>=0.3.0",
 ]
 description = "Litestar - A production-ready, highly performant, extensible ASGI API Framework"
 keywords = ["api", "rest", "asgi", "litestar", "starlite"]
@@ -95,7 +96,7 @@ opentelemetry = ["opentelemetry-instrumentation-asgi"]
 piccolo = ["piccolo"]
 picologging = ["picologging"]
 prometheus = ["prometheus-client"]
-pydantic = ["pydantic", "email-validator", "pydantic-extra-types"]
+pydantic = ["pydantic<2.10", "email-validator", "pydantic-extra-types"]
 redis = ["redis[hiredis]>=4.4.4"]
 sqlalchemy = ["advanced-alchemy>=0.2.2"]
 standard = ["jinja2", "jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0; sys_platform != 'win32'", "fast-query-parsers>=1.0.2"]
