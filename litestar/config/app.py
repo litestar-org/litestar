@@ -163,6 +163,9 @@ class AppConfig:
     """List of :class:`SerializationPluginProtocol <.plugins.SerializationPluginProtocol>`."""
     request_class: type[Request] | None = field(default=None)
     """An optional subclass of :class:`Request <.connection.Request>` to use for http connections."""
+    request_max_body_size: int | None | EmptyType = Empty
+    """Maximum allowed size of the request body in bytes. If this size is exceeded, a '413 - Request Entity Too Large'
+    error response is returned."""
     response_class: type[Response] | None = field(default=None)
     """A custom subclass of :class:`Response <.response.Response>` to be used as the app's default response."""
     response_cookies: ResponseCookies = field(default_factory=list)

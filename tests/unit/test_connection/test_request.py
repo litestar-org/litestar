@@ -11,7 +11,7 @@ from unittest.mock import patch
 
 import pytest
 
-from litestar import MediaType, Request, asgi, get, post
+from litestar import MediaType, Request, get, post
 from litestar.connection.base import AuthT, StateT, UserT, empty_send
 from litestar.datastructures import Address, Cookie, State
 from litestar.exceptions import (
@@ -24,6 +24,7 @@ from litestar.middleware import MiddlewareProtocol
 from litestar.response.base import ASGIResponse
 from litestar.serialization import encode_json, encode_msgpack
 from litestar.static_files.config import StaticFilesConfig
+from litestar.status_codes import HTTP_400_BAD_REQUEST, HTTP_413_REQUEST_ENTITY_TOO_LARGE
 from litestar.testing import TestClient, create_test_client
 
 if TYPE_CHECKING:
@@ -32,7 +33,7 @@ if TYPE_CHECKING:
     from litestar.types import ASGIApp, Receive, Scope, Send
 
 
-@get("/", sync_to_thread=False)
+@get("/", sync_to_thread=False, request_max_body_size=None)
 def _route_handler() -> None:
     pass
 
@@ -230,56 +231,51 @@ def test_request_client(
 
 
 def test_request_body() -> None:
-    async def app(scope: Scope, receive: Receive, send: Send) -> None:
-        request = Request[Any, Any, State](scope, receive)
+    @post("/")
+    async def handler(request: Request) -> bytes:
         body = await request.body()
-        response = ASGIResponse(body=encode_json({"body": body.decode()}))
-        await response(scope, receive, send)
+        return encode_json({"body": body.decode()})
 
-    client = TestClient(app)
+    with create_test_client([handler]) as client:
+        response = client.post("/")
+        assert response.json() == {"body": ""}
 
-    response = client.get("/")
-    assert response.json() == {"body": ""}
+        response = client.post("/", json={"a": "123"})
+        assert response.json() == {"body": '{"a": "123"}'}
 
-    response = client.post("/", json={"a": "123"})
-    assert response.json() == {"body": '{"a": "123"}'}
-
-    response = client.post("/", content="abc")
-    assert response.json() == {"body": "abc"}
+        response = client.post("/", content="abc")
+        assert response.json() == {"body": "abc"}
 
 
 def test_request_stream() -> None:
-    async def app(scope: Scope, receive: Receive, send: Send) -> None:
-        request = Request[Any, Any, State](scope, receive)
+    @post("/")
+    async def handler(request: Request) -> bytes:
         body = b""
         async for chunk in request.stream():
             body += chunk
-        response = ASGIResponse(body=encode_json({"body": body.decode()}))
-        await response(scope, receive, send)
+        return encode_json({"body": body.decode()})
 
-    client = TestClient(app)
+    with create_test_client([handler]) as client:
+        response = client.post("/")
+        assert response.json() == {"body": ""}
 
-    response = client.get("/")
-    assert response.json() == {"body": ""}
+        response = client.post("/", json={"a": "123"})
+        assert response.json() == {"body": '{"a": "123"}'}
 
-    response = client.post("/", json={"a": "123"})
-    assert response.json() == {"body": '{"a": "123"}'}
-
-    response = client.post("/", content="abc")
-    assert response.json() == {"body": "abc"}
+        response = client.post("/", content="abc")
+        assert response.json() == {"body": "abc"}
 
 
 def test_request_form_urlencoded() -> None:
-    async def app(scope: Scope, receive: Receive, send: Send) -> None:
-        request = Request[Any, Any, State](scope, receive)
+    @post("/")
+    async def handler(request: Request) -> bytes:
         form = await request.form()
-        response = ASGIResponse(body=encode_json({"form": dict(form)}))
-        await response(scope, receive, send)
 
-    client = TestClient(app)
+        return encode_json({"form": dict(form)})
 
-    response = client.post("/", data={"abc": "123 @"})
-    assert response.json() == {"form": {"abc": "123 @"}}
+    with create_test_client([handler]) as client:
+        response = client.post("/", data={"abc": "123 @"})
+        assert response.json() == {"form": {"abc": "123 @"}}
 
 
 def test_request_form_urlencoded_multi_keys() -> None:
@@ -301,19 +297,17 @@ def test_request_form_multipart_multi_keys() -> None:
 
 
 def test_request_body_then_stream() -> None:
-    async def app(scope: Any, receive: Receive, send: Send) -> None:
-        request = Request[Any, Any, State](scope, receive)
+    @post("/")
+    async def handler(request: Request) -> bytes:
         body = await request.body()
         chunks = b""
         async for chunk in request.stream():
             chunks += chunk
-        response = ASGIResponse(body=encode_json({"body": body.decode(), "stream": chunks.decode()}))
-        await response(scope, receive, send)
+        return encode_json({"body": body.decode(), "stream": chunks.decode()})
 
-    client = TestClient(app)
-
-    response = client.post("/", content="abc")
-    assert response.json() == {"body": "abc", "stream": "abc"}
+    with create_test_client([handler]) as client:
+        response = client.post("/", content="abc")
+        assert response.json() == {"body": "abc", "stream": "abc"}
 
 
 def test_request_stream_then_body() -> None:
@@ -329,19 +323,27 @@ def test_request_stream_then_body() -> None:
         response = ASGIResponse(body=encode_json({"body": body.decode(), "stream": chunks.decode()}))
         await response(scope, receive, send)
 
-    client = TestClient(app)
+    @post("/")
+    async def handler(request: Request) -> bytes:
+        chunks = b""
+        async for chunk in request.stream():
+            chunks += chunk
+        try:
+            body = await request.body()
+        except InternalServerException:
+            body = b"<stream consumed>"
+        return encode_json({"body": body.decode(), "stream": chunks.decode()})
 
-    response = client.post("/", content="abc")
-    assert response.json() == {"body": "<stream consumed>", "stream": "abc"}
+    with create_test_client([handler]) as client:
+        response = client.post("/", content="abc")
+        assert response.json() == {"body": "<stream consumed>", "stream": "abc"}
 
 
 def test_request_json() -> None:
-    @asgi("/")
-    async def handler(scope: Scope, receive: Receive, send: Send) -> None:
-        request = Request[Any, Any, State](scope, receive)
+    @post("/")
+    async def handler(request: Request) -> bytes:
         data = await request.json()
-        response = ASGIResponse(body=encode_json({"json": data}))
-        await response(scope, receive, send)
+        return encode_json({"json": data})
 
     with create_test_client(handler) as client:
         response = client.post("/", json={"a": "123"})
@@ -361,10 +363,11 @@ def test_request_raw_path() -> None:
     assert response.text == "/he/llo, b'/he%2Fllo'"
 
 
-def test_request_without_setting_receive() -> None:
+def test_request_without_setting_receive(create_scope: Callable[..., Scope]) -> None:
     """If Request is instantiated without the 'receive' channel, then .body() is not available."""
 
     async def app(scope: Scope, receive: Receive, send: Send) -> None:
+        scope.update(create_scope(route_handler=_route_handler))  # type: ignore[typeddict-item]
         request = Request[Any, Any, State](scope)
         try:
             data = await request.json()
@@ -431,20 +434,19 @@ def test_request_cookies() -> None:
 
 
 def test_chunked_encoding() -> None:
-    async def app(scope: Scope, receive: Receive, send: Send) -> None:
-        request = Request[Any, Any, State](scope, receive)
+    @post("/")
+    async def handler(request: Request) -> bytes:
         body = await request.body()
-        response = ASGIResponse(body=encode_json({"body": body.decode()}))
-        await response(scope, receive, send)
+        return encode_json({"body": body.decode()})
 
-    client = TestClient(app)
+    with create_test_client([handler]) as client:
 
-    def post_body() -> Generator[bytes, None, None]:
-        yield b"foo"
-        yield b"bar"
+        def post_body() -> Generator[bytes, None, None]:
+            yield b"foo"
+            yield b"bar"
 
-    response = client.post("/", content=post_body())
-    assert response.json() == {"body": "foobar"}
+        response = client.post("/", content=post_body())
+        assert response.json() == {"body": "foobar"}
 
 
 def test_request_send_push_promise() -> None:
@@ -548,3 +550,74 @@ def test_state() -> None:
     ) as client:
         response = client.get("/")
         assert response.json() == {"state": 2}
+
+
+def test_request_body_exceeds_content_length() -> None:
+    @post("/")
+    def handler(body: bytes) -> None:
+        pass
+
+    with create_test_client([handler]) as client:
+        response = client.post("/", headers={"content-length": "1"}, content=b"ab")
+        assert response.status_code == HTTP_400_BAD_REQUEST
+        assert response.json() == {"status_code": 400, "detail": "Malformed request"}
+
+
+def test_request_body_exceeds_max_request_body_size() -> None:
+    @post("/one", request_max_body_size=1)
+    async def handler_one(request: Request) -> None:
+        await request.body()
+
+    @post("/two", request_max_body_size=1)
+    async def handler_two(body: bytes) -> None:
+        pass
+
+    with create_test_client([handler_one, handler_two]) as client:
+        response = client.post("/one", headers={"content-length": "2"}, content=b"ab")
+        assert response.status_code == HTTP_413_REQUEST_ENTITY_TOO_LARGE
+
+        response = client.post("/two", headers={"content-length": "2"}, content=b"ab")
+        assert response.status_code == HTTP_413_REQUEST_ENTITY_TOO_LARGE
+
+
+def test_request_body_exceeds_max_request_body_size_chunked() -> None:
+    @post("/one", request_max_body_size=1)
+    async def handler_one(request: Request) -> None:
+        assert request.headers["transfer-encoding"] == "chunked"
+        await request.body()
+
+    @post("/two", request_max_body_size=1)
+    async def handler_two(body: bytes, request: Request) -> None:
+        assert request.headers["transfer-encoding"] == "chunked"
+        await request.body()
+
+    def generator() -> Generator[bytes, None, None]:
+        yield b"1"
+        yield b"2"
+
+    with create_test_client([handler_one, handler_two]) as client:
+        response = client.post("/one", content=generator())
+        assert response.status_code == HTTP_413_REQUEST_ENTITY_TOO_LARGE
+
+        response = client.post("/two", content=generator())
+        assert response.status_code == HTTP_413_REQUEST_ENTITY_TOO_LARGE
+
+
+def test_request_content_length() -> None:
+    @post("/")
+    def handler(request: Request) -> dict:
+        return {"content-length": request.content_length}
+
+    with create_test_client([handler]) as client:
+        assert client.post("/", content=b"1").json() == {"content-length": 1}
+
+
+def test_request_invalid_content_length() -> None:
+    @post("/")
+    def handler(request: Request) -> dict:
+        return {"content-length": request.content_length}
+
+    with create_test_client([handler]) as client:
+        response = client.post("/", content=b"1", headers={"content-length": "a"})
+        assert response.status_code == HTTP_400_BAD_REQUEST
+        assert response.json() == {"detail": "Invalid content-length: 'a'", "status_code": 400}

@@ -202,6 +202,7 @@ class Litestar(Router):
         path: str | None = None,
         plugins: Sequence[PluginProtocol] | None = None,
         request_class: type[Request] | None = None,
+        request_max_body_size: int | None = 10_000_000,
         response_cache_config: ResponseCacheConfig | None = None,
         response_class: type[Response] | None = None,
         response_cookies: ResponseCookies | None = None,
@@ -286,6 +287,8 @@ class Litestar(Router):
             pdb_on_exception: Drop into the PDB when an exception occurs.
             plugins: Sequence of plugins.
             request_class: An optional subclass of :class:`Request <.connection.Request>` to use for http connections.
+            request_max_body_size: Maximum allowed size of the request body in bytes. If this size is exceeded, a
+                '413 - Request Entity Too Large' error response is returned.
             response_class: A custom subclass of :class:`Response <.response.Response>` to be used as the app's default
                 response.
             response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>`.
@@ -361,6 +364,7 @@ class Litestar(Router):
             pdb_on_exception=pdb_on_exception,
             plugins=self._get_default_plugins(list(plugins or [])),
             request_class=request_class,
+            request_max_body_size=request_max_body_size,
             response_cache_config=response_cache_config or ResponseCacheConfig(),
             response_class=response_class,
             response_cookies=response_cookies or [],
@@ -464,6 +468,7 @@ class Litestar(Router):
             parameters=config.parameters,
             path=config.path,
             request_class=self.request_class,
+            request_max_body_size=request_max_body_size,
             response_class=config.response_class,
             response_cookies=config.response_cookies,
             response_headers=config.response_headers,

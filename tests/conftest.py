@@ -216,6 +216,7 @@ def create_scope() -> Callable[..., Scope]:
             "route_handler": route_handler,
             "user": user,
             "session": session,
+            "headers": [],
             **kwargs,
         }
         return cast("Scope", scope)

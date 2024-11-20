@@ -64,6 +64,7 @@ class Controller:
         "parameters",
         "path",
         "request_class",
+        "request_max_body_size",
         "response_class",
         "response_cookies",
         "response_headers",
@@ -136,6 +137,11 @@ class Controller:
     """A custom subclass of :class:`Request <.connection.Request>` to be used as the default request for all route
     handlers under the controller.
     """
+    request_max_body_size: int | None | EmptyType
+    """
+    Maximum allowed size of the request body in bytes. If this size is exceeded, a '413 - Request Entity Too Large'
+    error response is returned."""
+
     response_class: type[Response] | None
     """A custom subclass of :class:`Response <.response.Response>` to be used as the default response for all route
     handlers under the controller.
@@ -191,6 +197,9 @@ class Controller:
         if not hasattr(self, "include_in_schema"):
             self.include_in_schema = Empty
 
+        if not hasattr(self, "request_max_body_size"):
+            self.request_max_body_size = Empty
+
         self.signature_namespace = add_types_to_signature_namespace(
             getattr(self, "signature_types", []), getattr(self, "signature_namespace", {})
         )
@@ -235,6 +244,7 @@ class Controller:
             type_encoders=self.type_encoders,
             type_decoders=self.type_decoders,
             websocket_class=self.websocket_class,
+            request_max_body_size=self.request_max_body_size,
         )
         router.owner = self.owner
         return router
