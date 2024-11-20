@@ -1362,7 +1362,9 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../reference/params.html">params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/htmx.html">htmx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/problem_details.html">problem details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
@@ -1543,7 +1545,7 @@ document.write(`
 <h1>Using the init plugin<a class="headerlink" href="#using-the-init-plugin" title="Permalink to this heading">#</a></h1>
 <p>In our example application, we’ve seen that we need to manage the database engine within the scope of the application’s
 lifespan, and the session within the scope of a request. This is a common pattern, and the
-<a class="reference internal" href="../../reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin" title="litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyInitPlugin</span></code></a> plugin provides assistance for
+<code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyInitPlugin</span></code> plugin provides assistance for
 this.</p>
 <p>In our latest update, we leverage two features of the plugin:</p>
 <ol class="arabic simple">
@@ -1567,9 +1569,9 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">put</span>
 <span class="linenos"> 9</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.plugins</span> <span class="kn">import</span> <span class="p">(</span>
 <span class="linenos">10</span>    <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span>
-<span class="linenos">11</span>    <span class="n">SQLAlchemyInitPlugin</span><span class="p">,</span>
-<span class="hll"><span class="linenos">12</span>    <span class="n">SQLAlchemySerializationPlugin</span><span class="p">,</span>
-</span><span class="linenos">13</span><span class="p">)</span>
+<span class="hll"><span class="linenos">11</span>    <span class="n">SQLAlchemyInitPlugin</span><span class="p">,</span>
+</span><span class="linenos">12</span>    <span class="n">SQLAlchemySerializationPlugin</span><span class="p">,</span>
+<span class="linenos">13</span><span class="p">)</span>
 <span class="linenos">14</span><span class="kn">from</span> <span class="nn">litestar.exceptions</span> <span class="kn">import</span> <span class="n">ClientException</span><span class="p">,</span> <span class="n">NotFoundException</span>
 <span class="linenos">15</span><span class="kn">from</span> <span class="nn">litestar.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_409_CONFLICT</span>
 <span class="linenos">16</span>
@@ -1660,9 +1662,9 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 8</span>
 <span class="linenos"> 9</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">put</span>
 <span class="linenos">10</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.plugins</span> <span class="kn">import</span> <span class="p">(</span>
-<span class="linenos">11</span>    <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span>
-<span class="hll"><span class="linenos">12</span>    <span class="n">SQLAlchemyInitPlugin</span><span class="p">,</span>
-</span><span class="linenos">13</span>    <span class="n">SQLAlchemySerializationPlugin</span><span class="p">,</span>
+<span class="hll"><span class="linenos">11</span>    <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span>
+</span><span class="linenos">12</span>    <span class="n">SQLAlchemyInitPlugin</span><span class="p">,</span>
+<span class="linenos">13</span>    <span class="n">SQLAlchemySerializationPlugin</span><span class="p">,</span>
 <span class="linenos">14</span><span class="p">)</span>
 <span class="linenos">15</span><span class="kn">from</span> <span class="nn">litestar.exceptions</span> <span class="kn">import</span> <span class="n">ClientException</span><span class="p">,</span> <span class="n">NotFoundException</span>
 <span class="linenos">16</span><span class="kn">from</span> <span class="nn">litestar.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_409_CONFLICT</span>
@@ -1754,9 +1756,9 @@ Python 3.10+</label><div class="sd-tab-content docutils">
 <span class="linenos"> 8</span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">put</span>
 <span class="linenos"> 9</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.plugins</span> <span class="kn">import</span> <span class="p">(</span>
 <span class="linenos">10</span>    <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span>
-<span class="linenos">11</span>    <span class="n">SQLAlchemyInitPlugin</span><span class="p">,</span>
-<span class="hll"><span class="linenos">12</span>    <span class="n">SQLAlchemySerializationPlugin</span><span class="p">,</span>
-</span><span class="linenos">13</span><span class="p">)</span>
+<span class="hll"><span class="linenos">11</span>    <span class="n">SQLAlchemyInitPlugin</span><span class="p">,</span>
+</span><span class="linenos">12</span>    <span class="n">SQLAlchemySerializationPlugin</span><span class="p">,</span>
+<span class="linenos">13</span><span class="p">)</span>
 <span class="linenos">14</span><span class="kn">from</span> <span class="nn">litestar.exceptions</span> <span class="kn">import</span> <span class="n">ClientException</span><span class="p">,</span> <span class="n">NotFoundException</span>
 <span class="linenos">15</span><span class="kn">from</span> <span class="nn">litestar.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_409_CONFLICT</span>
 <span class="linenos">16</span>
@@ -1919,7 +1921,7 @@ dependency provider, instead of creating our own session.</p>
 
   <p class="copyright">
     
-      © Copyright 2023, Litestar-Org.
+      © Copyright 2024, Litestar-Org.
       <br/>
     
   </p>

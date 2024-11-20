@@ -1362,7 +1362,9 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/params.html">params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/htmx.html">htmx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/problem_details.html">problem details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
@@ -1598,7 +1600,7 @@ don’t spend a significant amount of time waiting.</p>
 <h3>Asynchronous CPU-bound tasks<a class="headerlink" href="#asynchronous-cpu-bound-tasks" title="Permalink to this heading">#</a></h3>
 <p>In some cases, CPU bound tasks can be made asynchronous, by introducing points for the
 event loop to switch to other tasks. An example of this would be an inner loop which
-awaits <a class="reference external" href="https://docs.python.org/3/library/asyncio-task.html#asyncio.sleep" title="(in Python v3.12)"><code class="xref py py-func docutils literal notranslate"><span class="pre">asyncio.sleep(0)</span></code></a> at the beginning of each iteration.</p>
+awaits <a class="reference external" href="https://docs.python.org/3/library/asyncio-task.html#asyncio.sleep" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">asyncio.sleep(0)</span></code></a> at the beginning of each iteration.</p>
 <p>This technique is mostly useful for long-running tasks, where each individual step does
 not block for an extended period of time.</p>
 </section>
@@ -1619,7 +1621,7 @@ operations will outperform an asynchronous function doing the same.</p>
 <section id="when-to-use-a-synchronous-function">
 <h2>When to use a synchronous function<a class="headerlink" href="#when-to-use-a-synchronous-function" title="Permalink to this heading">#</a></h2>
 <p>As an inverse of the previous paragraph, it follows that synchronous functions should
-be used for non-blocking, non-computationally intensive tasks. The synchronous execution
+be used for non-io intensive tasks. The synchronous execution
 model allows for the smallest amount of overhead and should therefore be preferred in
 such situations where no asynchronous functionality is made use of.</p>
 </section>
@@ -1638,7 +1640,7 @@ necessary.</p>
 non-blocking way, it does not speed up its execution. Computationally intensive tasks
 that are performed regularly should be offloaded into a different process, to make use
 of multiple CPU cores.</p>
-<p>This can for example be achieve by using <a class="reference external" href="https://anyio.readthedocs.io/en/stable/api.html#anyio.to_process.run_sync" title="(in AnyIO v4.6.0)"><code class="xref py py-func docutils literal notranslate"><span class="pre">anyio.to_process.run_sync()</span></code></a>.</p>
+<p>This can for example be achieve by using <a class="reference external" href="https://anyio.readthedocs.io/en/stable/api.html#anyio.to_process.run_sync" title="(in AnyIO v4.6.2)"><code class="xref py py-func docutils literal notranslate"><span class="pre">anyio.to_process.run_sync()</span></code></a>.</p>
 </section>
 </section>
 <section id="warnings-about-the-mode-of-execution">
@@ -1738,7 +1740,7 @@ to make a deliberate decision about whether or not to run the function in a thre
 
   <p class="copyright">
     
-      © Copyright 2023, Litestar-Org.
+      © Copyright 2024, Litestar-Org.
       <br/>
     
   </p>

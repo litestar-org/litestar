@@ -677,10 +677,6 @@ document.write(`
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
-      <span class="fa-solid fa-outdent"></span>
-    </label>
-  
 </div>
 
     </nav>
@@ -1362,7 +1358,9 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../params.html">params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../plugins/htmx.html">htmx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../plugins/problem_details.html">problem details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
@@ -1547,249 +1545,6 @@ document.write(`
   <section id="module-litestar.contrib.sqlalchemy.base">
 <span id="base"></span><h1>base<a class="headerlink" href="#module-litestar.contrib.sqlalchemy.base" title="Permalink to this heading">#</a></h1>
 <p>Application ORM configuration.</p>
-<dl class="py class">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.AuditColumns">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.contrib.sqlalchemy.base.</span></span><span class="sig-name descname"><span class="pre">AuditColumns</span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.AuditColumns" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>Created/Updated At Fields Mixin.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.AuditColumns.created_at">
-<span class="sig-name descname"><span class="pre">created_at</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/internals.html#sqlalchemy.orm.Mapped" title="(in SQLAlchemy v2.0)"><span class="pre">Mapped</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.12)"><span class="pre">datetime</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;sqlalchemy.orm.properties.MappedColumn</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.AuditColumns.created_at" title="Permalink to this definition">#</a></dt>
-<dd><p>Date/time of instance creation.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.AuditColumns.updated_at">
-<span class="sig-name descname"><span class="pre">updated_at</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/internals.html#sqlalchemy.orm.Mapped" title="(in SQLAlchemy v2.0)"><span class="pre">Mapped</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.12)"><span class="pre">datetime</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;sqlalchemy.orm.properties.MappedColumn</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.AuditColumns.updated_at" title="Permalink to this definition">#</a></dt>
-<dd><p>Date/time of instance last update.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.BigIntAuditBase">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.contrib.sqlalchemy.base.</span></span><span class="sig-name descname"><span class="pre">BigIntAuditBase</span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.BigIntAuditBase" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#litestar.contrib.sqlalchemy.base.CommonTableAttributes" title="advanced_alchemy.base.CommonTableAttributes"><code class="xref py py-class docutils literal notranslate"><span class="pre">CommonTableAttributes</span></code></a>, <a class="reference internal" href="#litestar.contrib.sqlalchemy.base.BigIntPrimaryKey" title="advanced_alchemy.base.BigIntPrimaryKey"><code class="xref py py-class docutils literal notranslate"><span class="pre">BigIntPrimaryKey</span></code></a>, <a class="reference internal" href="#litestar.contrib.sqlalchemy.base.AuditColumns" title="advanced_alchemy.base.AuditColumns"><code class="xref py py-class docutils literal notranslate"><span class="pre">AuditColumns</span></code></a>, <a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/mapping_api.html#sqlalchemy.orm.DeclarativeBase" title="(in SQLAlchemy v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeclarativeBase</span></code></a></p>
-<p>Base for declarative models with BigInt primary keys and audit columns.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.BigIntAuditBase.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.BigIntAuditBase.__init__" title="Permalink to this definition">#</a></dt>
-<dd><p>A simple constructor that allows initialization from kwargs.</p>
-<p>Sets attributes on the constructed instance using the names and
-values in <code class="docutils literal notranslate"><span class="pre">kwargs</span></code>.</p>
-<p>Only keys that are present as
-attributes of the instance’s class are allowed. These could be,
-for example, any mapped columns or relationships.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.BigIntAuditBase.metadata">
-<span class="sig-name descname"><span class="pre">metadata</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">MetaData</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">MetaData()</span></em><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.BigIntAuditBase.metadata" title="Permalink to this definition">#</a></dt>
-<dd><p>Refers to the <code class="xref py py-class docutils literal notranslate"><span class="pre">_schema.MetaData</span></code> collection that will be used
-for new <code class="xref py py-class docutils literal notranslate"><span class="pre">_schema.Table</span></code> objects.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/declarative_tables.html#orm-declarative-metadata" title="(in SQLAlchemy v2.0)"><span>Accessing Table and Metadata</span></a></p>
-</div>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.BigIntAuditBase.registry">
-<span class="sig-name descname"><span class="pre">registry</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">_RegistryType</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;sqlalchemy.orm.decl_api.registry</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.BigIntAuditBase.registry" title="Permalink to this definition">#</a></dt>
-<dd><p>Refers to the <code class="xref py py-class docutils literal notranslate"><span class="pre">_orm.registry</span></code> in use where new
-<code class="xref py py-class docutils literal notranslate"><span class="pre">_orm.Mapper</span></code> objects will be associated.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.BigIntBase">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.contrib.sqlalchemy.base.</span></span><span class="sig-name descname"><span class="pre">BigIntBase</span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.BigIntBase" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#litestar.contrib.sqlalchemy.base.BigIntPrimaryKey" title="advanced_alchemy.base.BigIntPrimaryKey"><code class="xref py py-class docutils literal notranslate"><span class="pre">BigIntPrimaryKey</span></code></a>, <a class="reference internal" href="#litestar.contrib.sqlalchemy.base.CommonTableAttributes" title="advanced_alchemy.base.CommonTableAttributes"><code class="xref py py-class docutils literal notranslate"><span class="pre">CommonTableAttributes</span></code></a>, <a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/mapping_api.html#sqlalchemy.orm.DeclarativeBase" title="(in SQLAlchemy v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeclarativeBase</span></code></a></p>
-<p>Base for all SQLAlchemy declarative models with BigInt primary keys.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.BigIntBase.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.BigIntBase.__init__" title="Permalink to this definition">#</a></dt>
-<dd><p>A simple constructor that allows initialization from kwargs.</p>
-<p>Sets attributes on the constructed instance using the names and
-values in <code class="docutils literal notranslate"><span class="pre">kwargs</span></code>.</p>
-<p>Only keys that are present as
-attributes of the instance’s class are allowed. These could be,
-for example, any mapped columns or relationships.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.BigIntBase.metadata">
-<span class="sig-name descname"><span class="pre">metadata</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">MetaData</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">MetaData()</span></em><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.BigIntBase.metadata" title="Permalink to this definition">#</a></dt>
-<dd><p>Refers to the <code class="xref py py-class docutils literal notranslate"><span class="pre">_schema.MetaData</span></code> collection that will be used
-for new <code class="xref py py-class docutils literal notranslate"><span class="pre">_schema.Table</span></code> objects.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/declarative_tables.html#orm-declarative-metadata" title="(in SQLAlchemy v2.0)"><span>Accessing Table and Metadata</span></a></p>
-</div>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.BigIntBase.registry">
-<span class="sig-name descname"><span class="pre">registry</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">_RegistryType</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;sqlalchemy.orm.decl_api.registry</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.BigIntBase.registry" title="Permalink to this definition">#</a></dt>
-<dd><p>Refers to the <code class="xref py py-class docutils literal notranslate"><span class="pre">_orm.registry</span></code> in use where new
-<code class="xref py py-class docutils literal notranslate"><span class="pre">_orm.Mapper</span></code> objects will be associated.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.BigIntPrimaryKey">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.contrib.sqlalchemy.base.</span></span><span class="sig-name descname"><span class="pre">BigIntPrimaryKey</span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.BigIntPrimaryKey" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>BigInt Primary Key Field Mixin.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.BigIntPrimaryKey.id">
-<span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.BigIntPrimaryKey.id" title="Permalink to this definition">#</a></dt>
-<dd><p>BigInt Primary key column.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.CommonTableAttributes">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.contrib.sqlalchemy.base.</span></span><span class="sig-name descname"><span class="pre">CommonTableAttributes</span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.CommonTableAttributes" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BasicAttributes</span></code></p>
-<p>Common attributes for SQLALchemy tables.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.create_registry">
-<span class="sig-prename descclassname"><span class="pre">litestar.contrib.sqlalchemy.base.</span></span><span class="sig-name descname"><span class="pre">create_registry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">custom_annotation_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.12)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">TypeEngine</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">TypeEngine</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#litestar.contrib.sqlalchemy.base.BigIntAuditBase.registry" title="litestar.contrib.sqlalchemy.base.BigIntAuditBase.registry"><span class="pre">registry</span></a></span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.create_registry" title="Permalink to this definition">#</a></dt>
-<dd><p>Create a new SQLAlchemy registry.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.ModelProtocol">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.contrib.sqlalchemy.base.</span></span><span class="sig-name descname"><span class="pre">ModelProtocol</span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.ModelProtocol" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a></p>
-<p>The base SQLAlchemy model protocol.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.ModelProtocol.to_dict">
-<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">exclude</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#set" title="(in Python v3.12)"><span class="pre">set</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.ModelProtocol.to_dict" title="Permalink to this definition">#</a></dt>
-<dd><p>Convert model to dictionary.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A dict representation of the model</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)">dict</a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a>, Any]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.ModelProtocol.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.ModelProtocol.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.touch_updated_timestamp">
-<span class="sig-prename descclassname"><span class="pre">litestar.contrib.sqlalchemy.base.</span></span><span class="sig-name descname"><span class="pre">touch_updated_timestamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Session</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">_</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.touch_updated_timestamp" title="Permalink to this definition">#</a></dt>
-<dd><p>Set timestamp on update.</p>
-<p>Called from SQLAlchemy’s
-<a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/events.html#sqlalchemy.orm.SessionEvents.before_flush" title="(in SQLAlchemy v2.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">before_flush</span></code></a> event to bump the <code class="docutils literal notranslate"><span class="pre">updated</span></code>
-timestamp on modified instances.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="target" id="litestar.contrib.sqlalchemy.base.touch_updated_timestamp.params.session"></span><strong>session</strong><a class="paramlink headerlink reference internal" href="#litestar.contrib.sqlalchemy.base.touch_updated_timestamp.params.session">¶</a> – The sync <a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/session_api.html#sqlalchemy.orm.Session" title="(in SQLAlchemy v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Session</span></code></a> instance that underlies the async
-session.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.UUIDAuditBase">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.contrib.sqlalchemy.base.</span></span><span class="sig-name descname"><span class="pre">UUIDAuditBase</span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.UUIDAuditBase" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#litestar.contrib.sqlalchemy.base.CommonTableAttributes" title="advanced_alchemy.base.CommonTableAttributes"><code class="xref py py-class docutils literal notranslate"><span class="pre">CommonTableAttributes</span></code></a>, <a class="reference internal" href="#litestar.contrib.sqlalchemy.base.UUIDPrimaryKey" title="advanced_alchemy.base.UUIDPrimaryKey"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUIDPrimaryKey</span></code></a>, <a class="reference internal" href="#litestar.contrib.sqlalchemy.base.AuditColumns" title="advanced_alchemy.base.AuditColumns"><code class="xref py py-class docutils literal notranslate"><span class="pre">AuditColumns</span></code></a>, <a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/mapping_api.html#sqlalchemy.orm.DeclarativeBase" title="(in SQLAlchemy v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeclarativeBase</span></code></a></p>
-<p>Base for declarative models with UUID primary keys and audit columns.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.UUIDAuditBase.registry">
-<span class="sig-name descname"><span class="pre">registry</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">_RegistryType</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;sqlalchemy.orm.decl_api.registry</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.UUIDAuditBase.registry" title="Permalink to this definition">#</a></dt>
-<dd><p>Refers to the <code class="xref py py-class docutils literal notranslate"><span class="pre">_orm.registry</span></code> in use where new
-<code class="xref py py-class docutils literal notranslate"><span class="pre">_orm.Mapper</span></code> objects will be associated.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.UUIDAuditBase.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.UUIDAuditBase.__init__" title="Permalink to this definition">#</a></dt>
-<dd><p>A simple constructor that allows initialization from kwargs.</p>
-<p>Sets attributes on the constructed instance using the names and
-values in <code class="docutils literal notranslate"><span class="pre">kwargs</span></code>.</p>
-<p>Only keys that are present as
-attributes of the instance’s class are allowed. These could be,
-for example, any mapped columns or relationships.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.UUIDAuditBase.metadata">
-<span class="sig-name descname"><span class="pre">metadata</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">MetaData</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">MetaData()</span></em><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.UUIDAuditBase.metadata" title="Permalink to this definition">#</a></dt>
-<dd><p>Refers to the <code class="xref py py-class docutils literal notranslate"><span class="pre">_schema.MetaData</span></code> collection that will be used
-for new <code class="xref py py-class docutils literal notranslate"><span class="pre">_schema.Table</span></code> objects.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/declarative_tables.html#orm-declarative-metadata" title="(in SQLAlchemy v2.0)"><span>Accessing Table and Metadata</span></a></p>
-</div>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.UUIDBase">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.contrib.sqlalchemy.base.</span></span><span class="sig-name descname"><span class="pre">UUIDBase</span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.UUIDBase" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#litestar.contrib.sqlalchemy.base.UUIDPrimaryKey" title="advanced_alchemy.base.UUIDPrimaryKey"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUIDPrimaryKey</span></code></a>, <a class="reference internal" href="#litestar.contrib.sqlalchemy.base.CommonTableAttributes" title="advanced_alchemy.base.CommonTableAttributes"><code class="xref py py-class docutils literal notranslate"><span class="pre">CommonTableAttributes</span></code></a>, <a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/mapping_api.html#sqlalchemy.orm.DeclarativeBase" title="(in SQLAlchemy v2.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">DeclarativeBase</span></code></a></p>
-<p>Base for all SQLAlchemy declarative models with UUID primary keys.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.UUIDBase.registry">
-<span class="sig-name descname"><span class="pre">registry</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">_RegistryType</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;sqlalchemy.orm.decl_api.registry</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.UUIDBase.registry" title="Permalink to this definition">#</a></dt>
-<dd><p>Refers to the <code class="xref py py-class docutils literal notranslate"><span class="pre">_orm.registry</span></code> in use where new
-<code class="xref py py-class docutils literal notranslate"><span class="pre">_orm.Mapper</span></code> objects will be associated.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.UUIDBase.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.UUIDBase.__init__" title="Permalink to this definition">#</a></dt>
-<dd><p>A simple constructor that allows initialization from kwargs.</p>
-<p>Sets attributes on the constructed instance using the names and
-values in <code class="docutils literal notranslate"><span class="pre">kwargs</span></code>.</p>
-<p>Only keys that are present as
-attributes of the instance’s class are allowed. These could be,
-for example, any mapped columns or relationships.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.UUIDBase.metadata">
-<span class="sig-name descname"><span class="pre">metadata</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">MetaData</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">MetaData()</span></em><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.UUIDBase.metadata" title="Permalink to this definition">#</a></dt>
-<dd><p>Refers to the <code class="xref py py-class docutils literal notranslate"><span class="pre">_schema.MetaData</span></code> collection that will be used
-for new <code class="xref py py-class docutils literal notranslate"><span class="pre">_schema.Table</span></code> objects.</p>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/declarative_tables.html#orm-declarative-metadata" title="(in SQLAlchemy v2.0)"><span>Accessing Table and Metadata</span></a></p>
-</div>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.UUIDPrimaryKey">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.contrib.sqlalchemy.base.</span></span><span class="sig-name descname"><span class="pre">UUIDPrimaryKey</span></span><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.UUIDPrimaryKey" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>UUID Primary Key Field Mixin.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.contrib.sqlalchemy.base.UUIDPrimaryKey.id">
-<span class="sig-name descname"><span class="pre">id</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.sqlalchemy.org/en/20/orm/internals.html#sqlalchemy.orm.Mapped" title="(in SQLAlchemy v2.0)"><span class="pre">Mapped</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/uuid.html#uuid.UUID" title="(in Python v3.12)"><span class="pre">UUID</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;sqlalchemy.orm.properties.MappedColumn</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#litestar.contrib.sqlalchemy.base.UUIDPrimaryKey.id" title="Permalink to this definition">#</a></dt>
-<dd><p>UUID Primary key column.</p>
-</dd></dl>
-
-</dd></dl>
-
 </section>
 
 
@@ -1827,65 +1582,6 @@ for new <code class="xref py py-class docutils literal notranslate"><span class=
             
             
               
-                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-  <div class="sidebar-secondary-item">
-
-  <div class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-  </div>
-  <nav class="bd-toc-nav page-toc">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.AuditColumns"><code class="docutils literal notranslate"><span class="pre">AuditColumns</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.AuditColumns.created_at"><code class="docutils literal notranslate"><span class="pre">AuditColumns.created_at</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.AuditColumns.updated_at"><code class="docutils literal notranslate"><span class="pre">AuditColumns.updated_at</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.BigIntAuditBase"><code class="docutils literal notranslate"><span class="pre">BigIntAuditBase</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.BigIntAuditBase.__init__"><code class="docutils literal notranslate"><span class="pre">BigIntAuditBase.__init__()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.BigIntAuditBase.metadata"><code class="docutils literal notranslate"><span class="pre">BigIntAuditBase.metadata</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.BigIntAuditBase.registry"><code class="docutils literal notranslate"><span class="pre">BigIntAuditBase.registry</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.BigIntBase"><code class="docutils literal notranslate"><span class="pre">BigIntBase</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.BigIntBase.__init__"><code class="docutils literal notranslate"><span class="pre">BigIntBase.__init__()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.BigIntBase.metadata"><code class="docutils literal notranslate"><span class="pre">BigIntBase.metadata</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.BigIntBase.registry"><code class="docutils literal notranslate"><span class="pre">BigIntBase.registry</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.BigIntPrimaryKey"><code class="docutils literal notranslate"><span class="pre">BigIntPrimaryKey</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.BigIntPrimaryKey.id"><code class="docutils literal notranslate"><span class="pre">BigIntPrimaryKey.id</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.CommonTableAttributes"><code class="docutils literal notranslate"><span class="pre">CommonTableAttributes</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.create_registry"><code class="docutils literal notranslate"><span class="pre">create_registry()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.ModelProtocol"><code class="docutils literal notranslate"><span class="pre">ModelProtocol</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.ModelProtocol.to_dict"><code class="docutils literal notranslate"><span class="pre">ModelProtocol.to_dict()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.ModelProtocol.__init__"><code class="docutils literal notranslate"><span class="pre">ModelProtocol.__init__()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.touch_updated_timestamp"><code class="docutils literal notranslate"><span class="pre">touch_updated_timestamp()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.UUIDAuditBase"><code class="docutils literal notranslate"><span class="pre">UUIDAuditBase</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.UUIDAuditBase.registry"><code class="docutils literal notranslate"><span class="pre">UUIDAuditBase.registry</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.UUIDAuditBase.__init__"><code class="docutils literal notranslate"><span class="pre">UUIDAuditBase.__init__()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.UUIDAuditBase.metadata"><code class="docutils literal notranslate"><span class="pre">UUIDAuditBase.metadata</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.UUIDBase"><code class="docutils literal notranslate"><span class="pre">UUIDBase</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.UUIDBase.registry"><code class="docutils literal notranslate"><span class="pre">UUIDBase.registry</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.UUIDBase.__init__"><code class="docutils literal notranslate"><span class="pre">UUIDBase.__init__()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.UUIDBase.metadata"><code class="docutils literal notranslate"><span class="pre">UUIDBase.metadata</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.UUIDPrimaryKey"><code class="docutils literal notranslate"><span class="pre">UUIDPrimaryKey</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.contrib.sqlalchemy.base.UUIDPrimaryKey.id"><code class="docutils literal notranslate"><span class="pre">UUIDPrimaryKey.id</span></code></a></li>
-</ul>
-</li>
-</ul>
-  </nav></div>
-
-</div></div>
-              
             
           </div>
           <footer class="bd-footer-content">
@@ -1909,7 +1605,7 @@ for new <code class="xref py py-class docutils literal notranslate"><span class=
 
   <p class="copyright">
     
-      © Copyright 2023, Litestar-Org.
+      © Copyright 2024, Litestar-Org.
       <br/>
     
   </p>

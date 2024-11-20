@@ -1362,7 +1362,9 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/params.html">params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/htmx.html">htmx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/problem_details.html">problem details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
@@ -1573,10 +1575,10 @@ callables annotated to return a <a class="reference internal" href="../reference
 </ol>
 <p>Within these locations, Litestar CLI looks for:</p>
 <ol class="arabic simple">
-<li><p>An <a class="reference external" href="https://docs.python.org/3/glossary.html#term-object" title="(in Python v3.12)"><span class="xref std std-term">object</span></a> named <code class="docutils literal notranslate"><span class="pre">app</span></code> that is an instance of <a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a></p></li>
+<li><p>An <a class="reference external" href="https://docs.python.org/3/glossary.html#term-object" title="(in Python v3.13)"><span class="xref std std-term">object</span></a> named <code class="docutils literal notranslate"><span class="pre">app</span></code> that is an instance of <a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a></p></li>
 <li><p>An object named <code class="docutils literal notranslate"><span class="pre">application</span></code> that is an instance of <a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a></p></li>
 <li><p>Any object that is an instance of <a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a></p></li>
-<li><p>A <a class="reference external" href="https://docs.python.org/3/glossary.html#term-callable" title="(in Python v3.12)"><span class="xref std std-term">callable</span></a> named <code class="docutils literal notranslate"><span class="pre">create_app</span></code></p></li>
+<li><p>A <a class="reference external" href="https://docs.python.org/3/glossary.html#term-callable" title="(in Python v3.13)"><span class="xref std std-term">callable</span></a> named <code class="docutils literal notranslate"><span class="pre">create_app</span></code></p></li>
 <li><p>A callable annotated to return an instance of <a class="reference internal" href="../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a></p></li>
 </ol>
 </section>
@@ -1588,7 +1590,7 @@ or by creating a plugin that conforms to the <a class="reference internal" href=
 <section id="using-entry-points">
 <h3>Using entry points<a class="headerlink" href="#using-entry-points" title="Permalink to this heading">#</a></h3>
 <p>Entry points for the CLI can be added under the <code class="docutils literal notranslate"><span class="pre">litestar.commands</span></code> group. These
-entries should point to a <a class="reference external" href="https://click.palletsprojects.com/en/8.1.x/api/#click.Command" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Command</span></code></a> or <a class="reference external" href="https://click.palletsprojects.com/en/8.1.x/api/#click.Group" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Group</span></code></a>:</p>
+entries should point to a <a class="reference external" href="https://click.palletsprojects.com/en/stable/api/#click.Command" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Command</span></code></a> or <a class="reference external" href="https://click.palletsprojects.com/en/stable/api/#click.Group" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Group</span></code></a>:</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" for="sd-tab-item-0">
@@ -1641,7 +1643,7 @@ Poetry</label><div class="sd-tab-content docutils">
 <h3>Using a plugin<a class="headerlink" href="#using-a-plugin" title="Permalink to this heading">#</a></h3>
 <p>A plugin extending the CLI can be created using the <a class="reference internal" href="../reference/plugins/index.html#litestar.plugins.CLIPluginProtocol" title="litestar.plugins.CLIPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">CLIPluginProtocol</span></code></a>.
 Its <a class="reference internal" href="../reference/plugins/index.html#litestar.plugins.CLIPluginProtocol.on_cli_init" title="litestar.plugins.CLIPluginProtocol.on_cli_init"><code class="xref py py-meth docutils literal notranslate"><span class="pre">on_cli_init()</span></code></a> will be called during the initialization of the CLI,
-and receive the root <a class="reference external" href="https://click.palletsprojects.com/en/8.1.x/api/#click.Group" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Group</span></code></a> as its first argument, which can then be used to add or override commands:</p>
+and receive the root <a class="reference external" href="https://click.palletsprojects.com/en/stable/api/#click.Group" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Group</span></code></a> as its first argument, which can then be used to add or override commands:</p>
 <div class="literal-block-wrapper docutils container" id="id6">
 <div class="code-block-caption"><span class="caption-text">Creating a CLI plugin</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
@@ -1774,7 +1776,7 @@ information.</p>
 
   <p class="copyright">
     
-      © Copyright 2023, Litestar-Org.
+      © Copyright 2024, Litestar-Org.
       <br/>
     
   </p>

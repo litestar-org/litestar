@@ -47,8 +47,14 @@
     <script src="../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../_static/litestar-theme.js?v=ab2dcc9e"></script>
     <script src="../../_static/design-tabs.js?v=36754332"></script>
-    <script src="https://unpkg.com/mermaid@10.2.0/dist/mermaid.min.js"></script>
-    <script>mermaid.initialize({startOnLoad:true});</script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
+    <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs";mermaid.registerLayoutLoaders(elkLayouts);mermaid.initialize({startOnLoad:false});</script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+    <script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";
+window.addEventListener("load", () => mermaid.run());
+</script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'usage/dto/index';</script>
     <script src="../../_static/versioning.js?v=68b42869"></script>
     <link rel="icon" href="../../_static/favicon.png"/>
@@ -1364,7 +1370,9 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../reference/params.html">params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/htmx.html">htmx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/problem_details.html">problem details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
@@ -1543,8 +1551,8 @@ document.write(`
 <p>In Litestar, a Data Transfer Object (DTO) is a class that is used to control the flow of data from the client into a
 useful form for the developer to use in their handler, and then back again.</p>
 <p>The following diagram demonstrates how the DTO is used within the context of an individual request in Litestar:</p>
-<div class="mermaid">
-            sequenceDiagram
+<pre  class="mermaid">
+        sequenceDiagram
     autonumber
     actor Client
     participant Litestar
@@ -1570,7 +1578,7 @@ useful form for the developer to use in their handler, and then back again.</p>
     Note over Litestar: Data received from DTO&lt;br&gt;is encoded into bytes
     Litestar-&gt;&gt;Client: Data as encoded bytes
     deactivate Litestar
-        </div><section id="data-movement">
+    </pre><section id="data-movement">
 <h2>Data movement<a class="headerlink" href="#data-movement" title="Permalink to this heading">#</a></h2>
 <p>The following is a short summary of the interaction between each of the participants in the above diagram.</p>
 <p>Data moves between each of the participants in the DTO chart, and as it does so, different actions are performed on the
@@ -1629,6 +1637,7 @@ DTO</p></li>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="0-basic-use.html#defining-dtos-on-layers">Defining DTOs on layers</a></li>
 <li class="toctree-l2"><a class="reference internal" href="0-basic-use.html#improving-performance-with-the-codegen-backend">Improving performance with the codegen backend</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="0-basic-use.html#disabling-the-backend">Disabling the backend</a></li>
 <li class="toctree-l3"><a class="reference internal" href="0-basic-use.html#enabling-the-backend">Enabling the backend</a></li>
 <li class="toctree-l3"><a class="reference internal" href="0-basic-use.html#performance-improvements">Performance improvements</a></li>
 </ul>
@@ -1748,7 +1757,7 @@ DTO</p></li>
 
   <p class="copyright">
     
-      © Copyright 2023, Litestar-Org.
+      © Copyright 2024, Litestar-Org.
       <br/>
     
   </p>

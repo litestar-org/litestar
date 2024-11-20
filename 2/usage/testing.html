@@ -1362,7 +1362,9 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../reference/params.html">params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../reference/plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/htmx.html">htmx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/problem_details.html">problem details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
@@ -1571,6 +1573,8 @@ Sync</label><div class="sd-tab-content docutils">
 
 <span class="kn">from</span> <span class="nn">my_app.main</span> <span class="kn">import</span> <span class="n">app</span>
 
+<span class="n">app</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="kc">True</span>
+
 
 <span class="k">def</span> <span class="nf">test_health_check</span><span class="p">():</span>
     <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
@@ -1590,6 +1594,8 @@ Async</label><div class="sd-tab-content docutils">
 <span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">AsyncTestClient</span>
 
 <span class="kn">from</span> <span class="nn">my_app.main</span> <span class="kn">import</span> <span class="n">app</span>
+
+<span class="n">app</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="kc">True</span>
 
 
 <span class="k">async</span> <span class="k">def</span> <span class="nf">test_health_check</span><span class="p">():</span>
@@ -1624,6 +1630,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
 
+<span class="n">app</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="kc">True</span>
+
 
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">)</span>
 <span class="k">def</span> <span class="nf">test_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">TestClient</span><span class="p">[</span><span class="n">Litestar</span><span class="p">]]:</span>
@@ -1649,6 +1657,8 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+
+<span class="n">app</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="kc">True</span>
 
 
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">)</span>
@@ -1681,6 +1691,8 @@ Python 3.8+</label><div class="sd-tab-content docutils">
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
 
+<span class="n">app</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="kc">True</span>
+
 
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">test_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">AsyncTestClient</span><span class="p">[</span><span class="n">Litestar</span><span class="p">]]:</span>
@@ -1706,6 +1718,8 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+
+<span class="n">app</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="kc">True</span>
 
 
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">)</span>
@@ -1744,7 +1758,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="s2">&quot;healthy&quot;</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">health_check</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">health_check</span><span class="p">],</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">)</span>
@@ -1780,7 +1794,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="s2">&quot;healthy&quot;</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">health_check</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">health_check</span><span class="p">],</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">)</span>
@@ -1822,7 +1836,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="s2">&quot;healthy&quot;</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">health_check</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">health_check</span><span class="p">],</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">)</span>
@@ -1858,7 +1872,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="s2">&quot;healthy&quot;</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">health_check</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">health_check</span><span class="p">],</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
 <span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;function&quot;</span><span class="p">)</span>
@@ -1962,7 +1976,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_session_data</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_session_data</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">],</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">test_get_session_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -1992,7 +2006,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_session_data</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_session_data</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">],</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">test_get_session_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -2018,7 +2032,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s2">&quot;foo&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;bar&quot;</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">set_session_data</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">set_session_data</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">],</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 <span class="k">with</span> <span class="n">TestClient</span><span class="p">(</span><span class="n">app</span><span class="o">=</span><span class="n">app</span><span class="p">,</span> <span class="n">session_config</span><span class="o">=</span><span class="n">session_config</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
     <span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/test&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
@@ -2050,7 +2064,7 @@ Python 3.8+</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_session_data</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_session_data</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">],</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
 <span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_session_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -2081,7 +2095,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">session</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_session_data</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_session_data</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">],</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
 <span class="k">async</span> <span class="k">def</span> <span class="nf">test_get_session_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -2108,7 +2122,7 @@ Python 3.9+</label><div class="sd-tab-content docutils">
     <span class="n">request</span><span class="o">.</span><span class="n">session</span><span class="p">[</span><span class="s2">&quot;foo&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;bar&quot;</span>
 
 
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">set_session_data</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">])</span>
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">set_session_data</span><span class="p">],</span> <span class="n">middleware</span><span class="o">=</span><span class="p">[</span><span class="n">session_config</span><span class="o">.</span><span class="n">middleware</span><span class="p">],</span> <span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
 
 <span class="k">async</span> <span class="k">def</span> <span class="nf">test_set_session_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -2468,7 +2482,7 @@ pydantic models and dataclasses based on type annotations. With it, we could rew
 
   <p class="copyright">
     
-      © Copyright 2023, Litestar-Org.
+      © Copyright 2024, Litestar-Org.
       <br/>
     
   </p>

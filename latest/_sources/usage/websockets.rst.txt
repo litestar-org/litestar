@@ -62,11 +62,13 @@ form of JSON.
     .. tab-item:: Text
 
         .. literalinclude:: /examples/websockets/receive_str.py
+            :language: python
 
 
     .. tab-item:: Bytes
 
         .. literalinclude:: /examples/websockets/receive_bytes.py
+            :language: python
 
 
 .. important::

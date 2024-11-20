@@ -47,8 +47,14 @@
     <script src="../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../_static/litestar-theme.js?v=ab2dcc9e"></script>
     <script src="../../_static/design-tabs.js?v=36754332"></script>
-    <script src="https://unpkg.com/mermaid@10.2.0/dist/mermaid.min.js"></script>
-    <script>mermaid.initialize({startOnLoad:true});</script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
+    <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs";mermaid.registerLayoutLoaders(elkLayouts);mermaid.initialize({startOnLoad:false});</script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+    <script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";
+window.addEventListener("load", () => mermaid.run());
+</script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'usage/middleware/using-middleware';</script>
     <script src="../../_static/versioning.js?v=68b42869"></script>
     <link rel="icon" href="../../_static/favicon.png"/>
@@ -1364,7 +1370,9 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../reference/params.html">params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/htmx.html">htmx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/problem_details.html">problem details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
@@ -1542,7 +1550,7 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section id="using-middleware">
-<h1>Using Middleware<a class="headerlink" href="#using-middleware" title="Permalink to this heading">#</a></h1>
+<span id="id1"></span><h1>Using Middleware<a class="headerlink" href="#using-middleware" title="Permalink to this heading">#</a></h1>
 <p>A middleware in Litestar is any callable that receives at least one kwarg called <code class="docutils literal notranslate"><span class="pre">app</span></code> and returns an
 <a class="reference internal" href="../../reference/types.html#litestar.types.ASGIApp" title="litestar.types.ASGIApp"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIApp</span></code></a>. An <code class="docutils literal notranslate"><span class="pre">ASGIApp</span></code> is nothing but an async function that receives the ASGI
 primitives <code class="docutils literal notranslate"><span class="pre">scope</span></code> , <code class="docutils literal notranslate"><span class="pre">receive</span></code> and <code class="docutils literal notranslate"><span class="pre">send</span></code> , and either calls the next <code class="docutils literal notranslate"><span class="pre">ASGIApp</span></code> or returns a response / handles
@@ -1595,10 +1603,10 @@ set them on every layer of the application.</p>
 middlewares will be <strong>top to bottom</strong> and <strong>left to right</strong>. This means for each layer, the
 middlewares will be called in the order they have been passed, while the layers will be
 traversed in the usual order:</p>
-<div class="mermaid">
-            flowchart LR
+<pre  class="mermaid">
+        flowchart LR
     Application --&gt; Router --&gt; Controller --&gt; Handler
-        </div><div class="sd-tab-set docutils">
+    </pre><div class="sd-tab-set docutils">
 <input id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-0">
 Python 3.8+</label><div class="sd-tab-content docutils">
@@ -1804,7 +1812,7 @@ from these exception, you will have to use an application layer exception handle
 
   <p class="copyright">
     
-      © Copyright 2023, Litestar-Org.
+      © Copyright 2024, Litestar-Org.
       <br/>
     
   </p>

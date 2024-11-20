@@ -53,7 +53,7 @@
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="sqlalchemy" href="sqlalchemy.html" />
-    <link rel="prev" title="problem details" href="problem_details.html" />
+    <link rel="prev" title="pydantic" href="pydantic.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -1362,7 +1362,9 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../params.html">params</a></li>
 <li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">plugins</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="htmx.html">htmx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="problem_details.html">problem details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pydantic.html">pydantic</a></li>
 <li class="toctree-l3 current active"><a class="current reference internal" href="#">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sqlalchemy.html">sqlalchemy</a></li>
 </ul>
@@ -1544,7 +1546,7 @@ document.write(`
 <dl class="py class">
 <dt class="sig sig-object py" id="litestar.plugins.structlog.StructlogConfig">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.structlog.</span></span><span class="sig-name descname"><span class="pre">StructlogConfig</span></span><a class="headerlink" href="#litestar.plugins.structlog.StructlogConfig" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>StructlogConfig(structlog_logging_config: ‘StructLoggingConfig’ = &lt;factory&gt;, middleware_logging_config: ‘LoggingMiddlewareConfig’ = &lt;factory&gt;, enable_middleware_logging: ‘bool’ = True)</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="litestar.plugins.structlog.StructlogConfig.structlog_logging_config">
@@ -1560,13 +1562,13 @@ document.write(`
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="litestar.plugins.structlog.StructlogConfig.enable_middleware_logging">
-<span class="sig-name descname"><span class="pre">enable_middleware_logging</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#litestar.plugins.structlog.StructlogConfig.enable_middleware_logging" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">enable_middleware_logging</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#litestar.plugins.structlog.StructlogConfig.enable_middleware_logging" title="Permalink to this definition">#</a></dt>
 <dd><p>Enable request logging.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.plugins.structlog.StructlogConfig.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structlog_logging_config:</span> <span class="pre">~litestar.logging.config.StructLoggingConfig</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">middleware_logging_config:</span> <span class="pre">~litestar.middleware.logging.LoggingMiddlewareConfig</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_middleware_logging:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.plugins.structlog.StructlogConfig.__init__" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">structlog_logging_config:</span> <span class="pre">~litestar.logging.config.StructLoggingConfig</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">middleware_logging_config:</span> <span class="pre">~litestar.middleware.logging.LoggingMiddlewareConfig</span> <span class="pre">=</span> <span class="pre">&lt;factory&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_middleware_logging:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.plugins.structlog.StructlogConfig.__init__" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1578,7 +1580,7 @@ document.write(`
 <p>Structlog Plugin.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="litestar.plugins.structlog.StructlogPlugin.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#litestar.plugins.structlog.StructlogConfig" title="litestar.plugins.structlog.StructlogConfig"><span class="pre">StructlogConfig</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.plugins.structlog.StructlogPlugin.__init__" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#litestar.plugins.structlog.StructlogConfig" title="litestar.plugins.structlog.StructlogConfig"><span class="pre">StructlogConfig</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.plugins.structlog.StructlogPlugin.__init__" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -1610,12 +1612,12 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="problem_details.html"
+       href="pydantic.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">problem details</p>
+        <p class="prev-next-title">pydantic</p>
       </div>
     </a>
     <a class="right-next"
@@ -1683,7 +1685,7 @@ document.write(`
 
   <p class="copyright">
     
-      © Copyright 2023, Litestar-Org.
+      © Copyright 2024, Litestar-Org.
       <br/>
     
   </p>

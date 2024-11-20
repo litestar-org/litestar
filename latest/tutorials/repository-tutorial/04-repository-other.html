@@ -1362,7 +1362,9 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../reference/params.html">params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/htmx.html">htmx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/problem_details.html">problem details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
@@ -1562,7 +1564,7 @@ can add functionality on top of the repository pattern.</p>
 <span class="linenos"> 7</span>    <span class="n">slug</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=-</span><span class="mi">9</span><span class="p">)</span>
 <span class="linenos"> 8</span>
 <span class="linenos"> 9</span>
-<span class="linenos">10</span><span class="c1"># record created, and `updated` is the last time the record was modified.</span>
+<span class="linenos">10</span><span class="c1"># record created, and `updated_at` is the last time the record was modified.</span>
 <span class="linenos">11</span><span class="k">class</span> <span class="nc">BlogPost</span><span class="p">(</span><span class="n">UUIDAuditBase</span><span class="p">,</span> <span class="n">SlugKey</span><span class="p">):</span>
 <span class="linenos">12</span>    <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 <span class="linenos">13</span>    <span class="n">content</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
@@ -1681,7 +1683,7 @@ Full Code (click to expand)<div class="sd-summary-down docutils">
 <span class="linenos"> 7</span>    <span class="n">slug</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapped_column</span><span class="p">(</span><span class="n">String</span><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mi">100</span><span class="p">),</span> <span class="n">nullable</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=-</span><span class="mi">9</span><span class="p">)</span>
 <span class="linenos"> 8</span>
 <span class="linenos"> 9</span>
-<span class="linenos">10</span><span class="c1"># record created, and `updated` is the last time the record was modified.</span>
+<span class="linenos">10</span><span class="c1"># record created, and `updated_at` is the last time the record was modified.</span>
 <span class="linenos">11</span><span class="k">class</span> <span class="nc">BlogPost</span><span class="p">(</span><span class="n">UUIDAuditBase</span><span class="p">,</span> <span class="n">SlugKey</span><span class="p">):</span>
 <span class="linenos">12</span>    <span class="n">title</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 <span class="linenos">13</span>    <span class="n">content</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
@@ -1828,7 +1830,7 @@ Full Code (click to expand)<div class="sd-summary-down docutils">
 
   <p class="copyright">
     
-      © Copyright 2023, Litestar-Org.
+      © Copyright 2024, Litestar-Org.
       <br/>
     
   </p>

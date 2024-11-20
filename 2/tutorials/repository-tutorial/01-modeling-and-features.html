@@ -1362,7 +1362,9 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../reference/params.html">params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/htmx.html">htmx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/problem_details.html">problem details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
@@ -1554,11 +1556,11 @@ to make working with models easier.</p>
 <h1>Modeling<a class="headerlink" href="#modeling" title="Permalink to this heading">#</a></h1>
 <p>We’ll begin by modelling the entities and relationships between authors and books.
 We’ll start by creating the <code class="docutils literal notranslate"><span class="pre">Author</span></code> table, utilizing the
-<a class="reference internal" href="../../reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.UUIDBase" title="advanced_alchemy.base.UUIDBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUIDBase</span></code></a> class. To keep things
+<a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/base.html#advanced_alchemy.base.UUIDBase" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUIDBase</span></code></a> class. To keep things
 simple, our first model will encompass only three fields: <code class="docutils literal notranslate"><span class="pre">id</span></code>, <code class="docutils literal notranslate"><span class="pre">name</span></code>, and <code class="docutils literal notranslate"><span class="pre">dob</span></code>.</p>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id1" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="c1"># The `Base` class includes a `UUID` based primary key (`id`)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="c1"># The `UUIDBase` class includes a `UUID` based primary key (`id`)</span>
 <span class="linenos">2</span><span class="k">class</span> <span class="nc">Author</span><span class="p">(</span><span class="n">UUIDBase</span><span class="p">):</span>
 <span class="linenos">3</span>    <span class="n">name</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 </pre></div>
@@ -1572,7 +1574,7 @@ By configuring it this way, SQLAlchemy will automatically include the necessary 
 key constraints when using the <code class="docutils literal notranslate"><span class="pre">author_id</span></code> field in each <code class="docutils literal notranslate"><span class="pre">Book</span></code> record.</p>
 <div class="literal-block-wrapper docutils container" id="id2">
 <div class="code-block-caption"><span class="caption-text">app.py</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="c1"># The `Base` class includes a `UUID` based primary key (`id`)</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">1</span><span class="c1"># The `UUIDBase` class includes a `UUID` based primary key (`id`)</span>
 <span class="linenos">2</span><span class="k">class</span> <span class="nc">Author</span><span class="p">(</span><span class="n">UUIDBase</span><span class="p">):</span>
 <span class="linenos">3</span>    <span class="n">name</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 <span class="linenos">4</span>    <span class="n">dob</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">date</span><span class="p">]</span>
@@ -1587,7 +1589,7 @@ key constraints when using the <code class="docutils literal notranslate"><span 
 <p>By using the audit model, we can automatically record the time a record was created and
 last updated.</p>
 <p>To implement this, we will define a new <code class="docutils literal notranslate"><span class="pre">Book</span></code> model via the
-<a class="reference internal" href="../../reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.UUIDAuditBase" title="advanced_alchemy.base.UUIDAuditBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUIDAuditBase</span></code></a> class. Observe
+<a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/base.html#advanced_alchemy.base.UUIDAuditBase" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">UUIDAuditBase</span></code></a> class. Observe
 that the only modification here is the parent class from which we inherit. This minor
 change endows the <cite>book</cite> table with automatic timestamp columns
 (<cite>created</cite> and <cite>updated</cite>) upon deployment!</p>
@@ -1595,8 +1597,8 @@ change endows the <cite>book</cite> table with automatic timestamp columns
 <p class="admonition-title">Note</p>
 <p>If your application requires integer-based primary keys, equivalent base model
 and base audit model implementations can be found at
-<a class="reference internal" href="../../reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.BigIntAuditBase" title="advanced_alchemy.base.BigIntAuditBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">BigIntBase</span></code></a> and
-<a class="reference internal" href="../../reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.UUIDAuditBase" title="advanced_alchemy.base.UUIDAuditBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">BigIntAuditBase</span></code></a>
+<a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/base.html#advanced_alchemy.base.BigIntAuditBase" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BigIntBase</span></code></a> and
+<a class="reference external" href="https://docs.advanced-alchemy.litestar.dev/latest/reference/base.html#advanced_alchemy.base.UUIDAuditBase" title="(in advanced_alchemy)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BigIntAuditBase</span></code></a>
 respectively.</p>
 </div>
 <div class="admonition important">
@@ -1651,15 +1653,15 @@ Full Code (click to expand)<div class="sd-summary-down docutils">
 <span class="linenos">13</span><span class="kn">from</span> <span class="nn">litestar.contrib.sqlalchemy.plugins</span> <span class="kn">import</span> <span class="n">AsyncSessionConfig</span><span class="p">,</span> <span class="n">SQLAlchemyAsyncConfig</span><span class="p">,</span> <span class="n">SQLAlchemyPlugin</span>
 <span class="linenos">14</span>
 <span class="linenos">15</span>
-<span class="linenos">16</span><span class="c1"># the SQLAlchemy base includes a declarative model for you to use in your models.</span>
-<span class="linenos">17</span><span class="c1"># The `Base` class includes a `UUID` based primary key (`id`)</span>
+<span class="linenos">16</span><span class="c1"># The SQLAlchemy base includes a declarative model for you to use in your models.</span>
+<span class="linenos">17</span><span class="c1"># The `UUIDBase` class includes a `UUID` based primary key (`id`)</span>
 <span class="hll"><span class="linenos">18</span><span class="k">class</span> <span class="nc">Author</span><span class="p">(</span><span class="n">UUIDBase</span><span class="p">):</span>
 </span><span class="hll"><span class="linenos">19</span>    <span class="n">name</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
 </span><span class="hll"><span class="linenos">20</span>    <span class="n">dob</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="n">date</span><span class="p">]</span>
 </span><span class="hll"><span class="linenos">21</span>    <span class="n">books</span><span class="p">:</span> <span class="n">Mapped</span><span class="p">[</span><span class="nb">list</span><span class="p">[</span><span class="n">Book</span><span class="p">]]</span> <span class="o">=</span> <span class="n">relationship</span><span class="p">(</span><span class="n">back_populates</span><span class="o">=</span><span class="s2">&quot;author&quot;</span><span class="p">,</span> <span class="n">lazy</span><span class="o">=</span><span class="s2">&quot;selectin&quot;</span><span class="p">)</span>
 </span><span class="linenos">22</span>
 <span class="linenos">23</span>
-<span class="linenos">24</span><span class="c1"># The `AuditBase` class includes the same UUID` based primary key (`id`) and 2</span>
+<span class="linenos">24</span><span class="c1"># The `UUIDAuditBase` class includes the same UUID` based primary key (`id`) and 2</span>
 <span class="linenos">25</span><span class="c1"># additional columns: `created_at` and `updated_at`. `created_at` is a timestamp of when the</span>
 <span class="linenos">26</span><span class="c1"># record created, and `updated_at` is the last time the record was modified.</span>
 <span class="hll"><span class="linenos">27</span><span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">UUIDAuditBase</span><span class="p">):</span>
@@ -1780,7 +1782,7 @@ Full Code (click to expand)<div class="sd-summary-down docutils">
 
   <p class="copyright">
     
-      © Copyright 2023, Litestar-Org.
+      © Copyright 2024, Litestar-Org.
       <br/>
     
   </p>

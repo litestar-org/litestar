@@ -1362,7 +1362,9 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../reference/params.html">params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/htmx.html">htmx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/problem_details.html">problem details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
@@ -1542,7 +1544,7 @@ document.write(`
   <section id="using-the-serialization-plugin">
 <h1>Using the serialization plugin<a class="headerlink" href="#using-the-serialization-plugin" title="Permalink to this heading">#</a></h1>
 <p>Our next improvement is to leverage the
-<a class="reference internal" href="../../reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin" title="litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemySerializationPlugin</span></code></a>
+<code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemySerializationPlugin</span></code>
 so that we can receive and return our SQLAlchemy models directly to and from our handlers.</p>
 <p>Here’s the code:</p>
 <div class="sd-tab-set docutils">
@@ -1947,7 +1949,7 @@ Before</label><div class="sd-tab-content docutils">
 <h2>Next steps<a class="headerlink" href="#next-steps" title="Permalink to this heading">#</a></h2>
 <p>In our application, we’ve had to build a bit of scaffolding to integrate SQLAlchemy with our application. We’ve had to
 define the <code class="docutils literal notranslate"><span class="pre">db_connection()</span></code> lifespan context manager, and the <code class="docutils literal notranslate"><span class="pre">provide_transaction()</span></code> dependency provider.</p>
-<p>Next we’ll look at how the <a class="reference internal" href="../../reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin" title="litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin"><code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyInitPlugin</span></code></a> can
+<p>Next we’ll look at how the <code class="xref py py-class docutils literal notranslate"><span class="pre">SQLAlchemyInitPlugin</span></code> can
 help us.</p>
 </section>
 </section>
@@ -2026,7 +2028,7 @@ help us.</p>
 
   <p class="copyright">
     
-      © Copyright 2023, Litestar-Org.
+      © Copyright 2024, Litestar-Org.
       <br/>
     
   </p>

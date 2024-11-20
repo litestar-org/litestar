@@ -46,8 +46,14 @@
     <script src="_static/copybutton.js?v=f281be69"></script>
     <script src="_static/litestar-theme.js?v=ab2dcc9e"></script>
     <script src="_static/design-tabs.js?v=36754332"></script>
-    <script src="https://unpkg.com/mermaid@10.2.0/dist/mermaid.min.js"></script>
-    <script>mermaid.initialize({startOnLoad:true});</script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
+    <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs";mermaid.registerLayoutLoaders(elkLayouts);mermaid.initialize({startOnLoad:false});</script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+    <script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";
+window.addEventListener("load", () => mermaid.run());
+</script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'genindex';</script>
     <script src="_static/versioning.js?v=68b42869"></script>
     <link rel="icon" href="_static/favicon.png"/>
@@ -1357,7 +1363,9 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="reference/params.html">params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="reference/plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/plugins/htmx.html">htmx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/plugins/problem_details.html">problem details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
@@ -1541,8 +1549,6 @@ document.write(`
       <li><a href="reference/background_tasks.html#litestar.background_tasks.BackgroundTask.params.**kwargs">**kwargs (litestar.background_tasks.BackgroundTask parameter)</a>
 
       <ul>
-        <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.response.HTMXTemplate.params.**kwargs">(litestar.contrib.htmx.response.HTMXTemplate parameter)</a>
-</li>
         <li><a href="reference/datastructures/index.html#litestar.datastructures.Cookie.to_header.params.**kwargs">(litestar.datastructures.Cookie.to_header parameter)</a>
 </li>
         <li><a href="reference/dto/data_structures.html#litestar.dto.data_structures.DTOData.create_instance.params.**kwargs">(litestar.dto.data_structures.DTOData.create_instance parameter)</a>
@@ -1588,6 +1594,8 @@ document.write(`
         <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.SwaggerRenderPlugin.params.**kwargs">(litestar.openapi.plugins.SwaggerRenderPlugin parameter)</a>
 </li>
         <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.YamlRenderPlugin.params.**kwargs">(litestar.openapi.plugins.YamlRenderPlugin parameter)</a>
+</li>
+        <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXTemplate.params.**kwargs">(litestar.plugins.htmx.HTMXTemplate parameter)</a>
 </li>
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.count.params.**kwargs">(litestar.repository.abc.AbstractAsyncRepository.count parameter)</a>
 </li>
@@ -1989,10 +1997,10 @@ document.write(`
 <h2 id="_">_</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.request.HTMXDetails.__bool__">__bool__() (litestar.contrib.htmx.request.HTMXDetails method)</a>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.ImmutableState.__bool__">__bool__() (litestar.datastructures.ImmutableState method)</a>
 
       <ul>
-        <li><a href="reference/datastructures/index.html#litestar.datastructures.ImmutableState.__bool__">(litestar.datastructures.ImmutableState method)</a>
+        <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXDetails.__bool__">(litestar.plugins.htmx.HTMXDetails method)</a>
 </li>
       </ul></li>
       <li><a href="reference/app.html#litestar.app.Litestar.__call__">__call__() (litestar.app.Litestar method)</a>
@@ -2114,30 +2122,6 @@ document.write(`
 </li>
         <li><a href="reference/connection.html#litestar.connection.WebSocket.__init__">(litestar.connection.WebSocket method)</a>
 </li>
-        <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.request.HTMXDetails.__init__">(litestar.contrib.htmx.request.HTMXDetails method)</a>
-</li>
-        <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.request.HTMXRequest.__init__">(litestar.contrib.htmx.request.HTMXRequest method)</a>
-</li>
-        <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.response.ClientRedirect.__init__">(litestar.contrib.htmx.response.ClientRedirect method)</a>
-</li>
-        <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.response.ClientRefresh.__init__">(litestar.contrib.htmx.response.ClientRefresh method)</a>
-</li>
-        <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.response.HTMXTemplate.__init__">(litestar.contrib.htmx.response.HTMXTemplate method)</a>
-</li>
-        <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.response.HXLocation.__init__">(litestar.contrib.htmx.response.HXLocation method)</a>
-</li>
-        <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.response.HXStopPolling.__init__">(litestar.contrib.htmx.response.HXStopPolling method)</a>
-</li>
-        <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.response.PushUrl.__init__">(litestar.contrib.htmx.response.PushUrl method)</a>
-</li>
-        <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.response.ReplaceUrl.__init__">(litestar.contrib.htmx.response.ReplaceUrl method)</a>
-</li>
-        <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.response.Reswap.__init__">(litestar.contrib.htmx.response.Reswap method)</a>
-</li>
-        <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.response.Retarget.__init__">(litestar.contrib.htmx.response.Retarget method)</a>
-</li>
-        <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.response.TriggerEvent.__init__">(litestar.contrib.htmx.response.TriggerEvent method)</a>
-</li>
         <li><a href="reference/contrib/jinja.html#litestar.contrib.jinja.JinjaTemplateEngine.__init__">(litestar.contrib.jinja.JinjaTemplateEngine method)</a>
 </li>
         <li><a href="reference/contrib/mako.html#litestar.contrib.mako.MakoTemplate.__init__">(litestar.contrib.mako.MakoTemplate method)</a>
@@ -2149,36 +2133,6 @@ document.write(`
         <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware.__init__">(litestar.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware method)</a>
 </li>
         <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryPlugin.__init__">(litestar.contrib.opentelemetry.OpenTelemetryPlugin method)</a>
-</li>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticInitPlugin.__init__">(litestar.contrib.pydantic.PydanticInitPlugin method)</a>
-</li>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticPlugin.__init__">(litestar.contrib.pydantic.PydanticPlugin method)</a>
-</li>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticSchemaPlugin.__init__">(litestar.contrib.pydantic.PydanticSchemaPlugin method)</a>
-</li>
-        <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.BigIntAuditBase.__init__">(litestar.contrib.sqlalchemy.base.BigIntAuditBase method)</a>
-</li>
-        <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.BigIntBase.__init__">(litestar.contrib.sqlalchemy.base.BigIntBase method)</a>
-</li>
-        <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.ModelProtocol.__init__">(litestar.contrib.sqlalchemy.base.ModelProtocol method)</a>
-</li>
-        <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.UUIDAuditBase.__init__">(litestar.contrib.sqlalchemy.base.UUIDAuditBase method)</a>
-</li>
-        <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.UUIDBase.__init__">(litestar.contrib.sqlalchemy.base.UUIDBase method)</a>
-</li>
-        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.AsyncSessionConfig.__init__">(litestar.contrib.sqlalchemy.plugins.AsyncSessionConfig method)</a>
-</li>
-        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.__init__">(litestar.contrib.sqlalchemy.plugins.EngineConfig method)</a>
-</li>
-        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSessionConfig.__init__">(litestar.contrib.sqlalchemy.plugins.GenericSessionConfig method)</a>
-</li>
-        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.__init__">(litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig method)</a>
-</li>
-        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin.__init__">(litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin method)</a>
-</li>
-        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin.__init__">(litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin method)</a>
-</li>
-        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin.__init__">(litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin method)</a>
 </li>
         <li><a href="reference/controller.html#litestar.controller.Controller.__init__">(litestar.controller.Controller method)</a>
 </li>
@@ -2416,6 +2370,34 @@ document.write(`
 </li>
         <li><a href="reference/plugins/flash_messages.html#litestar.plugins.flash.FlashPlugin.__init__">(litestar.plugins.flash.FlashPlugin method)</a>
 </li>
+        <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.ClientRedirect.__init__">(litestar.plugins.htmx.ClientRedirect method)</a>
+</li>
+        <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.ClientRefresh.__init__">(litestar.plugins.htmx.ClientRefresh method)</a>
+</li>
+        <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXConfig.__init__">(litestar.plugins.htmx.HTMXConfig method)</a>
+</li>
+        <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXDetails.__init__">(litestar.plugins.htmx.HTMXDetails method)</a>
+</li>
+        <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXPlugin.__init__">(litestar.plugins.htmx.HTMXPlugin method)</a>
+</li>
+        <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXRequest.__init__">(litestar.plugins.htmx.HTMXRequest method)</a>
+</li>
+        <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXTemplate.__init__">(litestar.plugins.htmx.HTMXTemplate method)</a>
+</li>
+        <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HXLocation.__init__">(litestar.plugins.htmx.HXLocation method)</a>
+</li>
+        <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HXStopPolling.__init__">(litestar.plugins.htmx.HXStopPolling method)</a>
+</li>
+        <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.PushUrl.__init__">(litestar.plugins.htmx.PushUrl method)</a>
+</li>
+        <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.ReplaceUrl.__init__">(litestar.plugins.htmx.ReplaceUrl method)</a>
+</li>
+        <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.Reswap.__init__">(litestar.plugins.htmx.Reswap method)</a>
+</li>
+        <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.Retarget.__init__">(litestar.plugins.htmx.Retarget method)</a>
+</li>
+        <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.TriggerEvent.__init__">(litestar.plugins.htmx.TriggerEvent method)</a>
+</li>
         <li><a href="reference/plugins/index.html#litestar.plugins.InitPluginProtocol.__init__">(litestar.plugins.InitPluginProtocol method)</a>
 </li>
         <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPluginProtocol.__init__">(litestar.plugins.OpenAPISchemaPluginProtocol method)</a>
@@ -2426,27 +2408,13 @@ document.write(`
 </li>
         <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsPlugin.__init__">(litestar.plugins.problem_details.ProblemDetailsPlugin method)</a>
 </li>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticInitPlugin.__init__">(litestar.plugins.pydantic.PydanticInitPlugin method)</a>
+</li>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticPlugin.__init__">(litestar.plugins.pydantic.PydanticPlugin method)</a>
+</li>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticSchemaPlugin.__init__">(litestar.plugins.pydantic.PydanticSchemaPlugin method)</a>
+</li>
         <li><a href="reference/plugins/index.html#litestar.plugins.SerializationPluginProtocol.__init__">(litestar.plugins.SerializationPluginProtocol method)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.AlembicAsyncConfig.__init__">(litestar.plugins.sqlalchemy.AlembicAsyncConfig method)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.AlembicSyncConfig.__init__">(litestar.plugins.sqlalchemy.AlembicSyncConfig method)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.AsyncSessionConfig.__init__">(litestar.plugins.sqlalchemy.AsyncSessionConfig method)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.EngineConfig.__init__">(litestar.plugins.sqlalchemy.EngineConfig method)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.__init__">(litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig method)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTOConfig.__init__">(litestar.plugins.sqlalchemy.SQLAlchemyDTOConfig method)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin.__init__">(litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin method)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyPlugin.__init__">(litestar.plugins.sqlalchemy.SQLAlchemyPlugin method)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySerializationPlugin.__init__">(litestar.plugins.sqlalchemy.SQLAlchemySerializationPlugin method)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.__init__">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig method)</a>
 </li>
         <li><a href="reference/plugins/structlog.html#litestar.plugins.structlog.StructlogConfig.__init__">(litestar.plugins.structlog.StructlogConfig method)</a>
 </li>
@@ -2598,6 +2566,8 @@ document.write(`
 </li>
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OpenAPIType.__new__">(litestar.openapi.spec.OpenAPIType method)</a>
 </li>
+        <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXHeaders.__new__">(litestar.plugins.htmx.HTMXHeaders method)</a>
+</li>
       </ul></li>
       <li><a href="reference/config.html#litestar.config.allowed_hosts.AllowedHostsConfig.__post_init__">__post_init__() (litestar.config.allowed_hosts.AllowedHostsConfig method)</a>
 
@@ -2711,7 +2681,7 @@ document.write(`
 </li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.Address">Address (class in litestar.datastructures)</a>
 </li>
-      <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.response.HTMXTemplate.params.after">after (litestar.contrib.htmx.response.HTMXTemplate parameter)</a>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXTemplate.params.after">after (litestar.plugins.htmx.HTMXTemplate parameter)</a>
 </li>
       <li><a href="reference/app.html#litestar.app.Litestar.params.after_exception">after_exception (litestar.app.Litestar parameter)</a>
 
@@ -2795,10 +2765,6 @@ document.write(`
 </li>
       <li><a href="reference/types.html#litestar.types.AfterResponseHookHandler">AfterResponseHookHandler (in module litestar.types)</a>
 </li>
-      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.AlembicAsyncConfig">AlembicAsyncConfig (class in litestar.plugins.sqlalchemy)</a>
-</li>
-      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.AlembicSyncConfig">AlembicSyncConfig (class in litestar.plugins.sqlalchemy)</a>
-</li>
       <li><a href="reference/security/jwt.html#litestar.security.jwt.BaseJWTAuth.algorithm">algorithm (litestar.security.jwt.BaseJWTAuth attribute)</a>
 
       <ul>
@@ -2879,6 +2845,8 @@ document.write(`
         <li><a href="reference/typing.html#litestar.typing.FieldDefinition.from_kwarg.params.annotation">(litestar.typing.FieldDefinition.from_kwarg parameter)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.any_of">any_of (litestar.openapi.spec.Schema attribute)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.AnyCallable">AnyCallable (in module litestar.types)</a>
@@ -2915,14 +2883,6 @@ document.write(`
         <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.params.app">(litestar.middleware.rate_limit.RateLimitMiddleware parameter)</a>
 </li>
         <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.SessionMiddleware.params.app">(litestar.middleware.session.base.SessionMiddleware parameter)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.create_all_metadata.params.app">(litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.create_all_metadata parameter)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.update_app_state.params.app">(litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.update_app_state parameter)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.create_all_metadata.params.app">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.create_all_metadata parameter)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.update_app_state.params.app">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.update_app_state parameter)</a>
 </li>
         <li><a href="reference/response/base.html#litestar.response.base.Response.to_asgi_response.params.app">(litestar.response.base.Response.to_asgi_response parameter)</a>
 </li>
@@ -2965,28 +2925,20 @@ document.write(`
         <li><a href="reference/testing.html#litestar.testing.TestClient.params.app">(litestar.testing.TestClient parameter)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryPlugin.on_app_init.params.app_config">app_config (litestar.contrib.opentelemetry.OpenTelemetryPlugin.on_app_init parameter)</a>
 
       <ul>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticInitPlugin.on_app_init.params.app_config">(litestar.contrib.pydantic.PydanticInitPlugin.on_app_init parameter)</a>
-</li>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticPlugin.on_app_init.params.app_config">(litestar.contrib.pydantic.PydanticPlugin.on_app_init parameter)</a>
-</li>
-        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin.on_app_init.params.app_config">(litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin.on_app_init parameter)</a>
-</li>
-        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin.on_app_init.params.app_config">(litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin.on_app_init parameter)</a>
-</li>
         <li><a href="reference/plugins/flash_messages.html#litestar.plugins.flash.FlashPlugin.on_app_init.params.app_config">(litestar.plugins.flash.FlashPlugin.on_app_init parameter)</a>
+</li>
+        <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXPlugin.on_app_init.params.app_config">(litestar.plugins.htmx.HTMXPlugin.on_app_init parameter)</a>
 </li>
         <li><a href="reference/plugins/index.html#litestar.plugins.InitPluginProtocol.on_app_init.params.app_config">(litestar.plugins.InitPluginProtocol.on_app_init parameter)</a>
 </li>
         <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsPlugin.on_app_init.params.app_config">(litestar.plugins.problem_details.ProblemDetailsPlugin.on_app_init parameter)</a>
 </li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin.on_app_init.params.app_config">(litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin.on_app_init parameter)</a>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticInitPlugin.on_app_init.params.app_config">(litestar.plugins.pydantic.PydanticInitPlugin.on_app_init parameter)</a>
 </li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyPlugin.on_app_init.params.app_config">(litestar.plugins.sqlalchemy.SQLAlchemyPlugin.on_app_init parameter)</a>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticPlugin.on_app_init.params.app_config">(litestar.plugins.pydantic.PydanticPlugin.on_app_init parameter)</a>
 </li>
         <li><a href="reference/plugins/structlog.html#litestar.plugins.structlog.StructlogPlugin.on_app_init.params.app_config">(litestar.plugins.structlog.StructlogPlugin.on_app_init parameter)</a>
 </li>
@@ -3031,15 +2983,7 @@ document.write(`
 </li>
       <li><a href="reference/response/streaming.html#litestar.response.streaming.ASGIStreamingResponse">ASGIStreamingResponse (class in litestar.response.streaming)</a>
 </li>
-      <li><a href="reference/types.html#litestar.types.ASGIVersion">ASGIVersion (in module litestar.types)</a>
-</li>
-      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.async_autocommit_before_send_handler">async_autocommit_before_send_handler() (in module litestar.plugins.sqlalchemy)</a>
-</li>
-      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.async_autocommit_handler_maker">async_autocommit_handler_maker() (in module litestar.plugins.sqlalchemy)</a>
-</li>
-      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.async_default_before_send_handler">async_default_before_send_handler() (in module litestar.plugins.sqlalchemy)</a>
-</li>
-      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.async_default_handler_maker">async_default_handler_maker() (in module litestar.plugins.sqlalchemy)</a>
+      <li><a href="reference/types.html#litestar.types.ASGIVersion">ASGIVersion (class in litestar.types)</a>
 </li>
       <li><a href="reference/response/file.html#litestar.response.file.async_file_iterator">async_file_iterator() (in module litestar.response.file)</a>
 </li>
@@ -3047,12 +2991,6 @@ document.write(`
 </li>
       <li><a href="reference/channels/backends/asyncpg.html#litestar.channels.backends.asyncpg.AsyncPgChannelsBackend">AsyncPgChannelsBackend (class in litestar.channels.backends.asyncpg)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.AsyncSessionConfig">AsyncSessionConfig (class in litestar.contrib.sqlalchemy.plugins)</a>
-
-      <ul>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.AsyncSessionConfig">(class in litestar.plugins.sqlalchemy)</a>
-</li>
-      </ul></li>
       <li><a href="reference/testing.html#litestar.testing.AsyncTestClient">AsyncTestClient (class in litestar.testing)</a>
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.XML.attribute">attribute (litestar.openapi.spec.XML attribute)</a>
@@ -3060,8 +2998,6 @@ document.write(`
       <li><a href="reference/security/jwt.html#litestar.security.jwt.Token.aud">aud (litestar.security.jwt.Token attribute)</a>
 </li>
       <li><a href="reference/security/jwt.html#litestar.security.jwt.Token.decode.params.audience">audience (litestar.security.jwt.Token.decode parameter)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.AuditColumns">AuditColumns (class in litestar.contrib.sqlalchemy.base)</a>
 </li>
       <li><a href="reference/connection.html#litestar.connection.ASGIConnection.auth">auth (litestar.connection.ASGIConnection property)</a>
 
@@ -3140,10 +3076,6 @@ document.write(`
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OAuthFlow.authorization_url">authorization_url (litestar.openapi.spec.OAuthFlow attribute)</a>
 </li>
       <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.authorize_connection">authorize_connection() (litestar.handlers.BaseRouteHandler method)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSessionConfig.autobegin">autobegin (litestar.contrib.sqlalchemy.plugins.GenericSessionConfig attribute)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSessionConfig.autoflush">autoflush (litestar.contrib.sqlalchemy.plugins.GenericSessionConfig attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -3301,7 +3233,7 @@ document.write(`
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.BaseSchemaObject">BaseSchemaObject (class in litestar.openapi.spec)</a>
 </li>
-      <li><a href="reference/types.html#litestar.types.BaseScope">BaseScope (in module litestar.types)</a>
+      <li><a href="reference/types.html#litestar.types.BaseScope">BaseScope (class in litestar.types)</a>
 </li>
       <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.BaseSessionBackend">BaseSessionBackend (class in litestar.middleware.session.base)</a>
 </li>
@@ -3351,27 +3283,11 @@ document.write(`
         <li><a href="reference/testing.html#litestar.testing.create_test_client.params.before_send">(litestar.testing.create_test_client parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.before_send_handler">before_send_handler (litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig attribute)</a>
-
-      <ul>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.before_send_handler">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig attribute)</a>
-</li>
-      </ul></li>
       <li><a href="reference/types.html#litestar.types.BeforeMessageSendHookHandler">BeforeMessageSendHookHandler (in module litestar.types)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.BeforeRequestHookHandler">BeforeRequestHookHandler (in module litestar.types)</a>
 </li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.Accept.best_match">best_match() (litestar.datastructures.Accept method)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.BigIntAuditBase">BigIntAuditBase (class in litestar.contrib.sqlalchemy.base)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.BigIntBase">BigIntBase (class in litestar.contrib.sqlalchemy.base)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.BigIntPrimaryKey">BigIntPrimaryKey (class in litestar.contrib.sqlalchemy.base)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSessionConfig.bind">bind (litestar.contrib.sqlalchemy.plugins.GenericSessionConfig attribute)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSessionConfig.binds">binds (litestar.contrib.sqlalchemy.plugins.GenericSessionConfig attribute)</a>
 </li>
       <li><a href="reference/testing.html#litestar.testing.WebSocketTestSession.receive.params.block">block (litestar.testing.WebSocketTestSession.receive parameter)</a>
 
@@ -3403,7 +3319,7 @@ document.write(`
 </li>
       <li><a href="reference/params.html#litestar.params.BodyKwarg">BodyKwarg (class in litestar.params)</a>
 </li>
-      <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.request.HTMXDetails.boosted">boosted (litestar.contrib.htmx.request.HTMXDetails property)</a>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXDetails.boosted">boosted (litestar.plugins.htmx.HTMXDetails property)</a>
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.bound_types">bound_types (litestar.typing.FieldDefinition property)</a>
 </li>
@@ -3565,20 +3481,12 @@ document.write(`
         <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_subclass_of.params.cl">(litestar.typing.FieldDefinition.is_subclass_of parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSessionConfig.class_">class_ (litestar.contrib.sqlalchemy.plugins.GenericSessionConfig attribute)</a>
-</li>
       <li><a href="reference/pagination.html#litestar.pagination.ClassicPagination">ClassicPagination (class in litestar.pagination)</a>
 </li>
       <li><a href="reference/connection.html#litestar.connection.ASGIConnection.clear_session">clear_session() (litestar.connection.ASGIConnection method)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin.on_cli_init.params.cli">cli (litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin.on_cli_init parameter)</a>
-
-      <ul>
-        <li><a href="reference/plugins/index.html#litestar.plugins.CLIPluginProtocol.on_cli_init.params.cli">(litestar.plugins.CLIPluginProtocol.on_cli_init parameter)</a>
+      <li><a href="reference/plugins/index.html#litestar.plugins.CLIPluginProtocol.on_cli_init.params.cli">cli (litestar.plugins.CLIPluginProtocol.on_cli_init parameter)</a>
 </li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin.on_cli_init.params.cli">(litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin.on_cli_init parameter)</a>
-</li>
-      </ul></li>
       <li><a href="reference/connection.html#litestar.connection.ASGIConnection.client">client (litestar.connection.ASGIConnection property)</a>
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OAuthFlows.client_credentials">client_credentials (litestar.openapi.spec.OAuthFlows attribute)</a>
@@ -3589,9 +3497,9 @@ document.write(`
 </li>
       <li><a href="reference/exceptions.html#litestar.exceptions.ClientException">ClientException</a>
 </li>
-      <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.response.ClientRedirect">ClientRedirect (class in litestar.contrib.htmx.response)</a>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.ClientRedirect">ClientRedirect (class in litestar.plugins.htmx)</a>
 </li>
-      <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.response.ClientRefresh">ClientRefresh (class in litestar.contrib.htmx.response)</a>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.ClientRefresh">ClientRefresh (class in litestar.plugins.htmx)</a>
 </li>
       <li><a href="reference/middleware/session/client_side.html#litestar.middleware.session.client_side.ClientSideSessionBackend">ClientSideSessionBackend (class in litestar.middleware.session.client_side)</a>
 </li>
@@ -3635,14 +3543,6 @@ document.write(`
         <li><a href="reference/response/sse.html#litestar.response.sse.ServerSentEvent.params.comment_message">(litestar.response.sse.ServerSentEvent parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.async_autocommit_handler_maker.params.commit_on_redirect">commit_on_redirect (litestar.plugins.sqlalchemy.async_autocommit_handler_maker parameter)</a>
-
-      <ul>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.sync_autocommit_handler_maker.params.commit_on_redirect">(litestar.plugins.sqlalchemy.sync_autocommit_handler_maker parameter)</a>
-</li>
-      </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.CommonTableAttributes">CommonTableAttributes (class in litestar.contrib.sqlalchemy.base)</a>
-</li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Components">Components (class in litestar.openapi.spec)</a>
 </li>
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.components">components (litestar.openapi.OpenAPIConfig attribute)</a>
@@ -3682,10 +3582,6 @@ document.write(`
       <ul>
         <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware.params.config">(litestar.contrib.opentelemetry.OpenTelemetryInstrumentationMiddleware parameter)</a>
 </li>
-        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin.params.config">(litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin parameter)</a>
-</li>
-        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin.params.config">(litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin parameter)</a>
-</li>
         <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.config">(litestar.dto.base_dto.AbstractDTO attribute)</a>
 </li>
         <li><a href="reference/middleware/allowed_hosts.html#litestar.middleware.allowed_hosts.AllowedHostsMiddleware.params.config">(litestar.middleware.allowed_hosts.AllowedHostsMiddleware parameter)</a>
@@ -3708,11 +3604,7 @@ document.write(`
 </li>
         <li><a href="reference/plugins/flash_messages.html#litestar.plugins.flash.FlashPlugin.params.config">(litestar.plugins.flash.FlashPlugin parameter)</a>
 </li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO.config">(litestar.plugins.sqlalchemy.SQLAlchemyDTO attribute)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin.params.config">(litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin parameter)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyPlugin.params.config">(litestar.plugins.sqlalchemy.SQLAlchemyPlugin parameter)</a>
+        <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXPlugin.params.config">(litestar.plugins.htmx.HTMXPlugin parameter)</a>
 </li>
       </ul></li>
       <li><a href="reference/logging/config.html#litestar.logging.config.BaseLoggingConfig.configure">configure() (litestar.logging.config.BaseLoggingConfig method)</a>
@@ -3724,8 +3616,6 @@ document.write(`
 </li>
       </ul></li>
       <li><a href="reference/logging/config.html#litestar.logging.config.LoggingConfig.configure_root_logger">configure_root_logger (litestar.logging.config.LoggingConfig attribute)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.connect_args">connect_args (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
 </li>
       <li><a href="reference/data_extractors.html#litestar.data_extractors.ConnectionDataExtractor.__call__.params.connection">connection (litestar.data_extractors.ConnectionDataExtractor.__call__ parameter)</a>
 
@@ -3788,8 +3678,6 @@ document.write(`
 </li>
       </ul></li>
       <li><a href="reference/handlers.html#litestar.handlers.WebsocketListenerRouteHandler.params.connection_lifespan">connection_lifespan (litestar.handlers.WebsocketListenerRouteHandler parameter)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.connection_string">connection_string (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig attribute)</a>
 </li>
       <li><a href="reference/data_extractors.html#litestar.data_extractors.ConnectionDataExtractor">ConnectionDataExtractor (class in litestar.data_extractors)</a>
 </li>
@@ -4055,20 +3943,6 @@ document.write(`
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.count">(litestar.repository.abc.AbstractSyncRepository method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.create_all">create_all (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig attribute)</a>
-</li>
-      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.create_all_metadata">create_all_metadata() (litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig method)</a>
-
-      <ul>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.create_all_metadata">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig method)</a>
-</li>
-      </ul></li>
-      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.create_app_state_items">create_app_state_items() (litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig method)</a>
-
-      <ul>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.create_app_state_items">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig method)</a>
-</li>
-      </ul></li>
       <li><a href="reference/testing.html#litestar.testing.create_async_test_client">create_async_test_client() (in module litestar.testing)</a>
 </li>
       <li><a href="reference/middleware/compression.html#litestar.middleware.compression.CompressionMiddleware.create_compression_send_wrapper">create_compression_send_wrapper() (litestar.middleware.compression.CompressionMiddleware method)</a>
@@ -4081,15 +3955,7 @@ document.write(`
         <li><a href="reference/stores/file.html#litestar.stores.file.FileStore.params.create_directories">(litestar.stores.file.FileStore parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin.create_dto_for_type">create_dto_for_type() (litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin method)</a>
-
-      <ul>
-        <li><a href="reference/plugins/index.html#litestar.plugins.SerializationPluginProtocol.create_dto_for_type">(litestar.plugins.SerializationPluginProtocol method)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySerializationPlugin.create_dto_for_type">(litestar.plugins.sqlalchemy.SQLAlchemySerializationPlugin method)</a>
-</li>
-      </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.create_engine_callable">create_engine_callable (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig attribute)</a>
+      <li><a href="reference/plugins/index.html#litestar.plugins.SerializationPluginProtocol.create_dto_for_type">create_dto_for_type() (litestar.plugins.SerializationPluginProtocol method)</a>
 </li>
       <li><a href="reference/response/file.html#litestar.response.file.create_etag_for_file">create_etag_for_file() (in module litestar.response.file)</a>
 </li>
@@ -4109,8 +3975,6 @@ document.write(`
 </li>
       <li><a href="reference/routes.html#litestar.routes.HTTPRoute.create_options_handler">create_options_handler() (litestar.routes.HTTPRoute method)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.create_registry">create_registry() (in module litestar.contrib.sqlalchemy.base)</a>
-</li>
       <li><a href="reference/security/index.html#litestar.security.AbstractSecurityConfig.create_response">create_response() (litestar.security.AbstractSecurityConfig method)</a>
 </li>
       <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.create_response_headers">create_response_headers() (litestar.middleware.rate_limit.RateLimitMiddleware method)</a>
@@ -4123,14 +3987,6 @@ document.write(`
         <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.create_send_wrapper">(litestar.middleware.rate_limit.RateLimitMiddleware method)</a>
 </li>
         <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.SessionMiddleware.create_send_wrapper">(litestar.middleware.session.base.SessionMiddleware method)</a>
-</li>
-      </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.create_session_maker">create_session_maker() (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig method)</a>
-
-      <ul>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.create_session_maker">(litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig method)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.create_session_maker">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig method)</a>
 </li>
       </ul></li>
       <li><a href="reference/static_files.html#litestar.static_files.create_static_files_router">create_static_files_router() (in module litestar.static_files)</a>
@@ -4148,8 +4004,6 @@ document.write(`
       <li><a href="reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.params.create_ws_route_handlers">create_ws_route_handlers (litestar.channels.plugin.ChannelsPlugin parameter)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.FileInfo.created">created (litestar.types.FileInfo attribute)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.AuditColumns.created_at">created_at (litestar.contrib.sqlalchemy.base.AuditColumns attribute)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.Logger.critical">critical() (litestar.types.Logger method)</a>
 </li>
@@ -4189,9 +4043,9 @@ document.write(`
         <li><a href="reference/pagination.html#litestar.pagination.ClassicPagination.current_page">(litestar.pagination.ClassicPagination attribute)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.request.HTMXDetails.current_url">current_url (litestar.contrib.htmx.request.HTMXDetails property)</a>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXDetails.current_url">current_url (litestar.plugins.htmx.HTMXDetails property)</a>
 </li>
-      <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.request.HTMXDetails.current_url_abs_path">current_url_abs_path (litestar.contrib.htmx.request.HTMXDetails property)</a>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXDetails.current_url_abs_path">current_url_abs_path (litestar.plugins.htmx.HTMXDetails property)</a>
 </li>
       <li><a href="reference/pagination.html#litestar.pagination.AbstractAsyncCursorPaginator.__call__.params.cursor">cursor (litestar.pagination.AbstractAsyncCursorPaginator.__call__ parameter)</a>
 
@@ -4305,16 +4159,16 @@ document.write(`
 </li>
       <li><a href="reference/security/jwt.html#litestar.security.jwt.Token.decode">decode() (litestar.security.jwt.Token class method)</a>
 </li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticDTO.decode_builtins">decode_builtins() (litestar.contrib.pydantic.PydanticDTO method)</a>
+      <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.decode_builtins">decode_builtins() (litestar.dto.base_dto.AbstractDTO method)</a>
 
       <ul>
-        <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.decode_builtins">(litestar.dto.base_dto.AbstractDTO method)</a>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticDTO.decode_builtins">(litestar.plugins.pydantic.PydanticDTO method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticDTO.decode_bytes">decode_bytes() (litestar.contrib.pydantic.PydanticDTO method)</a>
+      <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.decode_bytes">decode_bytes() (litestar.dto.base_dto.AbstractDTO method)</a>
 
       <ul>
-        <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.decode_bytes">(litestar.dto.base_dto.AbstractDTO method)</a>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticDTO.decode_bytes">(litestar.plugins.pydantic.PydanticDTO method)</a>
 </li>
       </ul></li>
       <li><a href="reference/serialization.html#litestar.serialization.decode_json">decode_json() (in module litestar.serialization)</a>
@@ -4626,15 +4480,13 @@ document.write(`
       <li><a href="reference/contrib/piccolo.html#litestar.contrib.piccolo.PiccoloDTO.detect_nested_field">detect_nested_field() (litestar.contrib.piccolo.PiccoloDTO class method)</a>
 
       <ul>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticDTO.detect_nested_field">(litestar.contrib.pydantic.PydanticDTO class method)</a>
-</li>
         <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.detect_nested_field">(litestar.dto.base_dto.AbstractDTO class method)</a>
 </li>
         <li><a href="reference/dto/dataclass_dto.html#litestar.dto.dataclass_dto.DataclassDTO.detect_nested_field">(litestar.dto.dataclass_dto.DataclassDTO class method)</a>
 </li>
         <li><a href="reference/dto/msgspec_dto.html#litestar.dto.msgspec_dto.MsgspecDTO.detect_nested_field">(litestar.dto.msgspec_dto.MsgspecDTO class method)</a>
 </li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO.detect_nested_field">(litestar.plugins.sqlalchemy.SQLAlchemyDTO class method)</a>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticDTO.detect_nested_field">(litestar.plugins.pydantic.PydanticDTO class method)</a>
 </li>
       </ul></li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.Cookie.dict">dict (litestar.datastructures.Cookie property)</a>
@@ -4769,10 +4621,6 @@ document.write(`
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.echo">echo (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.echo_pool">echo_pool (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
-</li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Contact.email">email (litestar.openapi.spec.Contact attribute)</a>
 </li>
       <li><a href="reference/app.html#litestar.app.Litestar.emit">emit() (litestar.app.Litestar method)</a>
@@ -4785,11 +4633,7 @@ document.write(`
       </ul></li>
       <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsConfig.enable_for_all_http_exceptions">enable_for_all_http_exceptions (litestar.plugins.problem_details.ProblemDetailsConfig attribute)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.enable_from_linting">enable_from_linting (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
-</li>
       <li><a href="reference/plugins/structlog.html#litestar.plugins.structlog.StructlogConfig.enable_middleware_logging">enable_middleware_logging (litestar.plugins.structlog.StructlogConfig attribute)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.enable_touch_updated_timestamp_listener">enable_touch_updated_timestamp_listener (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig attribute)</a>
 </li>
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.enabled_endpoints">enabled_endpoints (litestar.openapi.OpenAPIConfig attribute)</a>
 </li>
@@ -4897,46 +4741,16 @@ document.write(`
       </ul></li>
       <li><a href="reference/template.html#litestar.template.TemplateConfig.engine">engine (litestar.template.TemplateConfig attribute)</a>
 </li>
-      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.engine_app_state_key">engine_app_state_key (litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig attribute)</a>
-
-      <ul>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.engine_app_state_key">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig attribute)</a>
-</li>
-      </ul></li>
       <li><a href="reference/template.html#litestar.template.TemplateConfig.engine_callback">engine_callback (litestar.template.TemplateConfig attribute)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.engine_config">engine_config (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig attribute)</a>
-
-      <ul>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.engine_config">(litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig attribute)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.engine_config">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig attribute)</a>
-</li>
-      </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.engine_config_dict">engine_config_dict (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig property)</a>
-</li>
-      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.engine_dependency_key">engine_dependency_key (litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig attribute)</a>
-
-      <ul>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.engine_dependency_key">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig attribute)</a>
-</li>
-      </ul></li>
       <li><a href="reference/contrib/jinja.html#litestar.contrib.jinja.JinjaTemplateEngine.params.engine_instance">engine_instance (litestar.contrib.jinja.JinjaTemplateEngine parameter)</a>
 
       <ul>
         <li><a href="reference/contrib/mako.html#litestar.contrib.mako.MakoTemplateEngine.params.engine_instance">(litestar.contrib.mako.MakoTemplateEngine parameter)</a>
 </li>
-        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.engine_instance">(litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig attribute)</a>
-</li>
         <li><a href="reference/template.html#litestar.template.TemplateConfig.engine_instance">(litestar.template.TemplateConfig property)</a>
 </li>
         <li><a href="reference/template.html#litestar.template.TemplateEngineProtocol.params.engine_instance">(litestar.template.TemplateEngineProtocol parameter)</a>
-</li>
-      </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig">EngineConfig (class in litestar.contrib.sqlalchemy.plugins)</a>
-
-      <ul>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.EngineConfig">(class in litestar.plugins.sqlalchemy)</a>
 </li>
       </ul></li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.enum">enum (litestar.openapi.spec.Schema attribute)</a>
@@ -5133,8 +4947,6 @@ document.write(`
         <li><a href="reference/testing.html#litestar.testing.create_test_client.params.exception_handlers">(litestar.testing.create_test_client parameter)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/logging/config.html#litestar.logging.config.BaseLoggingConfig.exception_logging_handler">exception_logging_handler (litestar.logging.config.BaseLoggingConfig attribute)</a>
 
       <ul>
@@ -5143,6 +4955,8 @@ document.write(`
         <li><a href="reference/logging/config.html#litestar.logging.config.StructLoggingConfig.exception_logging_handler">(litestar.logging.config.StructLoggingConfig attribute)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsConfig.exception_to_problem_detail_map">exception_to_problem_detail_map (litestar.plugins.problem_details.ProblemDetailsConfig attribute)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.ExceptionHandler">ExceptionHandler (in module litestar.types)</a>
@@ -5159,10 +4973,6 @@ document.write(`
         <li><a href="reference/config.html#litestar.config.csrf.CSRFConfig.exclude">(litestar.config.csrf.CSRFConfig attribute)</a>
 </li>
         <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryConfig.exclude">(litestar.contrib.opentelemetry.OpenTelemetryConfig attribute)</a>
-</li>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticInitPlugin.params.exclude">(litestar.contrib.pydantic.PydanticInitPlugin parameter)</a>
-</li>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticPlugin.params.exclude">(litestar.contrib.pydantic.PydanticPlugin parameter)</a>
 </li>
         <li><a href="reference/dto/config.html#litestar.dto.config.DTOConfig.exclude">(litestar.dto.config.DTOConfig attribute)</a>
 </li>
@@ -5182,6 +4992,10 @@ document.write(`
 </li>
         <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionConfig.exclude">(litestar.middleware.session.server_side.ServerSideSessionConfig attribute)</a>
 </li>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticInitPlugin.params.exclude">(litestar.plugins.pydantic.PydanticInitPlugin parameter)</a>
+</li>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticPlugin.params.exclude">(litestar.plugins.pydantic.PydanticPlugin parameter)</a>
+</li>
         <li><a href="reference/security/index.html#litestar.security.AbstractSecurityConfig.exclude">(litestar.security.AbstractSecurityConfig attribute)</a>
 </li>
         <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTAuth.exclude">(litestar.security.jwt.JWTAuth attribute)</a>
@@ -5199,10 +5013,10 @@ document.write(`
         <li><a href="reference/security/session_auth.html#litestar.security.session_auth.SessionAuth.exclude">(litestar.security.session_auth.SessionAuth attribute)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticInitPlugin.params.exclude_defaults">exclude_defaults (litestar.contrib.pydantic.PydanticInitPlugin parameter)</a>
+      <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticInitPlugin.params.exclude_defaults">exclude_defaults (litestar.plugins.pydantic.PydanticInitPlugin parameter)</a>
 
       <ul>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticPlugin.params.exclude_defaults">(litestar.contrib.pydantic.PydanticPlugin parameter)</a>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticPlugin.params.exclude_defaults">(litestar.plugins.pydantic.PydanticPlugin parameter)</a>
 </li>
       </ul></li>
       <li><a href="reference/middleware/index.html#litestar.middleware.AbstractAuthenticationMiddleware.params.exclude_from_auth_key">exclude_from_auth_key (litestar.middleware.AbstractAuthenticationMiddleware parameter)</a>
@@ -5227,10 +5041,10 @@ document.write(`
         <li><a href="reference/security/session_auth.html#litestar.security.session_auth.middleware.SessionAuthMiddleware.params.exclude_http_methods">(litestar.security.session_auth.middleware.SessionAuthMiddleware parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticInitPlugin.params.exclude_none">exclude_none (litestar.contrib.pydantic.PydanticInitPlugin parameter)</a>
+      <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticInitPlugin.params.exclude_none">exclude_none (litestar.plugins.pydantic.PydanticInitPlugin parameter)</a>
 
       <ul>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticPlugin.params.exclude_none">(litestar.contrib.pydantic.PydanticPlugin parameter)</a>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticPlugin.params.exclude_none">(litestar.plugins.pydantic.PydanticPlugin parameter)</a>
 </li>
       </ul></li>
       <li><a href="reference/config.html#litestar.config.allowed_hosts.AllowedHostsConfig.exclude_opt_key">exclude_opt_key (litestar.config.allowed_hosts.AllowedHostsConfig attribute)</a>
@@ -5269,10 +5083,10 @@ document.write(`
         <li><a href="reference/security/session_auth.html#litestar.security.session_auth.SessionAuth.exclude_opt_key">(litestar.security.session_auth.SessionAuth attribute)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticInitPlugin.params.exclude_unset">exclude_unset (litestar.contrib.pydantic.PydanticInitPlugin parameter)</a>
+      <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticInitPlugin.params.exclude_unset">exclude_unset (litestar.plugins.pydantic.PydanticInitPlugin parameter)</a>
 
       <ul>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticPlugin.params.exclude_unset">(litestar.contrib.pydantic.PydanticPlugin parameter)</a>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticPlugin.params.exclude_unset">(litestar.plugins.pydantic.PydanticPlugin parameter)</a>
 </li>
       </ul></li>
       <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryConfig.exclude_urls_env_key">exclude_urls_env_key (litestar.contrib.opentelemetry.OpenTelemetryConfig attribute)</a>
@@ -5280,8 +5094,6 @@ document.write(`
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.exclusive_maximum">exclusive_maximum (litestar.openapi.spec.Schema attribute)</a>
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.exclusive_minimum">exclusive_minimum (litestar.openapi.spec.Schema attribute)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.execution_options">execution_options (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
 </li>
       <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.exists">exists() (litestar.repository.abc.AbstractAsyncRepository method)</a>
 
@@ -5318,8 +5130,6 @@ document.write(`
 </li>
       </ul></li>
       <li><a href="reference/config.html#litestar.config.app.ExperimentalFeatures">ExperimentalFeatures (class in litestar.config.app)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSessionConfig.expire_on_commit">expire_on_commit (litestar.contrib.sqlalchemy.plugins.GenericSessionConfig attribute)</a>
 </li>
       <li><a href="reference/stores/base.html#litestar.stores.base.StorageObject.expired">expired (litestar.stores.base.StorageObject property)</a>
 </li>
@@ -5409,18 +5219,6 @@ document.write(`
         <li><a href="reference/typing.html#litestar.typing.FieldDefinition.extra">(litestar.typing.FieldDefinition attribute)</a>
 </li>
         <li><a href="reference/typing.html#litestar.typing.FieldDefinition.from_kwarg.params.extra">(litestar.typing.FieldDefinition.from_kwarg parameter)</a>
-</li>
-      </ul></li>
-      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.async_autocommit_handler_maker.params.extra_commit_statuses">extra_commit_statuses (litestar.plugins.sqlalchemy.async_autocommit_handler_maker parameter)</a>
-
-      <ul>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.sync_autocommit_handler_maker.params.extra_commit_statuses">(litestar.plugins.sqlalchemy.sync_autocommit_handler_maker parameter)</a>
-</li>
-      </ul></li>
-      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.async_autocommit_handler_maker.params.extra_rollback_statuses">extra_rollback_statuses (litestar.plugins.sqlalchemy.async_autocommit_handler_maker parameter)</a>
-
-      <ul>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.sync_autocommit_handler_maker.params.extra_rollback_statuses">(litestar.plugins.sqlalchemy.sync_autocommit_handler_maker parameter)</a>
 </li>
       </ul></li>
       <li><a href="reference/data_extractors.html#litestar.data_extractors.ConnectionDataExtractor.params.extract_body">extract_body (litestar.data_extractors.ConnectionDataExtractor parameter)</a>
@@ -5520,16 +5318,6 @@ document.write(`
       <li><a href="reference/contrib/piccolo.html#litestar.contrib.piccolo.PiccoloDTO.detect_nested_field.params.field_definition">field_definition (litestar.contrib.piccolo.PiccoloDTO.detect_nested_field parameter)</a>
 
       <ul>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticDTO.detect_nested_field.params.field_definition">(litestar.contrib.pydantic.PydanticDTO.detect_nested_field parameter)</a>
-</li>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticSchemaPlugin.for_pydantic_model.params.field_definition">(litestar.contrib.pydantic.PydanticSchemaPlugin.for_pydantic_model parameter)</a>
-</li>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticSchemaPlugin.to_openapi_schema.params.field_definition">(litestar.contrib.pydantic.PydanticSchemaPlugin.to_openapi_schema parameter)</a>
-</li>
-        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin.create_dto_for_type.params.field_definition">(litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin.create_dto_for_type parameter)</a>
-</li>
-        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin.supports_type.params.field_definition">(litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin.supports_type parameter)</a>
-</li>
         <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.create_for_field_definition.params.field_definition">(litestar.dto.base_dto.AbstractDTO.create_for_field_definition parameter)</a>
 </li>
         <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.create_openapi_schema.params.field_definition">(litestar.dto.base_dto.AbstractDTO.create_openapi_schema parameter)</a>
@@ -5556,15 +5344,15 @@ document.write(`
 </li>
         <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema.params.field_definition">(litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema parameter)</a>
 </li>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticDTO.detect_nested_field.params.field_definition">(litestar.plugins.pydantic.PydanticDTO.detect_nested_field parameter)</a>
+</li>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticSchemaPlugin.for_pydantic_model.params.field_definition">(litestar.plugins.pydantic.PydanticSchemaPlugin.for_pydantic_model parameter)</a>
+</li>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticSchemaPlugin.to_openapi_schema.params.field_definition">(litestar.plugins.pydantic.PydanticSchemaPlugin.to_openapi_schema parameter)</a>
+</li>
         <li><a href="reference/plugins/index.html#litestar.plugins.SerializationPluginProtocol.create_dto_for_type.params.field_definition">(litestar.plugins.SerializationPluginProtocol.create_dto_for_type parameter)</a>
 </li>
         <li><a href="reference/plugins/index.html#litestar.plugins.SerializationPluginProtocol.supports_type.params.field_definition">(litestar.plugins.SerializationPluginProtocol.supports_type parameter)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO.detect_nested_field.params.field_definition">(litestar.plugins.sqlalchemy.SQLAlchemyDTO.detect_nested_field parameter)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySerializationPlugin.create_dto_for_type.params.field_definition">(litestar.plugins.sqlalchemy.SQLAlchemySerializationPlugin.create_dto_for_type parameter)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySerializationPlugin.supports_type.params.field_definition">(litestar.plugins.sqlalchemy.SQLAlchemySerializationPlugin.supports_type parameter)</a>
 </li>
       </ul></li>
       <li><a href="reference/dto/field.html#litestar.dto.field.extract_dto_field.params.field_info_mapping">field_info_mapping (litestar.dto.field.extract_dto_field parameter)</a>
@@ -5615,8 +5403,6 @@ document.write(`
         <li><a href="reference/static_files.html#litestar.static_files.StaticFilesConfig.file_system">(litestar.static_files.StaticFilesConfig attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/types.html#litestar.types.FileInfo">FileInfo (class in litestar.types)</a>
 </li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.UploadFile.params.filename">filename (litestar.datastructures.UploadFile parameter)</a>
@@ -5629,6 +5415,8 @@ document.write(`
         <li><a href="reference/response/file.html#litestar.response.file.File.params.filename">(litestar.response.file.File parameter)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/stores/file.html#litestar.stores.file.FileStore">FileStore (class in litestar.stores.file)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.FileSystemProtocol">FileSystemProtocol (class in litestar.types)</a>
@@ -5667,7 +5455,7 @@ document.write(`
         <li><a href="reference/testing.html#litestar.testing.TestClient.websocket_connect.params.follow_redirects">(litestar.testing.TestClient.websocket_connect parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticSchemaPlugin.for_pydantic_model">for_pydantic_model() (litestar.contrib.pydantic.PydanticSchemaPlugin class method)</a>
+      <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticSchemaPlugin.for_pydantic_model">for_pydantic_model() (litestar.plugins.pydantic.PydanticSchemaPlugin class method)</a>
 </li>
       <li><a href="reference/dto/config.html#litestar.dto.config.DTOConfig.forbid_unknown_fields">forbid_unknown_fields (litestar.dto.config.DTOConfig attribute)</a>
 </li>
@@ -5746,24 +5534,18 @@ document.write(`
       <li><a href="reference/contrib/piccolo.html#litestar.contrib.piccolo.PiccoloDTO.generate_field_definitions">generate_field_definitions() (litestar.contrib.piccolo.PiccoloDTO class method)</a>
 
       <ul>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticDTO.generate_field_definitions">(litestar.contrib.pydantic.PydanticDTO class method)</a>
-</li>
         <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.generate_field_definitions">(litestar.dto.base_dto.AbstractDTO class method)</a>
 </li>
         <li><a href="reference/dto/dataclass_dto.html#litestar.dto.dataclass_dto.DataclassDTO.generate_field_definitions">(litestar.dto.dataclass_dto.DataclassDTO class method)</a>
 </li>
         <li><a href="reference/dto/msgspec_dto.html#litestar.dto.msgspec_dto.MsgspecDTO.generate_field_definitions">(litestar.dto.msgspec_dto.MsgspecDTO class method)</a>
 </li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO.generate_field_definitions">(litestar.plugins.sqlalchemy.SQLAlchemyDTO class method)</a>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticDTO.generate_field_definitions">(litestar.plugins.pydantic.PydanticDTO class method)</a>
 </li>
       </ul></li>
       <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionBackend.generate_session_id">generate_session_id() (litestar.middleware.session.server_side.ServerSideSessionBackend method)</a>
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.generic_types">generic_types (litestar.typing.FieldDefinition property)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSessionConfig">GenericSessionConfig (class in litestar.contrib.sqlalchemy.plugins)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig">GenericSQLAlchemyConfig (class in litestar.contrib.sqlalchemy.plugins)</a>
 </li>
       <li><a href="reference/handlers.html#litestar.handlers.get">get (class in litestar.handlers)</a>
 
@@ -5793,10 +5575,10 @@ document.write(`
       </ul></li>
       <li><a href="reference/concurrency.html#litestar.concurrency.get_asyncio_executor">get_asyncio_executor() (in module litestar.concurrency)</a>
 </li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticDTO.get_config_for_model_type">get_config_for_model_type() (litestar.contrib.pydantic.PydanticDTO class method)</a>
+      <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.get_config_for_model_type">get_config_for_model_type() (litestar.dto.base_dto.AbstractDTO class method)</a>
 
       <ul>
-        <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.get_config_for_model_type">(litestar.dto.base_dto.AbstractDTO class method)</a>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticDTO.get_config_for_model_type">(litestar.plugins.pydantic.PydanticDTO class method)</a>
 </li>
       </ul></li>
       <li><a href="reference/middleware/session/client_side.html#litestar.middleware.session.client_side.ClientSideSessionBackend.get_cookie_key_set">get_cookie_key_set() (litestar.middleware.session.client_side.ClientSideSessionBackend method)</a>
@@ -5804,8 +5586,6 @@ document.write(`
       <li><a href="reference/middleware/session/client_side.html#litestar.middleware.session.client_side.ClientSideSessionBackend.get_cookie_keys">get_cookie_keys() (litestar.middleware.session.client_side.ClientSideSessionBackend method)</a>
 </li>
       <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.get_dto_config_from_annotated_type">get_dto_config_from_annotated_type() (litestar.dto.base_dto.AbstractDTO static method)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.get_engine">get_engine() (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig method)</a>
 </li>
       <li><a href="reference/static_files.html#litestar.static_files.StaticFiles.get_fs_info">get_fs_info() (litestar.static_files.StaticFiles method)</a>
 </li>
@@ -5879,10 +5659,10 @@ document.write(`
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.get_or_create">(litestar.repository.abc.AbstractSyncRepository method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.get_response_handler">get_response_handler() (litestar.handlers.HTTPRouteHandler method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/router.html#litestar.router.Router.get_route_handler_map">get_route_handler_map() (litestar.router.Router class method)</a>
 </li>
       <li><a href="reference/controller.html#litestar.controller.Controller.get_route_handlers">get_route_handlers() (litestar.controller.Controller method)</a>
@@ -5937,10 +5717,10 @@ document.write(`
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.get_type_hints">get_type_hints() (litestar.typing.FieldDefinition method)</a>
 </li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticDIPlugin.get_typed_init">get_typed_init() (litestar.contrib.pydantic.PydanticDIPlugin method)</a>
+      <li><a href="reference/plugins/index.html#litestar.plugins.DIPlugin.get_typed_init">get_typed_init() (litestar.plugins.DIPlugin method)</a>
 
       <ul>
-        <li><a href="reference/plugins/index.html#litestar.plugins.DIPlugin.get_typed_init">(litestar.plugins.DIPlugin method)</a>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticDIPlugin.get_typed_init">(litestar.plugins.pydantic.PydanticDIPlugin method)</a>
 </li>
       </ul></li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.MutableScopeHeaders.getall">getall() (litestar.datastructures.MutableScopeHeaders method)</a>
@@ -6071,10 +5851,10 @@ document.write(`
 </li>
       <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.OpenAPIRenderPlugin.has_path">has_path() (litestar.openapi.plugins.OpenAPIRenderPlugin method)</a>
 </li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticDIPlugin.has_typed_init">has_typed_init() (litestar.contrib.pydantic.PydanticDIPlugin method)</a>
+      <li><a href="reference/plugins/index.html#litestar.plugins.DIPlugin.has_typed_init">has_typed_init() (litestar.plugins.DIPlugin method)</a>
 
       <ul>
-        <li><a href="reference/plugins/index.html#litestar.plugins.DIPlugin.has_typed_init">(litestar.plugins.DIPlugin method)</a>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticDIPlugin.has_typed_init">(litestar.plugins.pydantic.PydanticDIPlugin method)</a>
 </li>
       </ul></li>
       <li><a href="reference/handlers.html#litestar.handlers.head">head (class in litestar.handlers)</a>
@@ -6191,8 +5971,6 @@ document.write(`
         <li><a href="reference/testing.html#litestar.testing.TestClient.websocket_connect.params.headers">(litestar.testing.TestClient.websocket_connect parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.hide_parameters">hide_parameters (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
-</li>
       <li><a href="reference/channels/backends/redis.html#litestar.channels.backends.redis.RedisChannelsStreamBackend.params.history">history (litestar.channels.backends.redis.RedisChannelsStreamBackend parameter)</a>
 
       <ul>
@@ -6201,7 +5979,7 @@ document.write(`
         <li><a href="reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.subscribe.params.history">(litestar.channels.plugin.ChannelsPlugin.subscribe parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.request.HTMXDetails.history_restore_request">history_restore_request (litestar.contrib.htmx.request.HTMXDetails property)</a>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXDetails.history_restore_request">history_restore_request (litestar.plugins.htmx.HTMXDetails property)</a>
 </li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.Address.host">host (litestar.datastructures.Address attribute)</a>
 </li>
@@ -6213,20 +5991,28 @@ document.write(`
         <li><a href="reference/static_files.html#litestar.static_files.StaticFilesConfig.html_mode">(litestar.static_files.StaticFilesConfig attribute)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.request.HTMXDetails">HTMXDetails (class in litestar.contrib.htmx.request)</a>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXConfig">HTMXConfig (class in litestar.plugins.htmx)</a>
 </li>
-      <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.request.HTMXRequest">HTMXRequest (class in litestar.contrib.htmx.request)</a>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXDetails">HTMXDetails (class in litestar.plugins.htmx)</a>
 </li>
-      <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.response.HTMXTemplate">HTMXTemplate (class in litestar.contrib.htmx.response)</a>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXHeaders">HTMXHeaders (class in litestar.plugins.htmx)</a>
+</li>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HtmxHeaderType">HtmxHeaderType (class in litestar.plugins.htmx)</a>
+</li>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXPlugin">HTMXPlugin (class in litestar.plugins.htmx)</a>
+</li>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXRequest">HTMXRequest (class in litestar.plugins.htmx)</a>
+</li>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXTemplate">HTMXTemplate (class in litestar.plugins.htmx)</a>
 </li>
       <li><a href="reference/status_codes.html#litestar.status_codes.HTTP_100_CONTINUE">HTTP_100_CONTINUE (in module litestar.status_codes)</a>
 </li>
       <li><a href="reference/status_codes.html#litestar.status_codes.HTTP_101_SWITCHING_PROTOCOLS">HTTP_101_SWITCHING_PROTOCOLS (in module litestar.status_codes)</a>
 </li>
-      <li><a href="reference/status_codes.html#litestar.status_codes.HTTP_102_PROCESSING">HTTP_102_PROCESSING (in module litestar.status_codes)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/status_codes.html#litestar.status_codes.HTTP_102_PROCESSING">HTTP_102_PROCESSING (in module litestar.status_codes)</a>
+</li>
       <li><a href="reference/status_codes.html#litestar.status_codes.HTTP_103_EARLY_HINTS">HTTP_103_EARLY_HINTS (in module litestar.status_codes)</a>
 </li>
       <li><a href="reference/status_codes.html#litestar.status_codes.HTTP_200_OK">HTTP_200_OK (in module litestar.status_codes)</a>
@@ -6407,15 +6193,15 @@ document.write(`
 </li>
       <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler">HTTPRouteHandler (class in litestar.handlers)</a>
 </li>
-      <li><a href="reference/types.html#litestar.types.HTTPScope">HTTPScope (in module litestar.types)</a>
+      <li><a href="reference/types.html#litestar.types.HTTPScope">HTTPScope (class in litestar.types)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.HTTPSendMessage">HTTPSendMessage (in module litestar.types)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.HTTPServerPushEvent">HTTPServerPushEvent (class in litestar.types)</a>
 </li>
-      <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.response.HXLocation">HXLocation (class in litestar.contrib.htmx.response)</a>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HXLocation">HXLocation (class in litestar.plugins.htmx)</a>
 </li>
-      <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.response.HXStopPolling">HXStopPolling (class in litestar.contrib.htmx.response)</a>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HXStopPolling">HXStopPolling (class in litestar.plugins.htmx)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -6425,12 +6211,6 @@ document.write(`
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/security/jwt.html#litestar.security.jwt.Token.iat">iat (litestar.security.jwt.Token attribute)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.BigIntPrimaryKey.id">id (litestar.contrib.sqlalchemy.base.BigIntPrimaryKey attribute)</a>
-
-      <ul>
-        <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.UUIDPrimaryKey.id">(litestar.contrib.sqlalchemy.base.UUIDPrimaryKey attribute)</a>
-</li>
-      </ul></li>
       <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.id_attribute">id_attribute (litestar.repository.abc.AbstractAsyncRepository attribute)</a>
 
       <ul>
@@ -6473,12 +6253,12 @@ document.write(`
 </li>
       <li><a href="reference/exceptions.html#litestar.exceptions.ImproperlyConfiguredException">ImproperlyConfiguredException</a>
 </li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticInitPlugin.params.include">include (litestar.contrib.pydantic.PydanticInitPlugin parameter)</a>
+      <li><a href="reference/dto/config.html#litestar.dto.config.DTOConfig.include">include (litestar.dto.config.DTOConfig attribute)</a>
 
       <ul>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticPlugin.params.include">(litestar.contrib.pydantic.PydanticPlugin parameter)</a>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticInitPlugin.params.include">(litestar.plugins.pydantic.PydanticInitPlugin parameter)</a>
 </li>
-        <li><a href="reference/dto/config.html#litestar.dto.config.DTOConfig.include">(litestar.dto.config.DTOConfig attribute)</a>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticPlugin.params.include">(litestar.plugins.pydantic.PydanticPlugin parameter)</a>
 </li>
       </ul></li>
       <li><a href="reference/middleware/logging.html#litestar.middleware.logging.LoggingMiddlewareConfig.include_compressed_body">include_compressed_body (litestar.middleware.logging.LoggingMiddlewareConfig attribute)</a>
@@ -6486,8 +6266,6 @@ document.write(`
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.get_type_hints.params.include_extras">include_extras (litestar.typing.FieldDefinition.get_type_hints parameter)</a>
 </li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.Header.to_header.params.include_header_name">include_header_name (litestar.datastructures.Header.to_header parameter)</a>
-</li>
-      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTOConfig.include_implicit_fields">include_implicit_fields (litestar.plugins.sqlalchemy.SQLAlchemyDTOConfig attribute)</a>
 </li>
       <li><a href="reference/app.html#litestar.app.Litestar.params.include_in_schema">include_in_schema (litestar.app.Litestar parameter)</a>
 
@@ -6525,12 +6303,8 @@ document.write(`
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Info">Info (class in litestar.openapi.spec)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSessionConfig.info">info (litestar.contrib.sqlalchemy.plugins.GenericSessionConfig attribute)</a>
-
-      <ul>
-        <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OpenAPI.info">(litestar.openapi.spec.OpenAPI attribute)</a>
+      <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OpenAPI.info">info (litestar.openapi.spec.OpenAPI attribute)</a>
 </li>
-      </ul></li>
       <li><a href="reference/types.html#litestar.types.FileSystemProtocol.info">info() (litestar.types.FileSystemProtocol method)</a>
 
       <ul>
@@ -6548,8 +6322,6 @@ document.write(`
 </li>
       </ul></li>
       <li><a href="reference/types.html#litestar.types.FileInfo.ino">ino (litestar.types.FileInfo attribute)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.insertmanyvalues_page_size">insertmanyvalues_page_size (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
 </li>
       <li><a href="reference/dto/data_structures.html#litestar.dto.data_structures.DTOData.update_instance.params.instance">instance (litestar.dto.data_structures.DTOData.update_instance parameter)</a>
 
@@ -6581,18 +6353,18 @@ document.write(`
 </li>
       <li><a href="reference/params.html#litestar.params.KwargDefinition.is_constrained">is_constrained (litestar.params.KwargDefinition property)</a>
 </li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticSchemaPlugin.is_constrained_field">is_constrained_field() (litestar.contrib.pydantic.PydanticSchemaPlugin static method)</a>
+      <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin.is_constrained_field">is_constrained_field() (litestar.plugins.OpenAPISchemaPlugin static method)</a>
 
       <ul>
-        <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin.is_constrained_field">(litestar.plugins.OpenAPISchemaPlugin static method)</a>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticSchemaPlugin.is_constrained_field">(litestar.plugins.pydantic.PydanticSchemaPlugin static method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_dataclass_type">is_dataclass_type (litestar.typing.FieldDefinition property)</a>
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_forward_ref">is_forward_ref (litestar.typing.FieldDefinition property)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_generic">is_generic (litestar.typing.FieldDefinition property)</a>
 </li>
       <li><a href="reference/response/base.html#litestar.response.base.ASGIResponse.params.is_head_response">is_head_response (litestar.response.base.ASGIResponse parameter)</a>
@@ -6649,12 +6421,12 @@ document.write(`
 </li>
       <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin.is_plugin_supported_field">is_plugin_supported_field() (litestar.plugins.OpenAPISchemaPlugin method)</a>
 </li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticSchemaPlugin.is_plugin_supported_type">is_plugin_supported_type() (litestar.contrib.pydantic.PydanticSchemaPlugin static method)</a>
+      <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin.is_plugin_supported_type">is_plugin_supported_type() (litestar.plugins.OpenAPISchemaPlugin static method)</a>
 
       <ul>
-        <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin.is_plugin_supported_type">(litestar.plugins.OpenAPISchemaPlugin static method)</a>
-</li>
         <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPluginProtocol.is_plugin_supported_type">(litestar.plugins.OpenAPISchemaPluginProtocol static method)</a>
+</li>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticSchemaPlugin.is_plugin_supported_type">(litestar.plugins.pydantic.PydanticSchemaPlugin static method)</a>
 </li>
       </ul></li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_required">is_required (litestar.typing.FieldDefinition property)</a>
@@ -6679,17 +6451,15 @@ document.write(`
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_typeddict_type">is_typeddict_type (litestar.typing.FieldDefinition property)</a>
 </li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticSchemaPlugin.is_undefined_sentinel">is_undefined_sentinel() (litestar.contrib.pydantic.PydanticSchemaPlugin static method)</a>
+      <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin.is_undefined_sentinel">is_undefined_sentinel() (litestar.plugins.OpenAPISchemaPlugin static method)</a>
 
       <ul>
-        <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin.is_undefined_sentinel">(litestar.plugins.OpenAPISchemaPlugin static method)</a>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticSchemaPlugin.is_undefined_sentinel">(litestar.plugins.pydantic.PydanticSchemaPlugin static method)</a>
 </li>
       </ul></li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_union">is_union (litestar.typing.FieldDefinition property)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.FileInfo.islink">islink (litestar.types.FileInfo attribute)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.isolation_level">isolation_level (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
 </li>
       <li><a href="reference/security/jwt.html#litestar.security.jwt.Token.iss">iss (litestar.security.jwt.Token attribute)</a>
 </li>
@@ -6767,8 +6537,6 @@ document.write(`
         <li><a href="reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber.stop.params.join">(litestar.channels.subscriber.Subscriber.stop parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSessionConfig.join_transaction_mode">join_transaction_mode (litestar.contrib.sqlalchemy.plugins.GenericSessionConfig attribute)</a>
-</li>
       <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.RapidocRenderPlugin.params.js_url">js_url (litestar.openapi.plugins.RapidocRenderPlugin parameter)</a>
 
       <ul>
@@ -6785,20 +6553,8 @@ document.write(`
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/connection.html#litestar.connection.Request.json">json() (litestar.connection.Request method)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.json_deserializer">json_deserializer() (litestar.contrib.sqlalchemy.plugins.EngineConfig method)</a>
-
-      <ul>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.EngineConfig.json_deserializer">(litestar.plugins.sqlalchemy.EngineConfig method)</a>
-</li>
-      </ul></li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OpenAPI.json_schema_dialect">json_schema_dialect (litestar.openapi.spec.OpenAPI attribute)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.json_serializer">json_serializer() (litestar.contrib.sqlalchemy.plugins.EngineConfig method)</a>
-
-      <ul>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.EngineConfig.json_serializer">(litestar.plugins.sqlalchemy.EngineConfig method)</a>
-</li>
-      </ul></li>
       <li><a href="reference/security/jwt.html#litestar.security.jwt.Token.jti">jti (litestar.security.jwt.Token attribute)</a>
 </li>
       <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTAuth">JWTAuth (class in litestar.security.jwt)</a>
@@ -6925,8 +6681,6 @@ document.write(`
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.label_length">label_length (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
-</li>
       <li><a href="reference/params.html#litestar.params.Body.params.le">le (litestar.params.Body parameter)</a>
 
       <ul>
@@ -6971,7 +6725,7 @@ document.write(`
 </li>
       <li><a href="reference/types.html#litestar.types.LifeSpanReceiveMessage">LifeSpanReceiveMessage (in module litestar.types)</a>
 </li>
-      <li><a href="reference/types.html#litestar.types.LifeSpanScope">LifeSpanScope (in module litestar.types)</a>
+      <li><a href="reference/types.html#litestar.types.LifeSpanScope">LifeSpanScope (class in litestar.types)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.LifeSpanSend">LifeSpanSend (in module litestar.types)</a>
 </li>
@@ -7369,8 +7123,6 @@ document.write(`
         <li><a href="reference/dto/base_dto.html#module-litestar.dto.base_dto">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     litestar.dto.config
 
@@ -7378,6 +7130,8 @@ document.write(`
         <li><a href="reference/dto/config.html#module-litestar.dto.config">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     litestar.dto.data_structures
 
@@ -7596,10 +7350,24 @@ document.write(`
 </li>
       </ul></li>
       <li>
+    litestar.plugins.htmx
+
+      <ul>
+        <li><a href="reference/plugins/htmx.html#module-litestar.plugins.htmx">module</a>
+</li>
+      </ul></li>
+      <li>
     litestar.plugins.problem_details
 
       <ul>
         <li><a href="reference/plugins/problem_details.html#module-litestar.plugins.problem_details">module</a>
+</li>
+      </ul></li>
+      <li>
+    litestar.plugins.pydantic
+
+      <ul>
+        <li><a href="reference/plugins/pydantic.html#module-litestar.plugins.pydantic">module</a>
 </li>
       </ul></li>
       <li>
@@ -7785,6 +7553,13 @@ document.write(`
 </li>
       </ul></li>
       <li>
+    litestar.types
+
+      <ul>
+        <li><a href="reference/types.html#module-litestar.types">module</a>
+</li>
+      </ul></li>
+      <li>
     litestar.typing
 
       <ul>
@@ -7805,6 +7580,8 @@ document.write(`
         <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionBackend.load_from_connection">(litestar.middleware.session.server_side.ServerSideSessionBackend method)</a>
 </li>
       </ul></li>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.LocationType">LocationType (class in litestar.plugins.htmx)</a>
+</li>
       <li><a href="reference/logging/config.html#litestar.logging.config.BaseLoggingConfig.log_exceptions">log_exceptions (litestar.logging.config.BaseLoggingConfig attribute)</a>
 
       <ul>
@@ -7840,8 +7617,6 @@ document.write(`
 </li>
       </ul></li>
       <li><a href="reference/logging/config.html#litestar.logging.config.LoggingConfig.logging_module">logging_module (litestar.logging.config.LoggingConfig attribute)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.logging_name">logging_name (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
 </li>
       <li><a href="reference/logging/config.html#litestar.logging.config.LoggingConfig">LoggingConfig (class in litestar.logging.config)</a>
 </li>
@@ -7911,8 +7686,6 @@ document.write(`
       </ul></li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.max_contains">max_contains (litestar.openapi.spec.Schema attribute)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.max_identifier_length">max_identifier_length (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
-</li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.max_items">max_items (litestar.openapi.spec.Schema attribute)</a>
 
       <ul>
@@ -7934,8 +7707,6 @@ document.write(`
 </li>
       </ul></li>
       <li><a href="reference/dto/config.html#litestar.dto.config.DTOConfig.max_nested_depth">max_nested_depth (litestar.dto.config.DTOConfig attribute)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.max_overflow">max_overflow (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.max_properties">max_properties (litestar.openapi.spec.Schema attribute)</a>
 </li>
@@ -8040,14 +7811,6 @@ document.write(`
 </li>
         <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionBackend.store_in_message.params.message">(litestar.middleware.session.server_side.ServerSideSessionBackend.store_in_message parameter)</a>
 </li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.async_autocommit_before_send_handler.params.message">(litestar.plugins.sqlalchemy.async_autocommit_before_send_handler parameter)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.async_default_before_send_handler.params.message">(litestar.plugins.sqlalchemy.async_default_before_send_handler parameter)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.sync_autocommit_before_send_handler.params.message">(litestar.plugins.sqlalchemy.sync_autocommit_before_send_handler parameter)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.sync_default_before_send_handler.params.message">(litestar.plugins.sqlalchemy.sync_default_before_send_handler parameter)</a>
-</li>
       </ul></li>
       <li><a href="reference/data_extractors.html#litestar.data_extractors.ResponseDataExtractor.__call__.params.messages">messages (litestar.data_extractors.ResponseDataExtractor.__call__ parameter)</a>
 
@@ -8061,20 +7824,8 @@ document.write(`
         <li><a href="reference/data_extractors.html#litestar.data_extractors.ResponseDataExtractor.extract_status_code.params.messages">(litestar.data_extractors.ResponseDataExtractor.extract_status_code parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.BigIntAuditBase.metadata">metadata (litestar.contrib.sqlalchemy.base.BigIntAuditBase attribute)</a>
-
-      <ul>
-        <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.BigIntBase.metadata">(litestar.contrib.sqlalchemy.base.BigIntBase attribute)</a>
+      <li><a href="reference/typing.html#litestar.typing.FieldDefinition.metadata">metadata (litestar.typing.FieldDefinition attribute)</a>
 </li>
-        <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.UUIDAuditBase.metadata">(litestar.contrib.sqlalchemy.base.UUIDAuditBase attribute)</a>
-</li>
-        <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.UUIDBase.metadata">(litestar.contrib.sqlalchemy.base.UUIDBase attribute)</a>
-</li>
-        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.metadata">(litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig attribute)</a>
-</li>
-        <li><a href="reference/typing.html#litestar.typing.FieldDefinition.metadata">(litestar.typing.FieldDefinition attribute)</a>
-</li>
-      </ul></li>
       <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryConfig.meter">meter (litestar.contrib.opentelemetry.OpenTelemetryConfig attribute)</a>
 </li>
       <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryConfig.meter_provider">meter_provider (litestar.contrib.opentelemetry.OpenTelemetryConfig attribute)</a>
@@ -8175,8 +7926,6 @@ document.write(`
         <li><a href="reference/params.html#litestar.params.Parameter.params.min_items">(litestar.params.Parameter parameter)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.min_length">min_length (litestar.openapi.spec.Schema attribute)</a>
 
       <ul>
@@ -8191,6 +7940,8 @@ document.write(`
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.minimum">minimum (litestar.openapi.spec.Schema attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/config.html#litestar.config.compression.CompressionConfig.minimum_size">minimum_size (litestar.config.compression.CompressionConfig attribute)</a>
 </li>
       <li><a href="reference/exceptions.html#litestar.exceptions.MissingDependencyException">MissingDependencyException</a>
@@ -8235,8 +7986,6 @@ document.write(`
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.model_type">(litestar.repository.abc.AbstractSyncRepository attribute)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.ModelProtocol">ModelProtocol (class in litestar.contrib.sqlalchemy.base)</a>
-</li>
       <li>
     module
 
@@ -8367,7 +8116,11 @@ document.write(`
 </li>
         <li><a href="reference/plugins/flash_messages.html#module-litestar.plugins.flash">litestar.plugins.flash</a>
 </li>
+        <li><a href="reference/plugins/htmx.html#module-litestar.plugins.htmx">litestar.plugins.htmx</a>
+</li>
         <li><a href="reference/plugins/problem_details.html#module-litestar.plugins.problem_details">litestar.plugins.problem_details</a>
+</li>
+        <li><a href="reference/plugins/pydantic.html#module-litestar.plugins.pydantic">litestar.plugins.pydantic</a>
 </li>
         <li><a href="reference/plugins/sqlalchemy.html#module-litestar.plugins.sqlalchemy">litestar.plugins.sqlalchemy</a>
 </li>
@@ -8421,11 +8174,11 @@ document.write(`
 </li>
         <li><a href="reference/testing.html#module-litestar.testing">litestar.testing</a>
 </li>
+        <li><a href="reference/types.html#module-litestar.types">litestar.types</a>
+</li>
         <li><a href="reference/typing.html#module-litestar.typing">litestar.typing</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.module">module (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
-</li>
       <li><a href="reference/connection.html#litestar.connection.Request.msgpack">msgpack() (litestar.connection.Request method)</a>
 </li>
       <li><a href="reference/dto/msgspec_dto.html#litestar.dto.msgspec_dto.MsgspecDTO">MsgspecDTO (class in litestar.dto.msgspec_dto)</a>
@@ -8630,14 +8383,14 @@ document.write(`
       </ul></li>
       <li><a href="reference/pagination.html#litestar.pagination.OffsetPagination">OffsetPagination (class in litestar.pagination)</a>
 </li>
-      <li><a href="reference/handlers.html#litestar.handlers.WebsocketListener.on_accept">on_accept (litestar.handlers.WebsocketListener attribute)</a>
+      <li><a href="reference/handlers.html#litestar.handlers.WebsocketListenerRouteHandler.on_accept">on_accept (litestar.handlers.WebsocketListenerRouteHandler attribute)</a>
 
       <ul>
-        <li><a href="reference/handlers.html#litestar.handlers.WebsocketListenerRouteHandler.on_accept">(litestar.handlers.WebsocketListenerRouteHandler attribute)</a>
-</li>
         <li><a href="reference/handlers.html#litestar.handlers.WebsocketListenerRouteHandler.params.on_accept">(litestar.handlers.WebsocketListenerRouteHandler parameter)</a>
 </li>
       </ul></li>
+      <li><a href="reference/handlers.html#litestar.handlers.WebsocketListener.on_accept">on_accept() (litestar.handlers.WebsocketListener method)</a>
+</li>
       <li><a href="reference/handlers.html#litestar.handlers.WebsocketListenerRouteHandler.default_connection_lifespan.params.on_accept_dependencies">on_accept_dependencies (litestar.handlers.WebsocketListenerRouteHandler.default_connection_lifespan parameter)</a>
 </li>
       <li><a href="reference/app.html#litestar.app.Litestar.params.on_app_init">on_app_init (litestar.app.Litestar parameter)</a>
@@ -8655,45 +8408,33 @@ document.write(`
 </li>
         <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryPlugin.on_app_init">(litestar.contrib.opentelemetry.OpenTelemetryPlugin method)</a>
 </li>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticInitPlugin.on_app_init">(litestar.contrib.pydantic.PydanticInitPlugin method)</a>
-</li>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticPlugin.on_app_init">(litestar.contrib.pydantic.PydanticPlugin method)</a>
-</li>
-        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin.on_app_init">(litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin method)</a>
-</li>
-        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin.on_app_init">(litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin method)</a>
-</li>
         <li><a href="reference/plugins/flash_messages.html#litestar.plugins.flash.FlashPlugin.on_app_init">(litestar.plugins.flash.FlashPlugin method)</a>
+</li>
+        <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXPlugin.on_app_init">(litestar.plugins.htmx.HTMXPlugin method)</a>
 </li>
         <li><a href="reference/plugins/index.html#litestar.plugins.InitPluginProtocol.on_app_init">(litestar.plugins.InitPluginProtocol method)</a>
 </li>
         <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsPlugin.on_app_init">(litestar.plugins.problem_details.ProblemDetailsPlugin method)</a>
 </li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin.on_app_init">(litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin method)</a>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticInitPlugin.on_app_init">(litestar.plugins.pydantic.PydanticInitPlugin method)</a>
 </li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyPlugin.on_app_init">(litestar.plugins.sqlalchemy.SQLAlchemyPlugin method)</a>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticPlugin.on_app_init">(litestar.plugins.pydantic.PydanticPlugin method)</a>
 </li>
         <li><a href="reference/plugins/structlog.html#litestar.plugins.structlog.StructlogPlugin.on_app_init">(litestar.plugins.structlog.StructlogPlugin method)</a>
 </li>
         <li><a href="reference/security/index.html#litestar.security.AbstractSecurityConfig.on_app_init">(litestar.security.AbstractSecurityConfig method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin.on_cli_init">on_cli_init() (litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin method)</a>
+      <li><a href="reference/plugins/index.html#litestar.plugins.CLIPluginProtocol.on_cli_init">on_cli_init() (litestar.plugins.CLIPluginProtocol method)</a>
+</li>
+      <li><a href="reference/handlers.html#litestar.handlers.WebsocketListenerRouteHandler.on_disconnect">on_disconnect (litestar.handlers.WebsocketListenerRouteHandler attribute)</a>
 
       <ul>
-        <li><a href="reference/plugins/index.html#litestar.plugins.CLIPluginProtocol.on_cli_init">(litestar.plugins.CLIPluginProtocol method)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin.on_cli_init">(litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin method)</a>
-</li>
-      </ul></li>
-      <li><a href="reference/handlers.html#litestar.handlers.WebsocketListener.on_disconnect">on_disconnect (litestar.handlers.WebsocketListener attribute)</a>
-
-      <ul>
-        <li><a href="reference/handlers.html#litestar.handlers.WebsocketListenerRouteHandler.on_disconnect">(litestar.handlers.WebsocketListenerRouteHandler attribute)</a>
-</li>
         <li><a href="reference/handlers.html#litestar.handlers.WebsocketListenerRouteHandler.params.on_disconnect">(litestar.handlers.WebsocketListenerRouteHandler parameter)</a>
 </li>
       </ul></li>
+      <li><a href="reference/handlers.html#litestar.handlers.WebsocketListener.on_disconnect">on_disconnect() (litestar.handlers.WebsocketListener method)</a>
+</li>
       <li><a href="reference/handlers.html#litestar.handlers.WebsocketListenerRouteHandler.default_connection_lifespan.params.on_disconnect_dependencies">on_disconnect_dependencies (litestar.handlers.WebsocketListenerRouteHandler.default_connection_lifespan parameter)</a>
 </li>
       <li><a href="reference/channels/subscriber.html#litestar.channels.subscriber.Subscriber.run_in_background.params.on_event">on_event (litestar.channels.subscriber.Subscriber.run_in_background parameter)</a>
@@ -9028,7 +8769,7 @@ document.write(`
       </ul></li>
       <li><a href="reference/types.html#litestar.types.ParametersMap">ParametersMap (in module litestar.types)</a>
 </li>
-      <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.response.HTMXTemplate.params.params">params (litestar.contrib.htmx.response.HTMXTemplate parameter)</a>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXTemplate.params.params">params (litestar.plugins.htmx.HTMXTemplate parameter)</a>
 
       <ul>
         <li><a href="reference/testing.html#litestar.testing.AsyncTestClient.websocket_connect.params.params">(litestar.testing.AsyncTestClient.websocket_connect parameter)</a>
@@ -9036,8 +8777,6 @@ document.write(`
         <li><a href="reference/testing.html#litestar.testing.TestClient.websocket_connect.params.params">(litestar.testing.TestClient.websocket_connect parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.paramstyle">paramstyle (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
-</li>
       <li><a href="reference/enums.html#litestar.enums.ParamType">ParamType (class in litestar.enums)</a>
 </li>
       <li><a href="reference/data_extractors.html#litestar.data_extractors.ConnectionDataExtractor.params.parse_body">parse_body (litestar.data_extractors.ConnectionDataExtractor parameter)</a>
@@ -9255,31 +8994,11 @@ document.write(`
       <ul>
         <li><a href="reference/config.html#litestar.config.app.AppConfig.plugins">(litestar.config.app.AppConfig attribute)</a>
 </li>
-        <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.plugins">(litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
-</li>
         <li><a href="reference/testing.html#litestar.testing.create_async_test_client.params.plugins">(litestar.testing.create_async_test_client parameter)</a>
 </li>
         <li><a href="reference/testing.html#litestar.testing.create_test_client.params.plugins">(litestar.testing.create_test_client parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.pool">pool (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.pool_logging_name">pool_logging_name (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.pool_pre_ping">pool_pre_ping (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.pool_recycle">pool_recycle (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.pool_reset_on_return">pool_reset_on_return (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.pool_size">pool_size (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.pool_timeout">pool_timeout (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.pool_use_lifo">pool_use_lifo (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.poolclass">poolclass (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
-</li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.Address.port">port (litestar.datastructures.Address attribute)</a>
 
       <ul>
@@ -9304,10 +9023,10 @@ document.write(`
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.match_predicate_recursively.params.predicate">predicate (litestar.typing.FieldDefinition.match_predicate_recursively parameter)</a>
 </li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticInitPlugin.params.prefer_alias">prefer_alias (litestar.contrib.pydantic.PydanticInitPlugin parameter)</a>
+      <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticInitPlugin.params.prefer_alias">prefer_alias (litestar.plugins.pydantic.PydanticInitPlugin parameter)</a>
 
       <ul>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticPlugin.params.prefer_alias">(litestar.contrib.pydantic.PydanticPlugin parameter)</a>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticPlugin.params.prefer_alias">(litestar.plugins.pydantic.PydanticPlugin parameter)</a>
 </li>
       </ul></li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.XML.prefix">prefix (litestar.openapi.spec.XML attribute)</a>
@@ -9332,7 +9051,7 @@ document.write(`
 </li>
       <li><a href="reference/logging/config.html#litestar.logging.config.StructLoggingConfig.processors">processors (litestar.logging.config.StructLoggingConfig attribute)</a>
 </li>
-      <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.request.HTMXDetails.prompt">prompt (litestar.contrib.htmx.request.HTMXDetails property)</a>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXDetails.prompt">prompt (litestar.plugins.htmx.HTMXDetails property)</a>
 </li>
       <li><a href="reference/logging/config.html#litestar.logging.config.LoggingConfig.propagate">propagate (litestar.logging.config.LoggingConfig attribute)</a>
 </li>
@@ -9344,18 +9063,6 @@ document.write(`
 </li>
       <li><a href="reference/di.html#litestar.di.Provide">Provide (class in litestar.di)</a>
 </li>
-      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.provide_engine">provide_engine() (litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig method)</a>
-
-      <ul>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.provide_engine">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig method)</a>
-</li>
-      </ul></li>
-      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.provide_session">provide_session() (litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig method)</a>
-
-      <ul>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.provide_session">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig method)</a>
-</li>
-      </ul></li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.Accept.best_match.params.provided_types">provided_types (litestar.datastructures.Accept.best_match parameter)</a>
 </li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.CacheControlHeader.proxy_revalidate">proxy_revalidate (litestar.datastructures.CacheControlHeader attribute)</a>
@@ -9380,9 +9087,9 @@ document.write(`
         <li><a href="reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.publish">(litestar.channels.plugin.ChannelsPlugin method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.response.HTMXTemplate.params.push_url">push_url (litestar.contrib.htmx.response.HTMXTemplate parameter)</a>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXTemplate.params.push_url">push_url (litestar.plugins.htmx.HTMXTemplate parameter)</a>
 </li>
-      <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.response.PushUrl">PushUrl (class in litestar.contrib.htmx.response)</a>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.PushUrl">PushUrl (class in litestar.plugins.htmx)</a>
 </li>
       <li><a href="reference/handlers.html#litestar.handlers.put">put (class in litestar.handlers)</a>
 
@@ -9396,15 +9103,15 @@ document.write(`
 </li>
       <li><a href="reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.put_subscriber_history">put_subscriber_history() (litestar.channels.plugin.ChannelsPlugin method)</a>
 </li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticDIPlugin">PydanticDIPlugin (class in litestar.contrib.pydantic)</a>
+      <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticDIPlugin">PydanticDIPlugin (class in litestar.plugins.pydantic)</a>
 </li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticDTO">PydanticDTO (class in litestar.contrib.pydantic)</a>
+      <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticDTO">PydanticDTO (class in litestar.plugins.pydantic)</a>
 </li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticInitPlugin">PydanticInitPlugin (class in litestar.contrib.pydantic)</a>
+      <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticInitPlugin">PydanticInitPlugin (class in litestar.plugins.pydantic)</a>
 </li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticPlugin">PydanticPlugin (class in litestar.contrib.pydantic)</a>
+      <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticPlugin">PydanticPlugin (class in litestar.plugins.pydantic)</a>
 </li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticSchemaPlugin">PydanticSchemaPlugin (class in litestar.contrib.pydantic)</a>
+      <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticSchemaPlugin">PydanticSchemaPlugin (class in litestar.plugins.pydantic)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -9424,10 +9131,6 @@ document.write(`
         <li><a href="reference/params.html#litestar.params.ParameterKwarg.query">(litestar.params.ParameterKwarg attribute)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.query_cache_size">query_cache_size (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSessionConfig.query_cls">query_cls (litestar.contrib.sqlalchemy.plugins.GenericSessionConfig attribute)</a>
-</li>
       <li><a href="reference/connection.html#litestar.connection.ASGIConnection.query_params">query_params (litestar.connection.ASGIConnection property)</a>
 
       <ul>
@@ -9512,9 +9215,9 @@ document.write(`
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.raw">raw (litestar.typing.FieldDefinition attribute)</a>
 </li>
-      <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.response.HTMXTemplate.params.re_swap">re_swap (litestar.contrib.htmx.response.HTMXTemplate parameter)</a>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXTemplate.params.re_swap">re_swap (litestar.plugins.htmx.HTMXTemplate parameter)</a>
 </li>
-      <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.response.HTMXTemplate.params.re_target">re_target (litestar.contrib.htmx.response.HTMXTemplate parameter)</a>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXTemplate.params.re_target">re_target (litestar.plugins.htmx.HTMXTemplate parameter)</a>
 </li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.UploadFile.read">read() (litestar.datastructures.UploadFile method)</a>
 </li>
@@ -9678,16 +9381,6 @@ document.write(`
         <li><a href="reference/template.html#litestar.template.TemplateEngineProtocol.register_template_callable">(litestar.template.TemplateEngineProtocol method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.BigIntAuditBase.registry">registry (litestar.contrib.sqlalchemy.base.BigIntAuditBase attribute)</a>
-
-      <ul>
-        <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.BigIntBase.registry">(litestar.contrib.sqlalchemy.base.BigIntBase attribute)</a>
-</li>
-        <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.UUIDAuditBase.registry">(litestar.contrib.sqlalchemy.base.UUIDAuditBase attribute)</a>
-</li>
-        <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.UUIDBase.registry">(litestar.contrib.sqlalchemy.base.UUIDBase attribute)</a>
-</li>
-      </ul></li>
       <li><a href="reference/dto/config.html#litestar.dto.config.DTOConfig.rename_fields">rename_fields (litestar.dto.config.DTOConfig attribute)</a>
 </li>
       <li><a href="reference/dto/config.html#litestar.dto.config.DTOConfig.rename_strategy">rename_strategy (litestar.dto.config.DTOConfig attribute)</a>
@@ -9756,7 +9449,7 @@ document.write(`
       </ul></li>
       <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionConfig.renew_on_access">renew_on_access (litestar.middleware.session.server_side.ServerSideSessionConfig attribute)</a>
 </li>
-      <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.response.ReplaceUrl">ReplaceUrl (class in litestar.contrib.htmx.response)</a>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.ReplaceUrl">ReplaceUrl (class in litestar.plugins.htmx)</a>
 </li>
       <li><a href="reference/connection.html#litestar.connection.Request">Request (class in litestar.connection)</a>
 </li>
@@ -9880,6 +9573,26 @@ document.write(`
 </li>
       <li><a href="reference/middleware/logging.html#litestar.middleware.logging.LoggingMiddlewareConfig.request_log_message">request_log_message (litestar.middleware.logging.LoggingMiddlewareConfig attribute)</a>
 </li>
+      <li><a href="reference/app.html#litestar.app.Litestar.params.request_max_body_size">request_max_body_size (litestar.app.Litestar parameter)</a>
+
+      <ul>
+        <li><a href="reference/config.html#litestar.config.app.AppConfig.request_max_body_size">(litestar.config.app.AppConfig attribute)</a>
+</li>
+        <li><a href="reference/controller.html#litestar.controller.Controller.request_max_body_size">(litestar.controller.Controller attribute)</a>
+</li>
+        <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.params.request_max_body_size">(litestar.handlers.HTTPRouteHandler parameter)</a>
+</li>
+        <li><a href="reference/handlers.html#litestar.handlers.patch.params.request_max_body_size">(litestar.handlers.patch parameter)</a>
+</li>
+        <li><a href="reference/handlers.html#litestar.handlers.post.params.request_max_body_size">(litestar.handlers.post parameter)</a>
+</li>
+        <li><a href="reference/handlers.html#litestar.handlers.put.params.request_max_body_size">(litestar.handlers.put parameter)</a>
+</li>
+        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.request_max_body_size">(litestar.openapi.OpenAPIController attribute)</a>
+</li>
+        <li><a href="reference/router.html#litestar.router.Router.params.request_max_body_size">(litestar.router.Router parameter)</a>
+</li>
+      </ul></li>
       <li><a href="reference/testing.html#litestar.testing.RequestFactory.patch.params.request_media_type">request_media_type (litestar.testing.RequestFactory.patch parameter)</a>
 
       <ul>
@@ -10182,9 +9895,9 @@ document.write(`
         <li><a href="reference/pagination.html#litestar.pagination.CursorPagination.results_per_page">(litestar.pagination.CursorPagination attribute)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.response.Reswap">Reswap (class in litestar.contrib.htmx.response)</a>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.Reswap">Reswap (class in litestar.plugins.htmx)</a>
 </li>
-      <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.response.Retarget">Retarget (class in litestar.contrib.htmx.response)</a>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.Retarget">Retarget (class in litestar.plugins.htmx)</a>
 </li>
       <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.retrieve_cached_history">retrieve_cached_history() (litestar.middleware.rate_limit.RateLimitMiddleware method)</a>
 </li>
@@ -10405,14 +10118,14 @@ document.write(`
         <li><a href="reference/params.html#litestar.params.Parameter.params.schema_component_key">(litestar.params.Parameter parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticSchemaPlugin.for_pydantic_model.params.schema_creator">schema_creator (litestar.contrib.pydantic.PydanticSchemaPlugin.for_pydantic_model parameter)</a>
+      <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.create_openapi_schema.params.schema_creator">schema_creator (litestar.dto.base_dto.AbstractDTO.create_openapi_schema parameter)</a>
 
       <ul>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticSchemaPlugin.to_openapi_schema.params.schema_creator">(litestar.contrib.pydantic.PydanticSchemaPlugin.to_openapi_schema parameter)</a>
-</li>
-        <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.create_openapi_schema.params.schema_creator">(litestar.dto.base_dto.AbstractDTO.create_openapi_schema parameter)</a>
-</li>
         <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema.params.schema_creator">(litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema parameter)</a>
+</li>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticSchemaPlugin.for_pydantic_model.params.schema_creator">(litestar.plugins.pydantic.PydanticSchemaPlugin.for_pydantic_model parameter)</a>
+</li>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticSchemaPlugin.to_openapi_schema.params.schema_creator">(litestar.plugins.pydantic.PydanticSchemaPlugin.to_openapi_schema parameter)</a>
 </li>
       </ul></li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.schema_else">schema_else (litestar.openapi.spec.Schema attribute)</a>
@@ -10487,18 +10200,6 @@ document.write(`
         <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.BaseSessionBackend.serialize_data.params.scope">(litestar.middleware.session.base.BaseSessionBackend.serialize_data parameter)</a>
 </li>
         <li><a href="reference/middleware/session/client_side.html#litestar.middleware.session.client_side.ClientSideSessionBackend.dump_data.params.scope">(litestar.middleware.session.client_side.ClientSideSessionBackend.dump_data parameter)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.async_autocommit_before_send_handler.params.scope">(litestar.plugins.sqlalchemy.async_autocommit_before_send_handler parameter)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.async_default_before_send_handler.params.scope">(litestar.plugins.sqlalchemy.async_default_before_send_handler parameter)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.provide_session.params.scope">(litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.provide_session parameter)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.provide_session.params.scope">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.provide_session parameter)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.sync_autocommit_before_send_handler.params.scope">(litestar.plugins.sqlalchemy.sync_autocommit_before_send_handler parameter)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.sync_default_before_send_handler.params.scope">(litestar.plugins.sqlalchemy.sync_default_before_send_handler parameter)</a>
 </li>
         <li><a href="reference/response/base.html#litestar.response.base.ASGIResponse.__call__.params.scope">(litestar.response.base.ASGIResponse.__call__ parameter)</a>
 </li>
@@ -10846,8 +10547,6 @@ document.write(`
       <li><a href="reference/connection.html#litestar.connection.ASGIConnection.session">session (litestar.connection.ASGIConnection property)</a>
 
       <ul>
-        <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.touch_updated_timestamp.params.session">(litestar.contrib.sqlalchemy.base.touch_updated_timestamp parameter)</a>
-</li>
         <li><a href="reference/testing.html#litestar.testing.RequestFactory.delete.params.session">(litestar.testing.RequestFactory.delete parameter)</a>
 </li>
         <li><a href="reference/testing.html#litestar.testing.RequestFactory.get.params.session">(litestar.testing.RequestFactory.get parameter)</a>
@@ -10867,11 +10566,9 @@ document.write(`
       </ul></li>
       <li><a href="reference/security/session_auth.html#litestar.security.session_auth.SessionAuth.session_backend_config">session_backend_config (litestar.security.session_auth.SessionAuth attribute)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.session_config">session_config (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig attribute)</a>
+      <li><a href="reference/testing.html#litestar.testing.AsyncTestClient.session_config">session_config (litestar.testing.AsyncTestClient attribute)</a>
 
       <ul>
-        <li><a href="reference/testing.html#litestar.testing.AsyncTestClient.session_config">(litestar.testing.AsyncTestClient attribute)</a>
-</li>
         <li><a href="reference/testing.html#litestar.testing.AsyncTestClient.params.session_config">(litestar.testing.AsyncTestClient parameter)</a>
 </li>
         <li><a href="reference/testing.html#litestar.testing.BaseTestClient.session_config">(litestar.testing.BaseTestClient attribute)</a>
@@ -10883,14 +10580,6 @@ document.write(`
         <li><a href="reference/testing.html#litestar.testing.TestClient.session_config">(litestar.testing.TestClient attribute)</a>
 </li>
         <li><a href="reference/testing.html#litestar.testing.TestClient.params.session_config">(litestar.testing.TestClient parameter)</a>
-</li>
-      </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.session_config_dict">session_config_dict (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig property)</a>
-</li>
-      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.session_dependency_key">session_dependency_key (litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig attribute)</a>
-
-      <ul>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.session_dependency_key">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig attribute)</a>
 </li>
       </ul></li>
       <li>
@@ -10910,30 +10599,6 @@ document.write(`
       </ul></li>
       <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionConfig.session_id_bytes">session_id_bytes (litestar.middleware.session.server_side.ServerSideSessionConfig attribute)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.session_maker">session_maker (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig attribute)</a>
-</li>
-      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.session_maker_app_state_key">session_maker_app_state_key (litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig attribute)</a>
-
-      <ul>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.session_maker_app_state_key">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig attribute)</a>
-</li>
-      </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig.session_maker_class">session_maker_class (litestar.contrib.sqlalchemy.plugins.GenericSQLAlchemyConfig attribute)</a>
-</li>
-      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.async_autocommit_handler_maker.params.session_scope_key">session_scope_key (litestar.plugins.sqlalchemy.async_autocommit_handler_maker parameter)</a>
-
-      <ul>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.async_default_handler_maker.params.session_scope_key">(litestar.plugins.sqlalchemy.async_default_handler_maker parameter)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.session_scope_key">(litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig attribute)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.session_scope_key">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig attribute)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.sync_autocommit_handler_maker.params.session_scope_key">(litestar.plugins.sqlalchemy.sync_autocommit_handler_maker parameter)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.sync_default_handler_maker.params.session_scope_key">(litestar.plugins.sqlalchemy.sync_default_handler_maker parameter)</a>
-</li>
-      </ul></li>
       <li><a href="reference/security/session_auth.html#litestar.security.session_auth.SessionAuth">SessionAuth (class in litestar.security.session_auth)</a>
 </li>
       <li><a href="reference/security/session_auth.html#litestar.security.session_auth.middleware.SessionAuthMiddleware">SessionAuthMiddleware (class in litestar.security.session_auth.middleware)</a>
@@ -10954,6 +10619,8 @@ document.write(`
       </ul></li>
       <li><a href="reference/concurrency.html#litestar.concurrency.set_asyncio_executor">set_asyncio_executor() (in module litestar.concurrency)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.set_cached_history">set_cached_history() (litestar.middleware.rate_limit.RateLimitMiddleware method)</a>
 </li>
       <li><a href="reference/response/base.html#litestar.response.base.Response.set_cookie">set_cookie() (litestar.response.base.Response method)</a>
@@ -10962,8 +10629,6 @@ document.write(`
         <li><a href="reference/response/index.html#litestar.response.Response.set_cookie">(litestar.response.Response method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/response/base.html#litestar.response.base.Response.set_etag">set_etag() (litestar.response.base.Response method)</a>
 
       <ul>
@@ -10991,6 +10656,8 @@ document.write(`
 </li>
       </ul></li>
       <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitConfig.set_rate_limit_headers">set_rate_limit_headers (litestar.middleware.rate_limit.RateLimitConfig attribute)</a>
+</li>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXConfig.set_request_class_globally">set_request_class_globally (litestar.plugins.htmx.HTMXConfig attribute)</a>
 </li>
       <li><a href="reference/connection.html#litestar.connection.ASGIConnection.set_session">set_session() (litestar.connection.ASGIConnection method)</a>
 </li>
@@ -11047,10 +10714,6 @@ document.write(`
 </li>
         <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.signature_namespace">(litestar.openapi.OpenAPIController attribute)</a>
 </li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.signature_namespace">(litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig property)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.signature_namespace">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig property)</a>
-</li>
         <li><a href="reference/router.html#litestar.router.Router.params.signature_namespace">(litestar.router.Router parameter)</a>
 </li>
         <li><a href="reference/testing.html#litestar.testing.create_async_test_client.params.signature_namespace">(litestar.testing.create_async_test_client parameter)</a>
@@ -11098,40 +10761,6 @@ document.write(`
       </ul></li>
       <li><a href="reference/handlers.html#litestar.handlers.WebsocketListenerRouteHandler.default_connection_lifespan.params.socket">socket (litestar.handlers.WebsocketListenerRouteHandler.default_connection_lifespan parameter)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyAsyncConfig">SQLAlchemyAsyncConfig (class in litestar.contrib.sqlalchemy.plugins)</a>
-
-      <ul>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig">(class in litestar.plugins.sqlalchemy)</a>
-</li>
-      </ul></li>
-      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTO">SQLAlchemyDTO (class in litestar.plugins.sqlalchemy)</a>
-</li>
-      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyDTOConfig">SQLAlchemyDTOConfig (class in litestar.plugins.sqlalchemy)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin">SQLAlchemyInitPlugin (class in litestar.contrib.sqlalchemy.plugins)</a>
-
-      <ul>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin">(class in litestar.plugins.sqlalchemy)</a>
-</li>
-      </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin">SQLAlchemyPlugin (class in litestar.contrib.sqlalchemy.plugins)</a>
-
-      <ul>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyPlugin">(class in litestar.plugins.sqlalchemy)</a>
-</li>
-      </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin">SQLAlchemySerializationPlugin (class in litestar.contrib.sqlalchemy.plugins)</a>
-
-      <ul>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySerializationPlugin">(class in litestar.plugins.sqlalchemy)</a>
-</li>
-      </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySyncConfig">SQLAlchemySyncConfig (class in litestar.contrib.sqlalchemy.plugins)</a>
-
-      <ul>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig">(class in litestar.plugins.sqlalchemy)</a>
-</li>
-      </ul></li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.CacheControlHeader.stale_while_revalidate">stale_while_revalidate (litestar.datastructures.CacheControlHeader attribute)</a>
 </li>
       <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.SwaggerRenderPlugin.params.standalone_preset_js_url">standalone_preset_js_url (litestar.openapi.plugins.SwaggerRenderPlugin parameter)</a>
@@ -11166,14 +10795,6 @@ document.write(`
         <li><a href="reference/datastructures/index.html#litestar.datastructures.ImmutableState.params.state">(litestar.datastructures.ImmutableState parameter)</a>
 </li>
         <li><a href="reference/datastructures/index.html#litestar.datastructures.State.params.state">(litestar.datastructures.State parameter)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.provide_engine.params.state">(litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.provide_engine parameter)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.provide_session.params.state">(litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.provide_session parameter)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.provide_engine.params.state">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.provide_engine parameter)</a>
-</li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.provide_session.params.state">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.provide_session parameter)</a>
 </li>
         <li><a href="reference/testing.html#litestar.testing.create_async_test_client.params.state">(litestar.testing.create_async_test_client parameter)</a>
 </li>
@@ -11496,14 +11117,8 @@ document.write(`
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Reference.summary">(litestar.openapi.spec.Reference attribute)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin.supports_type">supports_type() (litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin method)</a>
-
-      <ul>
-        <li><a href="reference/plugins/index.html#litestar.plugins.SerializationPluginProtocol.supports_type">(litestar.plugins.SerializationPluginProtocol method)</a>
+      <li><a href="reference/plugins/index.html#litestar.plugins.SerializationPluginProtocol.supports_type">supports_type() (litestar.plugins.SerializationPluginProtocol method)</a>
 </li>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySerializationPlugin.supports_type">(litestar.plugins.sqlalchemy.SQLAlchemySerializationPlugin method)</a>
-</li>
-      </ul></li>
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.swagger_css_url">swagger_css_url (litestar.openapi.OpenAPIController attribute)</a>
 </li>
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.swagger_ui_bundle_js_url">swagger_ui_bundle_js_url (litestar.openapi.OpenAPIController attribute)</a>
@@ -11516,20 +11131,6 @@ document.write(`
 </li>
       <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.SwaggerRenderPlugin">SwaggerRenderPlugin (class in litestar.openapi.plugins)</a>
 </li>
-      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.sync_autocommit_before_send_handler">sync_autocommit_before_send_handler() (in module litestar.plugins.sqlalchemy)</a>
-</li>
-      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.sync_autocommit_handler_maker">sync_autocommit_handler_maker() (in module litestar.plugins.sqlalchemy)</a>
-</li>
-      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.sync_default_before_send_handler">sync_default_before_send_handler() (in module litestar.plugins.sqlalchemy)</a>
-</li>
-      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.sync_default_handler_maker">sync_default_handler_maker() (in module litestar.plugins.sqlalchemy)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.AsyncSessionConfig.sync_session_class">sync_session_class (litestar.contrib.sqlalchemy.plugins.AsyncSessionConfig attribute)</a>
-
-      <ul>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.AsyncSessionConfig.sync_session_class">(litestar.plugins.sqlalchemy.AsyncSessionConfig attribute)</a>
-</li>
-      </ul></li>
       <li><a href="reference/di.html#litestar.di.Provide.params.sync_to_thread">sync_to_thread (litestar.di.Provide parameter)</a>
 
       <ul>
@@ -11552,12 +11153,6 @@ document.write(`
 </li>
       <li><a href="reference/types.html#litestar.types.SyncOrAsyncUnion">SyncOrAsyncUnion (in module litestar.types)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.SyncSessionConfig">SyncSessionConfig (class in litestar.contrib.sqlalchemy.plugins)</a>
-
-      <ul>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SyncSessionConfig">(class in litestar.plugins.sqlalchemy)</a>
-</li>
-      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -11604,7 +11199,7 @@ document.write(`
         <li><a href="reference/testing.html#litestar.testing.create_test_client.params.tags">(litestar.testing.create_test_client parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.request.HTMXDetails.target">target (litestar.contrib.htmx.request.HTMXDetails property)</a>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXDetails.target">target (litestar.plugins.htmx.HTMXDetails property)</a>
 </li>
       <li><a href="reference/serialization.html#litestar.serialization.decode_json.params.target_type">target_type (litestar.serialization.decode_json parameter)</a>
 
@@ -11754,8 +11349,6 @@ document.write(`
       </ul></li>
       <li><a href="reference/stores/base.html#litestar.stores.base.StorageObject.to_bytes">to_bytes() (litestar.stores.base.StorageObject method)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.ModelProtocol.to_dict">to_dict() (litestar.contrib.sqlalchemy.base.ModelProtocol method)</a>
-</li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.Cookie.to_encoded_header">to_encoded_header() (litestar.datastructures.Cookie method)</a>
 </li>
       <li><a href="reference/template.html#litestar.template.TemplateConfig.to_engine">to_engine() (litestar.template.TemplateConfig method)</a>
@@ -11768,12 +11361,12 @@ document.write(`
       </ul></li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.Headers.to_header_list">to_header_list() (litestar.datastructures.Headers method)</a>
 </li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticSchemaPlugin.to_openapi_schema">to_openapi_schema() (litestar.contrib.pydantic.PydanticSchemaPlugin method)</a>
+      <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.to_openapi_schema">to_openapi_schema() (litestar.openapi.OpenAPIConfig method)</a>
 
       <ul>
-        <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.to_openapi_schema">(litestar.openapi.OpenAPIConfig method)</a>
-</li>
         <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema">(litestar.plugins.OpenAPISchemaPluginProtocol method)</a>
+</li>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticSchemaPlugin.to_openapi_schema">(litestar.plugins.pydantic.PydanticSchemaPlugin method)</a>
 </li>
       </ul></li>
       <li><a href="reference/exceptions.html#litestar.exceptions.responses.ExceptionResponseContent.to_response">to_response() (litestar.exceptions.responses.ExceptionResponseContent method)</a>
@@ -11894,8 +11487,6 @@ document.write(`
 </li>
       <li><a href="reference/pagination.html#litestar.pagination.ClassicPagination.total_pages">total_pages (litestar.pagination.ClassicPagination attribute)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.touch_updated_timestamp">touch_updated_timestamp() (in module litestar.contrib.sqlalchemy.base)</a>
-</li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.PathItem.trace">trace (litestar.openapi.spec.PathItem attribute)</a>
 </li>
       <li><a href="reference/logging/config.html#litestar.logging.config.BaseLoggingConfig.traceback_line_limit">traceback_line_limit (litestar.logging.config.BaseLoggingConfig attribute)</a>
@@ -11908,17 +11499,17 @@ document.write(`
       </ul></li>
       <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryConfig.tracer_provider">tracer_provider (litestar.contrib.opentelemetry.OpenTelemetryConfig attribute)</a>
 </li>
-      <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.request.HTMXDetails.trigger">trigger (litestar.contrib.htmx.request.HTMXDetails property)</a>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXDetails.trigger">trigger (litestar.plugins.htmx.HTMXDetails property)</a>
 </li>
-      <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.response.HTMXTemplate.params.trigger_event">trigger_event (litestar.contrib.htmx.response.HTMXTemplate parameter)</a>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXTemplate.params.trigger_event">trigger_event (litestar.plugins.htmx.HTMXTemplate parameter)</a>
 </li>
-      <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.request.HTMXDetails.trigger_name">trigger_name (litestar.contrib.htmx.request.HTMXDetails property)</a>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXDetails.trigger_name">trigger_name (litestar.plugins.htmx.HTMXDetails property)</a>
 </li>
-      <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.response.TriggerEvent">TriggerEvent (class in litestar.contrib.htmx.response)</a>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.TriggerEvent">TriggerEvent (class in litestar.plugins.htmx)</a>
 </li>
-      <li><a href="reference/contrib/htmx.html#litestar.contrib.htmx.request.HTMXDetails.triggering_event">triggering_event (litestar.contrib.htmx.request.HTMXDetails property)</a>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.TriggerEventType">TriggerEventType (class in litestar.plugins.htmx)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.GenericSessionConfig.twophase">twophase (litestar.contrib.sqlalchemy.plugins.GenericSessionConfig attribute)</a>
+      <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXDetails.triggering_event">triggering_event (litestar.plugins.htmx.HTMXDetails property)</a>
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.type">type (litestar.openapi.spec.Schema attribute)</a>
 
@@ -12098,12 +11689,6 @@ document.write(`
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.update">(litestar.repository.abc.AbstractSyncRepository method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig.update_app_state">update_app_state() (litestar.plugins.sqlalchemy.SQLAlchemyAsyncConfig method)</a>
-
-      <ul>
-        <li><a href="reference/plugins/sqlalchemy.html#litestar.plugins.sqlalchemy.SQLAlchemySyncConfig.update_app_state">(litestar.plugins.sqlalchemy.SQLAlchemySyncConfig method)</a>
-</li>
-      </ul></li>
       <li><a href="reference/dto/data_structures.html#litestar.dto.data_structures.DTOData.update_instance">update_instance() (litestar.dto.data_structures.DTOData method)</a>
 </li>
       <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.update_many">update_many() (litestar.repository.abc.AbstractAsyncRepository method)</a>
@@ -12113,8 +11698,6 @@ document.write(`
 </li>
       </ul></li>
       <li><a href="reference/app.html#litestar.app.Litestar.update_openapi_schema">update_openapi_schema() (litestar.app.Litestar method)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.AuditColumns.updated_at">updated_at (litestar.contrib.sqlalchemy.base.AuditColumns attribute)</a>
 </li>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.UploadFile">UploadFile (class in litestar.datastructures)</a>
 </li>
@@ -12132,10 +11715,10 @@ document.write(`
         <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractSyncRepository.upsert_many">(litestar.repository.abc.AbstractSyncRepository method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/datastructures/index.html#litestar.datastructures.URL">URL (class in litestar.datastructures)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/datastructures/index.html#litestar.datastructures.URL">URL (class in litestar.datastructures)</a>
+</li>
       <li><a href="reference/connection.html#litestar.connection.ASGIConnection.url">url (litestar.connection.ASGIConnection property)</a>
 
       <ul>
@@ -12168,8 +11751,6 @@ document.write(`
 </li>
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.use_handler_docstrings">use_handler_docstrings (litestar.openapi.OpenAPIConfig attribute)</a>
 </li>
-      <li><a href="reference/contrib/sqlalchemy/plugins.html#litestar.contrib.sqlalchemy.plugins.EngineConfig.use_insertmanyvalues">use_insertmanyvalues (litestar.contrib.sqlalchemy.plugins.EngineConfig attribute)</a>
-</li>
       <li><a href="reference/connection.html#litestar.connection.ASGIConnection.user">user (litestar.connection.ASGIConnection property)</a>
 
       <ul>
@@ -12194,12 +11775,6 @@ document.write(`
         <li><a href="reference/stores/redis.html#litestar.stores.redis.RedisStore.with_client.params.username">(litestar.stores.redis.RedisStore.with_client parameter)</a>
 </li>
       </ul></li>
-      <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.UUIDAuditBase">UUIDAuditBase (class in litestar.contrib.sqlalchemy.base)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.UUIDBase">UUIDBase (class in litestar.contrib.sqlalchemy.base)</a>
-</li>
-      <li><a href="reference/contrib/sqlalchemy/base.html#litestar.contrib.sqlalchemy.base.UUIDPrimaryKey">UUIDPrimaryKey (class in litestar.contrib.sqlalchemy.base)</a>
-</li>
   </ul></td>
 </tr></table>
 
@@ -12210,10 +11785,10 @@ document.write(`
 </li>
       <li><a href="reference/controller.html#litestar.controller.Controller.validate_route_handlers">validate_route_handlers() (litestar.controller.Controller method)</a>
 </li>
-      <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticInitPlugin.params.validate_strict">validate_strict (litestar.contrib.pydantic.PydanticInitPlugin parameter)</a>
+      <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticInitPlugin.params.validate_strict">validate_strict (litestar.plugins.pydantic.PydanticInitPlugin parameter)</a>
 
       <ul>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticPlugin.params.validate_strict">(litestar.contrib.pydantic.PydanticPlugin parameter)</a>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticPlugin.params.validate_strict">(litestar.plugins.pydantic.PydanticPlugin parameter)</a>
 </li>
       </ul></li>
       <li><a href="reference/exceptions.html#litestar.exceptions.ValidationException">ValidationException</a>
@@ -12222,8 +11797,6 @@ document.write(`
 
       <ul>
         <li><a href="reference/connection.html#litestar.connection.ASGIConnection.set_session.params.value">(litestar.connection.ASGIConnection.set_session parameter)</a>
-</li>
-        <li><a href="reference/contrib/pydantic.html#litestar.contrib.pydantic.PydanticSchemaPlugin.is_plugin_supported_type.params.value">(litestar.contrib.pydantic.PydanticSchemaPlugin.is_plugin_supported_type parameter)</a>
 </li>
         <li><a href="reference/datastructures/index.html#litestar.datastructures.Cookie.value">(litestar.datastructures.Cookie attribute)</a>
 </li>
@@ -12246,6 +11819,8 @@ document.write(`
         <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin.is_plugin_supported_type.params.value">(litestar.plugins.OpenAPISchemaPlugin.is_plugin_supported_type parameter)</a>
 </li>
         <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPluginProtocol.is_plugin_supported_type.params.value">(litestar.plugins.OpenAPISchemaPluginProtocol.is_plugin_supported_type parameter)</a>
+</li>
+        <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticSchemaPlugin.is_plugin_supported_type.params.value">(litestar.plugins.pydantic.PydanticSchemaPlugin.is_plugin_supported_type parameter)</a>
 </li>
         <li><a href="reference/response/base.html#litestar.response.base.Response.set_cookie.params.value">(litestar.response.base.Response.set_cookie parameter)</a>
 </li>
@@ -12416,7 +11991,7 @@ document.write(`
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/types.html#litestar.types.WebSocketScope">WebSocketScope (in module litestar.types)</a>
+      <li><a href="reference/types.html#litestar.types.WebSocketScope">WebSocketScope (class in litestar.types)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.WebSocketSendEvent">WebSocketSendEvent (class in litestar.types)</a>
 </li>
@@ -12554,7 +12129,7 @@ document.write(`
 
   <p class="copyright">
     
-      © Copyright 2023, Litestar-Org.
+      © Copyright 2024, Litestar-Org.
       <br/>
     
   </p>

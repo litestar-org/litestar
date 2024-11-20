@@ -1362,7 +1362,9 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../reference/params.html">params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/htmx.html">htmx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/problem_details.html">problem details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
@@ -1542,10 +1544,10 @@ document.write(`
   <section id="route-handlers">
 <h1>Route handlers<a class="headerlink" href="#route-handlers" title="Permalink to this heading">#</a></h1>
 <p>Route handlers are the core of Litestar. They are constructed by decorating a function or class method with one of the
-handler <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.12)"><span class="xref std std-term">decorators</span></a> exported from Litestar.</p>
+handler <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.13)"><span class="xref std std-term">decorators</span></a> exported from Litestar.</p>
 <p>For example:</p>
 <div class="literal-block-wrapper docutils container" id="id2">
-<div class="code-block-caption"><span class="caption-text">Defining a route handler by decorating a function with the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.get" title="litestar.handlers.get"><code class="xref py py-class docutils literal notranslate"><span class="pre">&#64;get()</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.12)"><span class="xref std std-term">decorator</span></a></span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Defining a route handler by decorating a function with the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.get" title="litestar.handlers.get"><code class="xref py py-class docutils literal notranslate"><span class="pre">&#64;get()</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.13)"><span class="xref std std-term">decorator</span></a></span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
 
 
@@ -1555,7 +1557,7 @@ handler <a class="reference external" href="https://docs.python.org/3/glossary.h
 </pre></div>
 </div>
 </div>
-<p>In the above example, the <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.12)"><span class="xref std std-term">decorator</span></a> includes all the information required to define the endpoint operation for
+<p>In the above example, the <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.13)"><span class="xref std std-term">decorator</span></a> includes all the information required to define the endpoint operation for
 the combination of the path <code class="docutils literal notranslate"><span class="pre">&quot;/&quot;</span></code> and the HTTP verb <code class="docutils literal notranslate"><span class="pre">GET</span></code>. In this case it will be a HTTP response with a
 <code class="docutils literal notranslate"><span class="pre">Content-Type</span></code> header of <code class="docutils literal notranslate"><span class="pre">text/plain</span></code>.</p>
 <div class="important admonition">
@@ -1565,8 +1567,10 @@ this is that using a synchronous function which perform blocking operations, suc
 as I/O or computationally intensive tasks, can potentially block the main thread
 running the event loop, and in turn block the whole application.</p>
 <p>To mitigate this, the <code class="docutils literal notranslate"><span class="pre">sync_to_thread</span></code> parameter can be set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, which
-will result in the function being run in a thread pool. Should the function be
-non-blocking, <code class="docutils literal notranslate"><span class="pre">sync_to_thread</span></code> should be set to <code class="docutils literal notranslate"><span class="pre">False</span></code> instead.</p>
+will result in the function being run in a thread pool.</p>
+<p>If a synchronous function is non-blocking, setting <code class="docutils literal notranslate"><span class="pre">sync_to_thread</span></code> to <code class="docutils literal notranslate"><span class="pre">False</span></code>
+will tell Litestar that the user is sure about its behavior
+and the function can be treated as non-blocking.</p>
 <p>If a synchronous function is passed, without setting an explicit <code class="docutils literal notranslate"><span class="pre">sync_to_thread</span></code>
 value, a warning will be raised.</p>
 <div class="admonition seealso">
@@ -1576,8 +1580,8 @@ value, a warning will be raised.</p>
 </div>
 <section id="declaring-paths">
 <h2>Declaring paths<a class="headerlink" href="#declaring-paths" title="Permalink to this heading">#</a></h2>
-<p>All route handler <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.12)"><span class="xref std std-term">decorators</span></a> accept an optional path <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">argument</span></a>.
-This <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">argument</span></a> can be declared as a <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">kwarg</span></a> using the
+<p>All route handler <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.13)"><span class="xref std std-term">decorators</span></a> accept an optional path <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.13)"><span class="xref std std-term">argument</span></a>.
+This <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.13)"><span class="xref std std-term">argument</span></a> can be declared as a <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.13)"><span class="xref std std-term">kwarg</span></a> using the
 <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.BaseRouteHandler.params.path" title="litestar.handlers.base.BaseRouteHandler"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">path</span></code></a> parameter:</p>
 <div class="literal-block-wrapper docutils container" id="id3">
 <div class="code-block-caption"><span class="caption-text">Defining a route handler by passing the path as a keyword argument</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
@@ -1589,7 +1593,7 @@ This <a class="reference external" href="https://docs.python.org/3/glossary.html
 </pre></div>
 </div>
 </div>
-<p>It can also be passed as an <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">argument</span></a> without the keyword:</p>
+<p>It can also be passed as an <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.13)"><span class="xref std std-term">argument</span></a> without the keyword:</p>
 <div class="literal-block-wrapper docutils container" id="id4">
 <div class="code-block-caption"><span class="caption-text">Defining a route handler but not using the keyword argument</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
@@ -1600,8 +1604,8 @@ This <a class="reference external" href="https://docs.python.org/3/glossary.html
 </pre></div>
 </div>
 </div>
-<p>And the value for this <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">argument</span></a> can be either a string path, as in the above examples, or a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of
-<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">string</span></code></a>  paths:</p>
+<p>And the value for this <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.13)"><span class="xref std std-term">argument</span></a> can be either a string path, as in the above examples, or a <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> of
+<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">string</span></code></a>  paths:</p>
 <div class="literal-block-wrapper docutils container" id="id5">
 <div class="code-block-caption"><span class="caption-text">Defining a route handler with multiple paths</span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
@@ -1629,28 +1633,28 @@ This <a class="reference external" href="https://docs.python.org/3/glossary.html
 </section>
 <section id="reserved-keyword-arguments">
 <span id="handler-function-kwargs"></span><h2>“reserved” keyword arguments<a class="headerlink" href="#reserved-keyword-arguments" title="Permalink to this heading">#</a></h2>
-<p>Route handler functions or methods access various data by declaring these as annotated function <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">kwargs</span></a>. The annotated
-<a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">kwargs</span></a> are inspected by Litestar and then injected into the request handler.</p>
-<p>The following sources can be accessed using annotated function <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">kwargs</span></a>:</p>
+<p>Route handler functions or methods access various data by declaring these as annotated function <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.13)"><span class="xref std std-term">kwargs</span></a>. The annotated
+<a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.13)"><span class="xref std std-term">kwargs</span></a> are inspected by Litestar and then injected into the request handler.</p>
+<p>The following sources can be accessed using annotated function <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.13)"><span class="xref std std-term">kwargs</span></a>:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="parameters.html#the-parameter-function"><span class="std std-ref">path, query, header, and cookie parameters</span></a></p></li>
 <li><p><a class="reference internal" href="../requests.html"><span class="doc">requests</span></a></p></li>
 <li><p><a class="reference internal" href="../dependency-injection.html"><span class="doc">injected dependencies</span></a></p></li>
 </ul>
-<p>Additionally, you can specify the following special <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">kwargs</span></a>,
+<p>Additionally, you can specify the following special <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.13)"><span class="xref std std-term">kwargs</span></a>,
 (known as “reserved keywords”):</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">cookies</span></code>: injects the request <a class="reference internal" href="../../reference/datastructures/index.html#litestar.datastructures.Cookie" title="litestar.datastructures.cookie.Cookie"><code class="xref py py-class docutils literal notranslate"><span class="pre">cookies</span></code></a> as a parsed
-<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dictionary</span></code></a>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">headers</span></code>: injects the request headers as a parsed <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dictionary</span></code></a>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">query</span></code> : injects the request <code class="docutils literal notranslate"><span class="pre">query_params</span></code> as a parsed <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dictionary</span></code></a>.</p></li>
+<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dictionary</span></code></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">headers</span></code>: injects the request headers as a parsed <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dictionary</span></code></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">query</span></code> : injects the request <code class="docutils literal notranslate"><span class="pre">query_params</span></code> as a parsed <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dictionary</span></code></a>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">request</span></code>: injects the <a class="reference internal" href="../../reference/connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance. Available only for <a class="reference internal" href="#http-route-handlers">HTTP route handlers</a></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">scope</span></code> : injects the ASGI scope <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dictionary</span></code></a>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scope</span></code> : injects the ASGI scope <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dictionary</span></code></a>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">socket</span></code>: injects the <a class="reference internal" href="../../reference/connection.html#litestar.connection.WebSocket" title="litestar.connection.WebSocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocket</span></code></a> instance. Available only for <a class="reference internal" href="#websocket-route-handlers">websocket route handlers</a></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">state</span></code> : injects a copy of the application <a class="reference internal" href="../../reference/datastructures/index.html#litestar.datastructures.State" title="litestar.datastructures.state.State"><code class="xref py py-class docutils literal notranslate"><span class="pre">State</span></code></a>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">body</span></code> : the raw request body. Available only for <a class="reference internal" href="#http-route-handlers">HTTP route handlers</a></p></li>
 </ul>
-<p>Note that if your parameters collide with any of the reserved <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">keyword arguments</span></a> above, you can
+<p>Note that if your parameters collide with any of the reserved <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.13)"><span class="xref std std-term">keyword arguments</span></a> above, you can
 <a class="reference internal" href="parameters.html#alternative-names-and-constraints"><span class="std std-ref">provide an alternative name</span></a>.</p>
 <p>For example:</p>
 <div class="sd-tab-set docutils">
@@ -1707,8 +1711,8 @@ Python 3.9+</label><div class="sd-tab-content docutils">
 </section>
 <section id="type-annotations">
 <h2>Type annotations<a class="headerlink" href="#type-annotations" title="Permalink to this heading">#</a></h2>
-<p>Litestar enforces strict <a class="reference external" href="https://docs.python.org/3/glossary.html#term-annotation" title="(in Python v3.12)"><span class="xref std std-term">type annotations</span></a>.
-Functions decorated by a route handler <strong>must</strong> have all their <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">arguments</span></a> and return
+<p>Litestar enforces strict <a class="reference external" href="https://docs.python.org/3/glossary.html#term-annotation" title="(in Python v3.13)"><span class="xref std std-term">type annotations</span></a>.
+Functions decorated by a route handler <strong>must</strong> have all their <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.13)"><span class="xref std std-term">arguments</span></a> and return
 value type annotated.</p>
 <p>If a type annotation is missing, an <a class="reference internal" href="../../reference/exceptions.html#litestar.exceptions.ImproperlyConfiguredException" title="litestar.exceptions.ImproperlyConfiguredException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ImproperlyConfiguredException</span></code></a> will be raised during the
 application boot-up process.</p>
@@ -1716,17 +1720,17 @@ application boot-up process.</p>
 <ol class="arabic simple">
 <li><p>To ensure best practices</p></li>
 <li><p>To ensure consistent OpenAPI schema generation</p></li>
-<li><p>To allow Litestar to compute the <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">arguments</span></a> required by a function during application bootstrap</p></li>
+<li><p>To allow Litestar to compute the <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.13)"><span class="xref std std-term">arguments</span></a> required by a function during application bootstrap</p></li>
 </ol>
 </section>
 <section id="http-route-handlers">
 <h2>HTTP route handlers<a class="headerlink" href="#http-route-handlers" title="Permalink to this heading">#</a></h2>
 <p>The most commonly used route handlers are those that handle HTTP requests and responses.
 These route handlers all inherit from the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.HTTPRouteHandler" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPRouteHandler</span></code></a> class, which is aliased as the
-<a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.12)"><span class="xref std std-term">decorator</span></a> called <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.route" title="litestar.handlers.route"><code class="xref py py-func docutils literal notranslate"><span class="pre">route()</span></code></a>:</p>
+<a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.13)"><span class="xref std std-term">decorator</span></a> called <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.route" title="litestar.handlers.route"><code class="xref py py-func docutils literal notranslate"><span class="pre">route()</span></code></a>:</p>
 <div class="literal-block-wrapper docutils container" id="id9">
 <div class="code-block-caption"><span class="caption-text">Defining a route handler by decorating a function with the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.route" title="litestar.handlers.route"><code class="xref py py-class docutils literal notranslate"><span class="pre">&#64;route()</span></code></a>
-<a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.12)"><span class="xref std std-term">decorator</span></a></span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
+<a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.13)"><span class="xref std std-term">decorator</span></a></span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">HttpMethod</span><span class="p">,</span> <span class="n">route</span>
 
 
@@ -1750,9 +1754,9 @@ thus the below code is equivalent to the one above:</p>
 </div>
 </div>
 <section id="semantic-handler-decorators">
-<h3>Semantic handler <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.12)"><span class="xref std std-term">decorators</span></a><a class="headerlink" href="#semantic-handler-decorators" title="Permalink to this heading">#</a></h3>
-<p>Litestar also includes “semantic” <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.12)"><span class="xref std std-term">decorators</span></a>, that is, <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.12)"><span class="xref std std-term">decorators</span></a> the pre-set
-the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.HTTPRouteHandler.params.http_method" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">http_method</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">kwarg</span></a> to a specific HTTP verb,
+<h3>Semantic handler <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.13)"><span class="xref std std-term">decorators</span></a><a class="headerlink" href="#semantic-handler-decorators" title="Permalink to this heading">#</a></h3>
+<p>Litestar also includes “semantic” <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.13)"><span class="xref std std-term">decorators</span></a>, that is, <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.13)"><span class="xref std std-term">decorators</span></a> the pre-set
+the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.HTTPRouteHandler.params.http_method" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">http_method</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.13)"><span class="xref std std-term">kwarg</span></a> to a specific HTTP verb,
 which correlates with their name:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../../reference/handlers.html#litestar.handlers.delete" title="litestar.handlers.delete"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;delete()</span></code></a></p></li>
@@ -1763,7 +1767,7 @@ which correlates with their name:</p>
 <li><p><a class="reference internal" href="../../reference/handlers.html#litestar.handlers.put" title="litestar.handlers.put"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;put()</span></code></a></p></li>
 </ul>
 <p>These are used exactly like <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.route" title="litestar.handlers.route"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;route()</span></code></a> with the sole exception that you cannot configure the
-<a class="reference internal" href="../../reference/handlers.html#litestar.handlers.HTTPRouteHandler.params.http_method" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">http_method</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">kwarg</span></a>:</p>
+<a class="reference internal" href="../../reference/handlers.html#litestar.handlers.HTTPRouteHandler.params.http_method" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">http_method</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.13)"><span class="xref std std-term">kwarg</span></a>:</p>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header">
 Click to see the predefined route handlers<div class="sd-summary-down docutils">
@@ -1772,10 +1776,10 @@ Click to see the predefined route handlers<div class="sd-summary-down docutils">
 <svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
 </summary><div class="sd-summary-content sd-card-body docutils">
 <div class="literal-block-wrapper docutils container" id="id11">
-<div class="code-block-caption"><span class="caption-text">Predefined <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.12)"><span class="xref std std-term">decorators</span></a> for HTTP route handlers</span><a class="headerlink" href="#id11" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Predefined <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.13)"><span class="xref std std-term">decorators</span></a> for HTTP route handlers</span><a class="headerlink" href="#id11" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">delete</span><span class="p">,</span> <span class="n">get</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">put</span><span class="p">,</span> <span class="n">head</span>
 <span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">DTOData</span>
-<span class="kn">from</span> <span class="nn">litestar.contrib.pydantic</span> <span class="kn">import</span> <span class="n">PydanticDTO</span>
+<span class="kn">from</span> <span class="nn">litestar.plugins.pydantic</span> <span class="kn">import</span> <span class="n">PydanticDTO</span>
 
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
 
@@ -1819,7 +1823,7 @@ Click to see the predefined route handlers<div class="sd-summary-down docutils">
 </div>
 </div>
 </div>
-</details><p>Although these <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.12)"><span class="xref std std-term">decorators</span></a> are merely subclasses of <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.HTTPRouteHandler" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPRouteHandler</span></code></a> that pre-set
+</details><p>Although these <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.13)"><span class="xref std std-term">decorators</span></a> are merely subclasses of <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.HTTPRouteHandler" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">HTTPRouteHandler</span></code></a> that pre-set
 the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.HTTPRouteHandler.params.http_method" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">http_method</span></code></a>, using <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.get" title="litestar.handlers.get"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;get()</span></code></a>,
 <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.patch" title="litestar.handlers.patch"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;patch()</span></code></a>, <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.put" title="litestar.handlers.put"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;put()</span></code></a>, <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.delete" title="litestar.handlers.delete"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;delete()</span></code></a>, or
 <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.post" title="litestar.handlers.post"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;post()</span></code></a> instead of <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.route" title="litestar.handlers.route"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;route()</span></code></a> makes the code clearer and simpler.</p>
@@ -1828,7 +1832,7 @@ is regarded as a distinct <a class="reference external" href="https://spec.opena
 operation should be distinguished by a unique <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.HTTPRouteHandler.params.operation_id" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">operation_id</span></code></a> and optimally
 also have a <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.HTTPRouteHandler.params.summary" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">summary</span></code></a> and
 <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.HTTPRouteHandler.params.description" title="litestar.handlers.HTTPRouteHandler"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">description</span></code></a> sections.</p>
-<p>As such, using the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.route" title="litestar.handlers.route"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;route()</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.12)"><span class="xref std std-term">decorator</span></a> is discouraged.
+<p>As such, using the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.route" title="litestar.handlers.route"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;route()</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.13)"><span class="xref std std-term">decorator</span></a> is discouraged.
 Instead, the preferred pattern is to share code using secondary class methods or by abstracting code to reusable
 functions.</p>
 </section>
@@ -1843,7 +1847,7 @@ and dealing with keeping it open, exceptions, client disconnects, and content ne
 <p>For a more high level approach to handling WebSockets, see <a class="reference internal" href="../websockets.html"><span class="doc">WebSockets</span></a></p>
 </div>
 <div class="literal-block-wrapper docutils container" id="id12">
-<div class="code-block-caption"><span class="caption-text">Using the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.WebsocketRouteHandler" title="litestar.handlers.WebsocketRouteHandler"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;websocket()</span></code></a> route handler <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.12)"><span class="xref std std-term">decorator</span></a></span><a class="headerlink" href="#id12" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Using the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.WebsocketRouteHandler" title="litestar.handlers.WebsocketRouteHandler"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;websocket()</span></code></a> route handler <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.13)"><span class="xref std std-term">decorator</span></a></span><a class="headerlink" href="#id12" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">websocket</span>
 
 
@@ -1855,7 +1859,7 @@ and dealing with keeping it open, exceptions, client disconnects, and content ne
 </pre></div>
 </div>
 </div>
-<p>The <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.WebsocketRouteHandler" title="litestar.handlers.WebsocketRouteHandler"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;websocket()</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.12)"><span class="xref std std-term">decorator</span></a> is an alias of the
+<p>The <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.WebsocketRouteHandler" title="litestar.handlers.WebsocketRouteHandler"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;websocket()</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.13)"><span class="xref std std-term">decorator</span></a> is an alias of the
 <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.WebsocketRouteHandler" title="litestar.handlers.WebsocketRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebsocketRouteHandler</span></code></a> class. Thus, the below code is equivalent to the one above:</p>
 <div class="literal-block-wrapper docutils container" id="id13">
 <div class="code-block-caption"><span class="caption-text">Using the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.WebsocketRouteHandler" title="litestar.handlers.WebsocketRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebsocketRouteHandler</span></code></a> class directly</span><a class="headerlink" href="#id13" title="Permalink to this code">#</a></div>
@@ -1873,9 +1877,9 @@ and dealing with keeping it open, exceptions, client disconnects, and content ne
 </div>
 <p>In difference to HTTP routes handlers, websocket handlers have the following requirements:</p>
 <ol class="arabic simple">
-<li><p>They <strong>must</strong> declare a <code class="docutils literal notranslate"><span class="pre">socket</span></code> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">kwarg</span></a>.</p></li>
-<li><p>They <strong>must</strong> have a return <a class="reference external" href="https://docs.python.org/3/glossary.html#term-annotation" title="(in Python v3.12)"><span class="xref std std-term">annotation</span></a> of <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p>They <strong>must</strong> be <a class="reference external" href="https://docs.python.org/3/reference/compound_stmts.html#async-def" title="(in Python v3.12)"><span class="xref std std-ref">async functions</span></a>.</p></li>
+<li><p>They <strong>must</strong> declare a <code class="docutils literal notranslate"><span class="pre">socket</span></code> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.13)"><span class="xref std std-term">kwarg</span></a>.</p></li>
+<li><p>They <strong>must</strong> have a return <a class="reference external" href="https://docs.python.org/3/glossary.html#term-annotation" title="(in Python v3.13)"><span class="xref std std-term">annotation</span></a> of <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p>They <strong>must</strong> be <a class="reference external" href="https://docs.python.org/3/reference/compound_stmts.html#async-def" title="(in Python v3.13)"><span class="xref std std-ref">async functions</span></a>.</p></li>
 </ol>
 <p>These requirements are enforced using inspection, and if any of them is unfulfilled an informative exception
 will be raised.</p>
@@ -1890,9 +1894,9 @@ will be raised.</p>
 </section>
 <section id="asgi-route-handlers">
 <h2>ASGI route handlers<a class="headerlink" href="#asgi-route-handlers" title="Permalink to this heading">#</a></h2>
-<p>If you need to write your own ASGI application, you can do so using the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.asgi" title="litestar.handlers.asgi"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;asgi()</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.12)"><span class="xref std std-term">decorator</span></a>:</p>
+<p>If you need to write your own ASGI application, you can do so using the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.asgi" title="litestar.handlers.asgi"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;asgi()</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.13)"><span class="xref std std-term">decorator</span></a>:</p>
 <div class="literal-block-wrapper docutils container" id="id14">
-<div class="code-block-caption"><span class="caption-text">Using the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.asgi" title="litestar.handlers.asgi"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;asgi()</span></code></a> route handler <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.12)"><span class="xref std std-term">decorator</span></a></span><a class="headerlink" href="#id14" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Using the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.asgi" title="litestar.handlers.asgi"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;asgi()</span></code></a> route handler <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.13)"><span class="xref std std-term">decorator</span></a></span><a class="headerlink" href="#id14" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.types</span> <span class="kn">import</span> <span class="n">Scope</span><span class="p">,</span> <span class="n">Receive</span><span class="p">,</span> <span class="n">Send</span>
 <span class="kn">from</span> <span class="nn">litestar.status_codes</span> <span class="kn">import</span> <span class="n">HTTP_400_BAD_REQUEST</span>
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Response</span><span class="p">,</span> <span class="n">asgi</span>
@@ -1912,7 +1916,7 @@ will be raised.</p>
 </pre></div>
 </div>
 </div>
-<p>Like other route handlers, the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.asgi" title="litestar.handlers.asgi"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;asgi()</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.12)"><span class="xref std std-term">decorator</span></a> is an alias of the
+<p>Like other route handlers, the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.asgi" title="litestar.handlers.asgi"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;asgi()</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.13)"><span class="xref std std-term">decorator</span></a> is an alias of the
 <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.ASGIRouteHandler" title="litestar.handlers.ASGIRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIRouteHandler</span></code></a> class. Thus, the code below is equivalent to the one above:</p>
 <div class="literal-block-wrapper docutils container" id="id15">
 <div class="code-block-caption"><span class="caption-text">Using the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.ASGIRouteHandler" title="litestar.handlers.ASGIRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIRouteHandler</span></code></a> class directly</span><a class="headerlink" href="#id15" title="Permalink to this code">#</a></div>
@@ -1939,7 +1943,7 @@ will be raised.</p>
 <section id="limitations-of-asgi-route-handlers">
 <h3>Limitations of ASGI route handlers<a class="headerlink" href="#limitations-of-asgi-route-handlers" title="Permalink to this heading">#</a></h3>
 <p>In difference to the other route handlers, the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.asgi" title="litestar.handlers.asgi"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;asgi()</span></code></a> route handler accepts only three
-<a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">kwargs</span></a> that <strong>must</strong> be defined:</p>
+<a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.13)"><span class="xref std std-term">kwargs</span></a> that <strong>must</strong> be defined:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">scope</span></code>, a mapping of values describing the ASGI connection. It always includes a <code class="docutils literal notranslate"><span class="pre">type</span></code> key, with the values being
 either <code class="docutils literal notranslate"><span class="pre">http</span></code> or <code class="docutils literal notranslate"><span class="pre">websocket</span></code>, and a <code class="docutils literal notranslate"><span class="pre">path</span></code> key. If the type is <code class="docutils literal notranslate"><span class="pre">http</span></code>, the scope dictionary will also include
@@ -1948,25 +1952,25 @@ a <code class="docutils literal notranslate"><span class="pre">method</span></co
 <li><p><code class="docutils literal notranslate"><span class="pre">send</span></code>, an injected function by which the ASGI application sends messages.</p></li>
 </ul>
 <p>You can read more about these in the <a class="reference external" href="https://asgi.readthedocs.io/en/latest/specs/main.html">ASGI specification</a>.</p>
-<p>Additionally, ASGI route handler functions <strong>must</strong> be <a class="reference external" href="https://docs.python.org/3/reference/compound_stmts.html#async-def" title="(in Python v3.12)"><span class="xref std std-ref">async functions</span></a>.
-This is enforced using inspection, and if the function is not an <a class="reference external" href="https://docs.python.org/3/reference/compound_stmts.html#async-def" title="(in Python v3.12)"><span class="xref std std-ref">async functions</span></a>,
+<p>Additionally, ASGI route handler functions <strong>must</strong> be <a class="reference external" href="https://docs.python.org/3/reference/compound_stmts.html#async-def" title="(in Python v3.13)"><span class="xref std std-ref">async functions</span></a>.
+This is enforced using inspection, and if the function is not an <a class="reference external" href="https://docs.python.org/3/reference/compound_stmts.html#async-def" title="(in Python v3.13)"><span class="xref std std-ref">async functions</span></a>,
 an informative exception will be raised.</p>
 <p>See the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.ASGIRouteHandler" title="litestar.handlers.asgi_handlers.ASGIRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGIRouteHandler</span> <span class="pre">API</span> <span class="pre">reference</span> <span class="pre">documentation</span></code></a> for full
-details on the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.asgi" title="litestar.handlers.asgi"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;asgi()</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.12)"><span class="xref std std-term">decorator</span></a> and the <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">kwargs</span></a> it accepts.</p>
+details on the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.asgi" title="litestar.handlers.asgi"><code class="xref py py-func docutils literal notranslate"><span class="pre">&#64;asgi()</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.13)"><span class="xref std std-term">decorator</span></a> and the <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.13)"><span class="xref std std-term">kwargs</span></a> it accepts.</p>
 </section>
 </section>
 <section id="route-handler-indexing">
 <h2>Route handler indexing<a class="headerlink" href="#route-handler-indexing" title="Permalink to this heading">#</a></h2>
-<p>You can provide a <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.BaseRouteHandler.params.name" title="litestar.handlers.base.BaseRouteHandler"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">name</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">kwarg</span></a> in all route handler
-<a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.12)"><span class="xref std std-term">decorators</span></a>. The value for this <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">kwarg</span></a> <strong>must be unique</strong>, otherwise
+<p>You can provide a <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.BaseRouteHandler.params.name" title="litestar.handlers.base.BaseRouteHandler"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">name</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.13)"><span class="xref std std-term">kwarg</span></a> in all route handler
+<a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.13)"><span class="xref std std-term">decorators</span></a>. The value for this <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.13)"><span class="xref std std-term">kwarg</span></a> <strong>must be unique</strong>, otherwise
 <a class="reference internal" href="../../reference/exceptions.html#litestar.exceptions.ImproperlyConfiguredException" title="litestar.exceptions.ImproperlyConfiguredException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ImproperlyConfiguredException</span></code></a> exception will be raised.</p>
 <p>The default value for <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.BaseRouteHandler.params.name" title="litestar.handlers.base.BaseRouteHandler"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">name</span></code></a> is value returned by the handler’s
-<a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#object.__str__" title="(in Python v3.12)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">__str__()</span></code></a> method which should be the full dotted path to the handler
+<a class="reference external" href="https://docs.python.org/3/reference/datamodel.html#object.__str__" title="(in Python v3.13)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">__str__()</span></code></a> method which should be the full dotted path to the handler
 (e.g., <code class="docutils literal notranslate"><span class="pre">app.controllers.projects.list</span></code> for <code class="docutils literal notranslate"><span class="pre">list</span></code> function residing in <code class="docutils literal notranslate"><span class="pre">app/controllers/projects.py</span></code> file).
 <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.BaseRouteHandler.params.name" title="litestar.handlers.base.BaseRouteHandler"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">name</span></code></a> can be used to dynamically retrieve (i.e. during runtime) a mapping
 containing the route handler instance and paths, also it can be used to build a URL path for that handler:</p>
 <div class="literal-block-wrapper docutils container" id="id16">
-<div class="code-block-caption"><span class="caption-text">Using the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.BaseRouteHandler.params.name" title="litestar.handlers.base.BaseRouteHandler"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">name</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">kwarg</span></a> to retrieve a route
+<div class="code-block-caption"><span class="caption-text">Using the <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.BaseRouteHandler.params.name" title="litestar.handlers.base.BaseRouteHandler"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">name</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.13)"><span class="xref std std-term">kwarg</span></a> to retrieve a route
 handler instance and paths</span><a class="headerlink" href="#id16" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">Request</span><span class="p">,</span> <span class="n">get</span>
 <span class="kn">from</span> <span class="nn">litestar.exceptions</span> <span class="kn">import</span> <span class="n">NotFoundException</span>
@@ -2012,13 +2016,13 @@ handler instance and paths</span><a class="headerlink" href="#id16" title="Perma
 </div>
 </div>
 <p><a class="reference internal" href="../../reference/app.html#litestar.app.Litestar.route_reverse" title="litestar.app.Litestar.route_reverse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">route_reverse()</span></code></a> will raise <a class="reference internal" href="../../reference/exceptions.html#litestar.exceptions.NoRouteMatchFoundException" title="litestar.exceptions.NoRouteMatchFoundException"><code class="xref py py-exc docutils literal notranslate"><span class="pre">NoRouteMatchFoundException</span></code></a> if route with given
-name was not found or if any of path <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.12)"><span class="xref std std-term">parameters</span></a> is missing or if any of passed path
-<a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.12)"><span class="xref std std-term">parameters</span></a> types do not match types in the respective route declaration.</p>
-<p>However, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> is accepted in place of <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.date" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">date</span></code></a>,
-<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.time" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">time</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">timedelta</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, and <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></a>
+name was not found or if any of path <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.13)"><span class="xref std std-term">parameters</span></a> is missing or if any of passed path
+<a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.13)"><span class="xref std std-term">parameters</span></a> types do not match types in the respective route declaration.</p>
+<p>However, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> is accepted in place of <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.date" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">date</span></code></a>,
+<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.time" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">time</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">timedelta</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>, and <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></a>
 parameters, so you can apply custom formatting and pass the result to <a class="reference internal" href="../../reference/app.html#litestar.app.Litestar.route_reverse" title="litestar.app.Litestar.route_reverse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">route_reverse()</span></code></a>.</p>
 <p>If handler has multiple paths attached to it <a class="reference internal" href="../../reference/app.html#litestar.app.Litestar.route_reverse" title="litestar.app.Litestar.route_reverse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">route_reverse()</span></code></a> will return the path that consumes
-the most number of <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">keyword arguments</span></a> passed to the function.</p>
+the most number of <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.13)"><span class="xref std std-term">keyword arguments</span></a> passed to the function.</p>
 <div class="literal-block-wrapper docutils container" id="id17">
 <div class="code-block-caption"><span class="caption-text">Using the <a class="reference internal" href="../../reference/app.html#litestar.app.Litestar.route_reverse" title="litestar.app.Litestar.route_reverse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">route_reverse()</span></code></a> method to build a URL path for a route handler</span><a class="headerlink" href="#id17" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">Request</span>
@@ -2046,9 +2050,9 @@ the most number of <a class="reference external" href="https://docs.python.org/3
 </pre></div>
 </div>
 </div>
-<p>When a handler is associated with multiple routes having identical path <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.12)"><span class="xref std std-term">parameters</span></a>
+<p>When a handler is associated with multiple routes having identical path <a class="reference external" href="https://docs.python.org/3/glossary.html#term-parameter" title="(in Python v3.13)"><span class="xref std std-term">parameters</span></a>
 (e.g., an indexed handler registered across multiple routers), the output of <a class="reference internal" href="../../reference/app.html#litestar.app.Litestar.route_reverse" title="litestar.app.Litestar.route_reverse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">route_reverse()</span></code></a> is
-unpredictable. This <a class="reference external" href="https://docs.python.org/3/glossary.html#term-callable" title="(in Python v3.12)"><span class="xref std std-term">callable</span></a> will return a formatted path; however, its selection may appear arbitrary.
+unpredictable. This <a class="reference external" href="https://docs.python.org/3/glossary.html#term-callable" title="(in Python v3.13)"><span class="xref std std-term">callable</span></a> will return a formatted path; however, its selection may appear arbitrary.
 Therefore, reversing URLs under these conditions is <strong>strongly</strong> advised against.</p>
 <p>If you have access to <a class="reference internal" href="../../reference/connection.html#litestar.connection.Request" title="litestar.connection.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> instance you can make reverse lookups using
 <a class="reference internal" href="../../reference/connection.html#litestar.connection.ASGIConnection.url_for" title="litestar.connection.ASGIConnection.url_for"><code class="xref py py-meth docutils literal notranslate"><span class="pre">url_for()</span></code></a> method which is similar to <a class="reference internal" href="../../reference/app.html#litestar.app.Litestar.route_reverse" title="litestar.app.Litestar.route_reverse"><code class="xref py py-meth docutils literal notranslate"><span class="pre">route_reverse()</span></code></a> but
@@ -2056,10 +2060,10 @@ returns an absolute URL.</p>
 </section>
 <section id="adding-arbitrary-metadata-to-handlers">
 <span id="handler-opts"></span><h2>Adding arbitrary metadata to handlers<a class="headerlink" href="#adding-arbitrary-metadata-to-handlers" title="Permalink to this heading">#</a></h2>
-<p>All route handler <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.12)"><span class="xref std std-term">decorators</span></a> accept a key called <code class="docutils literal notranslate"><span class="pre">opt</span></code> which accepts a <a class="reference internal" href="../../reference/datastructures/index.html#litestar.datastructures.Cookie.dict" title="litestar.datastructures.Cookie.dict"><span class="xref std std-term">dictionary</span></a>
+<p>All route handler <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.13)"><span class="xref std std-term">decorators</span></a> accept a key called <code class="docutils literal notranslate"><span class="pre">opt</span></code> which accepts a <a class="reference internal" href="../../reference/datastructures/index.html#litestar.datastructures.Cookie.dict" title="litestar.datastructures.Cookie.dict"><span class="xref std std-term">dictionary</span></a>
 of arbitrary values, e.g.,</p>
 <div class="literal-block-wrapper docutils container" id="id18">
-<div class="code-block-caption"><span class="caption-text">Adding arbitrary metadata to a route handler through the <code class="docutils literal notranslate"><span class="pre">opt</span></code> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">kwarg</span></a></span><a class="headerlink" href="#id18" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Adding arbitrary metadata to a route handler through the <code class="docutils literal notranslate"><span class="pre">opt</span></code> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.13)"><span class="xref std std-term">kwarg</span></a></span><a class="headerlink" href="#id18" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
 
 
@@ -2071,10 +2075,10 @@ of arbitrary values, e.g.,</p>
 <p>This dictionary can be accessed by a <a class="reference internal" href="../security/guards.html"><span class="doc">route guard</span></a>, or by accessing the
 <a class="reference internal" href="../../reference/connection.html#litestar.connection.ASGIConnection.route_handler" title="litestar.connection.ASGIConnection.route_handler"><code class="xref py py-attr docutils literal notranslate"><span class="pre">route_handler</span></code></a> property on a <a class="reference internal" href="../../reference/connection.html#litestar.connection.Request" title="litestar.connection.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a> object,
 or using the <a class="reference internal" href="../../reference/types.html#litestar.types.Scope" title="litestar.types.Scope"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASGI</span> <span class="pre">scope</span></code></a> object directly.</p>
-<p>Building on <code class="docutils literal notranslate"><span class="pre">opt</span></code>, you can pass any arbitrary <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">kwarg</span></a> to the route handler <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.12)"><span class="xref std std-term">decorator</span></a>,
+<p>Building on <code class="docutils literal notranslate"><span class="pre">opt</span></code>, you can pass any arbitrary <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.13)"><span class="xref std std-term">kwarg</span></a> to the route handler <a class="reference external" href="https://docs.python.org/3/glossary.html#term-decorator" title="(in Python v3.13)"><span class="xref std std-term">decorator</span></a>,
 and it will be automatically set as a key in the <code class="docutils literal notranslate"><span class="pre">opt</span></code> dictionary:</p>
 <div class="literal-block-wrapper docutils container" id="id19">
-<div class="code-block-caption"><span class="caption-text">Adding arbitrary metadata to a route handler through the <code class="docutils literal notranslate"><span class="pre">opt</span></code> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">kwarg</span></a></span><a class="headerlink" href="#id19" title="Permalink to this code">#</a></div>
+<div class="code-block-caption"><span class="caption-text">Adding arbitrary metadata to a route handler through the <code class="docutils literal notranslate"><span class="pre">opt</span></code> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.13)"><span class="xref std std-term">kwarg</span></a></span><a class="headerlink" href="#id19" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">get</span>
 
 
@@ -2093,7 +2097,7 @@ On specific route handlers, on a controller, a router, and even on the app insta
 If multiple layers define the same key, the value from the closest layer to the response handler will take precedence.</p>
 </section>
 <section id="signature-namespace">
-<span id="id1"></span><h2>Signature <a class="reference external" href="https://docs.python.org/3/glossary.html#term-namespace" title="(in Python v3.12)"><span class="xref std std-term">namespace</span></a><a class="headerlink" href="#signature-namespace" title="Permalink to this heading">#</a></h2>
+<span id="id1"></span><h2>Signature <a class="reference external" href="https://docs.python.org/3/glossary.html#term-namespace" title="(in Python v3.13)"><span class="xref std std-term">namespace</span></a><a class="headerlink" href="#signature-namespace" title="Permalink to this heading">#</a></h2>
 <p>Litestar produces a model of the arguments to any handler or dependency function, called a “signature model” which is
 used for parsing and validation of raw data to be injected into the function.</p>
 <p>Building the model requires inspection of the names and types of the signature parameters at runtime, and so it is
@@ -2138,7 +2142,7 @@ the module scope at runtime. We can address this on a case-by-case basis by sile
 every <a class="reference internal" href="../applications.html#layered-architecture"><span class="std std-ref">layer</span></a> of the application, as demonstrated in the following example:</p>
 <div class="literal-block-wrapper docutils container" id="id22">
 <div class="code-block-caption"><span class="caption-text">This module defines our domain type in some central place.</span><a class="headerlink" href="#id22" title="Permalink to this code">#</a></div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
 
@@ -2150,11 +2154,11 @@ every <a class="reference internal" href="../applications.html#layered-architect
 </pre></div>
 </div>
 </div>
-<p>This module defines our controller, note that we do not import <code class="docutils literal notranslate"><span class="pre">Model</span></code> into the runtime <a class="reference external" href="https://docs.python.org/3/glossary.html#term-namespace" title="(in Python v3.12)"><span class="xref std std-term">namespace</span></a>,
+<p>This module defines our controller, note that we do not import <code class="docutils literal notranslate"><span class="pre">Model</span></code> into the runtime <a class="reference external" href="https://docs.python.org/3/glossary.html#term-namespace" title="(in Python v3.13)"><span class="xref std std-term">namespace</span></a>,
 nor do we require any directives to control behavior of linters.</p>
 <div class="literal-block-wrapper docutils container" id="id23">
 <div class="code-block-caption"><span class="caption-text">This module defines our controller without importing <code class="docutils literal notranslate"><span class="pre">Model</span></code> into the runtime namespace.</span><a class="headerlink" href="#id23" title="Permalink to this code">#</a></div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
@@ -2175,7 +2179,7 @@ nor do we require any directives to control behavior of linters.</p>
 should reference our domain <code class="docutils literal notranslate"><span class="pre">Model</span></code> type.</p>
 <div class="literal-block-wrapper docutils container" id="id24">
 <div class="code-block-caption"><span class="caption-text">Ensuring the application knows how to resolve the <code class="docutils literal notranslate"><span class="pre">Model</span></code> type when parsing signatures.</span><a class="headerlink" href="#id24" title="Permalink to this code">#</a></div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
 
@@ -2194,8 +2198,8 @@ e.g., <code class="docutils literal notranslate"><span class="pre">app</span> <s
 <p>This enables import patterns like <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">domain.foo</span> <span class="pre">import</span> <span class="pre">Model</span> <span class="pre">as</span> <span class="pre">FooModel</span></code> inside <code class="docutils literal notranslate"><span class="pre">if</span> <span class="pre">TYPE_CHECKING</span></code> blocks.</p>
 </div>
 <section id="default-signature-namespace">
-<h3>Default signature <a class="reference external" href="https://docs.python.org/3/glossary.html#term-namespace" title="(in Python v3.12)"><span class="xref std std-term">namespace</span></a><a class="headerlink" href="#default-signature-namespace" title="Permalink to this heading">#</a></h3>
-<p>Litestar automatically adds some names to the signature <a class="reference external" href="https://docs.python.org/3/glossary.html#term-namespace" title="(in Python v3.12)"><span class="xref std std-term">namespace</span></a> when parsing signature models in
+<h3>Default signature <a class="reference external" href="https://docs.python.org/3/glossary.html#term-namespace" title="(in Python v3.13)"><span class="xref std std-term">namespace</span></a><a class="headerlink" href="#default-signature-namespace" title="Permalink to this heading">#</a></h3>
+<p>Litestar automatically adds some names to the signature <a class="reference external" href="https://docs.python.org/3/glossary.html#term-namespace" title="(in Python v3.13)"><span class="xref std std-term">namespace</span></a> when parsing signature models in
 order to support injection of the <a class="reference internal" href="#handler-function-kwargs"><span class="std std-ref">“reserved” keyword arguments</span></a>.</p>
 <p>These names are:</p>
 <ul class="simple">
@@ -2305,7 +2309,7 @@ required.</p>
 
   <p class="copyright">
     
-      © Copyright 2023, Litestar-Org.
+      © Copyright 2024, Litestar-Org.
       <br/>
     
   </p>

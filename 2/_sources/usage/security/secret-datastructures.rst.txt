@@ -14,6 +14,7 @@ Secret Parameters
 The following example demonstrates how to use :class:`~datastructures.SecretString` to accept a secret value as a parameter in a GET request:
 
 .. literalinclude:: /examples/datastructures/secrets/secret_header.py
+    :language: python
     :caption: Example of using SecretString for a Header Parameter
 
 .. note::
@@ -35,6 +36,7 @@ This example demonstrates use of a data structure with a :class:`~datastructures
 within the HTTP body of a request:
 
 .. literalinclude:: /examples/datastructures/secrets/secret_body.py
+    :language: python
     :caption: Example of using SecretString for a Request Body
 
 Security Considerations

@@ -1362,7 +1362,9 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../../reference/params.html">params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="../../reference/plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/flash_messages.html">flash</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/htmx.html">htmx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/problem_details.html">problem details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
 </ul>
@@ -1546,7 +1548,7 @@ document.write(`
 <p>At the root of every Litestar application there is an instance of the <a class="reference internal" href="../../reference/app.html#litestar.app.Litestar" title="litestar.app.Litestar"><code class="xref py py-class docutils literal notranslate"><span class="pre">Litestar</span></code></a> class,
 on which the root level <a class="reference internal" href="../../reference/controller.html#litestar.controller.Controller" title="litestar.controller.Controller"><code class="xref py py-class docutils literal notranslate"><span class="pre">controllers</span></code></a>, <a class="reference internal" href="../../reference/router.html#litestar.router.Router" title="litestar.router.Router"><code class="xref py py-class docutils literal notranslate"><span class="pre">routers</span></code></a>,
 and <a class="reference internal" href="../../reference/handlers.html#litestar.handlers.BaseRouteHandler" title="litestar.handlers.BaseRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">route</span> <span class="pre">handler</span></code></a> functions are registered using the
-<a class="reference internal" href="../../reference/config.html#litestar.config.app.AppConfig.params.route_handlers" title="litestar.config.app.AppConfig"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">route_handlers</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.12)"><span class="xref std std-term">kwarg</span></a>:</p>
+<a class="reference internal" href="../../reference/config.html#litestar.config.app.AppConfig.params.route_handlers" title="litestar.config.app.AppConfig"><code class="xref py py-paramref docutils literal notranslate"><span class="pre">route_handlers</span></code></a> <a class="reference external" href="https://docs.python.org/3/glossary.html#term-argument" title="(in Python v3.13)"><span class="xref std std-term">kwarg</span></a>:</p>
 <div class="literal-block-wrapper docutils container" id="id2">
 <div class="code-block-caption"><span class="caption-text">Registering route handlers</span><a class="headerlink" href="#id2" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
@@ -1675,7 +1677,7 @@ Click to see an example of registering a controller<div class="sd-summary-down d
 </summary><div class="sd-summary-content sd-card-body docutils">
 <div class="literal-block-wrapper docutils container" id="id7">
 <div class="code-block-caption"><span class="caption-text">Registering a <a class="reference internal" href="../../reference/controller.html#litestar.controller.Controller" title="litestar.controller.Controller"><code class="xref py py-class docutils literal notranslate"><span class="pre">Controller</span></code></a></span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.contrib.pydantic</span> <span class="kn">import</span> <span class="n">PydanticDTO</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar.plugins.pydantic</span> <span class="kn">import</span> <span class="n">PydanticDTO</span>
 <span class="kn">from</span> <span class="nn">litestar.controller</span> <span class="kn">import</span> <span class="n">Controller</span>
 <span class="kn">from</span> <span class="nn">litestar.dto</span> <span class="kn">import</span> <span class="n">DTOConfig</span><span class="p">,</span> <span class="n">DTOData</span>
 <span class="kn">from</span> <span class="nn">litestar.handlers</span> <span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">patch</span><span class="p">,</span> <span class="n">delete</span>
@@ -1796,7 +1798,7 @@ Click to see an example of mounting an ASGI app<div class="sd-summary-down docut
 </summary><div class="sd-summary-content sd-card-body docutils">
 <div class="literal-block-wrapper docutils container" id="id10">
 <div class="code-block-caption"><span class="caption-text">Mounting an ASGI App</span><a class="headerlink" href="#id10" title="Permalink to this code">#</a></div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">asgi</span>
@@ -1847,7 +1849,7 @@ Click to see an example of mounting a Starlette app<div class="sd-summary-down d
 </summary><div class="sd-summary-content sd-card-body docutils">
 <div class="literal-block-wrapper docutils container" id="id11">
 <div class="code-block-caption"><span class="caption-text">Mounting a Starlette App</span><a class="headerlink" href="#id11" title="Permalink to this code">#</a></div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span>
 
 <span class="kn">from</span> <span class="nn">starlette.applications</span> <span class="kn">import</span> <span class="n">Starlette</span>
 <span class="kn">from</span> <span class="nn">starlette.responses</span> <span class="kn">import</span> <span class="n">JSONResponse</span>
@@ -1985,7 +1987,7 @@ an indepth discussion of the pertinent code.</p>
 
   <p class="copyright">
     
-      © Copyright 2023, Litestar-Org.
+      © Copyright 2024, Litestar-Org.
       <br/>
     
   </p>
