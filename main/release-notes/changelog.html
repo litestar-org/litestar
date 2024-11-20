@@ -1535,6 +1535,101 @@ document.write(`
                   
   <section id="x-changelog">
 <h1>2.x Changelog<a class="headerlink" href="#x-changelog" title="Permalink to this heading">#</a></h1>
+<section id="2.13.0">
+<h2>2.13.0<a class="headerlink" href="#2.13.0" title="Permalink to this heading">#</a></h2>
+<strong>Released: </strong>2024-11-20<section id="2.13.0-feature">
+<h3>Features<a class="headerlink" href="#2.13.0-feature" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Add <code class="docutils literal notranslate"><span class="pre">request_max_body_size</span></code> layered parameter<a class="headerlink reference internal" href="#2.13.0-add" id="2.13.0-add">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Add a new <code class="docutils literal notranslate"><span class="pre">request_max_body_size</span></code> layered parameter, which limits the
+maximum size of a request body before returning a <code class="docutils literal notranslate"><span class="pre">413</span> <span class="pre">-</span> <span class="pre">Request</span> <span class="pre">Entity</span> <span class="pre">Too</span> <span class="pre">Large</span></code>.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="../usage/requests.html#limits"><span class="std std-ref">Limits</span></a></p>
+</div>
+<p>References: </p>
+</div>
+</dd>
+<dt>Send CSRF request header in OpenAPI plugins<a class="headerlink reference internal" href="#2.13.0-send csrf request header in openapi plugins" id="2.13.0-send csrf request header in openapi plugins">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Supported OpenAPI UI clients will extract the CSRF cookie value and attach it to
+the request headers if CSRF is enabled on the application.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3754">litestar-org/litestar#3754</a></span></p>
+</div>
+</dd>
+<dt>deprecate <cite>litestar.contrib.sqlalchemy</cite><a class="headerlink reference internal" href="#2.13.0-deprecate" id="2.13.0-deprecate">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Deprecate the <code class="docutils literal notranslate"><span class="pre">litestar.contrib.sqlalchemy</span></code> module in favor of <code class="docutils literal notranslate"><span class="pre">litestar.plugins.sqlalchemy</span></code></p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3755">litestar-org/litestar#3755</a></span></p>
+</div>
+</dd>
+<dt>implement <cite>HTMX</cite> plugin using <cite>litestar-htmx</cite><a class="headerlink reference internal" href="#2.13.0-implement" id="2.13.0-implement">#</a></dt><dd><div class="changelog-change docutils container">
+<p>This plugin migrates the HTMX integration to <code class="docutils literal notranslate"><span class="pre">litestar.plugins.htmx</span></code>.</p>
+<p>This logic has been moved to it’s own repository named <code class="docutils literal notranslate"><span class="pre">litestar-htmx</span></code></p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3837">litestar-org/litestar#3837</a></span></p>
+</div>
+</dd>
+<dt>Pydantic: honor <code class="docutils literal notranslate"><span class="pre">hide_input_in_errors</span></code> in throwing validation exceptions<a class="headerlink reference internal" href="#2.13.0-pydantic: honor" id="2.13.0-pydantic: honor">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Pydantic’s <code class="docutils literal notranslate"><span class="pre">BaseModel</span></code> supports configuration to hide data values when
+throwing exceptions, via setting <code class="docutils literal notranslate"><span class="pre">hide_input_in_errors</span></code> – see
+<a class="reference external" href="https://docs.pydantic.dev/2.0/api/config/#pydantic.config.ConfigDict.hide_input_in_errors">https://docs.pydantic.dev/2.0/api/config/#pydantic.config.ConfigDict.hide_input_in_errors</a>
+and <a class="reference external" href="https://docs.pydantic.dev/latest/usage/model_config/#hide-input-in-errors">https://docs.pydantic.dev/latest/usage/model_config/#hide-input-in-errors</a></p>
+<p>Litestar will now honour this setting</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3843">litestar-org/litestar#3843</a></span></p>
+</div>
+</dd>
+<dt>deprecate``litestar.contrib.pydantic``<a class="headerlink reference internal" href="#2.13.0-deprecate``litestar.contrib.pydantic``" id="2.13.0-deprecate``litestar.contrib.pydantic``">#</a></dt><dd><div class="changelog-change docutils container">
+<p>## Description</p>
+<p>Deprecate <code class="docutils literal notranslate"><span class="pre">litestar.contrib.pydantic</span></code> in favor of <code class="docutils literal notranslate"><span class="pre">litestar.plugins.pydantic</span></code></p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3787">litestar-org/litestar#3787</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3852">litestar-org/litestar#3852</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+<section id="2.13.0-bugfix">
+<h3>Bugfixes<a class="headerlink" href="#2.13.0-bugfix" title="Permalink to this heading">#</a></h3>
+<dl>
+<dt>Fix sign bug in rate limit middelware<a class="headerlink reference internal" href="#2.13.0-fix sign bug in rate limit middelware" id="2.13.0-fix sign bug in rate limit middelware">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug in the rate limit middleware, that would cause the response header
+fields <code class="docutils literal notranslate"><span class="pre">RateLimit-Remaining</span></code> and <code class="docutils literal notranslate"><span class="pre">RateLimit-Reset</span></code> to have negative values.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3776">litestar-org/litestar#3776</a></span></p>
+</div>
+</dd>
+<dt>OpenAPI: map JSONSchema spec naming convention to snake_case when names from <code class="docutils literal notranslate"><span class="pre">schema_extra</span></code> are not found<a class="headerlink reference internal" href="#2.13.0-openapi: map jsonschema spec naming convention to snake_case when names from" id="2.13.0-openapi: map jsonschema spec naming convention to snake_case when names from">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Address rejection of <code class="docutils literal notranslate"><span class="pre">schema_extra</span></code> values using JSONSchema spec-compliant
+key names by mapping between the relevant naming conventions.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3766">litestar-org/litestar#3766</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3767">litestar-org/litestar#3767</a></span></p>
+</div>
+</dd>
+<dt>Use correct path template for routes without path parameters<a class="headerlink reference internal" href="#2.13.0-use correct path template for routes without path parameters" id="2.13.0-use correct path template for routes without path parameters">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a but where, when using <code class="docutils literal notranslate"><span class="pre">PrometheusConfig.group_path=True</span></code>, the metrics
+exporter response content would ignore all paths with no path parameters.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3784">litestar-org/litestar#3784</a></span></p>
+</div>
+</dd>
+<dt>Fix a dangling anyio stream in <code class="docutils literal notranslate"><span class="pre">TestClient</span></code><a class="headerlink reference internal" href="#2.13.0-fix a dangling anyio stream in" id="2.13.0-fix a dangling anyio stream in">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a dangling anyio stream in <code class="docutils literal notranslate"><span class="pre">TestClient</span></code> that would cause a resource warning</p>
+<p>Closes #3834.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3834">litestar-org/litestar#3834</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3836">litestar-org/litestar#3836</a></span></p>
+</div>
+</dd>
+<dt>Fix bug in handling of missing <code class="docutils literal notranslate"><span class="pre">more_body</span></code> key in ASGI response<a class="headerlink reference internal" href="#2.13.0-fix bug in handling of missing" id="2.13.0-fix bug in handling of missing">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Some frameworks do not include the <code class="docutils literal notranslate"><span class="pre">more_body</span></code> key in the “http.response.body” ASGI event.
+According to the ASGI specification, this key should be set to <code class="docutils literal notranslate"><span class="pre">False</span></code> when
+there is no additional body content. Litestar expects <code class="docutils literal notranslate"><span class="pre">more_body</span></code> to be
+explicitly defined, but others might not.</p>
+<p>This leads to failures when an ASGI framework mounted on Litestar throws error
+if this key is missing.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3845">litestar-org/litestar#3845</a></span></p>
+</div>
+</dd>
+<dt>Fix duplicate <code class="docutils literal notranslate"><span class="pre">RateLimit-*</span></code> headers with caching<a class="headerlink reference internal" href="#2.13.0-fix duplicate" id="2.13.0-fix duplicate">#</a></dt><dd><div class="changelog-change docutils container">
+<p>Fix a bug where <code class="docutils literal notranslate"><span class="pre">RateLimitMiddleware</span></code> duplicate all <code class="docutils literal notranslate"><span class="pre">RateLimit-*</span></code> headers
+when handler cache is enabled.</p>
+<p>References: <span><a class="github reference external" href="https://github.com/litestar-org/litestar/issues/3625">litestar-org/litestar#3625</a></span>, <span><a class="github reference external" href="https://github.com/litestar-org/litestar/pull/3855">litestar-org/litestar#3855</a></span></p>
+</div>
+</dd>
+</dl>
+</section>
+</section>
 <section id="2.12.1">
 <h2>2.12.1<a class="headerlink" href="#2.12.1" title="Permalink to this heading">#</a></h2>
 <strong>Released: </strong>2024-09-21<section id="2.12.1-bugfix">
@@ -6657,6 +6752,11 @@ the time it takes to <code class="docutils literal notranslate"><span class="pre
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.13.0">2.13.0</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.13.0-feature">Features</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.13.0-bugfix">Bugfixes</a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#2.12.1">2.12.1</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#2.12.1-bugfix">Bugfixes</a></li>
 </ul>
