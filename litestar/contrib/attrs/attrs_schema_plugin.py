@@ -14,7 +14,7 @@ def __getattr__(attr_name: str) -> object:
 
         warn_deprecation(
             deprecated_name=f"litestar.contrib.attrs.attrs_schema_plugin.{attr_name}",
-            version="2.12.1",
+            version="2.13.0",
             kind="import",
             removal_in="3.0",
             info=f"importing {attr_name} from 'litestar.contrib.attrs.attrs_schema_plugin' is deprecated, please "
