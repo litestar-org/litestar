@@ -26,7 +26,7 @@ def test_resolve_request_max_body_size() -> None:
     assert router_handler.resolve_request_max_body_size() == 1
     assert app_handler.resolve_request_max_body_size() == 3
     assert (
-        next(r for r in app.routes if r.path == "/3").route_handler_map["POST"][0].resolve_request_max_body_size() == 2  # type: ignore[union-attr]
+        next(r for r in app.routes if r.path == "/3").route_handler_map["POST"].resolve_request_max_body_size() == 2  # type: ignore[union-attr]
     )
 
 
