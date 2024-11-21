@@ -212,7 +212,7 @@ class HTTPRoute(BaseRoute):
 
         cache_config = request.app.response_cache_config
         cache_key = (route_handler.cache_key_builder or cache_config.key_builder)(request)
-        store = cache_config.get_store_from_app(request.app)
+        store = cache_config.get_store_from_app(request.app, route_handler.cache_store)
 
         if not (cached_response_data := await store.get(key=cache_key)):
             return None

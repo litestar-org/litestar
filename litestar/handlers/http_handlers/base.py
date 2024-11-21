@@ -90,6 +90,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         "cache",
         "cache_control",
         "cache_key_builder",
+        "cache_store",
         "content_encoding",
         "content_media_type",
         "deprecated",
@@ -130,6 +131,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         cache: bool | int | type[CACHE_FOREVER] = False,
         cache_control: CacheControlHeader | None = None,
         cache_key_builder: CacheKeyBuilder | None = None,
+        cache_store: str | None = None,
         dependencies: Dependencies | None = None,
         dto: type[AbstractDTO] | None | EmptyType = Empty,
         etag: ETag | None = None,
@@ -189,6 +191,7 @@ class HTTPRouteHandler(BaseRouteHandler):
                 :class:`CacheControlHeader <.datastructures.CacheControlHeader>` that will be added to the response.
             cache_key_builder: A :class:`cache-key builder function <.types.CacheKeyBuilder>`. Allows for customization
                 of the cache key if caching is configured on the application level.
+            cache_store: A string to override the default cache namespace.
             dependencies: A string keyed mapping of dependency :class:`Provider <.di.Provide>` instances.
             dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for (de)serializing and
                 validation of request data.
@@ -271,6 +274,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.cache = cache
         self.cache_control = cache_control
         self.cache_key_builder = cache_key_builder
+        self.cache_store = cache_store
         self.etag = etag
         self.media_type: MediaType | str = media_type or ""
         self.request_class = request_class
