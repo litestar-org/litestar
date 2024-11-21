@@ -4,6 +4,116 @@
 =============
 
 
+.. changelog:: 2.13.0
+    :date: 2024-11-20
+
+    .. change:: Add ``request_max_body_size`` layered parameter
+        :type: feature
+
+        Add a new ``request_max_body_size`` layered parameter, which limits the
+        maximum size of a request body before returning a ``413 - Request Entity Too Large``.
+
+        .. seealso::
+            :ref:`usage/requests:limits`
+
+
+    .. change:: Send CSRF request header in OpenAPI plugins
+        :type: feature
+        :pr: 3754
+
+        Supported OpenAPI UI clients will extract the CSRF cookie value and attach it to
+        the request headers if CSRF is enabled on the application.
+
+    .. change:: deprecate `litestar.contrib.sqlalchemy`
+        :type: feature
+        :pr: 3755
+
+        Deprecate the ``litestar.contrib.sqlalchemy`` module in favor of ``litestar.plugins.sqlalchemy``
+
+
+    .. change:: implement `HTMX` plugin using `litestar-htmx`
+        :type: feature
+        :pr: 3837
+
+        This plugin migrates the HTMX integration to ``litestar.plugins.htmx``.
+
+        This logic has been moved to it's own repository named ``litestar-htmx``
+
+    .. change:: Pydantic: honor ``hide_input_in_errors`` in throwing validation exceptions
+        :type: feature
+        :pr: 3843
+
+        Pydantic's ``BaseModel`` supports configuration to hide data values when
+        throwing exceptions, via setting ``hide_input_in_errors`` -- see
+        https://docs.pydantic.dev/2.0/api/config/#pydantic.config.ConfigDict.hide_input_in_errors
+        and https://docs.pydantic.dev/latest/usage/model_config/#hide-input-in-errors
+
+        Litestar will now honour this setting
+
+    .. change:: deprecate``litestar.contrib.pydantic``
+        :type: feature
+        :pr: 3852
+        :issue: 3787
+
+        ## Description
+
+        Deprecate ``litestar.contrib.pydantic`` in favor of ``litestar.plugins.pydantic``
+
+
+    .. change:: Fix sign bug in rate limit middelware
+        :type: bugfix
+        :pr: 3776
+
+        Fix a bug in the rate limit middleware, that would cause the response header
+        fields ``RateLimit-Remaining`` and ``RateLimit-Reset`` to have negative values.
+
+
+    .. change:: OpenAPI: map JSONSchema spec naming convention to snake_case when names from ``schema_extra`` are not found
+        :type: bugfix
+        :pr: 3767
+        :issue: 3766
+
+        Address rejection of ``schema_extra`` values using JSONSchema spec-compliant
+        key names by mapping between the relevant naming conventions.
+
+    .. change:: Use correct path template for routes without path parameters
+        :type: bugfix
+        :pr: 3784
+
+        Fix a but where, when using ``PrometheusConfig.group_path=True``, the metrics
+        exporter response content would ignore all paths with no path parameters.
+
+    .. change:: Fix a dangling anyio stream in ``TestClient``
+        :type: bugfix
+        :pr: 3836
+        :issue: 3834
+
+        Fix a dangling anyio stream in ``TestClient`` that would cause a resource warning
+
+        Closes #3834.
+
+    .. change:: Fix bug in handling of missing ``more_body`` key in ASGI response
+        :type: bugfix
+        :pr: 3845
+
+        Some frameworks do not include the ``more_body`` key in the "http.response.body" ASGI event.
+        According to the ASGI specification, this key should be set to ``False`` when
+        there is no additional body content. Litestar expects ``more_body`` to be
+        explicitly defined, but others might not.
+
+        This leads to failures when an ASGI framework mounted on Litestar throws error
+        if this key is missing.
+
+
+    .. change:: Fix duplicate ``RateLimit-*`` headers with caching
+        :type: bugfix
+        :pr: 3855
+        :issue: 3625
+
+        Fix a bug where ``RateLimitMiddleware`` duplicate all ``RateLimit-*`` headers
+        when handler cache is enabled.
+
+
 .. changelog:: 2.12.1
     :date: 2024-09-21
 

@@ -1365,6 +1365,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="reference/plugins/flash_messages.html">flash</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/plugins/htmx.html">htmx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/plugins/problem_details.html">problem details</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/plugins/prometheus.html">prometheus</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/plugins/pydantic.html">pydantic</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/plugins/structlog.html">structlog</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/plugins/sqlalchemy.html">sqlalchemy</a></li>
@@ -2408,6 +2409,10 @@ document.write(`
 </li>
         <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsPlugin.__init__">(litestar.plugins.problem_details.ProblemDetailsPlugin method)</a>
 </li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusConfig.__init__">(litestar.plugins.prometheus.PrometheusConfig method)</a>
+</li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusMiddleware.__init__">(litestar.plugins.prometheus.PrometheusMiddleware method)</a>
+</li>
         <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticInitPlugin.__init__">(litestar.plugins.pydantic.PydanticInitPlugin method)</a>
 </li>
         <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticPlugin.__init__">(litestar.plugins.pydantic.PydanticPlugin method)</a>
@@ -2716,6 +2721,8 @@ document.write(`
 </li>
         <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.after_request">(litestar.openapi.OpenAPIController attribute)</a>
 </li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusController.after_request">(litestar.plugins.prometheus.PrometheusController attribute)</a>
+</li>
         <li><a href="reference/router.html#litestar.router.Router.params.after_request">(litestar.router.Router parameter)</a>
 </li>
         <li><a href="reference/static_files.html#litestar.static_files.create_static_files_router.params.after_request">(litestar.static_files.create_static_files_router parameter)</a>
@@ -2747,6 +2754,8 @@ document.write(`
         <li><a href="reference/handlers.html#litestar.handlers.put.params.after_response">(litestar.handlers.put parameter)</a>
 </li>
         <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.after_response">(litestar.openapi.OpenAPIController attribute)</a>
+</li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusController.after_response">(litestar.plugins.prometheus.PrometheusController attribute)</a>
 </li>
         <li><a href="reference/router.html#litestar.router.Router.params.after_response">(litestar.router.Router parameter)</a>
 </li>
@@ -2884,6 +2893,8 @@ document.write(`
 </li>
         <li><a href="reference/middleware/session/base.html#litestar.middleware.session.base.SessionMiddleware.params.app">(litestar.middleware.session.base.SessionMiddleware parameter)</a>
 </li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusMiddleware.params.app">(litestar.plugins.prometheus.PrometheusMiddleware parameter)</a>
+</li>
         <li><a href="reference/response/base.html#litestar.response.base.Response.to_asgi_response.params.app">(litestar.response.base.Response.to_asgi_response parameter)</a>
 </li>
         <li><a href="reference/response/file.html#litestar.response.file.File.to_asgi_response.params.app">(litestar.response.file.File.to_asgi_response parameter)</a>
@@ -2945,6 +2956,8 @@ document.write(`
         <li><a href="reference/security/index.html#litestar.security.AbstractSecurityConfig.on_app_init.params.app_config">(litestar.security.AbstractSecurityConfig.on_app_init parameter)</a>
 </li>
       </ul></li>
+      <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusConfig.app_name">app_name (litestar.plugins.prometheus.PrometheusConfig attribute)</a>
+</li>
       <li><a href="reference/config.html#litestar.config.app.AppConfig">AppConfig (class in litestar.config.app)</a>
 </li>
       <li><a href="reference/channels/plugin.html#litestar.channels.plugin.ChannelsPlugin.params.arbitrary_channels_allowed">arbitrary_channels_allowed (litestar.channels.plugin.ChannelsPlugin parameter)</a>
@@ -3264,6 +3277,8 @@ document.write(`
 </li>
         <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.before_request">(litestar.openapi.OpenAPIController attribute)</a>
 </li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusController.before_request">(litestar.plugins.prometheus.PrometheusController attribute)</a>
+</li>
         <li><a href="reference/router.html#litestar.router.Router.params.before_request">(litestar.router.Router parameter)</a>
 </li>
         <li><a href="reference/static_files.html#litestar.static_files.create_static_files_router.params.before_request">(litestar.static_files.create_static_files_router parameter)</a>
@@ -3335,6 +3350,8 @@ document.write(`
 </li>
       <li><a href="reference/config.html#litestar.config.compression.CompressionConfig.brotli_quality">brotli_quality (litestar.config.compression.CompressionConfig attribute)</a>
 </li>
+      <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusConfig.buckets">buckets (litestar.plugins.prometheus.PrometheusConfig attribute)</a>
+</li>
       <li><a href="reference/middleware/compression.html#litestar.middleware.compression.CompressionFacade.params.buffer">buffer (litestar.middleware.compression.CompressionFacade parameter)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.FileSystemProtocol.open.params.buffering">buffering (litestar.types.FileSystemProtocol.open parameter)</a>
@@ -3383,6 +3400,8 @@ document.write(`
         <li><a href="reference/handlers.html#litestar.handlers.put.params.cache_control">(litestar.handlers.put parameter)</a>
 </li>
         <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.cache_control">(litestar.openapi.OpenAPIController attribute)</a>
+</li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusController.cache_control">(litestar.plugins.prometheus.PrometheusController attribute)</a>
 </li>
         <li><a href="reference/router.html#litestar.router.Router.params.cache_control">(litestar.router.Router parameter)</a>
 </li>
@@ -3605,6 +3624,8 @@ document.write(`
         <li><a href="reference/plugins/flash_messages.html#litestar.plugins.flash.FlashPlugin.params.config">(litestar.plugins.flash.FlashPlugin parameter)</a>
 </li>
         <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXPlugin.params.config">(litestar.plugins.htmx.HTMXPlugin parameter)</a>
+</li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusMiddleware.params.config">(litestar.plugins.prometheus.PrometheusMiddleware parameter)</a>
 </li>
       </ul></li>
       <li><a href="reference/logging/config.html#litestar.logging.config.BaseLoggingConfig.configure">configure() (litestar.logging.config.BaseLoggingConfig method)</a>
@@ -4328,6 +4349,8 @@ document.write(`
 </li>
         <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.dependencies">(litestar.openapi.OpenAPIController attribute)</a>
 </li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusController.dependencies">(litestar.plugins.prometheus.PrometheusController attribute)</a>
+</li>
         <li><a href="reference/router.html#litestar.router.Router.params.dependencies">(litestar.router.Router parameter)</a>
 </li>
         <li><a href="reference/security/index.html#litestar.security.AbstractSecurityConfig.dependencies">(litestar.security.AbstractSecurityConfig attribute)</a>
@@ -4586,6 +4609,8 @@ document.write(`
 </li>
         <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.dto">(litestar.openapi.OpenAPIController attribute)</a>
 </li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusController.dto">(litestar.plugins.prometheus.PrometheusController attribute)</a>
+</li>
         <li><a href="reference/router.html#litestar.router.Router.params.dto">(litestar.router.Router parameter)</a>
 </li>
         <li><a href="reference/testing.html#litestar.testing.create_async_test_client.params.dto">(litestar.testing.create_async_test_client parameter)</a>
@@ -4788,6 +4813,8 @@ document.write(`
 </li>
         <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.etag">(litestar.openapi.OpenAPIController attribute)</a>
 </li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusController.etag">(litestar.plugins.prometheus.PrometheusController attribute)</a>
+</li>
         <li><a href="reference/response/base.html#litestar.response.base.Response.set_etag.params.etag">(litestar.response.base.Response.set_etag parameter)</a>
 </li>
         <li><a href="reference/response/index.html#litestar.response.File.params.etag">(litestar.response.File parameter)</a>
@@ -4936,6 +4963,8 @@ document.write(`
 </li>
         <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.exception_handlers">(litestar.openapi.OpenAPIController attribute)</a>
 </li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusController.exception_handlers">(litestar.plugins.prometheus.PrometheusController attribute)</a>
+</li>
         <li><a href="reference/router.html#litestar.router.Router.params.exception_handlers">(litestar.router.Router parameter)</a>
 </li>
         <li><a href="reference/static_files.html#litestar.static_files.create_static_files_router.params.exception_handlers">(litestar.static_files.create_static_files_router parameter)</a>
@@ -4991,6 +5020,8 @@ document.write(`
         <li><a href="reference/middleware/session/client_side.html#litestar.middleware.session.client_side.CookieBackendConfig.exclude">(litestar.middleware.session.client_side.CookieBackendConfig attribute)</a>
 </li>
         <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionConfig.exclude">(litestar.middleware.session.server_side.ServerSideSessionConfig attribute)</a>
+</li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusConfig.exclude">(litestar.plugins.prometheus.PrometheusConfig attribute)</a>
 </li>
         <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticInitPlugin.params.exclude">(litestar.plugins.pydantic.PydanticInitPlugin parameter)</a>
 </li>
@@ -5066,6 +5097,8 @@ document.write(`
 </li>
         <li><a href="reference/middleware/session/server_side.html#litestar.middleware.session.server_side.ServerSideSessionConfig.exclude_opt_key">(litestar.middleware.session.server_side.ServerSideSessionConfig attribute)</a>
 </li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusConfig.exclude_opt_key">(litestar.plugins.prometheus.PrometheusConfig attribute)</a>
+</li>
         <li><a href="reference/security/index.html#litestar.security.AbstractSecurityConfig.exclude_opt_key">(litestar.security.AbstractSecurityConfig attribute)</a>
 </li>
         <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTAuth.exclude_opt_key">(litestar.security.jwt.JWTAuth attribute)</a>
@@ -5083,6 +5116,8 @@ document.write(`
         <li><a href="reference/security/session_auth.html#litestar.security.session_auth.SessionAuth.exclude_opt_key">(litestar.security.session_auth.SessionAuth attribute)</a>
 </li>
       </ul></li>
+      <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusConfig.exclude_unhandled_paths">exclude_unhandled_paths (litestar.plugins.prometheus.PrometheusConfig attribute)</a>
+</li>
       <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticInitPlugin.params.exclude_unset">exclude_unset (litestar.plugins.pydantic.PydanticInitPlugin parameter)</a>
 
       <ul>
@@ -5091,9 +5126,13 @@ document.write(`
       </ul></li>
       <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryConfig.exclude_urls_env_key">exclude_urls_env_key (litestar.contrib.opentelemetry.OpenTelemetryConfig attribute)</a>
 </li>
+      <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusConfig.excluded_http_methods">excluded_http_methods (litestar.plugins.prometheus.PrometheusConfig attribute)</a>
+</li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.exclusive_maximum">exclusive_maximum (litestar.openapi.spec.Schema attribute)</a>
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.exclusive_minimum">exclusive_minimum (litestar.openapi.spec.Schema attribute)</a>
+</li>
+      <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusConfig.exemplars">exemplars (litestar.plugins.prometheus.PrometheusConfig attribute)</a>
 </li>
       <li><a href="reference/repository/abc.html#litestar.repository.abc.AbstractAsyncRepository.exists">exists() (litestar.repository.abc.AbstractAsyncRepository method)</a>
 
@@ -5661,10 +5700,10 @@ document.write(`
       </ul></li>
       <li><a href="reference/handlers.html#litestar.handlers.HTTPRouteHandler.get_response_handler">get_response_handler() (litestar.handlers.HTTPRouteHandler method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/router.html#litestar.router.Router.get_route_handler_map">get_route_handler_map() (litestar.router.Router class method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/controller.html#litestar.controller.Controller.get_route_handlers">get_route_handlers() (litestar.controller.Controller method)</a>
 </li>
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.get_schema_from_request">get_schema_from_request() (litestar.openapi.OpenAPIController static method)</a>
@@ -5729,6 +5768,8 @@ document.write(`
 </li>
       <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.RedocRenderPlugin.params.google_fonts">google_fonts (litestar.openapi.plugins.RedocRenderPlugin parameter)</a>
 </li>
+      <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusConfig.group_path">group_path (litestar.plugins.prometheus.PrometheusConfig attribute)</a>
+</li>
       <li><a href="reference/params.html#litestar.params.Body.params.gt">gt (litestar.params.Body parameter)</a>
 
       <ul>
@@ -5771,6 +5812,8 @@ document.write(`
         <li><a href="reference/handlers.html#litestar.handlers.WebsocketRouteHandler.params.guards">(litestar.handlers.WebsocketRouteHandler parameter)</a>
 </li>
         <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.guards">(litestar.openapi.OpenAPIController attribute)</a>
+</li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusController.guards">(litestar.plugins.prometheus.PrometheusController attribute)</a>
 </li>
         <li><a href="reference/router.html#litestar.router.Router.params.guards">(litestar.router.Router parameter)</a>
 </li>
@@ -6290,6 +6333,8 @@ document.write(`
 </li>
         <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.include_in_schema">(litestar.openapi.OpenAPIController attribute)</a>
 </li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusController.include_in_schema">(litestar.plugins.prometheus.PrometheusController attribute)</a>
+</li>
         <li><a href="reference/router.html#litestar.router.Router.params.include_in_schema">(litestar.router.Router parameter)</a>
 </li>
         <li><a href="reference/static_files.html#litestar.static_files.create_static_files_router.params.include_in_schema">(litestar.static_files.create_static_files_router parameter)</a>
@@ -6681,6 +6726,8 @@ document.write(`
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusConfig.labels">labels (litestar.plugins.prometheus.PrometheusConfig attribute)</a>
+</li>
       <li><a href="reference/params.html#litestar.params.Body.params.le">le (litestar.params.Body parameter)</a>
 
       <ul>
@@ -7130,8 +7177,6 @@ document.write(`
         <li><a href="reference/dto/config.html#module-litestar.dto.config">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     litestar.dto.data_structures
 
@@ -7139,6 +7184,8 @@ document.write(`
         <li><a href="reference/dto/data_structures.html#module-litestar.dto.data_structures">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     litestar.dto.dataclass_dto
 
@@ -7361,6 +7408,13 @@ document.write(`
 
       <ul>
         <li><a href="reference/plugins/problem_details.html#module-litestar.plugins.problem_details">module</a>
+</li>
+      </ul></li>
+      <li>
+    litestar.plugins.prometheus
+
+      <ul>
+        <li><a href="reference/plugins/prometheus.html#module-litestar.plugins.prometheus">module</a>
 </li>
       </ul></li>
       <li>
@@ -7881,6 +7935,10 @@ document.write(`
 </li>
         <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.middleware">(litestar.openapi.OpenAPIController attribute)</a>
 </li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusConfig.middleware">(litestar.plugins.prometheus.PrometheusConfig property)</a>
+</li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusController.middleware">(litestar.plugins.prometheus.PrometheusController attribute)</a>
+</li>
         <li><a href="reference/router.html#litestar.router.Router.params.middleware">(litestar.router.Router parameter)</a>
 </li>
         <li><a href="reference/security/index.html#litestar.security.AbstractSecurityConfig.middleware">(litestar.security.AbstractSecurityConfig property)</a>
@@ -7908,6 +7966,8 @@ document.write(`
         <li><a href="reference/middleware/logging.html#litestar.middleware.logging.LoggingMiddlewareConfig.middleware_class">(litestar.middleware.logging.LoggingMiddlewareConfig attribute)</a>
 </li>
         <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitConfig.middleware_class">(litestar.middleware.rate_limit.RateLimitConfig attribute)</a>
+</li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusConfig.middleware_class">(litestar.plugins.prometheus.PrometheusConfig attribute)</a>
 </li>
       </ul></li>
       <li><a href="reference/plugins/structlog.html#litestar.plugins.structlog.StructlogConfig.middleware_logging_config">middleware_logging_config (litestar.plugins.structlog.StructlogConfig attribute)</a>
@@ -7938,10 +7998,10 @@ document.write(`
       </ul></li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.min_properties">min_properties (litestar.openapi.spec.Schema attribute)</a>
 </li>
-      <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.minimum">minimum (litestar.openapi.spec.Schema attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.minimum">minimum (litestar.openapi.spec.Schema attribute)</a>
+</li>
       <li><a href="reference/config.html#litestar.config.compression.CompressionConfig.minimum_size">minimum_size (litestar.config.compression.CompressionConfig attribute)</a>
 </li>
       <li><a href="reference/exceptions.html#litestar.exceptions.MissingDependencyException">MissingDependencyException</a>
@@ -8119,6 +8179,8 @@ document.write(`
         <li><a href="reference/plugins/htmx.html#module-litestar.plugins.htmx">litestar.plugins.htmx</a>
 </li>
         <li><a href="reference/plugins/problem_details.html#module-litestar.plugins.problem_details">litestar.plugins.problem_details</a>
+</li>
+        <li><a href="reference/plugins/prometheus.html#module-litestar.plugins.prometheus">litestar.plugins.prometheus</a>
 </li>
         <li><a href="reference/plugins/pydantic.html#module-litestar.plugins.pydantic">litestar.plugins.pydantic</a>
 </li>
@@ -8529,12 +8591,12 @@ document.write(`
         <li><a href="reference/testing.html#litestar.testing.create_test_client.params.openapi_config">(litestar.testing.create_test_client parameter)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.openapi_controller">openapi_controller (litestar.openapi.OpenAPIConfig attribute)</a>
 </li>
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.openapi_router">openapi_router (litestar.openapi.OpenAPIConfig attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/app.html#litestar.app.Litestar.openapi_schema">openapi_schema (litestar.app.Litestar property)</a>
 
       <ul>
@@ -8588,6 +8650,8 @@ document.write(`
       <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPluginProtocol">OpenAPISchemaPluginProtocol (class in litestar.plugins)</a>
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OpenAPIType">OpenAPIType (class in litestar.openapi.spec)</a>
+</li>
+      <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusController.openmetrics_format">openmetrics_format (litestar.plugins.prometheus.PrometheusController attribute)</a>
 </li>
       <li><a href="reference/contrib/opentelemetry.html#litestar.contrib.opentelemetry.OpenTelemetryConfig">OpenTelemetryConfig (class in litestar.contrib.opentelemetry)</a>
 </li>
@@ -8672,6 +8736,8 @@ document.write(`
 </li>
         <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.opt">(litestar.openapi.OpenAPIController attribute)</a>
 </li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusController.opt">(litestar.plugins.prometheus.PrometheusController attribute)</a>
+</li>
         <li><a href="reference/router.html#litestar.router.Router.params.opt">(litestar.router.Router parameter)</a>
 </li>
         <li><a href="reference/static_files.html#litestar.static_files.create_static_files_router.params.opt">(litestar.static_files.create_static_files_router parameter)</a>
@@ -8703,6 +8769,8 @@ document.write(`
         <li><a href="reference/handlers.html#litestar.handlers.WebsocketListener.params.owner">(litestar.handlers.WebsocketListener parameter)</a>
 </li>
         <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.owner">(litestar.openapi.OpenAPIController attribute)</a>
+</li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusController.owner">(litestar.plugins.prometheus.PrometheusController attribute)</a>
 </li>
       </ul></li>
       <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.ownership_layers">ownership_layers (litestar.handlers.BaseRouteHandler property)</a>
@@ -8759,6 +8827,8 @@ document.write(`
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Operation.parameters">(litestar.openapi.spec.Operation attribute)</a>
 </li>
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.PathItem.parameters">(litestar.openapi.spec.PathItem attribute)</a>
+</li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusController.parameters">(litestar.plugins.prometheus.PrometheusController attribute)</a>
 </li>
         <li><a href="reference/router.html#litestar.router.Router.params.parameters">(litestar.router.Router parameter)</a>
 </li>
@@ -8875,6 +8945,8 @@ document.write(`
         <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.SwaggerRenderPlugin.params.path">(litestar.openapi.plugins.SwaggerRenderPlugin parameter)</a>
 </li>
         <li><a href="reference/openapi/plugins.html#litestar.openapi.plugins.YamlRenderPlugin.params.path">(litestar.openapi.plugins.YamlRenderPlugin parameter)</a>
+</li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusController.path">(litestar.plugins.prometheus.PrometheusController attribute)</a>
 </li>
         <li><a href="reference/response/base.html#litestar.response.base.Response.delete_cookie.params.path">(litestar.response.base.Response.delete_cookie parameter)</a>
 </li>
@@ -9030,7 +9102,11 @@ document.write(`
 </li>
       </ul></li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.XML.prefix">prefix (litestar.openapi.spec.XML attribute)</a>
+
+      <ul>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusConfig.prefix">(litestar.plugins.prometheus.PrometheusConfig attribute)</a>
 </li>
+      </ul></li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.prefix_items">prefix_items (litestar.openapi.spec.Schema attribute)</a>
 </li>
       <li><a href="reference/config.html#litestar.config.cors.CORSConfig.preflight_headers">preflight_headers (litestar.config.cors.CORSConfig property)</a>
@@ -9050,6 +9126,12 @@ document.write(`
       <li><a href="reference/plugins/problem_details.html#litestar.plugins.problem_details.ProblemDetailsPlugin">ProblemDetailsPlugin (class in litestar.plugins.problem_details)</a>
 </li>
       <li><a href="reference/logging/config.html#litestar.logging.config.StructLoggingConfig.processors">processors (litestar.logging.config.StructLoggingConfig attribute)</a>
+</li>
+      <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusConfig">PrometheusConfig (class in litestar.plugins.prometheus)</a>
+</li>
+      <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusController">PrometheusController (class in litestar.plugins.prometheus)</a>
+</li>
+      <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusMiddleware">PrometheusMiddleware (class in litestar.plugins.prometheus)</a>
 </li>
       <li><a href="reference/plugins/htmx.html#litestar.plugins.htmx.HTMXDetails.prompt">prompt (litestar.plugins.htmx.HTMXDetails property)</a>
 </li>
@@ -9558,6 +9640,8 @@ document.write(`
 </li>
         <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.request_class">(litestar.openapi.OpenAPIController attribute)</a>
 </li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusController.request_class">(litestar.plugins.prometheus.PrometheusController attribute)</a>
+</li>
         <li><a href="reference/router.html#litestar.router.Router.params.request_class">(litestar.router.Router parameter)</a>
 </li>
         <li><a href="reference/testing.html#litestar.testing.create_async_test_client.params.request_class">(litestar.testing.create_async_test_client parameter)</a>
@@ -9589,6 +9673,8 @@ document.write(`
         <li><a href="reference/handlers.html#litestar.handlers.put.params.request_max_body_size">(litestar.handlers.put parameter)</a>
 </li>
         <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.request_max_body_size">(litestar.openapi.OpenAPIController attribute)</a>
+</li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusController.request_max_body_size">(litestar.plugins.prometheus.PrometheusController attribute)</a>
 </li>
         <li><a href="reference/router.html#litestar.router.Router.params.request_max_body_size">(litestar.router.Router parameter)</a>
 </li>
@@ -9744,6 +9830,8 @@ document.write(`
 </li>
         <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.response_class">(litestar.openapi.OpenAPIController attribute)</a>
 </li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusController.response_class">(litestar.plugins.prometheus.PrometheusController attribute)</a>
+</li>
         <li><a href="reference/router.html#litestar.router.Router.params.response_class">(litestar.router.Router parameter)</a>
 </li>
         <li><a href="reference/testing.html#litestar.testing.create_async_test_client.params.response_class">(litestar.testing.create_async_test_client parameter)</a>
@@ -9773,6 +9861,8 @@ document.write(`
         <li><a href="reference/handlers.html#litestar.handlers.put.params.response_cookies">(litestar.handlers.put parameter)</a>
 </li>
         <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.response_cookies">(litestar.openapi.OpenAPIController attribute)</a>
+</li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusController.response_cookies">(litestar.plugins.prometheus.PrometheusController attribute)</a>
 </li>
         <li><a href="reference/router.html#litestar.router.Router.params.response_cookies">(litestar.router.Router parameter)</a>
 </li>
@@ -9821,6 +9911,8 @@ document.write(`
         <li><a href="reference/handlers.html#litestar.handlers.put.params.response_headers">(litestar.handlers.put parameter)</a>
 </li>
         <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.response_headers">(litestar.openapi.OpenAPIController attribute)</a>
+</li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusController.response_headers">(litestar.plugins.prometheus.PrometheusController attribute)</a>
 </li>
         <li><a href="reference/router.html#litestar.router.Router.params.response_headers">(litestar.router.Router parameter)</a>
 </li>
@@ -9955,6 +10047,8 @@ document.write(`
         <li><a href="reference/handlers.html#litestar.handlers.WebsocketListenerRouteHandler.params.return_dto">(litestar.handlers.WebsocketListenerRouteHandler parameter)</a>
 </li>
         <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.return_dto">(litestar.openapi.OpenAPIController attribute)</a>
+</li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusController.return_dto">(litestar.plugins.prometheus.PrometheusController attribute)</a>
 </li>
         <li><a href="reference/router.html#litestar.router.Router.params.return_dto">(litestar.router.Router parameter)</a>
 </li>
@@ -10243,6 +10337,8 @@ document.write(`
 </li>
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OAuthFlow.scopes">(litestar.openapi.spec.OAuthFlow attribute)</a>
 </li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusConfig.scopes">(litestar.plugins.prometheus.PrometheusConfig attribute)</a>
+</li>
         <li><a href="reference/security/index.html#litestar.security.AbstractSecurityConfig.scopes">(litestar.security.AbstractSecurityConfig attribute)</a>
 </li>
         <li><a href="reference/security/jwt.html#litestar.security.jwt.JWTAuth.scopes">(litestar.security.jwt.JWTAuth attribute)</a>
@@ -10336,6 +10432,8 @@ document.write(`
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.OpenAPI.security">(litestar.openapi.spec.OpenAPI attribute)</a>
 </li>
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Operation.security">(litestar.openapi.spec.Operation attribute)</a>
+</li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusController.security">(litestar.plugins.prometheus.PrometheusController attribute)</a>
 </li>
         <li><a href="reference/router.html#litestar.router.Router.params.security">(litestar.router.Router parameter)</a>
 </li>
@@ -10714,6 +10812,8 @@ document.write(`
 </li>
         <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.signature_namespace">(litestar.openapi.OpenAPIController attribute)</a>
 </li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusController.signature_namespace">(litestar.plugins.prometheus.PrometheusController attribute)</a>
+</li>
         <li><a href="reference/router.html#litestar.router.Router.params.signature_namespace">(litestar.router.Router parameter)</a>
 </li>
         <li><a href="reference/testing.html#litestar.testing.create_async_test_client.params.signature_namespace">(litestar.testing.create_async_test_client parameter)</a>
@@ -10731,6 +10831,8 @@ document.write(`
         <li><a href="reference/handlers.html#litestar.handlers.BaseRouteHandler.params.signature_types">(litestar.handlers.BaseRouteHandler parameter)</a>
 </li>
         <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.signature_types">(litestar.openapi.OpenAPIController attribute)</a>
+</li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusController.signature_types">(litestar.plugins.prometheus.PrometheusController attribute)</a>
 </li>
         <li><a href="reference/router.html#litestar.router.Router.params.signature_types">(litestar.router.Router parameter)</a>
 </li>
@@ -11190,6 +11292,8 @@ document.write(`
 </li>
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Operation.tags">(litestar.openapi.spec.Operation attribute)</a>
 </li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusController.tags">(litestar.plugins.prometheus.PrometheusController attribute)</a>
+</li>
         <li><a href="reference/router.html#litestar.router.Router.params.tags">(litestar.router.Router parameter)</a>
 </li>
         <li><a href="reference/static_files.html#litestar.static_files.create_static_files_router.params.tags">(litestar.static_files.create_static_files_router parameter)</a>
@@ -11554,6 +11658,8 @@ document.write(`
 </li>
         <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.type_decoders">(litestar.openapi.OpenAPIController attribute)</a>
 </li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusController.type_decoders">(litestar.plugins.prometheus.PrometheusController attribute)</a>
+</li>
         <li><a href="reference/router.html#litestar.router.Router.params.type_decoders">(litestar.router.Router parameter)</a>
 </li>
         <li><a href="reference/serialization.html#litestar.serialization.decode_json.params.type_decoders">(litestar.serialization.decode_json parameter)</a>
@@ -11597,6 +11703,8 @@ document.write(`
         <li><a href="reference/handlers.html#litestar.handlers.WebsocketRouteHandler.params.type_encoders">(litestar.handlers.WebsocketRouteHandler parameter)</a>
 </li>
         <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.type_encoders">(litestar.openapi.OpenAPIController attribute)</a>
+</li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusController.type_encoders">(litestar.plugins.prometheus.PrometheusController attribute)</a>
 </li>
         <li><a href="reference/response/base.html#litestar.response.base.Response.params.type_encoders">(litestar.response.base.Response parameter)</a>
 </li>
@@ -11945,6 +12053,8 @@ document.write(`
         <li><a href="reference/handlers.html#litestar.handlers.WebsocketRouteHandler.params.websocket_class">(litestar.handlers.WebsocketRouteHandler parameter)</a>
 </li>
         <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIController.websocket_class">(litestar.openapi.OpenAPIController attribute)</a>
+</li>
+        <li><a href="reference/plugins/prometheus.html#litestar.plugins.prometheus.PrometheusController.websocket_class">(litestar.plugins.prometheus.PrometheusController attribute)</a>
 </li>
         <li><a href="reference/router.html#litestar.router.Router.params.websocket_class">(litestar.router.Router parameter)</a>
 </li>
