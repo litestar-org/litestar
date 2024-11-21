@@ -170,6 +170,7 @@ async def test_non_default_store_name(mock: MagicMock) -> None:
 
     assert await app.stores.get("some_store").exists("GET/")
 
+
 async def test_override_default_store_name(mock: MagicMock) -> None:
     @get(cache=True, cache_store="some_store")
     def handler() -> str:
@@ -189,6 +190,7 @@ async def test_override_default_store_name(mock: MagicMock) -> None:
         assert mock.call_count == 1
 
     assert await app.stores.get("some_store").exists("GET/")
+
 
 async def test_with_stores(store: Store, mock: MagicMock) -> None:
     @get(cache=True)
