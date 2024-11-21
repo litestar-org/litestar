@@ -78,7 +78,6 @@ Twitter = "https://twitter.com/LitestarAPI"
 [project.optional-dependencies]
 annotated-types = ["annotated-types"]
 attrs = ["attrs"]
-htmx = ["litestar-htmx>=0.3.0"]
 brotli = ["brotli"]
 cli = ["jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0; sys_platform != 'win32'"]
 cryptography = ["cryptography"]
