@@ -1,7 +1,7 @@
 from typing import Any, Dict
 
 from litestar import Litestar, Request
-from litestar.contrib.prometheus import PrometheusConfig, PrometheusController
+from litestar.plugins.prometheus import PrometheusConfig, PrometheusController
 
 
 # We can modify the path of our custom handler and override the metrics format by subclassing the PrometheusController.
@@ -38,7 +38,7 @@ prometheus_config = PrometheusConfig(
     app_name="litestar-example",
     prefix="litestar",
     labels=extra_labels,
-    buckets=buckets,
+    buckets=buckets,  # pyright: ignore[reportArgumentType]
     exemplars=custom_exemplar,
     excluded_http_methods=["POST"],
 )
