@@ -1362,6 +1362,7 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="reference/pagination.html">pagination</a></li>
 <li class="toctree-l2"><a class="reference internal" href="reference/params.html">params</a></li>
 <li class="toctree-l2 has-children"><a class="reference internal" href="reference/plugins/index.html">plugins</a><input class="toctree-checkbox" id="toctree-checkbox-22" name="toctree-checkbox-22" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-22"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/plugins/attrs.html">attrs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/plugins/flash_messages.html">flash</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/plugins/htmx.html">htmx</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reference/plugins/problem_details.html">problem details</a></li>
@@ -2847,6 +2848,8 @@ document.write(`
       <ul>
         <li><a href="reference/params.html#litestar.params.ParameterKwarg.annotation">(litestar.params.ParameterKwarg attribute)</a>
 </li>
+        <li><a href="reference/plugins/attrs.html#litestar.plugins.attrs.is_attrs_class.params.annotation">(litestar.plugins.attrs.is_attrs_class parameter)</a>
+</li>
         <li><a href="reference/typing.html#litestar.typing.FieldDefinition.annotation">(litestar.typing.FieldDefinition attribute)</a>
 </li>
         <li><a href="reference/typing.html#litestar.typing.FieldDefinition.from_annotation.params.annotation">(litestar.typing.FieldDefinition.from_annotation parameter)</a>
@@ -3007,6 +3010,8 @@ document.write(`
       <li><a href="reference/testing.html#litestar.testing.AsyncTestClient">AsyncTestClient (class in litestar.testing)</a>
 </li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.XML.attribute">attribute (litestar.openapi.spec.XML attribute)</a>
+</li>
+      <li><a href="reference/plugins/attrs.html#litestar.plugins.attrs.AttrsSchemaPlugin">AttrsSchemaPlugin (class in litestar.plugins.attrs)</a>
 </li>
       <li><a href="reference/security/jwt.html#litestar.security.jwt.Token.aud">aud (litestar.security.jwt.Token attribute)</a>
 </li>
@@ -5379,6 +5384,8 @@ document.write(`
 </li>
         <li><a href="reference/dto/msgspec_dto.html#litestar.dto.msgspec_dto.MsgspecDTO.detect_nested_field.params.field_definition">(litestar.dto.msgspec_dto.MsgspecDTO.detect_nested_field parameter)</a>
 </li>
+        <li><a href="reference/plugins/attrs.html#litestar.plugins.attrs.AttrsSchemaPlugin.to_openapi_schema.params.field_definition">(litestar.plugins.attrs.AttrsSchemaPlugin.to_openapi_schema parameter)</a>
+</li>
         <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin.is_plugin_supported_field.params.field_definition">(litestar.plugins.OpenAPISchemaPlugin.is_plugin_supported_field parameter)</a>
 </li>
         <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema.params.field_definition">(litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema parameter)</a>
@@ -5444,6 +5451,8 @@ document.write(`
       </ul></li>
       <li><a href="reference/types.html#litestar.types.FileInfo">FileInfo (class in litestar.types)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/datastructures/index.html#litestar.datastructures.UploadFile.params.filename">filename (litestar.datastructures.UploadFile parameter)</a>
 
       <ul>
@@ -5454,8 +5463,6 @@ document.write(`
         <li><a href="reference/response/file.html#litestar.response.file.File.params.filename">(litestar.response.file.File parameter)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/stores/file.html#litestar.stores.file.FileStore">FileStore (class in litestar.stores.file)</a>
 </li>
       <li><a href="reference/types.html#litestar.types.FileSystemProtocol">FileSystemProtocol (class in litestar.types)</a>
@@ -6392,6 +6399,8 @@ document.write(`
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_any">is_any (litestar.typing.FieldDefinition property)</a>
 </li>
+      <li><a href="reference/plugins/attrs.html#litestar.plugins.attrs.is_attrs_class">is_attrs_class() (in module litestar.plugins.attrs)</a>
+</li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_collection">is_collection (litestar.typing.FieldDefinition property)</a>
 </li>
       <li><a href="reference/typing.html#litestar.typing.FieldDefinition.is_const">is_const (litestar.typing.FieldDefinition property)</a>
@@ -6466,9 +6475,11 @@ document.write(`
 </li>
       <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin.is_plugin_supported_field">is_plugin_supported_field() (litestar.plugins.OpenAPISchemaPlugin method)</a>
 </li>
-      <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin.is_plugin_supported_type">is_plugin_supported_type() (litestar.plugins.OpenAPISchemaPlugin static method)</a>
+      <li><a href="reference/plugins/attrs.html#litestar.plugins.attrs.AttrsSchemaPlugin.is_plugin_supported_type">is_plugin_supported_type() (litestar.plugins.attrs.AttrsSchemaPlugin static method)</a>
 
       <ul>
+        <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin.is_plugin_supported_type">(litestar.plugins.OpenAPISchemaPlugin static method)</a>
+</li>
         <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPluginProtocol.is_plugin_supported_type">(litestar.plugins.OpenAPISchemaPluginProtocol static method)</a>
 </li>
         <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticSchemaPlugin.is_plugin_supported_type">(litestar.plugins.pydantic.PydanticSchemaPlugin static method)</a>
@@ -7390,6 +7401,13 @@ document.write(`
 </li>
       </ul></li>
       <li>
+    litestar.plugins.attrs
+
+      <ul>
+        <li><a href="reference/plugins/attrs.html#module-litestar.plugins.attrs">module</a>
+</li>
+      </ul></li>
+      <li>
     litestar.plugins.flash
 
       <ul>
@@ -7998,10 +8016,10 @@ document.write(`
       </ul></li>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.min_properties">min_properties (litestar.openapi.spec.Schema attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Schema.minimum">minimum (litestar.openapi.spec.Schema attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/config.html#litestar.config.compression.CompressionConfig.minimum_size">minimum_size (litestar.config.compression.CompressionConfig attribute)</a>
 </li>
       <li><a href="reference/exceptions.html#litestar.exceptions.MissingDependencyException">MissingDependencyException</a>
@@ -8173,6 +8191,8 @@ document.write(`
         <li><a href="reference/params.html#module-litestar.params">litestar.params</a>
 </li>
         <li><a href="reference/plugins/index.html#module-litestar.plugins">litestar.plugins</a>
+</li>
+        <li><a href="reference/plugins/attrs.html#module-litestar.plugins.attrs">litestar.plugins.attrs</a>
 </li>
         <li><a href="reference/plugins/flash_messages.html#module-litestar.plugins.flash">litestar.plugins.flash</a>
 </li>
@@ -10215,6 +10235,8 @@ document.write(`
       <li><a href="reference/dto/base_dto.html#litestar.dto.base_dto.AbstractDTO.create_openapi_schema.params.schema_creator">schema_creator (litestar.dto.base_dto.AbstractDTO.create_openapi_schema parameter)</a>
 
       <ul>
+        <li><a href="reference/plugins/attrs.html#litestar.plugins.attrs.AttrsSchemaPlugin.to_openapi_schema.params.schema_creator">(litestar.plugins.attrs.AttrsSchemaPlugin.to_openapi_schema parameter)</a>
+</li>
         <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema.params.schema_creator">(litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema parameter)</a>
 </li>
         <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticSchemaPlugin.for_pydantic_model.params.schema_creator">(litestar.plugins.pydantic.PydanticSchemaPlugin.for_pydantic_model parameter)</a>
@@ -10715,10 +10737,10 @@ document.write(`
         <li><a href="reference/stores/redis.html#litestar.stores.redis.RedisStore.set">(litestar.stores.redis.RedisStore method)</a>
 </li>
       </ul></li>
-      <li><a href="reference/concurrency.html#litestar.concurrency.set_asyncio_executor">set_asyncio_executor() (in module litestar.concurrency)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/concurrency.html#litestar.concurrency.set_asyncio_executor">set_asyncio_executor() (in module litestar.concurrency)</a>
+</li>
       <li><a href="reference/middleware/rate_limit.html#litestar.middleware.rate_limit.RateLimitMiddleware.set_cached_history">set_cached_history() (litestar.middleware.rate_limit.RateLimitMiddleware method)</a>
 </li>
       <li><a href="reference/response/base.html#litestar.response.base.Response.set_cookie">set_cookie() (litestar.response.base.Response method)</a>
@@ -11468,6 +11490,8 @@ document.write(`
       <li><a href="reference/openapi/openapi.html#litestar.openapi.OpenAPIConfig.to_openapi_schema">to_openapi_schema() (litestar.openapi.OpenAPIConfig method)</a>
 
       <ul>
+        <li><a href="reference/plugins/attrs.html#litestar.plugins.attrs.AttrsSchemaPlugin.to_openapi_schema">(litestar.plugins.attrs.AttrsSchemaPlugin method)</a>
+</li>
         <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema">(litestar.plugins.OpenAPISchemaPluginProtocol method)</a>
 </li>
         <li><a href="reference/plugins/pydantic.html#litestar.plugins.pydantic.PydanticSchemaPlugin.to_openapi_schema">(litestar.plugins.pydantic.PydanticSchemaPlugin method)</a>
@@ -11923,6 +11947,8 @@ document.write(`
         <li><a href="reference/middleware/logging.html#litestar.middleware.logging.LoggingMiddlewareConfig.__post_init__.params.value">(litestar.middleware.logging.LoggingMiddlewareConfig.__post_init__ parameter)</a>
 </li>
         <li><a href="reference/openapi/spec.html#litestar.openapi.spec.Example.value">(litestar.openapi.spec.Example attribute)</a>
+</li>
+        <li><a href="reference/plugins/attrs.html#litestar.plugins.attrs.AttrsSchemaPlugin.is_plugin_supported_type.params.value">(litestar.plugins.attrs.AttrsSchemaPlugin.is_plugin_supported_type parameter)</a>
 </li>
         <li><a href="reference/plugins/index.html#litestar.plugins.OpenAPISchemaPlugin.is_plugin_supported_type.params.value">(litestar.plugins.OpenAPISchemaPlugin.is_plugin_supported_type parameter)</a>
 </li>
