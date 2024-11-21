@@ -202,6 +202,8 @@ nitpick_ignore = [
     (PY_CLASS, "litestar.contrib.pydantic.PydanticDTO"),
     (PY_CLASS, "litestar.contrib.pydantic.PydanticPlugin"),
     (PY_CLASS, "typing.Self"),
+    (PY_CLASS, "attr.AttrsInstance"),
+    (PY_CLASS, "typing_extensions.TypeGuard"),
 ]
 
 nitpick_ignore_regex = [
