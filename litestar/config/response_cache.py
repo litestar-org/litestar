@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Callable, Optional, final
+from typing import TYPE_CHECKING, Any, Callable, final
 from urllib.parse import urlencode
 
 from litestar.status_codes import (
@@ -76,6 +76,6 @@ class ResponseCacheConfig:
     """A callable that receives connection scope and a status code, and returns a boolean indicating whether the
     response should be cached."""
 
-    def get_store_from_app(self, app: Litestar, cache_store: Optional[str] = None) -> Store:
+    def get_store_from_app(self, app: Litestar, cache_store: str | None = None) -> Store:
         """Get the store defined in :attr:`store` from an :class:`Litestar <.app.Litestar>` instance."""
         return app.stores.get(cache_store or self.store)
