@@ -104,33 +104,20 @@ structlog = ["structlog"]
 [project.scripts]
 litestar = "litestar.__main__:run_cli"
 
-[tool.hatch.metadata]
-allow-direct-references = true
 
 [tool.hatch.build.targets.sdist]
 include = [
   'docs/PYPI_README.md',
-  '/Makefile',
   '/litestar',
-  '/tests',
-  '/CHANGELOG.rst',
 ]
 
-[tool.pdm]
-ignore_package_warnings = [
-  "alabaster",
-  "sphinxcontrib-*",
-  "sphinx-*",
-  "sphinx",
-  "pre-commit",
-  "pydata-sphinx-*",
-  "slotscheck",
-  "autobahn",
-  "accessible-pygments"
-]
 
-[tool.pdm.dev-dependencies]
+[tool.uv]
+default-groups = ["dev", "linting", "test", "docs"]
+
+[dependency-groups]
 dev = [
+  "litestar[full]",
   "beanie>=1.21.0",
   "beautifulsoup4",
   "fsspec",
@@ -146,8 +133,10 @@ dev = [
   "psutil>=5.9.8",
   "hypercorn>=0.16.0",
   "daphne>=4.0.0",
+  "opentelemetry-sdk",
+  "httpx-sse"
 ]
-dev-contrib = ["opentelemetry-sdk", "httpx-sse"]
+
 docs = [
     "sphinx>=7.1.2",
     "sphinx-autobuild>=2021.3.14",
@@ -186,19 +175,13 @@ test = [
   "time-machine",
 ]
 
-[tool.pdm.scripts]
-ci = {composite = ["lint", "test"]}
-docs-serve = "sphinx-autobuild docs docs/_build/ -j auto --watch litestar --watch docs --watch tests --port 8002"
-lint = "pre-commit run --all-files"
-test = "pytest tests docs/examples"
-
 [build-system]
 build-backend = "hatchling.build"
 requires = ["hatchling"]
 
 [tool.codespell]
 ignore-words-list = "selectin"
-skip = 'pdm.lock,docs/examples/contrib/sqlalchemy/us_state_lookup.json'
+skip = 'uv.lock,docs/examples/contrib/sqlalchemy/us_state_lookup.json'
 
 [tool.coverage.run]
 concurrency = ["multiprocessing", "thread"]
