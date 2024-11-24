@@ -1543,6 +1543,42 @@ document.write(`
   <section id="module-litestar.events">
 <span id="events"></span><h1>events<a class="headerlink" href="#module-litestar.events" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
+<dt class="sig sig-object py" id="litestar.events.BaseEventEmitterBackend">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.events.</span></span><span class="sig-name descname"><span class="pre">BaseEventEmitterBackend</span></span><a class="headerlink" href="#litestar.events.BaseEventEmitterBackend" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/contextlib.html#contextlib.AbstractAsyncContextManager" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractAsyncContextManager</span></code></a>[BaseEventEmitterBackend], <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>Abstract class used to define event emitter backends.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.events.BaseEventEmitterBackend.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">listeners</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#litestar.events.EventListener" title="litestar.events.EventListener"><span class="pre">EventListener</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.events.BaseEventEmitterBackend.__init__" title="Permalink to this definition">#</a></dt>
+<dd><p>Create an event emitter instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="target" id="litestar.events.BaseEventEmitterBackend.params.listeners"></span><strong>listeners</strong><a class="paramlink headerlink reference internal" href="#litestar.events.BaseEventEmitterBackend.params.listeners">¶</a> – A list of listeners.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.events.BaseEventEmitterBackend.emit">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">emit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.events.BaseEventEmitterBackend.emit" title="Permalink to this definition">#</a></dt>
+<dd><p>Emit an event to all attached listeners.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="litestar.events.BaseEventEmitterBackend.emit.params.event_id"></span><strong>event_id</strong><a class="paramlink headerlink reference internal" href="#litestar.events.BaseEventEmitterBackend.emit.params.event_id">¶</a> – The ID of the event to emit, e.g ‘my_event’.</p></li>
+<li><p><span class="target" id="litestar.events.BaseEventEmitterBackend.emit.params.*args"></span><strong>*args</strong><a class="paramlink headerlink reference internal" href="#litestar.events.BaseEventEmitterBackend.emit.params.*args">¶</a> – args to pass to the listener(s).</p></li>
+<li><p><span class="target" id="litestar.events.BaseEventEmitterBackend.emit.params.**kwargs"></span><strong>**kwargs</strong><a class="paramlink headerlink reference internal" href="#litestar.events.BaseEventEmitterBackend.emit.params.**kwargs">¶</a> – kwargs to pass to the listener(s)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="litestar.events.EventListener">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.events.</span></span><span class="sig-name descname"><span class="pre">EventListener</span></span><a class="headerlink" href="#litestar.events.EventListener" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
@@ -1626,42 +1662,6 @@ be closed.</p>
 
 </dd></dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="litestar.events.BaseEventEmitterBackend">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.events.</span></span><span class="sig-name descname"><span class="pre">BaseEventEmitterBackend</span></span><a class="headerlink" href="#litestar.events.BaseEventEmitterBackend" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/contextlib.html#contextlib.AbstractAsyncContextManager" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractAsyncContextManager</span></code></a>[BaseEventEmitterBackend], <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
-<p>Abstract class used to define event emitter backends.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.events.BaseEventEmitterBackend.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">listeners</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#litestar.events.EventListener" title="litestar.events.EventListener"><span class="pre">EventListener</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.events.BaseEventEmitterBackend.__init__" title="Permalink to this definition">#</a></dt>
-<dd><p>Create an event emitter instance.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="target" id="litestar.events.BaseEventEmitterBackend.params.listeners"></span><strong>listeners</strong><a class="paramlink headerlink reference internal" href="#litestar.events.BaseEventEmitterBackend.params.listeners">¶</a> – A list of listeners.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.events.BaseEventEmitterBackend.emit">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">emit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.events.BaseEventEmitterBackend.emit" title="Permalink to this definition">#</a></dt>
-<dd><p>Emit an event to all attached listeners.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="litestar.events.BaseEventEmitterBackend.emit.params.event_id"></span><strong>event_id</strong><a class="paramlink headerlink reference internal" href="#litestar.events.BaseEventEmitterBackend.emit.params.event_id">¶</a> – The ID of the event to emit, e.g ‘my_event’.</p></li>
-<li><p><span class="target" id="litestar.events.BaseEventEmitterBackend.emit.params.*args"></span><strong>*args</strong><a class="paramlink headerlink reference internal" href="#litestar.events.BaseEventEmitterBackend.emit.params.*args">¶</a> – args to pass to the listener(s).</p></li>
-<li><p><span class="target" id="litestar.events.BaseEventEmitterBackend.emit.params.**kwargs"></span><strong>**kwargs</strong><a class="paramlink headerlink reference internal" href="#litestar.events.BaseEventEmitterBackend.emit.params.**kwargs">¶</a> – kwargs to pass to the listener(s)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
 <dl class="py attribute">
 <dt class="sig sig-object py" id="litestar.events.listener">
 <span class="sig-prename descclassname"><span class="pre">litestar.events.</span></span><span class="sig-name descname"><span class="pre">listener</span></span><a class="headerlink" href="#litestar.events.listener" title="Permalink to this definition">#</a></dt>
@@ -1714,6 +1714,11 @@ be closed.</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.events.BaseEventEmitterBackend"><code class="docutils literal notranslate"><span class="pre">BaseEventEmitterBackend</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.events.BaseEventEmitterBackend.__init__"><code class="docutils literal notranslate"><span class="pre">BaseEventEmitterBackend.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.events.BaseEventEmitterBackend.emit"><code class="docutils literal notranslate"><span class="pre">BaseEventEmitterBackend.emit()</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.events.EventListener"><code class="docutils literal notranslate"><span class="pre">EventListener</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.events.EventListener.__init__"><code class="docutils literal notranslate"><span class="pre">EventListener.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.events.EventListener.__call__"><code class="docutils literal notranslate"><span class="pre">EventListener.__call__()</span></code></a></li>
@@ -1723,11 +1728,6 @@ be closed.</p>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.events.SimpleEventEmitter"><code class="docutils literal notranslate"><span class="pre">SimpleEventEmitter</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.events.SimpleEventEmitter.__init__"><code class="docutils literal notranslate"><span class="pre">SimpleEventEmitter.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.events.SimpleEventEmitter.emit"><code class="docutils literal notranslate"><span class="pre">SimpleEventEmitter.emit()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.events.BaseEventEmitterBackend"><code class="docutils literal notranslate"><span class="pre">BaseEventEmitterBackend</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.events.BaseEventEmitterBackend.__init__"><code class="docutils literal notranslate"><span class="pre">BaseEventEmitterBackend.__init__()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.events.BaseEventEmitterBackend.emit"><code class="docutils literal notranslate"><span class="pre">BaseEventEmitterBackend.emit()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.events.listener"><code class="docutils literal notranslate"><span class="pre">listener</span></code></a></li>

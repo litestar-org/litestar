@@ -1543,6 +1543,155 @@ document.write(`
   <section id="module-litestar.datastructures">
 <span id="datastructures"></span><h1>datastructures<a class="headerlink" href="#module-litestar.datastructures" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
+<dt class="sig sig-object py" id="litestar.datastructures.URL">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.datastructures.</span></span><span class="sig-name descname"><span class="pre">URL</span></span><a class="headerlink" href="#litestar.datastructures.URL" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Representation and modification utilities of a URL.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.datastructures.URL.scheme">
+<span class="sig-name descname"><span class="pre">scheme</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#litestar.datastructures.URL.scheme" title="Permalink to this definition">#</a></dt>
+<dd><p>URL scheme.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.datastructures.URL.netloc">
+<span class="sig-name descname"><span class="pre">netloc</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#litestar.datastructures.URL.netloc" title="Permalink to this definition">#</a></dt>
+<dd><p>Network location.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.datastructures.URL.path">
+<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#litestar.datastructures.URL.path" title="Permalink to this definition">#</a></dt>
+<dd><p>Hierarchical path.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.datastructures.URL.fragment">
+<span class="sig-name descname"><span class="pre">fragment</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#litestar.datastructures.URL.fragment" title="Permalink to this definition">#</a></dt>
+<dd><p>Fragment component.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.datastructures.URL.query">
+<span class="sig-name descname"><span class="pre">query</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#litestar.datastructures.URL.query" title="Permalink to this definition">#</a></dt>
+<dd><p>Query string.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.datastructures.URL.username">
+<span class="sig-name descname"><span class="pre">username</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><a class="headerlink" href="#litestar.datastructures.URL.username" title="Permalink to this definition">#</a></dt>
+<dd><p>Username if specified.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.datastructures.URL.password">
+<span class="sig-name descname"><span class="pre">password</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><a class="headerlink" href="#litestar.datastructures.URL.password" title="Permalink to this definition">#</a></dt>
+<dd><p>Password if specified.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.datastructures.URL.port">
+<span class="sig-name descname"><span class="pre">port</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><a class="headerlink" href="#litestar.datastructures.URL.port" title="Permalink to this definition">#</a></dt>
+<dd><p>Port if specified.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.datastructures.URL.hostname">
+<span class="sig-name descname"><span class="pre">hostname</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><a class="headerlink" href="#litestar.datastructures.URL.hostname" title="Permalink to this definition">#</a></dt>
+<dd><p>Hostname if specified.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.datastructures.URL.__new__">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/urllib.parse.html#urllib.parse.SplitResult" title="(in Python v3.13)"><span class="pre">SplitResult</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#litestar.datastructures.URL" title="litestar.datastructures.url.URL"><span class="pre">URL</span></a></span></span><a class="headerlink" href="#litestar.datastructures.URL.__new__" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a new instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="target" id="litestar.datastructures.URL.__new__.params.url"></span><strong>url</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.__new__.params.url">¶</a> – url string or split result to represent.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.datastructures.URL.from_components">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_components</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scheme</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">netloc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fragment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#litestar.datastructures.URL.from_components" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a new URL from components.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="litestar.datastructures.URL.from_components.params.scheme"></span><strong>scheme</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.from_components.params.scheme">¶</a> – URL scheme</p></li>
+<li><p><span class="target" id="litestar.datastructures.URL.from_components.params.netloc"></span><strong>netloc</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.from_components.params.netloc">¶</a> – Network location</p></li>
+<li><p><span class="target" id="litestar.datastructures.URL.from_components.params.path"></span><strong>path</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.from_components.params.path">¶</a> – Hierarchical path</p></li>
+<li><p><span class="target" id="litestar.datastructures.URL.from_components.params.query"></span><strong>query</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.from_components.params.query">¶</a> – Query component</p></li>
+<li><p><span class="target" id="litestar.datastructures.URL.from_components.params.fragment"></span><strong>fragment</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.from_components.params.fragment">¶</a> – Fragment identifier</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new URL with the given components</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.datastructures.URL.from_scope">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_scope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../types.html#litestar.types.Scope" title="litestar.types.Scope"><span class="pre">Scope</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#litestar.datastructures.URL.from_scope" title="Permalink to this definition">#</a></dt>
+<dd><p>Construct a URL from a <a class="reference internal" href="../types.html#litestar.types.Scope" title="litestar.types.Scope"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scope</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="target" id="litestar.datastructures.URL.from_scope.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.from_scope.params.scope">¶</a> – A scope</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A URL</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.datastructures.URL.with_replacements">
+<span class="sig-name descname"><span class="pre">with_replacements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scheme</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">netloc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#litestar.datastructures.MultiDict" title="litestar.datastructures.MultiDict"><span class="pre">MultiDict</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">EmptyType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">_EmptyEnum.EMPTY</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fragment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#litestar.datastructures.URL.with_replacements" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a new URL, replacing the given components.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="litestar.datastructures.URL.with_replacements.params.scheme"></span><strong>scheme</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.with_replacements.params.scheme">¶</a> – URL scheme</p></li>
+<li><p><span class="target" id="litestar.datastructures.URL.with_replacements.params.netloc"></span><strong>netloc</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.with_replacements.params.netloc">¶</a> – Network location</p></li>
+<li><p><span class="target" id="litestar.datastructures.URL.with_replacements.params.path"></span><strong>path</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.with_replacements.params.path">¶</a> – Hierarchical path</p></li>
+<li><p><span class="target" id="litestar.datastructures.URL.with_replacements.params.query"></span><strong>query</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.with_replacements.params.query">¶</a> – Raw query string</p></li>
+<li><p><span class="target" id="litestar.datastructures.URL.with_replacements.params.fragment"></span><strong>fragment</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.with_replacements.params.fragment">¶</a> – Fragment identifier</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new URL with the given components replaced</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="litestar.datastructures.URL.query_params">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">query_params</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#litestar.datastructures.MultiDict" title="litestar.datastructures.multi_dicts.MultiDict"><span class="pre">MultiDict</span></a></em><a class="headerlink" href="#litestar.datastructures.URL.query_params" title="Permalink to this definition">#</a></dt>
+<dd><p>Query parameters of a URL as a <a class="reference internal" href="#litestar.datastructures.MultiDict" title="litestar.datastructures.multi_dicts.MultiDict"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiDict</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A <a class="reference internal" href="#litestar.datastructures.MultiDict" title="litestar.datastructures.multi_dicts.MultiDict"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiDict</span></code></a> with query parameters</p>
+</dd>
+</dl>
+<div class="admonition-notes admonition">
+<p class="admonition-title">Notes</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>The returned <code class="docutils literal notranslate"><span class="pre">MultiDict</span></code> is mutable, <a class="reference internal" href="#litestar.datastructures.URL" title="litestar.datastructures.URL"><code class="xref py py-class docutils literal notranslate"><span class="pre">URL</span></code></a> itself is <em>immutable</em>,</dt><dd><p>therefore mutating the query parameters will not directly mutate the <code class="docutils literal notranslate"><span class="pre">URL</span></code>.
+If you want to modify query parameters, make  modifications in the
+multidict and pass them back to <a class="reference internal" href="#litestar.datastructures.URL.with_replacements" title="litestar.datastructures.URL.with_replacements"><code class="xref py py-meth docutils literal notranslate"><span class="pre">with_replacements()</span></code></a></p>
+</dd>
+</dl>
+</li>
+</ul>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="litestar.datastructures.Accept">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.datastructures.</span></span><span class="sig-name descname"><span class="pre">Accept</span></span><a class="headerlink" href="#litestar.datastructures.Accept" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
@@ -2798,155 +2947,6 @@ the example MUST follow the prescribed serialization strategy for the parameter.
 
 </dd></dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="litestar.datastructures.URL">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.datastructures.</span></span><span class="sig-name descname"><span class="pre">URL</span></span><a class="headerlink" href="#litestar.datastructures.URL" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>Representation and modification utilities of a URL.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.datastructures.URL.scheme">
-<span class="sig-name descname"><span class="pre">scheme</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#litestar.datastructures.URL.scheme" title="Permalink to this definition">#</a></dt>
-<dd><p>URL scheme.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.datastructures.URL.netloc">
-<span class="sig-name descname"><span class="pre">netloc</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#litestar.datastructures.URL.netloc" title="Permalink to this definition">#</a></dt>
-<dd><p>Network location.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.datastructures.URL.path">
-<span class="sig-name descname"><span class="pre">path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#litestar.datastructures.URL.path" title="Permalink to this definition">#</a></dt>
-<dd><p>Hierarchical path.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.datastructures.URL.fragment">
-<span class="sig-name descname"><span class="pre">fragment</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#litestar.datastructures.URL.fragment" title="Permalink to this definition">#</a></dt>
-<dd><p>Fragment component.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.datastructures.URL.query">
-<span class="sig-name descname"><span class="pre">query</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></em><a class="headerlink" href="#litestar.datastructures.URL.query" title="Permalink to this definition">#</a></dt>
-<dd><p>Query string.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.datastructures.URL.username">
-<span class="sig-name descname"><span class="pre">username</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><a class="headerlink" href="#litestar.datastructures.URL.username" title="Permalink to this definition">#</a></dt>
-<dd><p>Username if specified.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.datastructures.URL.password">
-<span class="sig-name descname"><span class="pre">password</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><a class="headerlink" href="#litestar.datastructures.URL.password" title="Permalink to this definition">#</a></dt>
-<dd><p>Password if specified.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.datastructures.URL.port">
-<span class="sig-name descname"><span class="pre">port</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><a class="headerlink" href="#litestar.datastructures.URL.port" title="Permalink to this definition">#</a></dt>
-<dd><p>Port if specified.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.datastructures.URL.hostname">
-<span class="sig-name descname"><span class="pre">hostname</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><a class="headerlink" href="#litestar.datastructures.URL.hostname" title="Permalink to this definition">#</a></dt>
-<dd><p>Hostname if specified.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.datastructures.URL.__new__">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/urllib.parse.html#urllib.parse.SplitResult" title="(in Python v3.13)"><span class="pre">SplitResult</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#litestar.datastructures.URL" title="litestar.datastructures.url.URL"><span class="pre">URL</span></a></span></span><a class="headerlink" href="#litestar.datastructures.URL.__new__" title="Permalink to this definition">#</a></dt>
-<dd><p>Create a new instance.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="target" id="litestar.datastructures.URL.__new__.params.url"></span><strong>url</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.__new__.params.url">¶</a> – url string or split result to represent.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.datastructures.URL.from_components">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_components</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scheme</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">netloc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fragment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#litestar.datastructures.URL.from_components" title="Permalink to this definition">#</a></dt>
-<dd><p>Create a new URL from components.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="litestar.datastructures.URL.from_components.params.scheme"></span><strong>scheme</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.from_components.params.scheme">¶</a> – URL scheme</p></li>
-<li><p><span class="target" id="litestar.datastructures.URL.from_components.params.netloc"></span><strong>netloc</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.from_components.params.netloc">¶</a> – Network location</p></li>
-<li><p><span class="target" id="litestar.datastructures.URL.from_components.params.path"></span><strong>path</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.from_components.params.path">¶</a> – Hierarchical path</p></li>
-<li><p><span class="target" id="litestar.datastructures.URL.from_components.params.query"></span><strong>query</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.from_components.params.query">¶</a> – Query component</p></li>
-<li><p><span class="target" id="litestar.datastructures.URL.from_components.params.fragment"></span><strong>fragment</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.from_components.params.fragment">¶</a> – Fragment identifier</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A new URL with the given components</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.datastructures.URL.from_scope">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_scope</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../types.html#litestar.types.Scope" title="litestar.types.Scope"><span class="pre">Scope</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#litestar.datastructures.URL.from_scope" title="Permalink to this definition">#</a></dt>
-<dd><p>Construct a URL from a <a class="reference internal" href="../types.html#litestar.types.Scope" title="litestar.types.Scope"><code class="xref py py-class docutils literal notranslate"><span class="pre">Scope</span></code></a></p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="target" id="litestar.datastructures.URL.from_scope.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.from_scope.params.scope">¶</a> – A scope</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A URL</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.datastructures.URL.with_replacements">
-<span class="sig-name descname"><span class="pre">with_replacements</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scheme</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">netloc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference internal" href="#litestar.datastructures.MultiDict" title="litestar.datastructures.MultiDict"><span class="pre">MultiDict</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">EmptyType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">_EmptyEnum.EMPTY</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fragment</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Self</span></span></span><a class="headerlink" href="#litestar.datastructures.URL.with_replacements" title="Permalink to this definition">#</a></dt>
-<dd><p>Create a new URL, replacing the given components.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="litestar.datastructures.URL.with_replacements.params.scheme"></span><strong>scheme</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.with_replacements.params.scheme">¶</a> – URL scheme</p></li>
-<li><p><span class="target" id="litestar.datastructures.URL.with_replacements.params.netloc"></span><strong>netloc</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.with_replacements.params.netloc">¶</a> – Network location</p></li>
-<li><p><span class="target" id="litestar.datastructures.URL.with_replacements.params.path"></span><strong>path</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.with_replacements.params.path">¶</a> – Hierarchical path</p></li>
-<li><p><span class="target" id="litestar.datastructures.URL.with_replacements.params.query"></span><strong>query</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.with_replacements.params.query">¶</a> – Raw query string</p></li>
-<li><p><span class="target" id="litestar.datastructures.URL.with_replacements.params.fragment"></span><strong>fragment</strong><a class="paramlink headerlink reference internal" href="#litestar.datastructures.URL.with_replacements.params.fragment">¶</a> – Fragment identifier</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A new URL with the given components replaced</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="litestar.datastructures.URL.query_params">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">query_params</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#litestar.datastructures.MultiDict" title="litestar.datastructures.multi_dicts.MultiDict"><span class="pre">MultiDict</span></a></em><a class="headerlink" href="#litestar.datastructures.URL.query_params" title="Permalink to this definition">#</a></dt>
-<dd><p>Query parameters of a URL as a <a class="reference internal" href="#litestar.datastructures.MultiDict" title="litestar.datastructures.multi_dicts.MultiDict"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiDict</span></code></a></p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A <a class="reference internal" href="#litestar.datastructures.MultiDict" title="litestar.datastructures.multi_dicts.MultiDict"><code class="xref py py-class docutils literal notranslate"><span class="pre">MultiDict</span></code></a> with query parameters</p>
-</dd>
-</dl>
-<div class="admonition-notes admonition">
-<p class="admonition-title">Notes</p>
-<ul class="simple">
-<li><dl class="simple">
-<dt>The returned <code class="docutils literal notranslate"><span class="pre">MultiDict</span></code> is mutable, <a class="reference internal" href="#litestar.datastructures.URL" title="litestar.datastructures.URL"><code class="xref py py-class docutils literal notranslate"><span class="pre">URL</span></code></a> itself is <em>immutable</em>,</dt><dd><p>therefore mutating the query parameters will not directly mutate the <code class="docutils literal notranslate"><span class="pre">URL</span></code>.
-If you want to modify query parameters, make  modifications in the
-multidict and pass them back to <a class="reference internal" href="#litestar.datastructures.URL.with_replacements" title="litestar.datastructures.URL.with_replacements"><code class="xref py py-meth docutils literal notranslate"><span class="pre">with_replacements()</span></code></a></p>
-</dd>
-</dl>
-</li>
-</ul>
-</div>
-</dd></dl>
-
-</dd></dl>
-
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="secret_values.html">secret_values</a></li>
@@ -2998,6 +2998,23 @@ multidict and pass them back to <a class="reference internal" href="#litestar.da
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.URL"><code class="docutils literal notranslate"><span class="pre">URL</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.URL.scheme"><code class="docutils literal notranslate"><span class="pre">URL.scheme</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.URL.netloc"><code class="docutils literal notranslate"><span class="pre">URL.netloc</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.URL.path"><code class="docutils literal notranslate"><span class="pre">URL.path</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.URL.fragment"><code class="docutils literal notranslate"><span class="pre">URL.fragment</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.URL.query"><code class="docutils literal notranslate"><span class="pre">URL.query</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.URL.username"><code class="docutils literal notranslate"><span class="pre">URL.username</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.URL.password"><code class="docutils literal notranslate"><span class="pre">URL.password</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.URL.port"><code class="docutils literal notranslate"><span class="pre">URL.port</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.URL.hostname"><code class="docutils literal notranslate"><span class="pre">URL.hostname</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.URL.__new__"><code class="docutils literal notranslate"><span class="pre">URL.__new__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.URL.from_components"><code class="docutils literal notranslate"><span class="pre">URL.from_components()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.URL.from_scope"><code class="docutils literal notranslate"><span class="pre">URL.from_scope()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.URL.with_replacements"><code class="docutils literal notranslate"><span class="pre">URL.with_replacements()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.URL.query_params"><code class="docutils literal notranslate"><span class="pre">URL.query_params</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.Accept"><code class="docutils literal notranslate"><span class="pre">Accept</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.Accept.__init__"><code class="docutils literal notranslate"><span class="pre">Accept.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.Accept.best_match"><code class="docutils literal notranslate"><span class="pre">Accept.best_match()</span></code></a></li>
@@ -3156,23 +3173,6 @@ multidict and pass them back to <a class="reference internal" href="#litestar.da
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.UploadFile.read"><code class="docutils literal notranslate"><span class="pre">UploadFile.read()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.UploadFile.seek"><code class="docutils literal notranslate"><span class="pre">UploadFile.seek()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.UploadFile.close"><code class="docutils literal notranslate"><span class="pre">UploadFile.close()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.URL"><code class="docutils literal notranslate"><span class="pre">URL</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.URL.scheme"><code class="docutils literal notranslate"><span class="pre">URL.scheme</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.URL.netloc"><code class="docutils literal notranslate"><span class="pre">URL.netloc</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.URL.path"><code class="docutils literal notranslate"><span class="pre">URL.path</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.URL.fragment"><code class="docutils literal notranslate"><span class="pre">URL.fragment</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.URL.query"><code class="docutils literal notranslate"><span class="pre">URL.query</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.URL.username"><code class="docutils literal notranslate"><span class="pre">URL.username</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.URL.password"><code class="docutils literal notranslate"><span class="pre">URL.password</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.URL.port"><code class="docutils literal notranslate"><span class="pre">URL.port</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.URL.hostname"><code class="docutils literal notranslate"><span class="pre">URL.hostname</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.URL.__new__"><code class="docutils literal notranslate"><span class="pre">URL.__new__()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.URL.from_components"><code class="docutils literal notranslate"><span class="pre">URL.from_components()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.URL.from_scope"><code class="docutils literal notranslate"><span class="pre">URL.from_scope()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.URL.with_replacements"><code class="docutils literal notranslate"><span class="pre">URL.with_replacements()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.datastructures.URL.query_params"><code class="docutils literal notranslate"><span class="pre">URL.query_params</span></code></a></li>
 </ul>
 </li>
 </ul>

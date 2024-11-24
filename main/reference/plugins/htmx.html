@@ -1546,33 +1546,27 @@ document.write(`
   <section id="module-litestar.plugins.htmx">
 <span id="htmx"></span><h1>htmx<a class="headerlink" href="#module-litestar.plugins.htmx" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="litestar.plugins.htmx.HTMXPlugin">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.htmx.</span></span><span class="sig-name descname"><span class="pre">HTMXPlugin</span></span><a class="headerlink" href="#litestar.plugins.htmx.HTMXPlugin" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="index.html#litestar.plugins.InitPluginProtocol" title="litestar.plugins.base.InitPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">InitPluginProtocol</span></code></a></p>
-<p>HTMX Plugin.</p>
+<dt class="sig sig-object py" id="litestar.plugins.htmx.ClientRedirect">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.htmx.</span></span><span class="sig-name descname"><span class="pre">ClientRedirect</span></span><a class="headerlink" href="#litestar.plugins.htmx.ClientRedirect" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../response/base.html#litestar.response.base.Response" title="litestar.response.base.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></a></p>
+<p>HTMX Response class to support client side redirect.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="litestar.plugins.htmx.HTMXPlugin.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#litestar.plugins.htmx.HTMXConfig" title="litestar_htmx.plugin.HTMXConfig"><span class="pre">HTMXConfig</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.plugins.htmx.HTMXPlugin.__init__" title="Permalink to this definition">#</a></dt>
-<dd><p>Initialize the plugin.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="target" id="litestar.plugins.htmx.HTMXPlugin.params.config"></span><strong>config</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.htmx.HTMXPlugin.params.config">¶</a> – Configuration for flash messages, including the template engine instance.</p>
-</dd>
-</dl>
+<dt class="sig sig-object py" id="litestar.plugins.htmx.ClientRedirect.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">redirect_to</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.plugins.htmx.ClientRedirect.__init__" title="Permalink to this definition">#</a></dt>
+<dd><p>Set status code to 200 (required by HTMX), and pass redirect url.</p>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="litestar.plugins.htmx.ClientRefresh">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.htmx.</span></span><span class="sig-name descname"><span class="pre">ClientRefresh</span></span><a class="headerlink" href="#litestar.plugins.htmx.ClientRefresh" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../response/base.html#litestar.response.base.Response" title="litestar.response.base.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></a></p>
+<p>Response to support HTMX client page refresh</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="litestar.plugins.htmx.HTMXPlugin.on_app_init">
-<span class="sig-name descname"><span class="pre">on_app_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../config.html#litestar.config.app.AppConfig" title="litestar.config.app.AppConfig"><span class="pre">AppConfig</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../config.html#litestar.config.app.AppConfig" title="litestar.config.app.AppConfig"><span class="pre">AppConfig</span></a></span></span><a class="headerlink" href="#litestar.plugins.htmx.HTMXPlugin.on_app_init" title="Permalink to this definition">#</a></dt>
-<dd><p>Register the HTMX configuration.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="target" id="litestar.plugins.htmx.HTMXPlugin.on_app_init.params.app_config"></span><strong>app_config</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.htmx.HTMXPlugin.on_app_init.params.app_config">¶</a> – The application configuration.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The application configuration with the message callable registered.</p>
-</dd>
-</dl>
+<dt class="sig sig-object py" id="litestar.plugins.htmx.ClientRefresh.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.plugins.htmx.ClientRefresh.__init__" title="Permalink to this definition">#</a></dt>
+<dd><p>Set Status code to 200 and set headers.</p>
 </dd></dl>
 
 </dd></dl>
@@ -1685,6 +1679,38 @@ document.write(`
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="litestar.plugins.htmx.HTMXPlugin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.htmx.</span></span><span class="sig-name descname"><span class="pre">HTMXPlugin</span></span><a class="headerlink" href="#litestar.plugins.htmx.HTMXPlugin" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="index.html#litestar.plugins.InitPluginProtocol" title="litestar.plugins.base.InitPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">InitPluginProtocol</span></code></a></p>
+<p>HTMX Plugin.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.plugins.htmx.HTMXPlugin.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#litestar.plugins.htmx.HTMXConfig" title="litestar_htmx.plugin.HTMXConfig"><span class="pre">HTMXConfig</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.plugins.htmx.HTMXPlugin.__init__" title="Permalink to this definition">#</a></dt>
+<dd><p>Initialize the plugin.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="target" id="litestar.plugins.htmx.HTMXPlugin.params.config"></span><strong>config</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.htmx.HTMXPlugin.params.config">¶</a> – Configuration for flash messages, including the template engine instance.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.plugins.htmx.HTMXPlugin.on_app_init">
+<span class="sig-name descname"><span class="pre">on_app_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app_config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../config.html#litestar.config.app.AppConfig" title="litestar.config.app.AppConfig"><span class="pre">AppConfig</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../config.html#litestar.config.app.AppConfig" title="litestar.config.app.AppConfig"><span class="pre">AppConfig</span></a></span></span><a class="headerlink" href="#litestar.plugins.htmx.HTMXPlugin.on_app_init" title="Permalink to this definition">#</a></dt>
+<dd><p>Register the HTMX configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="target" id="litestar.plugins.htmx.HTMXPlugin.on_app_init.params.app_config"></span><strong>app_config</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.htmx.HTMXPlugin.on_app_init.params.app_config">¶</a> – The application configuration.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The application configuration with the message callable registered.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="litestar.plugins.htmx.HTMXRequest">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.htmx.</span></span><span class="sig-name descname"><span class="pre">HTMXRequest</span></span><a class="headerlink" href="#litestar.plugins.htmx.HTMXRequest" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../connection.html#litestar.connection.Request" title="litestar.connection.request.Request"><code class="xref py py-class docutils literal notranslate"><span class="pre">Request</span></code></a></p>
@@ -1698,14 +1724,28 @@ document.write(`
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="litestar.plugins.htmx.HXStopPolling">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.htmx.</span></span><span class="sig-name descname"><span class="pre">HXStopPolling</span></span><a class="headerlink" href="#litestar.plugins.htmx.HXStopPolling" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../response/base.html#litestar.response.base.Response" title="litestar.response.base.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></a></p>
-<p>Stop HTMX client from Polling.</p>
+<dt class="sig sig-object py" id="litestar.plugins.htmx.HTMXTemplate">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.htmx.</span></span><span class="sig-name descname"><span class="pre">HTMXTemplate</span></span><a class="headerlink" href="#litestar.plugins.htmx.HTMXTemplate" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../response/template.html#litestar.response.template.Template" title="litestar.response.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a></p>
+<p>HTMX template wrapper</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="litestar.plugins.htmx.HXStopPolling.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.plugins.htmx.HXStopPolling.__init__" title="Permalink to this definition">#</a></dt>
-<dd><p>Initialize</p>
+<dt class="sig sig-object py" id="litestar.plugins.htmx.HTMXTemplate.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">push_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">re_swap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.13)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'innerHTML'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'outerHTML'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'beforebegin'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'afterbegin'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'beforeend'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'afterend'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'delete'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'none'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">re_target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trigger_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">after</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.13)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'receive'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'settle'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'swap'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.plugins.htmx.HTMXTemplate.__init__" title="Permalink to this definition">#</a></dt>
+<dd><p>Create HTMXTemplate response.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="litestar.plugins.htmx.HTMXTemplate.params.push_url"></span><strong>push_url</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.htmx.HTMXTemplate.params.push_url">¶</a> – Either a string value specifying a URL to push to browser history or <code class="docutils literal notranslate"><span class="pre">False</span></code> to prevent HTMX client from
+pushing a url to browser history.</p></li>
+<li><p><span class="target" id="litestar.plugins.htmx.HTMXTemplate.params.re_swap"></span><strong>re_swap</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.htmx.HTMXTemplate.params.re_swap">¶</a> – Method value to instruct HTMX which swapping method to use.</p></li>
+<li><p><span class="target" id="litestar.plugins.htmx.HTMXTemplate.params.re_target"></span><strong>re_target</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.htmx.HTMXTemplate.params.re_target">¶</a> – Value for ‘id of target element’ to apply changes to.</p></li>
+<li><p><span class="target" id="litestar.plugins.htmx.HTMXTemplate.params.trigger_event"></span><strong>trigger_event</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.htmx.HTMXTemplate.params.trigger_event">¶</a> – Event name to trigger.</p></li>
+<li><p><span class="target" id="litestar.plugins.htmx.HTMXTemplate.params.params"></span><strong>params</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.htmx.HTMXTemplate.params.params">¶</a> – Dictionary of parameters if any required with trigger event parameter.</p></li>
+<li><p><span class="target" id="litestar.plugins.htmx.HTMXTemplate.params.after"></span><strong>after</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.htmx.HTMXTemplate.params.after">¶</a> – Changes to apply after <code class="docutils literal notranslate"><span class="pre">receive</span></code>, <code class="docutils literal notranslate"><span class="pre">settle</span></code> or <code class="docutils literal notranslate"><span class="pre">swap</span></code> event.</p></li>
+<li><p><span class="target" id="litestar.plugins.htmx.HTMXTemplate.params.**kwargs"></span><strong>**kwargs</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.htmx.HTMXTemplate.params.**kwargs">¶</a> – Additional arguments to pass to <code class="docutils literal notranslate"><span class="pre">Template</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -1725,29 +1765,30 @@ and pass redirect url.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="litestar.plugins.htmx.ClientRedirect">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.htmx.</span></span><span class="sig-name descname"><span class="pre">ClientRedirect</span></span><a class="headerlink" href="#litestar.plugins.htmx.ClientRedirect" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="litestar.plugins.htmx.HXStopPolling">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.htmx.</span></span><span class="sig-name descname"><span class="pre">HXStopPolling</span></span><a class="headerlink" href="#litestar.plugins.htmx.HXStopPolling" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../response/base.html#litestar.response.base.Response" title="litestar.response.base.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></a></p>
-<p>HTMX Response class to support client side redirect.</p>
+<p>Stop HTMX client from Polling.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="litestar.plugins.htmx.ClientRedirect.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">redirect_to</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.plugins.htmx.ClientRedirect.__init__" title="Permalink to this definition">#</a></dt>
-<dd><p>Set status code to 200 (required by HTMX), and pass redirect url.</p>
+<dt class="sig sig-object py" id="litestar.plugins.htmx.HXStopPolling.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.plugins.htmx.HXStopPolling.__init__" title="Permalink to this definition">#</a></dt>
+<dd><p>Initialize</p>
 </dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="litestar.plugins.htmx.ClientRefresh">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.htmx.</span></span><span class="sig-name descname"><span class="pre">ClientRefresh</span></span><a class="headerlink" href="#litestar.plugins.htmx.ClientRefresh" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../response/base.html#litestar.response.base.Response" title="litestar.response.base.Response"><code class="xref py py-class docutils literal notranslate"><span class="pre">Response</span></code></a></p>
-<p>Response to support HTMX client page refresh</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.plugins.htmx.ClientRefresh.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.plugins.htmx.ClientRefresh.__init__" title="Permalink to this definition">#</a></dt>
-<dd><p>Set Status code to 200 and set headers.</p>
+<dt class="sig sig-object py" id="litestar.plugins.htmx.HtmxHeaderType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.htmx.</span></span><span class="sig-name descname"><span class="pre">HtmxHeaderType</span></span><a class="headerlink" href="#litestar.plugins.htmx.HtmxHeaderType" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
+<p>Type for hx_headers parameter in get_headers().</p>
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="litestar.plugins.htmx.LocationType">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.htmx.</span></span><span class="sig-name descname"><span class="pre">LocationType</span></span><a class="headerlink" href="#litestar.plugins.htmx.LocationType" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
+<p>Type for HX-Location header.</p>
 </dd></dl>
 
 <dl class="py class">
@@ -1816,47 +1857,6 @@ and pass redirect url.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="litestar.plugins.htmx.HTMXTemplate">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.htmx.</span></span><span class="sig-name descname"><span class="pre">HTMXTemplate</span></span><a class="headerlink" href="#litestar.plugins.htmx.HTMXTemplate" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../response/template.html#litestar.response.template.Template" title="litestar.response.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a></p>
-<p>HTMX template wrapper</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.plugins.htmx.HTMXTemplate.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">push_url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">re_swap</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.13)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'innerHTML'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'outerHTML'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'beforebegin'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'afterbegin'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'beforeend'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'afterend'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'delete'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'none'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">re_target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trigger_event</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">after</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.13)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'receive'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'settle'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="s"><span class="pre">'swap'</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.plugins.htmx.HTMXTemplate.__init__" title="Permalink to this definition">#</a></dt>
-<dd><p>Create HTMXTemplate response.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="litestar.plugins.htmx.HTMXTemplate.params.push_url"></span><strong>push_url</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.htmx.HTMXTemplate.params.push_url">¶</a> – Either a string value specifying a URL to push to browser history or <code class="docutils literal notranslate"><span class="pre">False</span></code> to prevent HTMX client from
-pushing a url to browser history.</p></li>
-<li><p><span class="target" id="litestar.plugins.htmx.HTMXTemplate.params.re_swap"></span><strong>re_swap</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.htmx.HTMXTemplate.params.re_swap">¶</a> – Method value to instruct HTMX which swapping method to use.</p></li>
-<li><p><span class="target" id="litestar.plugins.htmx.HTMXTemplate.params.re_target"></span><strong>re_target</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.htmx.HTMXTemplate.params.re_target">¶</a> – Value for ‘id of target element’ to apply changes to.</p></li>
-<li><p><span class="target" id="litestar.plugins.htmx.HTMXTemplate.params.trigger_event"></span><strong>trigger_event</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.htmx.HTMXTemplate.params.trigger_event">¶</a> – Event name to trigger.</p></li>
-<li><p><span class="target" id="litestar.plugins.htmx.HTMXTemplate.params.params"></span><strong>params</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.htmx.HTMXTemplate.params.params">¶</a> – Dictionary of parameters if any required with trigger event parameter.</p></li>
-<li><p><span class="target" id="litestar.plugins.htmx.HTMXTemplate.params.after"></span><strong>after</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.htmx.HTMXTemplate.params.after">¶</a> – Changes to apply after <code class="docutils literal notranslate"><span class="pre">receive</span></code>, <code class="docutils literal notranslate"><span class="pre">settle</span></code> or <code class="docutils literal notranslate"><span class="pre">swap</span></code> event.</p></li>
-<li><p><span class="target" id="litestar.plugins.htmx.HTMXTemplate.params.**kwargs"></span><strong>**kwargs</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.htmx.HTMXTemplate.params.**kwargs">¶</a> – Additional arguments to pass to <code class="docutils literal notranslate"><span class="pre">Template</span></code>.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="litestar.plugins.htmx.HtmxHeaderType">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.htmx.</span></span><span class="sig-name descname"><span class="pre">HtmxHeaderType</span></span><a class="headerlink" href="#litestar.plugins.htmx.HtmxHeaderType" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
-<p>Type for hx_headers parameter in get_headers().</p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="litestar.plugins.htmx.LocationType">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.htmx.</span></span><span class="sig-name descname"><span class="pre">LocationType</span></span><a class="headerlink" href="#litestar.plugins.htmx.LocationType" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
-<p>Type for HX-Location header.</p>
-</dd></dl>
-
-<dl class="py class">
 <dt class="sig sig-object py" id="litestar.plugins.htmx.TriggerEventType">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.htmx.</span></span><span class="sig-name descname"><span class="pre">TriggerEventType</span></span><a class="headerlink" href="#litestar.plugins.htmx.TriggerEventType" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a></p>
@@ -1909,9 +1909,12 @@ pushing a url to browser history.</p></li>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.HTMXPlugin"><code class="docutils literal notranslate"><span class="pre">HTMXPlugin</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.HTMXPlugin.__init__"><code class="docutils literal notranslate"><span class="pre">HTMXPlugin.__init__()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.HTMXPlugin.on_app_init"><code class="docutils literal notranslate"><span class="pre">HTMXPlugin.on_app_init()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.ClientRedirect"><code class="docutils literal notranslate"><span class="pre">ClientRedirect</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.ClientRedirect.__init__"><code class="docutils literal notranslate"><span class="pre">ClientRedirect.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.ClientRefresh"><code class="docutils literal notranslate"><span class="pre">ClientRefresh</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.ClientRefresh.__init__"><code class="docutils literal notranslate"><span class="pre">ClientRefresh.__init__()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.HTMXConfig"><code class="docutils literal notranslate"><span class="pre">HTMXConfig</span></code></a><ul class="visible nav section-nav flex-column">
@@ -1937,26 +1940,29 @@ pushing a url to browser history.</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.HTMXHeaders.__new__"><code class="docutils literal notranslate"><span class="pre">HTMXHeaders.__new__()</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.HTMXPlugin"><code class="docutils literal notranslate"><span class="pre">HTMXPlugin</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.HTMXPlugin.__init__"><code class="docutils literal notranslate"><span class="pre">HTMXPlugin.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.HTMXPlugin.on_app_init"><code class="docutils literal notranslate"><span class="pre">HTMXPlugin.on_app_init()</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.HTMXRequest"><code class="docutils literal notranslate"><span class="pre">HTMXRequest</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.HTMXRequest.__init__"><code class="docutils literal notranslate"><span class="pre">HTMXRequest.__init__()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.HXStopPolling"><code class="docutils literal notranslate"><span class="pre">HXStopPolling</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.HXStopPolling.__init__"><code class="docutils literal notranslate"><span class="pre">HXStopPolling.__init__()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.HTMXTemplate"><code class="docutils literal notranslate"><span class="pre">HTMXTemplate</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.HTMXTemplate.__init__"><code class="docutils literal notranslate"><span class="pre">HTMXTemplate.__init__()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.HXLocation"><code class="docutils literal notranslate"><span class="pre">HXLocation</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.HXLocation.__init__"><code class="docutils literal notranslate"><span class="pre">HXLocation.__init__()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.ClientRedirect"><code class="docutils literal notranslate"><span class="pre">ClientRedirect</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.ClientRedirect.__init__"><code class="docutils literal notranslate"><span class="pre">ClientRedirect.__init__()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.HXStopPolling"><code class="docutils literal notranslate"><span class="pre">HXStopPolling</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.HXStopPolling.__init__"><code class="docutils literal notranslate"><span class="pre">HXStopPolling.__init__()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.ClientRefresh"><code class="docutils literal notranslate"><span class="pre">ClientRefresh</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.ClientRefresh.__init__"><code class="docutils literal notranslate"><span class="pre">ClientRefresh.__init__()</span></code></a></li>
-</ul>
-</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.HtmxHeaderType"><code class="docutils literal notranslate"><span class="pre">HtmxHeaderType</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.LocationType"><code class="docutils literal notranslate"><span class="pre">LocationType</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.PushUrl"><code class="docutils literal notranslate"><span class="pre">PushUrl</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.PushUrl.__init__"><code class="docutils literal notranslate"><span class="pre">PushUrl.__init__()</span></code></a></li>
 </ul>
@@ -1977,12 +1983,6 @@ pushing a url to browser history.</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.TriggerEvent.__init__"><code class="docutils literal notranslate"><span class="pre">TriggerEvent.__init__()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.HTMXTemplate"><code class="docutils literal notranslate"><span class="pre">HTMXTemplate</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.HTMXTemplate.__init__"><code class="docutils literal notranslate"><span class="pre">HTMXTemplate.__init__()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.HtmxHeaderType"><code class="docutils literal notranslate"><span class="pre">HtmxHeaderType</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.LocationType"><code class="docutils literal notranslate"><span class="pre">LocationType</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.htmx.TriggerEventType"><code class="docutils literal notranslate"><span class="pre">TriggerEventType</span></code></a></li>
 </ul>
   </nav></div>

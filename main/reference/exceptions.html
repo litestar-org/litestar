@@ -1914,6 +1914,26 @@ document.write(`
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="litestar.exceptions.responses.create_debug_response">
+<span class="sig-prename descclassname"><span class="pre">litestar.exceptions.responses.</span></span><span class="sig-name descname"><span class="pre">create_debug_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="connection.html#litestar.connection.Request" title="litestar.connection.request.Request"><span class="pre">Request</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">exc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.13)"><span class="pre">Exception</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="response/base.html#litestar.response.base.Response" title="litestar.response.base.Response"><span class="pre">Response</span></a></span></span><a class="headerlink" href="#litestar.exceptions.responses.create_debug_response" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a debug response from an exception.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="litestar.exceptions.responses.create_debug_response.params.request"></span><strong>request</strong><a class="paramlink headerlink reference internal" href="#litestar.exceptions.responses.create_debug_response.params.request">¶</a> – The request that triggered the exception.</p></li>
+<li><p><span class="target" id="litestar.exceptions.responses.create_debug_response.params.exc"></span><strong>exc</strong><a class="paramlink headerlink reference internal" href="#litestar.exceptions.responses.create_debug_response.params.exc">¶</a> – An exception.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Debug response constructed from exception details.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="response/base.html#litestar.response.base.Response" title="litestar.response.base.Response">Response</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="litestar.exceptions.responses.create_exception_response">
 <span class="sig-prename descclassname"><span class="pre">litestar.exceptions.responses.</span></span><span class="sig-name descname"><span class="pre">create_exception_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="connection.html#litestar.connection.Request" title="litestar.connection.request.Request"><span class="pre">Request</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.13)"><span class="pre">Exception</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="response/base.html#litestar.response.base.Response" title="litestar.response.base.Response"><span class="pre">Response</span></a></span></span><a class="headerlink" href="#litestar.exceptions.responses.create_exception_response" title="Permalink to this definition">#</a></dt>
 <dd><p>Construct a response from an exception.</p>
@@ -1934,26 +1954,6 @@ response status is <code class="docutils literal notranslate"><span class="pre">
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>HTTP response constructed from exception details.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="response/base.html#litestar.response.base.Response" title="litestar.response.base.Response">Response</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="litestar.exceptions.responses.create_debug_response">
-<span class="sig-prename descclassname"><span class="pre">litestar.exceptions.responses.</span></span><span class="sig-name descname"><span class="pre">create_debug_response</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="connection.html#litestar.connection.Request" title="litestar.connection.request.Request"><span class="pre">Request</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">exc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.13)"><span class="pre">Exception</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="response/base.html#litestar.response.base.Response" title="litestar.response.base.Response"><span class="pre">Response</span></a></span></span><a class="headerlink" href="#litestar.exceptions.responses.create_debug_response" title="Permalink to this definition">#</a></dt>
-<dd><p>Create a debug response from an exception.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="litestar.exceptions.responses.create_debug_response.params.request"></span><strong>request</strong><a class="paramlink headerlink reference internal" href="#litestar.exceptions.responses.create_debug_response.params.request">¶</a> – The request that triggered the exception.</p></li>
-<li><p><span class="target" id="litestar.exceptions.responses.create_debug_response.params.exc"></span><strong>exc</strong><a class="paramlink headerlink reference internal" href="#litestar.exceptions.responses.create_debug_response.params.exc">¶</a> – An exception.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Debug response constructed from exception details.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="response/base.html#litestar.response.base.Response" title="litestar.response.base.Response">Response</a></p>
@@ -2085,8 +2085,8 @@ response status is <code class="docutils literal notranslate"><span class="pre">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.exceptions.responses.ExceptionResponseContent.to_response"><code class="docutils literal notranslate"><span class="pre">ExceptionResponseContent.to_response()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.exceptions.responses.create_exception_response"><code class="docutils literal notranslate"><span class="pre">create_exception_response()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.exceptions.responses.create_debug_response"><code class="docutils literal notranslate"><span class="pre">create_debug_response()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.exceptions.responses.create_exception_response"><code class="docutils literal notranslate"><span class="pre">create_exception_response()</span></code></a></li>
 </ul>
   </nav></div>
 

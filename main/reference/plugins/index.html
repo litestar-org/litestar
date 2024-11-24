@@ -1543,41 +1543,50 @@ document.write(`
   <section id="module-litestar.plugins">
 <span id="plugins"></span><h1>plugins<a class="headerlink" href="#module-litestar.plugins" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="litestar.plugins.SerializationPluginProtocol">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.</span></span><span class="sig-name descname"><span class="pre">SerializationPluginProtocol</span></span><a class="headerlink" href="#litestar.plugins.SerializationPluginProtocol" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="litestar.plugins.CLIPlugin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.</span></span><span class="sig-name descname"><span class="pre">CLIPlugin</span></span><a class="headerlink" href="#litestar.plugins.CLIPlugin" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#litestar.plugins.CLIPluginProtocol" title="litestar.plugins.base.CLIPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">CLIPluginProtocol</span></code></a></p>
+<p>Plugin protocol to extend the CLI Server Lifespan.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="litestar.plugins.CLIPluginProtocol">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.</span></span><span class="sig-name descname"><span class="pre">CLIPluginProtocol</span></span><a class="headerlink" href="#litestar.plugins.CLIPluginProtocol" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a></p>
-<p>Protocol used to define a serialization plugin for DTOs.</p>
+<p>Plugin protocol to extend the CLI.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="litestar.plugins.SerializationPluginProtocol.supports_type">
-<span class="sig-name descname"><span class="pre">supports_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_definition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><span class="pre">FieldDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#litestar.plugins.SerializationPluginProtocol.supports_type" title="Permalink to this definition">#</a></dt>
-<dd><p>Given a value of indeterminate type, determine if this value is supported by the plugin.</p>
+<dt class="sig sig-object py" id="litestar.plugins.CLIPluginProtocol.on_cli_init">
+<span class="sig-name descname"><span class="pre">on_cli_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cli</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Group</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.plugins.CLIPluginProtocol.on_cli_init" title="Permalink to this definition">#</a></dt>
+<dd><p>Called when the CLI is initialized.</p>
+<p>This can be used to extend or override existing commands.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="target" id="litestar.plugins.SerializationPluginProtocol.supports_type.params.field_definition"></span><strong>field_definition</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.SerializationPluginProtocol.supports_type.params.field_definition">¶</a> – A parsed type.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Whether the type is supported by the plugin.</p>
+<dd class="field-odd"><p><span class="target" id="litestar.plugins.CLIPluginProtocol.on_cli_init.params.cli"></span><strong>cli</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.CLIPluginProtocol.on_cli_init.params.cli">¶</a> – The root <a class="reference external" href="https://click.palletsprojects.com/en/stable/api/#click.Group" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Group</span></code></a> of the Litestar CLI</p>
 </dd>
 </dl>
+<div class="admonition-examples admonition">
+<p class="admonition-title">Examples</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
+<span class="kn">from</span> <span class="nn">litestar.plugins</span> <span class="kn">import</span> <span class="n">CLIPluginProtocol</span>
+<span class="kn">from</span> <span class="nn">click</span> <span class="kn">import</span> <span class="n">Group</span>
+
+
+<span class="k">class</span> <span class="nc">CLIPlugin</span><span class="p">(</span><span class="n">CLIPluginProtocol</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">on_cli_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cli</span><span class="p">:</span> <span class="n">Group</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nd">@cli</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
+        <span class="k">def</span> <span class="nf">is_debug_mode</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">debug</span><span class="p">)</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">CLIPlugin</span><span class="p">()])</span>
+</pre></div>
+</div>
+</div>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="litestar.plugins.SerializationPluginProtocol.create_dto_for_type">
-<span class="sig-name descname"><span class="pre">create_dto_for_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_definition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><span class="pre">FieldDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.13)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../dto/base_dto.html#litestar.dto.base_dto.AbstractDTO" title="litestar.dto.base_dto.AbstractDTO"><span class="pre">AbstractDTO</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.plugins.SerializationPluginProtocol.create_dto_for_type" title="Permalink to this definition">#</a></dt>
-<dd><p>Given a parsed type, create a DTO class.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="target" id="litestar.plugins.SerializationPluginProtocol.create_dto_for_type.params.field_definition"></span><strong>field_definition</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.SerializationPluginProtocol.create_dto_for_type.params.field_definition">¶</a> – A parsed type.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A DTO class.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.plugins.SerializationPluginProtocol.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#litestar.plugins.SerializationPluginProtocol.__init__" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="litestar.plugins.CLIPluginProtocol.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#litestar.plugins.CLIPluginProtocol.__init__" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1603,13 +1612,6 @@ annotations (e.g. a Pydantic BaseModel subclass), and
 method.</p>
 </dd></dl>
 
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="litestar.plugins.CLIPlugin">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.</span></span><span class="sig-name descname"><span class="pre">CLIPlugin</span></span><a class="headerlink" href="#litestar.plugins.CLIPlugin" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#litestar.plugins.CLIPluginProtocol" title="litestar.plugins.base.CLIPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">CLIPluginProtocol</span></code></a></p>
-<p>Plugin protocol to extend the CLI Server Lifespan.</p>
 </dd></dl>
 
 <dl class="py class">
@@ -1666,49 +1668,6 @@ method.</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="litestar.plugins.OpenAPISchemaPluginProtocol">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.</span></span><span class="sig-name descname"><span class="pre">OpenAPISchemaPluginProtocol</span></span><a class="headerlink" href="#litestar.plugins.OpenAPISchemaPluginProtocol" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a></p>
-<p>Plugin protocol to extend the support of OpenAPI schema generation for non-library types.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.plugins.OpenAPISchemaPluginProtocol.is_plugin_supported_type">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_plugin_supported_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#litestar.plugins.OpenAPISchemaPluginProtocol.is_plugin_supported_type" title="Permalink to this definition">#</a></dt>
-<dd><p>Given a value of indeterminate type, determine if this value is supported by the plugin.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="target" id="litestar.plugins.OpenAPISchemaPluginProtocol.is_plugin_supported_type.params.value"></span><strong>value</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.OpenAPISchemaPluginProtocol.is_plugin_supported_type.params.value">¶</a> – An arbitrary value.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A typeguard dictating whether the value is supported by the plugin.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema">
-<span class="sig-name descname"><span class="pre">to_openapi_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_definition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><span class="pre">FieldDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_creator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SchemaCreator</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../openapi/spec.html#litestar.openapi.spec.Schema" title="litestar.openapi.spec.Schema"><span class="pre">Schema</span></a></span></span><a class="headerlink" href="#litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema" title="Permalink to this definition">#</a></dt>
-<dd><p>Given a type annotation, transform it into an OpenAPI schema class.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema.params.field_definition"></span><strong>field_definition</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema.params.field_definition">¶</a> – An <a class="reference internal" href="../openapi/spec.html#litestar.openapi.spec.Schema" title="litestar.openapi.spec.schema.Schema"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAPI</span></code></a> instance.</p></li>
-<li><p><span class="target" id="litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema.params.schema_creator"></span><strong>schema_creator</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema.params.schema_creator">¶</a> – An instance of the openapi SchemaCreator.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An <a class="reference internal" href="../openapi/spec.html#litestar.openapi.spec.Schema" title="litestar.openapi.spec.schema.Schema"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAPI</span></code></a> instance.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.plugins.OpenAPISchemaPluginProtocol.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#litestar.plugins.OpenAPISchemaPluginProtocol.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
 <dt class="sig sig-object py" id="litestar.plugins.OpenAPISchemaPlugin">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.</span></span><span class="sig-name descname"><span class="pre">OpenAPISchemaPlugin</span></span><a class="headerlink" href="#litestar.plugins.OpenAPISchemaPlugin" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#litestar.plugins.OpenAPISchemaPluginProtocol" title="litestar.plugins.base.OpenAPISchemaPluginProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAPISchemaPluginProtocol</span></code></a></p>
@@ -1760,43 +1719,84 @@ determine if this value is supported by the plugin</p>
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="litestar.plugins.CLIPluginProtocol">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.</span></span><span class="sig-name descname"><span class="pre">CLIPluginProtocol</span></span><a class="headerlink" href="#litestar.plugins.CLIPluginProtocol" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="litestar.plugins.OpenAPISchemaPluginProtocol">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.</span></span><span class="sig-name descname"><span class="pre">OpenAPISchemaPluginProtocol</span></span><a class="headerlink" href="#litestar.plugins.OpenAPISchemaPluginProtocol" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a></p>
-<p>Plugin protocol to extend the CLI.</p>
+<p>Plugin protocol to extend the support of OpenAPI schema generation for non-library types.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="litestar.plugins.CLIPluginProtocol.on_cli_init">
-<span class="sig-name descname"><span class="pre">on_cli_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cli</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Group</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.plugins.CLIPluginProtocol.on_cli_init" title="Permalink to this definition">#</a></dt>
-<dd><p>Called when the CLI is initialized.</p>
-<p>This can be used to extend or override existing commands.</p>
+<dt class="sig sig-object py" id="litestar.plugins.OpenAPISchemaPluginProtocol.is_plugin_supported_type">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_plugin_supported_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#litestar.plugins.OpenAPISchemaPluginProtocol.is_plugin_supported_type" title="Permalink to this definition">#</a></dt>
+<dd><p>Given a value of indeterminate type, determine if this value is supported by the plugin.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="target" id="litestar.plugins.CLIPluginProtocol.on_cli_init.params.cli"></span><strong>cli</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.CLIPluginProtocol.on_cli_init.params.cli">¶</a> – The root <a class="reference external" href="https://click.palletsprojects.com/en/stable/api/#click.Group" title="(in Click v8.1.x)"><code class="xref py py-class docutils literal notranslate"><span class="pre">click.Group</span></code></a> of the Litestar CLI</p>
+<dd class="field-odd"><p><span class="target" id="litestar.plugins.OpenAPISchemaPluginProtocol.is_plugin_supported_type.params.value"></span><strong>value</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.OpenAPISchemaPluginProtocol.is_plugin_supported_type.params.value">¶</a> – An arbitrary value.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A typeguard dictating whether the value is supported by the plugin.</p>
 </dd>
 </dl>
-<div class="admonition-examples admonition">
-<p class="admonition-title">Examples</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
-<span class="kn">from</span> <span class="nn">litestar.plugins</span> <span class="kn">import</span> <span class="n">CLIPluginProtocol</span>
-<span class="kn">from</span> <span class="nn">click</span> <span class="kn">import</span> <span class="n">Group</span>
-
-
-<span class="k">class</span> <span class="nc">CLIPlugin</span><span class="p">(</span><span class="n">CLIPluginProtocol</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">on_cli_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cli</span><span class="p">:</span> <span class="n">Group</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nd">@cli</span><span class="o">.</span><span class="n">command</span><span class="p">()</span>
-        <span class="k">def</span> <span class="nf">is_debug_mode</span><span class="p">(</span><span class="n">app</span><span class="p">:</span> <span class="n">Litestar</span><span class="p">):</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">app</span><span class="o">.</span><span class="n">debug</span><span class="p">)</span>
-
-
-<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">CLIPlugin</span><span class="p">()])</span>
-</pre></div>
-</div>
-</div>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="litestar.plugins.CLIPluginProtocol.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#litestar.plugins.CLIPluginProtocol.__init__" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema">
+<span class="sig-name descname"><span class="pre">to_openapi_schema</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_definition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><span class="pre">FieldDefinition</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">schema_creator</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SchemaCreator</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../openapi/spec.html#litestar.openapi.spec.Schema" title="litestar.openapi.spec.Schema"><span class="pre">Schema</span></a></span></span><a class="headerlink" href="#litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema" title="Permalink to this definition">#</a></dt>
+<dd><p>Given a type annotation, transform it into an OpenAPI schema class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema.params.field_definition"></span><strong>field_definition</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema.params.field_definition">¶</a> – An <a class="reference internal" href="../openapi/spec.html#litestar.openapi.spec.Schema" title="litestar.openapi.spec.schema.Schema"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAPI</span></code></a> instance.</p></li>
+<li><p><span class="target" id="litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema.params.schema_creator"></span><strong>schema_creator</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema.params.schema_creator">¶</a> – An instance of the openapi SchemaCreator.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An <a class="reference internal" href="../openapi/spec.html#litestar.openapi.spec.Schema" title="litestar.openapi.spec.schema.Schema"><code class="xref py py-class docutils literal notranslate"><span class="pre">OpenAPI</span></code></a> instance.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.plugins.OpenAPISchemaPluginProtocol.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#litestar.plugins.OpenAPISchemaPluginProtocol.__init__" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="litestar.plugins.SerializationPluginProtocol">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.</span></span><span class="sig-name descname"><span class="pre">SerializationPluginProtocol</span></span><a class="headerlink" href="#litestar.plugins.SerializationPluginProtocol" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Protocol" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></a></p>
+<p>Protocol used to define a serialization plugin for DTOs.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.plugins.SerializationPluginProtocol.supports_type">
+<span class="sig-name descname"><span class="pre">supports_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_definition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><span class="pre">FieldDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#litestar.plugins.SerializationPluginProtocol.supports_type" title="Permalink to this definition">#</a></dt>
+<dd><p>Given a value of indeterminate type, determine if this value is supported by the plugin.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="target" id="litestar.plugins.SerializationPluginProtocol.supports_type.params.field_definition"></span><strong>field_definition</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.SerializationPluginProtocol.supports_type.params.field_definition">¶</a> – A parsed type.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Whether the type is supported by the plugin.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.plugins.SerializationPluginProtocol.create_dto_for_type">
+<span class="sig-name descname"><span class="pre">create_dto_for_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_definition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../typing.html#litestar.typing.FieldDefinition" title="litestar.typing.FieldDefinition"><span class="pre">FieldDefinition</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.13)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../dto/base_dto.html#litestar.dto.base_dto.AbstractDTO" title="litestar.dto.base_dto.AbstractDTO"><span class="pre">AbstractDTO</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#litestar.plugins.SerializationPluginProtocol.create_dto_for_type" title="Permalink to this definition">#</a></dt>
+<dd><p>Given a parsed type, create a DTO class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="target" id="litestar.plugins.SerializationPluginProtocol.create_dto_for_type.params.field_definition"></span><strong>field_definition</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.SerializationPluginProtocol.create_dto_for_type.params.field_definition">¶</a> – A parsed type.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A DTO class.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.plugins.SerializationPluginProtocol.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#litestar.plugins.SerializationPluginProtocol.__init__" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -1849,10 +1849,10 @@ determine if this value is supported by the plugin</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.SerializationPluginProtocol"><code class="docutils literal notranslate"><span class="pre">SerializationPluginProtocol</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.SerializationPluginProtocol.supports_type"><code class="docutils literal notranslate"><span class="pre">SerializationPluginProtocol.supports_type()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.SerializationPluginProtocol.create_dto_for_type"><code class="docutils literal notranslate"><span class="pre">SerializationPluginProtocol.create_dto_for_type()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.SerializationPluginProtocol.__init__"><code class="docutils literal notranslate"><span class="pre">SerializationPluginProtocol.__init__()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.CLIPlugin"><code class="docutils literal notranslate"><span class="pre">CLIPlugin</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.CLIPluginProtocol"><code class="docutils literal notranslate"><span class="pre">CLIPluginProtocol</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.CLIPluginProtocol.on_cli_init"><code class="docutils literal notranslate"><span class="pre">CLIPluginProtocol.on_cli_init()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.CLIPluginProtocol.__init__"><code class="docutils literal notranslate"><span class="pre">CLIPluginProtocol.__init__()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.DIPlugin"><code class="docutils literal notranslate"><span class="pre">DIPlugin</span></code></a><ul class="visible nav section-nav flex-column">
@@ -1860,16 +1860,9 @@ determine if this value is supported by the plugin</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.DIPlugin.get_typed_init"><code class="docutils literal notranslate"><span class="pre">DIPlugin.get_typed_init()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.CLIPlugin"><code class="docutils literal notranslate"><span class="pre">CLIPlugin</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.InitPluginProtocol"><code class="docutils literal notranslate"><span class="pre">InitPluginProtocol</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.InitPluginProtocol.on_app_init"><code class="docutils literal notranslate"><span class="pre">InitPluginProtocol.on_app_init()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.InitPluginProtocol.__init__"><code class="docutils literal notranslate"><span class="pre">InitPluginProtocol.__init__()</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.OpenAPISchemaPluginProtocol"><code class="docutils literal notranslate"><span class="pre">OpenAPISchemaPluginProtocol</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.OpenAPISchemaPluginProtocol.is_plugin_supported_type"><code class="docutils literal notranslate"><span class="pre">OpenAPISchemaPluginProtocol.is_plugin_supported_type()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema"><code class="docutils literal notranslate"><span class="pre">OpenAPISchemaPluginProtocol.to_openapi_schema()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.OpenAPISchemaPluginProtocol.__init__"><code class="docutils literal notranslate"><span class="pre">OpenAPISchemaPluginProtocol.__init__()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.OpenAPISchemaPlugin"><code class="docutils literal notranslate"><span class="pre">OpenAPISchemaPlugin</span></code></a><ul class="visible nav section-nav flex-column">
@@ -1879,9 +1872,16 @@ determine if this value is supported by the plugin</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.OpenAPISchemaPlugin.is_constrained_field"><code class="docutils literal notranslate"><span class="pre">OpenAPISchemaPlugin.is_constrained_field()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.CLIPluginProtocol"><code class="docutils literal notranslate"><span class="pre">CLIPluginProtocol</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.CLIPluginProtocol.on_cli_init"><code class="docutils literal notranslate"><span class="pre">CLIPluginProtocol.on_cli_init()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.CLIPluginProtocol.__init__"><code class="docutils literal notranslate"><span class="pre">CLIPluginProtocol.__init__()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.OpenAPISchemaPluginProtocol"><code class="docutils literal notranslate"><span class="pre">OpenAPISchemaPluginProtocol</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.OpenAPISchemaPluginProtocol.is_plugin_supported_type"><code class="docutils literal notranslate"><span class="pre">OpenAPISchemaPluginProtocol.is_plugin_supported_type()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.OpenAPISchemaPluginProtocol.to_openapi_schema"><code class="docutils literal notranslate"><span class="pre">OpenAPISchemaPluginProtocol.to_openapi_schema()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.OpenAPISchemaPluginProtocol.__init__"><code class="docutils literal notranslate"><span class="pre">OpenAPISchemaPluginProtocol.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.SerializationPluginProtocol"><code class="docutils literal notranslate"><span class="pre">SerializationPluginProtocol</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.SerializationPluginProtocol.supports_type"><code class="docutils literal notranslate"><span class="pre">SerializationPluginProtocol.supports_type()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.SerializationPluginProtocol.create_dto_for_type"><code class="docutils literal notranslate"><span class="pre">SerializationPluginProtocol.create_dto_for_type()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.SerializationPluginProtocol.__init__"><code class="docutils literal notranslate"><span class="pre">SerializationPluginProtocol.__init__()</span></code></a></li>
 </ul>
 </li>
 </ul>

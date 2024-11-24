@@ -1543,24 +1543,6 @@ document.write(`
   <section id="module-litestar.serialization">
 <span id="serialization"></span><h1>serialization<a class="headerlink" href="#module-litestar.serialization" title="Permalink to this heading">#</a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="litestar.serialization.default_deserializer">
-<span class="sig-prename descclassname"><span class="pre">litestar.serialization.</span></span><span class="sig-name descname"><span class="pre">default_deserializer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type_decoders</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="types.html#litestar.types.TypeDecodersSequence" title="litestar.types.TypeDecodersSequence"><span class="pre">TypeDecodersSequence</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#litestar.serialization.default_deserializer" title="Permalink to this definition">#</a></dt>
-<dd><p>Transform values non-natively supported by <code class="docutils literal notranslate"><span class="pre">msgspec</span></code></p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="litestar.serialization.default_deserializer.params.target_type"></span><strong>target_type</strong><a class="paramlink headerlink reference internal" href="#litestar.serialization.default_deserializer.params.target_type">¶</a> – Encountered type</p></li>
-<li><p><span class="target" id="litestar.serialization.default_deserializer.params.value"></span><strong>value</strong><a class="paramlink headerlink reference internal" href="#litestar.serialization.default_deserializer.params.value">¶</a> – Value to coerce</p></li>
-<li><p><span class="target" id="litestar.serialization.default_deserializer.params.type_decoders"></span><strong>type_decoders</strong><a class="paramlink headerlink reference internal" href="#litestar.serialization.default_deserializer.params.type_decoders">¶</a> – Optional sequence of type decoders</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A <code class="docutils literal notranslate"><span class="pre">msgspec</span></code>-supported type</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="litestar.serialization.decode_json">
 <span class="sig-prename descclassname"><span class="pre">litestar.serialization.</span></span><span class="sig-name descname"><span class="pre">decode_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.13)"><span class="pre">type</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">EmptyType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">_EmptyEnum.EMPTY</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type_decoders</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="types.html#litestar.types.TypeDecodersSequence" title="litestar.types.TypeDecodersSequence"><span class="pre">TypeDecodersSequence</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#litestar.serialization.decode_json" title="Permalink to this definition">#</a></dt>
 <dd><p>Decode a JSON string/bytes into an object.</p>
@@ -1602,6 +1584,24 @@ a wider set of coercion rules from string to non-string types for all values</p>
 </dd>
 <dt class="field-odd">Raises<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="exceptions.html#litestar.exceptions.SerializationException" title="litestar.exceptions.SerializationException"><strong>SerializationException</strong></a> – If error decoding <code class="docutils literal notranslate"><span class="pre">value</span></code>.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="litestar.serialization.default_deserializer">
+<span class="sig-prename descclassname"><span class="pre">litestar.serialization.</span></span><span class="sig-name descname"><span class="pre">default_deserializer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type_decoders</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="types.html#litestar.types.TypeDecodersSequence" title="litestar.types.TypeDecodersSequence"><span class="pre">TypeDecodersSequence</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="#litestar.serialization.default_deserializer" title="Permalink to this definition">#</a></dt>
+<dd><p>Transform values non-natively supported by <code class="docutils literal notranslate"><span class="pre">msgspec</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="litestar.serialization.default_deserializer.params.target_type"></span><strong>target_type</strong><a class="paramlink headerlink reference internal" href="#litestar.serialization.default_deserializer.params.target_type">¶</a> – Encountered type</p></li>
+<li><p><span class="target" id="litestar.serialization.default_deserializer.params.value"></span><strong>value</strong><a class="paramlink headerlink reference internal" href="#litestar.serialization.default_deserializer.params.value">¶</a> – Value to coerce</p></li>
+<li><p><span class="target" id="litestar.serialization.default_deserializer.params.type_decoders"></span><strong>type_decoders</strong><a class="paramlink headerlink reference internal" href="#litestar.serialization.default_deserializer.params.type_decoders">¶</a> – Optional sequence of type decoders</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A <code class="docutils literal notranslate"><span class="pre">msgspec</span></code>-supported type</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1718,9 +1718,9 @@ a wider set of coercion rules from string to non-string types for all values</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.serialization.default_deserializer"><code class="docutils literal notranslate"><span class="pre">default_deserializer()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.serialization.decode_json"><code class="docutils literal notranslate"><span class="pre">decode_json()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.serialization.decode_msgpack"><code class="docutils literal notranslate"><span class="pre">decode_msgpack()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.serialization.default_deserializer"><code class="docutils literal notranslate"><span class="pre">default_deserializer()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.serialization.default_serializer"><code class="docutils literal notranslate"><span class="pre">default_serializer()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.serialization.encode_json"><code class="docutils literal notranslate"><span class="pre">encode_json()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.serialization.encode_msgpack"><code class="docutils literal notranslate"><span class="pre">encode_msgpack()</span></code></a></li>

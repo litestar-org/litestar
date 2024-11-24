@@ -1543,48 +1543,6 @@ document.write(`
   <section id="module-litestar.routes">
 <span id="routes"></span><h1>routes<a class="headerlink" href="#module-litestar.routes" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="litestar.routes.BaseRoute">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.routes.</span></span><span class="sig-name descname"><span class="pre">BaseRoute</span></span><a class="headerlink" href="#litestar.routes.BaseRoute" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
-<p>Base Route class used by Litestar.</p>
-<p>It’s an abstract class meant to be extended.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.routes.BaseRoute.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handler_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="enums.html#litestar.enums.ScopeType" title="litestar.enums.ScopeType"><span class="pre">ScopeType</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">methods</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="types.html#litestar.types.Method" title="litestar.types.Method"><span class="pre">Method</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.routes.BaseRoute.__init__" title="Permalink to this definition">#</a></dt>
-<dd><p>Initialize the route.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="litestar.routes.BaseRoute.params.handler_names"></span><strong>handler_names</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.BaseRoute.params.handler_names">¶</a> – Names of the associated handler functions</p></li>
-<li><p><span class="target" id="litestar.routes.BaseRoute.params.path"></span><strong>path</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.BaseRoute.params.path">¶</a> – Base path of the route</p></li>
-<li><p><span class="target" id="litestar.routes.BaseRoute.params.scope_type"></span><strong>scope_type</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.BaseRoute.params.scope_type">¶</a> – Type of the ASGI scope</p></li>
-<li><p><span class="target" id="litestar.routes.BaseRoute.params.methods"></span><strong>methods</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.BaseRoute.params.methods">¶</a> – Supported methods</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.routes.BaseRoute.handle">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">handle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="types.html#litestar.types.Scope" title="litestar.types.Scope"><span class="pre">Scope</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">receive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="types.html#litestar.types.Receive" title="litestar.types.Receive"><span class="pre">Receive</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">send</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="types.html#litestar.types.Send" title="litestar.types.Send"><span class="pre">Send</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.routes.BaseRoute.handle" title="Permalink to this definition">#</a></dt>
-<dd><p>ASGI App of the route.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="litestar.routes.BaseRoute.handle.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.BaseRoute.handle.params.scope">¶</a> – The ASGI connection scope.</p></li>
-<li><p><span class="target" id="litestar.routes.BaseRoute.handle.params.receive"></span><strong>receive</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.BaseRoute.handle.params.receive">¶</a> – The ASGI receive function.</p></li>
-<li><p><span class="target" id="litestar.routes.BaseRoute.handle.params.send"></span><strong>send</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.BaseRoute.handle.params.send">¶</a> – The ASGI send function.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
 <dt class="sig sig-object py" id="litestar.routes.ASGIRoute">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.routes.</span></span><span class="sig-name descname"><span class="pre">ASGIRoute</span></span><a class="headerlink" href="#litestar.routes.ASGIRoute" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#litestar.routes.BaseRoute" title="litestar.routes.base.BaseRoute"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRoute</span></code></a></p>
@@ -1624,34 +1582,37 @@ document.write(`
 </dd></dl>
 
 <dl class="py class">
-<dt class="sig sig-object py" id="litestar.routes.WebSocketRoute">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.routes.</span></span><span class="sig-name descname"><span class="pre">WebSocketRoute</span></span><a class="headerlink" href="#litestar.routes.WebSocketRoute" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#litestar.routes.BaseRoute" title="litestar.routes.base.BaseRoute"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRoute</span></code></a></p>
-<p>A websocket route, handling a single <code class="docutils literal notranslate"><span class="pre">WebsocketRouteHandler</span></code></p>
+<dt class="sig sig-object py" id="litestar.routes.BaseRoute">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.routes.</span></span><span class="sig-name descname"><span class="pre">BaseRoute</span></span><a class="headerlink" href="#litestar.routes.BaseRoute" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>Base Route class used by Litestar.</p>
+<p>It’s an abstract class meant to be extended.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="litestar.routes.WebSocketRoute.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">route_handler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="handlers.html#litestar.handlers.WebsocketRouteHandler" title="litestar.handlers.WebsocketRouteHandler"><span class="pre">WebsocketRouteHandler</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.routes.WebSocketRoute.__init__" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="litestar.routes.BaseRoute.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handler_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">scope_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="enums.html#litestar.enums.ScopeType" title="litestar.enums.ScopeType"><span class="pre">ScopeType</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">methods</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="types.html#litestar.types.Method" title="litestar.types.Method"><span class="pre">Method</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.routes.BaseRoute.__init__" title="Permalink to this definition">#</a></dt>
 <dd><p>Initialize the route.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="litestar.routes.WebSocketRoute.params.path"></span><strong>path</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.WebSocketRoute.params.path">¶</a> – The path for the route.</p></li>
-<li><p><span class="target" id="litestar.routes.WebSocketRoute.params.route_handler"></span><strong>route_handler</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.WebSocketRoute.params.route_handler">¶</a> – An instance of <a class="reference internal" href="handlers.html#litestar.handlers.WebsocketRouteHandler" title="litestar.handlers.WebsocketRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebsocketRouteHandler</span></code></a>.</p></li>
+<li><p><span class="target" id="litestar.routes.BaseRoute.params.handler_names"></span><strong>handler_names</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.BaseRoute.params.handler_names">¶</a> – Names of the associated handler functions</p></li>
+<li><p><span class="target" id="litestar.routes.BaseRoute.params.path"></span><strong>path</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.BaseRoute.params.path">¶</a> – Base path of the route</p></li>
+<li><p><span class="target" id="litestar.routes.BaseRoute.params.scope_type"></span><strong>scope_type</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.BaseRoute.params.scope_type">¶</a> – Type of the ASGI scope</p></li>
+<li><p><span class="target" id="litestar.routes.BaseRoute.params.methods"></span><strong>methods</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.BaseRoute.params.methods">¶</a> – Supported methods</p></li>
 </ul>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="litestar.routes.WebSocketRoute.handle">
-<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">handle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="types.html#litestar.types.WebSocketScope" title="litestar.types.WebSocketScope"><span class="pre">WebSocketScope</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">receive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="types.html#litestar.types.Receive" title="litestar.types.Receive"><span class="pre">Receive</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">send</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="types.html#litestar.types.Send" title="litestar.types.Send"><span class="pre">Send</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.routes.WebSocketRoute.handle" title="Permalink to this definition">#</a></dt>
-<dd><p>ASGI app that creates a WebSocket from the passed in args, and then awaits the handler function.</p>
+<dt class="sig sig-object py" id="litestar.routes.BaseRoute.handle">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">handle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="types.html#litestar.types.Scope" title="litestar.types.Scope"><span class="pre">Scope</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">receive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="types.html#litestar.types.Receive" title="litestar.types.Receive"><span class="pre">Receive</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">send</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="types.html#litestar.types.Send" title="litestar.types.Send"><span class="pre">Send</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.routes.BaseRoute.handle" title="Permalink to this definition">#</a></dt>
+<dd><p>ASGI App of the route.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="litestar.routes.WebSocketRoute.handle.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.WebSocketRoute.handle.params.scope">¶</a> – The ASGI connection scope.</p></li>
-<li><p><span class="target" id="litestar.routes.WebSocketRoute.handle.params.receive"></span><strong>receive</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.WebSocketRoute.handle.params.receive">¶</a> – The ASGI receive function.</p></li>
-<li><p><span class="target" id="litestar.routes.WebSocketRoute.handle.params.send"></span><strong>send</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.WebSocketRoute.handle.params.send">¶</a> – The ASGI send function.</p></li>
+<li><p><span class="target" id="litestar.routes.BaseRoute.handle.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.BaseRoute.handle.params.scope">¶</a> – The ASGI connection scope.</p></li>
+<li><p><span class="target" id="litestar.routes.BaseRoute.handle.params.receive"></span><strong>receive</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.BaseRoute.handle.params.receive">¶</a> – The ASGI receive function.</p></li>
+<li><p><span class="target" id="litestar.routes.BaseRoute.handle.params.send"></span><strong>send</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.BaseRoute.handle.params.send">¶</a> – The ASGI send function.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1722,6 +1683,45 @@ http- methods and route handlers.</p>
 
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="litestar.routes.WebSocketRoute">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.routes.</span></span><span class="sig-name descname"><span class="pre">WebSocketRoute</span></span><a class="headerlink" href="#litestar.routes.WebSocketRoute" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#litestar.routes.BaseRoute" title="litestar.routes.base.BaseRoute"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseRoute</span></code></a></p>
+<p>A websocket route, handling a single <code class="docutils literal notranslate"><span class="pre">WebsocketRouteHandler</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.routes.WebSocketRoute.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">route_handler</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="handlers.html#litestar.handlers.WebsocketRouteHandler" title="litestar.handlers.WebsocketRouteHandler"><span class="pre">WebsocketRouteHandler</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.routes.WebSocketRoute.__init__" title="Permalink to this definition">#</a></dt>
+<dd><p>Initialize the route.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="litestar.routes.WebSocketRoute.params.path"></span><strong>path</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.WebSocketRoute.params.path">¶</a> – The path for the route.</p></li>
+<li><p><span class="target" id="litestar.routes.WebSocketRoute.params.route_handler"></span><strong>route_handler</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.WebSocketRoute.params.route_handler">¶</a> – An instance of <a class="reference internal" href="handlers.html#litestar.handlers.WebsocketRouteHandler" title="litestar.handlers.WebsocketRouteHandler"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebsocketRouteHandler</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.routes.WebSocketRoute.handle">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">handle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scope</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="types.html#litestar.types.WebSocketScope" title="litestar.types.WebSocketScope"><span class="pre">WebSocketScope</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">receive</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="types.html#litestar.types.Receive" title="litestar.types.Receive"><span class="pre">Receive</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">send</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="types.html#litestar.types.Send" title="litestar.types.Send"><span class="pre">Send</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.routes.WebSocketRoute.handle" title="Permalink to this definition">#</a></dt>
+<dd><p>ASGI app that creates a WebSocket from the passed in args, and then awaits the handler function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="litestar.routes.WebSocketRoute.handle.params.scope"></span><strong>scope</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.WebSocketRoute.handle.params.scope">¶</a> – The ASGI connection scope.</p></li>
+<li><p><span class="target" id="litestar.routes.WebSocketRoute.handle.params.receive"></span><strong>receive</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.WebSocketRoute.handle.params.receive">¶</a> – The ASGI receive function.</p></li>
+<li><p><span class="target" id="litestar.routes.WebSocketRoute.handle.params.send"></span><strong>send</strong><a class="paramlink headerlink reference internal" href="#litestar.routes.WebSocketRoute.handle.params.send">¶</a> – The ASGI send function.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
@@ -1768,19 +1768,14 @@ http- methods and route handlers.</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.routes.BaseRoute"><code class="docutils literal notranslate"><span class="pre">BaseRoute</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.routes.BaseRoute.__init__"><code class="docutils literal notranslate"><span class="pre">BaseRoute.__init__()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.routes.BaseRoute.handle"><code class="docutils literal notranslate"><span class="pre">BaseRoute.handle()</span></code></a></li>
-</ul>
-</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.routes.ASGIRoute"><code class="docutils literal notranslate"><span class="pre">ASGIRoute</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.routes.ASGIRoute.__init__"><code class="docutils literal notranslate"><span class="pre">ASGIRoute.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.routes.ASGIRoute.handle"><code class="docutils literal notranslate"><span class="pre">ASGIRoute.handle()</span></code></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.routes.WebSocketRoute"><code class="docutils literal notranslate"><span class="pre">WebSocketRoute</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.routes.WebSocketRoute.__init__"><code class="docutils literal notranslate"><span class="pre">WebSocketRoute.__init__()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.routes.WebSocketRoute.handle"><code class="docutils literal notranslate"><span class="pre">WebSocketRoute.handle()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.routes.BaseRoute"><code class="docutils literal notranslate"><span class="pre">BaseRoute</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.routes.BaseRoute.__init__"><code class="docutils literal notranslate"><span class="pre">BaseRoute.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.routes.BaseRoute.handle"><code class="docutils literal notranslate"><span class="pre">BaseRoute.handle()</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.routes.HTTPRoute"><code class="docutils literal notranslate"><span class="pre">HTTPRoute</span></code></a><ul class="visible nav section-nav flex-column">
@@ -1788,6 +1783,11 @@ http- methods and route handlers.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.routes.HTTPRoute.handle"><code class="docutils literal notranslate"><span class="pre">HTTPRoute.handle()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.routes.HTTPRoute.create_handler_map"><code class="docutils literal notranslate"><span class="pre">HTTPRoute.create_handler_map()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.routes.HTTPRoute.create_options_handler"><code class="docutils literal notranslate"><span class="pre">HTTPRoute.create_options_handler()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.routes.WebSocketRoute"><code class="docutils literal notranslate"><span class="pre">WebSocketRoute</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.routes.WebSocketRoute.__init__"><code class="docutils literal notranslate"><span class="pre">WebSocketRoute.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.routes.WebSocketRoute.handle"><code class="docutils literal notranslate"><span class="pre">WebSocketRoute.handle()</span></code></a></li>
 </ul>
 </li>
 </ul>

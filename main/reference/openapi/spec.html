@@ -1546,6 +1546,57 @@ document.write(`
   <section id="module-litestar.openapi.spec">
 <span id="spec"></span><h1>spec<a class="headerlink" href="#module-litestar.openapi.spec" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
+<dt class="sig sig-object py" id="litestar.openapi.spec.XML">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.openapi.spec.</span></span><span class="sig-name descname"><span class="pre">XML</span></span><a class="headerlink" href="#litestar.openapi.spec.XML" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#litestar.openapi.spec.BaseSchemaObject" title="litestar.openapi.spec.base.BaseSchemaObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseSchemaObject</span></code></a></p>
+<p>A metadata object that allows for more fine-tuned XML model definitions.</p>
+<p>When using arrays, XML element names are <em>not</em> inferred (for singular/plural forms) and the <code class="docutils literal notranslate"><span class="pre">name</span></code> property SHOULD
+be used to add that information. See examples for expected behavior.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.openapi.spec.XML.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#litestar.openapi.spec.XML.name" title="Permalink to this definition">#</a></dt>
+<dd><p>Replaces the name of the element/attribute used for the described schema property. When defined within <code class="docutils literal notranslate"><span class="pre">items</span></code>, it
+will affect the name of the individual XML elements within the list. When defined alongside <code class="docutils literal notranslate"><span class="pre">type</span></code> being <code class="docutils literal notranslate"><span class="pre">array</span></code>
+(outside the <code class="docutils literal notranslate"><span class="pre">items</span></code>), it will affect the wrapping element and only if <code class="docutils literal notranslate"><span class="pre">wrapped</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>. If <code class="docutils literal notranslate"><span class="pre">wrapped</span></code> is
+<code class="docutils literal notranslate"><span class="pre">False</span></code>, it will be ignored.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.openapi.spec.XML.namespace">
+<span class="sig-name descname"><span class="pre">namespace</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#litestar.openapi.spec.XML.namespace" title="Permalink to this definition">#</a></dt>
+<dd><p>The URI of the namespace definition. Value MUST be in the form of an absolute URI.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.openapi.spec.XML.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wrapped</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.openapi.spec.XML.__init__" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.openapi.spec.XML.prefix">
+<span class="sig-name descname"><span class="pre">prefix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#litestar.openapi.spec.XML.prefix" title="Permalink to this definition">#</a></dt>
+<dd><p>The prefix to be used for the
+<a class="reference external" href="https://spec.openapis.org/oas/v3.1.0#xmlName">xmlName</a></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.openapi.spec.XML.attribute">
+<span class="sig-name descname"><span class="pre">attribute</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#litestar.openapi.spec.XML.attribute" title="Permalink to this definition">#</a></dt>
+<dd><p>Declares whether the property definition translates to an attribute instead of an element. Default value is
+<code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.openapi.spec.XML.wrapped">
+<span class="sig-name descname"><span class="pre">wrapped</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#litestar.openapi.spec.XML.wrapped" title="Permalink to this definition">#</a></dt>
+<dd><p>MAY be used only for an array definition. Signifies whether the array is wrapped (for example,
+<code class="docutils literal notranslate"><span class="pre">&lt;books&gt;&lt;book/&gt;&lt;book/&gt;&lt;/books&gt;</span></code>) or unwrapped (<code class="docutils literal notranslate"><span class="pre">&lt;book/&gt;&lt;book/&gt;</span></code>). Default value is <code class="docutils literal notranslate"><span class="pre">False</span></code>. The definition
+takes effect only when defined alongside <code class="docutils literal notranslate"><span class="pre">type</span></code> being <code class="docutils literal notranslate"><span class="pre">array</span></code> (outside the <code class="docutils literal notranslate"><span class="pre">items</span></code>).</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="litestar.openapi.spec.BaseSchemaObject">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.openapi.spec.</span></span><span class="sig-name descname"><span class="pre">BaseSchemaObject</span></span><a class="headerlink" href="#litestar.openapi.spec.BaseSchemaObject" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
@@ -3623,57 +3674,6 @@ defined, the value MUST exist in the enum’s values.</p>
 
 </dd></dl>
 
-<dl class="py class">
-<dt class="sig sig-object py" id="litestar.openapi.spec.XML">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.openapi.spec.</span></span><span class="sig-name descname"><span class="pre">XML</span></span><a class="headerlink" href="#litestar.openapi.spec.XML" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#litestar.openapi.spec.BaseSchemaObject" title="litestar.openapi.spec.base.BaseSchemaObject"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseSchemaObject</span></code></a></p>
-<p>A metadata object that allows for more fine-tuned XML model definitions.</p>
-<p>When using arrays, XML element names are <em>not</em> inferred (for singular/plural forms) and the <code class="docutils literal notranslate"><span class="pre">name</span></code> property SHOULD
-be used to add that information. See examples for expected behavior.</p>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.openapi.spec.XML.name">
-<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#litestar.openapi.spec.XML.name" title="Permalink to this definition">#</a></dt>
-<dd><p>Replaces the name of the element/attribute used for the described schema property. When defined within <code class="docutils literal notranslate"><span class="pre">items</span></code>, it
-will affect the name of the individual XML elements within the list. When defined alongside <code class="docutils literal notranslate"><span class="pre">type</span></code> being <code class="docutils literal notranslate"><span class="pre">array</span></code>
-(outside the <code class="docutils literal notranslate"><span class="pre">items</span></code>), it will affect the wrapping element and only if <code class="docutils literal notranslate"><span class="pre">wrapped</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>. If <code class="docutils literal notranslate"><span class="pre">wrapped</span></code> is
-<code class="docutils literal notranslate"><span class="pre">False</span></code>, it will be ignored.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.openapi.spec.XML.namespace">
-<span class="sig-name descname"><span class="pre">namespace</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#litestar.openapi.spec.XML.namespace" title="Permalink to this definition">#</a></dt>
-<dd><p>The URI of the namespace definition. Value MUST be in the form of an absolute URI.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.openapi.spec.XML.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wrapped</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.openapi.spec.XML.__init__" title="Permalink to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.openapi.spec.XML.prefix">
-<span class="sig-name descname"><span class="pre">prefix</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#litestar.openapi.spec.XML.prefix" title="Permalink to this definition">#</a></dt>
-<dd><p>The prefix to be used for the
-<a class="reference external" href="https://spec.openapis.org/oas/v3.1.0#xmlName">xmlName</a></p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.openapi.spec.XML.attribute">
-<span class="sig-name descname"><span class="pre">attribute</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#litestar.openapi.spec.XML.attribute" title="Permalink to this definition">#</a></dt>
-<dd><p>Declares whether the property definition translates to an attribute instead of an element. Default value is
-<code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.openapi.spec.XML.wrapped">
-<span class="sig-name descname"><span class="pre">wrapped</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#litestar.openapi.spec.XML.wrapped" title="Permalink to this definition">#</a></dt>
-<dd><p>MAY be used only for an array definition. Signifies whether the array is wrapped (for example,
-<code class="docutils literal notranslate"><span class="pre">&lt;books&gt;&lt;book/&gt;&lt;book/&gt;&lt;/books&gt;</span></code>) or unwrapped (<code class="docutils literal notranslate"><span class="pre">&lt;book/&gt;&lt;book/&gt;</span></code>). Default value is <code class="docutils literal notranslate"><span class="pre">False</span></code>. The definition
-takes effect only when defined alongside <code class="docutils literal notranslate"><span class="pre">type</span></code> being <code class="docutils literal notranslate"><span class="pre">array</span></code> (outside the <code class="docutils literal notranslate"><span class="pre">items</span></code>).</p>
-</dd></dl>
-
-</dd></dl>
-
 <dl class="py data">
 <dt class="sig sig-object py" id="litestar.openapi.spec.SecurityRequirement">
 <span class="sig-prename descclassname"><span class="pre">litestar.openapi.spec.</span></span><span class="sig-name descname"><span class="pre">SecurityRequirement</span></span><a class="headerlink" href="#litestar.openapi.spec.SecurityRequirement" title="Permalink to this definition">#</a></dt>
@@ -3726,6 +3726,15 @@ takes effect only when defined alongside <code class="docutils literal notransla
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.spec.XML"><code class="docutils literal notranslate"><span class="pre">XML</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.spec.XML.name"><code class="docutils literal notranslate"><span class="pre">XML.name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.spec.XML.namespace"><code class="docutils literal notranslate"><span class="pre">XML.namespace</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.spec.XML.__init__"><code class="docutils literal notranslate"><span class="pre">XML.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.spec.XML.prefix"><code class="docutils literal notranslate"><span class="pre">XML.prefix</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.spec.XML.attribute"><code class="docutils literal notranslate"><span class="pre">XML.attribute</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.spec.XML.wrapped"><code class="docutils literal notranslate"><span class="pre">XML.wrapped</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.spec.BaseSchemaObject"><code class="docutils literal notranslate"><span class="pre">BaseSchemaObject</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.spec.BaseSchemaObject.to_schema"><code class="docutils literal notranslate"><span class="pre">BaseSchemaObject.to_schema()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.spec.BaseSchemaObject.__init__"><code class="docutils literal notranslate"><span class="pre">BaseSchemaObject.__init__()</span></code></a></li>
@@ -4031,15 +4040,6 @@ takes effect only when defined alongside <code class="docutils literal notransla
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.spec.Tag.__init__"><code class="docutils literal notranslate"><span class="pre">Tag.__init__()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.spec.Tag.description"><code class="docutils literal notranslate"><span class="pre">Tag.description</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.spec.Tag.external_docs"><code class="docutils literal notranslate"><span class="pre">Tag.external_docs</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.spec.XML"><code class="docutils literal notranslate"><span class="pre">XML</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.spec.XML.name"><code class="docutils literal notranslate"><span class="pre">XML.name</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.spec.XML.namespace"><code class="docutils literal notranslate"><span class="pre">XML.namespace</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.spec.XML.__init__"><code class="docutils literal notranslate"><span class="pre">XML.__init__()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.spec.XML.prefix"><code class="docutils literal notranslate"><span class="pre">XML.prefix</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.spec.XML.attribute"><code class="docutils literal notranslate"><span class="pre">XML.attribute</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.spec.XML.wrapped"><code class="docutils literal notranslate"><span class="pre">XML.wrapped</span></code></a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.openapi.spec.SecurityRequirement"><code class="docutils literal notranslate"><span class="pre">SecurityRequirement</span></code></a></li>

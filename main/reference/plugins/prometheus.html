@@ -1546,27 +1546,6 @@ document.write(`
   <section id="module-litestar.plugins.prometheus">
 <span id="prometheus"></span><h1>prometheus<a class="headerlink" href="#module-litestar.plugins.prometheus" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="litestar.plugins.prometheus.PrometheusMiddleware">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.prometheus.</span></span><span class="sig-name descname"><span class="pre">PrometheusMiddleware</span></span><a class="headerlink" href="#litestar.plugins.prometheus.PrometheusMiddleware" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference internal" href="../middleware/index.html#litestar.middleware.AbstractMiddleware" title="litestar.middleware.base.AbstractMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractMiddleware</span></code></a></p>
-<p>Prometheus Middleware.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="litestar.plugins.prometheus.PrometheusMiddleware.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../types.html#litestar.types.ASGIApp" title="litestar.types.ASGIApp"><span class="pre">ASGIApp</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#litestar.plugins.prometheus.PrometheusConfig" title="litestar.plugins.prometheus.PrometheusConfig"><span class="pre">PrometheusConfig</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.plugins.prometheus.PrometheusMiddleware.__init__" title="Permalink to this definition">#</a></dt>
-<dd><p>Middleware that adds Prometheus instrumentation to the application.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><span class="target" id="litestar.plugins.prometheus.PrometheusMiddleware.params.app"></span><strong>app</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.prometheus.PrometheusMiddleware.params.app">¶</a> – The <code class="docutils literal notranslate"><span class="pre">next</span></code> ASGI app to call.</p></li>
-<li><p><span class="target" id="litestar.plugins.prometheus.PrometheusMiddleware.params.config"></span><strong>config</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.prometheus.PrometheusMiddleware.params.config">¶</a> – An instance of <a class="reference internal" href="#litestar.plugins.prometheus.PrometheusConfig" title="litestar.plugins.prometheus.PrometheusConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrometheusConfig</span></code></a></p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
 <dt class="sig sig-object py" id="litestar.plugins.prometheus.PrometheusConfig">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.prometheus.</span></span><span class="sig-name descname"><span class="pre">PrometheusConfig</span></span><a class="headerlink" href="#litestar.plugins.prometheus.PrometheusConfig" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
@@ -1833,15 +1812,15 @@ data.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="litestar.plugins.prometheus.PrometheusController.type_encoders">
-<span class="sig-name descname"><span class="pre">type_encoders</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../types.html#litestar.types.TypeEncodersMap" title="litestar.types.TypeEncodersMap"><span class="pre">TypeEncodersMap</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><a class="headerlink" href="#litestar.plugins.prometheus.PrometheusController.type_encoders" title="Permalink to this definition">#</a></dt>
-<dd><p>A mapping of types to callables that transform them into types supported for serialization.</p>
-</dd></dl>
-
-<dl class="py attribute">
 <dt class="sig sig-object py" id="litestar.plugins.prometheus.PrometheusController.type_decoders">
 <span class="sig-name descname"><span class="pre">type_decoders</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../types.html#litestar.types.TypeDecodersSequence" title="litestar.types.TypeDecodersSequence"><span class="pre">TypeDecodersSequence</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><a class="headerlink" href="#litestar.plugins.prometheus.PrometheusController.type_decoders" title="Permalink to this definition">#</a></dt>
 <dd><p>A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="litestar.plugins.prometheus.PrometheusController.type_encoders">
+<span class="sig-name descname"><span class="pre">type_encoders</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../types.html#litestar.types.TypeEncodersMap" title="litestar.types.TypeEncodersMap"><span class="pre">TypeEncodersMap</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><a class="headerlink" href="#litestar.plugins.prometheus.PrometheusController.type_encoders" title="Permalink to this definition">#</a></dt>
+<dd><p>A mapping of types to callables that transform them into types supported for serialization.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1855,6 +1834,27 @@ handlers under the controller.</p>
 <dt class="sig sig-object py" id="litestar.plugins.prometheus.PrometheusController.openmetrics_format">
 <span class="sig-name descname"><span class="pre">openmetrics_format</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#litestar.plugins.prometheus.PrometheusController.openmetrics_format" title="Permalink to this definition">#</a></dt>
 <dd><p>Whether to expose the metrics in OpenMetrics format.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="litestar.plugins.prometheus.PrometheusMiddleware">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.plugins.prometheus.</span></span><span class="sig-name descname"><span class="pre">PrometheusMiddleware</span></span><a class="headerlink" href="#litestar.plugins.prometheus.PrometheusMiddleware" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../middleware/index.html#litestar.middleware.AbstractMiddleware" title="litestar.middleware.base.AbstractMiddleware"><code class="xref py py-class docutils literal notranslate"><span class="pre">AbstractMiddleware</span></code></a></p>
+<p>Prometheus Middleware.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.plugins.prometheus.PrometheusMiddleware.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../types.html#litestar.types.ASGIApp" title="litestar.types.ASGIApp"><span class="pre">ASGIApp</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#litestar.plugins.prometheus.PrometheusConfig" title="litestar.plugins.prometheus.PrometheusConfig"><span class="pre">PrometheusConfig</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.plugins.prometheus.PrometheusMiddleware.__init__" title="Permalink to this definition">#</a></dt>
+<dd><p>Middleware that adds Prometheus instrumentation to the application.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="litestar.plugins.prometheus.PrometheusMiddleware.params.app"></span><strong>app</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.prometheus.PrometheusMiddleware.params.app">¶</a> – The <code class="docutils literal notranslate"><span class="pre">next</span></code> ASGI app to call.</p></li>
+<li><p><span class="target" id="litestar.plugins.prometheus.PrometheusMiddleware.params.config"></span><strong>config</strong><a class="paramlink headerlink reference internal" href="#litestar.plugins.prometheus.PrometheusMiddleware.params.config">¶</a> – An instance of <a class="reference internal" href="#litestar.plugins.prometheus.PrometheusConfig" title="litestar.plugins.prometheus.PrometheusConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">PrometheusConfig</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -1905,10 +1905,6 @@ handlers under the controller.</p>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.prometheus.PrometheusMiddleware"><code class="docutils literal notranslate"><span class="pre">PrometheusMiddleware</span></code></a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.prometheus.PrometheusMiddleware.__init__"><code class="docutils literal notranslate"><span class="pre">PrometheusMiddleware.__init__()</span></code></a></li>
-</ul>
-</li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.prometheus.PrometheusConfig"><code class="docutils literal notranslate"><span class="pre">PrometheusConfig</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.prometheus.PrometheusConfig.app_name"><code class="docutils literal notranslate"><span class="pre">PrometheusConfig.app_name</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.prometheus.PrometheusConfig.prefix"><code class="docutils literal notranslate"><span class="pre">PrometheusConfig.prefix</span></code></a></li>
@@ -1952,10 +1948,14 @@ handlers under the controller.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.prometheus.PrometheusController.signature_namespace"><code class="docutils literal notranslate"><span class="pre">PrometheusController.signature_namespace</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.prometheus.PrometheusController.signature_types"><code class="docutils literal notranslate"><span class="pre">PrometheusController.signature_types</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.prometheus.PrometheusController.tags"><code class="docutils literal notranslate"><span class="pre">PrometheusController.tags</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.prometheus.PrometheusController.type_encoders"><code class="docutils literal notranslate"><span class="pre">PrometheusController.type_encoders</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.prometheus.PrometheusController.type_decoders"><code class="docutils literal notranslate"><span class="pre">PrometheusController.type_decoders</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.prometheus.PrometheusController.type_encoders"><code class="docutils literal notranslate"><span class="pre">PrometheusController.type_encoders</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.prometheus.PrometheusController.websocket_class"><code class="docutils literal notranslate"><span class="pre">PrometheusController.websocket_class</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.prometheus.PrometheusController.openmetrics_format"><code class="docutils literal notranslate"><span class="pre">PrometheusController.openmetrics_format</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.prometheus.PrometheusMiddleware"><code class="docutils literal notranslate"><span class="pre">PrometheusMiddleware</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.plugins.prometheus.PrometheusMiddleware.__init__"><code class="docutils literal notranslate"><span class="pre">PrometheusMiddleware.__init__()</span></code></a></li>
 </ul>
 </li>
 </ul>

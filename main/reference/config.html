@@ -2294,6 +2294,14 @@ the ‘csrf_config’ key.</p>
 </dd></dl>
 
 <span class="target" id="module-litestar.config.response_cache"></span><dl class="py class">
+<dt class="sig sig-object py" id="litestar.config.response_cache.CACHE_FOREVER">
+<em class="property"><span class="pre">final</span><span class="w"> </span><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.config.response_cache.</span></span><span class="sig-name descname"><span class="pre">CACHE_FOREVER</span></span><a class="headerlink" href="#litestar.config.response_cache.CACHE_FOREVER" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Sentinel value indicating that a cached response should be stored without an expiration, explicitly skipping the
+default expiration</p>
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="litestar.config.response_cache.ResponseCacheConfig">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.config.response_cache.</span></span><span class="sig-name descname"><span class="pre">ResponseCacheConfig</span></span><a class="headerlink" href="#litestar.config.response_cache.ResponseCacheConfig" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
@@ -2351,14 +2359,6 @@ the request method and path with the sorted query params.</p>
 <dd class="field-even"><p>A combination of url path and query parameters</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="litestar.config.response_cache.CACHE_FOREVER">
-<em class="property"><span class="pre">final</span><span class="w"> </span><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.config.response_cache.</span></span><span class="sig-name descname"><span class="pre">CACHE_FOREVER</span></span><a class="headerlink" href="#litestar.config.response_cache.CACHE_FOREVER" title="Permalink to this definition">#</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
-<p>Sentinel value indicating that a cached response should be stored without an expiration, explicitly skipping the
-default expiration</p>
 </dd></dl>
 
 </section>
@@ -2529,6 +2529,7 @@ default expiration</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.config.csrf.CSRFConfig.exclude_from_csrf_key"><code class="docutils literal notranslate"><span class="pre">CSRFConfig.exclude_from_csrf_key</span></code></a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.config.response_cache.CACHE_FOREVER"><code class="docutils literal notranslate"><span class="pre">CACHE_FOREVER</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.config.response_cache.ResponseCacheConfig"><code class="docutils literal notranslate"><span class="pre">ResponseCacheConfig</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.config.response_cache.ResponseCacheConfig.default_expiration"><code class="docutils literal notranslate"><span class="pre">ResponseCacheConfig.default_expiration</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.config.response_cache.ResponseCacheConfig.key_builder"><code class="docutils literal notranslate"><span class="pre">ResponseCacheConfig.key_builder()</span></code></a></li>
@@ -2539,7 +2540,6 @@ default expiration</p>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.config.response_cache.default_cache_key_builder"><code class="docutils literal notranslate"><span class="pre">default_cache_key_builder()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.config.response_cache.CACHE_FOREVER"><code class="docutils literal notranslate"><span class="pre">CACHE_FOREVER</span></code></a></li>
 </ul>
   </nav></div>
 
