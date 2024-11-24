@@ -139,6 +139,8 @@ PYDANTIC_TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
 }
 
 if pydantic_v2 is not None:  # pragma: no cover
+    from pydantic import networks
+
     PYDANTIC_TYPE_MAP.update(
         {
             pydantic_v2.SecretStr: Schema(type=OpenAPIType.STRING),
@@ -192,6 +194,8 @@ if pydantic_v2 is not None:  # pragma: no cover
                 type=OpenAPIType.STRING, format=OpenAPIFormat.EMAIL, description="Name and email"
             ),
             pydantic_v2.AnyUrl: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URL),
+            networks.AnyHttpUrl: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URL),
+            networks.HttpUrl: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URL),
         }
     )
 
