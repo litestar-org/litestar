@@ -97,14 +97,14 @@ async def parse_multipart_form(  # noqa: C901
                             # we have reached the end of a segment before we have
                             # received a complete header segment
                             raise ClientException("Unexpected eof in multipart/form-data")
-                        if segment.name:
-                            if isinstance(data, UploadFile):
-                                await data.seek(0)
-                                fields[segment.name].append(data)
-                            elif data:
-                                fields[segment.name].append(data.decode(segment.charset or "utf-8"))
-                            else:
-                                fields[segment.name].append(None)
+
+                        if isinstance(data, UploadFile):
+                            await data.seek(0)
+                            fields[segment.name].append(data)
+                        elif data:
+                            fields[segment.name].append(data.decode(segment.charset or "utf-8"))
+                        else:
+                            fields[segment.name].append(None)
 
                         # reset for next part
                         data = b""
