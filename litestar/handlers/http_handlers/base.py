@@ -658,7 +658,6 @@ class HTTPRouteHandler(BaseRouteHandler):
                 "processed request data, use the 'data' parameter."
             )
 
-
     async def handle(self, connection: Request[Any, Any, Any]) -> None:
         """ASGI app that creates a :class:`~.connection.Request` from the passed in args, determines which handler function to call and then
             handles the call.
