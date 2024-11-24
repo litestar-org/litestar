@@ -44,6 +44,7 @@ dependencies = [
     "click",
     "rich>=13.0.0",
     "rich-click",
+    "multipart@git+https://github.com/defnull/multipart.git",
     # default litestar plugins
     "litestar-htmx>=0.3.0"
 ]
