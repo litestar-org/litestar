@@ -37,94 +37,25 @@ Setting up the environment
 If you are utilizing `GitHub Codespaces <https://codespaces.new/litestar-org/litestar?quickstart=1>`_,
 the environment will bootstrap itself automatically. The steps below are for local development.
 
-#. Install `PDM <https://pdm.fming.dev/latest/>`_:
-
-   .. tab-set::
-
-        .. tab-item:: Makefile
-            :sync: makefile
-
-            .. code-block:: bash
-                :caption: Using our Make target to install PDM
-
-                make install-pdm
-
-        .. tab-item:: pipx
-            :sync: pipx
-
-            .. code-block:: bash
-                :caption: Using |pipx|
-
-                pipx install pdm
-
-        .. tab-item:: Homebrew
-            :sync: homebrew
-
-            .. code-block:: bash
-                :caption: Using |homebrew|
-
-                brew install pdm
+#. Install `uv <https://docs.astral.sh/uv/getting-started/installation/>`_:
 
 #. Run ``make install`` to create a `virtual environment <https://docs.python.org/3/tutorial/venv.html>`_
-   and install the required development dependencies or run the PDM installation command manually:
+   and install the required development dependencies or run the uv sync command manually:
 
    .. code-block:: shell
         :caption: Installing the documentation dependencies
 
-        pdm install
+        uv install
 
-#. If you're working on the documentation and need to build it locally, install the extra dependencies with
-   ``make docs-install`` or:
 
-   .. code-block:: shell
-        :caption: Installing the documentation dependencies
-
-        pdm install -G:docs
-
-#. Install `pre-commit <https://pre-commit.com/>`_:
-
-   .. tab-set::
-
-        .. tab-item:: pip
-            :sync: pip
-
-            .. code-block:: bash
-                :caption: Using pip
-
-                python3 -m pip install pre-commit
-
-        .. tab-item:: pipx
-            :sync: pipx
-
-            .. code-block:: bash
-                :caption: Using |pipx|
-
-                pipx install pre-commit
-
-        .. tab-item:: Homebrew
-            :sync: homebrew
-
-            .. code-block:: bash
-                :caption: Using |homebrew|
-
-                brew install pre-commit
-
-#. Install our pre-commit hooks. by running ``make install`` or:
-
-   .. code-block:: shell
-        :caption: Installing pre-commit hooks
-
-        pre-commit install --install-hooks
-
-.. tip:: Many modern IDEs like PyCharm or VS Code will enable the PDM-managed virtualenv that is created in step 2
+.. tip:: Many modern IDEs like PyCharm or VS Code will enable the uv-managed virtualenv that is created in step 2
    for you automatically.
    If your IDE / editor does not offer this functionality, then you will need to manually activate the virtualenv
    yourself. Otherwise you may encounter errors or unexpected behaviour when trying to run the commands referenced
    within this document.
 
    To activate the virtualenv manually, please consult PDM's documentation on
-   `working with virtual environments <https://pdm-project.org/latest/usage/venv/#working-with-virtual-environments>`_.
-   A simpler alternative is using the PDM plugin `pdm-shell <https://github.com/abersheeran/pdm-shell>`_.
+   `working with virtual environments <https://docs.astral.sh/uv/pip/environments/>`_.
 
    The rest of this document will assume this environment is active wherever commands are referenced.
 
