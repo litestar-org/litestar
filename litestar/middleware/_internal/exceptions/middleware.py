@@ -81,7 +81,7 @@ def _starlette_exception_handler(request: Request[Any, Any, Any], exc: Starlette
         exc=HTTPException(
             detail=exc.detail,
             status_code=exc.status_code,
-            headers=exc.headers,
+            headers=exc.headers,  # type: ignore[arg-type]
         ),
     )
 
