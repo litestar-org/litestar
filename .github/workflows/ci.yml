@@ -136,7 +136,7 @@ jobs:
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
 
       - name: Test
-        run: uv run pytest tests -m server_integration
+        run: uv run --no-sync pytest tests -m server_integration
 
   test-platform-compat:
     if: github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'test platform compat')
@@ -287,7 +287,7 @@ jobs:
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
 
       - name: Test
-        run: uv run coverage run --branch -m unittest test_apps/pydantic_1_app.py
+        run: uv run --no-sync coverage run --branch -m unittest test_apps/pydantic_1_app.py
 
       - name: Rename coverage file
         run: mv .coverage* .coverage.pydantic_v1
