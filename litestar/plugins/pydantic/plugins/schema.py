@@ -139,6 +139,8 @@ PYDANTIC_TYPE_MAP: dict[type[Any] | None | Any, Schema] = {
 }
 
 if pydantic_v2 is not None:  # pragma: no cover
+    from pydantic import networks
+
     PYDANTIC_TYPE_MAP.update(
         {
             pydantic_v2.SecretStr: Schema(type=OpenAPIType.STRING),
@@ -194,6 +196,16 @@ if pydantic_v2 is not None:  # pragma: no cover
             pydantic_v2.AnyUrl: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URL),
         }
     )
+    if int(pydantic_v2.version.version_short().split(".")[1]) >= 10:
+        # These were 'Annotated' type aliases before Pydantic 2.10, where they were
+        # changed to proper classes. Using subscripted generics type in an 'isinstance'
+        # check would raise a 'TypeError' on Python <3.12
+        PYDANTIC_TYPE_MAP.update(
+            {
+                networks.HttpUrl: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URL),
+                networks.AnyHttpUrl: Schema(type=OpenAPIType.STRING, format=OpenAPIFormat.URL),
+            }
+        )
 
 
 _supported_types = (pydantic_v1.BaseModel, *PYDANTIC_TYPE_MAP.keys())
