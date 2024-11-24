@@ -8,9 +8,9 @@ from litestar.utils import warn_deprecation
 __all__ = (
     "SESSION_SCOPE_KEY",
     "SESSION_TERMINUS_ASGI_EVENTS",
+    "GenericAlembicConfig",
     "GenericSQLAlchemyConfig",
     "GenericSessionConfig",
-    "GenericAlembicConfig",
 )
 
 

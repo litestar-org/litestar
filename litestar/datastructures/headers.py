@@ -385,7 +385,7 @@ class ETag(Header):
 class MediaTypeHeader:
     """A helper class for ``Accept`` header parsing."""
 
-    __slots__ = ("maintype", "subtype", "params", "_params_str")
+    __slots__ = ("_params_str", "maintype", "params", "subtype")
 
     def __init__(self, type_str: str) -> None:
         # preserve the original parameters, because the order might be

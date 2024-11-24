@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 class AuthenticationResult:
     """Dataclass for authentication result."""
 
-    __slots__ = ("user", "auth")
+    __slots__ = ("auth", "user")
 
     user: Any
     """The user model, this can be any value corresponding to a user of the API."""

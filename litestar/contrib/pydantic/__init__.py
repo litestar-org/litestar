@@ -6,11 +6,11 @@ from typing import TYPE_CHECKING, Any
 from litestar.utils import warn_deprecation
 
 __all__ = (
+    "PydanticDIPlugin",
     "PydanticDTO",
     "PydanticInitPlugin",
-    "PydanticSchemaPlugin",
     "PydanticPlugin",
-    "PydanticDIPlugin",
+    "PydanticSchemaPlugin",
 )
 
 

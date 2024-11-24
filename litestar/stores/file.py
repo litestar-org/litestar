@@ -28,7 +28,7 @@ def _safe_file_name(name: str) -> str:
 class FileStore(NamespacedStore):
     """File based, thread and process safe, asynchronous key/value store."""
 
-    __slots__ = {"path": "file path", "create_directories": "flag to create directories in path"}
+    __slots__ = {"create_directories": "flag to create directories in path", "path": "file path"}
 
     def __init__(self, path: PathLike[str], *, create_directories: bool = False) -> None:
         """Initialize ``FileStorage``.

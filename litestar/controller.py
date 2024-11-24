@@ -73,8 +73,8 @@ class Controller:
         "signature_namespace",
         "signature_types",
         "tags",
-        "type_encoders",
         "type_decoders",
+        "type_encoders",
         "websocket_class",
     )
 

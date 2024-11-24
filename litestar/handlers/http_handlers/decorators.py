@@ -41,7 +41,7 @@ if TYPE_CHECKING:
     from litestar.types.callable_types import OperationIDCreator
 
 
-__all__ = ("get", "head", "post", "put", "patch", "delete")
+__all__ = ("delete", "get", "head", "patch", "post", "put")
 
 MSG_SEMANTIC_ROUTE_HANDLER_WITH_HTTP = "semantic route handlers cannot define http_method"
 

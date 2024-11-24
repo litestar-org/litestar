@@ -11,8 +11,8 @@ from litestar.status_codes import HTTP_500_INTERNAL_SERVER_ERROR
 
 __all__ = (
     "ExceptionResponseContent",
-    "create_exception_response",
     "create_debug_response",
+    "create_exception_response",
 )
 
 

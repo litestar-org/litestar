@@ -33,4 +33,4 @@ from .async_client import AsyncTestClient
 from .base import BaseTestClient
 from .sync_client import TestClient
 
-__all__ = ("TestClient", "AsyncTestClient", "BaseTestClient")
+__all__ = ("AsyncTestClient", "BaseTestClient", "TestClient")

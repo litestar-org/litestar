@@ -15,9 +15,9 @@ if TYPE_CHECKING:
 __all__ = (
     "get_enum_string_value",
     "get_name",
+    "unique_name_for_scope",
     "unwrap_partial",
     "url_quote",
-    "unique_name_for_scope",
 )
 
 T = TypeVar("T")

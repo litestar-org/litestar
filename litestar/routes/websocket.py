@@ -18,8 +18,8 @@ class WebSocketRoute(BaseRoute):
     """A websocket route, handling a single ``WebsocketRouteHandler``"""
 
     __slots__ = (
-        "route_handler",
         "handler_parameter_model",
+        "route_handler",
     )
 
     def __init__(

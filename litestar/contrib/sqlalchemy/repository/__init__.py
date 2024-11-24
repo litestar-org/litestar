@@ -7,9 +7,9 @@ from typing import TYPE_CHECKING
 from litestar.utils import warn_deprecation
 
 __all__ = (
+    "ModelT",
     "SQLAlchemyAsyncRepository",
     "SQLAlchemySyncRepository",
-    "ModelT",
     "wrap_sqlalchemy_exception",
 )
 

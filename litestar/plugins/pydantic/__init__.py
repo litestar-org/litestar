@@ -16,11 +16,11 @@ if TYPE_CHECKING:
     from litestar.types.serialization import PydanticV1FieldsListType, PydanticV2FieldsListType
 
 __all__ = (
+    "PydanticDIPlugin",
     "PydanticDTO",
     "PydanticInitPlugin",
-    "PydanticSchemaPlugin",
     "PydanticPlugin",
-    "PydanticDIPlugin",
+    "PydanticSchemaPlugin",
 )
 
 

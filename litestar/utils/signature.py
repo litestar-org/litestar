@@ -29,10 +29,10 @@ else:
 
 
 __all__ = (
-    "add_types_to_signature_namespace",
-    "merge_signature_namespaces",
-    "get_fn_type_hints",
     "ParsedSignature",
+    "add_types_to_signature_namespace",
+    "get_fn_type_hints",
+    "merge_signature_namespaces",
 )
 
 _GLOBAL_NAMES = {
@@ -184,7 +184,7 @@ class ParsedSignature:
     The only post-processing that occurs is the conversion of any forward referenced type annotations.
     """
 
-    __slots__ = ("parameters", "return_type", "original_signature")
+    __slots__ = ("original_signature", "parameters", "return_type")
 
     parameters: dict[str, FieldDefinition]
     """A mapping of parameter names to ParsedSignatureParameter instances."""

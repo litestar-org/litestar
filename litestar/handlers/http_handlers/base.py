@@ -76,13 +76,13 @@ class HTTPRouteHandler(BaseRouteHandler):
     __slots__ = (
         "_resolved_after_response",
         "_resolved_before_request",
-        "_response_handler_mapping",
         "_resolved_include_in_schema",
-        "_resolved_response_class",
         "_resolved_request_class",
-        "_resolved_tags",
-        "_resolved_security",
         "_resolved_request_max_body_size",
+        "_resolved_response_class",
+        "_resolved_security",
+        "_resolved_tags",
+        "_response_handler_mapping",
         "after_request",
         "after_response",
         "background",
@@ -103,6 +103,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         "operation_id",
         "raises",
         "request_class",
+        "request_max_body_size",
         "response_class",
         "response_cookies",
         "response_description",
@@ -114,7 +115,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         "sync_to_thread",
         "tags",
         "template_name",
-        "request_max_body_size",
     )
 
     has_sync_callable: bool

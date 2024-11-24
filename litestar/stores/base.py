@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
 
-__all__ = ("Store", "NamespacedStore", "StorageObject")
+__all__ = ("NamespacedStore", "StorageObject", "Store")
 
 
 class Store(ABC):

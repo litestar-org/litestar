@@ -103,7 +103,7 @@ if TYPE_CHECKING:
     from litestar.types.callable_types import LifespanHook
 
 
-__all__ = ("HandlerIndex", "Litestar", "DEFAULT_OPENAPI_CONFIG")
+__all__ = ("DEFAULT_OPENAPI_CONFIG", "HandlerIndex", "Litestar")
 
 DEFAULT_OPENAPI_CONFIG = OpenAPIConfig(title="Litestar API", version="1.0.0")
 """The default OpenAPI config used if not configuration is explicitly passed to the
@@ -136,12 +136,11 @@ class Litestar(Router):
     """
 
     __slots__ = (
-        "_lifespan_managers",
-        "_server_lifespan_managers",
         "_debug",
+        "_lifespan_managers",
         "_openapi_schema",
+        "_server_lifespan_managers",
         "_static_files_config",
-        "plugins",
         "after_exception",
         "allowed_hosts",
         "asgi_handler",
@@ -151,6 +150,7 @@ class Litestar(Router):
         "cors_config",
         "csrf_config",
         "event_emitter",
+        "experimental_features",
         "get_logger",
         "logger",
         "logging_config",
@@ -158,13 +158,13 @@ class Litestar(Router):
         "on_shutdown",
         "on_startup",
         "openapi_config",
+        "pdb_on_exception",
+        "plugins",
         "response_cache_config",
         "route_map",
         "state",
         "stores",
         "template_engine",
-        "pdb_on_exception",
-        "experimental_features",
     )
 
     def __init__(

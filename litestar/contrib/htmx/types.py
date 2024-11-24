@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from litestar.utils import warn_deprecation
 
 if TYPE_CHECKING:
-    from litestar_htmx import HtmxHeaderType, LocationType, TriggerEventType  # noqa: TCH004
+    from litestar_htmx import HtmxHeaderType, LocationType, TriggerEventType  # noqa: TC004
 __all__ = (
     "HtmxHeaderType",
     "LocationType",
