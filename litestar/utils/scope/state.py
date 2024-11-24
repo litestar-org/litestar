@@ -26,6 +26,7 @@ class ScopeState:
     """
 
     __slots__ = (
+        "_compat_ns",
         "accept",
         "base_url",
         "body",
@@ -47,7 +48,6 @@ class ScopeState:
         "response_started",
         "session_id",
         "url",
-        "_compat_ns",
     )
 
     def __init__(self) -> None:

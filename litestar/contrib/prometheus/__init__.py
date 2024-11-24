@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from litestar.utils import warn_deprecation
 
-__all__ = ("PrometheusMiddleware", "PrometheusConfig", "PrometheusController")
+__all__ = ("PrometheusConfig", "PrometheusController", "PrometheusMiddleware")
 
 
 def __getattr__(attr_name: str) -> object:

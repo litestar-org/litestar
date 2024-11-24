@@ -28,15 +28,15 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
     __slots__ = (
         "algorithm",
         "auth_header",
-        "retrieve_user_handler",
-        "token_secret",
-        "token_cls",
-        "token_audience",
-        "token_issuer",
         "require_claims",
+        "retrieve_user_handler",
+        "strict_audience",
+        "token_audience",
+        "token_cls",
+        "token_issuer",
+        "token_secret",
         "verify_expiry",
         "verify_not_before",
-        "strict_audience",
     )
 
     def __init__(

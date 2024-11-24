@@ -17,7 +17,7 @@ class BackgroundTask:
     Background tasks are called once a Response finishes.
     """
 
-    __slots__ = ("fn", "args", "kwargs")
+    __slots__ = ("args", "fn", "kwargs")
 
     def __init__(self, fn: Callable[P, Any], *args: P.args, **kwargs: P.kwargs) -> None:
         """Initialize ``BackgroundTask``.
@@ -46,7 +46,7 @@ class BackgroundTasks:
     Background tasks are called once a Response finishes.
     """
 
-    __slots__ = ("tasks", "run_in_task_group")
+    __slots__ = ("run_in_task_group", "tasks")
 
     def __init__(self, tasks: Iterable[BackgroundTask], run_in_task_group: bool = False) -> None:
         """Initialize ``BackgroundTasks``.

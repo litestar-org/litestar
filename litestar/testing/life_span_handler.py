@@ -24,11 +24,11 @@ T = TypeVar("T", bound=BaseTestClient)
 
 class LifeSpanHandler(Generic[T]):
     __slots__ = (
-        "stream_send",
-        "stream_receive",
-        "client",
-        "task",
         "_startup_done",
+        "client",
+        "stream_receive",
+        "stream_send",
+        "task",
     )
 
     def __init__(self, client: T) -> None:

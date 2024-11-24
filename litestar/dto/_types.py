@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 class NestedFieldInfo:
     """Type for representing fields and model type of nested model type."""
 
-    __slots__ = ("model", "field_definitions")
+    __slots__ = ("field_definitions", "model")
 
     model: type[Any]
     field_definitions: tuple[TransferDTOFieldDefinition, ...]

@@ -46,7 +46,7 @@ class MiddlewareProtocol(Protocol):
 class DefineMiddleware:
     """Container enabling passing ``*args`` and ``**kwargs`` to Middleware class constructors and factory functions."""
 
-    __slots__ = ("middleware", "args", "kwargs")
+    __slots__ = ("args", "kwargs", "middleware")
 
     def __init__(self, middleware: Callable[..., ASGIApp], *args: Any, **kwargs: Any) -> None:
         """Initialize ``DefineMiddleware``.

@@ -58,7 +58,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
     returned
     """
 
-    __slots__ = {
+    __slots__ = {  # noqa: RUF023
         "connection_accept_handler": "Callback to accept a WebSocket connection. By default, calls WebSocket.accept",
         "on_accept": "Callback invoked after a WebSocket connection has been accepted",
         "on_disconnect": "Callback invoked after a WebSocket connection has been closed",

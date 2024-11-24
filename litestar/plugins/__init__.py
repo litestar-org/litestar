@@ -11,13 +11,13 @@ from litestar.plugins.base import (
 )
 
 __all__ = (
-    "SerializationPluginProtocol",
-    "DIPlugin",
     "CLIPlugin",
-    "InitPluginProtocol",
-    "OpenAPISchemaPluginProtocol",
-    "OpenAPISchemaPlugin",
-    "PluginProtocol",
     "CLIPluginProtocol",
+    "DIPlugin",
+    "InitPluginProtocol",
+    "OpenAPISchemaPlugin",
+    "OpenAPISchemaPluginProtocol",
+    "PluginProtocol",
     "PluginRegistry",
+    "SerializationPluginProtocol",
 )

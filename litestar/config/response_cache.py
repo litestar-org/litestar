@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from litestar.stores.base import Store
     from litestar.types import CacheKeyBuilder, HTTPScope
 
-__all__ = ("ResponseCacheConfig", "default_cache_key_builder", "CACHE_FOREVER")
+__all__ = ("CACHE_FOREVER", "ResponseCacheConfig", "default_cache_key_builder")
 
 
 @final

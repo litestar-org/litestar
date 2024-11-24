@@ -237,10 +237,10 @@ class File(Response):
         "chunk_size",
         "content_disposition_type",
         "etag",
+        "file_info",
         "file_path",
         "file_system",
         "filename",
-        "file_info",
         "stat_result",
     )
 

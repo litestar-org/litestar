@@ -9,8 +9,8 @@ from litestar.utils import warn_deprecation
 __all__ = (
     "GUID",
     "ORA_JSONB",
-    "DateTimeUTC",
     "BigIntIdentity",
+    "DateTimeUTC",
     "JsonB",
 )
 

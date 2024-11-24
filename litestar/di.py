@@ -26,9 +26,9 @@ class Provide:
 
     __slots__ = (
         "dependency",
+        "has_async_generator_dependency",
         "has_sync_callable",
         "has_sync_generator_dependency",
-        "has_async_generator_dependency",
         "parsed_fn_signature",
         "signature_model",
         "sync_to_thread",

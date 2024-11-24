@@ -20,6 +20,7 @@ from litestar.datastructures.upload_file import UploadFile
 from litestar.datastructures.url import URL, Address
 
 __all__ = (
+    "URL",
     "Accept",
     "Address",
     "CacheControlHeader",
@@ -38,5 +39,4 @@ __all__ = (
     "SecretString",
     "State",
     "UploadFile",
-    "URL",
 )

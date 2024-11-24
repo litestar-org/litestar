@@ -18,7 +18,7 @@ def default_default_factory(name: str) -> Store:
 class StoreRegistry:
     """Registry for :class:`Store <.base.Store>` instances."""
 
-    __slots__ = ("_stores", "_default_factory")
+    __slots__ = ("_default_factory", "_stores")
 
     def __init__(
         self, stores: dict[str, Store] | None = None, default_factory: Callable[[str], Store] = default_default_factory

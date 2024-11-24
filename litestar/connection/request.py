@@ -49,13 +49,13 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
     """The Litestar Request class."""
 
     __slots__ = (
-        "_json",
-        "_form",
-        "_body",
-        "_msgpack",
-        "_content_type",
         "_accept",
+        "_body",
         "_content_length",
+        "_content_type",
+        "_form",
+        "_json",
+        "_msgpack",
         "is_connected",
         "supports_push_promise",
     )
