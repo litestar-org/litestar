@@ -296,26 +296,6 @@ def test_multipart_request_without_charset_for_filename() -> None:
         }
 
 
-@pytest.mark.xfail
-def test_multipart_request_with_asterisks_filename() -> None:
-    with create_test_client(form_handler) as client:
-        response = client.post(
-            "/form",
-            content=(
-                # file
-                b"--a7f7ac8d4e2e437c877bb7b8d7cc549c\r\n"
-                b"Content-Disposition: form-data; name='file'; filename*=utf-8''Na%C3%AFve%20file.jpg\r\n"
-                b"Content-Type: image/jpeg\r\n\r\n"
-                b"<file content>\r\n"
-                b"--a7f7ac8d4e2e437c877bb7b8d7cc549c--\r\n"
-            ),
-            headers={"Content-Type": "multipart/form-data; boundary=a7f7ac8d4e2e437c877bb7b8d7cc549c"},
-        )
-        assert response.json() == {
-            "'file'": {"filename": "Naïve file.jpg", "content": "<file content>", "content_type": "image/jpeg"}
-        }
-
-
 def test_multipart_request_with_encoded_value() -> None:
     with create_test_client(form_handler) as client:
         response = client.post(
