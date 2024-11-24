@@ -47,7 +47,6 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v3
         with:
-          # Install a specific version of uv.
           version: "0.5.4"
           python-version: "3.8"
           enable-cache: true
@@ -68,7 +67,6 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v3
         with:
-          # Install a specific version of uv.
           version: "0.5.4"
           python-version: "3.8"
           enable-cache: true
@@ -89,7 +87,7 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v3
         with:
-          # Install a specific version of uv.
+          
           version: "0.5.4"
           python-version: "3.8"
           enable-cache: true
@@ -126,7 +124,6 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v3
         with:
-          # Install a specific version of uv.
           version: "0.5.4"
           python-version: "3.8"
           enable-cache: true
@@ -207,7 +204,6 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v3
         with:
-          # Install a specific version of uv.
           version: "0.5.4"
           python-version: "3.8"
           enable-cache: true
@@ -250,7 +246,6 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v3
         with:
-          # Install a specific version of uv.
           version: "0.5.4"
           python-version: "3.8"
           enable-cache: true
@@ -280,7 +275,6 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v3
         with:
-          # Install a specific version of uv.
           version: "0.5.4"
           python-version: "3.8"
           enable-cache: true
