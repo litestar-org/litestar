@@ -75,7 +75,7 @@ async def parse_multipart_form(  # noqa: C901
     try:
         with PushMultipartParser(boundary, max_segment_count=multipart_form_part_limit) as parser:
             segment: MultipartSegment | None = None
-            data: UploadFile | bytes = b""
+            data: UploadFile | bytearray = bytearray()
             while not parser.closed:
                 for form_part in parser.parse(chunk):
                     if isinstance(form_part, MultipartSegment):
@@ -90,7 +90,7 @@ async def parse_multipart_form(  # noqa: C901
                         if isinstance(data, UploadFile):
                             await data.write(form_part)
                         else:
-                            data += form_part
+                            data.extend(form_part)
                     else:
                         # end of part
                         if segment is None:
@@ -107,7 +107,7 @@ async def parse_multipart_form(  # noqa: C901
                             fields[segment.name].append(None)
 
                         # reset for next part
-                        data = b""
+                        data = bytearray()
                         segment = None
 
                 chunk = await async_next(stream, b"")
