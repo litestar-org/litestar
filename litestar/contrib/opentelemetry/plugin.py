@@ -42,6 +42,7 @@ class OpenTelemetryPlugin(InitPluginProtocol):
         for middleware in middlewares:
             if (
                 isinstance(middleware, DefineMiddleware)
+                and isintance(middleware.middleware, type)
                 and issubclass(middleware.middleware, OpenTelemetryInstrumentationMiddleware)
             ):
                 otel_middleware = middleware
