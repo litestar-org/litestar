@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 
 class WebsocketRouteHandler(BaseRouteHandler):
-    __slots__ = ("websocket_class", "_kwargs_model")
+    __slots__ = ("_kwargs_model", "websocket_class")
 
     def __init__(
         self,
