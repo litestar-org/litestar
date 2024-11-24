@@ -563,3 +563,18 @@ def test_multipart_and_url_encoded_behave_the_same(form_type) -> None:  # type: 
                 headers={"Content-Type": "multipart/form-data; boundary=1f35df74046888ceaa62d8a534a076dd"},
             )
         assert response.status_code == HTTP_201_CREATED
+
+
+def test_invalid_multipart_raises_client_error() -> None:
+    with create_test_client(form_handler) as client:
+        response = client.post(
+            "/form",
+            content=(
+                b"--20b303e711c4ab8c443184ac833ab00f\r\n"
+                b"Content-Disposition: form-data; "
+                b'name="value"\r\n\r\n'
+                b"--20b303e711c4ab8c44318833ab00f--\r\n"
+            ),
+            headers={"Content-Type": "multipart/form-data; charset=utf-8; boundary=20b303e711c4ab8c443184ac833ab00f"},
+        )
+        assert response.status_code == HTTP_400_BAD_REQUEST
