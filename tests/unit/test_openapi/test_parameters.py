@@ -105,13 +105,13 @@ def test_create_parameters(person_controller: Type[Controller]) -> None:
     assert is_schema_value(gender.schema)
     assert gender.schema == Schema(
         one_of=[
-            Schema(type=OpenAPIType.NULL),
             Reference(ref="#/components/schemas/tests_unit_test_openapi_utils_Gender"),
             Schema(
                 type=OpenAPIType.ARRAY,
                 items=Reference(ref="#/components/schemas/tests_unit_test_openapi_utils_Gender"),
                 examples=[[Gender.MALE]],
             ),
+            Schema(type=OpenAPIType.NULL),
         ],
         examples=[Gender.MALE, [Gender.MALE, Gender.OTHER]],
     )
@@ -390,8 +390,8 @@ def test_unwrap_new_type() -> None:
     app = Litestar([handler])
     assert app.openapi_schema.paths["/{path_param}"].get.parameters[0].schema.type == OpenAPIType.STRING  # type: ignore[index, union-attr]
     assert app.openapi_schema.paths["/{path_param}"].get.parameters[1].schema.one_of == [  # type: ignore[index, union-attr]
-        Schema(type=OpenAPIType.NULL),
         Schema(type=OpenAPIType.STRING),
+        Schema(type=OpenAPIType.NULL),
     ]
     assert app.openapi_schema.paths["/{path_param}"].get.parameters[2].schema.type == OpenAPIType.STRING  # type: ignore[index, union-attr]
     assert (

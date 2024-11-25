@@ -23,7 +23,7 @@ class AttrsGeneric(Generic[T]):
 def test_schema_generation_with_generic_classes() -> None:
     cls = AttrsGeneric[int]
     expected_foo_schema = Schema(type=OpenAPIType.INTEGER)
-    expected_optional_foo_schema = Schema(one_of=[Schema(type=OpenAPIType.NULL), Schema(type=OpenAPIType.INTEGER)])
+    expected_optional_foo_schema = Schema(one_of=[Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.NULL)])
 
     field_definition = FieldDefinition.from_kwarg(name=get_name(cls), annotation=cls)
     properties = get_schema_for_field_definition(field_definition, plugins=[AttrsSchemaPlugin()]).properties

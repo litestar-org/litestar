@@ -426,12 +426,10 @@ class SchemaCreator:
         )
         if isinstance(schema_or_reference, Schema) and isinstance(schema_or_reference.one_of, list):
             result = schema_or_reference.one_of
-        elif isinstance(schema_or_reference, Schema) and isinstance(schema_or_reference.any_of, list):
-            result = schema_or_reference.any_of
         else:
             result = [schema_or_reference]
 
-        return Schema(any_of=[*result, Schema(type=OpenAPIType.NULL)])
+        return Schema(one_of=[*result, Schema(type=OpenAPIType.NULL)])
 
     def for_union_field(self, field_definition: FieldDefinition) -> Schema:
         """Create a Schema for a union FieldDefinition.

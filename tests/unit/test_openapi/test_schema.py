@@ -389,7 +389,7 @@ if sys.version_info >= (3, 11):
 @pytest.mark.parametrize("cls", annotations)
 def test_schema_generation_with_generic_classes(cls: Any) -> None:
     expected_foo_schema = Schema(type=OpenAPIType.INTEGER)
-    expected_optional_foo_schema = Schema(one_of=[Schema(type=OpenAPIType.NULL), Schema(type=OpenAPIType.INTEGER)])
+    expected_optional_foo_schema = Schema(one_of=[Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.NULL)])
 
     properties = get_schema_for_field_definition(
         FieldDefinition.from_kwarg(name=get_name(cls), annotation=cls)
@@ -443,7 +443,7 @@ def test_schema_generation_with_generic_classes_constrained() -> None:
 )
 def test_schema_generation_with_pagination(annotation: Any) -> None:
     expected_foo_schema = Schema(type=OpenAPIType.INTEGER)
-    expected_optional_foo_schema = Schema(one_of=[Schema(type=OpenAPIType.NULL), Schema(type=OpenAPIType.INTEGER)])
+    expected_optional_foo_schema = Schema(one_of=[Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.NULL)])
 
     properties = get_schema_for_field_definition(FieldDefinition.from_annotation(annotation).inner_types[-1]).properties
 
@@ -478,11 +478,11 @@ def test_optional_enum() -> None:
     assert isinstance(schema, Schema)
     assert schema.type is None
     assert schema.one_of is not None
-    null_schema = schema.one_of[0]
+    null_schema = schema.one_of[1]
     assert isinstance(null_schema, Schema)
     assert null_schema.type is not None
     assert null_schema.type is OpenAPIType.NULL
-    enum_ref = schema.one_of[1]
+    enum_ref = schema.one_of[0]
     assert isinstance(enum_ref, Reference)
     assert enum_ref.ref == "#/components/schemas/tests_unit_test_openapi_test_schema_test_optional_enum.Foo"
     enum_schema = creator.schema_registry.from_reference(enum_ref).schema
@@ -569,9 +569,9 @@ def test_type_union_with_none(base_type: type) -> None:
         FieldDefinition.from_kwarg(name="Lookup", annotation=Union[ModelA, ModelB, None])
     )
     assert schema.one_of == [
-        Schema(type=OpenAPIType.NULL),
         Reference(ref="#/components/schemas/tests_unit_test_openapi_test_schema_test_type_union_with_none.ModelA"),
         Reference("#/components/schemas/tests_unit_test_openapi_test_schema_test_type_union_with_none.ModelB"),
+        Schema(type=OpenAPIType.NULL),
     ]
 
 
