@@ -269,13 +269,14 @@ to test them alongside the rest of the test suite, ensuring they do not become s
 Please follow the next guidelines when adding a new example:
 
 - Add the example in the corresponding module directory in ``/docs/examples`` or create a new one if necessary
-- Create a suite for the module in ``/docs/examples/tests`` that tests the aspects of the example that it demonstrates
+- Create a suite for the module in ``/tests/examples`` that tests the aspects of the example that it demonstrates
 - Reference the example in the rst file with an external reference code block, e.g.
 
 .. code-block:: rst
    :caption: An example of how to use literal includes of external files
 
    .. literalinclude:: /examples/test_thing.py
+      :language: python
       :caption: All includes should have a descriptive caption
 
 Automatically execute examples

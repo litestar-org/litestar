@@ -12,6 +12,7 @@ from litestar.handlers import get
 from litestar.serialization import encode_json, get_serializer
 
 if TYPE_CHECKING:
+    from litestar.config.csrf import CSRFConfig
     from litestar.connection import Request
     from litestar.router import Router
 
@@ -28,6 +29,11 @@ __all__ = (
 _favicon_url = "https://cdn.jsdelivr.net/gh/litestar-org/branding@main/assets/Branding%20-%20PNG%20-%20Transparent/Badge%20-%20Blue%20and%20Yellow.png"
 _default_favicon = f"<link rel='icon' type='image/png' href='{_favicon_url}'>"
 _default_style = "<style>body { margin: 0; padding: 0 }</style>"
+
+
+def _get_cookie_value_or_undefined(cookie_name: str) -> str:
+    """Javascript code as a string to get the value of a cookie by name or undefined."""
+    return f"document.cookie.split('; ').find((row) => row.startsWith('{cookie_name}='))?.split('=')[1];"
 
 
 class OpenAPIRenderPlugin(ABC):
@@ -221,6 +227,25 @@ class RapidocRenderPlugin(OpenAPIRenderPlugin):
             A rendered html string.
         """
 
+        def create_request_interceptor(csrf_config: CSRFConfig) -> str:
+            if csrf_config.cookie_httponly:
+                return ""
+
+            return f"""
+            <script>
+              window.addEventListener('DOMContentLoaded', (event) => {{
+                const rapidocEl = document.getElementsByTagName("rapi-doc")[0];
+
+                rapidocEl.addEventListener('before-try', (e) => {{
+                  const csrf_token = {_get_cookie_value_or_undefined(csrf_config.cookie_name)};
+
+                  if (csrf_token !== undefined) {{
+                    e.detail.request.headers.append('{csrf_config.header_name}', csrf_token);
+                  }}
+                }});
+              }});
+            </script>"""
+
         head = f"""
           <head>
             <title>{openapi_schema["info"]["title"]}</title>
@@ -235,6 +260,7 @@ class RapidocRenderPlugin(OpenAPIRenderPlugin):
         body = f"""
           <body>
             <rapi-doc spec-url="{self.get_openapi_json_route(request)}" />
+            {create_request_interceptor(request.app.csrf_config) if request.app.csrf_config else ""}
           </body>
         """
 
@@ -333,7 +359,7 @@ class ScalarRenderPlugin(OpenAPIRenderPlugin):
     def __init__(
         self,
         *,
-        version: str = "1.19.5",
+        version: str = "latest",
         js_url: str | None = None,
         css_url: str | None = None,
         path: str | Sequence[str] = "/scalar",
@@ -520,6 +546,21 @@ class SwaggerRenderPlugin(OpenAPIRenderPlugin):
             A rendered html string.
         """
 
+        def create_request_interceptor(csrf_config: CSRFConfig) -> bytes:
+            if csrf_config.cookie_httponly:
+                return b""
+
+            return f"""
+                  requestInterceptor: (request) => {{
+                    const csrf_token = {_get_cookie_value_or_undefined(csrf_config.cookie_name)};
+
+                    if (csrf_token !== undefined) {{
+                      request.headers['{csrf_config.header_name}'] = csrf_token;
+                    }}
+
+                    return request;
+                  }},""".encode()
+
         head = f"""
           <head>
             <title>{openapi_schema["info"]["title"]}</title>
@@ -550,7 +591,9 @@ class SwaggerRenderPlugin(OpenAPIRenderPlugin):
                   presets: [
                       SwaggerUIBundle.presets.apis,
                       SwaggerUIBundle.SwaggerUIStandalonePreset
-                  ],
+                  ],""",
+                create_request_interceptor(request.app.csrf_config) if request.app.csrf_config else b"",
+                b"""
                 })
             ui.initOAuth(""",
                 encode_json(self.init_oauth),

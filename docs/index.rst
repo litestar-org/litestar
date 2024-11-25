@@ -325,13 +325,13 @@ Example Applications
 --------------------
 
 
-* `litestar-pg-redis-docker <https://github.com/litestar-org/litestar-pg-redis-docker>`_ : In addition to Litestar, this
-  demonstrates a pattern of application modularity, SQLAlchemy 2.0 ORM, Redis cache connectivity, and more. Like all
-  Litestar projects, this application is open to contributions, big and small.
 * `litestar-fullstack <https://github.com/litestar-org/litestar-fullstack>`_ : A fully-capable, production-ready fullstack
   Litestar web application configured with best practices. It includes SQLAlchemy 2.0, VueJS, `Vite <https://vitejs.dev/>`_,
   `SAQ job queue <https://saq-py.readthedocs.io/en/latest/>`_, ``Jinja`` templates and more.
-  `Read more <https://litestar-org.github.io/litestar-fullstack/latest/>`_.
+  `Read more <https://litestar-org.github.io/litestar-fullstack/latest/>`_. Like all
+  Litestar projects, this application is open to contributions, big and small.
+* `litestar-fullstack-inertia <https://github.com/litestar-org/litestar-fullstack-inertia>`_ : Similar to
+  `Litestar Fullstack <https://litestar-org.github.io/litestar-fullstack/latest/>`_ but uses `Inertia.js <https://inertiajs.com>`_.
 * `litestar-hello-world <https://github.com/litestar-org/litestar-hello-world>`_: A bare-minimum application setup.
   Great for testing and POC work.
 
@@ -360,5 +360,5 @@ Example Applications
     :hidden:
 
     contribution-guide
-    Available Issues <https://github.com/search?q=user%3Alitestar-org+state%3Aopen+label%3A%22good+first+issue%22+++no%3Aassignee+&type=issues=>
+    Available Issues <https://github.com/search?q=user%3Alitestar-org+state%3Aopen+label%3A%22good+first+issue%22+++no%3Aassignee+&type=issues>
     Code of Conduct <https://github.com/litestar-org/.github?tab=coc-ov-file#readme>

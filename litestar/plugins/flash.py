@@ -7,7 +7,6 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Mapping
 
 import litestar.exceptions
-from litestar import Request
 from litestar.exceptions import MissingDependencyException
 from litestar.middleware import DefineMiddleware
 from litestar.middleware.session import SessionMiddleware
@@ -20,6 +19,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from litestar.config.app import AppConfig
+    from litestar.connection.base import ASGIConnection
     from litestar.template import TemplateConfig
 
 
@@ -69,7 +69,7 @@ class FlashPlugin(InitPluginProtocol):
 
 
 def flash(
-    request: Request,
+    request: ASGIConnection[Any, Any, Any, Any],
     message: Any,
     category: str,
 ) -> None:

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Mapping, _GenericAlias  # type: ignore[attr-defined]
+from typing import TYPE_CHECKING, Any, Mapping  # type: ignore[attr-defined]
 
 from litestar.utils.helpers import get_name
 
@@ -10,10 +10,7 @@ if TYPE_CHECKING:
     from litestar.openapi.spec import Example
     from litestar.typing import FieldDefinition
 
-__all__ = (
-    "_should_create_literal_schema",
-    "_get_normalized_schema_key",
-)
+__all__ = ("_should_create_literal_schema",)
 
 
 def _should_create_literal_schema(field_definition: FieldDefinition) -> bool:
@@ -31,28 +28,10 @@ def _should_create_literal_schema(field_definition: FieldDefinition) -> bool:
     Returns:
         A boolean
     """
-    return (
-        field_definition.is_literal
-        or field_definition.is_optional
+    return field_definition.is_literal or (
+        field_definition.is_optional
         and all(inner.is_literal for inner in field_definition.inner_types if not inner.is_none_type)
     )
-
-
-def _get_normalized_schema_key(annotation: Any) -> tuple[str, ...]:
-    """Create a key for a type annotation.
-
-    The key should be a tuple such as ``("path", "to", "type", "TypeName")``.
-
-    Args:
-        annotation: a type annotation
-
-    Returns:
-        A tuple of strings.
-    """
-    module = getattr(annotation, "__module__", "")
-    name = str(annotation)[len(module) + 1 :] if isinstance(annotation, _GenericAlias) else annotation.__qualname__
-    name = name.replace(".<locals>.", ".")
-    return *module.split("."), name
 
 
 def get_formatted_examples(field_definition: FieldDefinition, examples: Sequence[Example]) -> Mapping[str, Example]:

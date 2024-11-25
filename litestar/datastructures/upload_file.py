@@ -1,3 +1,4 @@
+# ruff: noqa: SIM115
 from __future__ import annotations
 
 from tempfile import SpooledTemporaryFile
@@ -11,7 +12,7 @@ __all__ = ("UploadFile",)
 class UploadFile:
     """Representation of a file upload"""
 
-    __slots__ = ("filename", "file", "content_type", "headers")
+    __slots__ = ("content_type", "file", "filename", "headers")
 
     def __init__(
         self,

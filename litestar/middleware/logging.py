@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Any, Iterable
+from typing import TYPE_CHECKING, Any, Collection, Iterable
 
 from litestar.constants import (
     HTTP_RESPONSE_BODY,
@@ -227,7 +227,7 @@ class LoggingMiddleware(AbstractMiddleware):
                 connection_state.log_context[HTTP_RESPONSE_BODY] = message
                 self.log_response(scope=scope)
 
-                if not message["more_body"]:
+                if not message.get("more_body"):
                     connection_state.log_context.clear()
 
             await send(message)
@@ -273,7 +273,7 @@ class LoggingMiddlewareConfig:
     """Log message to prepend when logging a request."""
     response_log_message: str = field(default="HTTP Response")
     """Log message to prepend when logging a response."""
-    request_log_fields: Iterable[RequestExtractorField] = field(
+    request_log_fields: Collection[RequestExtractorField] = field(
         default=(
             "path",
             "method",
@@ -292,7 +292,7 @@ class LoggingMiddlewareConfig:
             Thus, re-arranging the log-message is as simple as changing the iterable.
         -  To turn off logging of requests, use and empty iterable.
     """
-    response_log_fields: Iterable[ResponseExtractorField] = field(
+    response_log_fields: Collection[ResponseExtractorField] = field(
         default=(
             "status_code",
             "cookies",

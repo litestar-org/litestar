@@ -1,69 +1,48 @@
+# ruff: noqa: TCH004, F401
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from litestar.plugins import InitPluginProtocol
-
-from .pydantic_di_plugin import PydanticDIPlugin
-from .pydantic_dto_factory import PydanticDTO
-from .pydantic_init_plugin import PydanticInitPlugin
-from .pydantic_schema_plugin import PydanticSchemaPlugin
-
-if TYPE_CHECKING:
-    from pydantic import BaseModel
-    from pydantic.v1 import BaseModel as BaseModelV1
-
-    from litestar.config.app import AppConfig
+from litestar.utils import warn_deprecation
 
 __all__ = (
+    "PydanticDIPlugin",
     "PydanticDTO",
     "PydanticInitPlugin",
-    "PydanticSchemaPlugin",
     "PydanticPlugin",
-    "PydanticDIPlugin",
+    "PydanticSchemaPlugin",
 )
 
 
-def _model_dump(model: BaseModel | BaseModelV1, *, by_alias: bool = False) -> dict[str, Any]:
-    return (
-        model.model_dump(mode="json", by_alias=by_alias)  # pyright: ignore
-        if hasattr(model, "model_dump")
-        else {k: v.decode() if isinstance(v, bytes) else v for k, v in model.dict(by_alias=by_alias).items()}
-    )
-
-
-def _model_dump_json(model: BaseModel | BaseModelV1, by_alias: bool = False) -> str:
-    return (
-        model.model_dump_json(by_alias=by_alias)  # pyright: ignore
-        if hasattr(model, "model_dump_json")
-        else model.json(by_alias=by_alias)  # pyright: ignore
-    )
-
-
-class PydanticPlugin(InitPluginProtocol):
-    """A plugin that provides Pydantic integration."""
-
-    __slots__ = ("prefer_alias",)
-
-    def __init__(self, prefer_alias: bool = False) -> None:
-        """Initialize ``PydanticPlugin``.
-
-        Args:
-            prefer_alias: OpenAPI and ``type_encoders`` will export by alias
-        """
-        self.prefer_alias = prefer_alias
-
-    def on_app_init(self, app_config: AppConfig) -> AppConfig:
-        """Configure application for use with Pydantic.
-
-        Args:
-            app_config: The :class:`AppConfig <.config.app.AppConfig>` instance.
-        """
-        app_config.plugins.extend(
-            [
-                PydanticInitPlugin(prefer_alias=self.prefer_alias),
-                PydanticSchemaPlugin(prefer_alias=self.prefer_alias),
-                PydanticDIPlugin(),
-            ]
+def __getattr__(attr_name: str) -> object:
+    if attr_name in __all__:
+        from litestar.plugins.pydantic import (
+            PydanticDIPlugin,
+            PydanticDTO,
+            PydanticInitPlugin,
+            PydanticPlugin,
+            PydanticSchemaPlugin,
         )
-        return app_config
+
+        warn_deprecation(
+            deprecated_name=f"litestar.contrib.pydantic.{attr_name}",
+            version="2.12",
+            kind="import",
+            removal_in="3.0",
+            info=f"importing {attr_name} from 'litestar.contrib.pydantic' is deprecated, please "
+            f"import it from 'litestar.plugins.pydantic' instead",
+        )
+        value = globals()[attr_name] = locals()[attr_name]
+        return value
+
+    raise AttributeError(f"module {__name__!r} has no attribute {attr_name!r}")  # pragma: no cover
+
+
+if TYPE_CHECKING:
+    from litestar.plugins.pydantic import (
+        PydanticDIPlugin,
+        PydanticDTO,
+        PydanticInitPlugin,
+        PydanticPlugin,
+        PydanticSchemaPlugin,
+    )

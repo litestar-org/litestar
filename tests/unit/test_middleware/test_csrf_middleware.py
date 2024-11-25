@@ -242,6 +242,31 @@ def test_csrf_middleware_exclude_from_check() -> None:
         assert response.json() == data
 
 
+def test_csrf_middleware_exclude_from_set_cookies() -> None:
+    #  https://github.com/litestar-org/litestar/issues/3688
+    #  middleware should be bypassed completely when excluded, so no cookies should be set
+
+    @get("/protected-handler")
+    def get_handler() -> dict:
+        return {}
+
+    @get("/unprotected-handler")
+    def get_handler2() -> dict:
+        return {}
+
+    with create_test_client(
+        route_handlers=[get_handler, get_handler2],
+        csrf_config=CSRFConfig(secret=str(urandom(10)), exclude=["unprotected-handler"]),
+    ) as client:
+        response = client.get("/unprotected-handler")
+        assert response.status_code == HTTP_200_OK
+        assert "set-cookie" not in response.headers
+
+        response = client.get("/protected-handler")
+        assert response.status_code == HTTP_200_OK
+        assert "set-cookie" in response.headers
+
+
 def test_csrf_middleware_configure_name_for_exclude_from_check_via_opts() -> None:
     @post("/handler", exclude_from_csrf=True)
     def post_handler(data: dict = Body(media_type=RequestEncodingType.URL_ENCODED)) -> dict:

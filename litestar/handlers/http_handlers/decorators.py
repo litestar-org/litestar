@@ -8,9 +8,9 @@ from litestar.exceptions import HTTPException, ImproperlyConfiguredException
 from litestar.openapi.spec import Operation
 from litestar.response.file import ASGIFileResponse, File
 from litestar.types import Empty, TypeDecodersSequence
-from litestar.types.builtin_types import NoneType
 from litestar.utils import is_class_and_subclass
 
+from ._utils import is_empty_response_annotation
 from .base import HTTPRouteHandler
 
 if TYPE_CHECKING:
@@ -41,22 +41,21 @@ if TYPE_CHECKING:
     from litestar.types.callable_types import OperationIDCreator
 
 
-__all__ = ("get", "head", "post", "put", "patch", "delete")
+__all__ = ("delete", "get", "head", "patch", "post", "put")
 
 MSG_SEMANTIC_ROUTE_HANDLER_WITH_HTTP = "semantic route handlers cannot define http_method"
 
 
-class _SubclassWarningMixin:
-    def __init_subclass__(cls, **kwargs: Any) -> None:
-        warnings.warn(
-            "Semantic HTTP route handler classes are deprecated and will be replaced by"
-            "functional decorators in Litestar 3.0.",
-            category=DeprecationWarning,
-            stacklevel=2,
-        )
+def _subclass_warning() -> None:
+    warnings.warn(
+        "Semantic HTTP route handler classes are deprecated and will be replaced by "
+        "functional decorators in Litestar 3.0.",
+        category=DeprecationWarning,
+        stacklevel=2,
+    )
 
 
-class delete(HTTPRouteHandler, _SubclassWarningMixin):
+class delete(HTTPRouteHandler):
     """DELETE Route Decorator.
 
     Use this decorator to decorate an HTTP handler for DELETE requests.
@@ -227,8 +226,11 @@ class delete(HTTPRouteHandler, _SubclassWarningMixin):
             **kwargs,
         )
 
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        _subclass_warning()
 
-class get(HTTPRouteHandler, _SubclassWarningMixin):
+
+class get(HTTPRouteHandler):
     """GET Route Decorator.
 
     Use this decorator to decorate an HTTP handler for GET requests.
@@ -400,8 +402,11 @@ class get(HTTPRouteHandler, _SubclassWarningMixin):
             **kwargs,
         )
 
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        _subclass_warning()
 
-class head(HTTPRouteHandler, _SubclassWarningMixin):
+
+class head(HTTPRouteHandler):
     """HEAD Route Decorator.
 
     Use this decorator to decorate an HTTP handler for HEAD requests.
@@ -577,21 +582,26 @@ class head(HTTPRouteHandler, _SubclassWarningMixin):
             **kwargs,
         )
 
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        _subclass_warning()
+
     def _validate_handler_function(self) -> None:
         """Validate the route handler function once it is set by inspecting its return annotations."""
         super()._validate_handler_function()
 
         # we allow here File and File because these have special setting for head responses
-        return_annotation = self.parsed_fn_signature.return_type.annotation
+        field_definition = self.parsed_fn_signature.return_type
         if not (
-            return_annotation in {NoneType, None}
-            or is_class_and_subclass(return_annotation, File)
-            or is_class_and_subclass(return_annotation, ASGIFileResponse)
+            is_empty_response_annotation(field_definition)
+            or is_class_and_subclass(field_definition.annotation, File)
+            or is_class_and_subclass(field_definition.annotation, ASGIFileResponse)
         ):
-            raise ImproperlyConfiguredException("A response to a head request should not have a body")
+            raise ImproperlyConfiguredException(
+                f"{self}: Handlers for 'HEAD' requests must not return a value. Either return 'None' or a response type without a body."
+            )
 
 
-class patch(HTTPRouteHandler, _SubclassWarningMixin):
+class patch(HTTPRouteHandler):
     """PATCH Route Decorator.
 
     Use this decorator to decorate an HTTP handler for PATCH requests.
@@ -618,6 +628,7 @@ class patch(HTTPRouteHandler, _SubclassWarningMixin):
         name: str | None = None,
         opt: Mapping[str, Any] | None = None,
         request_class: type[Request] | None = None,
+        request_max_body_size: int | None | EmptyType = Empty,
         response_class: type[Response] | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
@@ -682,6 +693,8 @@ class patch(HTTPRouteHandler, _SubclassWarningMixin):
                 wherever you have access to :class:`Request <.connection.Request>` or :class:`ASGI Scope <.types.Scope>`.
             request_class: A custom subclass of :class:`Request <.connection.Request>` to be used as route handler's
                 default request.
+            request_max_body_size: Maximum allowed size of the request body in bytes. If this size is exceeded,
+                a '413 - Request Entity Too Large' error response is returned.
             response_class: A custom subclass of :class:`Response <.response.Response>` to be used as route handler's
                 default response.
             response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>` instances.
@@ -745,6 +758,7 @@ class patch(HTTPRouteHandler, _SubclassWarningMixin):
             path=path,
             raises=raises,
             request_class=request_class,
+            request_max_body_size=request_max_body_size,
             response_class=response_class,
             response_cookies=response_cookies,
             response_description=response_description,
@@ -762,8 +776,11 @@ class patch(HTTPRouteHandler, _SubclassWarningMixin):
             **kwargs,
         )
 
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        _subclass_warning()
 
-class post(HTTPRouteHandler, _SubclassWarningMixin):
+
+class post(HTTPRouteHandler):
     """POST Route Decorator.
 
     Use this decorator to decorate an HTTP handler for POST requests.
@@ -790,6 +807,7 @@ class post(HTTPRouteHandler, _SubclassWarningMixin):
         name: str | None = None,
         opt: Mapping[str, Any] | None = None,
         request_class: type[Request] | None = None,
+        request_max_body_size: int | None | EmptyType = Empty,
         response_class: type[Response] | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
@@ -854,6 +872,8 @@ class post(HTTPRouteHandler, _SubclassWarningMixin):
                 wherever you have access to :class:`Request <.connection.Request>` or :class:`ASGI Scope <.types.Scope>`.
             request_class: A custom subclass of :class:`Request <.connection.Request>` to be used as route handler's
                 default request.
+            request_max_body_size: Maximum allowed size of the request body in bytes. If this size is exceeded,
+                a '413 - Request Entity Too Large' error response is returned.
             response_class: A custom subclass of :class:`Response <.response.Response>` to be used as route handler's
                 default response.
             response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>` instances.
@@ -917,6 +937,7 @@ class post(HTTPRouteHandler, _SubclassWarningMixin):
             path=path,
             raises=raises,
             request_class=request_class,
+            request_max_body_size=request_max_body_size,
             response_class=response_class,
             response_cookies=response_cookies,
             response_description=response_description,
@@ -934,8 +955,11 @@ class post(HTTPRouteHandler, _SubclassWarningMixin):
             **kwargs,
         )
 
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        _subclass_warning()
 
-class put(HTTPRouteHandler, _SubclassWarningMixin):
+
+class put(HTTPRouteHandler):
     """PUT Route Decorator.
 
     Use this decorator to decorate an HTTP handler for PUT requests.
@@ -962,6 +986,7 @@ class put(HTTPRouteHandler, _SubclassWarningMixin):
         name: str | None = None,
         opt: Mapping[str, Any] | None = None,
         request_class: type[Request] | None = None,
+        request_max_body_size: int | None | EmptyType = Empty,
         response_class: type[Response] | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
@@ -1026,6 +1051,8 @@ class put(HTTPRouteHandler, _SubclassWarningMixin):
                 wherever you have access to :class:`Request <.connection.Request>` or :class:`ASGI Scope <.types.Scope>`.
             request_class: A custom subclass of :class:`Request <.connection.Request>` to be used as route handler's
                 default request.
+            request_max_body_size: Maximum allowed size of the request body in bytes. If this size is exceeded,
+                a '413 - Request Entity Too Large' error response is returned.
             response_class: A custom subclass of :class:`Response <.response.Response>` to be used as route handler's
                 default response.
             response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>` instances.
@@ -1089,6 +1116,7 @@ class put(HTTPRouteHandler, _SubclassWarningMixin):
             path=path,
             raises=raises,
             request_class=request_class,
+            request_max_body_size=request_max_body_size,
             response_class=response_class,
             response_cookies=response_cookies,
             response_description=response_description,
@@ -1105,3 +1133,6 @@ class put(HTTPRouteHandler, _SubclassWarningMixin):
             type_encoders=type_encoders,
             **kwargs,
         )
+
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        _subclass_warning()

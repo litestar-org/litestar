@@ -89,10 +89,8 @@ class AbstractSecurityConfig(ABC, Generic[UserType, AuthType]):
             app_config.openapi_config = copy(app_config.openapi_config)
             if isinstance(app_config.openapi_config.components, list):
                 app_config.openapi_config.components.append(self.openapi_components)
-            elif app_config.openapi_config.components:
-                app_config.openapi_config.components = [self.openapi_components, app_config.openapi_config.components]
             else:
-                app_config.openapi_config.components = [self.openapi_components]
+                app_config.openapi_config.components = [self.openapi_components, app_config.openapi_config.components]
 
             if isinstance(app_config.openapi_config.security, list):
                 app_config.openapi_config.security.append(self.security_requirement)

@@ -5,8 +5,8 @@ on:
     types:
       - closed
     branches:
-      - develop
       - main
+      - v3.0
 
 jobs:
   close_and_notify:
@@ -19,8 +19,8 @@ jobs:
           script: |
             const prNumber = context.payload.number
             const branch = context.baseRef
-            const isDevelop = branch === "develop"
-            const commentBody = `<!--closing-comment-->\nThis issue has been closed in #${prNumber}. The change will be included in the upcoming ${isDevelop ? "minor" : "patch"} release.`
+            // TODO: use semantic commits to specify the exact version, when it will be released
+            const commentBody = `<!--closing-comment-->\nThis issue has been closed in #${prNumber}. The change will be included in upcoming releases.`
 
             const query = `query($number: Int!, $owner: String!, $name: String!) { repository(owner: $owner, name: $name) {
                 pullRequest(number: $number) {

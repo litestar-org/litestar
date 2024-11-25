@@ -1,26 +1,30 @@
+# ruff: noqa: TCH004, F401
 from __future__ import annotations
 
-import inspect
-from inspect import Signature
-from typing import Any
+from typing import TYPE_CHECKING  # pragma: no cover
 
-from litestar.contrib.pydantic.utils import is_pydantic_model_class
-from litestar.plugins import DIPlugin
+from litestar.utils import warn_deprecation  # pragma: no cover
+
+__all__ = ("PydanticDIPlugin",)  # pragma: no cover
 
 
-class PydanticDIPlugin(DIPlugin):
-    def has_typed_init(self, type_: Any) -> bool:
-        return is_pydantic_model_class(type_)
+def __getattr__(attr_name: str) -> object:  # pragma: no cover
+    if attr_name in __all__:
+        from litestar.plugins.pydantic.plugins.di import PydanticDIPlugin
 
-    def get_typed_init(self, type_: Any) -> tuple[Signature, dict[str, Any]]:
-        try:
-            model_fields = dict(type_.model_fields)
-        except AttributeError:
-            model_fields = {k: model_field.field_info for k, model_field in type_.__fields__.items()}
+        warn_deprecation(
+            deprecated_name=f"litestar.contrib.pydantic.pydantic_di_plugin.{attr_name}",
+            version="2.12",
+            kind="import",
+            removal_in="3.0",
+            info=f"importing {attr_name} from 'litestar.contrib.pydantic.pydantic_di_plugin' is deprecated, please "
+            f"import it from 'litestar.plugins.pydantic' instead",
+        )
+        value = globals()[attr_name] = locals()[attr_name]
+        return value
 
-        parameters = [
-            inspect.Parameter(name=field_name, kind=inspect.Parameter.KEYWORD_ONLY, annotation=Any)
-            for field_name in model_fields
-        ]
-        type_hints = {field_name: Any for field_name in model_fields}
-        return Signature(parameters), type_hints
+    raise AttributeError(f"module {__name__!r} has no attribute {attr_name!r}")
+
+
+if TYPE_CHECKING:
+    from litestar.plugins.pydantic.plugins.di import PydanticDIPlugin

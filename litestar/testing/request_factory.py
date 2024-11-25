@@ -55,12 +55,12 @@ class RequestFactory:
 
     __slots__ = (
         "app",
-        "server",
+        "handler_kwargs",
         "port",
         "root_path",
         "scheme",
-        "handler_kwargs",
         "serializer",
+        "server",
     )
 
     def __init__(
@@ -188,6 +188,7 @@ class RequestFactory:
             route_handler=route_handler
             or _create_default_route_handler(http_method, self.handler_kwargs, app=self.app),
             extensions={},
+            path_template="",
         )
 
     @classmethod

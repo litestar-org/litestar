@@ -1,8 +1,11 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Union
+from warnings import catch_warnings
+
+import pytest
 
 from litestar import MediaType, asgi, get
 from litestar.datastructures.headers import MutableScopeHeaders
-from litestar.exceptions import ValidationException
+from litestar.exceptions import LitestarWarning, ValidationException
 from litestar.middleware import AbstractMiddleware, DefineMiddleware
 from litestar.response.base import ASGIResponse
 from litestar.status_codes import HTTP_400_BAD_REQUEST
@@ -119,6 +122,30 @@ def test_exclude_by_pattern_list() -> None:
         assert "test" not in response.headers
         response = client.get("/789")
         assert "test" in response.headers
+
+
+@pytest.mark.parametrize("excludes", ["/", ["/", "/foo"], "/*", "/.*"])
+def test_exclude_by_pattern_warns_if_exclude_all(excludes: Union[str, List[str]]) -> None:
+    class SubclassMiddleware(AbstractMiddleware):
+        exclude = excludes
+
+        async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+            await self.app(scope, receive, send)
+
+    with pytest.warns(LitestarWarning, match="Middleware 'SubclassMiddleware' exclude pattern"):
+        create_test_client(middleware=[SubclassMiddleware])
+
+
+def test_exclude_doesnt_warn_on_non_greedy_pattern() -> None:
+    class SubclassMiddleware(AbstractMiddleware):
+        exclude = "^/$"
+
+        async def __call__(self, scope: "Scope", receive: "Receive", send: "Send") -> None:
+            await self.app(scope, receive, send)
+
+    with catch_warnings(record=True) as warnings:
+        create_test_client(middleware=[SubclassMiddleware])
+        assert len(warnings) == 0
 
 
 def test_exclude_by_opt_key() -> None:

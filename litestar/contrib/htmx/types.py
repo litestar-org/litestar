@@ -1,54 +1,33 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Literal, TypedDict, Union
+from typing import TYPE_CHECKING
 
+from litestar.utils import warn_deprecation
+
+if TYPE_CHECKING:
+    from litestar_htmx import HtmxHeaderType, LocationType, TriggerEventType  # noqa: TC004
 __all__ = (
     "HtmxHeaderType",
     "LocationType",
     "TriggerEventType",
 )
 
-if TYPE_CHECKING:
-    from typing_extensions import Required
 
+def __getattr__(attr_name: str) -> object:
+    if attr_name in __all__:
+        import litestar_htmx
 
-EventAfterType = Literal["receive", "settle", "swap", None]
+        module = "litestar.plugins.htmx"
+        value = globals()[attr_name] = getattr(litestar_htmx, attr_name)
 
-PushUrlType = Union[str, bool]
+        warn_deprecation(
+            deprecated_name=f"litestar.contrib.htmx.types.{attr_name}",
+            version="2.13",
+            kind="import",
+            removal_in="3.0",
+            info=f"importing {attr_name} from 'litestar.contrib.htmx.types' is deprecated, please import it from '{module}' instead",
+        )
 
-ReSwapMethod = Literal[
-    "innerHTML", "outerHTML", "beforebegin", "afterbegin", "beforeend", "afterend", "delete", "none", None
-]
+        return value
 
-
-class LocationType(TypedDict):
-    """Type for HX-Location header."""
-
-    path: Required[str]
-    source: str | None
-    event: str | None
-    target: str | None
-    swap: ReSwapMethod | None
-    values: dict[str, str] | None
-    hx_headers: dict[str, Any] | None
-
-
-class TriggerEventType(TypedDict):
-    """Type for HX-Trigger header."""
-
-    name: Required[str]
-    params: dict[str, Any] | None
-    after: EventAfterType | None
-
-
-class HtmxHeaderType(TypedDict, total=False):
-    """Type for hx_headers parameter in get_headers()."""
-
-    location: LocationType | None
-    redirect: str | None
-    refresh: bool
-    push_url: PushUrlType | None
-    replace_url: PushUrlType | None
-    re_swap: ReSwapMethod | None
-    re_target: str | None
-    trigger_event: TriggerEventType | None
+    raise AttributeError(f"module {__name__!r} has no attribute {attr_name!r}")

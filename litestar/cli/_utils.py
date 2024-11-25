@@ -15,7 +15,13 @@ from os import getenv
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, Generator, Iterable, Sequence, TypeVar, cast
 
-from click import ClickException, Command, Context, Group, pass_context
+try:
+    from rich_click import RichCommand as Command
+    from rich_click import RichGroup as Group
+except ImportError:
+    from click import Command, Group  # type: ignore[assignment]
+
+from click import ClickException, Context, pass_context
 from rich import get_console
 from rich.table import Table
 from typing_extensions import ParamSpec, get_type_hints
@@ -41,13 +47,13 @@ JSBEAUTIFIER_INSTALLED = find_spec("jsbeautifier") is not None
 
 
 __all__ = (
-    "UVICORN_INSTALLED",
     "JSBEAUTIFIER_INSTALLED",
-    "LoadedApp",
+    "UVICORN_INSTALLED",
     "LitestarCLIException",
     "LitestarEnv",
     "LitestarExtensionGroup",
     "LitestarGroup",
+    "LoadedApp",
     "show_app_info",
 )
 
@@ -128,7 +134,7 @@ class LoadedApp:
     is_factory: bool
 
 
-class LitestarGroup(Group):
+class LitestarGroup(Group):  # pyright: ignore
     """:class:`click.Group` subclass that automatically injects ``app`` and ``env` kwargs into commands that request it.
 
     Use this as the ``cls`` for :class:`click.Group` if you're extending the internal CLI with a group. For ``command``s
@@ -145,7 +151,7 @@ class LitestarGroup(Group):
         self.group_class = LitestarGroup
         super().__init__(name=name, commands=commands, **attrs)
 
-    def add_command(self, cmd: Command, name: str | None = None) -> None:
+    def add_command(self, cmd: Command, name: str | None = None) -> None:  # type: ignore[override]
         """Add command.
 
         If necessary, inject ``app`` and ``env`` kwargs
@@ -207,7 +213,7 @@ class LitestarExtensionGroup(LitestarGroup):
 
         self._prepare_done = True
 
-    def make_context(
+    def make_context(  # type: ignore[override]
         self,
         info_name: str | None,
         args: list[str],

@@ -96,7 +96,8 @@ class DTOBackend:
             handler_id: The name of the handler that this backend is for.
             is_data_field: Whether the field is a subclass of DTOData.
             model_type: Model type.
-            wrapper_attribute_name: If the data that DTO should operate upon is wrapped in a generic datastructure, this is the name of the attribute that the data is stored in.
+            wrapper_attribute_name: If the data that DTO should operate upon is wrapped in a generic datastructure,
+                this is the name of the attribute that the data is stored in.
         """
         self.dto_factory: Final[type[AbstractDTO]] = dto_factory
         self.field_definition: Final[FieldDefinition] = field_definition
@@ -209,7 +210,10 @@ class DTOBackend:
         struct_name = self._create_transfer_model_name(model_name)
 
         struct = _create_struct_for_field_definitions(
-            struct_name, field_definitions, self.dto_factory.config.rename_strategy
+            model_name=struct_name,
+            field_definitions=field_definitions,
+            rename_strategy=self.dto_factory.config.rename_strategy,
+            forbid_unknown_fields=self.dto_factory.config.forbid_unknown_fields,
         )
         setattr(struct, "__schema_name__", struct_name)
         return struct
@@ -232,9 +236,9 @@ class DTOBackend:
         type_decoders = asgi_connection.route_handler.resolve_type_decoders()
 
         if request_encoding == RequestEncodingType.MESSAGEPACK:
-            result = decode_msgpack(value=raw, target_type=self.annotation, type_decoders=type_decoders)
+            result = decode_msgpack(value=raw, target_type=self.annotation, type_decoders=type_decoders, strict=False)
         else:
-            result = decode_json(value=raw, target_type=self.annotation, type_decoders=type_decoders)
+            result = decode_json(value=raw, target_type=self.annotation, type_decoders=type_decoders, strict=False)
 
         return cast("Struct | Collection[Struct]", result)
 
@@ -785,9 +789,11 @@ def _create_struct_field_meta_for_field_definition(field_definition: TransferDTO
 
 
 def _create_struct_for_field_definitions(
+    *,
     model_name: str,
     field_definitions: tuple[TransferDTOFieldDefinition, ...],
     rename_strategy: RenameStrategy | dict[str, str] | None,
+    forbid_unknown_fields: bool,
 ) -> type[Struct]:
     struct_fields: list[tuple[str, type] | tuple[str, type, type]] = []
 
@@ -799,8 +805,11 @@ def _create_struct_for_field_definitions(
         if field_definition.is_partial:
             field_type = Union[field_type, UnsetType]
 
-        if (field_meta := _create_struct_field_meta_for_field_definition(field_definition)) is not None:
-            field_type = Annotated[field_type, field_meta]
+        if field_definition.passthrough_constraints:
+            if (field_meta := _create_struct_field_meta_for_field_definition(field_definition)) is not None:
+                field_type = Annotated[field_type, field_meta]
+        elif field_definition.kwarg_definition:
+            field_type = Annotated[field_type, field_definition.kwarg_definition]
 
         struct_fields.append(
             (
@@ -809,7 +818,14 @@ def _create_struct_for_field_definitions(
                 _create_msgspec_field(field_definition),
             )
         )
-    return defstruct(model_name, struct_fields, frozen=True, kw_only=True, rename=rename_strategy)
+    return defstruct(
+        model_name,
+        struct_fields,
+        frozen=True,
+        kw_only=True,
+        rename=rename_strategy,
+        forbid_unknown_fields=forbid_unknown_fields,
+    )
 
 
 def build_annotation_for_backend(

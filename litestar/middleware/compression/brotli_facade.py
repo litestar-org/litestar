@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
 
 class BrotliCompression(CompressionFacade):
-    __slots__ = ("compressor", "buffer", "compression_encoding")
+    __slots__ = ("buffer", "compression_encoding", "compressor")
 
     encoding = CompressionEncoding.BROTLI
 

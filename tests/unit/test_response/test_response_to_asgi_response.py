@@ -132,7 +132,7 @@ async def test_to_response_returning_starlette_response(
             data=route_handler.fn(), app=client.app, request=RequestFactory().get()
         )
         assert isinstance(response, StarletteResponse)
-        assert response is expected_response  # type: ignore[unreachable]
+        assert response is expected_response
 
 
 async def test_to_response_returning_redirect_response(anyio_backend: str) -> None:

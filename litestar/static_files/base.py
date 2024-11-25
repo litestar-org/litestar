@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 class StaticFiles:
     """ASGI App that handles file sending."""
 
-    __slots__ = ("is_html_mode", "directories", "adapter", "send_as_attachment", "headers")
+    __slots__ = ("adapter", "directories", "headers", "is_html_mode", "send_as_attachment")
 
     def __init__(
         self,

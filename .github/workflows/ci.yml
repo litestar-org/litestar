@@ -235,9 +235,8 @@ jobs:
         run: pdm run make docs-linkcheck
 
       - name: Save PR number
-        env:
-          PR_NUMBER: ${{ github.event.number }}
-        run: echo $PR_NUMBER > .pr_number
+        run: |
+          echo "${{ github.event.number }}" > .pr_number
 
       - name: Upload artifact
         uses: actions/upload-artifact@v3
@@ -246,6 +245,7 @@ jobs:
           path: |
             docs/_build/html
             .pr_number
+          include-hidden-files: true
 
   test_minimal_app:
     name: Test Minimal Application with Base Dependencies
@@ -321,6 +321,7 @@ jobs:
         with:
           name: coverage-data
           path: .coverage.pydantic_v1
+          include-hidden-files: true
 
   upload-test-coverage:
     runs-on: ubuntu-latest
@@ -348,7 +349,7 @@ jobs:
         run: sed -i "s/home\/runner\/work\/litestar\/litestar/github\/workspace/g" coverage.xml
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           files: coverage.xml
           token: ${{ secrets.CODECOV_TOKEN }}

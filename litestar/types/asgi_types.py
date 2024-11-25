@@ -51,7 +51,6 @@ __all__ = (
     "ASGIApp",
     "ASGIVersion",
     "BaseScope",
-    "HeaderScope",
     "HTTPDisconnectEvent",
     "HTTPReceiveMessage",
     "HTTPRequestEvent",
@@ -60,6 +59,7 @@ __all__ = (
     "HTTPScope",
     "HTTPSendMessage",
     "HTTPServerPushEvent",
+    "HeaderScope",
     "LifeSpanReceive",
     "LifeSpanReceiveMessage",
     "LifeSpanScope",
@@ -132,6 +132,7 @@ class BaseScope(HeaderScope):
     http_version: str
     path: str
     path_params: dict[str, str]
+    path_template: str
     query_string: bytes
     raw_path: bytes
     root_path: str

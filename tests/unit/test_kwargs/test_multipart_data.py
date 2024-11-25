@@ -51,18 +51,17 @@ async def form_multi_item_handler(request: Request) -> DefaultDict[str, list]:
     data = await request.form()
     output = defaultdict(list)
     for key, value in data.multi_items():
-        for v in value:
-            if isinstance(v, UploadFile):
-                content = await v.read()
-                output[key].append(
-                    {
-                        "filename": v.filename,
-                        "content": content.decode(),
-                        "content_type": v.content_type,
-                    }
-                )
-            else:
-                output[key].append(v)
+        if isinstance(value, UploadFile):
+            content = await value.read()
+            output[key].append(
+                {
+                    "filename": value.filename,
+                    "content": content.decode(),
+                    "content_type": value.content_type,
+                }
+            )
+        else:
+            output[key].append(value)
     return output
 
 

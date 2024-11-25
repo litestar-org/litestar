@@ -23,7 +23,7 @@ PY_OBJ = "py:obj"
 PY_FUNC = "py:func"
 
 project = "Litestar"
-copyright = "2023, Litestar-Org"
+copyright = "2024, Litestar-Org"
 author = "Litestar-Org"
 release = os.getenv("_LITESTAR_DOCS_BUILD_VERSION", importlib.metadata.version("litestar").rsplit(".")[0])
 
@@ -153,8 +153,13 @@ nitpick_ignore = [
     (PY_CLASS, "litestar.response.RedirectResponse"),
     (PY_CLASS, "litestar.response_containers.Redirect"),
     (PY_CLASS, "litestar.response_containers.Template"),
+    (PY_CLASS, "litestar.contrib.sqlalchemy.plugins.SQLAlchemyPlugin"),
+    (PY_CLASS, "litestar.contrib.sqlalchemy.plugins.SQLAlchemySerializationPlugin"),
+    (PY_CLASS, "litestar.contrib.sqlalchemy.plugins.SQLAlchemyInitPlugin"),
+    (PY_CLASS, "litestar.contrib.sqlalchemy.dto.SQLAlchemyDTO"),
     (PY_CLASS, "litestar.contrib.sqlalchemy.types.BigIntIdentity"),
     (PY_CLASS, "litestar.contrib.sqlalchemy.types.JsonB"),
+    (PY_CLASS, "litestar.contrib.htmx.request.HTMXRequest"),
     (PY_CLASS, "litestar.typing.ParsedType"),
     (PY_METH, "litestar.dto.factory.DTOData.create_instance"),
     (PY_METH, "litestar.dto.interface.DTOInterface.data_to_encodable_type"),
@@ -165,6 +170,8 @@ nitpick_ignore = [
     (PY_CLASS, "advanced_alchemy.extensions.litestar.plugins._slots_base.SlotsBase"),
     (PY_CLASS, "advanced_alchemy.config.EngineConfig"),
     (PY_CLASS, "advanced_alchemy.config.common.GenericAlembicConfig"),
+    (PY_CLASS, "advanced_alchemy.extensions.litestar.SQLAlchemyDTO"),
+    (PY_CLASS, "advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO"),
     (PY_CLASS, "advanced_alchemy.extensions.litestar.plugins.SQLAlchemyPlugin"),
     (PY_CLASS, "advanced_alchemy.extensions.litestar.plugins.SQLAlchemySerializationPlugin"),
     (PY_CLASS, "advanced_alchemy.extensions.litestar.plugins.SQLAlchemyInitPlugin"),
@@ -184,7 +191,19 @@ nitpick_ignore = [
     ("py:exc", "HTTPExceptions"),
     (PY_CLASS, "litestar.template.Template"),
     (PY_CLASS, "litestar.middleware.compression.gzip_facade.GzipCompression"),
-    (PY_CLASS, "litestar.handlers.http_handlers.decorators._SubclassWarningMixin"),
+    (PY_CLASS, "litestar.handlers.http_handlers.decorators._subclass_warning"),
+    (PY_CLASS, "litestar.background_tasks.P"),
+    (PY_CLASS, "P.args"),
+    (PY_CLASS, "P.kwargs"),
+    (PY_CLASS, "litestar.contrib.jinja.P"),
+    (PY_CLASS, "litestar.contrib.mako.P"),
+    (PY_CLASS, "JWTDecodeOptions"),
+    (PY_CLASS, "litestar.template.base.P"),
+    (PY_CLASS, "litestar.contrib.pydantic.PydanticDTO"),
+    (PY_CLASS, "litestar.contrib.pydantic.PydanticPlugin"),
+    (PY_CLASS, "typing.Self"),
+    (PY_CLASS, "attr.AttrsInstance"),
+    (PY_CLASS, "typing_extensions.TypeGuard"),
 ]
 
 nitpick_ignore_regex = [
@@ -213,6 +232,9 @@ nitpick_ignore_regex = [
     (PY_RE, r"advanced_alchemy\.config.common\.EngineT"),
     (PY_RE, r"advanced_alchemy\.config.common\.SessionT"),
     (PY_RE, r".*R"),
+    (PY_OBJ, r"litestar.security.jwt.auth.TokenT"),
+    (PY_CLASS, "ExceptionToProblemDetailMapType"),
+    (PY_CLASS, "litestar.security.jwt.token.JWTDecodeOptions"),
 ]
 
 # Warnings about missing references to those targets in the specified location will be ignored.
@@ -236,7 +258,7 @@ ignore_missing_refs = {
     re.compile(r"litestar\.template\.(config|TemplateConfig).*"): re.compile(".*EngineType"),
     "litestar.concurrency.set_asyncio_executor": {"ThreadPoolExecutor"},
     "litestar.concurrency.get_asyncio_executor": {"ThreadPoolExecutor"},
-    re.compile(r"litestar\.channels\.backends\.asyncpg.*"): {"asyncpg.connection.Connection"},
+    re.compile(r"litestar\.channels\.backends\.asyncpg.*"): {"asyncpg.connection.Connection", "asyncpg.Connection"},
 }
 
 # Do not warn about broken links to the following:
@@ -346,11 +368,11 @@ def delayed_setup(app: Sphinx) -> None:
         return
 
     app.setup_extension("pydata_sphinx_theme")
-    app.connect("html-page-context", update_html_context)
+    app.connect("html-page-context", update_html_context)  # type: ignore
 
 
 def setup(app: Sphinx) -> dict[str, bool]:
-    app.connect("builder-inited", delayed_setup, priority=0)
+    app.connect("builder-inited", delayed_setup, priority=0)  # type: ignore
 
     app.setup_extension("litestar_sphinx_theme")
 

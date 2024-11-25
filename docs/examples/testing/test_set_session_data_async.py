@@ -12,7 +12,7 @@ def get_session_data(request: Request) -> Dict[str, Any]:
     return request.session
 
 
-app = Litestar(route_handlers=[get_session_data], middleware=[session_config.middleware])
+app = Litestar(route_handlers=[get_session_data], middleware=[session_config.middleware], debug=True)
 
 
 async def test_get_session_data() -> None:

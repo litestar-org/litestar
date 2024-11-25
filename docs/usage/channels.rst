@@ -219,8 +219,10 @@ subscriptions need to be managed dynamically.
 .. code-block:: python
 
     subscriber = await channels.subscribe(["foo", "bar"])
-    ...  # do some stuff here
-    await channels.unsubscribe(subscriber, ["foo"])
+    try:
+        ...  # do some stuff here
+    finally:
+        await channels.unsubscribe(subscriber, ["foo"])
 
 
 Or, using the context manager
@@ -438,7 +440,7 @@ route handlers.
 
 .. literalinclude:: /examples/channels/create_route_handlers.py
     :language: python
-    :caption: Setting ``create_route_handlers=True`` will create route handlers for all ``channels``
+    :caption: Setting ``create_ws_route_handlers=True`` will create route handlers for all ``channels``
 
 
 

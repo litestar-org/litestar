@@ -140,6 +140,7 @@ def configure_node(
     """
     from litestar.routes import HTTPRoute, WebSocketRoute
 
+    node.path_template = route.path_format
     if not node.path_parameters:
         node.path_parameters = {}
 

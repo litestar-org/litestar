@@ -68,6 +68,7 @@ class Router:
         "path",
         "registered_route_handler_ids",
         "request_class",
+        "request_max_body_size",
         "response_class",
         "response_cookies",
         "response_headers",
@@ -111,6 +112,7 @@ class Router:
         type_decoders: TypeDecodersSequence | None = None,
         type_encoders: TypeEncodersMap | None = None,
         websocket_class: type[WebSocket] | None = None,
+        request_max_body_size: int | None | EmptyType = Empty,
     ) -> None:
         """Initialize a ``Router``.
 
@@ -143,6 +145,8 @@ class Router:
                 with the router instance.
             request_class: A custom subclass of :class:`Request <.connection.Request>` to be used as the default for
                 all route handlers, controllers and other routers associated with the router instance.
+            request_max_body_size: Maximum allowed size of the request body in bytes. If this size is exceeded,
+                a '413 - Request Entity Too Large" error response is returned.
             response_class: A custom subclass of :class:`Response <.response.Response>` to be used as the default for
                 all route handlers, controllers and other routers associated with the router instance.
             response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>` instances.
@@ -197,6 +201,7 @@ class Router:
         self.type_encoders = dict(type_encoders) if type_encoders is not None else None
         self.type_decoders = list(type_decoders) if type_decoders is not None else None
         self.websocket_class = websocket_class
+        self.request_max_body_size = request_max_body_size
 
         for route_handler in route_handlers or []:
             self.register(value=route_handler)
@@ -280,40 +285,25 @@ class Router:
     @classmethod
     def get_route_handler_map(
         cls,
-        value: Controller | RouteHandlerType | Router,
+        value: RouteHandlerType | Router,
     ) -> dict[str, RouteHandlerMapItem]:
         """Map route handlers to HTTP methods."""
         if isinstance(value, Router):
             return value.route_handler_method_map
 
-        if isinstance(value, (HTTPRouteHandler, ASGIRouteHandler, WebsocketRouteHandler)):
-            copied_value = copy(value)
-            if isinstance(value, HTTPRouteHandler):
-                return {path: {http_method: copied_value for http_method in value.http_methods} for path in value.paths}
+        copied_value = copy(value)
+        if isinstance(value, HTTPRouteHandler):
+            return {path: {http_method: copied_value for http_method in value.http_methods} for path in value.paths}
 
-            return {
-                path: {"websocket" if isinstance(value, WebsocketRouteHandler) else "asgi": copied_value}
-                for path in value.paths
-            }
+        return {
+            path: {"websocket" if isinstance(value, WebsocketRouteHandler) else "asgi": copied_value}
+            for path in value.paths
+        }
 
-        handlers_map: defaultdict[str, RouteHandlerMapItem] = defaultdict(dict)
-        for route_handler in value.get_route_handlers():
-            for handler_path in route_handler.paths:
-                path = join_paths([value.path, handler_path]) if handler_path else value.path
-                if isinstance(route_handler, HTTPRouteHandler):
-                    for http_method in route_handler.http_methods:
-                        handlers_map[path][http_method] = route_handler
-                else:
-                    handlers_map[path]["websocket" if isinstance(route_handler, WebsocketRouteHandler) else "asgi"] = (
-                        cast("WebsocketRouteHandler | ASGIRouteHandler", route_handler)
-                    )
-
-        return handlers_map
-
-    def _validate_registration_value(self, value: ControllerRouterHandler) -> Controller | RouteHandlerType | Router:
+    def _validate_registration_value(self, value: ControllerRouterHandler) -> RouteHandlerType | Router:
         """Ensure values passed to the register method are supported."""
         if is_class_and_subclass(value, Controller):
-            return value(owner=self)
+            return value(owner=self).as_router()
 
         # this narrows down to an ABC, but we assume a non-abstract subclass of the ABC superclass
         if is_class_and_subclass(value, WebsocketListener):

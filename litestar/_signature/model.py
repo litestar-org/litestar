@@ -168,7 +168,9 @@ class SignatureModel(Struct):
         return message
 
     @classmethod
-    def _collect_errors(cls, deserializer: Callable[[Any, Any], Any], **kwargs: Any) -> list[tuple[str, Exception]]:
+    def _collect_errors(
+        cls, deserializer: Callable[[Any, Any], Any], kwargs: dict[str, Any]
+    ) -> list[tuple[str, Exception]]:
         exceptions: list[tuple[str, Exception]] = []
         for field_name in cls._fields:
             try:
@@ -181,12 +183,12 @@ class SignatureModel(Struct):
         return exceptions
 
     @classmethod
-    def parse_values_from_connection_kwargs(cls, connection: ASGIConnection, **kwargs: Any) -> dict[str, Any]:
+    def parse_values_from_connection_kwargs(cls, connection: ASGIConnection, kwargs: dict[str, Any]) -> dict[str, Any]:
         """Extract values from the connection instance and return a dict of parsed values.
 
         Args:
             connection: The ASGI connection instance.
-            **kwargs: A dictionary of kwargs.
+            kwargs: A dictionary of kwargs.
 
         Raises:
             ValidationException: If validation failed.
@@ -206,7 +208,7 @@ class SignatureModel(Struct):
                 messages.append(message)
             raise cls._create_exception(messages=messages, connection=connection) from e
         except ValidationError as e:
-            for field_name, exc in cls._collect_errors(deserializer=deserializer, **kwargs):  # type: ignore[assignment]
+            for field_name, exc in cls._collect_errors(deserializer=deserializer, kwargs=kwargs):  # type: ignore[assignment]
                 match = ERR_RE.search(str(exc))
                 keys = [field_name, str(match.group(1))] if match else [field_name]
                 message = cls._build_error_message(keys=keys, exc_msg=str(exc), connection=connection)

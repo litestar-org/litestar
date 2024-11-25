@@ -76,15 +76,14 @@ DTOs can similarly be defined on :class:`Routers <litestar.router.Router>` and
 
 
 Improving performance with the codegen backend
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. note::
 
-    This feature was introduced in ``2.2.0`` and hidden behind the ``DTO_CODEGEN``
-    feature flag. As of ``2.8.0`` it is considered stable and enabled by default. It can
-    still be disabled selectively by using the
-    ``DTOConfig(experimental_codegen_backend=True)`` override.
-
+    This feature was introduced in ``2.2.0`` and was hidden behind the ``DTO_CODEGEN``
+    feature flag. As of ``2.8.0`` it is considered stable and is enabled by default.
+    It can still be disabled selectively by using the
+    ``DTOConfig(experimental_codegen_backend=False)`` override.
 
 The DTO backend is the part that does the heavy lifting for all the DTO features. It
 is responsible for the transforming, validation and parsing. Because of this,
@@ -93,37 +92,11 @@ introduced by the DTOs, the DTO codegen backend was introduced; A DTO backend th
 increases efficiency by generating optimized Python code at runtime to perform all the
 necessary operations.
 
-Enabling the backend
---------------------
+Disabling the backend
+---------------------
 
-You can enable this backend globally for all DTOs by passing the appropriate feature
-flag to your Litestar application:
-
-.. code-block:: python
-
-    from litestar import Litestar
-    from litestar.config.app import ExperimentalFeatures
-
-    app = Litestar(experimental_features=[ExperimentalFeatures.DTO_CODEGEN])
-
-
-or selectively for individual DTOs:
-
-.. code-block:: python
-
-    from dataclasses import dataclass
-    from litestar.dto import DTOConfig, DataclassDTO
-
-
-    @dataclass
-    class Foo:
-        name: str
-
-
-    class FooDTO(DataclassDTO[Foo]):
-        config = DTOConfig(experimental_codegen_backend=True)
-
-The same flag can be used to disable the backend selectively:
+You can use ``experimental_codegen_backend=False``
+to disable the codegen backend selectively:
 
 .. code-block:: python
 
@@ -138,6 +111,60 @@ The same flag can be used to disable the backend selectively:
 
     class FooDTO(DataclassDTO[Foo]):
         config = DTOConfig(experimental_codegen_backend=False)
+
+Enabling the backend
+--------------------
+
+.. note:: This is a historical document meant for Litestar versions prior to 2.8.0
+    This backend was enabled by default since 2.8.0
+
+.. warning:: ``ExperimentalFeatures.DTO_CODEGEN`` is deprecated and will be removed in 3.0.0
+
+.. dropdown:: Enabling DTO codegen backend
+    :icon: git-pull-request-closed
+
+    You can enable this backend globally for all DTOs by passing the appropriate feature
+    flag to your Litestar application:
+
+    .. code-block:: python
+
+        from litestar import Litestar
+        from litestar.config.app import ExperimentalFeatures
+
+        app = Litestar(experimental_features=[ExperimentalFeatures.DTO_CODEGEN])
+
+
+    or selectively for individual DTOs:
+
+    .. code-block:: python
+
+        from dataclasses import dataclass
+        from litestar.dto import DTOConfig, DataclassDTO
+
+
+        @dataclass
+        class Foo:
+            name: str
+
+
+        class FooDTO(DataclassDTO[Foo]):
+            config = DTOConfig(experimental_codegen_backend=True)
+
+    The same flag can be used to disable the backend selectively:
+
+    .. code-block:: python
+
+        from dataclasses import dataclass
+        from litestar.dto import DTOConfig, DataclassDTO
+
+
+        @dataclass
+        class Foo:
+            name: str
+
+
+        class FooDTO(DataclassDTO[Foo]):
+            config = DTOConfig(experimental_codegen_backend=False)
 
 
 Performance improvements
