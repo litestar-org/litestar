@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Mapping  # type: ignore[attr-defined]
+from typing import TYPE_CHECKING, Any, Mapping
 
 from litestar.utils.helpers import get_name
 
