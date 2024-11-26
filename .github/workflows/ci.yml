@@ -45,6 +45,7 @@ jobs:
         name: Set up PDM
         with:
           python-version: "3.8"
+          version: "2.20.1"
           allow-python-prereleases: false
           cache: true
           cache-dependency-path: |
@@ -70,6 +71,7 @@ jobs:
         name: Set up PDM
         with:
           python-version: "3.8"
+          version: "2.20.1"
           allow-python-prereleases: false
           cache: true
           cache-dependency-path: |
@@ -95,6 +97,7 @@ jobs:
         name: Set up PDM
         with:
           python-version: "3.8"
+          version: "2.20.1"
           allow-python-prereleases: false
           cache: true
           cache-dependency-path: |
