@@ -54,7 +54,7 @@ the environment will bootstrap itself automatically. The steps below are for loc
    yourself. Otherwise you may encounter errors or unexpected behaviour when trying to run the commands referenced
    within this document.
 
-   To activate the virtualenv manually, please consult PDM's documentation on
+   To activate the virtualenv manually, please consult uv's documentation on
    `working with virtual environments <https://docs.astral.sh/uv/pip/environments/>`_.
 
    The rest of this document will assume this environment is active wherever commands are referenced.
@@ -161,19 +161,20 @@ as a first step.
 Running the docs locally
 ++++++++++++++++++++++++
 
-To run or build the docs locally, you need to first install the required dependencies:
-
-.. code-block:: shell
-    :caption: Installing the documentation dependencies
-
-    pdm install -G:docs
-
-Then you can serve the documentation with our helpful Makefile targets:
+You can serve the documentation locally with
 
 .. code-block:: shell
     :caption: Serving the documentation locally
 
     make docs-serve
+
+or build it with
+
+.. code-block:: shell
+    :caption: Serving the documentation locally
+
+    make docs
+
 
 Writing and editing docs
 ++++++++++++++++++++++++
