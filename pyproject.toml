@@ -112,8 +112,6 @@ include = [
 ]
 
 
-[tool.uv]
-default-groups = ["dev", "linting", "test", "docs"]
 
 [dependency-groups]
 dev = [
