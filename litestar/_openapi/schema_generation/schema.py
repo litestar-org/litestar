@@ -566,12 +566,13 @@ class SchemaCreator:
             A schema or reference instance.
         """
         enum_type: None | OpenAPIType | list[OpenAPIType] = None
-        if issubclass(field_definition.annotation, str):  # StrEnum
-            enum_type = OpenAPIType.STRING
-        elif issubclass(field_definition.annotation, int):  # IntEnum
-            enum_type = OpenAPIType.INTEGER
+        if issubclass(field_definition.annotation, Enum):
+            if issubclass(field_definition.annotation, str):  # StrEnum
+                enum_type = OpenAPIType.STRING
+            elif issubclass(field_definition.annotation, int):  # IntEnum
+                enum_type = OpenAPIType.INTEGER
 
-        enum_values: list[Any] = [v.value for v in field_definition.annotation]  # pyright: ignore
+        enum_values: list[Any] = [v.value for v in field_definition.annotation]
         if enum_type is None:
             enum_type = _types_in_list(enum_values)
 
