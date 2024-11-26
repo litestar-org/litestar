@@ -48,7 +48,6 @@ jobs:
         uses: astral-sh/setup-uv@v3
         with:
           version: "0.5.4"
-          python-version: "3.8"
           enable-cache: true
 
       - name: Run mypy
@@ -68,7 +67,6 @@ jobs:
         uses: astral-sh/setup-uv@v3
         with:
           version: "0.5.4"
-          python-version: "3.8"
           enable-cache: true
 
       - name: Run pyright
@@ -88,7 +86,6 @@ jobs:
         uses: astral-sh/setup-uv@v3
         with:
           version: "0.5.4"
-          python-version: "3.8"
           enable-cache: true
 
       - name: Run slotscheck
@@ -124,7 +121,6 @@ jobs:
         uses: astral-sh/setup-uv@v3
         with:
           version: "0.5.4"
-          python-version: "3.8"
           enable-cache: true
 
       - name: Install dependencies
@@ -204,7 +200,6 @@ jobs:
         uses: astral-sh/setup-uv@v3
         with:
           version: "0.5.4"
-          python-version: "3.8"
           enable-cache: true
 
       - name: Build docs
@@ -246,7 +241,6 @@ jobs:
         uses: astral-sh/setup-uv@v3
         with:
           version: "0.5.4"
-          python-version: "3.8"
           enable-cache: true
 
       - name: Set pythonpath
@@ -275,7 +269,6 @@ jobs:
         uses: astral-sh/setup-uv@v3
         with:
           version: "0.5.4"
-          python-version: "3.8"
           enable-cache: true
 
       - name: Install dependencies
