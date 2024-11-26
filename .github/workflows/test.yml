@@ -39,7 +39,7 @@ jobs:
         name: Set up PDM
         with:
           python-version: ${{ inputs.python-version }}
-          version: ${{ inputs.python-version == "3.8" && "2.20.1" || "latest"}}
+          version: ${{ inputs.python-version == '3.8' && '2.20.1' || 'latest'}}
           allow-python-prereleases: false
           cache: true
           cache-dependency-path: |
