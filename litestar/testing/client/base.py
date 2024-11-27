@@ -97,13 +97,13 @@ class BaseTestClient(Generic[T]):
     blocking_portal: BlockingPortal
 
     __slots__ = (
+        "_session_backend",
         "app",
-        "base_url",
         "backend",
         "backend_options",
-        "session_config",
-        "_session_backend",
+        "base_url",
         "cookies",
+        "session_config",
     )
 
     def __init__(

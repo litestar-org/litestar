@@ -5,7 +5,7 @@ from unittest.mock import ANY, MagicMock, call
 
 import pytest
 
-from litestar import Request
+from litestar import Request, post
 from litestar.testing import RequestFactory
 from litestar.types import Empty, HTTPReceiveMessage, Scope
 from litestar.utils.scope.state import ScopeState
@@ -17,11 +17,15 @@ async def test_multiple_request_object_data_caching(create_scope: Callable[..., 
     https://github.com/litestar-org/litestar/issues/2727
     """
 
+    @post("/", request_max_body_size=None)
+    async def handler() -> None:
+        pass
+
     async def test_receive() -> HTTPReceiveMessage:
         mock()
         return {"type": "http.request", "body": b"abc", "more_body": False}
 
-    scope = create_scope()
+    scope = create_scope(route_handler=handler)
     request_1 = Request[Any, Any, Any](scope, test_receive)
     request_2 = Request[Any, Any, Any](scope, test_receive)
     assert (await request_1.body()) == b"abc"
@@ -121,6 +125,8 @@ async def test_connection_cached_properties_no_scope_or_connection_caching(
             get_mock.assert_has_calls([call(state_key), call("headers")])
         elif state_key == "form":
             get_mock.assert_has_calls([call(state_key), call("content_type")])
+        elif state_key == "body":
+            get_mock.assert_has_calls([call(state_key), call("headers")])
         else:
             get_mock.assert_called_once_with(state_key)
 
@@ -135,6 +141,8 @@ async def test_connection_cached_properties_no_scope_or_connection_caching(
         elif state_key == "form":
             set_mock.assert_has_calls([call("content_type", ANY), call(state_key, ANY)])
         elif state_key in {"accept", "cookies", "content_type"}:
+            set_mock.assert_has_calls([call("headers", ANY), call(state_key, ANY)])
+        elif state_key == "body":
             set_mock.assert_has_calls([call("headers", ANY), call(state_key, ANY)])
         else:
             set_mock.assert_called_once_with(state_key, ANY)

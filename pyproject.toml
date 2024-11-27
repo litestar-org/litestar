@@ -62,7 +62,7 @@ maintainers = [
 name = "litestar"
 readme = "README.md"
 requires-python = ">=3.8,<4.0"
-version = "2.12.1"
+version = "2.13.0"
 
 [project.urls]
 Blog = "https://blog.litestar.dev"
@@ -78,7 +78,6 @@ Twitter = "https://twitter.com/LitestarAPI"
 [project.optional-dependencies]
 annotated-types = ["annotated-types"]
 attrs = ["attrs"]
-htmx = ["litestar-htmx>=0.3.0"]
 brotli = ["brotli"]
 cli = ["jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0; sys_platform != 'win32'"]
 cryptography = ["cryptography"]
@@ -278,7 +277,7 @@ module = ["tests.unit.test_contrib.test_repository"]
 strict_equality = false
 
 [[tool.mypy.overrides]]
-module = ["tests.unit.test_contrib.test_pydantic.test_openapi","litestar._asgi.routing_trie.traversal"]
+module = ["tests.unit.test_plugins.test_pydantic.test_openapi","litestar._asgi.routing_trie.traversal"]
 disable_error_code = "index, union-attr"
 
 [[tool.mypy.overrides]]
@@ -300,7 +299,7 @@ module = [
 warn_unused_ignores = false
 module = [
   "litestar.contrib.sqlalchemy.*",
-  "litestar.contrib.pydantic.*",
+  "litestar.plugins.pydantic.*",
   "tests.unit.test_contrib.test_sqlalchemy",
   "tests.unit.test_contrib.test_pydantic.*",
   "litestar.openapi.spec.base",
@@ -314,7 +313,7 @@ warn_unused_ignores = false
 module = [
   "litestar.openapi.spec.base",
   "litestar._asgi.routin_trie.traversal",
-  "litestar.contrib.pydantic.pydantic_init_plugin",
+  "litestar.plugins.pydantic.plugins.int",
 ]
 disable_error_code = "arg-type"
 
@@ -332,8 +331,10 @@ exclude = [
   "docs",
   "tests/examples",
   "tests/docker_service_fixtures.py",
-  "litestar/contrib/pydantic/pydantic_dto_factory.py",
-  "litestar/contrib/pydantic/pydantic_init_plugin.py",
+  "litestar/plugins/pydantic/plugins/di.py",
+  "litestar/plugins/pydantic/plugins/init.py",
+  "litestar/plugins/pydantic/plugins/schema.py",
+  "litestar/plugins/pydantic/dto_factory.py",
   "tests/unit/test_contrib/test_sqlalchemy.py",
 ]
 include = ["litestar", "tests"]
@@ -458,6 +459,7 @@ known-first-party = ["litestar", "tests", "examples"]
 "litestar/_openapi/schema_generation/schema.py" = ["C901"]
 "litestar/exceptions/*.*" = ["N818"]
 "litestar/handlers/**/*.*" = ["N801"]
+"litestar/handlers/websocket_handlers/listener.py" = ["B027"]
 "litestar/params.py" = ["N802"]
 "test_apps/**/*.*" = ["D", "TRY", "EM", "S", "PTH"]
 "tests/**/*.*" = [

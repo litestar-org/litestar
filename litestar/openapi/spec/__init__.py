@@ -32,6 +32,7 @@ from .tag import Tag
 from .xml import XML
 
 __all__ = (
+    "XML",
     "BaseSchemaObject",
     "Callback",
     "Components",
@@ -64,5 +65,4 @@ __all__ = (
     "Server",
     "ServerVariable",
     "Tag",
-    "XML",
 )

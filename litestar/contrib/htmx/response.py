@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from litestar.utils import warn_deprecation
 
 if TYPE_CHECKING:
-    from litestar_htmx import (  # noqa: TCH004
+    from litestar_htmx import (  # noqa: TC004
         ClientRedirect,
         ClientRefresh,
         HTMXTemplate,

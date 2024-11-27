@@ -12,9 +12,9 @@ if TYPE_CHECKING:
     from litestar.typing import FieldDefinition
 
 __all__ = (
-    "_type_or_first_not_none_inner_type",
     "_should_create_enum_schema",
     "_should_create_literal_schema",
+    "_type_or_first_not_none_inner_type",
 )
 
 
@@ -75,9 +75,8 @@ def _should_create_literal_schema(field_definition: FieldDefinition) -> bool:
     Returns:
         A boolean
     """
-    return (
-        field_definition.is_literal
-        or field_definition.is_optional
+    return field_definition.is_literal or (
+        field_definition.is_optional
         and all(inner.is_literal for inner in field_definition.inner_types if not inner.is_none_type)
     )
 

@@ -42,13 +42,13 @@ if TYPE_CHECKING:
         AttrsInstance = Any  # type: ignore[assignment, misc]
 
 __all__ = (
-    "LitestarEncodableType",
-    "EncodableBuiltinType",
-    "EncodableBuiltinCollectionType",
-    "EncodableStdLibType",
-    "EncodableStdLibIPType",
-    "EncodableMsgSpecType",
     "DataContainerType",
+    "EncodableBuiltinCollectionType",
+    "EncodableBuiltinType",
+    "EncodableMsgSpecType",
+    "EncodableStdLibIPType",
+    "EncodableStdLibType",
+    "LitestarEncodableType",
 )
 
 EncodableBuiltinType: TypeAlias = "None | bool | int | float | str | bytes | bytearray"

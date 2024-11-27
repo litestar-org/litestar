@@ -53,11 +53,11 @@ def handle_schema_path_not_found(path: str = "/") -> Response:
 
 class OpenAPIPlugin(InitPluginProtocol, ReceiveRoutePlugin):
     __slots__ = (
+        "_openapi",
+        "_openapi_config",
+        "_openapi_schema",
         "app",
         "included_routes",
-        "_openapi_config",
-        "_openapi",
-        "_openapi_schema",
     )
 
     def __init__(self, app: Litestar) -> None:

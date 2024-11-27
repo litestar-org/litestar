@@ -1,3 +1,3 @@
 from .config import BaseLoggingConfig, LoggingConfig, StructLoggingConfig
 
-__all__ = ("BaseLoggingConfig", "StructLoggingConfig", "LoggingConfig")
+__all__ = ("BaseLoggingConfig", "LoggingConfig", "StructLoggingConfig")

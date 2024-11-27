@@ -24,7 +24,7 @@ class DependencyCleanupGroup:
     exceptions caught in this manner will be re-raised after they have been thrown in the generators.
     """
 
-    __slots__ = ("_generators", "_closed")
+    __slots__ = ("_closed", "_generators")
 
     def __init__(self, generators: list[AnyGenerator] | None = None) -> None:
         """Initialize ``DependencyCleanupGroup``.

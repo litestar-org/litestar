@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from litestar.utils import warn_deprecation
 
 if TYPE_CHECKING:
-    from litestar_htmx._utils import (  # noqa: TCH004
+    from litestar_htmx._utils import (  # noqa: TC004
         HTMXHeaders,
         get_headers,
         get_location_headers,

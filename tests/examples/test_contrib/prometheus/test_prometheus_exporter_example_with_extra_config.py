@@ -3,7 +3,7 @@ from typing import Any, Dict
 from prometheus_client import REGISTRY
 
 from litestar import get
-from litestar.contrib.prometheus import PrometheusMiddleware
+from litestar.plugins.prometheus import PrometheusMiddleware
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import TestClient
 
@@ -17,7 +17,7 @@ def clear_collectors() -> None:
 
 
 def test_prometheus_exporter_with_extra_config_example() -> None:
-    from docs.examples.contrib.prometheus.using_prometheus_exporter_with_extra_configs import app
+    from docs.examples.plugins.prometheus.using_prometheus_exporter_with_extra_configs import app
 
     clear_collectors()
 

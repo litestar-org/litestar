@@ -3,9 +3,9 @@ from typing import Generic, Optional, TypeVar
 from attrs import define
 from typing_extensions import Annotated
 
-from litestar.contrib.attrs.attrs_schema_plugin import AttrsSchemaPlugin
 from litestar.openapi.spec import OpenAPIType
 from litestar.openapi.spec.schema import Schema
+from litestar.plugins.attrs import AttrsSchemaPlugin
 from litestar.typing import FieldDefinition
 from litestar.utils.helpers import get_name
 from tests.helpers import get_schema_for_field_definition

@@ -1,5 +1,5 @@
 from litestar import Litestar
-from litestar.contrib.prometheus import PrometheusConfig, PrometheusController
+from litestar.plugins.prometheus import PrometheusConfig, PrometheusController
 
 
 def create_app(group_path: bool = False):

@@ -155,7 +155,7 @@ def _default_exception_logging_handler_factory(
 class BaseLoggingConfig(ABC):
     """Abstract class that should be extended by logging configs."""
 
-    __slots__ = ("log_exceptions", "traceback_line_limit", "exception_logging_handler")
+    __slots__ = ("exception_logging_handler", "log_exceptions", "traceback_line_limit")
 
     log_exceptions: Literal["always", "debug", "never"]
     """Should exceptions be logged, defaults to log exceptions when ``app.debug == True``'"""

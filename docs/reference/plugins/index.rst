@@ -9,8 +9,11 @@ plugins
     :maxdepth: 1
     :hidden:
 
+    attrs
     flash_messages
     htmx
     problem_details
+    prometheus
+    pydantic
     structlog
     sqlalchemy

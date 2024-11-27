@@ -15,7 +15,7 @@ from litestar.repository.filters import (
 if TYPE_CHECKING:
     from litestar.config.app import AppConfig
 
-__all__ = ("signature_namespace_values", "on_app_init")
+__all__ = ("on_app_init", "signature_namespace_values")
 
 signature_namespace_values = {
     "BeforeAfter": BeforeAfter,

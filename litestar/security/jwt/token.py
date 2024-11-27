@@ -14,8 +14,8 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
 __all__ = (
-    "Token",
     "JWTDecodeOptions",
+    "Token",
 )
 
 

@@ -9,8 +9,8 @@ import pytest
 from pydantic import v1 as pydantic_v1
 from typing_extensions import Annotated
 
-from litestar.contrib.pydantic import PydanticDTO
 from litestar.dto import DTOField, DTOFieldDefinition, Mark, dto_field
+from litestar.plugins.pydantic import PydanticDTO
 from litestar.typing import FieldDefinition
 
 from . import PydanticVersion
@@ -170,7 +170,7 @@ def test_dto_field_via_pydantic_field_extra_deprecation(
     else:
 
         class Model(pydantic_v2.BaseModel):  # type: ignore[no-redef]
-            a: int = pydantic_v2.Field(**dto_field("read-only"))  # type: ignore[arg-type, pydantic-field]
+            a: int = pydantic_v2.Field(**dto_field("read-only"))  # type: ignore[call-overload]
 
     with pytest.warns(DeprecationWarning):
         next(PydanticDTO.generate_field_definitions(Model))

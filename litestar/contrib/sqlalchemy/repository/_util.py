@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING
 from litestar.utils import warn_deprecation
 
 __all__ = (
-    "wrap_sqlalchemy_exception",
     "get_instrumented_attr",
+    "wrap_sqlalchemy_exception",
 )
 
 

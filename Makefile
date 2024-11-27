@@ -51,7 +51,7 @@ clean: 												## Cleanup temporary build artifacts
 	@echo "=> Cleaning working directory"
 	@rm -rf .pytest_cache .ruff_cache .hypothesis build/ -rf dist/ .eggs/
 	@find . -name '*.egg-info' -exec rm -rf {} +
-	@find . -name '*.egg' -exec rm -f {} +
+	@find . -type f -name '*.egg' -exec rm -f {} +
 	@find . -name '*.pyc' -exec rm -f {} +
 	@find . -name '*.pyo' -exec rm -f {} +
 	@find . -name '*~' -exec rm -f {} +

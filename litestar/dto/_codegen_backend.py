@@ -43,11 +43,11 @@ __all__ = ("DTOCodegenBackend",)
 
 class DTOCodegenBackend(DTOBackend):
     __slots__ = (
-        "_transfer_to_dict",
-        "_transfer_to_model_type",
+        "_encode_data",
         "_transfer_data_from_builtins",
         "_transfer_data_from_builtins_with_overrides",
-        "_encode_data",
+        "_transfer_to_dict",
+        "_transfer_to_model_type",
     )
 
     def __init__(

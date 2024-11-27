@@ -7,11 +7,11 @@ from typing import TYPE_CHECKING
 from litestar.utils import warn_deprecation
 
 __all__ = (
-    "SQLAlchemySyncConfig",
     "AlembicSyncConfig",
+    "SQLAlchemySyncConfig",
     "SyncSessionConfig",
-    "default_before_send_handler",
     "autocommit_before_send_handler",
+    "default_before_send_handler",
 )
 
 

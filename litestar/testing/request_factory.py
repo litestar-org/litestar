@@ -55,12 +55,12 @@ class RequestFactory:
 
     __slots__ = (
         "app",
-        "server",
+        "handler_kwargs",
         "port",
         "root_path",
         "scheme",
-        "handler_kwargs",
         "serializer",
+        "server",
     )
 
     def __init__(

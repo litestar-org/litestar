@@ -77,9 +77,9 @@ class BaseRoute(ABC):
         "handler_names",
         "methods",
         "path",
+        "path_components",
         "path_format",
         "path_parameters",
-        "path_components",
         "scope_type",
     )
 

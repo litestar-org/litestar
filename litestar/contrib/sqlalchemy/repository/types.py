@@ -8,10 +8,10 @@ from litestar.utils import warn_deprecation
 
 __all__ = (
     "ModelT",
-    "SelectT",
     "RowT",
-    "SQLAlchemySyncRepositoryT",
     "SQLAlchemyAsyncRepositoryT",
+    "SQLAlchemySyncRepositoryT",
+    "SelectT",
 )
 
 

@@ -76,12 +76,13 @@ class HTTPRouteHandler(BaseRouteHandler):
     __slots__ = (
         "_resolved_after_response",
         "_resolved_before_request",
-        "_response_handler_mapping",
         "_resolved_include_in_schema",
-        "_resolved_response_class",
         "_resolved_request_class",
-        "_resolved_tags",
+        "_resolved_request_max_body_size",
+        "_resolved_response_class",
         "_resolved_security",
+        "_resolved_tags",
+        "_response_handler_mapping",
         "after_request",
         "after_response",
         "background",
@@ -102,6 +103,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         "operation_id",
         "raises",
         "request_class",
+        "request_max_body_size",
         "response_class",
         "response_cookies",
         "response_description",
@@ -139,6 +141,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         name: str | None = None,
         opt: Mapping[str, Any] | None = None,
         request_class: type[Request] | None = None,
+        request_max_body_size: int | None | EmptyType = Empty,
         response_class: type[Response] | None = None,
         response_cookies: ResponseCookies | None = None,
         response_headers: ResponseHeaders | None = None,
@@ -204,6 +207,8 @@ class HTTPRouteHandler(BaseRouteHandler):
                 :class:`ASGI Scope <.types.Scope>`.
             request_class: A custom subclass of :class:`Request <.connection.Request>` to be used as route handler's
                 default request.
+            request_max_body_size: Maximum allowed size of the request body in bytes. If this size is exceeded,
+                a '413 - Request Entity Too Large' error response is returned.
             response_class: A custom subclass of :class:`Response <.response.Response>` to be used as route handler's
                 default response.
             response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>` instances.
@@ -272,6 +277,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.response_class = response_class
         self.response_cookies: Sequence[Cookie] | None = narrow_response_cookies(response_cookies)
         self.response_headers: Sequence[ResponseHeader] | None = narrow_response_headers(response_headers)
+        self.request_max_body_size = request_max_body_size
 
         self.sync_to_thread = sync_to_thread
         # OpenAPI related attributes
@@ -297,6 +303,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self._resolved_request_class: type[Request] | EmptyType = Empty
         self._resolved_security: list[SecurityRequirement] | EmptyType = Empty
         self._resolved_tags: list[str] | EmptyType = Empty
+        self._resolved_request_max_body_size: int | EmptyType | None = Empty
 
     def __call__(self, fn: AnyCallable) -> HTTPRouteHandler:
         """Replace a function with itself."""
@@ -472,6 +479,25 @@ class HTTPRouteHandler(BaseRouteHandler):
             self._resolved_tags = sorted(tag_set)
 
         return self._resolved_tags
+
+    def resolve_request_max_body_size(self) -> int | None:
+        if (resolved_limits := self._resolved_request_max_body_size) is not Empty:
+            return resolved_limits
+
+        max_body_size = self._resolved_request_max_body_size = next(  # pyright: ignore
+            (
+                max_body_size
+                for layer in reversed(self.ownership_layers)
+                if (max_body_size := layer.request_max_body_size) is not Empty
+            ),
+            Empty,
+        )
+        if max_body_size is Empty:
+            raise ImproperlyConfiguredException(
+                "'request_max_body_size' set to 'Empty' on all layers. To omit a limit, "
+                "set 'request_max_body_size=None'"
+            )
+        return max_body_size
 
     def get_response_handler(self, is_response_type_data: bool = False) -> Callable[[Any], Awaitable[ASGIApp]]:
         """Resolve the response_handler function for the route handler.

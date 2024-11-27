@@ -47,13 +47,13 @@ JSBEAUTIFIER_INSTALLED = find_spec("jsbeautifier") is not None
 
 
 __all__ = (
-    "UVICORN_INSTALLED",
     "JSBEAUTIFIER_INSTALLED",
-    "LoadedApp",
+    "UVICORN_INSTALLED",
     "LitestarCLIException",
     "LitestarEnv",
     "LitestarExtensionGroup",
     "LitestarGroup",
+    "LoadedApp",
     "show_app_info",
 )
 

@@ -454,6 +454,11 @@ def test_use_dto_codegen_feature_flag_warns() -> None:
         Litestar(experimental_features=[ExperimentalFeatures.DTO_CODEGEN])
 
 
+def test_use_future_feature_flag_warns() -> None:
+    app = Litestar(experimental_features=[ExperimentalFeatures.FUTURE])
+    assert app.experimental_features == frozenset([ExperimentalFeatures.FUTURE])
+
+
 def test_using_custom_path_parameter() -> None:
     @get()
     def my_route_handler() -> None: ...

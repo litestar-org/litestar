@@ -19,8 +19,8 @@ class ImmutableState(Mapping[str, Any]):
     """
 
     __slots__ = (
-        "_state",
         "_deep_copy",
+        "_state",
     )
 
     _state: dict[str, Any]
