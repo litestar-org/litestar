@@ -1565,96 +1565,12 @@ You can run <code class="docutils literal notranslate"><span class="pre">make</s
 <p>If you are utilizing <a class="reference external" href="https://codespaces.new/litestar-org/litestar?quickstart=1">GitHub Codespaces</a>,
 the environment will bootstrap itself automatically. The steps below are for local development.</p>
 <ol class="arabic">
-<li><p>Install <a class="reference external" href="https://pdm.fming.dev/latest/">PDM</a>:</p>
-<div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="makefile" for="sd-tab-item-0">
-Makefile</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id5">
-<div class="code-block-caption"><span class="caption-text">Using our Make target to install PDM</span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>install-pdm
-</pre></div>
-</div>
-</div>
-</div>
-<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="pipx" for="sd-tab-item-1">
-pipx</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id6">
-<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://pypa.github.io/pipx/">pipx</a></span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pipx<span class="w"> </span>install<span class="w"> </span>pdm
-</pre></div>
-</div>
-</div>
-</div>
-<input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
-</input><label class="sd-tab-label" data-sync-id="homebrew" for="sd-tab-item-2">
-Homebrew</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id7">
-<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://brew.sh/">Homebrew</a></span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>pdm
-</pre></div>
-</div>
-</div>
-</div>
-</div>
-</li>
+<li><p>Install <a class="reference external" href="https://docs.astral.sh/uv/getting-started/installation/">uv</a>:</p></li>
 <li><p>Run <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">install</span></code> to create a <a class="reference external" href="https://docs.python.org/3/tutorial/venv.html">virtual environment</a>
-and install the required development dependencies or run the PDM installation command manually:</p>
-<div class="literal-block-wrapper docutils container" id="id8">
-<div class="code-block-caption"><span class="caption-text">Installing the documentation dependencies</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pdm<span class="w"> </span>install
-</pre></div>
-</div>
-</div>
-</li>
-<li><p>If you’re working on the documentation and need to build it locally, install the extra dependencies with
-<code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">docs-install</span></code> or:</p>
-<div class="literal-block-wrapper docutils container" id="id9">
-<div class="code-block-caption"><span class="caption-text">Installing the documentation dependencies</span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pdm<span class="w"> </span>install<span class="w"> </span>-G:docs
-</pre></div>
-</div>
-</div>
-</li>
-<li><p>Install <a class="reference external" href="https://pre-commit.com/">pre-commit</a>:</p>
-<div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="pip" for="sd-tab-item-3">
-pip</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id10">
-<div class="code-block-caption"><span class="caption-text">Using pip</span><a class="headerlink" href="#id10" title="Permalink to this code">#</a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>pre-commit
-</pre></div>
-</div>
-</div>
-</div>
-<input id="sd-tab-item-4" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="pipx" for="sd-tab-item-4">
-pipx</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id11">
-<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://pypa.github.io/pipx/">pipx</a></span><a class="headerlink" href="#id11" title="Permalink to this code">#</a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pipx<span class="w"> </span>install<span class="w"> </span>pre-commit
-</pre></div>
-</div>
-</div>
-</div>
-<input id="sd-tab-item-5" name="sd-tab-set-1" type="radio">
-</input><label class="sd-tab-label" data-sync-id="homebrew" for="sd-tab-item-5">
-Homebrew</label><div class="sd-tab-content docutils">
-<div class="literal-block-wrapper docutils container" id="id12">
-<div class="code-block-caption"><span class="caption-text">Using <a class="reference external" href="https://brew.sh/">Homebrew</a></span><a class="headerlink" href="#id12" title="Permalink to this code">#</a></div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>brew<span class="w"> </span>install<span class="w"> </span>pre-commit
-</pre></div>
-</div>
-</div>
-</div>
-</div>
-</li>
-<li><p>Install our pre-commit hooks. by running <code class="docutils literal notranslate"><span class="pre">make</span> <span class="pre">install</span></code> or:</p>
-<div class="literal-block-wrapper docutils container" id="id13">
-<div class="code-block-caption"><span class="caption-text">Installing pre-commit hooks</span><a class="headerlink" href="#id13" title="Permalink to this code">#</a></div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pre-commit<span class="w"> </span>install<span class="w"> </span>--install-hooks
+and install the required development dependencies or run the uv sync command manually:</p>
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Installing the documentation dependencies</span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>install
 </pre></div>
 </div>
 </div>
@@ -1662,14 +1578,13 @@ Homebrew</label><div class="sd-tab-content docutils">
 </ol>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>Many modern IDEs like PyCharm or VS Code will enable the PDM-managed virtualenv that is created in step 2
+<p>Many modern IDEs like PyCharm or VS Code will enable the uv-managed virtualenv that is created in step 2
 for you automatically.
 If your IDE / editor does not offer this functionality, then you will need to manually activate the virtualenv
 yourself. Otherwise you may encounter errors or unexpected behaviour when trying to run the commands referenced
 within this document.</p>
-<p>To activate the virtualenv manually, please consult PDM’s documentation on
-<a class="reference external" href="https://pdm-project.org/latest/usage/venv/#working-with-virtual-environments">working with virtual environments</a>.
-A simpler alternative is using the PDM plugin <a class="reference external" href="https://github.com/abersheeran/pdm-shell">pdm-shell</a>.</p>
+<p>To activate the virtualenv manually, please consult uv’s documentation on
+<a class="reference external" href="https://docs.astral.sh/uv/pip/environments/">working with virtual environments</a>.</p>
 <p>The rest of this document will assume this environment is active wherever commands are referenced.</p>
 </div>
 </section>
@@ -1772,17 +1687,17 @@ as a first step.</p>
 </section>
 <section id="running-the-docs-locally">
 <h3>Running the docs locally<a class="headerlink" href="#running-the-docs-locally" title="Permalink to this heading">#</a></h3>
-<p>To run or build the docs locally, you need to first install the required dependencies:</p>
-<div class="literal-block-wrapper docutils container" id="id14">
-<div class="code-block-caption"><span class="caption-text">Installing the documentation dependencies</span><a class="headerlink" href="#id14" title="Permalink to this code">#</a></div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pdm<span class="w"> </span>install<span class="w"> </span>-G:docs
+<p>You can serve the documentation locally with</p>
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Serving the documentation locally</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>docs-serve
 </pre></div>
 </div>
 </div>
-<p>Then you can serve the documentation with our helpful Makefile targets:</p>
-<div class="literal-block-wrapper docutils container" id="id15">
-<div class="code-block-caption"><span class="caption-text">Serving the documentation locally</span><a class="headerlink" href="#id15" title="Permalink to this code">#</a></div>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>docs-serve
+<p>or build it with</p>
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">Serving the documentation locally</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>make<span class="w"> </span>docs
 </pre></div>
 </div>
 </div>
@@ -1812,8 +1727,8 @@ to test them alongside the rest of the test suite, ensuring they do not become s
 <li><p>Create a suite for the module in <code class="docutils literal notranslate"><span class="pre">/tests/examples</span></code> that tests the aspects of the example that it demonstrates</p></li>
 <li><p>Reference the example in the rst file with an external reference code block, e.g.</p></li>
 </ul>
-<div class="literal-block-wrapper docutils container" id="id16">
-<div class="code-block-caption"><span class="caption-text">An example of how to use literal includes of external files</span><a class="headerlink" href="#id16" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">An example of how to use literal includes of external files</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
 <div class="highlight-rst notranslate"><div class="highlight"><pre><span></span><span class="p">..</span> <span class="ow">literalinclude</span><span class="p">::</span> /examples/test_thing.py
    <span class="nc">:language:</span> python
    <span class="nc">:caption:</span> All includes should have a descriptive caption
@@ -1837,8 +1752,8 @@ after the example code-block.</p>
 the <code class="docutils literal notranslate"><span class="pre">curl</span></code> command that’s being invoked. The URL is built automatically, so the
 specified path can just be a path relative to the app.</p>
 <p>In practice, this looks like the following:</p>
-<div class="literal-block-wrapper docutils container" id="id17">
-<div class="code-block-caption"><span class="caption-text">An example of how to use the automatic example runner</span><a class="headerlink" href="#id17" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id9">
+<div class="code-block-caption"><span class="caption-text">An example of how to use the automatic example runner</span><a class="headerlink" href="#id9" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 
 <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
@@ -1857,8 +1772,8 @@ specified path can just be a path relative to the app.</p>
 </div>
 </div>
 <p>This is equivalent to:</p>
-<div class="literal-block-wrapper docutils container" id="id18">
-<div class="code-block-caption"><span class="caption-text">An example of how to use the automatic example runner</span><a class="headerlink" href="#id18" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id10">
+<div class="code-block-caption"><span class="caption-text">An example of how to use the automatic example runner</span><a class="headerlink" href="#id10" title="Permalink to this code">#</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span>   <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
 
    <span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
@@ -1888,16 +1803,16 @@ specified path can just be a path relative to the app.</p>
 <h2>Creating a New Release<a class="headerlink" href="#creating-a-new-release" title="Permalink to this heading">#</a></h2>
 <ol class="arabic">
 <li><p>Checkout the <code class="docutils literal notranslate"><span class="pre">main</span></code> branch:</p>
-<div class="literal-block-wrapper docutils container" id="id19">
-<div class="code-block-caption"><span class="caption-text">Checking out the main branch of the <code class="docutils literal notranslate"><span class="pre">litestar</span></code> repository</span><a class="headerlink" href="#id19" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id11">
+<div class="code-block-caption"><span class="caption-text">Checking out the main branch of the <code class="docutils literal notranslate"><span class="pre">litestar</span></code> repository</span><a class="headerlink" href="#id11" title="Permalink to this code">#</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>checkout<span class="w"> </span>main
 </pre></div>
 </div>
 </div>
 </li>
 <li><p>Run the release preparation script:</p>
-<div class="literal-block-wrapper docutils container" id="id20">
-<div class="code-block-caption"><span class="caption-text">Preparing  a new release</span><a class="headerlink" href="#id20" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id12">
+<div class="code-block-caption"><span class="caption-text">Preparing  a new release</span><a class="headerlink" href="#id12" title="Permalink to this code">#</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>tools/prepare_release.py<span class="w"> </span>&lt;new<span class="w"> </span>version<span class="w"> </span>number&gt;<span class="w"> </span>--update-version<span class="w"> </span>--create-draft-release
 </pre></div>
 </div>
@@ -1913,8 +1828,8 @@ specified path can just be a path relative to the app.</p>
 </li>
 <li><p>Review the generated changelog entry in <a class="reference internal" href="release-notes/changelog.html"><span class="doc">2.x Changelog</span></a> to ensure it looks correct.</p></li>
 <li><p>Commit the changes to <code class="docutils literal notranslate"><span class="pre">main</span></code>:</p>
-<div class="literal-block-wrapper docutils container" id="id21">
-<div class="code-block-caption"><span class="caption-text">Committing the changes to the main branch</span><a class="headerlink" href="#id21" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id13">
+<div class="code-block-caption"><span class="caption-text">Committing the changes to the main branch</span><a class="headerlink" href="#id13" title="Permalink to this code">#</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>commit<span class="w"> </span>-am<span class="w"> </span><span class="s2">&quot;chore(release): prepare release vX.Y.Z&quot;</span>
 </pre></div>
 </div>
@@ -1922,16 +1837,16 @@ specified path can just be a path relative to the app.</p>
 <p>Replace <code class="docutils literal notranslate"><span class="pre">vX.Y.Z</span></code> with the actual version number.</p>
 </li>
 <li><p>Create a new branch for the release:</p>
-<div class="literal-block-wrapper docutils container" id="id22">
-<div class="code-block-caption"><span class="caption-text">Creating a new branch for the release</span><a class="headerlink" href="#id22" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id14">
+<div class="code-block-caption"><span class="caption-text">Creating a new branch for the release</span><a class="headerlink" href="#id14" title="Permalink to this code">#</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>vX.Y.Z
 </pre></div>
 </div>
 </div>
 </li>
 <li><p>Push the changes to a <code class="docutils literal notranslate"><span class="pre">vX.Y.Z</span></code> branch:</p>
-<div class="literal-block-wrapper docutils container" id="id23">
-<div class="code-block-caption"><span class="caption-text">Pushing the changes to the <code class="docutils literal notranslate"><span class="pre">vX.Y.Z</span></code> branch</span><a class="headerlink" href="#id23" title="Permalink to this code">#</a></div>
+<div class="literal-block-wrapper docutils container" id="id15">
+<div class="code-block-caption"><span class="caption-text">Pushing the changes to the <code class="docutils literal notranslate"><span class="pre">vX.Y.Z</span></code> branch</span><a class="headerlink" href="#id15" title="Permalink to this code">#</a></div>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>vX.Y.Z
 </pre></div>
 </div>
