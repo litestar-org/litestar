@@ -28,7 +28,8 @@ upgrade:       										## Upgrade all dependencies to the latest stable versio
 # =============================================================================
 
 .PHONY: install
-install: uv sync
+install:
+	@uv sync
 
 .PHONY: clean
 clean: 												## Cleanup temporary build artifacts
@@ -51,7 +52,7 @@ destroy: 											## Destroy the virtual environment
 
 .PHONY: lock
 lock:                                             ## Rebuild lockfiles from scratch, updating all dependencies
-	uv lock
+	@uv lock
 
 # =============================================================================
 # Tests, Linting, Coverage

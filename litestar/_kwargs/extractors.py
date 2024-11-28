@@ -340,8 +340,8 @@ async def _extract_multipart(
     connection.scope["_form"] = form_values = (  # type: ignore[typeddict-unknown-key]
         connection.scope["_form"]  # type: ignore[typeddict-item]
         if "_form" in connection.scope
-        else parse_multipart_form(
-            body=await connection.body(),
+        else await parse_multipart_form(
+            stream=connection.stream(),
             boundary=connection.content_type[-1].get("boundary", "").encode(),
             multipart_form_part_limit=multipart_form_part_limit,
             type_decoders=connection.route_handler.resolve_type_decoders(),
