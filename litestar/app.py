@@ -698,11 +698,11 @@ class Litestar(Router):
 
                     route: WebSocketRoute | ASGIRoute | HTTPRoute = HTTPRoute(
                         path=path,
-                        route_handlers=_maybe_add_options_handler(path, http_handlers),
+                        route_handlers=_maybe_add_options_handler(path, http_handlers, root=self),
                     )
                     self.routes[existing_route_index] = route
                 else:
-                    route = HTTPRoute(path=path, route_handlers=_maybe_add_options_handler(path, http_handlers))
+                    route = HTTPRoute(path=path, route_handlers=_maybe_add_options_handler(path, http_handlers, root=self))
                     self.routes.append(route)
 
                 routes.append(route)

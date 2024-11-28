@@ -403,6 +403,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             etag=self.etag or other.etag,
             media_type=self.media_type,
             request_class=self.request_class or other.request_class,
+            request_max_body_size=value_or_default(self.request_max_body_size, other.request_max_body_size),
             response_class=self.response_class or other.response_class,
             response_cookies=self._merge_response_cookies(other.response_cookies),
             response_headers=self._merge_response_headers(other),
