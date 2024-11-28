@@ -63,7 +63,7 @@ from litestar.utils.warnings import warn_implicit_sync_to_thread, warn_sync_to_t
 if TYPE_CHECKING:
     from typing import Any
 
-    from litestar import Controller, Router
+    from litestar import Controller, Router, Litestar
     from litestar._kwargs import KwargsModel
     from litestar._kwargs.cleanup import DependencyCleanupGroup
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
@@ -73,7 +73,7 @@ if TYPE_CHECKING:
     from litestar.openapi.spec import SecurityRequirement
     from litestar.routes import BaseRoute
     from litestar.types.callable_types import AsyncAnyCallable, OperationIDCreator
-    from litestar.types.composite_types import TypeDecodersSequence
+    from litestar.types.composite_types import TypeDecodersSequence, ParametersMap
     from litestar.typing import FieldDefinition
 
 __all__ = ("HTTPRouteHandler",)
@@ -181,6 +181,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         tags: Sequence[str] | None = None,
         type_decoders: TypeDecodersSequence | None = None,
         type_encoders: TypeEncodersMap | None = None,
+        parameters: ParametersMap | None = None,
         **kwargs: Any,
     ) -> None:
         """Route handler for HTTP routes.
@@ -293,6 +294,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             signature_namespace=signature_namespace,
             type_decoders=type_decoders,
             type_encoders=type_encoders,
+            parameters=parameters,
             **kwargs,
         )
 
@@ -338,30 +340,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         self._response_type_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType = Empty
         self._resolved_request_max_body_size: int | EmptyType | None = Empty
 
-    # def _merge_background(
-    #     self, other_background: BackgroundTask | BackgroundTasks | None
-    # ) -> BackgroundTask | BackgroundTasks | None:
-    #     if not self.background:
-    #         return other_background
-    #     if not other_background:
-    #         return self.background
-    #
-    #     tasks = []
-    #     run_in_taskgroup = False
-    #     if isinstance(other_background, BackgroundTasks):
-    #         run_in_taskgroup = other_background.run_in_task_group
-    #         tasks.extend(other_background.tasks)
-    #     else:
-    #         tasks.append(other_background)
-    #
-    #     if isinstance(self.background, BackgroundTasks):
-    #         run_in_taskgroup = self.background
-    #         tasks.extend(self.background.tasks)
-    #     else:
-    #         tasks.append(self.background)
-    #
-    #     return BackgroundTasks(tasks, run_in_task_group=run_in_taskgroup)
-
     def _merge_response_cookies(self, other: ResponseCookies | None) -> frozenset[Cookie] | None:
         response_cookies = set()
         for cookies in [self.response_cookies, other]:
@@ -406,16 +384,17 @@ class HTTPRouteHandler(BaseRouteHandler):
             return_dto=value_or_default(self.return_dto, other.return_dto),
             exception_handlers={**(other.exception_handlers or {}), **self.exception_handlers},
             guards=[*(other.guards or []), *self.guards],
-            middleware=[*self.middleware, *(other.middleware or ())],
+            middleware=[*(other.middleware or ()), *self.middleware],
             name=self.name,
             opt={**(other.opt or {}), **(self.opt or {})},
             signature_namespace={**other.signature_namespace, **self.signature_namespace},
-            signature_types=getattr(other, "signature_types", None),
+            # signature_types=getattr(other, "signature_types", None),
             type_decoders=(*(other.type_decoders or ()), *self.type_decoders),
             type_encoders={**(other.type_encoders or {}), **self.type_encoders},
             # http handler specific
             after_response=self.after_response or other.after_response,
             after_request=self.after_request or other.after_request,
+            before_request=self.before_request or other.before_request,
             background=self.background,
             http_method=self.http_methods,
             cache=self.cache,
@@ -433,16 +412,17 @@ class HTTPRouteHandler(BaseRouteHandler):
             content_media_type=self.content_media_type,
             deprecated=self.deprecated,
             description=self.description,
-            include_in_schema=self.include_in_schema,
+            include_in_schema=value_or_default(self.include_in_schema, other.include_in_schema),
             operation_class=self.operation_class,
             operation_id=self.operation_id,
             raises=self.raises,
             response_description=self.response_description,
-            response=self.responses,
+            responses=self.responses,
             security=[*(other.security or []), *(self.security or [])],
             summary=self.summary,
             tags=[*(other.tags or []), *(self.tags or [])],
             sync_to_thread=False if self.has_sync_callable else None,
+            parameters={**(other.parameters or {}), **self.parameters},
             # sync_to_thread=self._sync_to_thread,
         )
 
@@ -637,8 +617,9 @@ class HTTPRouteHandler(BaseRouteHandler):
         after = [layer.after_request for layer in self._ownership_layers if layer.after_request]
         return after[-1] if after else None  # type: ignore[return-value]
 
-    def on_registration(self, route: BaseRoute) -> None:
-        super().on_registration(route=route)
+    def on_registration(self, route: BaseRoute, app: Litestar) -> None:
+        super().on_registration(route=route, app=app)
+
         self._resolve_after_response()
         self.resolve_include_in_schema()
 

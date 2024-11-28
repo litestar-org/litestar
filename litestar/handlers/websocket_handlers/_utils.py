@@ -78,7 +78,7 @@ def create_handle_send(
 
 
 class ListenerHandler:
-    __slots__ = ("_can_send_data", "_fn", "_listener", "_pass_socket")
+    __slots__ = ("_can_send_data", "_fn", "_listener", "_pass_socket", "_wrapped_fn")
 
     def __init__(
         self,
@@ -88,6 +88,7 @@ class ListenerHandler:
         namespace: dict[str, Any],
     ) -> None:
         self._can_send_data = not parsed_signature.return_type.is_subclass_of(NoneType)
+        self._wrapped_fn = fn
         self._fn = ensure_async_callable(fn)
         self._listener = listener
         self._pass_socket = "socket" in parsed_signature.parameters

@@ -39,27 +39,20 @@ def test_websocket_class_resolution_of_layers(
     expected: Type[WebSocket],
 ) -> None:
     class MyController(Controller):
-        @websocket_listener("/")
+        websocket_class = controller_websocket_class
+
+        @websocket_listener("/", websocket_class=handler_websocket_class)
         def handler(self, data: str) -> None:
             return
 
-    if controller_websocket_class:
-        MyController.websocket_class = ControllerWebSocket
+    router = Router(path="/", route_handlers=[MyController], websocket_class=router_websocket_class)
 
-    router = Router(path="/", route_handlers=[MyController])
-
-    if router_websocket_class:
-        router.websocket_class = router_websocket_class
-
-    app = Litestar(route_handlers=[router])
-
-    if app_websocket_class or not has_default_app_class:
-        app.websocket_class = app_websocket_class  # type: ignore[assignment]
+    app = Litestar(
+        route_handlers=[router],
+        websocket_class=app_websocket_class if app_websocket_class or not has_default_app_class else None,
+    )
 
     route_handler = app.routes[0].route_handler  # type: ignore[union-attr]
-
-    if handler_websocket_class:
-        route_handler.websocket_class = handler_websocket_class  # type: ignore[union-attr]
 
     websocket_class = route_handler.resolve_websocket_class()  # type: ignore[union-attr]
     assert websocket_class is expected

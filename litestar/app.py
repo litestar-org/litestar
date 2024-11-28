@@ -30,6 +30,7 @@ from litestar.exceptions import (
     LitestarWarning,
     MissingDependencyException,
     NoRouteMatchFoundException,
+    ImproperlyConfiguredException,
 )
 from litestar.logging.config import LoggingConfig, get_logger_placeholder
 from litestar.middleware._internal.cors import CORSMiddleware
@@ -47,7 +48,7 @@ from litestar.router import Router
 from litestar.stores.registry import StoreRegistry
 from litestar.types import Empty, TypeDecodersSequence
 from litestar.types.internal_types import PathParameterDefinition, TemplateConfigType
-from litestar.utils import deprecated, ensure_async_callable, join_paths, unique
+from litestar.utils import deprecated, ensure_async_callable, join_paths, unique, find_index
 from litestar.utils.dataclass import extract_dataclass_items
 from litestar.utils.predicates import is_async_callable
 from litestar.utils.warnings import warn_pdb_on_exception
@@ -66,7 +67,7 @@ if TYPE_CHECKING:
     from litestar.openapi.spec import SecurityRequirement
     from litestar.openapi.spec.open_api import OpenAPI
     from litestar.response import Response
-    from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
+    from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute, BaseRoute
     from litestar.stores.base import Store
     from litestar.types import (
         AfterExceptionHookHandler,
@@ -466,7 +467,8 @@ class Litestar(Router):
             response_headers=config.response_headers,
             return_dto=config.return_dto,
             # route handlers are registered below
-            route_handlers=[],
+            # route_handlers=[],
+            route_handlers=config.route_handlers,
             security=config.security,
             signature_namespace=config.signature_namespace,
             signature_types=config.signature_types,
@@ -479,8 +481,9 @@ class Litestar(Router):
 
         self.asgi_router = ASGIRouter(app=self)
 
-        for route_handler in self._reduce_handlers(config.route_handlers):
-            self.register(route_handler)
+        for route_handler in self._reduce_handlers(self._route_handlers):
+            self._finalize_routes(route_handler)
+            # self.register(route_handler)
 
         if self.logging_config:
             self.get_logger = self.logging_config.configure()
@@ -504,6 +507,18 @@ class Litestar(Router):
         except ImportError:
             pass
         return config
+
+    def _reduce_handlers(self, route_handlers: Sequence[ControllerRouterHandler]) -> list[RouteHandlerType]:
+        reduced_handlers = []
+        handlers_to = list(route_handlers)
+        while handlers_to:
+            handler = self._validate_registration_value(handlers_to.pop(0))
+            if isinstance(handler, Router):
+                handlers_to.extend(handler._route_handlers)
+            else:
+                reduced_handlers.append(handler)
+
+        return reduced_handlers
 
     @property
     @deprecated(version="2.0", alternative="Litestar.plugins.cli", kind="property")
@@ -655,32 +670,68 @@ class Litestar(Router):
         """
         return cls(**dict(extract_dataclass_items(config)))
 
-    def register(self, value: ControllerRouterHandler) -> None:  # type: ignore[override]
-        """Register a route handler on the app.
+    def _finalize_routes(self, value: ControllerRouterHandler) -> list[BaseRoute]:
+        from litestar.handlers import HTTPRouteHandler
+        from litestar.router import _maybe_add_options_handler
+        from litestar.routes import HTTPRoute, WebSocketRoute, ASGIRoute, BaseRoute
 
-        This method can be used to dynamically add endpoints to an application.
+        validated_value = value
 
-        Args:
-            value: An instance of :class:`Router <.router.Router>`, a subclass of
-                :class:`Controller <.controller.Controller>` or any function decorated by the route handler decorators.
+        routes: list[BaseRoute] = []
 
-        Returns:
-            None
-        """
-        routes = super().register(value=value)
-        value._app = self
+        for path, handlers_map in self.get_route_handler_map(value=validated_value).items():
+            if http_handlers := unique(
+                [handler for handler in handlers_map.values() if isinstance(handler, HTTPRouteHandler)]
+            ):
+                if existing_handlers := unique(
+                    [
+                        handler
+                        for handler in self.route_handler_method_map.get(path, {}).values()
+                        if isinstance(handler, HTTPRouteHandler)
+                    ]
+                ):
+                    http_handlers.extend(existing_handlers)
+                    existing_route_index = find_index(self.routes, lambda x: x.path == path)  # noqa: B023
+
+                    if existing_route_index == -1:  # pragma: no cover
+                        raise ImproperlyConfiguredException("unable to find_index existing route index")
+
+                    route: WebSocketRoute | ASGIRoute | HTTPRoute = HTTPRoute(
+                        path=path,
+                        route_handlers=_maybe_add_options_handler(path, http_handlers),
+                    )
+                    self.routes[existing_route_index] = route
+                else:
+                    route = HTTPRoute(path=path, route_handlers=_maybe_add_options_handler(path, http_handlers))
+                    self.routes.append(route)
+
+                routes.append(route)
+
+            if websocket_handler := handlers_map.get("websocket"):
+                route = WebSocketRoute(path=path, route_handler=cast("WebsocketRouteHandler", websocket_handler))
+                self.routes.append(route)
+                routes.append(route)
+
+            if asgi_handler := handlers_map.get("asgi"):
+                route = ASGIRoute(path=path, route_handler=cast("ASGIRouteHandler", asgi_handler))
+                self.routes.append(route)
+                routes.append(route)
 
         for route in routes:
             route_handlers = get_route_handlers(route)
 
             for route_handler in route_handlers:
-                route_handler._app = self
-                route_handler.on_registration(route=route)
+                route_handler.on_registration(route=route, app=self)
 
             for plugin in self.plugins.receive_route:
                 plugin.receive_route(route)
 
         self.asgi_router.construct_routing_trie()
+
+    def register(self, value: ControllerRouterHandler) -> None:  # type: ignore[override]
+        handlers = super().register(value)
+        for h in handlers:
+            self._finalize_routes(h)
 
     def get_handler_index_by_name(self, name: str) -> HandlerIndex | None:
         """Receives a route handler name and returns an optional dictionary containing the route handler instance and

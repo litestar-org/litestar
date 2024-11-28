@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from pytest_lazy_fixtures import lf
 
-from litestar import Controller, Request, WebSocket
+from litestar import Controller, Request, WebSocket, Litestar
 from litestar.datastructures import State
 from litestar.di import Provide
 from litestar.dto import DataclassDTO, dto_field
@@ -239,7 +239,7 @@ def test_listener_callback_no_data_arg_raises() -> None:
         @websocket_listener("/")
         def handler() -> None: ...
 
-        handler.on_registration(WebSocketRoute(path="/", route_handler=handler))
+        handler.on_registration(WebSocketRoute(path="/", route_handler=handler), app=Litestar())
 
 
 def test_listener_callback_request_and_body_arg_raises() -> None:
@@ -248,14 +248,14 @@ def test_listener_callback_request_and_body_arg_raises() -> None:
         @websocket_listener("/")
         def handler_request(data: str, request: Request) -> None: ...
 
-        handler_request.on_registration(WebSocketRoute(path="/", route_handler=handler_request))
+        handler_request.on_registration(WebSocketRoute(path="/", route_handler=handler_request), app=Litestar())
 
     with pytest.raises(ImproperlyConfiguredException):
 
         @websocket_listener("/")
         def handler_body(data: str, body: bytes) -> None: ...
 
-        handler_body.on_registration(WebSocketRoute(path="/", route_handler=handler_body))
+        handler_body.on_registration(WebSocketRoute(path="/", route_handler=handler_body), app=Litestar())
 
 
 def test_listener_accept_connection_callback() -> None:

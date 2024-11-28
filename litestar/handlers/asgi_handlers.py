@@ -19,6 +19,7 @@ if TYPE_CHECKING:
         AsyncAnyCallable,
         ExceptionHandlersMap,
         Guard,
+        ParametersMap,
     )
 
 
@@ -36,6 +37,7 @@ class ASGIRouteHandler(BaseRouteHandler):
         opt: Mapping[str, Any] | None = None,
         is_mount: bool = False,
         signature_namespace: Mapping[str, Any] | None = None,
+        parameters: ParametersMap | None = None,
         **kwargs: Any,
     ) -> None:
         """Route handler for ASGI routes.
@@ -69,6 +71,7 @@ class ASGIRouteHandler(BaseRouteHandler):
             name=name,
             opt=opt,
             signature_namespace=signature_namespace,
+            parameters=parameters,
             **kwargs,
         )
 
@@ -88,6 +91,7 @@ class ASGIRouteHandler(BaseRouteHandler):
             signature_types=getattr(other, "signature_types", None),
             type_decoders=(*(other.type_decoders or ()), *self.type_decoders),
             type_encoders={**(other.type_encoders or {}), **self.type_encoders},
+            parameters={**other.parameters, **self.parameters},
             is_mount=self.is_mount,
         )
 

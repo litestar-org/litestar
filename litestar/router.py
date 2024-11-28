@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import traceback
 from collections import defaultdict
 from copy import copy, deepcopy
 from typing import TYPE_CHECKING, Any, Mapping, Sequence, cast
@@ -209,18 +210,6 @@ class Router:
 
         self._route_handlers = self._merge_handlers(route_handlers)
 
-    def _reduce_handlers(self, route_handlers: Sequence[ControllerRouterHandler]) -> list[RouteHandlerType]:
-        reduced_handlers = []
-        handlers_to = list(route_handlers)
-        while handlers_to:
-            handler = self._validate_registration_value(handlers_to.pop(0))
-            if isinstance(handler, Router):
-                handlers_to.extend(handler._route_handlers)
-            else:
-                reduced_handlers.append(handler)
-
-        return reduced_handlers
-
     def _merge_handlers(self, handlers: Sequence[ControllerRouterHandler]) -> list[RouteHandlerType]:
         from litestar.handlers import BaseRouteHandler
 
@@ -244,52 +233,9 @@ class Router:
         Returns:
             Collection of handlers added to the router.
         """
-        self._route_handlers.extend(self._merge_handlers([value]))
-        # validated_value = self._validate_registration_value(value)
-        validated_value = value
-
-        routes: list[BaseRoute] = []
-
-        for path, handlers_map in self.get_route_handler_map(value=validated_value).items():
-            # path = join_paths([self.path, route_path])
-            if http_handlers := unique(
-                [handler for handler in handlers_map.values() if isinstance(handler, HTTPRouteHandler)]
-            ):
-                if existing_handlers := unique(
-                    [
-                        handler
-                        for handler in self.route_handler_method_map.get(path, {}).values()
-                        if isinstance(handler, HTTPRouteHandler)
-                    ]
-                ):
-                    http_handlers.extend(existing_handlers)
-                    existing_route_index = find_index(self.routes, lambda x: x.path == path)  # noqa: B023
-
-                    if existing_route_index == -1:  # pragma: no cover
-                        raise ImproperlyConfiguredException("unable to find_index existing route index")
-
-                    route: WebSocketRoute | ASGIRoute | HTTPRoute = HTTPRoute(
-                        path=path,
-                        route_handlers=_maybe_add_options_handler(path, http_handlers),
-                    )
-                    self.routes[existing_route_index] = route
-                else:
-                    route = HTTPRoute(path=path, route_handlers=_maybe_add_options_handler(path, http_handlers))
-                    self.routes.append(route)
-
-                routes.append(route)
-
-            if websocket_handler := handlers_map.get("websocket"):
-                route = WebSocketRoute(path=path, route_handler=cast("WebsocketRouteHandler", websocket_handler))
-                self.routes.append(route)
-                routes.append(route)
-
-            if asgi_handler := handlers_map.get("asgi"):
-                route = ASGIRoute(path=path, route_handler=cast("ASGIRouteHandler", asgi_handler))
-                self.routes.append(route)
-                routes.append(route)
-
-        return routes
+        handlers = self._merge_handlers([value])
+        self._route_handlers.extend(handlers)
+        return handlers
 
     @property
     def route_handler_method_map(self) -> dict[str, RouteHandlerMapItem]:
@@ -318,13 +264,11 @@ class Router:
         if isinstance(value, Router):
             return value.route_handler_method_map
 
-        copied_value = copy(value)
         if isinstance(value, HTTPRouteHandler):
-            return {path: {http_method: copied_value for http_method in value.http_methods} for path in value.paths}
+            return {path: {http_method: value for http_method in value.http_methods} for path in value.paths}
 
         return {
-            path: {"websocket" if isinstance(value, WebsocketRouteHandler) else "asgi": copied_value}
-            for path in value.paths
+            path: {"websocket" if isinstance(value, WebsocketRouteHandler) else "asgi": value} for path in value.paths
         }
 
     def _validate_registration_value(self, value: ControllerRouterHandler) -> RouteHandlerType | Router:
@@ -340,12 +284,14 @@ class Router:
             if value is self:
                 raise ImproperlyConfiguredException("Cannot register a router on itself")
 
-            router_copy = deepcopy(value)
-            router_copy.owner = self
-            return router_copy
+            return value
+
+            # router_copy = deepcopy(value)
+            # router_copy.owner = self
+            # return router_copy
 
         if isinstance(value, (ASGIRouteHandler, HTTPRouteHandler, WebsocketRouteHandler)):
-            value.owner = self
+            # value.owner = self
             return value
 
         raise ImproperlyConfiguredException(
@@ -359,6 +305,5 @@ def _maybe_add_options_handler(path: str, http_handlers: list[HTTPRouteHandler])
     handler_methods = {method for handler in http_handlers for method in handler.http_methods}
     if "OPTIONS" not in handler_methods:
         options_handler = create_options_handler(path=path, allow_methods={*handler_methods, "OPTIONS"})  # pyright: ignore
-        options_handler.owner = http_handlers[0].owner
         return [*http_handlers, options_handler]
     return http_handlers
