@@ -158,7 +158,7 @@ class BaseRouteHandler:
         self.paths = (
             {normalize_path(p) for p in path} if path and isinstance(path, list) else {normalize_path(path or "/")}  # type: ignore[arg-type]
         )
-        self.fn = self._prepare_fn(fn)
+        self.fn = fn
         self.parameters = parameters or {}
         self._app: Litestar | None = None
 
@@ -181,8 +181,8 @@ class BaseRouteHandler:
             parameters={**other.parameters, **self.parameters},
         )
 
-    def _prepare_fn(self, fn: AsyncAnyCallable) -> AsyncAnyCallable:
-        return fn
+    def finalize(self) -> Self:
+        return self
 
     @property
     def handler_id(self) -> str:
