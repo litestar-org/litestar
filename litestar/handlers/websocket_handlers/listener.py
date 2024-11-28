@@ -25,7 +25,7 @@ from litestar.types import (
     Middleware,
     TypeEncodersMap,
 )
-from litestar.utils import ensure_async_callable
+from litestar.utils import ensure_async_callable, join_paths
 from litestar.utils.signature import ParsedSignature, get_fn_type_hints
 
 from ._utils import (
@@ -36,14 +36,16 @@ from ._utils import (
     create_stub_dependency,
 )
 from .route_handler import WebsocketRouteHandler
+from ...routes import BaseRoute
+from ...utils.empty import value_or_default
 
 if TYPE_CHECKING:
     from typing import Coroutine
 
-    from litestar import Router
+    from litestar import Router, Controller, Litestar
     from litestar.dto import AbstractDTO
     from litestar.types.asgi_types import WebSocketMode
-    from litestar.types.composite_types import TypeDecodersSequence
+    from litestar.types.composite_types import TypeDecodersSequence, ParametersMap
 
 __all__ = ("WebsocketListener", "WebsocketListenerRouteHandler", "websocket_listener")
 
@@ -86,6 +88,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         type_decoders: TypeDecodersSequence | None = None,
         type_encoders: TypeEncodersMap | None = None,
         websocket_class: type[WebSocket] | None = None,
+        parameters: ParametersMap | None = None,
         **kwargs: Any,
     ) -> None: ...
 
@@ -112,6 +115,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         type_decoders: TypeDecodersSequence | None = None,
         type_encoders: TypeEncodersMap | None = None,
         websocket_class: type[WebSocket] | None = None,
+        parameters: ParametersMap | None = None,
         **kwargs: Any,
     ) -> None: ...
 
@@ -138,6 +142,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         type_decoders: TypeDecodersSequence | None = None,
         type_encoders: TypeEncodersMap | None = None,
         websocket_class: type[WebSocket] | None = None,
+        parameters: ParametersMap | None = None,
         **kwargs: Any,
     ) -> None:
         """Initialize ``WebsocketRouteHandler``
@@ -224,8 +229,41 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
             type_decoders=type_decoders,
             type_encoders=type_encoders,
             websocket_class=websocket_class,
+            parameters=parameters,
             **kwargs,
         )
+
+    def merge(self, other: Controller | Router) -> WebsocketListenerRouteHandler:
+        return WebsocketListenerRouteHandler(
+            path=[join_paths([other.path, p]) for p in self.paths],
+            fn=self.fn._wrapped_fn,
+            # fn=self.fn._fn if isinstance(self.fn, ListenerHandler) else self.fn,
+            # fn=self.fn,
+            dependencies={**(other.dependencies or {}), **self.dependencies},
+            dto=value_or_default(self.dto, other.dto),
+            return_dto=value_or_default(self.return_dto, other.return_dto),
+            exception_handlers={**(other.exception_handlers or {}), **self.exception_handlers},
+            guards=[*(other.guards or []), *self.guards],
+            middleware=[*(other.middleware or ()), *self.middleware],
+            name=self.name,
+            opt={**(other.opt or {}), **(self.opt or {})},
+            signature_namespace={**other.signature_namespace, **self.signature_namespace},
+            signature_types=getattr(other, "signature_types", None),
+            type_decoders=(*(other.type_decoders or ()), *self.type_decoders),
+            type_encoders={**(other.type_encoders or {}), **self.type_encoders},
+            websocket_class=self.websocket_class or other.websocket_class,
+            parameters={**other.parameters, **self.parameters},
+            receive_mode=self._receive_mode,
+            send_mode=self._send_mode,
+            connection_lifespan=self._connection_lifespan,
+            connection_accept_handler=self.connection_accept_handler,
+            on_accept=self.on_accept,
+            on_disconnect=self.on_disconnect,
+        )
+
+    # def on_registration(self, route: BaseRoute, app: Litestar) -> None:
+    #     super().on_registration(route, app)
+    #     self.fn = self.__prepare_fn(self.fn)
 
     def _prepare_fn(self, fn: AnyCallable) -> ListenerHandler:
         parsed_signature = ParsedSignature.from_fn(fn, self._resolve_signature_namespace())

@@ -28,7 +28,7 @@ def test_head_decorator_raises_validation_error_if_body_is_declared() -> None:
         def handler() -> dict:
             return {}
 
-        handler.on_registration(HTTPRoute(path="/", route_handlers=[handler]))
+        handler.on_registration(HTTPRoute(path="/", route_handlers=[handler]), app=Litestar())
 
 def test_head_decorator_none_response_return_value_allowed() -> None:
     # https://github.com/litestar-org/litestar/issues/3640
@@ -55,7 +55,7 @@ def test_head_decorator_does_not_raise_for_file_response() -> None:
 
     Litestar(route_handlers=[handler])
 
-    handler.on_registration(HTTPRoute(path="/", route_handlers=[handler]))
+    handler.on_registration(HTTPRoute(path="/", route_handlers=[handler]), app=Litestar())
 
 
 def test_head_decorator_does_not_raise_for_asgi_file_response() -> None:
@@ -65,4 +65,4 @@ def test_head_decorator_does_not_raise_for_asgi_file_response() -> None:
 
     Litestar(route_handlers=[handler])
 
-    handler.on_registration(HTTPRoute(path="/", route_handlers=[handler]))
+    handler.on_registration(HTTPRoute(path="/", route_handlers=[handler]), app=Litestar())

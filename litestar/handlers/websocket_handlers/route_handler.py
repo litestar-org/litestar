@@ -5,14 +5,16 @@ from typing import TYPE_CHECKING, Any, Callable, Mapping
 from litestar.connection import WebSocket
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import BaseRouteHandler
+from litestar.types import AsyncAnyCallable
 from litestar.types import Empty
+from litestar.types import ParametersMap
 from litestar.types.builtin_types import NoneType
 from litestar.utils import join_paths
 from litestar.utils.empty import value_or_default
 from litestar.utils.predicates import is_async_callable
 
 if TYPE_CHECKING:
-    from litestar import Controller, Router
+    from litestar import Controller, Router, Litestar
     from litestar._kwargs import KwargsModel
     from litestar._kwargs.cleanup import DependencyCleanupGroup
     from litestar.routes import BaseRoute
@@ -35,6 +37,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
         opt: dict[str, Any] | None = None,
         signature_namespace: Mapping[str, Any] | None = None,
         websocket_class: type[WebSocket] | None = None,
+        parameters: ParametersMap | None = None,
         **kwargs: Any,
     ) -> None:
         """Route handler for WebSocket routes.
@@ -72,6 +75,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
             name=name,
             opt=opt,
             signature_namespace=signature_namespace,
+            parameters=parameters,
             **kwargs,
         )
 
@@ -84,14 +88,15 @@ class WebsocketRouteHandler(BaseRouteHandler):
             return_dto=value_or_default(self.return_dto, other.return_dto),
             exception_handlers={**(other.exception_handlers or {}), **self.exception_handlers},
             guards=[*(other.guards or []), *self.guards],
-            middleware=[*self.middleware, *(other.middleware or ())],
+            middleware=[*(other.middleware or ()), *self.middleware],
             name=self.name,
             opt={**(other.opt or {}), **(self.opt or {})},
             signature_namespace={**other.signature_namespace, **self.signature_namespace},
             signature_types=getattr(other, "signature_types", None),
             type_decoders=(*(other.type_decoders or ()), *self.type_decoders),
             type_encoders={**(other.type_encoders or {}), **self.type_encoders},
-            websocket_class=self.websocket_class
+            websocket_class=self.websocket_class or other.websocket_class,
+            parameters={**other.parameters, **self.parameters},
         )
 
     def resolve_websocket_class(self) -> type[WebSocket]:
@@ -126,8 +131,8 @@ class WebsocketRouteHandler(BaseRouteHandler):
         if not is_async_callable(self.fn):
             raise ImproperlyConfiguredException(f"{self}: WebSocket handler functions must be asynchronous")
 
-    def on_registration(self, route: BaseRoute) -> None:
-        super().on_registration(route=route)
+    def on_registration(self, route: BaseRoute, app: Litestar) -> None:
+        super().on_registration(route=route, app=app)
         self._kwargs_model = self._create_kwargs_model(path_parameters=route.path_parameters)
 
     async def handle(self, connection: WebSocket[Any, Any, Any]) -> None:

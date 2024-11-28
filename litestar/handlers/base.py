@@ -17,7 +17,7 @@ from litestar.types import (
     Guard,
     Middleware,
     TypeDecodersSequence,
-    TypeEncodersMap,
+    TypeEncodersMap, ParametersMap,
 )
 from litestar.typing import FieldDefinition
 from litestar.utils import ensure_async_callable, get_name, join_paths, normalize_path
@@ -75,7 +75,8 @@ class BaseRouteHandler:
         "signature_namespace",
         "type_decoders",
         "type_encoders",
-        "_app"
+        "parameters",
+        "_app",
     )
 
     def __init__(
@@ -93,6 +94,7 @@ class BaseRouteHandler:
         return_dto: type[AbstractDTO] | None | EmptyType = Empty,
         signature_namespace: Mapping[str, Any] | None = None,
         signature_types: Sequence[Any] | None = None,
+        parameters: ParametersMap | None = None,
         type_decoders: TypeDecodersSequence | None = None,
         type_encoders: TypeEncodersMap | None = None,
         **kwargs: Any,
@@ -157,6 +159,7 @@ class BaseRouteHandler:
             {normalize_path(p) for p in path} if path and isinstance(path, list) else {normalize_path(path or "/")}  # type: ignore[arg-type]
         )
         self.fn = self._prepare_fn(fn)
+        self.parameters = parameters or {}
         self._app: Litestar | None = None
 
     def merge(self, other: Controller | Router) -> Self:
@@ -168,13 +171,14 @@ class BaseRouteHandler:
             return_dto=value_or_default(self.return_dto, other.return_dto),
             exception_handlers={**(other.exception_handlers or {}), **self.exception_handlers},
             guards=[*(other.guards or []), *self.guards],
-            middleware=[*self.middleware, *(other.middleware or ())],
+            middleware=[*(other.middleware or ()), *self.middleware],
             name=self.name,
             opt={**other.opt, **self.opt},
             signature_namespace={**other.signature_namespace, **self.signature_namespace},
             signature_types=other.signature_types,
             type_decoders=(*(other.type_decoders or ()), *self.type_decoders),
             type_encoders={**(other.type_encoders or {}), **self.type_encoders},
+            parameters={**other.parameters, **self.parameters},
         )
 
     def _prepare_fn(self, fn: AsyncAnyCallable) -> AsyncAnyCallable:
@@ -535,7 +539,7 @@ class BaseRouteHandler:
                     f"If you wish to override a provider, it must have the same key."
                 )
 
-    def on_registration(self, route: BaseRoute) -> None:
+    def on_registration(self, route: BaseRoute, app: Litestar) -> None:
         """Called once per handler when the app object is instantiated.
 
         Args:
@@ -544,6 +548,7 @@ class BaseRouteHandler:
         Returns:
             None
         """
+        self._app = app
         self._validate_handler_function()
         self.resolve_dependencies()
         self._resolve_guards()

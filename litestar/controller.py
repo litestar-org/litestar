@@ -212,13 +212,14 @@ class Controller:
         self.response_cookies = narrow_response_cookies(self.response_cookies)
         self.response_headers = narrow_response_headers(self.response_headers)
         self.path = normalize_path(self.path or "/")
-        self.owner = owner
+        # self.owner = owner
 
     def as_router(self) -> Router:
         from litestar.router import Router
 
         router = Router(
-            path="/",  # paths have already been merged inside Controller.get_route_handlers
+            # path="/",  # paths have already been merged inside Controller.get_route_handlers
+            path=self.path,
             route_handlers=self.get_route_handlers(),  # type: ignore[arg-type]
             after_request=self.after_request,
             after_response=self.after_response,
@@ -247,7 +248,7 @@ class Controller:
             websocket_class=self.websocket_class,
             request_max_body_size=self.request_max_body_size,
         )
-        router.owner = self.owner
+        # router.owner = self.owner
         return router
 
     def get_route_handlers(self) -> list[BaseRouteHandler]:
@@ -266,13 +267,12 @@ class Controller:
         ]
         self_handlers.sort(key=attrgetter("handler_id"))
         for self_handler in self_handlers:
-            # route_handler = deepcopy(self_handler)
+            route_handler = deepcopy(self_handler)
             # at the point we get a reference to the handler function, it's unbound, so
             # we replace it with a regular bound method here
-            route_handler = self_handler.merge(self)
-            # route_handler = self_handler
+            # route_handler = self_handler.merge(self)
             route_handler.fn = types.MethodType(route_handler.fn, self)
-            route_handler.owner = self
+            # route_handler.owner = self
             route_handlers.append(route_handler)
 
         self.validate_route_handlers(route_handlers=route_handlers)

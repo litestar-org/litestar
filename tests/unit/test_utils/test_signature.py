@@ -230,6 +230,6 @@ def test_using_generics_in_controller_annotations(annotation_type: type, expecte
 
     controller_object = ConcreteController(owner=None)  # type: ignore[arg-type]
 
-    signature = controller_object.get_route_handlers()[0].parsed_fn_signature
+    signature = (controller_object.get_route_handlers()[0]).merge(controller_object).parsed_fn_signature
     actual = {"data": signature.parameters["data"].annotation, "return": signature.return_type.annotation}
     assert actual == expected
