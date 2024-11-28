@@ -566,7 +566,8 @@ class SchemaCreator:
             A schema or reference instance.
         """
         enum_type: None | OpenAPIType | list[OpenAPIType] = None
-        if issubclass(field_definition.annotation, Enum):
+        if issubclass(field_definition.annotation, Enum):  # pragma: no branch
+            # This method is only called for enums, so this branch is always executed
             if issubclass(field_definition.annotation, str):  # StrEnum
                 enum_type = OpenAPIType.STRING
             elif issubclass(field_definition.annotation, int):  # IntEnum
