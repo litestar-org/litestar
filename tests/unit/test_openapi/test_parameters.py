@@ -21,7 +21,7 @@ from litestar.params import Dependency, Parameter
 from litestar.routes import BaseRoute
 from litestar.testing import create_test_client
 from litestar.utils import find_index
-from tests.unit.test_openapi.utils import Gender
+from tests.unit.test_openapi.utils import Gender, LuckyNumber
 
 if TYPE_CHECKING:
     from litestar.openapi.spec.parameter import Parameter as OpenAPIParameter
@@ -50,8 +50,10 @@ def test_create_parameters(person_controller: Type[Controller]) -> None:
     ExampleFactory.seed_random(10)
 
     parameters = _create_parameters(app=Litestar(route_handlers=[person_controller]), path="/{service_id}/person")
-    assert len(parameters) == 9
-    page, name, service_id, page_size, from_date, to_date, gender, secret_header, cookie_value = tuple(parameters)
+    assert len(parameters) == 10
+    page, name, service_id, page_size, from_date, to_date, gender, lucky_number, secret_header, cookie_value = tuple(
+        parameters
+    )
 
     assert service_id.name == "service_id"
     assert service_id.param_in == ParamType.PATH
@@ -128,6 +130,18 @@ def test_create_parameters(person_controller: Type[Controller]) -> None:
     assert cookie_value.schema.type == OpenAPIType.INTEGER
     assert cookie_value.required
     assert cookie_value.schema.examples
+
+    assert lucky_number.param_in == ParamType.QUERY
+    assert lucky_number.name == "lucky_number"
+    assert is_schema_value(lucky_number.schema)
+    assert lucky_number.schema == Schema(
+        one_of=[
+            Reference(ref="#/components/schemas/tests_unit_test_openapi_utils_LuckyNumber"),
+            Schema(type=OpenAPIType.NULL),
+        ],
+        examples=[LuckyNumber.SEVEN],
+    )
+    assert not lucky_number.required
 
 
 def test_deduplication_for_param_where_key_and_type_are_equal() -> None:
