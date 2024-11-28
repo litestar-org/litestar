@@ -1,7 +1,7 @@
 SQLAlchemy Init Plugin
 ----------------------
 
-The :class:`SQLAlchemyInitPlugin <advanced_alchemy.extensions.litestar.plugins.SQLAlchemyInitPlugin>` adds functionality to the
+The :class:`SQLAlchemyInitPlugin <litestar.plugins.sqlalchemy.SQLAlchemyInitPlugin>` adds functionality to the
 application that supports using Litestar with `SQLAlchemy <http://www.sqlalchemy.org/>`_.
 
 The plugin:
@@ -39,8 +39,8 @@ Renaming the dependencies
 #########################
 
 You can change the name that the engine and session are bound to by setting the
-:attr:`engine_dependency_key <advanced_alchemy.extensions.litestar.plugins.init.config.asyncio.SQLAlchemyAsyncConfig.engine_dependency_key>`
-and :attr:`session_dependency_key <advanced_alchemy.extensions.litestar.plugins.init.config.asyncio.SQLAlchemyAsyncConfig.session_dependency_key>`
+:attr:`engine_dependency_key <litestar.plugins.sqlalchemy.config.SQLAlchemyAsyncConfig.engine_dependency_key>`
+and :attr:`session_dependency_key <litestar.plugins.sqlalchemy.config.SQLAlchemyAsyncConfig.session_dependency_key>`
 attributes on the plugin configuration.
 
 Configuring the before send handler
@@ -50,7 +50,7 @@ The plugin configures a ``before_send`` handler that is called before sending a 
 session and removes it from the connection scope.
 
 You can change the handler by setting the
-:attr:`before_send_handler <advanced_alchemy.extensions.litestar.plugins.init.config.asyncio.SQLAlchemyAsyncConfig.before_send_handler>`
+:attr:`before_send_handler <litestar.plugins.sqlalchemy.config.SQLAlchemyAsyncConfig.before_send_handler>`
 attribute on the configuration object. For example, an alternate handler is available that will also commit the session
 on success and rollback upon failure.
 
@@ -98,7 +98,7 @@ Example
 The below example is a complete demonstration of use of the init plugin. Readers who are familiar with the prior section
 may note the additional complexity involved in managing the conversion to and from SQLAlchemy objects within the
 handlers. Read on to see how this increased complexity is efficiently handled by the
-:class:`SQLAlchemySerializationPlugin <advanced_alchemy.extensions.litestar.plugins.SQLAlchemySerializationPlugin>`.
+:class:`SQLAlchemySerializationPlugin <litestar.plugins.sqlalchemy.SQLAlchemySerializationPlugin>`.
 
 .. tab-set::
 
