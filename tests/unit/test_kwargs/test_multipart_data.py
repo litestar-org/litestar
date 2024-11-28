@@ -296,7 +296,7 @@ def test_multipart_request_without_charset_for_filename() -> None:
         }
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason="filename* is deprecated and should not be used according to RFC-7578")
 def test_multipart_request_with_asterisks_filename() -> None:
     with create_test_client(form_handler) as client:
         response = client.post(
