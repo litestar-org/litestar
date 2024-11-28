@@ -23,8 +23,12 @@ def test_resolve_request_max_body_size() -> None:
 
     router = Router("/", route_handlers=[router_handler], request_max_body_size=1)
     app = Litestar(route_handlers=[app_handler, router, MyController], request_max_body_size=3)
-    assert router_handler.resolve_request_max_body_size() == 1
-    assert app_handler.resolve_request_max_body_size() == 3
+    assert (
+        next(r for r in app.routes if r.path == "/1").route_handler_map["POST"].resolve_request_max_body_size() == 1  # type: ignore[union-attr]
+    )
+    assert (
+        next(r for r in app.routes if r.path == "/2").route_handler_map["POST"].resolve_request_max_body_size() == 3  # type: ignore[union-attr]
+    )
     assert (
         next(r for r in app.routes if r.path == "/3").route_handler_map["POST"].resolve_request_max_body_size() == 2  # type: ignore[union-attr]
     )
@@ -46,7 +50,10 @@ def test_resolve_request_max_body_size_app_default() -> None:
 
     app = Litestar(route_handlers=[router_handler])
 
-    assert router_handler.resolve_request_max_body_size() == app.request_max_body_size == 10_000_000
+    assert (
+        next(r for r in app.routes if r.path == "/").route_handler_map["POST"].resolve_request_max_body_size() == app.request_max_body_size == 10_000_000
+    )
+
 
 
 def test_resolve_request_max_body_size_empty_on_all_layers_raises() -> None:
