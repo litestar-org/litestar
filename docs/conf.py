@@ -77,8 +77,7 @@ autodoc_class_signature = "separated"
 autodoc_default_options = {"special-members": "__init__", "show-inheritance": True, "members": True}
 autodoc_member_order = "bysource"
 autodoc_typehints_format = "short"
-autodoc_mock_imports = [
-]
+autodoc_mock_imports = []
 
 nitpicky = True
 nitpick_ignore = [
@@ -246,7 +245,6 @@ ignore_missing_refs = {
     "litestar.concurrency.set_asyncio_executor": {"ThreadPoolExecutor"},
     "litestar.concurrency.get_asyncio_executor": {"ThreadPoolExecutor"},
     re.compile(r"litestar\.channels\.backends\.asyncpg.*"): {"asyncpg.connection.Connection", "asyncpg.Connection"},
-
 }
 
 # Do not warn about broken links to the following:
