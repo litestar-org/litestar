@@ -49,7 +49,7 @@ class UploadFile:
         """
         return getattr(self.file, "_rolled", False)
 
-    async def write(self, data: bytes) -> int:
+    async def write(self, data: bytes | bytearray) -> int:
         """Proxy for data writing.
 
         Args:
@@ -94,6 +94,8 @@ class UploadFile:
         Returns:
             None.
         """
+        if self.file.closed:
+            return None
         if self.rolled_to_disk:
             return await sync_to_thread(self.file.close)
         return self.file.close()

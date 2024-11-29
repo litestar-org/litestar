@@ -77,7 +77,7 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
         """
         super().__init__(scope, receive, send)
         self.is_connected: bool = True
-        self._body: bytes | EmptyType = Empty
+        self._body: bytes | EmptyType = self._connection_state.body
         self._form: FormMultiDict | EmptyType = Empty
         self._json: Any = Empty
         self._msgpack: Any = Empty
@@ -264,31 +264,21 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
             if (form_data := self._connection_state.form) is Empty:
                 content_type, options = self.content_type
                 if content_type == RequestEncodingType.MULTI_PART:
-                    form_data = parse_multipart_form(
-                        body=await self.body(),
+                    form_data = await parse_multipart_form(
+                        stream=self.stream(),
                         boundary=options.get("boundary", "").encode(),
                         multipart_form_part_limit=self.app.multipart_form_part_limit,
                     )
                 elif content_type == RequestEncodingType.URL_ENCODED:
-                    form_data = parse_url_encoded_form_data(
+                    form_data = parse_url_encoded_form_data(  # type: ignore[assignment]
                         await self.body(),
                     )
                 else:
                     form_data = {}
 
-                self._connection_state.form = form_data
+                self._connection_state.form = form_data  # pyright: ignore
 
-            # form_data is a dict[str, list[str] | str | UploadFile]. Convert it to a
-            # list[tuple[str, str | UploadFile]] before passing it to FormMultiDict so
-            # multi-keys can be accessed properly
-            items = []
-            for k, v in form_data.items():
-                if isinstance(v, list):
-                    for sv in v:
-                        items.append((k, sv))
-                else:
-                    items.append((k, v))
-            self._form = FormMultiDict(items)
+            self._form = FormMultiDict.from_form_data(cast("dict[str, Any]", form_data))
 
         return self._form
 

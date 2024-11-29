@@ -1641,6 +1641,7 @@ dependencies = [
     { name = "litestar-htmx" },
     { name = "msgspec" },
     { name = "multidict" },
+    { name = "multipart" },
     { name = "polyfactory" },
     { name = "pyyaml" },
     { name = "rich" },
@@ -1843,6 +1844,7 @@ requires-dist = [
     { name = "minijinja", marker = "extra == 'minijinja'", specifier = ">=1.0.0" },
     { name = "msgspec", specifier = ">=0.18.2" },
     { name = "multidict", specifier = ">=6.0.2" },
+    { name = "multipart", specifier = ">=1.2.0" },
     { name = "opentelemetry-instrumentation-asgi", marker = "extra == 'opentelemetry'" },
     { name = "piccolo", marker = "extra == 'piccolo'" },
     { name = "picologging", marker = "extra == 'picologging'" },
@@ -2296,6 +2298,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/86/99/e82e1a275d8b1ea16d3a251474262258dbbe41c05cce0c01bceda1fc8ea5/multidict-6.1.0-cp39-cp39-win32.whl", hash = "sha256:1ca0083e80e791cffc6efce7660ad24af66c8d4079d2a750b29001b53ff59ada", size = 26421 },
     { url = "https://files.pythonhosted.org/packages/86/1c/9fa630272355af7e4446a2c7550c259f11ee422ab2d30ff90a0a71cf3d9e/multidict-6.1.0-cp39-cp39-win_amd64.whl", hash = "sha256:aa466da5b15ccea564bdab9c89175c762bc12825f4659c11227f515cee76fa4a", size = 28791 },
     { url = "https://files.pythonhosted.org/packages/99/b7/b9e70fde2c0f0c9af4cc5277782a89b66d35948ea3369ec9f598358c3ac5/multidict-6.1.0-py3-none-any.whl", hash = "sha256:48e171e52d1c4d33888e529b999e5900356b9ae588c2f09a52dcefb158b27506", size = 10051 },
+]
+
+[[package]]
+name = "multipart"
+version = "1.2.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/f8/5a/66075b21cf7622958e724c482ab9e0c150fe057b20743ec215706bf5dbac/multipart-1.2.0.tar.gz", hash = "sha256:fc9ec7177b642e07c3c360126b9c845160376e65db6fcfd04df63d58135e1e8b", size = 35932 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/5a/49/89bdcbefe6fdb59ef67e7d6d407c88acdce7ca6441b73945f949862081c6/multipart-1.2.0-py3-none-any.whl", hash = "sha256:79ecedd8ad13e1b4888224cedcc7caee6b784cb89337b50c83ad24a09c66be0f", size = 12915 },
 ]
 
 [[package]]

@@ -9,7 +9,7 @@ from litestar.utils.empty import value_or_default
 if TYPE_CHECKING:
     from typing_extensions import Self
 
-    from litestar.datastructures import URL, Accept, Headers
+    from litestar.datastructures import URL, Accept, Headers, UploadFile
     from litestar.types.asgi_types import Scope
     from litestar.types.composite_types import ExceptionHandlersMap
 
@@ -83,7 +83,7 @@ class ScopeState:
     dependency_cache: dict[str, Any] | EmptyType
     do_cache: bool | EmptyType
     exception_handlers: ExceptionHandlersMap | EmptyType
-    form: dict[str, str | list[str]] | EmptyType
+    form: dict[str, str | list[str] | UploadFile] | EmptyType
     flash_messages: list[dict[str, str]]
     headers: Headers | EmptyType
     is_cached: bool | EmptyType

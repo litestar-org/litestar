@@ -186,7 +186,11 @@ def test_multipart_request_multiple_files_with_headers(tmpdir: Any) -> None:
                 "filename": "test2.txt",
                 "content": "<file2 content>",
                 "content_type": "text/plain",
-                "headers": [["content-disposition", "form-data"], ["x-custom", "f2"], ["content-type", "text/plain"]],
+                "headers": [
+                    ["content-disposition", 'form-data; name="test2"; filename="test2.txt"'],
+                    ["x-custom", "f2"],
+                    ["content-type", "text/plain"],
+                ],
             },
         }
 
@@ -292,6 +296,7 @@ def test_multipart_request_without_charset_for_filename() -> None:
         }
 
 
+@pytest.mark.xfail(reason="filename* is deprecated and should not be used according to RFC-7578")
 def test_multipart_request_with_asterisks_filename() -> None:
     with create_test_client(form_handler) as client:
         response = client.post(
@@ -456,13 +461,14 @@ def test_optional_formdata() -> None:
 @pytest.mark.parametrize("limit", (1000, 100, 10))
 def test_multipart_form_part_limit(limit: int) -> None:
     @post("/", signature_types=[UploadFile])
-    async def hello_world(data: List[UploadFile] = Body(media_type=RequestEncodingType.MULTI_PART)) -> None:
-        assert len(data) == limit
+    async def hello_world(data: List[UploadFile] = Body(media_type=RequestEncodingType.MULTI_PART)) -> dict:
+        return {"limit": len(data)}
 
     with create_test_client(route_handlers=[hello_world], multipart_form_part_limit=limit) as client:
         data = {str(i): "a" for i in range(limit)}
         response = client.post("/", files=data)
         assert response.status_code == HTTP_201_CREATED
+        assert response.json() == {"limit": limit}
 
         data = {str(i): "a" for i in range(limit)}
         data[str(limit + 1)] = "b"
@@ -577,3 +583,18 @@ def test_multipart_and_url_encoded_behave_the_same(form_type) -> None:  # type: 
                 headers={"Content-Type": "multipart/form-data; boundary=1f35df74046888ceaa62d8a534a076dd"},
             )
         assert response.status_code == HTTP_201_CREATED
+
+
+def test_invalid_multipart_raises_client_error() -> None:
+    with create_test_client(form_handler) as client:
+        response = client.post(
+            "/form",
+            content=(
+                b"--20b303e711c4ab8c443184ac833ab00f\r\n"
+                b"Content-Disposition: form-data; "
+                b'name="value"\r\n\r\n'
+                b"--20b303e711c4ab8c44318833ab00f--\r\n"
+            ),
+            headers={"Content-Type": "multipart/form-data; charset=utf-8; boundary=20b303e711c4ab8c443184ac833ab00f"},
+        )
+        assert response.status_code == HTTP_400_BAD_REQUEST
