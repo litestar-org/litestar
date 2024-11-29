@@ -74,6 +74,7 @@ Additional features provided by the built-in base models include:
   reverts to an ``Integer`` for unsupported variants.
 - A custom :class:`JsonB <advanced_alchemy.types.JsonB>` type that uses
   native ``JSONB`` where possible and ``Binary`` or ``Blob`` as an alternative.
+- A custom :class:`EncryptedString <advanced_alchemy.types.EncryptedString>` encrypted string that supports multiple cryptography backends.
 
 Let's build on this as we look at the repository classes.
 
