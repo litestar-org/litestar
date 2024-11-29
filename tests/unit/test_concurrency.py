@@ -47,6 +47,7 @@ def test_get_set_asyncio_executor() -> None:
     executor = ThreadPoolExecutor()
     set_asyncio_executor(executor)
     assert get_asyncio_executor() is executor
+    executor.shutdown(False)
 
 
 def test_get_set_trio_capacity_limiter() -> None:
@@ -68,6 +69,7 @@ def test_asyncio_uses_executor(mocker: MockerFixture) -> None:
     loop.close()
 
     assert mock_run_in_executor.call_args_list[0].args[0] is executor
+    executor.shutdown(False)
 
 
 def test_set_asyncio_executor_from_running_loop_raises() -> None:
@@ -75,7 +77,9 @@ def test_set_asyncio_executor_from_running_loop_raises() -> None:
         set_asyncio_executor(ThreadPoolExecutor())
 
     with pytest.raises(RuntimeError):
-        asyncio.new_event_loop().run_until_complete(main())
+        loop = asyncio.new_event_loop()
+        loop.run_until_complete(main())
+        loop.close()
 
     assert get_asyncio_executor() is None
 
@@ -104,4 +108,6 @@ def test_sync_to_thread_unsupported_lib(mocker: MockerFixture) -> None:
     mocker.patch("litestar.concurrency.sniffio.current_async_library", return_value="something")
 
     with pytest.raises(RuntimeError):
-        asyncio.new_event_loop().run_until_complete(sync_to_thread(func))
+        loop = asyncio.new_event_loop()
+        loop.run_until_complete(sync_to_thread(func))
+        loop.close()
