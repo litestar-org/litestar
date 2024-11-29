@@ -1,15 +1,13 @@
-from typing import TYPE_CHECKING, Optional, Type
+from typing import Optional
 
 import beanie
-
-if TYPE_CHECKING:
-    from pydantic import BaseModel
+from pydantic import BaseModel
 
 from litestar.plugins.pydantic import PydanticDTO
 
 
-def test_generate_field_definitions_from_beanie_models(base_model: "Type[BaseModel]") -> None:
-    class Category(base_model):  # type: ignore[valid-type, misc]
+def test_generate_field_definitions_from_beanie_models() -> None:
+    class Category(BaseModel):
         name: str
         description: str
 

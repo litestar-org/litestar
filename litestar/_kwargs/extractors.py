@@ -337,16 +337,16 @@ async def _extract_multipart(
         if body_kwarg_multipart_form_part_limit is not None
         else connection.app.multipart_form_part_limit
     )
-    connection.scope["_form"] = form_values = (  # type: ignore[typeddict-unknown-key]
-        connection.scope["_form"]  # type: ignore[typeddict-item]
-        if "_form" in connection.scope
-        else await parse_multipart_form(
+    scope_state = ScopeState.from_scope(connection.scope)
+    if scope_state.form is Empty:
+        scope_state.form = form_values = await parse_multipart_form(
             stream=connection.stream(),
             boundary=connection.content_type[-1].get("boundary", "").encode(),
             multipart_form_part_limit=multipart_form_part_limit,
             type_decoders=connection.route_handler.resolve_type_decoders(),
         )
-    )
+    else:
+        form_values = scope_state.form
 
     if field_definition.is_non_string_sequence:
         values = list(form_values.values())
@@ -377,7 +377,7 @@ async def _extract_multipart(
                 or (is_optional_union(tp) and is_non_string_sequence(make_non_optional_union(tp)))
             )
         ):
-            form_values[name] = [value]
+            form_values[name] = [value]  # pyright: ignore
 
     return form_values
 
@@ -426,11 +426,13 @@ def create_url_encoded_data_extractor(
     async def extract_url_encoded_extractor(
         connection: Request[Any, Any, Any],
     ) -> Any:
-        connection.scope["_form"] = form_values = (  # type: ignore[typeddict-unknown-key]
-            connection.scope["_form"]  # type: ignore[typeddict-item]
-            if "_form" in connection.scope
-            else parse_url_encoded_form_data(await connection.body())
-        )
+        scope_state = ScopeState.from_scope(connection.scope)
+        if scope_state.form is Empty:
+            scope_state.form = form_values = (  # type: ignore[assignment]
+                parse_url_encoded_form_data(await connection.body())
+            )
+        else:
+            form_values = scope_state.form  # type: ignore[assignment]
 
         if not form_values and is_data_optional:
             return None

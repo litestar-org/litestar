@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from itertools import chain
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any
 
 from msgspec.msgpack import decode as _decode_msgpack_plain
 
@@ -77,19 +77,18 @@ class HTTPRoute(BaseRoute):
         if route_handler.resolve_guards():
             await route_handler.authorize_connection(connection=request)
 
-        response = await self._get_response_for_request(
-            scope=scope, request=request, route_handler=route_handler, parameter_model=parameter_model
-        )
+        try:
+            response = await self._get_response_for_request(
+                scope=scope, request=request, route_handler=route_handler, parameter_model=parameter_model
+            )
 
-        await response(scope, receive, send)
+            await response(scope, receive, send)
 
-        if after_response_handler := route_handler.resolve_after_response():
-            await after_response_handler(request)
-
-        if request._form is not Empty:
-            await request._form.close()
-        if form_data := scope.get("_form", {}):
-            await FormMultiDict.from_form_data(cast("dict[str, Any]", form_data)).close()
+            if after_response_handler := route_handler.resolve_after_response():
+                await after_response_handler(request)
+        finally:
+            if (form_data := ScopeState.from_scope(scope).form) is not Empty:
+                await FormMultiDict.from_form_data(form_data).close()
 
     def create_handler_map(self) -> None:
         """Parse the ``router_handlers`` of this route and return a mapping of

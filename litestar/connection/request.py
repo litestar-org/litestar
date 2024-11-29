@@ -270,13 +270,13 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
                         multipart_form_part_limit=self.app.multipart_form_part_limit,
                     )
                 elif content_type == RequestEncodingType.URL_ENCODED:
-                    form_data = parse_url_encoded_form_data(
+                    form_data = parse_url_encoded_form_data(  # type: ignore[assignment]
                         await self.body(),
                     )
                 else:
                     form_data = {}
 
-                self._connection_state.form = form_data
+                self._connection_state.form = form_data  # pyright: ignore
 
             self._form = FormMultiDict.from_form_data(cast("dict[str, Any]", form_data))
 

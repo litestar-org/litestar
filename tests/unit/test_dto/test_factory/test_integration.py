@@ -58,11 +58,13 @@ def test_url_encoded_form_data(use_experimental_dto_backend: bool) -> None:
 
 
 async def test_multipart_encoded_form_data(use_experimental_dto_backend: bool) -> None:
+    default_file = UploadFile(content_type="text/plain", filename="forbidden", file_data=b"forbidden")
+
     @dataclass
     class Payload:
         file: UploadFile
         forbidden: UploadFile = field(
-            default=UploadFile(content_type="text/plain", filename="forbidden", file_data=b"forbidden"),
+            default=default_file,
             metadata=dto_field("read-only"),
         )
 
@@ -79,6 +81,8 @@ async def test_multipart_encoded_form_data(use_experimental_dto_backend: bool) -
             files={"file": b"abc123", "forbidden": b"123abc"},
         )
         assert response.content == b"forbidden"
+
+    await default_file.close()
 
 
 def test_renamed_field(use_experimental_dto_backend: bool) -> None:

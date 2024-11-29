@@ -48,6 +48,13 @@ def parse_content_header(value: str) -> tuple[str, dict[str, str]]:
     return value.strip().lower(), options
 
 
+async def _close_upload_files(fields: dict[str, list[Any]]) -> None:
+    for values in fields.values():
+        for value in values:
+            if isinstance(value, UploadFile):
+                await value.close()
+
+
 async def parse_multipart_form(  # noqa: C901
     stream: AsyncGenerator[bytes, None],
     boundary: bytes,
@@ -72,10 +79,11 @@ async def parse_multipart_form(  # noqa: C901
     if not chunk:
         return fields
 
+    data: UploadFile | bytearray = bytearray()
+
     try:
         with PushMultipartParser(boundary, max_segment_count=multipart_form_part_limit) as parser:
             segment: MultipartSegment | None = None
-            data: UploadFile | bytearray = bytearray()
             while not parser.closed:
                 for form_part in parser.parse(chunk):
                     if isinstance(form_part, MultipartSegment):
@@ -113,8 +121,17 @@ async def parse_multipart_form(  # noqa: C901
                 chunk = await async_next(stream, b"")
 
     except ParserError as exc:
+        # if an exception is raised, make sure that all 'UploadFile's are closed
+        if isinstance(data, UploadFile):
+            await data.close()
+        await _close_upload_files(fields)
+
         raise ClientException("Invalid multipart/form-data") from exc
     except ParserLimitReached:
+        if isinstance(data, UploadFile):
+            await data.close()
+        await _close_upload_files(fields)
+
         # FIXME (3.0): This should raise a '413 - Request Entity Too Large', but for
         # backwards compatibility, we keep it as a 400 for now
         raise ClientException("Request Entity Too Large") from None
