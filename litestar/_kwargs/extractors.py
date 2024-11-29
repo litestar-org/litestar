@@ -377,7 +377,7 @@ async def _extract_multipart(
                 or (is_optional_union(tp) and is_non_string_sequence(make_non_optional_union(tp)))
             )
         ):
-            form_values[name] = [value]
+            form_values[name] = [value]  # pyright: ignore
 
     return form_values
 

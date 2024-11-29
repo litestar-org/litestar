@@ -276,7 +276,7 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
                 else:
                     form_data = {}
 
-                self._connection_state.form = form_data
+                self._connection_state.form = form_data  # pyright: ignore
 
             self._form = FormMultiDict.from_form_data(cast("dict[str, Any]", form_data))
 
