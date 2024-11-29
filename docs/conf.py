@@ -189,6 +189,9 @@ nitpick_ignore = [
     (PY_CLASS, "typing.Self"),
     (PY_CLASS, "attr.AttrsInstance"),
     (PY_CLASS, "typing_extensions.TypeGuard"),
+    (PY_CLASS, "advanced_alchemy.types.BigIntIdentity"),
+    (PY_CLASS, "advanced_alchemy.types.JsonB"),
+    (PY_CLASS, "advanced_alchemy.repository.SQLAlchemyAsyncRepository"),
 ]
 
 nitpick_ignore_regex = [
