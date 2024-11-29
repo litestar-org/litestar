@@ -1,6 +1,5 @@
 from typing import AsyncGenerator, List, Optional
 
-from advanced_alchemy.extensions.litestar.plugins.init.config.asyncio import autocommit_before_send_handler
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError, NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -74,7 +73,7 @@ db_config = SQLAlchemyAsyncConfig(
     connection_string="sqlite+aiosqlite:///todo.sqlite",
     metadata=Base.metadata,
     create_all=True,
-    before_send_handler=autocommit_before_send_handler,
+    before_send_handler="autocommit",
 )
 
 app = Litestar(
