@@ -1,4 +1,4 @@
-# ruff: noqa: TCH004, F401
+# ruff: noqa: TC004, F401
 from __future__ import annotations
 
 import importlib

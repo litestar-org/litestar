@@ -1,4 +1,4 @@
-# ruff: noqa: TCH004, F401
+# ruff: noqa: TC004, F401
 # pyright: reportUnusedImport=false
 from __future__ import annotations
 
