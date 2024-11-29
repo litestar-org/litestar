@@ -7,6 +7,7 @@ from msgspec.msgpack import decode as _decode_msgpack_plain
 
 from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
 from litestar.connection import Request
+from litestar.datastructures import CacheControlHeader, ETag, FormMultiDict
 from litestar.datastructures.cookie import Cookie
 from litestar.datastructures.response_header import ResponseHeader
 from litestar.enums import HttpMethod, MediaType
@@ -18,7 +19,6 @@ from litestar.exceptions import (
 )
 from litestar.handlers.base import BaseRouteHandler
 from litestar.handlers.http_handlers._utils import (
-    cleanup_temporary_files,
     create_data_handler,
     create_generic_asgi_response_handler,
     create_response_handler,
@@ -65,7 +65,6 @@ if TYPE_CHECKING:
     from litestar.app import Litestar
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
     from litestar.config.response_cache import CACHE_FOREVER
-    from litestar.datastructures import CacheControlHeader, ETag
     from litestar.dto import AbstractDTO
     from litestar.openapi.datastructures import ResponseSpec
     from litestar.openapi.spec import SecurityRequirement
@@ -683,7 +682,7 @@ class HTTPRouteHandler(BaseRouteHandler):
                 await after_response_handler(connection)
         finally:
             if (form_data := ScopeState.from_scope(connection.scope).form) is not Empty:
-                await cleanup_temporary_files(form_data=cast("dict[str, Any]", form_data))
+                await FormMultiDict.from_form_data(form_data).close()
 
     async def _get_response_for_request(
         self,
