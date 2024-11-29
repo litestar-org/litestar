@@ -203,6 +203,9 @@ fail_under = 50
 addopts = "--strict-markers --strict-config --dist=loadgroup -m 'not server_integration'"
 asyncio_mode = "auto"
 filterwarnings = [
+  "error",
+  # https://github.com/pytest-dev/pytest-asyncio/issues/724
+  "default:.*socket.socket:pytest.PytestUnraisableExceptionWarning",
   "ignore::trio.TrioDeprecationWarning:anyio._backends._trio*:",
   "ignore::DeprecationWarning:pkg_resources.*",
   "ignore::DeprecationWarning:google.rpc",
