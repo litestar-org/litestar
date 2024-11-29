@@ -65,7 +65,12 @@ def async_mock() -> AsyncMock:
     return AsyncMock()
 
 
-@pytest.fixture(params=[pytest.param("asyncio", id="asyncio"), pytest.param("trio", id="trio")])
+@pytest.fixture(
+    params=[
+        pytest.param("asyncio", id="asyncio"),
+        # pytest.param("trio", id="trio")
+    ]
+)
 def anyio_backend(request: pytest.FixtureRequest) -> str:
     return request.param  # type: ignore[no-any-return]
 

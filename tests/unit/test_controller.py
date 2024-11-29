@@ -22,6 +22,7 @@ from litestar.testing import create_test_client
 from tests.models import DataclassPerson, DataclassPersonFactory
 
 
+@pytest.mark.anyio
 @pytest.mark.parametrize(
     "decorator, http_method, expected_status_code, return_value, return_annotation",
     [

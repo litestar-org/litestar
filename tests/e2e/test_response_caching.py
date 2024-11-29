@@ -26,6 +26,9 @@ if TYPE_CHECKING:
 T = TypeVar("T")
 
 
+pytestmark = pytest.mark.anyio
+
+
 @pytest.fixture()
 def mock() -> MagicMock:
     return MagicMock(return_value=str(random.random()))

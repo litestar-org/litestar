@@ -17,6 +17,8 @@ from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 from litestar.types import FileSystemProtocol
 
+pytestmark = pytest.mark.anyio
+
 
 @pytest.mark.parametrize("content_disposition_type", ("inline", "attachment"))
 def test_file_response_default_content_type(tmpdir: Path, content_disposition_type: Any) -> None:

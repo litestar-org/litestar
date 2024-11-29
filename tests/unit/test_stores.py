@@ -25,6 +25,8 @@ if TYPE_CHECKING:
 
     from litestar.stores.base import NamespacedStore, Store
 
+pytestmark = pytest.mark.anyio
+
 
 @pytest.fixture()
 def mock_redis() -> None:
@@ -225,13 +227,13 @@ async def test_redis_delete_all_no_namespace_raises(redis_client: Redis) -> None
 
 
 @pytest.mark.xdist_group("redis")
-def test_redis_namespaced_key(redis_store: RedisStore) -> None:
+async def test_redis_namespaced_key(redis_store: RedisStore) -> None:
     assert redis_store.namespace == "LITESTAR"
     assert redis_store._make_key("foo") == "LITESTAR:foo"
 
 
 @pytest.mark.xdist_group("redis")
-def test_redis_with_namespace(redis_store: RedisStore) -> None:
+async def test_redis_with_namespace(redis_store: RedisStore) -> None:
     namespaced_test = redis_store.with_namespace("TEST")
     namespaced_test_foo = namespaced_test.with_namespace("FOO")
     assert namespaced_test.namespace == "LITESTAR_TEST"
@@ -240,7 +242,7 @@ def test_redis_with_namespace(redis_store: RedisStore) -> None:
 
 
 @pytest.mark.xdist_group("redis")
-def test_redis_namespace_explicit_none(redis_client: Redis) -> None:
+async def test_redis_namespace_explicit_none(redis_client: Redis) -> None:
     assert RedisStore.with_client(url="redis://127.0.0.1", namespace=None).namespace is None
     assert RedisStore(redis=redis_client, namespace=None).namespace is None
 

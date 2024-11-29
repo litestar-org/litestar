@@ -20,6 +20,8 @@ from litestar.types.asgi_types import WebSocketMode
 
 from .util import get_from_stream
 
+pytestmark = pytest.mark.anyio
+
 
 @pytest.fixture(
     params=[
@@ -78,6 +80,7 @@ def test_plugin_dependency_signature_namespace(memory_backend: MemoryChannelsBac
     assert app.signature_namespace["ChannelsPlugin"] is ChannelsPlugin
 
 
+@pytest.mark.anyio
 @pytest.mark.flaky(reruns=5)
 async def test_pub_sub_wait_published(channels_backend: ChannelsBackend) -> None:
     async with ChannelsPlugin(backend=channels_backend, channels=["something"]) as plugin:
@@ -114,10 +117,11 @@ async def test_pub_sub_run_in_background(channels_backend: ChannelsBackend, asyn
     assert async_mock.call_count == 1
 
 
+@pytest.mark.anyio
 @pytest.mark.flaky(reruns=5)
 @pytest.mark.parametrize("socket_send_mode", ["text", "binary"])
 @pytest.mark.parametrize("handler_base_path", [None, "/ws"])
-def test_create_ws_route_handlers(
+async def test_create_ws_route_handlers(
     channels_backend: ChannelsBackend, handler_base_path: str | None, socket_send_mode: WebSocketMode
 ) -> None:
     channels_plugin = ChannelsPlugin(
@@ -155,8 +159,9 @@ async def test_ws_route_handlers_receive_arbitrary_message(channels_backend: Cha
         assert ws.receive_json(timeout=2) == ["foo"]
 
 
+@pytest.mark.anyio
 @pytest.mark.flaky(reruns=15)
-def test_create_ws_route_handlers_arbitrary_channels_allowed(channels_backend: ChannelsBackend) -> None:
+async def test_create_ws_route_handlers_arbitrary_channels_allowed(channels_backend: ChannelsBackend) -> None:
     channels_plugin = ChannelsPlugin(
         backend=channels_backend,
         arbitrary_channels_allowed=True,

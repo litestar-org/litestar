@@ -15,6 +15,8 @@ from litestar.testing import RequestFactory
 
 factory = RequestFactory()
 
+pytestmark = pytest.mark.anyio
+
 
 async def test_connection_data_extractor() -> None:
     request = factory.post(

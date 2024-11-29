@@ -18,6 +18,8 @@ from litestar.status_codes import (
 )
 from tests.models import DataclassPerson
 
+pytestmark = pytest.mark.anyio
+
 
 def test_route_handler_validation_http_method() -> None:
     # doesn't raise for http methods

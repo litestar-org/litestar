@@ -35,6 +35,7 @@ def func() -> int:
 def test_sync_to_thread_asyncio() -> None:
     loop = asyncio.new_event_loop()
     assert loop.run_until_complete(sync_to_thread(func)) == 1
+    loop.close()
 
 
 def test_sync_to_thread_trio() -> None:
@@ -64,6 +65,7 @@ def test_asyncio_uses_executor(mocker: MockerFixture) -> None:
 
     loop = asyncio.new_event_loop()
     loop.run_until_complete(sync_to_thread(func))
+    loop.close()
 
     assert mock_run_in_executor.call_args_list[0].args[0] is executor
 
