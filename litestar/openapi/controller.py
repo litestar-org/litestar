@@ -36,7 +36,7 @@ class OpenAPIController(Controller):
     """Base styling of the html body."""
     redoc_version: str = "next"
     """Redoc version to download from the CDN."""
-    swagger_ui_version: str = "5.1.3"
+    swagger_ui_version: str = "5.18.2"
     """SwaggerUI version to download from the CDN."""
     stoplight_elements_version: str = "7.7.18"
     """StopLight Elements version to download from the CDN."""

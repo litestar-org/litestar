@@ -465,7 +465,7 @@ def test_spec_generation(cls: Any) -> None:
                 "first_name": {"type": "string"},
                 "last_name": {"type": "string"},
                 "id": {"type": "string"},
-                "optional": {"oneOf": [{"type": "null"}, {"type": "string"}]},
+                "optional": {"oneOf": [{"type": "string"}, {"type": "null"}]},
                 "complex": {
                     "type": "object",
                     "additionalProperties": {
@@ -476,11 +476,11 @@ def test_spec_generation(cls: Any) -> None:
                 "union": {"oneOf": [{"type": "integer"}, {"items": {"type": "string"}, "type": "array"}]},
                 "pets": {
                     "oneOf": [
-                        {"type": "null"},
                         {
                             "items": {"$ref": "#/components/schemas/DataclassPet"},
                             "type": "array",
                         },
+                        {"type": "null"},
                     ]
                 },
             },

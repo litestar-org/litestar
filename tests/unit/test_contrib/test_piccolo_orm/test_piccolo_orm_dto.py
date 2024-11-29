@@ -139,9 +139,14 @@ def test_piccolo_dto_openapi_spec_generation() -> None:
     assert concert_schema
     assert concert_schema.to_schema() == {
         "properties": {
-            "band_1": {"oneOf": [{"type": "null"}, {"type": "integer"}]},
-            "band_2": {"oneOf": [{"type": "null"}, {"type": "integer"}]},
-            "venue": {"oneOf": [{"type": "null"}, {"type": "integer"}]},
+            "band_1": {"oneOf": [{"type": "integer"}, {"type": "null"}]},
+            "band_2": {
+                "oneOf": [
+                    {"type": "integer"},
+                    {"type": "null"},
+                ]
+            },
+            "venue": {"oneOf": [{"type": "integer"}, {"type": "null"}]},
         },
         "required": [],
         "title": "CreateConcertConcertRequestBody",
@@ -152,10 +157,10 @@ def test_piccolo_dto_openapi_spec_generation() -> None:
     assert record_studio_schema
     assert record_studio_schema.to_schema() == {
         "properties": {
-            "facilities": {"oneOf": [{"type": "null"}, {"type": "string"}]},
-            "facilities_b": {"oneOf": [{"type": "null"}, {"type": "string"}]},
-            "microphones": {"oneOf": [{"type": "null"}, {"items": {"type": "string"}, "type": "array"}]},
-            "id": {"oneOf": [{"type": "null"}, {"type": "integer"}]},
+            "facilities": {"oneOf": [{"type": "string"}, {"type": "null"}]},
+            "facilities_b": {"oneOf": [{"type": "string"}, {"type": "null"}]},
+            "microphones": {"oneOf": [{"items": {"type": "string"}, "type": "array"}, {"type": "null"}]},
+            "id": {"oneOf": [{"type": "integer"}, {"type": "null"}]},
         },
         "required": [],
         "title": "RetrieveStudioRecordingStudioResponseBody",
@@ -166,8 +171,8 @@ def test_piccolo_dto_openapi_spec_generation() -> None:
     assert venue_schema
     assert venue_schema.to_schema() == {
         "properties": {
-            "id": {"oneOf": [{"type": "null"}, {"type": "integer"}]},
-            "name": {"oneOf": [{"type": "null"}, {"type": "string"}]},
+            "id": {"oneOf": [{"type": "integer"}, {"type": "null"}]},
+            "name": {"oneOf": [{"type": "string"}, {"type": "null"}]},
         },
         "required": [],
         "title": "RetrieveVenuesVenueResponseBody",

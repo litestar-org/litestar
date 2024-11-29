@@ -38,7 +38,7 @@ def test_schema_generation_with_generic_classes(model: Type[Union[PydanticV1Gene
     field_definition = FieldDefinition.from_kwarg(name=get_name(cls), annotation=cls)
     properties = get_schema_for_field_definition(field_definition, plugins=[PydanticSchemaPlugin()]).properties
     expected_foo_schema = Schema(type=OpenAPIType.INTEGER)
-    expected_optional_foo_schema = Schema(one_of=[Schema(type=OpenAPIType.NULL), Schema(type=OpenAPIType.INTEGER)])
+    expected_optional_foo_schema = Schema(one_of=[Schema(type=OpenAPIType.INTEGER), Schema(type=OpenAPIType.NULL)])
 
     assert properties
     assert properties["foo"] == expected_foo_schema
