@@ -1,13 +1,8 @@
 from __future__ import annotations
 
-from typing import Iterable
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Iterable
 
-from msgspec.msgpack import decode as _decode_msgpack_plain
-
-from litestar.enums import HttpMethod, MediaType
-from litestar.exceptions import ClientException, ImproperlyConfiguredException, SerializationException
-from litestar.response import Response
+from litestar.exceptions import ImproperlyConfiguredException
 from litestar.routes.base import BaseRoute
 from litestar.types import HTTPScope
 
