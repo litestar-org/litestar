@@ -46,7 +46,7 @@ dependencies = [
     "rich-click",
     "multipart>=1.2.0",
     # default litestar plugins
-    "litestar-htmx>=0.3.0"
+    "litestar-htmx>=0.4.0"
 ]
 description = "Litestar - A production-ready, highly performant, extensible ASGI API Framework"
 keywords = ["api", "rest", "asgi", "litestar", "starlite"]
