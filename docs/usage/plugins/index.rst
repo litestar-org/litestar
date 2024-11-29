@@ -91,20 +91,20 @@ The following example shows the actual implementation of the ``SerializationPlug
    :language: python
    :caption: ``SerializationPluginProtocol`` implementation example
 
-:meth:`supports_type(self, field_definition: FieldDefinition) -> bool: <litestar.plugins.sqlalchemy.SQLAlchemySerializationPlugin.supports_type>`
+:meth:`supports_type(self, field_definition: FieldDefinition) -> bool: <advanced_alchemy.extensions.litestar.SQLAlchemySerializationPlugin.supports_type>`
 returns a :class:`bool` indicating whether the plugin supports serialization for the given type. Specifically, we return
 ``True`` if the parsed type is either a collection of SQLAlchemy models or a single SQLAlchemy model.
 
-:meth:`create_dto_for_type(self, field_definition: FieldDefinition) -> type[AbstractDTO]: <litestar.plugins.sqlalchemy.SQLAlchemySerializationPlugin.create_dto_for_type>`
+:meth:`create_dto_for_type(self, field_definition: FieldDefinition) -> type[AbstractDTO]: <advanced_alchemy.extensions.litestar.SQLAlchemySerializationPlugin.create_dto_for_type>`
 takes a :class:`FieldDefinition <litestar.typing.FieldDefinition>` instance as an argument and returns a
-:class:`SQLAlchemyDTO <litestar.plugins.sqlalchemy.dto.SQLAlchemyDTO>` subclass and includes some logic that may be
+:class:`SQLAlchemyDTO <advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO>` subclass and includes some logic that may be
 interesting to potential serialization plugin authors.
 
 The first thing the method does is check if the parsed type is a collection of SQLAlchemy models or a single SQLAlchemy
 model, retrieves the model type in either case and assigns it to the ``annotation`` variable.
 
 The method then checks if ``annotation`` is already in the ``_type_dto_map`` dictionary. If it is, it returns the
-corresponding DTO type. This is done to ensure that multiple :class:`SQLAlchemyDTO <litestar.plugins.sqlalchemy.dto.SQLAlchemyDTO>`
+corresponding DTO type. This is done to ensure that multiple :class:`SQLAlchemyDTO <advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO>`
 subtypes are not created for the same model.
 
 If the annotation is not in the ``_type_dto_map`` dictionary, the method creates a new DTO type for the annotation,
