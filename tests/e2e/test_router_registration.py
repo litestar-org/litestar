@@ -46,7 +46,7 @@ def controller() -> Type[Controller]:
 
 
 def test_register_with_controller_class(controller: Type[Controller]) -> None:
-    router = Router(path="/base", route_handlers=[controller])
+    router = Litestar(path="/base", route_handlers=[controller], openapi_config=None)
     assert len(router.routes) == 3
     for route in router.routes:
         if isinstance(route, HTTPRoute):
@@ -82,7 +82,7 @@ def test_register_controller_on_different_routers(controller: Type[Controller]) 
 
 def test_register_with_router_instance(controller: Type[Controller]) -> None:
     top_level_router = Router(path="/top-level", route_handlers=[controller])
-    base_router = Router(path="/base", route_handlers=[top_level_router])
+    base_router = Litestar(path="/base", route_handlers=[top_level_router], openapi_config=None)
 
     assert len(base_router.routes) == 3
     for route in base_router.routes:
@@ -108,7 +108,11 @@ def test_register_with_route_handler_functions() -> None:
     def third_route_handler() -> None:
         pass
 
-    router = Router(path="/base", route_handlers=[first_route_handler, second_route_handler, third_route_handler])
+    router = Litestar(
+        path="/base",
+        route_handlers=[first_route_handler, second_route_handler, third_route_handler],
+        openapi_config=None,
+    )
     assert len(router.routes) == 2
     for route in router.routes:
         if isinstance(route, HTTPRoute):

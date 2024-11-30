@@ -171,7 +171,6 @@ def test_app_config_object_used(app_config_object: AppConfig, monkeypatch: pytes
     # Things that we don't actually need to call for this test
     monkeypatch.setattr(Litestar, "register", MagicMock())
     monkeypatch.setattr(Litestar, "_create_asgi_handler", MagicMock())
-    monkeypatch.setattr(ASGIRouter, "__init__", MagicMock(return_value=None))
 
     # instantiates the app with an `on_app_config` that returns our patched `AppConfig` object.
     Litestar(on_app_init=[MagicMock(return_value=app_config_object)])
