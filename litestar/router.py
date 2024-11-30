@@ -286,12 +286,7 @@ class Router:
 
             return value
 
-            # router_copy = deepcopy(value)
-            # router_copy.owner = self
-            # return router_copy
-
         if isinstance(value, (ASGIRouteHandler, HTTPRouteHandler, WebsocketRouteHandler)):
-            # value.owner = self
             return value
 
         raise ImproperlyConfiguredException(
