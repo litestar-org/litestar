@@ -24,7 +24,8 @@ from litestar.handlers.http_handlers._utils import (
     create_response_handler,
     get_default_status_code,
     is_empty_response_annotation,
-    normalize_http_method, cleanup_temporary_files,
+    normalize_http_method,
+    cleanup_temporary_files,
 )
 from litestar.openapi.spec import Operation
 from litestar.response import Response, File
@@ -637,7 +638,6 @@ class HTTPRouteHandler(BaseRouteHandler):
             after_request=self._resolve_after_request(),
         )
 
-
     def _get_kwargs_model_for_route(self, path_parameters: Iterable[str]) -> KwargsModel:
         key = tuple(path_parameters)
         if (model := self._kwargs_models.get(key)) is None:
@@ -797,75 +797,6 @@ class HTTPRouteHandler(BaseRouteHandler):
 
         if cleanup_group:
             await cleanup_group.cleanup()
-
-        return response
-
-    async def _get_response_data(self, request: Request) -> tuple[Any, DependencyCleanupGroup | None]:
-        """Determine what kwargs are required for the given route handler's ``fn`` and calls it."""
-        parsed_kwargs: dict[str, Any] = {}
-        cleanup_group: DependencyCleanupGroup | None = None
-        parameter_model = self._get_kwargs_model_for_route(request.scope["path_params"].keys())
-
-        if parameter_model.has_kwargs and self.signature_model:
-            kwargs = parameter_model.to_kwargs(connection=request)
-
-            if "data" in kwargs:
-                try:
-                    data = await kwargs["data"]
-                except SerializationException as e:
-                    raise ClientException(str(e)) from e
-
-                if data is Empty:
-                    del kwargs["data"]
-                else:
-                    kwargs["data"] = data
-
-            if "body" in kwargs:
-                kwargs["body"] = await kwargs["body"]
-
-            if parameter_model.dependency_batches:
-                cleanup_group = await parameter_model.resolve_dependencies(request, kwargs)
-
-            parsed_kwargs = self.signature_model.parse_values_from_connection_kwargs(connection=request, **kwargs)
-
-        if cleanup_group:
-            async with cleanup_group:
-                data = self.fn(**parsed_kwargs) if self.has_sync_callable else await self.fn(**parsed_kwargs)
-        elif self.has_sync_callable:
-            data = self.fn(**parsed_kwargs)
-        else:
-            data = await self.fn(**parsed_kwargs)
-
-        return data, cleanup_group
-
-    async def _get_cached_response(self, request: Request) -> ASGIApp | None:
-        """Retrieve and un-pickle the cached response, if existing.
-
-        Args:
-            request: The :class:`Request <litestar.connection.Request>` instance
-
-        Returns:
-            A cached response instance, if existing.
-        """
-
-        cache_config = request.app.response_cache_config
-        cache_key = (self.cache_key_builder or cache_config.key_builder)(request)
-        store = cache_config.get_store_from_app(request.app)
-
-        if not (cached_response_data := await store.get(key=cache_key)):
-            return None
-
-        # we use the regular msgspec.msgpack.decode here since we don't need any of
-        # the added decoders
-        messages = _decode_msgpack_plain(cached_response_data)
-
-        async def cached_response(scope: Scope, receive: Receive, send: Send) -> None:
-            ScopeState.from_scope(scope).is_cached = True
-            for message in messages:
-                await send(message)
-
-        return cached_response
-
 
         return response
 
