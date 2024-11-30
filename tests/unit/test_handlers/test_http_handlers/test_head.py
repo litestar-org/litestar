@@ -37,15 +37,16 @@ def test_head_decorator_none_response_return_value_allowed() -> None:
     class MyResponse(Generic[T], Response[T]):
         pass
 
-    @head("/1")
+    @head("/")
     def handler() -> Response[None]:
         return Response(None)
 
-    @head("/2")
+    @head("/")
     def handler_subclass() -> MyResponse[None]:
         return MyResponse(None)
 
-    handler.on_registration(Litestar(), HTTPRoute(path="/", route_handlers=[handler, handler_subclass]))
+    handler.on_registration(HTTPRoute(path="/", route_handlers=[handler]), Litestar())
+    handler.on_registration(HTTPRoute(path="/", route_handlers=[handler_subclass]), Litestar())
 
 
 def test_head_decorator_does_not_raise_for_file_response() -> None:
