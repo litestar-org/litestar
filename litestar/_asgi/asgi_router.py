@@ -6,6 +6,8 @@ from functools import lru_cache
 from traceback import format_exc
 from typing import TYPE_CHECKING, Any, Pattern
 
+import warnings
+
 from litestar._asgi.routing_trie import validate_node
 from litestar._asgi.routing_trie.mapping import add_route_to_trie
 from litestar._asgi.routing_trie.traversal import parse_path_to_route
@@ -52,6 +54,7 @@ class ASGIRouter:
         "_plain_routes",
         "_registered_routes",
         "_static_routes",
+        "_trie_initialized",
         "app",
         "root_route_map_node",
         "route_handler_index",
@@ -69,6 +72,7 @@ class ASGIRouter:
         self._mount_routes: dict[str, RouteTrieNode] = {}
         self._plain_routes: set[str] = set()
         self._registered_routes: set[HTTPRoute | WebSocketRoute | ASGIRoute] = set()
+        self._trie_initialized = False
         self.app = app
         self.root_route_map_node: RouteTrieNode = create_node()
         self.route_handler_index: dict[str, RouteHandlerType] = {}
@@ -145,8 +149,16 @@ class ASGIRouter:
 
         This map is used in the asgi router to route requests.
         """
-        new_routes = [route for route in self.app.routes if route not in self._registered_routes]
-        for route in new_routes:
+        if self._trie_initialized:
+            self._mount_paths_regex: Pattern | None = None
+            self._mount_routes: dict[str, RouteTrieNode] = {}
+            self._plain_routes: set[str] = set()
+            self._registered_routes: set[HTTPRoute | WebSocketRoute | ASGIRoute] = set()
+            self.root_route_map_node: RouteTrieNode = create_node()
+            self.route_handler_index: dict[str, RouteHandlerType] = {}
+            self.route_mapping: dict[str, list[BaseRoute]] = defaultdict(list)
+
+        for route in self.app.routes:
             add_route_to_trie(
                 app=self.app,
                 mount_routes=self._mount_routes,

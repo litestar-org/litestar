@@ -235,6 +235,7 @@ filterwarnings = [
   "ignore: Dropping max_length:litestar.exceptions.LitestarWarning:litestar.contrib.piccolo",
   "ignore: Python Debugger on exception enabled:litestar.exceptions.LitestarWarning:",
   "ignore: datetime.datetime.utcnow:DeprecationWarning:time_machine",
+  "ignore:Registering routes.*:litestar.exceptions.base_exceptions.LitestarWarning"
 ]
 markers = [
   "sqlalchemy_integration: SQLAlchemy integration tests",
