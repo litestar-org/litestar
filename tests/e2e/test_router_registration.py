@@ -193,5 +193,5 @@ def test_missing_path_param_type(controller: Type[Controller]) -> None:
     def handler() -> None: ...
 
     with pytest.raises(ImproperlyConfiguredException) as exc:
-        Router(path="/", route_handlers=[handler])
+        Litestar(route_handlers=[handler])
     assert missing_path_type in exc.value.args[0]
