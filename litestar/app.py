@@ -485,6 +485,8 @@ class Litestar(Router):
             self._finalize_routes(route_handler)
             # self.register(route_handler)
 
+        self.asgi_router.construct_routing_trie()
+
         if self.logging_config:
             self.get_logger = self.logging_config.configure()
             self.logger = self.get_logger("litestar")
@@ -726,12 +728,13 @@ class Litestar(Router):
             for plugin in self.plugins.receive_route:
                 plugin.receive_route(route)
 
-        self.asgi_router.construct_routing_trie()
 
     def register(self, value: ControllerRouterHandler) -> None:  # type: ignore[override]
         handlers = super().register(value)
         for h in handlers:
             self._finalize_routes(h)
+
+        self.asgi_router.construct_routing_trie()
 
     def get_handler_index_by_name(self, name: str) -> HandlerIndex | None:
         """Receives a route handler name and returns an optional dictionary containing the route handler instance and
