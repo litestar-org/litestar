@@ -704,7 +704,9 @@ class Litestar(Router):
                     )
                     self.routes[existing_route_index] = route
                 else:
-                    route = HTTPRoute(path=path, route_handlers=_maybe_add_options_handler(path, http_handlers, root=self))
+                    route = HTTPRoute(
+                        path=path, route_handlers=_maybe_add_options_handler(path, http_handlers, root=self)
+                    )
                     self.routes.append(route)
 
                 routes.append(route)
@@ -728,8 +730,16 @@ class Litestar(Router):
             for plugin in self.plugins.receive_route:
                 plugin.receive_route(route)
 
-
     def register(self, value: ControllerRouterHandler) -> None:  # type: ignore[override]
+        warnings.warn(
+            "Registering routes after the application instance has been "
+            "created is discouraged, as it might lead to unexpected behaviour "
+            "and is a costly operation. To register routes dynamically, a "
+            "plugin should be used where routes can be added to the "
+            "application via 'AppConfig' 'route_handlers' property",
+            category=LitestarWarning,
+            stacklevel=2,
+        )
         handlers = super().register(value)
         for h in handlers:
             self._finalize_routes(h)
