@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import types
 from collections import defaultdict
 from copy import deepcopy
@@ -270,9 +271,7 @@ class Controller:
             route_handler = deepcopy(self_handler)
             # at the point we get a reference to the handler function, it's unbound, so
             # we replace it with a regular bound method here
-            # route_handler = self_handler.merge(self)
             route_handler.fn = types.MethodType(route_handler.fn, self)
-            # route_handler.owner = self
             route_handlers.append(route_handler)
 
         self.validate_route_handlers(route_handlers=route_handlers)
