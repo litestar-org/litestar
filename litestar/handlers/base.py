@@ -4,6 +4,7 @@ from copy import copy
 from functools import partial
 from typing import TYPE_CHECKING, Any, Callable, Iterable, Mapping, Sequence, cast
 
+from litestar.utils.deprecation import deprecated
 from litestar._signature import SignatureModel
 from litestar.di import Provide
 from litestar.dto import DTOData
@@ -207,7 +208,7 @@ class BaseRouteHandler:
             A default serializer for the route handler.
 
         """
-        return partial(default_serializer, type_encoders=self.resolve_type_encoders())
+        return partial(default_serializer, type_encoders=self.type_encoders)
 
     @property
     def _signature_model(self) -> type[SignatureModel]:
@@ -294,6 +295,7 @@ class BaseRouteHandler:
             raise ValueError("no app")
         return self._app
 
+    @deprecated("3.0", removal_in="4.0", alternative=".type_encoders property")
     def resolve_type_encoders(self) -> TypeEncodersMap:
         """Return a merged type_encoders mapping.
 
@@ -302,13 +304,7 @@ class BaseRouteHandler:
         Returns:
             A dict of type encoders
         """
-        if self._resolved_type_encoders is Empty:
-            self._resolved_type_encoders = {}
-
-            for layer in self._ownership_layers:
-                if type_encoders := getattr(layer, "type_encoders", None):
-                    self._resolved_type_encoders.update(type_encoders)
-        return cast("TypeEncodersMap", self._resolved_type_encoders)
+        return self.type_encoders
 
     def resolve_type_decoders(self) -> TypeDecodersSequence:
         """Return a merged type_encoders mapping.

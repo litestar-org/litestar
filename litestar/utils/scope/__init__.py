@@ -22,8 +22,8 @@ def get_serializer_from_scope(scope: Scope) -> Serializer:
     route_handler = scope["route_handler"]
     app = scope["app"]
 
-    if hasattr(route_handler, "resolve_type_encoders"):
-        type_encoders = route_handler.resolve_type_encoders()
+    if hasattr(route_handler, "type_encoders"):
+        type_encoders = route_handler.type_encoders
     else:
         type_encoders = app.type_encoders or {}
 

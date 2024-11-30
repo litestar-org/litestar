@@ -631,7 +631,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             response_class=self.resolve_response_class(),
             cookies=self.resolve_response_cookies(),
             headers=self.resolve_response_headers(),
-            type_encoders=self.resolve_type_encoders(),
+            type_encoders=self.type_encoders,
             return_type=self.parsed_fn_signature.return_type,
             status_code=self.status_code,
             background=self.background,
