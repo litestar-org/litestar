@@ -162,7 +162,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
                 cleanup_group = await handler_kwargs_model.resolve_dependencies(connection, parsed_kwargs)
 
             parsed_kwargs = self._signature_model.parse_values_from_connection_kwargs(
-                connection=connection, **parsed_kwargs
+                connection=connection, kwargs=parsed_kwargs
             )
 
         if cleanup_group:
