@@ -7,7 +7,7 @@ import random
 import shutil
 import string
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from os import urandom
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Generator, Union, cast
@@ -68,7 +68,6 @@ def async_mock() -> AsyncMock:
 @pytest.fixture(
     params=[
         pytest.param("asyncio", id="asyncio"),
-        # pytest.param("trio", id="trio")
     ]
 )
 def anyio_backend(request: pytest.FixtureRequest) -> str:
@@ -267,7 +266,7 @@ def create_module(tmp_path: Path, monkeypatch: MonkeyPatch) -> Callable[[str], M
 
 @pytest.fixture()
 def frozen_datetime() -> Generator[Coordinates, None, None]:
-    with travel(datetime.utcnow, tick=False) as frozen:
+    with travel(datetime.now(timezone.utc), tick=False) as frozen:
         yield frozen
 
 
