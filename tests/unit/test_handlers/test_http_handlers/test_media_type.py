@@ -4,6 +4,7 @@ from typing import Any, AnyStr
 import pytest
 
 from litestar import Litestar, MediaType, get
+from litestar.routes import HTTPRoute
 from tests.models import DataclassPerson
 
 
@@ -38,5 +39,5 @@ def test_media_type_inference(annotation: Any, expected_media_type: MediaType) -
 
     Litestar(route_handlers=[handler])
 
-    handler.on_registration(Litestar())
+    handler.on_registration(Litestar(), HTTPRoute(path="/", route_handlers=[handler]))
     assert handler.media_type == expected_media_type

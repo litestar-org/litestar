@@ -38,3 +38,4 @@ LifespanHook: TypeAlias = "Callable[[Litestar], SyncOrAsyncUnion[Any]] | Callabl
 OnAppInitHandler: TypeAlias = "Callable[[AppConfig], AppConfig]"
 OperationIDCreator: TypeAlias = "Callable[[HTTPRouteHandler, Method, list[str | PathParameterDefinition]], str]"
 Serializer: TypeAlias = Callable[[Any], Any]
+HTTPHandlerDecorator: TypeAlias = "Callable[..., Callable[[AnyCallable], HTTPRouteHandler]]"
