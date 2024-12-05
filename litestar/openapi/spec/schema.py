@@ -658,7 +658,7 @@ class Schema(BaseSchemaObject):
         cls._field_aliases = retval  # type: ignore[attr-defined]
         return retval
 
-    def __eq__(self, other: "Schema"):
+    def __eq__(self, other: object):
         return super().__eq__(other)
 
 
