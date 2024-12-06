@@ -46,7 +46,7 @@ def test_client_cls(request: FixtureRequest) -> Type[AnyTestClient]:
     "anyio_backend",
     [
         pytest.param("asyncio"),
-        # pytest.param("trio", marks=pytest.mark.xfail(reason="Known issue with trio backend", strict=False)),
+        pytest.param("trio", marks=pytest.mark.xfail(reason="Known issue with trio backend", strict=False)),
     ],
 )
 @pytest.mark.parametrize("with_domain", [False, True])
@@ -79,7 +79,7 @@ async def test_test_client_set_session_data(
     "anyio_backend",
     [
         pytest.param("asyncio"),
-        # pytest.param("trio", marks=pytest.mark.xfail(reason="Known issue with trio backend", strict=False)),
+        pytest.param("trio", marks=pytest.mark.xfail(reason="Known issue with trio backend", strict=False)),
     ],
 )
 @pytest.mark.parametrize("with_domain", [True, False])

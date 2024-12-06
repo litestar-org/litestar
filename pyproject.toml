@@ -97,7 +97,9 @@ piccolo = ["piccolo"]
 picologging = ["picologging"]
 prometheus = ["prometheus-client"]
 pydantic = ["pydantic", "email-validator", "pydantic-extra-types"]
-redis = ["redis[hiredis]>=4.4.4"]
+redis = [
+    "redis",
+]
 sqlalchemy = ["advanced-alchemy>=0.2.2"]
 standard = ["jinja2", "jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0; sys_platform != 'win32'", "fast-query-parsers>=1.0.2"]
 structlog = ["structlog"]
@@ -115,6 +117,9 @@ include = [
 
 [tool.uv]
 default-groups = ["dev", "linting", "test", "docs"]
+
+[tool.uv.sources]
+redis = { git = "https://github.com/redis/redis-py.git", branch = "vv-3431-fix" }
 
 [dependency-groups]
 dev = [

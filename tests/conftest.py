@@ -15,8 +15,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 from pytest_lazy_fixtures import lf
-from redis.asyncio import Redis as AsyncRedis
-from redis.client import Redis
+from redis.asyncio import ConnectionPool, Redis
 from time_machine import travel
 
 from litestar.logging import LoggingConfig
@@ -82,8 +81,8 @@ def mock_asgi_app() -> ASGIApp:
 
 
 @pytest.fixture()
-def redis_store(redis_client: AsyncRedis) -> RedisStore:
-    return RedisStore(redis=redis_client)
+async def redis_store(redis_client: Redis) -> RedisStore:
+    return RedisStore(redis=redis_client, handle_client_shutdown=True)
 
 
 @pytest.fixture()
@@ -318,17 +317,16 @@ def get_logger() -> GetLogger:
 
 
 @pytest.fixture()
-async def redis_client(docker_ip: str, redis_service: None) -> AsyncGenerator[AsyncRedis, None]:
-    # this is to get around some weirdness with pytest-asyncio and redis interaction
-    # on 3.8 and 3.9
-
-    Redis(host=docker_ip, port=6397).flushall()
-    client: AsyncRedis = AsyncRedis(host=docker_ip, port=6397)
+async def redis_client(docker_ip: str, redis_service: None) -> AsyncGenerator[Redis, None]:
+    pool = ConnectionPool.from_url(f"redis://{docker_ip}:6397")
+    client = Redis.from_pool(pool)
     yield client
+    await client.flushall()  # test_expires_not_set fails without this, it has to be here, if flushall happens above the yield the test response caching test_with_stores fails
     try:
-        await client.aclose()  # type: ignore[attr-defined]
-    except RuntimeError:
-        pass
+        await client.aclose(close_connection_pool=True)
+    except BaseException as exc:
+        logging.error(f"Error closing redis connection: {exc}")
+        raise
 
 
 @pytest.fixture(autouse=True)

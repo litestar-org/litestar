@@ -160,7 +160,7 @@ async def test_ws_route_handlers_receive_arbitrary_message(channels_backend: Cha
 
 
 @pytest.mark.anyio
-@pytest.mark.flaky(reruns=15)
+# @pytest.mark.flaky(reruns=15)
 async def test_create_ws_route_handlers_arbitrary_channels_allowed(channels_backend: ChannelsBackend) -> None:
     channels_plugin = ChannelsPlugin(
         backend=channels_backend,
