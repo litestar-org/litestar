@@ -1629,6 +1629,122 @@ wheels = [
 ]
 
 [[package]]
+name = "libvalkey"
+version = "4.0.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/38/49/57857ba9d02ba4df3bc1e71044f599c82ea590e928328e6b512dbf720228/libvalkey-4.0.1.tar.gz", hash = "sha256:fe60ef535bc826fc35f4019228a0a46bdce8b41fd6013a7591e822a8a17c3170", size = 109005 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/17/ac/c7b21f810c17527f77c8bd4145e21568a95a4eccc32bce8df4c5ba5d8863/libvalkey-4.0.1-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:9e180a893ac62e340a63e18c6dcc91fc756c9f2291b47b35ee1febec68c6d13c", size = 43044 },
+    { url = "https://files.pythonhosted.org/packages/e9/67/84c88cf0e8df1d68da9a2e7f6a79e818031a7ced1b70d66c60041e8dd7b5/libvalkey-4.0.1-cp310-cp310-macosx_11_0_universal2.whl", hash = "sha256:f51c08cae774071ea354658f9a9bb7ffb7b1743661011a28668650b130e0d063", size = 82094 },
+    { url = "https://files.pythonhosted.org/packages/7a/b3/4a7bf5a0275674cb17e0204c05e16356c94406256d811317e6ba87e1f234/libvalkey-4.0.1-cp310-cp310-macosx_11_0_x86_64.whl", hash = "sha256:98a37d1cb5f4c3dde6646968b0a624d3051fd99176583a5245641050e931a682", size = 44753 },
+    { url = "https://files.pythonhosted.org/packages/25/2f/aee00783de3ad3fbbadca23692f854f4b9f4b545c55db19657a4330e1bb4/libvalkey-4.0.1-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:01c4051c3b772bd3032ca66c96f229412622ef0bef344f9ad645221f56082573", size = 170126 },
+    { url = "https://files.pythonhosted.org/packages/1d/56/c8f80d3fa881cf79d20b537dcbc3ab5c8776db51cfa50b2a04a3191d027d/libvalkey-4.0.1-cp310-cp310-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:cf424fe1f45462ae4fea5f88b250ae86d7217a9662cfe5cd8a25208268129833", size = 165552 },
+    { url = "https://files.pythonhosted.org/packages/f1/0c/e697bc18740d95dd0a3104404a0fbaaf4f1d463ac6b7ed2f6fc0c8be4b6a/libvalkey-4.0.1-cp310-cp310-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:ea9bdd8fc54de6ceea9e28dc28b327a443423dd1d110bb9fa1d67f02626a8679", size = 181753 },
+    { url = "https://files.pythonhosted.org/packages/07/f6/49e0b1eb0cc9aee67d711386cbda604ea67752d17d9f94b62ea9866716af/libvalkey-4.0.1-cp310-cp310-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:641eed2e36408b8ba553c4606b2cfbee05286183249c76841188897d595c6639", size = 170657 },
+    { url = "https://files.pythonhosted.org/packages/b4/07/205b2e63936f880d0ff8cc7cc27059aa698a0d4f02dc9194854eadce985c/libvalkey-4.0.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:dbf76b1b51bd5fe23dd09d0b7599cf6ee7a074e73a1933910e5faa1741408708", size = 170331 },
+    { url = "https://files.pythonhosted.org/packages/35/93/31734676641cb36a3ac23ffedc89b328a63a2f00eba80fc0554e2dd93872/libvalkey-4.0.1-cp310-cp310-musllinux_1_2_aarch64.whl", hash = "sha256:75918faf78b2728ef8a73438361c328d70757cdb0e8bf57fa636e0776f302d4e", size = 164756 },
+    { url = "https://files.pythonhosted.org/packages/b7/fd/1f8476e45792c1bd6bb364e7f04c0274caa37767d4ed12658b1d863874cf/libvalkey-4.0.1-cp310-cp310-musllinux_1_2_i686.whl", hash = "sha256:aa678090591e1c28a5f0647ce69531752e8f75e83a03e8963500941475898ccf", size = 162825 },
+    { url = "https://files.pythonhosted.org/packages/23/03/c293870a74b88d8ce2c5fed2a049eb2ec2373e29ccd3eb3df32217746e00/libvalkey-4.0.1-cp310-cp310-musllinux_1_2_ppc64le.whl", hash = "sha256:a1eff0939e0577ddc6b8b359a846c0a83cb7ed3b0688fe98f8f8cf3ba8aa04b7", size = 176181 },
+    { url = "https://files.pythonhosted.org/packages/6e/b0/8624fa9195c4af93044860c9685b7667c1b7dd9bff6b62f815e65a512f24/libvalkey-4.0.1-cp310-cp310-musllinux_1_2_s390x.whl", hash = "sha256:b3ac608744fc2727eb87cdd7613f8d64b18a210b1661706d2b2de09fffd3d2d0", size = 167755 },
+    { url = "https://files.pythonhosted.org/packages/f6/66/74f722d90e37addf2b1235ce8294d50751c1a406a7dd05e7b4893f474daa/libvalkey-4.0.1-cp310-cp310-musllinux_1_2_x86_64.whl", hash = "sha256:e8801cf0274b2a6b0d19ea47de351e5ce67579b8503c4f9905ab53b52fbf270e", size = 165462 },
+    { url = "https://files.pythonhosted.org/packages/18/a1/16512251a897ad7022787ae395c2ecaf48449f7fce170d6656c5a27df795/libvalkey-4.0.1-cp310-cp310-win32.whl", hash = "sha256:a9438415f500c1b65fe258f102b004ef690db142a74d681d10fd82e344dc947f", size = 19468 },
+    { url = "https://files.pythonhosted.org/packages/5b/a8/7819672c42b470c67a994db05dd876b88ad97d5e4ae3152a7e49172b0b1b/libvalkey-4.0.1-cp310-cp310-win_amd64.whl", hash = "sha256:cd3495a5c4c7f04c26bd5c34feb15c13da2dab5a349756a3f42f2a15521a5197", size = 21354 },
+    { url = "https://files.pythonhosted.org/packages/c4/7a/d7e4726c9a08c703fd4e824c7c644ae6c5f0ee3f1b99474a524f0149b77f/libvalkey-4.0.1-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:f342da7200765da30e8a6a540722a8e9e689b0b0604e067290d308981d93826f", size = 43043 },
+    { url = "https://files.pythonhosted.org/packages/27/ae/30ba1da48e143da9c1fa0e4cf4899bbd4402b0a0c8f6c355aa76e89b6490/libvalkey-4.0.1-cp311-cp311-macosx_11_0_universal2.whl", hash = "sha256:0db70261f8843007ea995f7adf0d619780380ac3abc4c1ac44ad4f3e885d5594", size = 82093 },
+    { url = "https://files.pythonhosted.org/packages/84/da/1c2b524ad44a7c24d7e62bb63d995bb8e59863c0f88844778c109604f83f/libvalkey-4.0.1-cp311-cp311-macosx_11_0_x86_64.whl", hash = "sha256:785c73ba7177777d9af01f48aa3344099815cdae3fef12c5d0f35b9b392f35bf", size = 44754 },
+    { url = "https://files.pythonhosted.org/packages/f7/1f/954f1ac80371dc50efaada4ca133219e2edb265c136c7fa2af1821caf5b2/libvalkey-4.0.1-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:5d56ed4c6c17bfb65bf4fe0745fdb3ae6bd1111af6171294497173e3a45226d7", size = 170152 },
+    { url = "https://files.pythonhosted.org/packages/cf/3f/1fbe055702041bcf2a85e056955219102e8b0aa3967482a5d68f7a3bb8c8/libvalkey-4.0.1-cp311-cp311-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:d99b4adae993b9d8f057e150e5a2f938823d17286abcbc5cca0cb4741c530ddf", size = 165334 },
+    { url = "https://files.pythonhosted.org/packages/49/ad/ef273ef578fbac6e3b336c2138e457893654da0a40c75fcc76bf28be4761/libvalkey-4.0.1-cp311-cp311-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:3d803812b4933a1926479aff4057f06b4332977b796038b4309d98546c56edf5", size = 181816 },
+    { url = "https://files.pythonhosted.org/packages/2e/87/3b681951477e98e135dee6f8b570779875a96a0367ad886327610f9134ee/libvalkey-4.0.1-cp311-cp311-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:b473dc3d005a9b57e4445cb2a9ab48f8a26ea90889458ef3cb4d3dd7b23b5a26", size = 170687 },
+    { url = "https://files.pythonhosted.org/packages/13/4c/d384395d2378e6481cdcb1fb7c6e6d0a3ae0feb3dffaefbd6c1eb39cb3d1/libvalkey-4.0.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:195f7e78cb6d2c391dac2d0fc1bf7e65555ebad856e0c36bcc4986e0b3b6c616", size = 170453 },
+    { url = "https://files.pythonhosted.org/packages/8f/d8/1c64a5704ef4f843e2ffab8d815f1c918445f92e38660a6d44c7c64d1fe1/libvalkey-4.0.1-cp311-cp311-musllinux_1_2_aarch64.whl", hash = "sha256:79b446abdb18aefc984214de68ac5f50164550a00b703b81c2b9d9c1618f4a13", size = 164803 },
+    { url = "https://files.pythonhosted.org/packages/e1/65/6d3004b011a799781f379bdba531a3c19bc5f8cd929bafa96fc066a59b12/libvalkey-4.0.1-cp311-cp311-musllinux_1_2_i686.whl", hash = "sha256:3453cd138a43cdcce32cbbbdc99d99472fb7905e56df8ff2f73dac5be70f0657", size = 162855 },
+    { url = "https://files.pythonhosted.org/packages/fb/b8/35c8f8cedfeaf2ddb261f09e9a618a3e5ce44c8d4ea29e19ce4c1ae175d7/libvalkey-4.0.1-cp311-cp311-musllinux_1_2_ppc64le.whl", hash = "sha256:0a9acf658749ee324750643df040a62401d479de9a4507ca8f69bcf02df1b189", size = 176207 },
+    { url = "https://files.pythonhosted.org/packages/fd/ea/428c9404f41bce80d946ed904b5749a5b3ac2f2a6a1a48f4da1c9b58f8b2/libvalkey-4.0.1-cp311-cp311-musllinux_1_2_s390x.whl", hash = "sha256:ebfe6976a10ab6fb84d885622a39ff580803f3244a048b75fb63a97048cb894c", size = 167761 },
+    { url = "https://files.pythonhosted.org/packages/2f/97/b0e5fc755c78ac23a6e7a5c81288e7b44131becc11af07ef087f54054adf/libvalkey-4.0.1-cp311-cp311-musllinux_1_2_x86_64.whl", hash = "sha256:860862322eceb3ed2ff2031663ee42d9ff4146226af3734f818b54a70339c440", size = 165463 },
+    { url = "https://files.pythonhosted.org/packages/c7/fd/9700a1edec4ebacbcb7ccdf55ac6548f2a5693b016768d721c0d520753ad/libvalkey-4.0.1-cp311-cp311-win32.whl", hash = "sha256:dd96985818cc1ddc8882dda67fa1cf711db37d0a24a4cd70897fd83a7377a11c", size = 19475 },
+    { url = "https://files.pythonhosted.org/packages/85/25/d59dbdf8cb16d5c1f9215fc7cf66d2cbca6d05008eda1104b321df785647/libvalkey-4.0.1-cp311-cp311-win_amd64.whl", hash = "sha256:4a1174d53d949f38128efc038b2d77cb79c4db127f5707ad350de0cda3aa9451", size = 21358 },
+    { url = "https://files.pythonhosted.org/packages/2b/62/fb85f94411890d233c74aad7b581bb65a0f809b5757446a280a8fa42a50d/libvalkey-4.0.1-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:f3d5da92598f8e6a82a5e3dedd49dae39fce6b3089030e17681e2b73df4a6d89", size = 43057 },
+    { url = "https://files.pythonhosted.org/packages/ed/cb/6f7614cab744f0e4e0eae583b2997bf22ffee4aa333e26786b91342986b6/libvalkey-4.0.1-cp312-cp312-macosx_11_0_universal2.whl", hash = "sha256:ce623bb8c37beb16d0f2c7c5b7080a3172dae4030e3bcd71326c7731883f766f", size = 82198 },
+    { url = "https://files.pythonhosted.org/packages/cf/de/9515ba0f436c3e54331b66cf7652c03fc73688e0b6f22853a6fc2cc8aa23/libvalkey-4.0.1-cp312-cp312-macosx_11_0_x86_64.whl", hash = "sha256:00adc978a791e944e2f6b442212cd3494a8d683ed215ff785dc9384968b212b6", size = 44839 },
+    { url = "https://files.pythonhosted.org/packages/21/f1/dd28a89f6c89e4fbcd95be18a04758f6f57fc69d38a7bc22a59377b277fc/libvalkey-4.0.1-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:827ea20b5ee1d99cf3d2c10da24c356c55836dd6ff1689b3fbf190b5bffe1605", size = 173314 },
+    { url = "https://files.pythonhosted.org/packages/c6/17/debc72596eb3e4c27a4ae1a5b5636e99b7b5e606c072c8816358ab69fb7f/libvalkey-4.0.1-cp312-cp312-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:f81f7d806e5dd826532c0a4b6d8bc91a485fba65a3767cfdeb796b493ac59c8c", size = 167968 },
+    { url = "https://files.pythonhosted.org/packages/fd/00/451b234f5125e0b9396d7ca4b9d2ab9785e21475f4da60ff019e48912f73/libvalkey-4.0.1-cp312-cp312-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:65fe45323bbabee8d770127c0a763182a0d540a8c1afe6537d97dcc021fc26c4", size = 184371 },
+    { url = "https://files.pythonhosted.org/packages/09/c1/e10266e11034af9194feacec78221bb01db6961b662303a980c77a61f159/libvalkey-4.0.1-cp312-cp312-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:c20ec7a26163dad23b0dfdbb81dd13ae3aa4083942b438c07dadaed88fa0ca6c", size = 173422 },
+    { url = "https://files.pythonhosted.org/packages/88/ba/fe3b25281e41546ea96c41b7899d2a83a262463432280e07daed44beb7f5/libvalkey-4.0.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:4c0d5b4b01c2e4e5bad8339d8b585f42c0b10fb05a6e4469c15c43d925be6285", size = 173617 },
+    { url = "https://files.pythonhosted.org/packages/05/b8/a75b6edcaabdc6245ee719357d307e2fccb375ca09d012327fbc1ef68771/libvalkey-4.0.1-cp312-cp312-musllinux_1_2_aarch64.whl", hash = "sha256:c151a43b250b6e6412c5b0a75093c49d248bbe541db91d2d7f04fd523ea616b3", size = 167110 },
+    { url = "https://files.pythonhosted.org/packages/a9/ae/602254b8865a0fb21df3f3cd57815ca7e6049cd79318bfb426449b661cee/libvalkey-4.0.1-cp312-cp312-musllinux_1_2_i686.whl", hash = "sha256:4c8f59bb57f8e02e287da54a2e1250b9d591131922c006b873e5e2cad50fc36c", size = 164932 },
+    { url = "https://files.pythonhosted.org/packages/0f/c6/116f5432c8234630079f3dadcf48828db41c2bfcdfaeb36ef197a2efa380/libvalkey-4.0.1-cp312-cp312-musllinux_1_2_ppc64le.whl", hash = "sha256:89e79fade6e6953c786b0e2d255a2930733f5d9e7ef07cf47a4eb0db4eabba5e", size = 178905 },
+    { url = "https://files.pythonhosted.org/packages/ce/00/ec095e022b7e5c2035787ad7389e0a11157ceb98f4ceae7fc44805907be0/libvalkey-4.0.1-cp312-cp312-musllinux_1_2_s390x.whl", hash = "sha256:56495ab791f539dc3ee30378f9783f017e000ad8b03751ad2426003f74eee0bc", size = 170350 },
+    { url = "https://files.pythonhosted.org/packages/a5/84/d8bd771b07854c58cbf8926d98fed1701a4dcbe97ef31e8fea63416fc461/libvalkey-4.0.1-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:df9d7ba691c49c632bdc953b5c0af5c50231d0ae3bb0397688f63257a12786c0", size = 168125 },
+    { url = "https://files.pythonhosted.org/packages/45/88/00d5d2d0960d0023c52d25d5ae87d47b5aec995241788be5c424826727aa/libvalkey-4.0.1-cp312-cp312-win32.whl", hash = "sha256:a39ad585b3d2d48d6f5b60941f9d6a5f3f30a396ae129db15bf626316f71594f", size = 19651 },
+    { url = "https://files.pythonhosted.org/packages/8f/57/a3f837524d63ed927f6ab3da3be2050f6c838279c796d5b44b617cad0047/libvalkey-4.0.1-cp312-cp312-win_amd64.whl", hash = "sha256:7b39754c9cdf7fe704c636a2ea179c17229566e7c79af453df3a604b98879dc3", size = 21451 },
+    { url = "https://files.pythonhosted.org/packages/51/3c/8571abc9b8a78281312b99348bccb35dfa161a3a3e9b963afdd473beea40/libvalkey-4.0.1-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:f72346eca7408cfd6d6f407e7e548040b310ed6fdaec7d9ea67b49f20dc90a9e", size = 43065 },
+    { url = "https://files.pythonhosted.org/packages/8e/08/197217ff273fde5670b84682a2d67fe372890d14595ae0a15284626975ba/libvalkey-4.0.1-cp313-cp313-macosx_11_0_universal2.whl", hash = "sha256:66b4558ca5b8fa48fde40dfc79547779d78c5397906f5ea5671b9a75f0952ff4", size = 82206 },
+    { url = "https://files.pythonhosted.org/packages/51/e1/a806533c315cf758812e4f609548ccbb51c10221e2a3c6f9aa6e17633ee9/libvalkey-4.0.1-cp313-cp313-macosx_11_0_x86_64.whl", hash = "sha256:33d29f8d826b59e972a8502e8547d5fef7b1a1376fa0884cf1360c15977bca50", size = 44840 },
+    { url = "https://files.pythonhosted.org/packages/7b/c8/9908fdb4a5661bef8972cf94d149f5c5199c3835bba1a6f523225e2d6c37/libvalkey-4.0.1-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:8adea3c5824937c1e94bb1d5bc30c57661e8bbcb1a79e8ead77b45bbe206f488", size = 173200 },
+    { url = "https://files.pythonhosted.org/packages/80/d2/3b6c235393137b16dacddb04ac6b632f3998cd10cb52b1e34b2eb7bdcabf/libvalkey-4.0.1-cp313-cp313-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:50e956e1bc0ab21e2479fb5729456ae74de808a1be799b9163bf7a25029eeb41", size = 168270 },
+    { url = "https://files.pythonhosted.org/packages/79/b3/844123ae52d63d9ec97f4ad026054a0b616d83fd886adcfd2f8484939044/libvalkey-4.0.1-cp313-cp313-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:56d6db545639a5fbb1c634621634a7f87845b7867056b1460a8299cc489e3364", size = 184290 },
+    { url = "https://files.pythonhosted.org/packages/7c/13/390d1f1fac2167e5e4531cbc090ec99e974271fc05e4c0c8597db593596d/libvalkey-4.0.1-cp313-cp313-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:b83e133826ca50506c9f49b5c4fd64ef0dc3bbc6e85bb18b781a08320bf3f0db", size = 173279 },
+    { url = "https://files.pythonhosted.org/packages/6c/9f/74deb4ea77efb2cbf24c2a7364628b93f3bd02bff7203162c88e9bfe8f13/libvalkey-4.0.1-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9e58b6dcea57df7ee8d80f914ed8895141fbb53d6f344b310ebe6cae3e407d0f", size = 173436 },
+    { url = "https://files.pythonhosted.org/packages/db/e6/9bb87d6d2fe4ba4da960104356c2b165766cb1d420ef1d7f0f671729f3ab/libvalkey-4.0.1-cp313-cp313-musllinux_1_2_aarch64.whl", hash = "sha256:35576248ac379e755cf40c4ebe6bf735f278d46b5e449d0c8ea9f66869e3a8d4", size = 167050 },
+    { url = "https://files.pythonhosted.org/packages/2e/aa/35eda3faa3a7e9a5702c1833cf2ff0fdb024661d8342b24393198db968a2/libvalkey-4.0.1-cp313-cp313-musllinux_1_2_i686.whl", hash = "sha256:2be9cd8533638be94956567602554bbffa65d6fc8e758cd628f317a58cbcafda", size = 164934 },
+    { url = "https://files.pythonhosted.org/packages/ba/54/6439403407317d1228f8b2d5e38917ff162cd86b371bf28953e727674b20/libvalkey-4.0.1-cp313-cp313-musllinux_1_2_ppc64le.whl", hash = "sha256:a03058988844b5a56f296d0d5608bbbe38df1b875246d6c6d7b442af793b5197", size = 178943 },
+    { url = "https://files.pythonhosted.org/packages/f5/54/8628c445f9683d2b0f2df3cf2084ec48917d33ccf3f857b2b4b25c6ba3a8/libvalkey-4.0.1-cp313-cp313-musllinux_1_2_s390x.whl", hash = "sha256:885a2ca644a2fdaf555e9fdab2bbe7de0f91de4e2a07726751efa35417736d55", size = 170398 },
+    { url = "https://files.pythonhosted.org/packages/e1/86/9780ad4d818fbb63efb3763041109fbdbe20a901413effa70a8fcf0ec56b/libvalkey-4.0.1-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:90fb5252391a8a9a3bb2a4eadd3f24a8af1032821d818e620da16854fb52503e", size = 168104 },
+    { url = "https://files.pythonhosted.org/packages/61/b2/8ec653c1e1cb85a8135f6413be90e40c1d3c6732f5933f4d3990f1777d09/libvalkey-4.0.1-cp313-cp313-win32.whl", hash = "sha256:ac6d515ece9c769ce8a0692fcb0d2ceeb5a71503a7db0cbfef0c255b5fb56b19", size = 19657 },
+    { url = "https://files.pythonhosted.org/packages/61/92/f0b490a7bd7749aeed9e0dfca1f73e860a82ccb3ddb729591e4324c54367/libvalkey-4.0.1-cp313-cp313-win_amd64.whl", hash = "sha256:125ff9fdba066a97e4bbdea69649184a5f5fcb832106bbaca81b80ff8dbee55c", size = 21461 },
+    { url = "https://files.pythonhosted.org/packages/eb/9b/16cf35d50004c918da27cd9f33e27a1037690b523e8d4e8244b497988d8a/libvalkey-4.0.1-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:9f389b48f37e7d14fd42eb47e52b799c1624edafc2b9398b9fe2f4e204d072a4", size = 43052 },
+    { url = "https://files.pythonhosted.org/packages/f6/19/865dc1a17f8a4b4f5c63cb926bf30cfff61c69446b27f83a9c7b8da65d5e/libvalkey-4.0.1-cp38-cp38-macosx_11_0_universal2.whl", hash = "sha256:200b135258f6ada4aaacf8499e2d2d3484b39a03b2178f64d4da16eb39bcbf77", size = 82130 },
+    { url = "https://files.pythonhosted.org/packages/b4/03/c12e79b6dfc1d9f90315288bf81e7c4df5ddbfeb22ade52c61d5eacb93ec/libvalkey-4.0.1-cp38-cp38-macosx_11_0_x86_64.whl", hash = "sha256:4aaa2b8ef0a3cc1a72abbb29667be2321ea5cd31f3b131ea0a35e4ee86caea6f", size = 44774 },
+    { url = "https://files.pythonhosted.org/packages/d7/84/c6fa981a5a922dccf2c6eebb0d9cad3fbb3122c7d21ad3d9f444f67cc97f/libvalkey-4.0.1-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:91143449ee77ca072799759469df20ff538b82e0c538e3f3a4afbe5f1c7bfeaf", size = 172594 },
+    { url = "https://files.pythonhosted.org/packages/ad/28/e1745166d26c73cb7a6fa1df5f51f0326a4e7e79fd8a9948f81a750132e9/libvalkey-4.0.1-cp38-cp38-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:e266a71b747cf5f8c8882966c58c080a61f8cb772bbf6dbb2d67530034ebd611", size = 167113 },
+    { url = "https://files.pythonhosted.org/packages/b1/4e/61c0b3392f8f97bc169c3f9eaee8053ec514e3ee85ed3fea0b3ee0cc6072/libvalkey-4.0.1-cp38-cp38-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:f9bb157a7fdc91b49d274eeb7961fcdb03d32380d1c25b9bcbb4dd490944539e", size = 183759 },
+    { url = "https://files.pythonhosted.org/packages/e5/d0/43c41bbbbc05e781396508ad689e3b5507701ba3c57da204bee0486bfb3b/libvalkey-4.0.1-cp38-cp38-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:be5dae7eebe303f549b9cab63fb9d6b1a1730b00e5011b0cb3d3403dc2d70ad9", size = 172950 },
+    { url = "https://files.pythonhosted.org/packages/80/3e/1a03a45f9dfbb634da3db90ec96c92df56fa1a844cbd7a479f790e6b513f/libvalkey-4.0.1-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:60466c4bfd4d55ce6233d951627a4eacdae6888de0885695b5b6f3deafde57bf", size = 172691 },
+    { url = "https://files.pythonhosted.org/packages/3c/2f/65e4a05ed217f5e59a5677c5c7fea110f3a343349f0c1b8425132f4a285c/libvalkey-4.0.1-cp38-cp38-musllinux_1_2_aarch64.whl", hash = "sha256:f448af77c485fabb2f93928ca759f9813bc8999f2fb0560d9c2e4870aa6e0edc", size = 165533 },
+    { url = "https://files.pythonhosted.org/packages/16/6a/4cb7e3770694029c8289e041734f96b0d0203a36d6330bc1276979815191/libvalkey-4.0.1-cp38-cp38-musllinux_1_2_i686.whl", hash = "sha256:cc4354d075614a736e62d8283fe173df66e55b5260e6c29ff851a1d3680a5d1e", size = 163574 },
+    { url = "https://files.pythonhosted.org/packages/26/b7/d49605d0e0a0f998f9addf724fd20ac2142bbb3c714e80f34406d7cee1fc/libvalkey-4.0.1-cp38-cp38-musllinux_1_2_ppc64le.whl", hash = "sha256:6445163e102f10217532b6547edcc239f2dd0bced13fd982da10b352d0771b21", size = 176969 },
+    { url = "https://files.pythonhosted.org/packages/ad/04/876ea16da27d5000d6b4d763a0fa0b43a06fb4e45b70acb70f12eeef3f84/libvalkey-4.0.1-cp38-cp38-musllinux_1_2_s390x.whl", hash = "sha256:aa162ddb08a5d9a3b2d08f6ebe92385a049077c9b4e168e5171c615fbc8155b8", size = 168622 },
+    { url = "https://files.pythonhosted.org/packages/2b/4d/e208e3335988ae2d35ca07f9e7b4718ccc2c0eef7e50ca6c4149c37c37df/libvalkey-4.0.1-cp38-cp38-musllinux_1_2_x86_64.whl", hash = "sha256:48cc9f0fd6724780949bddbbadda9ee338b63a8923202bd7df0e2de4feea63bf", size = 166221 },
+    { url = "https://files.pythonhosted.org/packages/2b/81/828b1db1fb2dbcda215bb3806b89d2493e6c4a7ab4b529c7bcbdc6e1cc96/libvalkey-4.0.1-cp38-cp38-win32.whl", hash = "sha256:471ac81196e1bf5d00069be2bc6fee4f52744b0a3c219b51f3d3115a7903e190", size = 19490 },
+    { url = "https://files.pythonhosted.org/packages/7f/a8/c34155613194fa9cbf406dd0cb05b965b8280c52d00af12062ddb609b711/libvalkey-4.0.1-cp38-cp38-win_amd64.whl", hash = "sha256:3ff7f2e78c0e195d862cb9bda3b3fe16183713220d5f2faae653d9b187249c9b", size = 21368 },
+    { url = "https://files.pythonhosted.org/packages/ce/17/d432510a70089a9781b81dd94d649d156f8af9db0c8b9603702b0ec95dcc/libvalkey-4.0.1-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:e9c5975aae213a3c7251c3e8989c78b2ee39be5eace45a7d99fadc6a4a5a7bc4", size = 43036 },
+    { url = "https://files.pythonhosted.org/packages/49/88/64f54ed1ce28fc1c27353ff676b8673820384af72bafa12930566c0d8843/libvalkey-4.0.1-cp39-cp39-macosx_11_0_universal2.whl", hash = "sha256:c3ce037eeb03682c1dea8435bc0b9c118dba105cd8dca353b4a49cd741fff60f", size = 82089 },
+    { url = "https://files.pythonhosted.org/packages/e4/2c/a64b3aa6fceb32026f965d983251b59a30017dd973c243ed0050400cebba/libvalkey-4.0.1-cp39-cp39-macosx_11_0_x86_64.whl", hash = "sha256:d9ff6deda50245842b901501e282be0399fd6c5289ae9f7a6cc5c62a2e5303d7", size = 44751 },
+    { url = "https://files.pythonhosted.org/packages/a0/9a/aa4cc4075fa05d98607011efd98888bf7e9eb9c7278bc9e3ea14206cc3e8/libvalkey-4.0.1-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:cd77106af55d6c0fb588fe58c2daea2ccf05ffab3713266b66157add022b9623", size = 169574 },
+    { url = "https://files.pythonhosted.org/packages/bd/7c/870dc7b68a0166bc216c403157e25fdd29e34ed1429b6821903cac31ad81/libvalkey-4.0.1-cp39-cp39-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:ff5e5559b3aa04f1cd630b07f320ff0bd336471e5c74ef27a30e198b1a35b7c8", size = 164870 },
+    { url = "https://files.pythonhosted.org/packages/87/6c/525d00c790cfae5fc196d2518de878e15d4b54459dc71aed5137e8bf6282/libvalkey-4.0.1-cp39-cp39-manylinux_2_17_ppc64le.manylinux2014_ppc64le.whl", hash = "sha256:70deceeb55973d6b5911b06f7ceadeea022a2496a75aa9774453f68b70ab924b", size = 181172 },
+    { url = "https://files.pythonhosted.org/packages/b0/b6/b0e6a1f509a6a11b3f925038d4e3d0fd9da18d56d3be34ed41b8a44d6c8b/libvalkey-4.0.1-cp39-cp39-manylinux_2_17_s390x.manylinux2014_s390x.whl", hash = "sha256:ce6b42ab06ba28d7fc8d24b8da9eccda4033e9342b6d4731c823998ec0294a09", size = 170052 },
+    { url = "https://files.pythonhosted.org/packages/ca/c0/bcedb0f40ee4d12694f3c7d6809d7de8b8205636fe291f1b7daf6094d8cc/libvalkey-4.0.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c38f42b6632fdfd39c0e361d004c0c93f9059b6c3b36626f903a371abbb8af8b", size = 169800 },
+    { url = "https://files.pythonhosted.org/packages/57/2e/40dfde852a9dde4baf961531a294d02152d89c4bbd7fc72ccf798c92b951/libvalkey-4.0.1-cp39-cp39-musllinux_1_2_aarch64.whl", hash = "sha256:d2175fd547761e67f00141b7d22ea6ba730da6ae72f182b92d122ed6b9371f27", size = 164293 },
+    { url = "https://files.pythonhosted.org/packages/b7/4f/34c6bd1097b33cc0eeeb514b0992639f6e5df9edf86d424d9ffc09dd6d32/libvalkey-4.0.1-cp39-cp39-musllinux_1_2_i686.whl", hash = "sha256:13856099dd591714975ee4399f1c6a1b87d4a7a79960681b641b57ee70bcc5a3", size = 162324 },
+    { url = "https://files.pythonhosted.org/packages/83/a8/31fd517128120e4df4aa0209519ac6a467d38ecbc898dae9100a1f288ac7/libvalkey-4.0.1-cp39-cp39-musllinux_1_2_ppc64le.whl", hash = "sha256:fa4dc913f28d799e755fbf2bd411bc0e2f342b9a4cdc2336aab68419b405e17d", size = 175654 },
+    { url = "https://files.pythonhosted.org/packages/8d/f6/b46976335a946e3f3c1cfe8155bcb2b3ad0b6496ec87a8ca90f4da561a56/libvalkey-4.0.1-cp39-cp39-musllinux_1_2_s390x.whl", hash = "sha256:be54d0ce94ff65ff8eede2ab78635e0f582f27db3e9143a1e132910896157684", size = 167234 },
+    { url = "https://files.pythonhosted.org/packages/3b/08/df3cdaed3bcd15a9470fbb2511de9b3237e3b956a1c8d835b75ff1d56c0e/libvalkey-4.0.1-cp39-cp39-musllinux_1_2_x86_64.whl", hash = "sha256:6c7500ddd11760372c3d9ace0efea0cf00834857be7f7da6321ba9a0ba01379f", size = 164994 },
+    { url = "https://files.pythonhosted.org/packages/ff/6b/7342449b847165e773ccf320189161ec26663dbc93fcc5099539a270ae09/libvalkey-4.0.1-cp39-cp39-win32.whl", hash = "sha256:e5b7cf073a416f2be03b6aebe19d626f36a1350da9170dc2947d8364a77d6c3d", size = 19489 },
+    { url = "https://files.pythonhosted.org/packages/cd/9d/64a33e7141ef8cb63078a3b3e4e4821adfff401198cfa536679ca78e0247/libvalkey-4.0.1-cp39-cp39-win_amd64.whl", hash = "sha256:d050e7ac0906fc1650c5675b0a68da53181425937986559d129da665382e444a", size = 21367 },
+    { url = "https://files.pythonhosted.org/packages/39/7d/8dec58f9f2f0f4eb8b1b861a4ee5ef2c8e7b63a46f0ffbba274f5170125b/libvalkey-4.0.1-pp310-pypy310_pp73-macosx_11_0_arm64.whl", hash = "sha256:75528a996263e57880d12a5b1421d90f3b63d8f65e1229af02075079ba17be0a", size = 37210 },
+    { url = "https://files.pythonhosted.org/packages/77/d9/857376c3e0af4988d1b8ad13e8ee964dcfae9860e1917febd4f6b0819feb/libvalkey-4.0.1-pp310-pypy310_pp73-macosx_11_0_x86_64.whl", hash = "sha256:4ee4f42a117cc172286f3180fdd2db9d74e7d3f28f97466e29d69e7c126eb084", size = 39638 },
+    { url = "https://files.pythonhosted.org/packages/c2/ae/9c0fcf578a56d860a9e056e67fbdff54b33952a88b63c384bc05b0cfe215/libvalkey-4.0.1-pp310-pypy310_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:cb120643254a1b44fee2d07a9cb2eef80e65635ac6cd82af7c76b4c09941575e", size = 48760 },
+    { url = "https://files.pythonhosted.org/packages/ff/3d/76fa39c775c33e356be5b7b687b85d7fea512e1fd314a17b75f143e85b67/libvalkey-4.0.1-pp310-pypy310_pp73-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:9e62c472774dd38d9e5809d4bea07ec6309a088e2102ddce8beef5a3e0d68b76", size = 56262 },
+    { url = "https://files.pythonhosted.org/packages/5a/cb/60131ef56e5152829c834c9c55cc5facb0a1988ba909c23d43f13bb65e0d/libvalkey-4.0.1-pp310-pypy310_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a73ce687cda35c1a07c24bfb09b3b877c3d74837b59674cded032d03d12c1e55", size = 48920 },
+    { url = "https://files.pythonhosted.org/packages/e8/ac/69d01a8e2ad5c94bd261784b8e8c2be3992b48492009baf56fcd16d1ab15/libvalkey-4.0.1-pp310-pypy310_pp73-win_amd64.whl", hash = "sha256:1cd593e96281b80f5831292b9befe631a88415c68ad0748fe3d69101a093c501", size = 21366 },
+    { url = "https://files.pythonhosted.org/packages/28/15/39c3c69ee642ea1271be2c92ca8e628e251b898d98306953b70a37d46310/libvalkey-4.0.1-pp38-pypy38_pp73-macosx_11_0_arm64.whl", hash = "sha256:a50f5f7482aa64038aa93ba12c45bffd2950a5485288558adc80ebc409b20a21", size = 37244 },
+    { url = "https://files.pythonhosted.org/packages/92/82/8801ecc1d4f875b7f218cc6ad9345cf7ef3c0e9eec2ada6c7fc34b6c5609/libvalkey-4.0.1-pp38-pypy38_pp73-macosx_11_0_x86_64.whl", hash = "sha256:bda1b59ed326fc0fe909b4be38297d37cba1ee332913f1ab1a8f17bd9791e2c9", size = 39663 },
+    { url = "https://files.pythonhosted.org/packages/ab/a7/0458e8387f860c96c64242c8c78118d228a54a619a64b59d918c5a44bdf6/libvalkey-4.0.1-pp38-pypy38_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:f111810607172cada546003d444e9f0d7b2c9d1a5f305e56d365bda89adbce8d", size = 48790 },
+    { url = "https://files.pythonhosted.org/packages/26/d6/e79606ad905d9ef0df36b5a4c3d933636467eef4f16dcbc719a6800de02d/libvalkey-4.0.1-pp38-pypy38_pp73-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:a2cf10a178140e94116ba467c209d38bc73962211a666e5b85e018194dd3c67e", size = 56353 },
+    { url = "https://files.pythonhosted.org/packages/cb/a9/c62cfa984c864088c22d9b326abdfd83b561d28f8f2eaf9863e6189d3349/libvalkey-4.0.1-pp38-pypy38_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:3c1b982292085c1b14b487d348b6dd572a1e2cf9b892b96bae8b74d21304f4e4", size = 48991 },
+    { url = "https://files.pythonhosted.org/packages/c7/8e/322f5eedf6b9e14fa6b9749197b9f8a486736fa29b1b42f26ef0f7e5497c/libvalkey-4.0.1-pp38-pypy38_pp73-win_amd64.whl", hash = "sha256:3a5f27e938173df8dda85c7f76d0f92cfb8a5a6f59ac094da133e70bd5526ccf", size = 21380 },
+    { url = "https://files.pythonhosted.org/packages/03/86/f6e93a4f19df53f381d66bcd8ef9aa256c660d0eb924e58b0fdccec250b5/libvalkey-4.0.1-pp39-pypy39_pp73-macosx_11_0_arm64.whl", hash = "sha256:55a5b78467c0605817e12469630e627c3cccccb44ff810c4943337fbf3979529", size = 37185 },
+    { url = "https://files.pythonhosted.org/packages/68/c1/cc3658e45979a9cfe0e03df32b863a9ed75d1cedbc12147644ba6e4c406a/libvalkey-4.0.1-pp39-pypy39_pp73-macosx_11_0_x86_64.whl", hash = "sha256:af5a237ed6fec3c9977dd57248f11d9ab71a2d8a8954eb76f65171b7454f9f23", size = 39605 },
+    { url = "https://files.pythonhosted.org/packages/76/37/4e13d72109f2e946f9d472b6e9564c332a983d20ef1c1ddc54794d02dc17/libvalkey-4.0.1-pp39-pypy39_pp73-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:c5ce282d3b888bbabb71eb065defb66383f0775fb1f12da42edfff1800d85336", size = 48703 },
+    { url = "https://files.pythonhosted.org/packages/2f/3c/76bfbca61ca46414c2c59a8006a88f04f8653c99a2f41ccc1b0663a8c005/libvalkey-4.0.1-pp39-pypy39_pp73-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:6c2feb0686f51def52095d3429404db5092efb1edb336a961acc4887389c177a", size = 56226 },
+    { url = "https://files.pythonhosted.org/packages/29/bb/f245b3b517b9ca1f41a4e3dc3600fdec3c59765d18c1ca079de44b3e0f6e/libvalkey-4.0.1-pp39-pypy39_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:30b9048d4f3745ecaa7e82aa985dbe57b8f96c6f5586767b9afd63d1c3021295", size = 48891 },
+    { url = "https://files.pythonhosted.org/packages/2a/54/c256395784535d31cf398f5a32a4fc2dac31003c28491fe7868e3ea07cd5/libvalkey-4.0.1-pp39-pypy39_pp73-win_amd64.whl", hash = "sha256:2e321a8af5ea12281898744f41cf7f8c4008770dcc12f8f0afbc5f0b3cd40c4f", size = 21367 },
+]
+
+[[package]]
 name = "litestar"
 version = "2.13.0"
 source = { editable = "." }
@@ -1691,6 +1807,7 @@ full = [
     { name = "structlog" },
     { name = "uvicorn", extra = ["standard"] },
     { name = "uvloop", marker = "sys_platform != 'win32'" },
+    { name = "valkey", extra = ["libvalkey"] },
 ]
 jinja = [
     { name = "jinja2" },
@@ -1737,6 +1854,9 @@ standard = [
 ]
 structlog = [
     { name = "structlog" },
+]
+valkey = [
+    { name = "valkey", extra = ["libvalkey"] },
 ]
 
 [package.dev-dependencies]
@@ -1818,7 +1938,7 @@ requires-dist = [
     { name = "jinja2", marker = "extra == 'standard'" },
     { name = "jsbeautifier", marker = "extra == 'cli'" },
     { name = "jsbeautifier", marker = "extra == 'standard'" },
-    { name = "litestar", extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "picologging", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog"], marker = "extra == 'full'" },
+    { name = "litestar", extras = ["annotated-types", "attrs", "brotli", "cli", "cryptography", "jinja", "jwt", "mako", "minijinja", "opentelemetry", "piccolo", "picologging", "prometheus", "pydantic", "redis", "sqlalchemy", "standard", "structlog", "valkey"], marker = "extra == 'full'" },
     { name = "litestar-htmx", specifier = ">=0.4.0" },
     { name = "mako", marker = "extra == 'mako'", specifier = ">=1.2.4" },
     { name = "minijinja", marker = "extra == 'minijinja'", specifier = ">=1.0.0" },
@@ -1843,6 +1963,7 @@ requires-dist = [
     { name = "uvicorn", extras = ["standard"], marker = "extra == 'standard'" },
     { name = "uvloop", marker = "sys_platform != 'win32' and extra == 'cli'", specifier = ">=0.18.0" },
     { name = "uvloop", marker = "sys_platform != 'win32' and extra == 'standard'", specifier = ">=0.18.0" },
+    { name = "valkey", extras = ["libvalkey"], marker = "extra == 'valkey'", specifier = ">=6.0.2" },
 ]
 
 [package.metadata.requires-dev]
@@ -3870,7 +3991,7 @@ name = "taskgroup"
 version = "0.0.0a4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "exceptiongroup" },
+    { name = "exceptiongroup", marker = "python_full_version < '3.13'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/0a/40/02753c40fa30dfdde7567c1daeefbf957dcf8c99e6534a80afb438adf07e/taskgroup-0.0.0a4.tar.gz", hash = "sha256:eb08902d221e27661950f2a0320ddf3f939f579279996f81fe30779bca3a159c", size = 8553 }
 wheels = [
@@ -4295,6 +4416,23 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/b8/c0/392e235e4100ae3b95b5c6dac77f82b529d2760942b1e7e0981e5d8e895d/uvloop-0.21.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:88cb67cdbc0e483da00af0b2c3cdad4b7c61ceb1ee0f33fe00e09c81e3a6cb75", size = 3827185 },
     { url = "https://files.pythonhosted.org/packages/e1/24/a5da6aba58f99aed5255eca87d58d1760853e8302d390820cc29058408e3/uvloop-0.21.0-cp39-cp39-musllinux_1_2_aarch64.whl", hash = "sha256:221f4f2a1f46032b403bf3be628011caf75428ee3cc204a22addf96f586b19fd", size = 3705833 },
     { url = "https://files.pythonhosted.org/packages/1a/5c/6ba221bb60f1e6474474102e17e38612ec7a06dc320e22b687ab563d877f/uvloop-0.21.0-cp39-cp39-musllinux_1_2_x86_64.whl", hash = "sha256:2d1f581393673ce119355d56da84fe1dd9d2bb8b3d13ce792524e1607139feff", size = 3804696 },
+]
+
+[[package]]
+name = "valkey"
+version = "6.0.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "async-timeout", marker = "python_full_version < '3.12'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/45/f7/b552b7a67017e6233cd8a3b783ce8c4b548e29df98daedd7fb4c4c2cc8f8/valkey-6.0.2.tar.gz", hash = "sha256:dc2e91512b82d1da0b91ab0cdbd8c97c0c0250281728cb32f9398760df9caeae", size = 4602149 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d7/cb/b1eac0fe9cbdbba0a5cf189f5778fe54ba7d7c9f26c2f62ca8d759b38f52/valkey-6.0.2-py3-none-any.whl", hash = "sha256:dbbdd65439ee0dc5689502c54f1899504cc7268e85cb7fe8935f062178ff5805", size = 260101 },
+]
+
+[package.optional-dependencies]
+libvalkey = [
+    { name = "libvalkey" },
 ]
 
 [[package]]
