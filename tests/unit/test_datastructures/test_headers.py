@@ -12,7 +12,7 @@ from litestar.datastructures import (
     Headers,
     MutableScopeHeaders,
 )
-from litestar.datastructures.headers import Header
+from litestar.datastructures.headers import Header, Range
 from litestar.exceptions import ImproperlyConfiguredException, ValidationException
 from litestar.types.asgi_types import HTTPResponseBodyEvent, HTTPResponseStartEvent
 from litestar.utils.dataclass import simple_asdict
@@ -378,3 +378,82 @@ def test_accept_best_match(accept_value: str, provided_types: list[str], best_ma
 def test_accept_accepts() -> None:
     accept = Accept("text/plain;q=0.8,text/html")
     assert accept.accepts(MediaType.TEXT)
+
+
+class TestRange:
+    # def test_if_range_parsing(self):
+    #     rv = http.parse_if_range_header('"Test"')
+    #     assert rv.etag == "Test"
+    #     assert rv.date is None
+    #     assert rv.to_header() == '"Test"'
+    #
+    #     # weak information is dropped
+    #     rv = http.parse_if_range_header('W/"Test"')
+    #     assert rv.etag == "Test"
+    #     assert rv.date is None
+    #     assert rv.to_header() == '"Test"'
+    #
+    #     # broken etags are supported too
+    #     rv = http.parse_if_range_header("bullshit")
+    #     assert rv.etag == "bullshit"
+    #     assert rv.date is None
+    #     assert rv.to_header() == '"bullshit"'
+    #
+    #     rv = http.parse_if_range_header("Thu, 01 Jan 1970 00:00:00 GMT")
+    #     assert rv.etag is None
+    #     assert rv.date == datetime(1970, 1, 1, tzinfo=timezone.utc)
+    #     assert rv.to_header() == "Thu, 01 Jan 1970 00:00:00 GMT"
+    #
+    #     for x in "", None:
+    #         rv = http.parse_if_range_header(x)
+    #         assert rv.etag is None
+    #         assert rv.date is None
+    #         assert rv.to_header() == ""
+
+    @pytest.mark.parametrize(
+        "header",
+        [
+            "bytes=52",
+            "bytes=-",
+            "bytes=foo",
+            "bytes=-foo",
+            "bytes=foo-1",
+            "bytes=1-foo",
+            "bytes=1-10,foo",
+        ],
+    )
+    def test_invalid_range(self, header: str) -> None:
+        with pytest.raises(ValueError):
+            Range.from_header(header)
+
+    @pytest.mark.parametrize(
+        "header,expected_ranges,expected_unit",
+        [
+            ("bytes=52-", ((52, None),), "bytes"),
+            ("bytes=52-99", ((52, 99),), "bytes"),
+            ("bytes=52-99,-1000", ((52, 99), (-1000, None)), "bytes"),
+            ("bytes = 1 - 100", ((1, 100),), "bytes"),
+            ("bananas=0-10", ((0, 10),), "bananas"),
+            ("bananas=0-10", ((0, 10),), "bananas"),
+        ],
+    )
+    def test_range_parsing(
+        self, header: str, expected_ranges: tuple[tuple[int, int | None], ...], expected_unit: int
+    ) -> None:
+        range_ = Range.from_header(header)
+        assert range_.unit == expected_unit
+        assert range_.ranges == expected_ranges
+        assert range_.raw == header
+
+    @pytest.mark.parametrize(
+        "header,total,expected",
+        [
+            ("bytes=-10", 100, ((90, 100),)),
+            ("bytes=10-", 100, ((10, 100),)),
+            ("bytes=5-10", 100, ((5, 11),)),
+            ("bytes=10-,-10,5-10", 100, ((10, 100), (90, 100), (5, 11))),
+        ],
+    )
+    def test_get_offsets(self, header: str, total: int, expected: tuple[tuple[int, int], ...]) -> None:
+        range_ = Range.from_header(header)
+        assert range_.get_offsets(total=total) == expected

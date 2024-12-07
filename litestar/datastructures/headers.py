@@ -1,9 +1,14 @@
+import datetime
+import msgspec
 import re
 from abc import ABC, abstractmethod
 from collections.abc import Iterable, Iterator, Mapping, MutableMapping
 from contextlib import suppress
 from copy import copy
 from dataclasses import dataclass, fields
+from email.utils import parsedate_to_datetime
+from multidict import CIMultiDict, CIMultiDictProxy, MultiDict
+from multidict import CIMultiDict, CIMultiDictProxy, MultiMapping
 from re import Pattern
 from typing import (
     TYPE_CHECKING,
@@ -12,10 +17,9 @@ from typing import (
     Optional,
     Union,
     cast,
+    NamedTuple,
 )
-
-import msgspec
-from multidict import CIMultiDict, CIMultiDictProxy, MultiDict
+from typing_extensions import Self, Literal
 
 from litestar._multipart import parse_content_header
 from litestar.datastructures.multi_dicts import MultiMixin
@@ -480,3 +484,96 @@ class Accept:
             True if the request accepts ``media_type``.
         """
         return self.best_match([media_type]) == media_type
+
+
+_MAYBE_NEGATIVE_INT_RGX = re.compile(r"-?\d+", re.ASCII)
+
+
+def _range_int(value: str) -> int:
+    if _MAYBE_NEGATIVE_INT_RGX.match(value):
+        try:
+            return int(value)
+        except ValueError:
+            pass
+
+    raise ValidationException("Invalid Range header value", extra={"value": value})
+
+
+@dataclass
+class Range:
+    raw: str
+    unit: str
+    ranges: tuple[tuple[int, int | None], ...]
+
+    @classmethod
+    def from_header(cls, raw: str) -> Self:
+        header = raw.replace(" ", "")
+        if not header:
+            raise ValidationException("Invalid Range header")
+
+        unit, *values = header.split("=", maxsplit=1)
+
+        if not unit and values:
+            raise ValidationException("Invalid Range header")
+
+        values: str = values[0]
+
+        ranges = []
+        for raw_range in values.split(","):
+            range_ = raw_range.split("-", maxsplit=1)
+            if len(range_) != 2:
+                raise ValidationException("Invalid Range header", extra={"invalid_range": raw_range})
+
+            start, end = range_
+            if not (end or start):
+                raise ValidationException("Invalid Range header", extra={"invalid_range": raw_range})
+
+            if end and not start:
+                # suffix range, e.g. '-100'
+                start = "-" + end
+                end = None
+
+            ranges.append((_range_int(start), _range_int(end) if end else None))
+
+        return cls(raw=raw, unit=unit.lower(), ranges=tuple(ranges))
+
+    def get_offsets(self, total: int) -> tuple[tuple[int, int], ...]:
+        offsets = []
+        for start, end in self.ranges:
+            if end is None:
+                if start < 0:
+                    # suffix range, e.g. '-100'. internally represented as (-100, None)
+                    offsets.append((total + start, total))
+                else:
+                    # open range, e.g. '1'. internally represented as (1, None)
+                    offsets.append((start, total))
+            else:
+                # closed range, e.g. '1-5'. internally represented as (1, 5). we add + 1
+                # to the end to align offsets for reading
+                offsets.append((start, end + 1))
+        return tuple(offsets)
+
+    def get_content_range_header(self, total: int) -> str:
+        if len(self.ranges) == 1:
+            range_ = self.ranges[0]
+            return f"{self.unit} {range_[0]}-{range_[1] - 1}/{total}"
+        raise RuntimeError
+
+
+@dataclass
+class IfRange:
+    etag: str | None = None
+    datetime: datetime.datetime | None = None
+
+    @classmethod
+    def from_header(cls, header: str) -> Self:
+        try:
+            dt = parsedate_to_datetime(header)
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=datetime.UTC)
+            etag = None
+        except (TypeError, ValueError):
+            dt = None
+            etag = ETag.from_header(header).value
+
+        return cls(etag=etag, datetime=dt)

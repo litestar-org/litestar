@@ -14,7 +14,7 @@ from litestar.connection.base import (
     empty_receive,
     empty_send,
 )
-from litestar.datastructures.headers import Accept
+from litestar.datastructures.headers import Accept, Range, IfRange
 from litestar.datastructures.multi_dicts import FormMultiDict
 from litestar.enums import ASGIExtension, RequestEncodingType
 from litestar.exceptions import (
@@ -25,7 +25,7 @@ from litestar.exceptions import (
 )
 from litestar.exceptions.http_exceptions import RequestEntityTooLarge
 from litestar.serialization import decode_json, decode_msgpack
-from litestar.types import Empty, HTTPReceiveMessage
+from litestar.types import Empty
 
 __all__ = ("Request",)
 
@@ -126,6 +126,18 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
             else:
                 self._accept = self._connection_state.accept = Accept(self.headers.get("Accept", "*/*"))
         return self._accept
+
+    @property
+    def range(self) -> Range | None:
+        if (header := self.headers.get("range")) is not None:
+            return Range.from_header(header)
+        return None
+
+    @property
+    def if_range(self) -> IfRange | None:
+        if (header := self.headers.get("if-range")) is not None:
+            return IfRange.from_header(header)
+        return None
 
     async def json(self) -> Any:
         """Retrieve the json request body from the request.
