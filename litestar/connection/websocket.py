@@ -341,3 +341,7 @@ class WebSocket(Generic[UserT, AuthT, StateT], ASGIConnection["WebsocketRouteHan
             None
         """
         await self.send_data(data=encode_msgpack(data, serializer), mode="binary", encoding=encoding)
+
+    async def send_stream(self, stream: AsyncGenerator[str | bytes, Any], mode: WebSocketMode) -> None:
+        async for event in stream:
+            await self.send_data(event, mode=mode)
