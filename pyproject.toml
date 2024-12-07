@@ -83,7 +83,7 @@ brotli = ["brotli"]
 cli = ["jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0; sys_platform != 'win32'"]
 cryptography = ["cryptography"]
 full = [
-  "litestar[annotated-types,attrs,brotli,cli,cryptography,jinja,jwt,mako,minijinja,opentelemetry,piccolo,picologging,prometheus,pydantic,redis,sqlalchemy,standard,structlog]",
+  "litestar[annotated-types,attrs,brotli,cli,cryptography,jinja,jwt,mako,minijinja,opentelemetry,piccolo,picologging,prometheus,pydantic,redis,sqlalchemy,standard,structlog,valkey]",
 ]
 jinja = ["jinja2>=3.1.2"]
 jwt = [
@@ -98,6 +98,7 @@ picologging = ["picologging"]
 prometheus = ["prometheus-client"]
 pydantic = ["pydantic", "email-validator", "pydantic-extra-types"]
 redis = ["redis[hiredis]>=4.4.4"]
+valkey = ["valkey[libvalkey]>=6.0.2"]
 sqlalchemy = ["advanced-alchemy>=0.2.2"]
 standard = ["jinja2", "jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0; sys_platform != 'win32'", "fast-query-parsers>=1.0.2"]
 structlog = ["structlog"]
