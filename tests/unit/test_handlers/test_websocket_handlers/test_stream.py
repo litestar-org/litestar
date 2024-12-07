@@ -56,7 +56,11 @@ def test_websocket_stream_dependencies_cleaned_up_after_stream_close() -> None:
         yield "foo"
         mock()
 
-    @websocket_stream("/", dependencies={"message": dep})
+    @websocket_stream(
+        "/",
+        dependencies={"message": dep},
+        listen_for_disconnect=False,
+    )
     async def handler(socket: WebSocket, message: str) -> AsyncGenerator[str, None]:
         yield "one"
         await socket.receive_text()
@@ -72,11 +76,17 @@ def test_websocket_stream_dependencies_cleaned_up_after_stream_close() -> None:
 
 
 def test_websocket_stream_handle_disconnect() -> None:
-    @websocket_stream("/")
+    @websocket_stream("/", warn_on_data_discard=False)
     async def handler() -> AsyncGenerator[str, None]:
         while True:
-            await asyncio.sleep(0.1)
             yield "foo"
+            # sleep for longer than our read-timeout to ensure we're disconnecting prematurely
+            await asyncio.sleep(1)
 
     with create_test_client([handler]) as client, client.websocket_connect("/") as ws:
+        assert ws.receive_text(timeout=0.1) == "foo"
+
+    with create_test_client([handler]) as client, client.websocket_connect("/") as ws:
+        # ensure we still disconnect even after receiving some data
+        ws.send_text("")
         assert ws.receive_text(timeout=0.1) == "foo"

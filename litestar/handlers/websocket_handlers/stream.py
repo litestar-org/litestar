@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import functools
 import inspect
+import warnings
 from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Mapping
 
 import anyio
 
+from litestar.exceptions import LitestarWarning, WebSocketDisconnect
 from litestar.handlers.websocket_handlers.route_handler import WebsocketRouteHandler
 
 if TYPE_CHECKING:
@@ -20,15 +22,47 @@ async def send_websocket_stream(
     close: bool = True,
     mode: WebSocketMode = "text",
     listen_for_disconnect: bool = False,
+    warn_on_data_discard: bool = True,
 ) -> None:
     if listen_for_disconnect:
+        # wrap 'send_stream' and disconnect listener, so they'll cancel the other once
+        # one of the finishes
+        async def wrapped_stream() -> None:
+            await socket.send_stream(stream, mode=mode)
+            # stream exhausted, we can stop listening for a disconnect
+            tg.cancel_scope.cancel()
+
+        async def disconnect_listener() -> None:
+            try:
+                # run this in a loop - we might receive other data than disconnects.
+                # listen_for_disconnect is explicitly not safe when consuming WS data
+                # in other places, so discarding that data here is fine
+                while True:
+                    await socket.receive_data("text")
+                    if warn_on_data_discard:
+                        warnings.warn(
+                            "received data from websocket while listening for disconnect "
+                            "in a websocket_stream. listen_for_disconnect is not safe to"
+                            "use when attempting to receive data from the same socket "
+                            "concurrently with a websocket_stream. set "
+                            "listen_for_disconnect=False if you're attempting to "
+                            "receive data from this socket or "
+                            "set warn_on_data_discard=False to disable this warning",
+                            stacklevel=2,
+                            category=LitestarWarning,
+                        )
+            except WebSocketDisconnect:
+                # client disconnected, we can stop streaming
+                tg.cancel_scope.cancel()
+
         async with anyio.create_task_group() as tg:
-            tg.start_soon(socket.receive_data, "text")
-            tg.start_soon(socket.send_stream, stream, mode)
+            tg.start_soon(wrapped_stream)
+            tg.start_soon(disconnect_listener)
+
     else:
         await socket.send_stream(stream=stream, mode=mode)
 
-    if close:
+    if close and socket.connection_state != "disconnect":
         await socket.close()
 
 
@@ -45,6 +79,7 @@ def websocket_stream(
     websocket_class: type[WebSocket] | None = None,
     mode: WebSocketMode = "text",
     listen_for_disconnect: bool = True,
+    warn_on_data_discard: bool = True,
     **kwargs: Any,
 ) -> Callable[[Callable[..., AsyncGenerator[str | bytes, Any]]], WebsocketRouteHandler]:
     def decorator(fn: Callable[..., AsyncGenerator[str | bytes, Any]]) -> WebsocketRouteHandler:
@@ -62,6 +97,7 @@ def websocket_stream(
                 mode=mode,
                 close=True,
                 listen_for_disconnect=listen_for_disconnect,
+                warn_on_data_discard=warn_on_data_discard,
             )
 
         handler.__annotations__ = fn.__annotations__
