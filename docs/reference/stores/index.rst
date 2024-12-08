@@ -8,3 +8,4 @@ stores
     memory
     redis
     registry
+    valkey
