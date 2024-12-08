@@ -2,7 +2,7 @@ import asyncio
 from typing import AsyncGenerator
 from unittest.mock import MagicMock
 
-from litestar import WebSocket
+from litestar import WebSocket, Controller
 from litestar.handlers.websocket_handlers import websocket_stream
 from litestar.testing import create_test_client
 
@@ -16,6 +16,16 @@ def test_websocket_stream() -> None:
     with create_test_client([handler]) as client, client.websocket_connect("/") as ws:
         assert ws.receive_text(timeout=0.1) == "foo"
         assert ws.receive_text(timeout=0.1) == "bar"
+
+
+def test_websocket_stream_in_controller() -> None:
+    class MyController(Controller):
+        @websocket_stream("/")
+        async def handler(self, socket: WebSocket) -> AsyncGenerator[str, None]:
+            yield "foo"
+
+    with create_test_client([MyController]) as client, client.websocket_connect("/") as ws:
+        assert ws.receive_text(timeout=0.1) == "foo"
 
 
 def test_websocket_stream_without_socket() -> None:

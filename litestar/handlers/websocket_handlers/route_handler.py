@@ -49,9 +49,9 @@ class WebsocketRouteHandler(BaseRouteHandler):
                 :class:`ASGI Scope <.types.Scope>`.
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
-            **kwargs: Any additional kwarg - will be set in the opt dictionary.
             websocket_class: A custom subclass of :class:`WebSocket <.connection.WebSocket>` to be used as route handler's
                 default websocket class.
+            **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         self.websocket_class = websocket_class
 
