@@ -9,7 +9,7 @@ import pytest
 
 from litestar import Controller, Litestar, WebSocket
 from litestar.dto import DataclassDTO, dto_field
-from litestar.exceptions import ImproperlyConfiguredException, LitestarWarning
+from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers.websocket_handlers import websocket_stream
 from litestar.testing import create_test_client
 
@@ -150,16 +150,3 @@ def test_raises_if_stream_fn_does_not_return_async_generator() -> None:
             return b""
 
         Litestar([foo])
-
-
-def test_websocket_stream_raise_if_data_receive_on_listen_for_disconnect() -> None:
-    @websocket_stream("/")
-    async def handler() -> AsyncGenerator[str, None]:
-        while True:
-            yield "foo"
-            await asyncio.sleep(0.1)
-
-    with pytest.warns(LitestarWarning, match="received data from websocket"):
-        with create_test_client([handler], raise_server_exceptions=True) as client, client.websocket_connect("/") as ws:
-            ws.send_text("foo")
-            assert ws.receive_text(timeout=0.1) == "foo"

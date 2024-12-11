@@ -107,7 +107,6 @@ async def send_websocket_stream(
                             stacklevel=2,
                             category=LitestarWarning,
                         )
-                        await socket.close(4500)
 
             except WebSocketDisconnect:
                 # client disconnected, we can stop streaming
@@ -261,9 +260,7 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
         return_dto = self.resolve_return_dto()
 
         # make sure the closure doesn't capture self._ws_stream / self
-        send_mode = cast(  # pyright doesn't track the 'Literal' here for some reason
-            "WebSocketMode", self._ws_stream_options.send_mode
-        )
+        send_mode = self._ws_stream_options.send_mode
         listen_for_disconnect = self._ws_stream_options.listen_for_disconnect
         warn_on_data_discard = self._ws_stream_options.warn_on_data_discard
 
