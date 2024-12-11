@@ -25,7 +25,8 @@ if TYPE_CHECKING:
 
 async def send_websocket_stream(
     socket: WebSocket,
-    stream: AsyncGenerator[str | bytes, Any],
+    stream: AsyncGenerator[Any, Any],
+    *,
     close: bool = True,
     mode: WebSocketMode = "text",
     send_handler: Callable[[WebSocket, Any], Awaitable[Any]] | None = None,
@@ -72,8 +73,12 @@ async def send_websocket_stream(
         send_handler = functools.partial(type(socket).send_data, mode=mode)
 
     async def send_stream() -> None:
-        async for event in stream:
-            await send_handler(socket, event)
+        try:
+            # client might have disconnected elsewhere, so we stop sending
+            while socket.connection_state != "disconnect":
+                await send_handler(socket, await stream.__anext__())
+        except StopAsyncIteration:
+            pass
 
     if listen_for_disconnect:
         # wrap 'send_stream' and disconnect listener, so they'll cancel the other once
@@ -92,16 +97,18 @@ async def send_websocket_stream(
                     await socket.receive_data("text")
                     if warn_on_data_discard:
                         warnings.warn(
-                            "received data from websocket while listening for client"
-                            "disconnect in a websocket_stream. listen_for_disconnect is"
-                            "not safe to use when attempting to receive data from the "
-                            "same socket concurrently with a websocket_stream. set "
+                            "received data from websocket while listening for client "
+                            "disconnect in a websocket_stream. listen_for_disconnect "
+                            "is not safe to use when attempting to receive data from "
+                            "the same socket concurrently with a websocket_stream. set "
                             "listen_for_disconnect=False if you're attempting to "
                             "receive data from this socket or set "
                             "warn_on_data_discard=False to disable this warning",
                             stacklevel=2,
                             category=LitestarWarning,
                         )
+                        await socket.close(4500)
+
             except WebSocketDisconnect:
                 # client disconnected, we can stop streaming
                 tg.cancel_scope.cancel()
@@ -142,6 +149,7 @@ def websocket_stream(
         Sending the current time to the connected client every 0.5 seconds:
 
         .. code-block:: python
+
             @websocket_stream("/time")
             async def send_time() -> AsyncGenerator[str, None]:
                 while True:
@@ -165,8 +173,7 @@ def websocket_stream(
         mode: WebSocket mode used for sending
         return_dto: :class:`AbstractDTO <.dto.base_dto.AbstractDTO>` to use for serializing outbound response data.
         type_encoders: A mapping of types to callables that transform them into types supported for serialization.
-        listen_for_disconnect: If ``True``, listen for client
-        disconnects in the background. If a client disconnects,
+        listen_for_disconnect: If ``True``, listen for client disconnects in the background. If a client disconnects,
             stop the generator and cancel sending data. Should always be ``True`` unless disconnects are handled
             elsewhere, for example by reading data from the socket concurrently. Should never be set to ``True`` when
             reading data from socket concurrently, as it can lead to data loss
@@ -254,7 +261,9 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
         return_dto = self.resolve_return_dto()
 
         # make sure the closure doesn't capture self._ws_stream / self
-        send_mode = self._ws_stream_options.send_mode
+        send_mode = cast(  # pyright doesn't track the 'Literal' here for some reason
+            "WebSocketMode", self._ws_stream_options.send_mode
+        )
         listen_for_disconnect = self._ws_stream_options.listen_for_disconnect
         warn_on_data_discard = self._ws_stream_options.warn_on_data_discard
 

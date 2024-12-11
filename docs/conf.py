@@ -245,6 +245,7 @@ ignore_missing_refs = {
     "litestar.concurrency.set_asyncio_executor": {"ThreadPoolExecutor"},
     "litestar.concurrency.get_asyncio_executor": {"ThreadPoolExecutor"},
     re.compile(r"litestar\.channels\.backends\.asyncpg.*"): {"asyncpg.connection.Connection", "asyncpg.Connection"},
+    re.compile(r"litestar\.handlers\.websocket_handlers\.stream.*"): {"WebSocketMode"},
 }
 
 # Do not warn about broken links to the following:
