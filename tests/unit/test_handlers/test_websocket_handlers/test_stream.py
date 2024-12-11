@@ -1,8 +1,15 @@
+from __future__ import annotations
+
 import asyncio
-from typing import AsyncGenerator
+import dataclasses
+from typing import AsyncGenerator, Generator
 from unittest.mock import MagicMock
 
-from litestar import WebSocket, Controller
+import pytest
+
+from litestar import Controller, Litestar, WebSocket
+from litestar.dto import DataclassDTO, dto_field
+from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers.websocket_handlers import websocket_stream
 from litestar.testing import create_test_client
 
@@ -100,3 +107,46 @@ def test_websocket_stream_handle_disconnect() -> None:
         # ensure we still disconnect even after receiving some data
         ws.send_text("")
         assert ws.receive_text(timeout=0.1) == "foo"
+
+
+def test_websocket_stream_send_json() -> None:
+    @websocket_stream("/")
+    async def handler() -> AsyncGenerator[dict[str, str], None]:
+        yield {"hello": "there"}
+        yield {"and": "goodbye"}
+
+    with create_test_client([handler]) as client, client.websocket_connect("/") as ws:
+        assert ws.receive_json(timeout=0.1) == {"hello": "there"}
+        assert ws.receive_json(timeout=0.1) == {"and": "goodbye"}
+
+
+def test_websocket_stream_send_json_with_dto() -> None:
+    @dataclasses.dataclass
+    class Event:
+        id: int = dataclasses.field(metadata=dto_field("private"))
+        content: str
+
+    @websocket_stream("/", return_dto=DataclassDTO[Event])
+    async def handler() -> AsyncGenerator[Event, None]:
+        yield Event(id=1, content="hello")
+
+    with create_test_client([handler], signature_types=[Event]) as client, client.websocket_connect("/") as ws:
+        assert ws.receive_json(timeout=0.1) == {"content": "hello"}
+
+
+def test_raises_if_stream_fn_does_not_return_async_generator() -> None:
+    with pytest.raises(ImproperlyConfiguredException):
+
+        @websocket_stream("/")  # type: ignore[arg-type]
+        def foo() -> Generator[bytes, None, None]:
+            yield b""
+
+        Litestar([foo])
+
+    with pytest.raises(ImproperlyConfiguredException):
+
+        @websocket_stream("/")  # type: ignore[arg-type]
+        def foo() -> bytes:
+            return b""
+
+        Litestar([foo])
