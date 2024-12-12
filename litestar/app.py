@@ -15,7 +15,7 @@ from datetime import date, datetime, time, timedelta
 from functools import partial
 from itertools import chain
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Iterable, Mapping, Sequence, TypedDict, cast
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Iterable, Mapping, Sequence, TypedDict, cast, Generator
 
 from litestar._asgi import ASGIRouter
 from litestar._asgi.utils import get_route_handlers, wrap_in_exception_handler
@@ -33,7 +33,7 @@ from litestar.exceptions import (
     NoRouteMatchFoundException,
     ImproperlyConfiguredException,
 )
-from litestar.handlers import HTTPRouteHandler, WebsocketRouteHandler
+from litestar.handlers import HTTPRouteHandler, WebsocketRouteHandler, BaseRouteHandler
 from litestar.handlers.http_handlers._options import create_options_handler
 from litestar.logging.config import LoggingConfig, get_logger_placeholder
 from litestar.middleware._internal.cors import CORSMiddleware
@@ -54,7 +54,7 @@ from litestar.types import Empty, TypeDecodersSequence
 from litestar.types.internal_types import PathParameterDefinition, TemplateConfigType, RouteHandlerMapItem
 from litestar.utils import deprecated, ensure_async_callable, join_paths, unique, find_index
 from litestar.utils.dataclass import extract_dataclass_items
-from litestar.utils.predicates import is_async_callable
+from litestar.utils.predicates import is_async_callable, is_class_and_subclass
 from litestar.utils.warnings import warn_pdb_on_exception
 
 if TYPE_CHECKING:
@@ -484,7 +484,8 @@ class Litestar(Router):
 
         self.asgi_router = ASGIRouter(app=self)
 
-        for route_handler in self._reduce_handlers(self._route_handlers):
+        # for route_handler in self._reduce_handlers(self._merge_handlers(self._route_handlers)):
+        for route_handler in self._merge_handlers(self._route_handlers):
             self._finalize_routes(route_handler)
             # self.register(route_handler)
 
@@ -766,6 +767,51 @@ class Litestar(Router):
             for plugin in self.plugins.receive_route:
                 plugin.receive_route(route)
 
+    def _iter_handlers(
+        self, handlers: Iterable[ControllerRouterHandler], bases: Iterable[Router]
+    ) -> Generator[tuple[BaseRouteHandler, Iterable[Router]], None, None]:
+        for handler in handlers:
+            handler = self._validate_registration_value(handler)
+            if isinstance(handler, Router):
+                yield from self._iter_handlers(handler._route_handlers, [handler, *bases])
+            else:
+                yield handler, bases
+
+    def _merge_handlers(self, handlers: list[ControllerRouterHandler]) -> list[BaseRouteHandler]:
+        merged_handlers = []
+        for handler, bases in self._iter_handlers(handlers, bases=[self]):
+            for base in bases:
+                handler = handler.merge(base)
+            merged_handlers.append(handler)
+        return merged_handlers
+
+    def _validate_registration_value(self, value: ControllerRouterHandler) -> RouteHandlerType | Router:
+        """Ensure values passed to the register method are supported."""
+        from litestar.controller import Controller
+        from litestar.handlers import WebsocketListener, ASGIRouteHandler
+
+        if is_class_and_subclass(value, Controller):
+            return value().as_router()
+
+        # this narrows down to an ABC, but we assume a non-abstract subclass of the ABC superclass
+        if is_class_and_subclass(value, WebsocketListener):
+            return value().to_handler()  # pyright: ignore
+
+        if isinstance(value, Router):
+            if value is self:
+                raise ImproperlyConfiguredException("Cannot register a router on itself")
+
+            return value
+
+        if isinstance(value, (ASGIRouteHandler, HTTPRouteHandler, WebsocketRouteHandler)):
+            return value
+
+        raise ImproperlyConfiguredException(
+            "Unsupported value passed to `Router.register`. "
+            "If you passed in a function or method, "
+            "make sure to decorate it first with one of the routing decorators"
+        )
+
     def register(self, value: ControllerRouterHandler) -> None:  # type: ignore[override]
         warnings.warn(
             "Registering routes after the application instance has been "
@@ -776,7 +822,7 @@ class Litestar(Router):
             category=LitestarWarning,
             stacklevel=2,
         )
-        handlers = super().register(value)
+        handlers = self._merge_handlers([value])
         for h in handlers:
             self._finalize_routes(h)
 

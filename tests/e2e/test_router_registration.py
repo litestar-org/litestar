@@ -136,7 +136,7 @@ def test_register_validation_wrong_class() -> None:
             pass
 
     with pytest.raises(ImproperlyConfiguredException):
-        Router(path="/base", route_handlers=[MyCustomClass])
+        Litestar(path="/base", route_handlers=[MyCustomClass])
 
 
 def test_register_already_registered_router() -> None:
@@ -150,6 +150,13 @@ def test_register_router_on_itself() -> None:
 
     with pytest.raises(ImproperlyConfiguredException):
         router.register(router)
+
+
+def test_register_app_on_itself() -> None:
+    app = Litestar(path="/first", route_handlers=[])
+
+    with pytest.raises(ImproperlyConfiguredException):
+        app.register(app)
 
 
 def test_route_handler_method_view(controller: Type[Controller]) -> None:
