@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING, Any, AsyncGenerator, Awaitable, Callable, Mapp
 
 import anyio
 from msgspec.json import Encoder as JsonEncoder
-from typing_extensions import Self
 
 from litestar.exceptions import ImproperlyConfiguredException, LitestarWarning, WebSocketDisconnect
 from litestar.handlers.websocket_handlers.route_handler import WebsocketRouteHandler
@@ -19,6 +18,7 @@ from litestar.utils.signature import ParsedSignature
 if TYPE_CHECKING:
     from litestar import Litestar, WebSocket
     from litestar.dto import AbstractDTO
+    from litestar.routes import BaseRoute
     from litestar.types import Dependencies, EmptyType, ExceptionHandler, Guard, Middleware, TypeEncodersMap
     from litestar.types.asgi_types import WebSocketMode
 
@@ -183,6 +183,7 @@ def websocket_stream(
 
     def decorator(fn: Callable[..., AsyncGenerator[Any, Any]]) -> WebsocketRouteHandler:
         return WebSocketStreamHandler(
+            fn=fn,  # type: ignore[arg-type]
             path=path,
             dependencies=dependencies,
             exception_handlers=exception_handlers,
@@ -194,14 +195,13 @@ def websocket_stream(
             websocket_class=websocket_class,
             return_dto=return_dto,
             type_encoders=type_encoders,
-            **kwargs,
-        )(
-            _WebSocketStreamOptions(
+            stream_options=_WebSocketStreamOptions(
                 generator_fn=fn,
                 send_mode=mode,
                 listen_for_disconnect=listen_for_disconnect,
                 warn_on_data_discard=warn_on_data_discard,
-            )
+            ),
+            **kwargs,
         )
 
     return decorator
@@ -211,12 +211,9 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
     __slots__ = ("_ws_stream_options",)
     _ws_stream_options: _WebSocketStreamOptions
 
-    def __call__(self, fn: _WebSocketStreamOptions) -> Self:  # type: ignore[override]
-        self._ws_stream_options = fn
-        self._fn = self._ws_stream_options.generator_fn  # type: ignore[assignment]
-        return self
+    def on_registration(self, app: Litestar, route: BaseRoute) -> None:
+        self._ws_stream_options = self.opt["stream_options"]
 
-    def on_registration(self, app: Litestar) -> None:
         parsed_handler_signature = parsed_stream_fn_signature = ParsedSignature.from_fn(
             self.fn, self.resolve_signature_namespace()
         )
@@ -293,9 +290,9 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
                 send_handler=send_handler,
             )
 
-        self._fn = handler_fn
+        self.fn = handler_fn
 
-        super().on_registration(app)
+        super().on_registration(app, route)
 
 
 class _WebSocketStreamOptions:
