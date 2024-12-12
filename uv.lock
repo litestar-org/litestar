@@ -11,18 +11,6 @@ resolution-markers = [
 ]
 
 [[package]]
-name = "accessible-pygments"
-version = "0.0.4"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "pygments" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/b2/50/7055ebd9b7928eca202768bcf5f8f69d8d69dec1767c956c08f055c5b31e/accessible-pygments-0.0.4.tar.gz", hash = "sha256:e7b57a9b15958e9601c7e9eb07a440c813283545a20973f2574a5f453d0e953e", size = 11650 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/20/d7/45cfa326d945e411c7e02764206845b05f8f5766aa7ebc812ef3bc4138cd/accessible_pygments-0.0.4-py2.py3-none-any.whl", hash = "sha256:416c6d8c1ea1c5ad8701903a20fcedf953c6e720d64f33dc47bfb2d3f2fa4e8d", size = 29320 },
-]
-
-[[package]]
 name = "advanced-alchemy"
 version = "0.26.2"
 source = { registry = "https://pypi.org/simple" }
@@ -401,6 +389,18 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/27/25/3f706b4f044dd569a20a4835c3b733dedea38d83d2ee0beb8178a6d44945/black-24.8.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:9e84e33b37be070ba135176c123ae52a51f82306def9f7d063ee302ecab2cf47", size = 1756488 },
     { url = "https://files.pythonhosted.org/packages/63/72/79375cd8277cbf1c5670914e6bd4c1b15dea2c8f8e906dc21c448d0535f0/black-24.8.0-cp39-cp39-win_amd64.whl", hash = "sha256:73bbf84ed136e45d451a260c6b73ed674652f90a2b3211d6a35e78054563a9bb", size = 1417721 },
     { url = "https://files.pythonhosted.org/packages/27/1e/83fa8a787180e1632c3d831f7e58994d7aaf23a0961320d21e84f922f919/black-24.8.0-py3-none-any.whl", hash = "sha256:972085c618ee94f402da1af548a4f218c754ea7e5dc70acb168bfaca4c2542ed", size = 206504 },
+]
+
+[[package]]
+name = "blacken-docs"
+version = "1.18.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "black" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/12/a9/99fe0283575297466df65eb54873a892f0db5fd24459abef4c2691db883a/blacken_docs-1.18.0.tar.gz", hash = "sha256:47bed628679d008a8eb55d112df950582e68d0f57615223929e366348d935444", size = 14743 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3d/7e/532f6c8b81346c2337c54b0e16f49f2968d86b0c535d6318b3f21f3ff4cf/blacken_docs-1.18.0-py3-none-any.whl", hash = "sha256:64f592246784131e9f84dad1db397f44eeddc77fdf01726bab920a3f00a3815c", size = 8243 },
 ]
 
 [[package]]
@@ -1891,30 +1891,72 @@ valkey = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "advanced-alchemy" },
     { name = "aiosqlite" },
+    { name = "annotated-types" },
     { name = "asyncpg" },
+    { name = "attrs" },
     { name = "beanie" },
     { name = "beautifulsoup4" },
+    { name = "brotli" },
+    { name = "cryptography" },
     { name = "daphne" },
+    { name = "email-validator" },
+    { name = "fast-query-parsers" },
     { name = "fsspec" },
     { name = "greenlet" },
     { name = "httpx-sse" },
     { name = "hypercorn" },
     { name = "hypothesis" },
-    { name = "litestar", extra = ["full"] },
+    { name = "jinja2" },
+    { name = "jsbeautifier" },
+    { name = "mako" },
+    { name = "minijinja" },
+    { name = "opentelemetry-instrumentation-asgi" },
     { name = "opentelemetry-sdk" },
+    { name = "piccolo" },
+    { name = "picologging" },
+    { name = "prometheus-client" },
     { name = "psutil" },
     { name = "psycopg", extra = ["binary"], marker = "python_full_version < '3.13'" },
     { name = "psycopg", extra = ["c"], marker = "python_full_version >= '3.13' and sys_platform == 'linux'" },
     { name = "psycopg", extra = ["pool"] },
     { name = "psycopg2-binary" },
+    { name = "pydantic" },
+    { name = "pydantic-extra-types" },
+    { name = "pyjwt" },
     { name = "python-dotenv" },
+    { name = "redis", extra = ["hiredis"] },
     { name = "starlette" },
+    { name = "structlog" },
     { name = "trio" },
+    { name = "uvicorn", extra = ["standard"] },
+    { name = "uvloop", marker = "sys_platform != 'win32'" },
 ]
 docs = [
+    { name = "advanced-alchemy" },
+    { name = "annotated-types" },
+    { name = "asyncpg" },
+    { name = "attrs" },
     { name = "auto-pytabs", extra = ["sphinx"] },
+    { name = "brotli" },
+    { name = "cryptography" },
+    { name = "email-validator" },
+    { name = "fast-query-parsers" },
+    { name = "jinja2" },
+    { name = "jsbeautifier" },
     { name = "litestar-sphinx-theme" },
+    { name = "mako" },
+    { name = "minijinja" },
+    { name = "opentelemetry-instrumentation-asgi" },
+    { name = "piccolo" },
+    { name = "picologging" },
+    { name = "prometheus-client" },
+    { name = "psycopg" },
+    { name = "pydantic" },
+    { name = "pydantic-extra-types" },
+    { name = "pyjwt" },
+    { name = "redis", extra = ["hiredis"] },
     { name = "sphinx" },
     { name = "sphinx-autobuild" },
     { name = "sphinx-click" },
@@ -1923,6 +1965,9 @@ docs = [
     { name = "sphinx-paramlinks" },
     { name = "sphinx-toolbox" },
     { name = "sphinxcontrib-mermaid" },
+    { name = "structlog" },
+    { name = "uvicorn", extra = ["standard"] },
+    { name = "uvloop", marker = "sys_platform != 'win32'" },
 ]
 linting = [
     { name = "asyncpg-stubs" },
@@ -2025,8 +2070,11 @@ dev = [
     { name = "trio" },
 ]
 docs = [
+    { name = "asyncpg" },
     { name = "auto-pytabs", extras = ["sphinx"], specifier = ">=0.5.0" },
-    { name = "litestar-sphinx-theme", git = "https://github.com/litestar-org/litestar-sphinx-theme.git" },
+    { name = "litestar", extras = ["full"] },
+    { name = "litestar-sphinx-theme", git = "https://github.com/litestar-org/litestar-sphinx-theme.git?rev=v3" },
+    { name = "psycopg" },
     { name = "sphinx", specifier = ">=7.1.2" },
     { name = "sphinx-autobuild", specifier = ">=2021.3.14" },
     { name = "sphinx-click", specifier = ">=4.4.0" },
@@ -2074,11 +2122,16 @@ wheels = [
 
 [[package]]
 name = "litestar-sphinx-theme"
-version = "0.2.0"
-source = { git = "https://github.com/litestar-org/litestar-sphinx-theme.git#76b1d0e4c8afff1ad135b1917fe09cf6c1cc6c9b" }
+version = "0.3.1"
+source = { git = "https://github.com/litestar-org/litestar-sphinx-theme.git?rev=v3#e5f1df5af973eafafbc683e56d0f5762b2e0c315" }
 dependencies = [
-    { name = "pydata-sphinx-theme" },
+    { name = "blacken-docs" },
+    { name = "shibuya" },
+    { name = "sphinx-autobuild" },
+    { name = "sphinx-copybutton" },
     { name = "sphinx-design" },
+    { name = "sphinx-togglebutton" },
+    { name = "sphinx-toolbox" },
 ]
 
 [[package]]
@@ -3172,25 +3225,6 @@ wheels = [
 ]
 
 [[package]]
-name = "pydata-sphinx-theme"
-version = "0.14.4"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "accessible-pygments" },
-    { name = "babel" },
-    { name = "beautifulsoup4" },
-    { name = "docutils" },
-    { name = "packaging" },
-    { name = "pygments" },
-    { name = "sphinx" },
-    { name = "typing-extensions" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/de/47/1bc31c4bc8b395cd37d8ceaf720abe10cf64c857fb9ce55856a6dd958484/pydata_sphinx_theme-0.14.4.tar.gz", hash = "sha256:f5d7a2cb7a98e35b9b49d3b02cec373ad28958c2ed5c9b1ffe6aff6c56e9de5b", size = 2410500 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/1b/bf/3f8dc653e3015fa0656587e101013754d9bf926f395cbe0892f7e87158dd/pydata_sphinx_theme-0.14.4-py3-none-any.whl", hash = "sha256:ac15201f4c2e2e7042b0cad8b30251433c1f92be762ddcefdb4ae68811d918d9", size = 4682140 },
-]
-
-[[package]]
 name = "pygments"
 version = "2.18.0"
 source = { registry = "https://pypi.org/simple" }
@@ -3688,6 +3722,18 @@ wheels = [
 ]
 
 [[package]]
+name = "shibuya"
+version = "2024.10.15"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "sphinx" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ed/ae/31d3755354c0903fbbce4a094575cada36afcb5fdc2df729afc69a7bea9d/shibuya-2024.10.15.tar.gz", hash = "sha256:fc057a32a2dcdca9f0f85616f9fff5b3007500bf42ff4eeb1d68fae124b1a51d", size = 80522 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/84/11/19d5407d5828e2d6dc45baff6ad813f70f6a10acea9a678db1f41ccee5c5/shibuya-2024.10.15-py3-none-any.whl", hash = "sha256:46d32c4dc7f244bfe130e710f477f4bda64706e5610916089371509992cae5e6", size = 96363 },
+]
+
+[[package]]
 name = "six"
 version = "1.16.0"
 source = { registry = "https://pypi.org/simple" }
@@ -3900,6 +3946,21 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/27/32/ab475e252dc2b704e82a91141fa404cdd8901a5cf34958fd22afacebfccd/sphinx-tabs-3.4.5.tar.gz", hash = "sha256:ba9d0c1e3e37aaadd4b5678449eb08176770e0fc227e769b6ce747df3ceea531", size = 16070 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/20/9f/4ac7dbb9f23a2ff5a10903a4f9e9f43e0ff051f63a313e989c962526e305/sphinx_tabs-3.4.5-py3-none-any.whl", hash = "sha256:92cc9473e2ecf1828ca3f6617d0efc0aa8acb06b08c56ba29d1413f2f0f6cf09", size = 9904 },
+]
+
+[[package]]
+name = "sphinx-togglebutton"
+version = "0.3.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "docutils" },
+    { name = "setuptools" },
+    { name = "sphinx" },
+    { name = "wheel" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/f0/df/d151dfbbe588116e450ca7e898750cb218dca6b2e557ced8de6f9bd7242b/sphinx-togglebutton-0.3.2.tar.gz", hash = "sha256:ab0c8b366427b01e4c89802d5d078472c427fa6e9d12d521c34fa0442559dc7a", size = 8324 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e9/18/267ce39f29d26cdc7177231428ba823fe5ca94db8c56d1bed69033b364c8/sphinx_togglebutton-0.3.2-py3-none-any.whl", hash = "sha256:9647ba7874b7d1e2d43413d8497153a85edc6ac95a3fea9a75ef9c1e08aaae2b", size = 8249 },
 ]
 
 [[package]]
@@ -4769,6 +4830,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/c7/86/38279dfefecd035e22b79c38722d4f87c4b6196f1556b7a631d0a3095ca7/websockets-13.1-pp39-pypy39_pp73-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:459bf774c754c35dbb487360b12c5727adab887f1622b8aed5755880a21c4a20", size = 156649 },
     { url = "https://files.pythonhosted.org/packages/f6/c5/12c6859a2eaa8c53f59a647617a27f1835a226cd7106c601067c53251d98/websockets-13.1-pp39-pypy39_pp73-win_amd64.whl", hash = "sha256:95858ca14a9f6fa8413d29e0a585b31b278388aa775b8a81fa24830123874678", size = 159187 },
     { url = "https://files.pythonhosted.org/packages/56/27/96a5cd2626d11c8280656c6c71d8ab50fe006490ef9971ccd154e0c42cd2/websockets-13.1-py3-none-any.whl", hash = "sha256:a9a396a6ad26130cdae92ae10c36af09d9bfe6cafe69670fd3b6da9b07b4044f", size = 152134 },
+]
+
+[[package]]
+name = "wheel"
+version = "0.45.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/8a/98/2d9906746cdc6a6ef809ae6338005b3f21bb568bea3165cfc6a243fdc25c/wheel-0.45.1.tar.gz", hash = "sha256:661e1abd9198507b1409a20c02106d9670b2576e916d58f520316666abca6729", size = 107545 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/0b/2c/87f3254fd8ffd29e4c02732eee68a83a1d3c346ae39bc6822dcbcb697f2b/wheel-0.45.1-py3-none-any.whl", hash = "sha256:708e7481cc80179af0e556bbf0cc00b8444c7321e2700b8d8580231d13017248", size = 72494 },
 ]
 
 [[package]]
