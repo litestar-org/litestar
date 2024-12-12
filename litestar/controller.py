@@ -62,7 +62,6 @@ class Controller:
         "include_in_schema",
         "middleware",
         "opt",
-        "owner",
         "parameters",
         "path",
         "request_class",
@@ -123,11 +122,6 @@ class Controller:
     """A string key mapping of arbitrary values that can be accessed in :class:`Guards <.types.Guard>` or wherever you
     have access to :class:`Request <.connection.Request>` or :class:`ASGI Scope <.types.Scope>`.
     """
-    owner: Router
-    """The :class:`Router <.router.Router>` or :class:`Litestar <litestar.app.Litestar>` app that owns the controller.
-
-    This value is set internally by Litestar and it should not be set when subclassing the controller.
-    """
     parameters: ParametersMap | None
     """A mapping of :class:`Parameter <.params.Parameter>` definitions available to all application paths."""
     path: str
@@ -176,13 +170,10 @@ class Controller:
     handlers under the controller.
     """
 
-    def __init__(self, owner: Router) -> None:
+    def __init__(self) -> None:
         """Initialize a controller.
 
         Should only be called by routers as part of controller registration.
-
-        Args:
-            owner: An instance of :class:`Router <.router.Router>`
         """
         # Since functions set on classes are bound, we need replace the bound instance with the class version
         for key in ("after_request", "after_response", "before_request"):
@@ -213,7 +204,6 @@ class Controller:
         self.response_cookies = narrow_response_cookies(self.response_cookies)
         self.response_headers = narrow_response_headers(self.response_headers)
         self.path = normalize_path(self.path or "/")
-        # self.owner = owner
 
     def as_router(self) -> Router:
         from litestar.router import Router
@@ -249,11 +239,10 @@ class Controller:
             websocket_class=self.websocket_class,
             request_max_body_size=self.request_max_body_size,
         )
-        # router.owner = self.owner
         return router
 
     def get_route_handlers(self) -> list[BaseRouteHandler]:
-        """Get a controller's route handlers and set the controller as the handlers' owner.
+        """Get a controller's route handlers
 
         Returns:
             A list containing a copy of the route handlers defined on the controller

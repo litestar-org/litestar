@@ -70,7 +70,6 @@ class BaseRouteHandler:
         "middleware",
         "name",
         "opt",
-        "owner",
         "paths",
         "return_dto",
         "signature_namespace",
@@ -149,7 +148,6 @@ class BaseRouteHandler:
         self.name = name
         self.opt = dict(opt or {})
         self.opt.update(**kwargs)
-        self.owner: Controller | Router | None = None
         self.return_dto = return_dto
         self.signature_namespace = add_types_to_signature_namespace(
             signature_types or [], dict(signature_namespace or {})
@@ -280,14 +278,7 @@ class BaseRouteHandler:
 
         ``app -> ... -> route handler``
         """
-        layers = []
-
-        cur: Any = self
-        while cur:
-            layers.append(cur)
-            cur = cur.owner
-
-        return list(reversed(layers))
+        return [self]
 
     @property
     def app(self) -> Litestar:

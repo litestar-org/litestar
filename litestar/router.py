@@ -1,22 +1,16 @@
 from __future__ import annotations
 
-import traceback
-from collections import defaultdict
-from copy import copy, deepcopy
-from typing import TYPE_CHECKING, Any, Mapping, Sequence, cast
+from typing import TYPE_CHECKING, Any, Mapping, Sequence
 
 from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
 from litestar.controller import Controller
-from litestar.datastructures import Cookie, ResponseHeader
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers.asgi_handlers import ASGIRouteHandler
 from litestar.handlers.http_handlers import HTTPRouteHandler
-from litestar.handlers.http_handlers._options import create_options_handler
 from litestar.handlers.websocket_handlers import WebsocketListener, WebsocketRouteHandler
 from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from litestar.types.empty import Empty
-from litestar.utils import find_index, is_class_and_subclass, join_paths, normalize_path, unique
-from litestar.utils.empty import value_or_default
+from litestar.utils import is_class_and_subclass, normalize_path
 from litestar.utils.signature import add_types_to_signature_namespace
 from litestar.utils.sync import ensure_async_callable
 
@@ -40,7 +34,6 @@ if TYPE_CHECKING:
         Middleware,
         ParametersMap,
         ResponseCookies,
-        RouteHandlerMapItem,
         RouteHandlerType,
         TypeEncodersMap,
     )
@@ -237,48 +230,14 @@ class Router:
         self._route_handlers.extend(handlers)
         return handlers
 
-    @property
-    def route_handler_method_map(self) -> dict[str, RouteHandlerMapItem]:
-        """Map route paths to :class:`~litestar.types.internal_types.RouteHandlerMapItem`
-
-        Returns:
-             A dictionary mapping paths to route handlers
-        """
-        route_map: defaultdict[str, RouteHandlerMapItem] = defaultdict(dict)
-        for route in self.routes:
-            if isinstance(route, HTTPRoute):
-                route_map[route.path] = route.route_handler_map  # type: ignore[assignment]
-            else:
-                route_map[route.path]["websocket" if isinstance(route, WebSocketRoute) else "asgi"] = (
-                    route.route_handler
-                )
-
-        return route_map
-
-    @classmethod
-    def get_route_handler_map(
-        cls,
-        value: RouteHandlerType | Router,
-    ) -> dict[str, RouteHandlerMapItem]:
-        """Map route handlers to HTTP methods."""
-        if isinstance(value, Router):
-            return value.route_handler_method_map
-
-        if isinstance(value, HTTPRouteHandler):
-            return {path: {http_method: value for http_method in value.http_methods} for path in value.paths}
-
-        return {
-            path: {"websocket" if isinstance(value, WebsocketRouteHandler) else "asgi": value} for path in value.paths
-        }
-
     def _validate_registration_value(self, value: ControllerRouterHandler) -> RouteHandlerType | Router:
         """Ensure values passed to the register method are supported."""
         if is_class_and_subclass(value, Controller):
-            return value(owner=self).as_router()
+            return value().as_router()
 
         # this narrows down to an ABC, but we assume a non-abstract subclass of the ABC superclass
         if is_class_and_subclass(value, WebsocketListener):
-            return value(owner=self).to_handler()  # pyright: ignore
+            return value().to_handler()  # pyright: ignore
 
         if isinstance(value, Router):
             if value is self:
@@ -296,10 +255,3 @@ class Router:
         )
 
 
-def _maybe_add_options_handler(path: str, http_handlers: list[HTTPRouteHandler], root: Router) -> list[HTTPRouteHandler]:
-    handler_methods = {method for handler in http_handlers for method in handler.http_methods}
-    if "OPTIONS" not in handler_methods:
-        options_handler = create_options_handler(path=path, allow_methods={*handler_methods, "OPTIONS"})  # pyright: ignore
-        options_handler = options_handler.merge(root)
-        return [*http_handlers, options_handler]
-    return http_handlers
