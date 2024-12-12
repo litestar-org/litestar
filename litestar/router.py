@@ -3,14 +3,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Mapping, Sequence
 
 from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
-from litestar.controller import Controller
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.handlers.asgi_handlers import ASGIRouteHandler
-from litestar.handlers.http_handlers import HTTPRouteHandler
-from litestar.handlers.websocket_handlers import WebsocketListener, WebsocketRouteHandler
 from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from litestar.types.empty import Empty
-from litestar.utils import is_class_and_subclass, normalize_path
+from litestar.utils import normalize_path
 from litestar.utils.signature import add_types_to_signature_namespace
 from litestar.utils.sync import ensure_async_callable
 
@@ -23,7 +19,6 @@ if TYPE_CHECKING:
     from litestar.dto import AbstractDTO
     from litestar.openapi.spec import SecurityRequirement
     from litestar.response import Response
-    from litestar.routes import BaseRoute
     from litestar.types import (
         AfterRequestHookHandler,
         AfterResponseHookHandler,
@@ -34,7 +29,6 @@ if TYPE_CHECKING:
         Middleware,
         ParametersMap,
         ResponseCookies,
-        RouteHandlerType,
         TypeEncodersMap,
     )
     from litestar.types.composite_types import Dependencies, ResponseHeaders, TypeDecodersSequence
@@ -201,57 +195,10 @@ class Router:
         self.websocket_class = websocket_class
         self.request_max_body_size = request_max_body_size
 
-        self._route_handlers = self._merge_handlers(route_handlers)
+        self._route_handlers = list(route_handlers)
 
-    def _merge_handlers(self, handlers: Sequence[ControllerRouterHandler]) -> list[RouteHandlerType]:
-        from litestar.handlers import BaseRouteHandler
-
-        merged = []
-        for handler in handlers:
-            handler = self._validate_registration_value(handler)
-            if isinstance(handler, BaseRouteHandler):
-                merged.append(handler.merge(self))
-                continue
-            merged.extend(self._merge_handlers(handler._route_handlers))
-        return merged
-
-    def register(self, value: ControllerRouterHandler) -> list[BaseRoute]:
-        """Register a Controller, Route instance or RouteHandler on the router.
-
-        Args:
-            value: a subclass or instance of Controller, an instance of :class:`Router` or a function/method that has
-                been decorated by any of the routing decorators, e.g. :class:`get <.handlers.get>`,
-                :class:`post <.handlers.post>`.
-
-        Returns:
-            Collection of handlers added to the router.
-        """
-        handlers = self._merge_handlers([value])
-        self._route_handlers.extend(handlers)
-        return handlers
-
-    def _validate_registration_value(self, value: ControllerRouterHandler) -> RouteHandlerType | Router:
-        """Ensure values passed to the register method are supported."""
-        if is_class_and_subclass(value, Controller):
-            return value().as_router()
-
-        # this narrows down to an ABC, but we assume a non-abstract subclass of the ABC superclass
-        if is_class_and_subclass(value, WebsocketListener):
-            return value().to_handler()  # pyright: ignore
-
-        if isinstance(value, Router):
-            if value is self:
-                raise ImproperlyConfiguredException("Cannot register a router on itself")
-
-            return value
-
-        if isinstance(value, (ASGIRouteHandler, HTTPRouteHandler, WebsocketRouteHandler)):
-            return value
-
-        raise ImproperlyConfiguredException(
-            "Unsupported value passed to `Router.register`. "
-            "If you passed in a function or method, "
-            "make sure to decorate it first with one of the routing decorators"
-        )
-
-
+    def register(self, value: ControllerRouterHandler) -> None:
+        """Register a Controller, Route instance or RouteHandler on the router"""
+        if value is self:
+            raise ImproperlyConfiguredException("Cannot register a router on itself")
+        self._route_handlers.append(value)
