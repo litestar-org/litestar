@@ -3,9 +3,10 @@ from typing import Generic, TypeVar
 
 import pytest
 
-from litestar import HttpMethod, Litestar, Response, head
+from litestar import Litestar, Response, head
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.response.file import ASGIFileResponse, File
+from litestar.routes import HTTPRoute
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 
@@ -27,6 +28,7 @@ def test_head_decorator_raises_validation_error_if_body_is_declared() -> None:
         def handler() -> dict:
             return {}
 
+        handler.on_registration(Litestar(), HTTPRoute(path="/", route_handlers=[handler]))
         Litestar(route_handlers=[handler])
 
 
@@ -48,16 +50,6 @@ def test_head_decorator_none_response_return_value_allowed() -> None:
     Litestar(route_handlers=[handler, handler_subclass])
 
 
-def test_head_decorator_raises_validation_error_if_method_is_passed() -> None:
-    with pytest.raises(ImproperlyConfiguredException):
-
-        @head("/", http_method=HttpMethod.HEAD)
-        def handler() -> None:
-            return
-
-        handler.on_registration(Litestar())
-
-
 def test_head_decorator_does_not_raise_for_file_response() -> None:
     @head("/")
     def handler() -> "File":
@@ -65,7 +57,7 @@ def test_head_decorator_does_not_raise_for_file_response() -> None:
 
     Litestar(route_handlers=[handler])
 
-    handler.on_registration(Litestar())
+    handler.on_registration(Litestar(), HTTPRoute(path="/", route_handlers=[handler]))
 
 
 def test_head_decorator_does_not_raise_for_asgi_file_response() -> None:
@@ -75,4 +67,4 @@ def test_head_decorator_does_not_raise_for_asgi_file_response() -> None:
 
     Litestar(route_handlers=[handler])
 
-    handler.on_registration(Litestar())
+    handler.on_registration(Litestar(), HTTPRoute(path="/", route_handlers=[handler]))

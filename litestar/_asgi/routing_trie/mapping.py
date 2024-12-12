@@ -49,7 +49,6 @@ def add_mount_route(
             current_node = current_node.children[component]  # type: ignore[index]
 
     current_node.is_mount = True
-    current_node.is_static = route.route_handler.is_static
 
     if route.path != "/":
         mount_routes[route.path] = root_node.children[route.path] = current_node
@@ -145,8 +144,7 @@ def configure_node(
         node.path_parameters = {}
 
     if isinstance(route, HTTPRoute):
-        for method, handler_mapping in route.route_handler_map.items():
-            handler, _ = handler_mapping
+        for method, handler in route.route_handler_map.items():
             node.asgi_handlers[method] = ASGIHandlerTuple(
                 asgi_app=build_route_middleware_stack(app=app, route=route, route_handler=handler),
                 handler=handler,
