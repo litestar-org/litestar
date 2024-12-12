@@ -160,7 +160,7 @@ docs = [
   "sphinx-paramlinks>=0.6.0",
 #    "litestar-sphinx-theme @ {root:uri}/../litestar-sphinx-theme", # only needed when working on the theme
   "litestar-sphinx-theme @ git+https://github.com/litestar-org/litestar-sphinx-theme.git@v3",
-  "litestar[full] @ {root:uri}/",
+  "litestar[full]",
   "asyncpg",
   "psycopg",
 ]
