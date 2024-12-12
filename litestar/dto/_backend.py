@@ -233,7 +233,7 @@ class DTOBackend:
         if (content_type := getattr(asgi_connection, "content_type", None)) and (media_type := content_type[0]):
             request_encoding = media_type
 
-        type_decoders = asgi_connection.route_handler.resolve_type_decoders()
+        type_decoders = asgi_connection.route_handler.type_decoders
 
         if request_encoding == RequestEncodingType.MESSAGEPACK:
             result = decode_msgpack(value=raw, target_type=self.annotation, type_decoders=type_decoders, strict=False)

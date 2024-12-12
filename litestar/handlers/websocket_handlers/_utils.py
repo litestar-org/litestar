@@ -44,7 +44,7 @@ def create_handle_receive(listener: WebsocketListenerRouteHandler) -> Callable[[
 
         async def handle_receive(socket: WebSocket) -> Any:
             received_data = await socket.receive_data(mode=listener._receive_mode)
-            return decode_json(value=received_data, type_decoders=socket.route_handler.resolve_type_decoders())
+            return decode_json(value=received_data, type_decoders=socket.route_handler.type_decoders)
 
     return handle_receive
 
