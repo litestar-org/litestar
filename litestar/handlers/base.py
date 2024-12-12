@@ -196,7 +196,7 @@ class BaseRouteHandler:
             A default deserializer for the route handler.
 
         """
-        return partial(default_deserializer, type_decoders=self.resolve_type_decoders())
+        return partial(default_deserializer, type_decoders=self.type_decoders)
 
     @property
     def default_serializer(self) -> Callable[[Any], Any]:
@@ -222,7 +222,7 @@ class BaseRouteHandler:
                 fn=cast("AnyCallable", self.fn),
                 parsed_signature=self.parsed_fn_signature,
                 data_dto=self.resolve_data_dto(),
-                type_decoders=self.resolve_type_decoders(),
+                type_decoders=self.type_decoders,
             )
         return self._resolved_signature_model
 
@@ -289,29 +289,20 @@ class BaseRouteHandler:
     @deprecated("3.0", removal_in="4.0", alternative=".type_encoders property")
     def resolve_type_encoders(self) -> TypeEncodersMap:
         """Return a merged type_encoders mapping.
-
-        This method is memoized so the computation occurs only once.
-
+        
         Returns:
             A dict of type encoders
         """
         return self.type_encoders
 
+    @deprecated("3.0", removal_in="4.0", alternative=".type_decoders property")
     def resolve_type_decoders(self) -> TypeDecodersSequence:
         """Return a merged type_encoders mapping.
-
-        This method is memoized so the computation occurs only once.
 
         Returns:
             A dict of type encoders
         """
-        if self._resolved_type_decoders is Empty:
-            self._resolved_type_decoders = []
-
-            for layer in self._ownership_layers:
-                if type_decoders := getattr(layer, "type_decoders", None):
-                    self._resolved_type_decoders.extend(list(type_decoders))
-        return cast("TypeDecodersSequence", self._resolved_type_decoders)
+        return self.type_decoders
 
     def resolve_layered_parameters(self) -> dict[str, FieldDefinition]:
         """Return all parameters declared above the handler."""
@@ -389,7 +380,7 @@ class BaseRouteHandler:
                 fn=provider.dependency,
                 parsed_signature=provider.parsed_fn_signature,
                 data_dto=self.resolve_data_dto(),
-                type_decoders=self.resolve_type_decoders(),
+                type_decoders=self.type_decoders,
             )
         return provider
 
