@@ -1542,18 +1542,26 @@ document.write(`
                   
   <section id="websockets">
 <h1>WebSockets<a class="headerlink" href="#websockets" title="Permalink to this heading">#</a></h1>
-<p>Handling WebSockets in an application often involves dealing with low level constructs
-such as the socket itself, setting up a loop and listening for incoming data, handling
-exceptions, and parsing incoming and serializing outgoing data. In addition to the
-low-level <a class="reference internal" href="../reference/handlers.html#litestar.handlers.websocket" title="litestar.handlers.websocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocket</span> <span class="pre">route</span> <span class="pre">handler</span></code></a>, Litestar offers two
-high level interfaces:</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="../reference/handlers.html#litestar.handlers.websocket_listener" title="litestar.handlers.websocket_listener"><code class="xref py py-class docutils literal notranslate"><span class="pre">websocket_listener</span></code></a></p></li>
-<li><p><a class="reference internal" href="../reference/handlers.html#litestar.handlers.WebsocketListener" title="litestar.handlers.WebsocketListener"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketListener</span></code></a></p></li>
-</ul>
-<p>These treat a WebSocket handler like any other route handler: as a callable that takes
-in incoming data in an already pre-processed form and returns data to be serialized and
-sent over the connection. The low level details will be handled behind the curtains.</p>
+<p>There are three ways to handle WebSockets in Litestar:</p>
+<ol class="arabic simple">
+<li><p>The low-level <a class="reference internal" href="../reference/handlers.html#litestar.handlers.websocket" title="litestar.handlers.websocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">websocket</span></code></a> route handler, providing basic
+abstractions over the ASGI WebSocket interface</p></li>
+<li><p><a class="reference internal" href="../reference/handlers.html#litestar.handlers.websocket_listener" title="litestar.handlers.websocket_listener"><code class="xref py py-class docutils literal notranslate"><span class="pre">websocket_listener</span></code></a> and <a class="reference internal" href="../reference/handlers.html#litestar.handlers.WebsocketListener" title="litestar.handlers.WebsocketListener"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebsocketListener</span></code></a> :
+Reactive, event-driven WebSockets with full serialization and DTO support and support
+for a synchronous interface</p></li>
+<li><p><a class="reference internal" href="../reference/handlers.html#litestar.handlers.websocket_stream" title="litestar.handlers.websocket_stream"><code class="xref py py-class docutils literal notranslate"><span class="pre">websocket_stream</span></code></a> and <a class="reference internal" href="../reference/handlers.html#litestar.handlers.send_websocket_stream" title="litestar.handlers.send_websocket_stream"><code class="xref py py-func docutils literal notranslate"><span class="pre">send_websocket_stream()</span></code></a>:
+Proactive, stream oriented WebSockets with full serialization and DTO support</p></li>
+</ol>
+<p>The main difference between the low and high level interfaces is that, dealing with low
+level interface requires, setting up a loop and listening for incoming data, handling
+exceptions, client disconnects, and parsing incoming and serializing outgoing data.</p>
+<section id="websocket-listeners">
+<h2>WebSocket Listeners<a class="headerlink" href="#websocket-listeners" title="Permalink to this heading">#</a></h2>
+<p>WebSocket Listeners can be used to interact with a WebSocket in an event-driven manner,
+using a callback style interface. They treat a WebSocket handler like any other route
+handler: A callable that takes in incoming data in an already pre-processed form and
+returns data to be serialized and sent over the connection. The low level details will
+be handled behind the curtains.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span>
 <span class="kn">from</span> <span class="nn">litestar.handlers.websocket_handlers</span> <span class="kn">import</span> <span class="n">websocket_listener</span>
 
@@ -1577,7 +1585,7 @@ type of data which should be received, and it will be converted accordingly.</p>
 asynchronous.</p>
 </div>
 <section id="receiving-data">
-<h2>Receiving data<a class="headerlink" href="#receiving-data" title="Permalink to this heading">#</a></h2>
+<h3>Receiving data<a class="headerlink" href="#receiving-data" title="Permalink to this heading">#</a></h3>
 <p>Data can be received in the listener via the <code class="docutils literal notranslate"><span class="pre">data</span></code> parameter. The data passed to this
 will be converted / parsed according to the given type annotation and supports
 <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a>, or arbitrary <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></a>s / or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>s in the
@@ -1659,14 +1667,15 @@ is a limitation of the current implementation and will change in future versions
 </div>
 </section>
 <section id="sending-data">
-<h2>Sending data<a class="headerlink" href="#sending-data" title="Permalink to this heading">#</a></h2>
+<h3>Sending data<a class="headerlink" href="#sending-data" title="Permalink to this heading">#</a></h3>
 <p>Sending data is done by simply returning the value to be sent from the handler function.
 Similar to receiving data, type annotations configure how the data is being handled.
 Values that are not <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> are assumed to be JSON encodable and
 will be serialized accordingly before being sent. This serialization is available for
 all data types currently supported by Litestar (
 <a class="reference external" href="https://docs.python.org/3/library/dataclasses.html" title="(in Python v3.13)"><span class="xref std std-doc">dataclasses</span></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a>,
-<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.NamedTuple" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></a>,  <a class="reference external" href="https://jcristharif.com/msgspec/api.html#msgspec.Struct" title="(in msgspec)"><code class="xref py py-class docutils literal notranslate"><span class="pre">msgspec.Struct</span></code></a>, etc.).</p>
+<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.NamedTuple" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></a>,  <a class="reference external" href="https://jcristharif.com/msgspec/api.html#msgspec.Struct" title="(in msgspec)"><code class="xref py py-class docutils literal notranslate"><span class="pre">msgspec.Struct</span></code></a>, etc.), including
+DTOs.</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
 </input><label class="sd-tab-label" for="sd-tab-item-5">
@@ -1762,22 +1771,10 @@ Dataclass as JSON</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </section>
-<section id="transport-modes">
-<h2>Transport modes<a class="headerlink" href="#transport-modes" title="Permalink to this heading">#</a></h2>
-<p>WebSockets have two transport modes: Text and binary. These can be specified
-individually for receiving and sending data.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>It may seem intuitive that <code class="docutils literal notranslate"><span class="pre">text</span></code> and <code class="docutils literal notranslate"><span class="pre">binary</span></code> should map to <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> and
-<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> respectively, but this is not the case. Listeners can receive and
-send data in any format, independently of the mode. The mode only affects how
-data is encoded during transport (i.e. on the protocol level). In most cases the
-default mode - <code class="docutils literal notranslate"><span class="pre">text</span></code> - is all that’s needed. Binary transport is usually employed
-when sending binary blobs that don’t have a meaningful string representation, such
-as images.</p>
-</div>
-<section id="setting-the-receive-mode">
-<h3>Setting the receive mode<a class="headerlink" href="#setting-the-receive-mode" title="Permalink to this heading">#</a></h3>
+<section id="setting-transport-modes">
+<h3>Setting transport modes<a class="headerlink" href="#setting-transport-modes" title="Permalink to this heading">#</a></h3>
+<section id="receive-mode">
+<h4>Receive mode<a class="headerlink" href="#receive-mode" title="Permalink to this heading">#</a></h4>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-11" name="sd-tab-set-4" type="radio">
 </input><label class="sd-tab-label" for="sd-tab-item-11">
@@ -1819,8 +1816,8 @@ appropriate type. This means if a listener is configured to use <code class="doc
 it will not respond to WebSocket events sending data in the text channel.</p>
 </div>
 </section>
-<section id="setting-the-send-mode">
-<h3>Setting the send mode<a class="headerlink" href="#setting-the-send-mode" title="Permalink to this heading">#</a></h3>
+<section id="send-mode">
+<h4>Send mode<a class="headerlink" href="#send-mode" title="Permalink to this heading">#</a></h4>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-13" name="sd-tab-set-5" type="radio">
 </input><label class="sd-tab-label" for="sd-tab-item-13">
@@ -1858,9 +1855,9 @@ Binary mode</label><div class="sd-tab-content docutils">
 </section>
 </section>
 <section id="dependency-injection">
-<h2>Dependency injection<a class="headerlink" href="#dependency-injection" title="Permalink to this heading">#</a></h2>
-<p><a class="reference internal" href="dependency-injection.html"><span class="doc">Dependency Injection</span></a> is available as well and generally works the same as with
-regular route handlers:</p>
+<h3>Dependency injection<a class="headerlink" href="#dependency-injection" title="Permalink to this heading">#</a></h3>
+<p><a class="reference internal" href="dependency-injection.html"><span class="doc">Dependency Injection</span></a> is available and generally works the same as in regular
+route handlers:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">websocket_listener</span>
 <span class="kn">from</span> <span class="nn">litestar.di</span> <span class="kn">import</span> <span class="n">Provide</span>
 
@@ -1916,7 +1913,7 @@ the <code class="docutils literal notranslate"><span class="pre">yield</span></c
 </div>
 </section>
 <section id="interacting-with-the-websocket-directly">
-<h2>Interacting with the WebSocket directly<a class="headerlink" href="#interacting-with-the-websocket-directly" title="Permalink to this heading">#</a></h2>
+<h3>Interacting with the WebSocket directly<a class="headerlink" href="#interacting-with-the-websocket-directly" title="Permalink to this heading">#</a></h3>
 <p>Sometimes access to the socket instance is needed, in which case the
 <a class="reference internal" href="../reference/connection.html#litestar.connection.WebSocket" title="litestar.connection.WebSocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocket</span></code></a> instance can be injected into the handler
 function via the <code class="docutils literal notranslate"><span class="pre">socket</span></code> argument:</p>
@@ -1942,7 +1939,7 @@ to be asynchronous.</p>
 </div>
 </section>
 <section id="customising-connection-acceptance">
-<h2>Customising connection acceptance<a class="headerlink" href="#customising-connection-acceptance" title="Permalink to this heading">#</a></h2>
+<h3>Customising connection acceptance<a class="headerlink" href="#customising-connection-acceptance" title="Permalink to this heading">#</a></h3>
 <p>By default, Litestar will accept all incoming connections by awaiting <code class="docutils literal notranslate"><span class="pre">WebSocket.accept()</span></code> without arguments.
 This behavior can be customized by passing a custom <code class="docutils literal notranslate"><span class="pre">connection_accept_handler</span></code> function. Litestar will await this
 function to accept the connection.</p>
@@ -1963,7 +1960,7 @@ function to accept the connection.</p>
 </div>
 </section>
 <section id="class-based-websocket-handling">
-<h2>Class based WebSocket handling<a class="headerlink" href="#class-based-websocket-handling" title="Permalink to this heading">#</a></h2>
+<h3>Class based WebSocket handling<a class="headerlink" href="#class-based-websocket-handling" title="Permalink to this heading">#</a></h3>
 <p>In addition to using a simple function as in the examples above, a class based approach
 is made possible by extending the
 <a class="reference internal" href="../reference/handlers.html#litestar.handlers.WebsocketListener" title="litestar.handlers.WebsocketListener"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocketListener</span></code></a>. This provides
@@ -2021,7 +2018,7 @@ Async</label><div class="sd-tab-content docutils">
 </div>
 </section>
 <section id="custom-websocket">
-<h2>Custom WebSocket<a class="headerlink" href="#custom-websocket" title="Permalink to this heading">#</a></h2>
+<h3>Custom WebSocket<a class="headerlink" href="#custom-websocket" title="Permalink to this heading">#</a></h3>
 <div class="versionadded">
 <p><span class="versionmodified added">New in version 2.7.0.</span></p>
 </div>
@@ -2063,6 +2060,444 @@ set a WebSocket class on every layer of the application. If you have set a WebSo
 class on multiple layers, the layer closest to the route handler will take precedence.</p>
 <p>You can read more about this in the <a class="reference internal" href="applications.html#layered-architecture"><span class="std std-ref">Layered architecture</span></a> section</p>
 </div>
+</section>
+</section>
+<section id="websocket-streams">
+<h2>WebSocket Streams<a class="headerlink" href="#websocket-streams" title="Permalink to this heading">#</a></h2>
+<p>WebSocket streams can be used to proactively push data to a client, using an
+asynchronous generator function. Data will be sent via the socket every time the
+generator <code class="docutils literal notranslate"><span class="pre">yield</span></code>s, until it is either exhausted or the client disconnects.</p>
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-17" name="sd-tab-set-7" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-17">
+Python 3.8+</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id3">
+<div class="code-block-caption"><span class="caption-text">Streaming the current time in 0.5 second intervals</span><a class="headerlink" href="#id3" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">AsyncGenerator</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">websocket_stream</span>
+
+
+<span class="nd">@websocket_stream</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">ping</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">ping</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<input checked="checked" id="sd-tab-item-18" name="sd-tab-set-7" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-18">
+Python 3.9+</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id4">
+<div class="code-block-caption"><span class="caption-text">Streaming the current time in 0.5 second intervals</span><a class="headerlink" href="#id4" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">AsyncGenerator</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">websocket_stream</span>
+
+
+<span class="nd">@websocket_stream</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">ping</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">ping</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<section id="serialization">
+<h3>Serialization<a class="headerlink" href="#serialization" title="Permalink to this heading">#</a></h3>
+<p>Just like with route handlers, type annotations configure how the data is being handled.
+<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> will be sent as-is, while everything else will be encoded
+as JSON before being sent. This serialization is available for all data types currently
+supported by Litestar (<a class="reference external" href="https://docs.python.org/3/library/dataclasses.html" title="(in Python v3.13)"><span class="xref std std-doc">dataclasses</span></a>,
+<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.TypedDict" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypedDict</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.NamedTuple" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">NamedTuple</span></code></a>,
+<a class="reference external" href="https://jcristharif.com/msgspec/api.html#msgspec.Struct" title="(in msgspec)"><code class="xref py py-class docutils literal notranslate"><span class="pre">msgspec.Struct</span></code></a>, etc.), including DTOs.</p>
+</section>
+<section id="id1">
+<h3>Dependency Injection<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
+<p>Dependency injection is available and works analogous to regular route handlers.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>One thing to keep in mind, especially for long-lived streams, is that dependencies
+are scoped to the lifetime of the handler. This means that if for example a
+database connection is acquired in a dependency, it will be held until the generator
+stops. This may not be desirable in all cases, and acquiring resources ad-hoc inside
+the generator itself preferable</p>
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-19" name="sd-tab-set-8" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-19">
+Python 3.8+</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id5">
+<div class="code-block-caption"><span class="caption-text">Bad: The lock will be held until the client disconnects</span><a class="headerlink" href="#id5" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">AsyncGenerator</span>
+
+<span class="kn">from</span> <span class="nn">app.lib</span> <span class="kn">import</span> <span class="n">ping_external_resource</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">websocket_stream</span>
+
+<span class="n">RESOURCE_LOCK</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">acquire_lock</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">RESOURCE_LOCK</span><span class="p">:</span>
+        <span class="k">yield</span>
+
+
+<span class="nd">@websocket_stream</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">ping</span><span class="p">(</span><span class="n">lock</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">alive</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ping_external_resource</span><span class="p">()</span>
+        <span class="k">yield</span> <span class="n">alive</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">ping</span><span class="p">],</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;lock&quot;</span><span class="p">:</span> <span class="n">acquire_lock</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+</div>
+<input checked="checked" id="sd-tab-item-20" name="sd-tab-set-8" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-20">
+Python 3.9+</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id6">
+<div class="code-block-caption"><span class="caption-text">Bad: The lock will be held until the client disconnects</span><a class="headerlink" href="#id6" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">AsyncGenerator</span>
+
+<span class="kn">from</span> <span class="nn">app.lib</span> <span class="kn">import</span> <span class="n">ping_external_resource</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">websocket_stream</span>
+
+<span class="n">RESOURCE_LOCK</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">acquire_lock</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">RESOURCE_LOCK</span><span class="p">:</span>
+        <span class="k">yield</span>
+
+
+<span class="nd">@websocket_stream</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">ping</span><span class="p">(</span><span class="n">lock</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">alive</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ping_external_resource</span><span class="p">()</span>
+        <span class="k">yield</span> <span class="n">alive</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">ping</span><span class="p">],</span> <span class="n">dependencies</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;lock&quot;</span><span class="p">:</span> <span class="n">acquire_lock</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-21" name="sd-tab-set-9" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-21">
+Python 3.8+</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id7">
+<div class="code-block-caption"><span class="caption-text">Good: The lock will only be acquired when it’s needed</span><a class="headerlink" href="#id7" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">AsyncGenerator</span>
+
+<span class="kn">from</span> <span class="nn">app.lib</span> <span class="kn">import</span> <span class="n">ping_external_resource</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">websocket_stream</span>
+
+<span class="n">RESOURCE_LOCK</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+
+
+<span class="nd">@websocket_stream</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">ping</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">RESOURCE_LOCK</span><span class="p">:</span>
+            <span class="n">alive</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ping_external_resource</span><span class="p">()</span>
+        <span class="k">yield</span> <span class="n">alive</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">ping</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<input checked="checked" id="sd-tab-item-22" name="sd-tab-set-9" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-22">
+Python 3.9+</label><div class="sd-tab-content docutils">
+<div class="literal-block-wrapper docutils container" id="id8">
+<div class="code-block-caption"><span class="caption-text">Good: The lock will only be acquired when it’s needed</span><a class="headerlink" href="#id8" title="Permalink to this code">#</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">AsyncGenerator</span>
+
+<span class="kn">from</span> <span class="nn">app.lib</span> <span class="kn">import</span> <span class="n">ping_external_resource</span>
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">websocket_stream</span>
+
+<span class="n">RESOURCE_LOCK</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+
+
+<span class="nd">@websocket_stream</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">ping</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">with</span> <span class="n">RESOURCE_LOCK</span><span class="p">:</span>
+            <span class="n">alive</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ping_external_resource</span><span class="p">()</span>
+        <span class="k">yield</span> <span class="n">alive</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">ping</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="id2">
+<h3>Interacting with the WebSocket directly<a class="headerlink" href="#id2" title="Permalink to this heading">#</a></h3>
+<p>To interact with the <a class="reference internal" href="../reference/connection.html#litestar.connection.WebSocket" title="litestar.connection.WebSocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">WebSocket</span></code></a> directly, it can be
+injected into the generator function via the <code class="docutils literal notranslate"><span class="pre">socket</span></code> argument:</p>
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-23" name="sd-tab-set-10" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-23">
+Python 3.8+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">AsyncGenerator</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">websocket_stream</span>
+
+
+<span class="nd">@websocket_stream</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">ping</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="p">{</span><span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span> <span class="s2">&quot;client&quot;</span><span class="p">:</span> <span class="n">socket</span><span class="o">.</span><span class="n">client</span><span class="p">}</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">ping</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<input checked="checked" id="sd-tab-item-24" name="sd-tab-set-10" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-24">
+Python 3.9+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">AsyncGenerator</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">websocket_stream</span>
+
+
+<span class="nd">@websocket_stream</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">ping</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="p">{</span><span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span> <span class="s2">&quot;client&quot;</span><span class="p">:</span> <span class="n">socket</span><span class="o">.</span><span class="n">client</span><span class="p">}</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">ping</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="receiving-data-while-streaming">
+<h3>Receiving data while streaming<a class="headerlink" href="#receiving-data-while-streaming" title="Permalink to this heading">#</a></h3>
+<p>By default, a stream will listen for a client disconnect in the background, and stop
+the generator once received. Since this requires receiving data from the socket, it can
+lead to data loss if the application is attempting to read from the same socket
+simultaneously.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>To prevent data loss, by default, <code class="docutils literal notranslate"><span class="pre">websocket_stream</span></code> will raise an
+exception if it receives any data while listening for client disconnects. If
+incoming data should be ignored, <code class="docutils literal notranslate"><span class="pre">allow_data_discard</span></code> should be set to <code class="docutils literal notranslate"><span class="pre">True</span></code></p>
+</div>
+<p>If receiving data while streaming is desired,
+<a class="reference internal" href="../reference/handlers.html#litestar.handlers.send_websocket_stream" title="litestar.handlers.send_websocket_stream"><code class="xref py py-func docutils literal notranslate"><span class="pre">send_websocket_stream()</span></code></a> can be configured to not listen for
+disconnects by setting <code class="docutils literal notranslate"><span class="pre">listen_for_disconnect=False</span></code>.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>When using <code class="docutils literal notranslate"><span class="pre">listen_for_disconnect=False</span></code>, the application needs to ensure the
+disconnect event is received elsewhere, otherwise the stream will only terminate
+when the generator is exhausted</p>
+</div>
+</section>
+</section>
+<section id="combining-streaming-and-receiving-data">
+<h2>Combining streaming and receiving data<a class="headerlink" href="#combining-streaming-and-receiving-data" title="Permalink to this heading">#</a></h2>
+<p>To stream and receive data concurrently, the stream can be set up manually using
+<a class="reference internal" href="../reference/handlers.html#litestar.handlers.send_websocket_stream" title="litestar.handlers.send_websocket_stream"><code class="xref py py-func docutils literal notranslate"><span class="pre">send_websocket_stream()</span></code></a> in combination with either a regular
+<a class="reference internal" href="../reference/handlers.html#litestar.handlers.websocket" title="litestar.handlers.websocket"><code class="xref py py-class docutils literal notranslate"><span class="pre">websocket</span></code></a> handler or a WebSocket listener.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-25" name="sd-tab-set-11" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-25">
+websocket_listener</label><div class="sd-tab-content docutils">
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-27" name="sd-tab-set-12" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-27">
+Python 3.8+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">AsyncGenerator</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">websocket_listener</span>
+<span class="kn">from</span> <span class="nn">litestar.handlers</span> <span class="kn">import</span> <span class="n">send_websocket_stream</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">listener_lifespan</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">handle_stream</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="p">{</span><span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()}</span>
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+
+    <span class="n">task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">send_websocket_stream</span><span class="p">(</span><span class="n">socket</span><span class="o">=</span><span class="n">socket</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="n">handle_stream</span><span class="p">()))</span>
+    <span class="k">yield</span>
+    <span class="n">task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+    <span class="k">await</span> <span class="n">task</span>
+
+
+<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">connection_lifespan</span><span class="o">=</span><span class="n">listener_lifespan</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">socket</span><span class="o">.</span><span class="n">client</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">handler</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<input checked="checked" id="sd-tab-item-28" name="sd-tab-set-12" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-28">
+Python 3.9+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">AsyncGenerator</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">websocket_listener</span>
+<span class="kn">from</span> <span class="nn">litestar.handlers</span> <span class="kn">import</span> <span class="n">send_websocket_stream</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">listener_lifespan</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">handle_stream</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="p">{</span><span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()}</span>
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+
+    <span class="n">task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">send_websocket_stream</span><span class="p">(</span><span class="n">socket</span><span class="o">=</span><span class="n">socket</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="n">handle_stream</span><span class="p">()))</span>
+    <span class="k">yield</span>
+    <span class="n">task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+    <span class="k">await</span> <span class="n">task</span>
+
+
+<span class="nd">@websocket_listener</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="n">connection_lifespan</span><span class="o">=</span><span class="n">listener_lifespan</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">socket</span><span class="o">.</span><span class="n">client</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">data</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">handler</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<input id="sd-tab-item-26" name="sd-tab-set-11" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-26">
+websocket handler</label><div class="sd-tab-content docutils">
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-29" name="sd-tab-set-13" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-29">
+Python 3.8+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">AsyncGenerator</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">websocket</span>
+<span class="kn">from</span> <span class="nn">litestar.handlers</span> <span class="kn">import</span> <span class="n">send_websocket_stream</span>
+
+
+<span class="nd">@websocket</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">handle_stream</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="p">{</span><span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()}</span>
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">handle_receive</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">socket</span><span class="o">.</span><span class="n">iter_json</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">socket</span><span class="o">.</span><span class="n">client</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">event</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">with</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">TaskGroup</span><span class="p">()</span> <span class="k">as</span> <span class="n">tg</span><span class="p">:</span>
+        <span class="n">tg</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">send_websocket_stream</span><span class="p">(</span><span class="n">socket</span><span class="o">=</span><span class="n">socket</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="n">handle_stream</span><span class="p">()))</span>
+        <span class="n">tg</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">handle_receive</span><span class="p">())</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">handler</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<input checked="checked" id="sd-tab-item-30" name="sd-tab-set-13" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-30">
+Python 3.9+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">AsyncGenerator</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">WebSocket</span><span class="p">,</span> <span class="n">websocket</span>
+<span class="kn">from</span> <span class="nn">litestar.handlers</span> <span class="kn">import</span> <span class="n">send_websocket_stream</span>
+
+
+<span class="nd">@websocket</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="n">socket</span><span class="p">:</span> <span class="n">WebSocket</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">await</span> <span class="n">socket</span><span class="o">.</span><span class="n">accept</span><span class="p">()</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">handle_stream</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="p">{</span><span class="s2">&quot;time&quot;</span><span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()}</span>
+            <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">handle_receive</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">socket</span><span class="o">.</span><span class="n">iter_json</span><span class="p">():</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">socket</span><span class="o">.</span><span class="n">client</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">event</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">with</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">TaskGroup</span><span class="p">()</span> <span class="k">as</span> <span class="n">tg</span><span class="p">:</span>
+        <span class="n">tg</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">send_websocket_stream</span><span class="p">(</span><span class="n">socket</span><span class="o">=</span><span class="n">socket</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="n">handle_stream</span><span class="p">()))</span>
+        <span class="n">tg</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">handle_receive</span><span class="p">())</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">([</span><span class="n">handler</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="transport-modes">
+<h2>Transport modes<a class="headerlink" href="#transport-modes" title="Permalink to this heading">#</a></h2>
+<p>WebSockets have two transport modes: <code class="docutils literal notranslate"><span class="pre">text</span></code> and <code class="docutils literal notranslate"><span class="pre">binary</span></code>. They dictate how bytes are
+transferred over the wire and can be set independently from another, i.e. a socket can
+send <code class="docutils literal notranslate"><span class="pre">binary</span></code> and receive <code class="docutils literal notranslate"><span class="pre">text</span></code></p>
+<p>It may seem intuitive that <code class="docutils literal notranslate"><span class="pre">text</span></code> and <code class="docutils literal notranslate"><span class="pre">binary</span></code> should map to <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> and
+<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bytes</span></code></a> respectively, but this is not the case. WebSockets can receive and
+send data in any format, independently of the mode. The mode only affects how the
+bytes are handled during transport (i.e. on the protocol level). In most cases the
+default mode - <code class="docutils literal notranslate"><span class="pre">text</span></code> - is all that’s needed. Binary transport is usually employed
+when sending binary blobs that don’t have a meaningful string representation, such
+as images.</p>
 </section>
 </section>
 
@@ -2110,18 +2545,30 @@ class on multiple layers, the layer closest to the route handler will take prece
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#receiving-data">Receiving data</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sending-data">Sending data</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transport-modes">Transport modes</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-the-receive-mode">Setting the receive mode</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-the-send-mode">Setting the send mode</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#websocket-listeners">WebSocket Listeners</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#receiving-data">Receiving data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#sending-data">Sending data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-transport-modes">Setting transport modes</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#receive-mode">Receive mode</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#send-mode">Send mode</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#dependency-injection">Dependency injection</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#interacting-with-the-websocket-directly">Interacting with the WebSocket directly</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#customising-connection-acceptance">Customising connection acceptance</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#class-based-websocket-handling">Class based WebSocket handling</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-websocket">Custom WebSocket</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#dependency-injection">Dependency injection</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#interacting-with-the-websocket-directly">Interacting with the WebSocket directly</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#customising-connection-acceptance">Customising connection acceptance</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#class-based-websocket-handling">Class based WebSocket handling</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-websocket">Custom WebSocket</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#websocket-streams">WebSocket Streams</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#serialization">Serialization</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id1">Dependency Injection</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#id2">Interacting with the WebSocket directly</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#receiving-data-while-streaming">Receiving data while streaming</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#combining-streaming-and-receiving-data">Combining streaming and receiving data</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transport-modes">Transport modes</a></li>
 </ul>
   </nav></div>
 
