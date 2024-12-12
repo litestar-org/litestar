@@ -4,6 +4,7 @@ import inspect
 import logging
 import os
 import warnings
+from collections import defaultdict
 from contextlib import (
     AbstractAsyncContextManager,
     AsyncExitStack,
@@ -32,6 +33,8 @@ from litestar.exceptions import (
     NoRouteMatchFoundException,
     ImproperlyConfiguredException,
 )
+from litestar.handlers import HTTPRouteHandler, WebsocketRouteHandler
+from litestar.handlers.http_handlers._options import create_options_handler
 from litestar.logging.config import LoggingConfig, get_logger_placeholder
 from litestar.middleware._internal.cors import CORSMiddleware
 from litestar.openapi.config import OpenAPIConfig
@@ -45,9 +48,10 @@ from litestar.plugins import (
 )
 from litestar.plugins.base import CLIPlugin
 from litestar.router import Router
+from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute, BaseRoute
 from litestar.stores.registry import StoreRegistry
 from litestar.types import Empty, TypeDecodersSequence
-from litestar.types.internal_types import PathParameterDefinition, TemplateConfigType
+from litestar.types.internal_types import PathParameterDefinition, TemplateConfigType, RouteHandlerMapItem
 from litestar.utils import deprecated, ensure_async_callable, join_paths, unique, find_index
 from litestar.utils.dataclass import extract_dataclass_items
 from litestar.utils.predicates import is_async_callable
@@ -67,7 +71,6 @@ if TYPE_CHECKING:
     from litestar.openapi.spec import SecurityRequirement
     from litestar.openapi.spec.open_api import OpenAPI
     from litestar.response import Response
-    from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute, BaseRoute
     from litestar.stores.base import Store
     from litestar.types import (
         AfterExceptionHookHandler,
@@ -672,9 +675,42 @@ class Litestar(Router):
         """
         return cls(**dict(extract_dataclass_items(config)))
 
+    @property
+    def route_handler_method_map(self) -> dict[str, RouteHandlerMapItem]:
+        """Map route paths to :class:`~litestar.types.internal_types.RouteHandlerMapItem`
+
+        Returns:
+             A dictionary mapping paths to route handlers
+        """
+        route_map: defaultdict[str, RouteHandlerMapItem] = defaultdict(dict)
+        for route in self.routes:
+            if isinstance(route, HTTPRoute):
+                route_map[route.path] = route.route_handler_map  # type: ignore[assignment]
+            else:
+                route_map[route.path]["websocket" if isinstance(route, WebSocketRoute) else "asgi"] = (
+                    route.route_handler
+                )
+
+        return route_map
+
+    @classmethod
+    def get_route_handler_map(
+        cls,
+        value: RouteHandlerType | Router,
+    ) -> dict[str, RouteHandlerMapItem]:
+        """Map route handlers to HTTP methods."""
+        if isinstance(value, Litestar):
+            return value.route_handler_method_map
+
+        if isinstance(value, HTTPRouteHandler):
+            return {path: {http_method: value for http_method in value.http_methods} for path in value.paths}
+
+        return {
+            path: {"websocket" if isinstance(value, WebsocketRouteHandler) else "asgi": value} for path in value.paths
+        }
+
     def _finalize_routes(self, value: ControllerRouterHandler) -> list[BaseRoute]:
         from litestar.handlers import HTTPRouteHandler
-        from litestar.router import _maybe_add_options_handler
         from litestar.routes import HTTPRoute, WebSocketRoute, ASGIRoute, BaseRoute
 
         validated_value = value
@@ -917,3 +953,14 @@ class Litestar(Router):
             None
         """
         self.event_emitter.emit(event_id, *args, **kwargs)
+
+
+def _maybe_add_options_handler(
+    path: str, http_handlers: list[HTTPRouteHandler], root: Router
+) -> list[HTTPRouteHandler]:
+    handler_methods = {method for handler in http_handlers for method in handler.http_methods}
+    if "OPTIONS" not in handler_methods:
+        options_handler = create_options_handler(path=path, allow_methods={*handler_methods, "OPTIONS"})  # pyright: ignore
+        options_handler = options_handler.merge(root)
+        return [*http_handlers, options_handler]
+    return http_handlers

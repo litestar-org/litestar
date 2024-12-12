@@ -383,19 +383,11 @@ class WebsocketListener(ABC):
     default websocket class.
     """
 
-    def __init__(self, owner: Router) -> None:
-        """Initialize a WebsocketListener instance.
-
-        Args:
-            owner: The :class:`Router <.router.Router>` instance that owns this listener.
-        """
-        self._owner = owner
-
     def to_handler(self) -> WebsocketListenerRouteHandler:
         on_accept = self.on_accept if self.on_accept != WebsocketListener.on_accept else None
         on_disconnect = self.on_disconnect if self.on_disconnect != WebsocketListener.on_disconnect else None
 
-        handler = WebsocketListenerRouteHandler(
+        return WebsocketListenerRouteHandler(
             dependencies=self.dependencies,
             dto=self.dto,
             exception_handlers=self.exception_handlers,
@@ -415,8 +407,6 @@ class WebsocketListener(ABC):
             websocket_class=self.websocket_class,
             fn=self.on_receive,
         )
-        handler.owner = self._owner
-        return handler
 
     def on_accept(self, *args: Any, **kwargs: Any) -> Any:
         """Called after a :class:`WebSocket <.connection.WebSocket>` connection

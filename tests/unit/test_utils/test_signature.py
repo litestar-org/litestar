@@ -206,7 +206,7 @@ class GenericController(Controller, Generic[T]):
         return type(f"GenericController[{model_class.__name__}", (cls,), cls_dict)
 
     def __init__(self, owner: Router) -> None:
-        super().__init__(owner)
+        super().__init__()
         self.signature_namespace[T] = self.model_class  # type: ignore[misc]
 
 
