@@ -80,7 +80,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
         )
 
     def merge(self, other: Controller | Router) -> WebsocketRouteHandler:
-        return WebsocketRouteHandler(
+        return type(self)(
             path=[join_paths([other.path, p]) for p in self.paths],
             fn=self.fn,
             dependencies={**(other.dependencies or {}), **self.dependencies},

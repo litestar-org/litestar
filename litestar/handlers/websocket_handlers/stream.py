@@ -13,10 +13,12 @@ from litestar.handlers.websocket_handlers.route_handler import WebsocketRouteHan
 from litestar.types import Empty
 from litestar.types.builtin_types import NoneType
 from litestar.typing import FieldDefinition
+from litestar.utils import join_paths
+from litestar.utils.empty import value_or_default
 from litestar.utils.signature import ParsedSignature
 
 if TYPE_CHECKING:
-    from litestar import Litestar, WebSocket
+    from litestar import Litestar, WebSocket, Controller, Router
     from litestar.dto import AbstractDTO
     from litestar.routes import BaseRoute
     from litestar.types import Dependencies, EmptyType, ExceptionHandler, Guard, Middleware, TypeEncodersMap
@@ -211,11 +213,42 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
     __slots__ = ("_ws_stream_options",)
     _ws_stream_options: _WebSocketStreamOptions
 
-    def on_registration(self, app: Litestar, route: BaseRoute) -> None:
+    def _validate_handler_function(self) -> None:
+        """Validate the route handler function once it's set by inspecting its return annotations."""
+        # super(BaseRouteHandler)._validate_handler_function()
+        pass
+        # if not self.parsed_fn_signature.return_type.is_subclass_of(AsyncGenerator):
+        #     raise ImproperlyConfiguredException(
+        #         f"Route handler {self}: 'websocket_stream' handlers must return an "
+        #         f"'AsyncGenerator', not {type(self.parsed_fn_signature.return_type.raw)!r}"
+        #     )
+
+    # def merge(self, other: Controller | Router) -> WebsocketRouteHandler:
+    #     return WebsocketRouteHandler(
+    #         path=[join_paths([other.path, p]) for p in self.paths],
+    #         fn=self.fn,
+    #         dependencies={**(other.dependencies or {}), **self.dependencies},
+    #         dto=value_or_default(self.dto, other.dto),
+    #         return_dto=value_or_default(self.return_dto, other.return_dto),
+    #         exception_handlers={**(other.exception_handlers or {}), **self.exception_handlers},
+    #         guards=[*(other.guards or []), *self.guards],
+    #         middleware=[*(other.middleware or ()), *self.middleware],
+    #         name=self.name,
+    #         opt={**(other.opt or {}), **(self.opt or {})},
+    #         signature_namespace={**other.signature_namespace, **self.signature_namespace},
+    #         signature_types=getattr(other, "signature_types", None),
+    #         type_decoders=(*(other.type_decoders or ()), *self.type_decoders),
+    #         type_encoders={**(other.type_encoders or {}), **self.type_encoders},
+    #         websocket_class=self.websocket_class or other.websocket_class,
+    #         parameters={**other.parameters, **self.parameters},
+    #     )
+
+    def on_registration(self, route: BaseRoute, app: Litestar) -> None:
+        self._app = app
         self._ws_stream_options = self.opt["stream_options"]
 
         parsed_handler_signature = parsed_stream_fn_signature = ParsedSignature.from_fn(
-            self.fn, self.resolve_signature_namespace()
+            self.fn, self._resolve_signature_namespace()
         )
 
         if not parsed_stream_fn_signature.return_type.is_subclass_of(AsyncGenerator):
@@ -292,7 +325,7 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
 
         self.fn = handler_fn
 
-        super().on_registration(app, route)
+        super().on_registration(route, app)
 
 
 class _WebSocketStreamOptions:
