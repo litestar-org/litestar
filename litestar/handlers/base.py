@@ -36,7 +36,7 @@ if TYPE_CHECKING:
     from litestar.dto import AbstractDTO
     from litestar.router import Router
     from litestar.routes import BaseRoute
-    from litestar.types import AsyncAnyCallable, ExceptionHandler
+    from litestar.types import AsyncAnyCallable
     from litestar.types.empty import EmptyType
 
 __all__ = ("BaseRouteHandler",)
@@ -387,19 +387,6 @@ class BaseRouteHandler:
         self._check_registered()
         return self.exception_handlers
 
-    def _resolve_opts(self) -> None:
-        """Build the route handler opt dictionary by going from top to bottom.
-
-        When merging keys from multiple layers, if the same key is defined by multiple layers, the value from the
-        layer closest to the response handler will take precedence.
-        """
-
-        opt: dict[str, Any] = {}
-        for layer in self._ownership_layers:
-            opt.update(layer.opt or {})  # pyright: ignore
-
-        self.opt = opt
-
     def _resolve_signature_namespace(self) -> dict[str, Any]:
         """Build the route handler signature namespace dictionary by going from top to bottom.
 
@@ -509,7 +496,6 @@ class BaseRouteHandler:
         self._finalize_dependencies(app=app)
         self.resolve_data_dto(app=app)
         self.resolve_return_dto(app=app)
-        self._resolve_opts()
 
     def _validate_handler_function(self, app: Litestar | None = None) -> None:
         """Validate the route handler function once set by inspecting its return annotations."""
