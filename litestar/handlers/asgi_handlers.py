@@ -148,7 +148,7 @@ class ASGIRouteHandler(BaseRouteHandler):
                 None
         """
 
-        if self._resolve_guards():
+        if self.guards:
             await self.authorize_connection(connection=connection)
 
         await self.fn(scope=connection.scope, receive=connection.receive, send=connection.send)

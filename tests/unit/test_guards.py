@@ -95,7 +95,7 @@ def test_guards_layering_for_same_route_handler() -> None:
         len(
             app.asgi_router.root_route_map_node.children["/http"]
             .asgi_handlers["GET"][1]  # type: ignore[arg-type]
-            ._resolved_guards
+            .guards
         )
         == 2
     )
@@ -103,7 +103,7 @@ def test_guards_layering_for_same_route_handler() -> None:
         len(
             app.asgi_router.root_route_map_node.children["/router/http"]
             .asgi_handlers["GET"][1]  # type: ignore[arg-type]
-            ._resolved_guards
+            .guards
         )
         == 3
     )
