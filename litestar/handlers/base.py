@@ -36,7 +36,7 @@ if TYPE_CHECKING:
     from litestar.dto import AbstractDTO
     from litestar.router import Router
     from litestar.routes import BaseRoute
-    from litestar.types import AnyCallable, AsyncAnyCallable, ExceptionHandler
+    from litestar.types import AsyncAnyCallable, ExceptionHandler
     from litestar.types.empty import EmptyType
 
 __all__ = ("BaseRouteHandler",)
@@ -53,7 +53,6 @@ class BaseRouteHandler:
         "_parsed_fn_signature",
         "_parsed_return_field",
         "_resolved_data_dto",
-        "_resolved_dependencies",
         "_parameter_field_definitions",
         "_resolved_return_dto",
         "_resolved_signature_namespace",
@@ -128,7 +127,6 @@ class BaseRouteHandler:
         self._parsed_return_field: FieldDefinition | EmptyType = Empty
         self._parsed_data_field: FieldDefinition | None | EmptyType = Empty
         self._resolved_data_dto: type[AbstractDTO] | None | EmptyType = Empty
-        self._resolved_dependencies: dict[str, Provide] | EmptyType = Empty
         self._parameter_field_definitions: dict[str, FieldDefinition] | EmptyType = Empty
         self._resolved_return_dto: type[AbstractDTO] | None | EmptyType = Empty
         self._resolved_signature_namespace: dict[str, Any] | EmptyType = Empty
@@ -136,7 +134,14 @@ class BaseRouteHandler:
         self._resolved_type_encoders: TypeEncodersMap | EmptyType = Empty
         self._resolved_signature_model: type[SignatureModel] | EmptyType = Empty
 
-        self.dependencies = dependencies or {}
+        self.dependencies = (
+            {
+                key: provider if isinstance(provider, Provide) else Provide(provider)
+                for key, provider in dependencies.items()
+            }
+            if dependencies
+            else {}
+        )
         self.dto = dto
         self.exception_handlers = exception_handlers or {}
         self.guards = tuple(ensure_async_callable(guard) for guard in guards) if guards else ()
@@ -213,7 +218,7 @@ class BaseRouteHandler:
         """
         if self._resolved_signature_model is Empty:
             self._resolved_signature_model = SignatureModel.create(
-                dependency_name_set=self._dependency_name_set,
+                dependency_name_set=set(self.dependencies.keys()),
                 fn=cast("AnyCallable", self.fn),
                 parsed_signature=self.parsed_fn_signature,
                 data_dto=self.resolve_data_dto(),
@@ -262,12 +267,6 @@ class BaseRouteHandler:
         return get_name(unwrap_partial(self.fn))
 
     @property
-    def _dependency_name_set(self) -> set[str]:
-        """Set of all dependency names provided in the handler's ownership layers."""
-        layered_dependencies = (layer.dependencies or {} for layer in self._ownership_layers)
-        return {name for layer in layered_dependencies for name in layer}  # pyright: ignore
-
-    @property
     def _ownership_layers(self) -> list[Self | Controller | Router]:
         """Return the handler layers from the app down to the route handler.
 
@@ -312,51 +311,55 @@ class BaseRouteHandler:
         """Return all guards in the handlers scope, starting from highest to current layer."""
         return self.guards
 
-    def resolve_dependencies(self, app: Litestar | None = None) -> dict[str, Provide]:
+    @deprecated("3.0", removal_in="4.0", alternative=".dependencies attribute")
+    def resolve_dependencies(self) -> dict[str, Provide]:
         """Return all dependencies correlating to handler function's kwargs that exist in the handler's scope."""
-        if self._resolved_dependencies is Empty:
-            self._resolved_dependencies = {}
-            for layer in self._ownership_layers:
-                for key, provider in (layer.dependencies or {}).items():
-                    self._resolved_dependencies[key] = self._resolve_dependency(key=key, provider=provider, app=app)
+        return self.dependencies
 
-        return self._resolved_dependencies
+    def _finalize_dependencies(self, app: Litestar | None = None):
+        dependencies: dict[str, Provide] = {}
 
-    def _resolve_dependency(
-        self,
-        key: str,
-        provider: Provide | AnyCallable,
-        app: Litestar | None = None,
-    ) -> Provide:
-        if not isinstance(provider, Provide):
-            provider = Provide(provider)
+        # keep track of which providers are available for each dependency
+        provider_keys: dict[Any, str] = {}
 
-        if self._resolved_dependencies is not Empty:  # pragma: no cover
-            self._validate_dependency_is_unique(dependencies=self._resolved_dependencies, key=key, provider=provider)
-
-        if not getattr(provider, "parsed_fn_signature", None):
-            dependency = unwrap_partial(provider.dependency)
-            plugin: DIPlugin | None = None
-            if app:
-                plugin = next(
-                    (p for p in app.plugins.di if isinstance(p, DIPlugin) and p.has_typed_init(dependency)),
-                    None,
+        for key, provider in self.dependencies.items():
+            # ensure that if a provider for this dependency has already been registered,
+            # registering this provider again is only allowed as an override, i.e. with
+            # the same key
+            if (existing_key := provider_keys.get(provider.dependency)) and existing_key != key:
+                raise ImproperlyConfiguredException(
+                    f"Provider for {provider.dependency!r} with key {key!r} is already defined under a different key "
+                    f"{existing_key!r}. If you wish to override a provider, it must have the same key."
                 )
-            if plugin:
-                signature, init_type_hints = plugin.get_typed_init(dependency)
-                provider.parsed_fn_signature = ParsedSignature.from_signature(signature, init_type_hints)
-            else:
-                provider.parsed_fn_signature = ParsedSignature.from_fn(dependency, self._resolve_signature_namespace())
 
-        if not getattr(provider, "signature_model", None):
-            provider.signature_model = SignatureModel.create(
-                dependency_name_set=self._dependency_name_set,
-                fn=provider.dependency,
-                parsed_signature=provider.parsed_fn_signature,
-                data_dto=self.resolve_data_dto(app=app),
-                type_decoders=self.type_decoders,
-            )
-        return provider
+            provider_keys[provider.dependency] = key
+
+            # TODO: Move this part to 'Provide'
+            if not getattr(provider, "parsed_fn_signature", None):
+                dependency = unwrap_partial(provider.dependency)
+                plugin: DIPlugin | None = None
+                if app:
+                    plugin = next(
+                        (p for p in app.plugins.di if isinstance(p, DIPlugin) and p.has_typed_init(dependency)),
+                        None,
+                    )
+                if plugin:
+                    signature, init_type_hints = plugin.get_typed_init(dependency)
+                    provider.parsed_fn_signature = ParsedSignature.from_signature(signature, init_type_hints)
+                else:
+                    provider.parsed_fn_signature = ParsedSignature.from_fn(
+                        dependency, self._resolve_signature_namespace()
+                    )
+
+            if not getattr(provider, "signature_model", None):
+                provider.signature_model = SignatureModel.create(
+                    dependency_name_set=set(self.dependencies.keys()),
+                    fn=provider.dependency,
+                    parsed_signature=provider.parsed_fn_signature,
+                    data_dto=self.resolve_data_dto(app=app),
+                    type_decoders=self.type_decoders,
+                )
+            dependencies[key] = provider
 
     def resolve_middleware(self) -> list[Middleware]:
         """Build the middleware stack for the RouteHandler and return it.
@@ -481,16 +484,6 @@ class BaseRouteHandler:
         for guard in self.guards:
             await guard(connection, self)  # type: ignore[misc]
 
-    @staticmethod
-    def _validate_dependency_is_unique(dependencies: dict[str, Provide], key: str, provider: Provide) -> None:
-        """Validate that a given provider has not been already defined under a different key."""
-        for dependency_key, value in dependencies.items():
-            if provider == value:
-                raise ImproperlyConfiguredException(
-                    f"Provider for key {key} is already defined under the different key {dependency_key}. "
-                    f"If you wish to override a provider, it must have the same key."
-                )
-
     def on_registration(self, route: BaseRoute, app: Litestar) -> None:
         """Called once per handler when the app object is instantiated.
 
@@ -501,7 +494,7 @@ class BaseRouteHandler:
             None
         """
         self._validate_handler_function(app=app)
-        self.resolve_dependencies(app=app)
+        self._finalize_dependencies(app=app)
         self.resolve_data_dto(app=app)
         self.resolve_return_dto(app=app)
         self.resolve_middleware()
@@ -541,7 +534,7 @@ class BaseRouteHandler:
         return KwargsModel.create_for_signature_model(
             signature_model=self._signature_model,
             parsed_signature=self.parsed_fn_signature,
-            dependencies=self.resolve_dependencies(),
+            dependencies=self.dependencies,
             path_parameters=set(path_parameters),
             layered_parameters=self.parameter_field_definitions,
         )
