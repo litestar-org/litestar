@@ -15,7 +15,7 @@ def test_resolve_dependencies_without_provide() -> None:
     async def handler() -> None:
         pass
 
-    assert handler.resolve_dependencies() == {"foo": Provide(foo), "bar": Provide(bar)}
+    assert handler.dependencies == {"foo": Provide(foo), "bar": Provide(bar)}
 
 
 def function_factory() -> Callable[[], Awaitable[None]]:
@@ -46,7 +46,7 @@ def test_resolve_from_layers() -> None:
     assert handler_map
     handler = handler_map["handler"]
 
-    assert handler.resolve_dependencies() == {
+    assert handler.dependencies == {
         "app": Provide(app_dependency),
         "router": Provide(router_dependency),
         "controller": Provide(controller_dependency),
@@ -65,5 +65,5 @@ def test_resolve_dependencies_cached() -> None:
     async def handler_2() -> None:
         pass
 
-    assert handler.resolve_dependencies() is handler.resolve_dependencies()
-    assert handler_2.resolve_dependencies() is handler_2.resolve_dependencies()
+    assert handler.resolve_dependencies() is handler.dependencies is handler.dependencies
+    assert handler_2.resolve_dependencies() is handler_2.dependencies is handler_2.dependencies
