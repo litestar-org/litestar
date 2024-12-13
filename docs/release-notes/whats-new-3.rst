@@ -18,30 +18,10 @@ Imports
 +====================================================+========================================================================+
 | **SECTION**                                                                                                                 |
 +----------------------------------------------------+------------------------------------------------------------------------+
-+ Put your shit here from v2                         | Put your shit here from v3                                             |
+| Put your shit here from v2                         | Put your shit here from v3                                             |
 +----------------------------------------------------+------------------------------------------------------------------------+
 
 
-
-Removal of ``StaticFileConfig``
--------------------------------
-
-The ``StaticFilesConfig`` has been removed, alongside these related parameters and
-functions:
-
-- ``Litestar.static_files_config``
-- ``Litestar.url_for_static_asset``
-- ``Request.url_for_static_asset``
-
-:func:`create_static_files_router` is a drop-in replacement for ``StaticFilesConfig``,
-and can simply be added to the ``route_handlers`` like any other regular handler.
-
-Usage of ``url_for_static_assets`` should be replaced with a ``url_for("static", ...)``
-call.
-
-
-Other Changes
--------------
 Removal of ``StaticFileConfig``
 -------------------------------
 
@@ -112,7 +92,6 @@ The ``OpenAPIConfig.enabled_endpoints`` attribute is no longer available in vers
 enabled a set of endpoints that would serve different OpenAPI UIs. In the new version, only the ``openapi.json``
 endpoint is enabled by default, alongside the ``Scalar`` UI plugin as the default.
 
-Make more sections as they are appropriate :)
 To adapt to this change, you should explicitly configure any additional endpoints you need by properly setting up the
 necessary plugins within the :attr:`OpenAPIConfig.render_plugins` parameter.
 
@@ -139,7 +118,6 @@ replace the usages of ``app`` with ``request.app``.
 Deprecated scope state utilities removed
 ----------------------------------------
 
-Make more sections as they are appropriate :)
 Litestar has previously made available utilities for storing and retrieving data in the ASGI scope state. These
 utilities have been removed in version 3.0.0. If you need to store data in the ASGI scope state, you should use do so
 using a namespace that is unique to your application and unlikely to conflict with other applications.
