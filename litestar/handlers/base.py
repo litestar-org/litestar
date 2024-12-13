@@ -56,8 +56,6 @@ class BaseRouteHandler:
         "_parameter_field_definitions",
         "_resolved_return_dto",
         "_resolved_signature_namespace",
-        "_resolved_type_decoders",
-        "_resolved_type_encoders",
         "_resolved_signature_model",
         "_registered",
         "dependencies",
@@ -131,8 +129,6 @@ class BaseRouteHandler:
         self._parameter_field_definitions: dict[str, FieldDefinition] | EmptyType = Empty
         self._resolved_return_dto: type[AbstractDTO] | None | EmptyType = Empty
         self._resolved_signature_namespace: dict[str, Any] | EmptyType = Empty
-        self._resolved_type_decoders: TypeDecodersSequence | EmptyType = Empty
-        self._resolved_type_encoders: TypeEncodersMap | EmptyType = Empty
         self._resolved_signature_model: type[SignatureModel] | EmptyType = Empty
         self._registered = False
 
