@@ -65,5 +65,8 @@ def test_resolve_dependencies_cached() -> None:
     async def handler_2() -> None:
         pass
 
+    handler._registered = True
+    handler_2._registered = True
+
     assert handler.resolve_dependencies() is handler.dependencies is handler.dependencies
     assert handler_2.resolve_dependencies() is handler_2.dependencies is handler_2.dependencies
