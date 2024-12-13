@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, Callable, Iterable, Mapping, Sequence, ca
 from litestar._signature import SignatureModel
 from litestar.di import Provide
 from litestar.dto import DTOData
-from litestar.exceptions import ImproperlyConfiguredException
+from litestar.exceptions import ImproperlyConfiguredException, LitestarException
 from litestar.plugins import DIPlugin
 from litestar.serialization import default_deserializer, default_serializer
 from litestar.types import (
@@ -59,6 +59,7 @@ class BaseRouteHandler:
         "_resolved_type_decoders",
         "_resolved_type_encoders",
         "_resolved_signature_model",
+        "_registered",
         "dependencies",
         "dto",
         "exception_handlers",
@@ -133,6 +134,7 @@ class BaseRouteHandler:
         self._resolved_type_decoders: TypeDecodersSequence | EmptyType = Empty
         self._resolved_type_encoders: TypeEncodersMap | EmptyType = Empty
         self._resolved_signature_model: type[SignatureModel] | EmptyType = Empty
+        self._registered = False
 
         self.dependencies = (
             {
@@ -145,7 +147,7 @@ class BaseRouteHandler:
         self.dto = dto
         self.exception_handlers = exception_handlers or {}
         self.guards = tuple(ensure_async_callable(guard) for guard in guards) if guards else ()
-        self.middleware = middleware or ()
+        self.middleware = tuple(middleware) if middleware else ()
         self.name = name
         self.opt = dict(opt or {})
         self.opt.update(**kwargs)
@@ -274,6 +276,13 @@ class BaseRouteHandler:
         """
         return [self]
 
+    def _check_registered(self) -> None:
+        if not self._registered:
+            raise LitestarException(
+                f"Handler {self!r}: Accessing this attribute is unsafe until the handler has been"
+                "registered with an application, as it may yield different results after registration."
+            )
+
     @deprecated("3.0", removal_in="4.0", alternative=".type_encoders attribute")
     def resolve_type_encoders(self) -> TypeEncodersMap:
         """Return a merged type_encoders mapping.
@@ -281,6 +290,7 @@ class BaseRouteHandler:
         Returns:
             A dict of type encoders
         """
+        self._check_registered()
         return self.type_encoders
 
     @deprecated("3.0", removal_in="4.0", alternative=".type_decoders attribute")
@@ -290,16 +300,19 @@ class BaseRouteHandler:
         Returns:
             A dict of type encoders
         """
+        self._check_registered()
         return self.type_decoders
 
     @deprecated("3.0", removal_in="4.0", alternative=".parameter_field_definitions property")
     def resolve_layered_parameters(self) -> dict[str, FieldDefinition]:
+        self._check_registered()
         return self.parameter_field_definitions
 
     @property
     def parameter_field_definitions(self) -> dict[str, FieldDefinition]:
         """Return all parameters declared above the handler."""
         if self._parameter_field_definitions is Empty:
+            self._check_registered()
             self._parameter_field_definitions = {
                 key: FieldDefinition.from_kwarg(name=key, annotation=parameter.annotation, kwarg_definition=parameter)
                 for key, parameter in self.parameters.items()
@@ -309,11 +322,13 @@ class BaseRouteHandler:
     @deprecated("3.0", removal_in="4.0", alternative=".guards attribute")
     def resolve_guards(self) -> tuple[Guard, ...]:
         """Return all guards in the handlers scope, starting from highest to current layer."""
+        self._check_registered()
         return self.guards
 
     @deprecated("3.0", removal_in="4.0", alternative=".dependencies attribute")
     def resolve_dependencies(self) -> dict[str, Provide]:
         """Return all dependencies correlating to handler function's kwargs that exist in the handler's scope."""
+        self._check_registered()
         return self.dependencies
 
     def _finalize_dependencies(self, app: Litestar | None = None):
@@ -361,16 +376,11 @@ class BaseRouteHandler:
                 )
             dependencies[key] = provider
 
-    def resolve_middleware(self) -> list[Middleware]:
-        """Build the middleware stack for the RouteHandler and return it.
-
-        The middlewares are added from top to bottom (``app -> router -> controller -> route handler``) and then
-        reversed.
-        """
-        resolved_middleware: list[Middleware] = []
-        for layer in self._ownership_layers:
-            resolved_middleware.extend(layer.middleware or [])  # pyright: ignore
-        return list(reversed(resolved_middleware))
+    @deprecated("3.0", removal_in="4.0", alternative=".middleware attribute")
+    def resolve_middleware(self) -> tuple[Middleware, ...]:
+        """Return registered middlewares"""
+        self._check_registered()
+        return self.middleware
 
     def resolve_exception_handlers(self) -> ExceptionHandlersMap:
         """Resolve the exception_handlers by starting from the route handler and moving up.
@@ -493,11 +503,17 @@ class BaseRouteHandler:
         Returns:
             None
         """
+        self._registered = True
+
+        # due to the way we're traversing over the app layers, the middleware stack is
+        # constructed in the wrong order (handler > application). reversing the order
+        # here is easier than handling it correctly at every intermediary step
+        self.middleware = tuple(reversed(self.middleware))
+
         self._validate_handler_function(app=app)
         self._finalize_dependencies(app=app)
         self.resolve_data_dto(app=app)
         self.resolve_return_dto(app=app)
-        self.resolve_middleware()
         self._resolve_opts()
 
     def _validate_handler_function(self, app: Litestar | None = None) -> None:
