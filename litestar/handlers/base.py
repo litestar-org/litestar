@@ -34,7 +34,6 @@ if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
     from litestar.controller import Controller
     from litestar.dto import AbstractDTO
-    from litestar.params import ParameterKwarg
     from litestar.router import Router
     from litestar.routes import BaseRoute
     from litestar.types import AnyCallable, AsyncAnyCallable, ExceptionHandler
@@ -55,7 +54,7 @@ class BaseRouteHandler:
         "_parsed_return_field",
         "_resolved_data_dto",
         "_resolved_dependencies",
-        "_resolved_layered_parameters",
+        "_parameter_field_definitions",
         "_resolved_return_dto",
         "_resolved_signature_namespace",
         "_resolved_type_decoders",
@@ -130,7 +129,7 @@ class BaseRouteHandler:
         self._parsed_data_field: FieldDefinition | None | EmptyType = Empty
         self._resolved_data_dto: type[AbstractDTO] | None | EmptyType = Empty
         self._resolved_dependencies: dict[str, Provide] | EmptyType = Empty
-        self._resolved_layered_parameters: dict[str, FieldDefinition] | EmptyType = Empty
+        self._parameter_field_definitions: dict[str, FieldDefinition] | EmptyType = Empty
         self._resolved_return_dto: type[AbstractDTO] | None | EmptyType = Empty
         self._resolved_signature_namespace: dict[str, Any] | EmptyType = Empty
         self._resolved_type_decoders: TypeDecodersSequence | EmptyType = Empty
@@ -276,7 +275,7 @@ class BaseRouteHandler:
         """
         return [self]
 
-    @deprecated("3.0", removal_in="4.0", alternative=".type_encoders property")
+    @deprecated("3.0", removal_in="4.0", alternative=".type_encoders attribute")
     def resolve_type_encoders(self) -> TypeEncodersMap:
         """Return a merged type_encoders mapping.
 
@@ -285,7 +284,7 @@ class BaseRouteHandler:
         """
         return self.type_encoders
 
-    @deprecated("3.0", removal_in="4.0", alternative=".type_decoders property")
+    @deprecated("3.0", removal_in="4.0", alternative=".type_decoders attribute")
     def resolve_type_decoders(self) -> TypeDecodersSequence:
         """Return a merged type_encoders mapping.
 
@@ -294,22 +293,21 @@ class BaseRouteHandler:
         """
         return self.type_decoders
 
+    @deprecated("3.0", removal_in="4.0", alternative=".parameter_field_definitions property")
     def resolve_layered_parameters(self) -> dict[str, FieldDefinition]:
+        return self.parameter_field_definitions
+
+    @property
+    def parameter_field_definitions(self) -> dict[str, FieldDefinition]:
         """Return all parameters declared above the handler."""
-        if self._resolved_layered_parameters is Empty:
-            parameter_kwargs: dict[str, ParameterKwarg] = {}
-
-            for layer in self._ownership_layers:
-                parameter_kwargs.update(getattr(layer, "parameters", {}) or {})
-
-            self._resolved_layered_parameters = {
+        if self._parameter_field_definitions is Empty:
+            self._parameter_field_definitions = {
                 key: FieldDefinition.from_kwarg(name=key, annotation=parameter.annotation, kwarg_definition=parameter)
-                for key, parameter in parameter_kwargs.items()
+                for key, parameter in self.parameters.items()
             }
+        return self._parameter_field_definitions
 
-        return self._resolved_layered_parameters
-
-    @deprecated("3.0", removal_in="4.0", alternative=".guards property")
+    @deprecated("3.0", removal_in="4.0", alternative=".guards attribute")
     def resolve_guards(self) -> tuple[Guard, ...]:
         """Return all guards in the handlers scope, starting from highest to current layer."""
         return self.guards
@@ -545,5 +543,5 @@ class BaseRouteHandler:
             parsed_signature=self.parsed_fn_signature,
             dependencies=self.resolve_dependencies(),
             path_parameters=set(path_parameters),
-            layered_parameters=self.resolve_layered_parameters(),
+            layered_parameters=self.parameter_field_definitions,
         )
