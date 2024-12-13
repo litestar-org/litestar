@@ -174,7 +174,6 @@ class WebsocketRouteHandler(BaseRouteHandler):
             await self.fn(**parsed_kwargs)
 
 
-
 def websocket(
     path: str | list[str] | None = None,
     *,
