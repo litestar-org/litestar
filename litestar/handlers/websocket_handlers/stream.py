@@ -218,7 +218,7 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
         self._ws_stream_options = self.opt["stream_options"]
 
         parsed_handler_signature = parsed_stream_fn_signature = ParsedSignature.from_fn(
-            self.fn, self._resolve_signature_namespace()
+            self.fn, self.signature_namespace
         )
 
         if not parsed_stream_fn_signature.return_type.is_subclass_of(AsyncGenerator):

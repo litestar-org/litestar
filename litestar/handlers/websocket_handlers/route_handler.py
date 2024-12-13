@@ -13,6 +13,7 @@ from litestar.types.builtin_types import NoneType
 from litestar.utils import join_paths
 from litestar.utils.empty import value_or_default
 from litestar.utils.predicates import is_async_callable
+from litestar.utils.signature import merge_signature_namespaces
 
 if TYPE_CHECKING:
     from litestar import Controller, Router, Litestar
@@ -92,7 +93,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
             middleware=[*(other.middleware or ()), *self.middleware],
             name=self.name,
             opt={**(other.opt or {}), **(self.opt or {})},
-            signature_namespace={**other.signature_namespace, **self.signature_namespace},
+            signature_namespace=merge_signature_namespaces(other.signature_namespace, self.signature_namespace),
             signature_types=getattr(other, "signature_types", None),
             type_decoders=(*(other.type_decoders or ()), *self.type_decoders),
             type_encoders={**(other.type_encoders or {}), **self.type_encoders},

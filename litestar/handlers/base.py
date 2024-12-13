@@ -55,7 +55,6 @@ class BaseRouteHandler:
         "_resolved_data_dto",
         "_parameter_field_definitions",
         "_resolved_return_dto",
-        "_resolved_signature_namespace",
         "_resolved_signature_model",
         "_registered",
         "dependencies",
@@ -128,7 +127,6 @@ class BaseRouteHandler:
         self._resolved_data_dto: type[AbstractDTO] | None | EmptyType = Empty
         self._parameter_field_definitions: dict[str, FieldDefinition] | EmptyType = Empty
         self._resolved_return_dto: type[AbstractDTO] | None | EmptyType = Empty
-        self._resolved_signature_namespace: dict[str, Any] | EmptyType = Empty
         self._resolved_signature_model: type[SignatureModel] | EmptyType = Empty
         self._registered = False
 
@@ -171,7 +169,7 @@ class BaseRouteHandler:
             middleware=[*(other.middleware or ()), *self.middleware],
             name=self.name,
             opt={**other.opt, **self.opt},
-            signature_namespace={**other.signature_namespace, **self.signature_namespace},
+            signature_namespace=merge_signature_namespaces(other.signature_namespace, self.signature_namespace),
             signature_types=other.signature_types,
             type_decoders=(*(other.type_decoders or ()), *self.type_decoders),
             type_encoders={**(other.type_encoders or {}), **self.type_encoders},
@@ -234,9 +232,7 @@ class BaseRouteHandler:
             A ParsedSignature instance
         """
         if self._parsed_fn_signature is Empty:
-            self._parsed_fn_signature = ParsedSignature.from_fn(
-                unwrap_partial(self.fn), self._resolve_signature_namespace()
-            )
+            self._parsed_fn_signature = ParsedSignature.from_fn(unwrap_partial(self.fn), self.signature_namespace)
 
         return self._parsed_fn_signature
 
@@ -358,9 +354,7 @@ class BaseRouteHandler:
                     signature, init_type_hints = plugin.get_typed_init(dependency)
                     provider.parsed_fn_signature = ParsedSignature.from_signature(signature, init_type_hints)
                 else:
-                    provider.parsed_fn_signature = ParsedSignature.from_fn(
-                        dependency, self._resolve_signature_namespace()
-                    )
+                    provider.parsed_fn_signature = ParsedSignature.from_fn(dependency, self.signature_namespace)
 
             if not getattr(provider, "signature_model", None):
                 provider.signature_model = SignatureModel.create(
@@ -387,20 +381,11 @@ class BaseRouteHandler:
         self._check_registered()
         return self.exception_handlers
 
-    def _resolve_signature_namespace(self) -> dict[str, Any]:
-        """Build the route handler signature namespace dictionary by going from top to bottom.
-
-        When merging keys from multiple layers, if the same key is defined by multiple layers, the value from the
-        layer closest to the response handler will take precedence.
-        """
-        if self._resolved_signature_namespace is Empty:
-            ns: dict[str, Any] = {}
-            for layer in self._ownership_layers:
-                merge_signature_namespaces(
-                    signature_namespace=ns, additional_signature_namespace=layer.signature_namespace
-                )
-            self._resolved_signature_namespace = ns
-        return self._resolved_signature_namespace
+    @deprecated("3.0", removal_in="4.0", alternative=".signature_namespace attribute")
+    def resolve_signature_namespace(self) -> dict[str, Any]:
+        """Build the route handler signature namespace dictionary by going from top to bottom"""
+        self._check_registered()
+        return self.signature_namespace
 
     def resolve_data_dto(self, app: Litestar | None = None) -> type[AbstractDTO] | None:
         """Resolve the data_dto by starting from the route handler and moving up.

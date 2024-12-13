@@ -27,7 +27,7 @@ from litestar.types import (
     TypeEncodersMap,
 )
 from litestar.utils import ensure_async_callable, join_paths
-from litestar.utils.signature import ParsedSignature, get_fn_type_hints
+from litestar.utils.signature import ParsedSignature, get_fn_type_hints, merge_signature_namespaces
 
 from ._utils import (
     ListenerHandler,
@@ -247,7 +247,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
             middleware=[*(other.middleware or ()), *self.middleware],
             name=self.name,
             opt={**(other.opt or {}), **(self.opt or {})},
-            signature_namespace={**other.signature_namespace, **self.signature_namespace},
+            signature_namespace=merge_signature_namespaces(other.signature_namespace, self.signature_namespace),
             signature_types=getattr(other, "signature_types", None),
             type_decoders=(*(other.type_decoders or ()), *self.type_decoders),
             type_encoders={**(other.type_encoders or {}), **self.type_encoders},
@@ -266,7 +266,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         super().on_registration(route, app)
 
     def _prepare_fn(self) -> ListenerHandler:
-        parsed_signature = ParsedSignature.from_fn(self.fn, self._resolve_signature_namespace())
+        parsed_signature = ParsedSignature.from_fn(self.fn, self.signature_namespace)
 
         if "data" not in parsed_signature.parameters:
             raise ImproperlyConfiguredException("Websocket listeners must accept a 'data' parameter")
@@ -282,13 +282,13 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         self._parsed_fn_signature = ParsedSignature.from_signature(
             create_handler_signature(parsed_signature.original_signature),
             fn_type_hints={
-                **get_fn_type_hints(self.fn, namespace=self._resolve_signature_namespace()),
-                **get_fn_type_hints(ListenerHandler.__call__, namespace=self._resolve_signature_namespace()),
+                **get_fn_type_hints(self.fn, namespace=self.signature_namespace),
+                **get_fn_type_hints(ListenerHandler.__call__, namespace=self.signature_namespace),
             },
         )
 
         return ListenerHandler(
-            listener=self, fn=self.fn, parsed_signature=parsed_signature, namespace=self._resolve_signature_namespace()
+            listener=self, fn=self.fn, parsed_signature=parsed_signature, namespace=self.signature_namespace
         )
 
     def _validate_handler_function(self, app: Litestar | None = None) -> None:
