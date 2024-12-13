@@ -1,9 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable, Mapping, Sequence
+from typing import TYPE_CHECKING, Any, Callable, Mapping, Sequence, Literal
+
+from mypy.plugin import Plugin
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers.base import BaseRouteHandler
+from litestar.plugins import PluginRegistry
 from litestar.types.builtin_types import NoneType
 from litestar.utils import join_paths
 from litestar.utils.empty import value_or_default
@@ -13,7 +16,7 @@ __all__ = ("ASGIRouteHandler", "asgi")
 
 
 if TYPE_CHECKING:
-    from litestar import Controller, Router
+    from litestar import Controller, Router, Litestar
     from litestar.connection import ASGIConnection
     from litestar.types import (
         AsyncAnyCallable,
@@ -95,9 +98,9 @@ class ASGIRouteHandler(BaseRouteHandler):
             is_mount=self.is_mount,
         )
 
-    def _validate_handler_function(self) -> None:
+    def _validate_handler_function(self, app: Litestar | None = None) -> None:
         """Validate the route handler function once it's set by inspecting its return annotations."""
-        super()._validate_handler_function()
+        super()._validate_handler_function(app=app)
 
         if not self.parsed_fn_signature.return_type.is_subclass_of(NoneType):
             raise ImproperlyConfiguredException("ASGI handler functions should return 'None'")

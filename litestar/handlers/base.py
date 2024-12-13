@@ -4,12 +4,11 @@ from copy import copy
 from functools import partial
 from typing import TYPE_CHECKING, Any, Callable, Iterable, Mapping, Sequence, cast
 
-from litestar.utils.deprecation import deprecated
 from litestar._signature import SignatureModel
 from litestar.di import Provide
 from litestar.dto import DTOData
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.plugins import DIPlugin, PluginRegistry
+from litestar.plugins import DIPlugin
 from litestar.serialization import default_deserializer, default_serializer
 from litestar.types import (
     Dependencies,
@@ -18,10 +17,12 @@ from litestar.types import (
     Guard,
     Middleware,
     TypeDecodersSequence,
-    TypeEncodersMap, ParametersMap,
+    TypeEncodersMap,
+    ParametersMap,
 )
 from litestar.typing import FieldDefinition
 from litestar.utils import ensure_async_callable, get_name, join_paths, normalize_path
+from litestar.utils.deprecation import deprecated
 from litestar.utils.empty import value_or_default
 from litestar.utils.helpers import unwrap_partial
 from litestar.utils.signature import ParsedSignature, add_types_to_signature_namespace, merge_signature_namespaces
@@ -76,7 +77,6 @@ class BaseRouteHandler:
         "type_decoders",
         "type_encoders",
         "parameters",
-        "_app",
     )
 
     def __init__(
@@ -159,7 +159,6 @@ class BaseRouteHandler:
         )
         self.fn = fn
         self.parameters = parameters or {}
-        self._app: Litestar | None = None
 
     def merge(self, other: Controller | Router) -> Self:
         return BaseRouteHandler(
@@ -280,16 +279,10 @@ class BaseRouteHandler:
         """
         return [self]
 
-    @property
-    def app(self) -> Litestar:
-        if self._app is None:
-            raise ValueError("no app")
-        return self._app
-
     @deprecated("3.0", removal_in="4.0", alternative=".type_encoders property")
     def resolve_type_encoders(self) -> TypeEncodersMap:
         """Return a merged type_encoders mapping.
-        
+
         Returns:
             A dict of type encoders
         """
@@ -333,26 +326,21 @@ class BaseRouteHandler:
 
         return self._resolved_guards
 
-    def _get_plugin_registry(self) -> PluginRegistry | None:
-        if self._app:
-            return self._app.plugins
-        return None
-
-    def resolve_dependencies(self) -> dict[str, Provide]:
+    def resolve_dependencies(self, app: Litestar | None = None) -> dict[str, Provide]:
         """Return all dependencies correlating to handler function's kwargs that exist in the handler's scope."""
-        plugin_registry = self._get_plugin_registry()
         if self._resolved_dependencies is Empty:
             self._resolved_dependencies = {}
             for layer in self._ownership_layers:
                 for key, provider in (layer.dependencies or {}).items():
-                    self._resolved_dependencies[key] = self._resolve_dependency(
-                        key=key, provider=provider, plugin_registry=plugin_registry
-                    )
+                    self._resolved_dependencies[key] = self._resolve_dependency(key=key, provider=provider, app=app)
 
         return self._resolved_dependencies
 
     def _resolve_dependency(
-        self, key: str, provider: Provide | AnyCallable, plugin_registry: PluginRegistry | None
+        self,
+        key: str,
+        provider: Provide | AnyCallable,
+        app: Litestar | None = None,
     ) -> Provide:
         if not isinstance(provider, Provide):
             provider = Provide(provider)
@@ -363,9 +351,9 @@ class BaseRouteHandler:
         if not getattr(provider, "parsed_fn_signature", None):
             dependency = unwrap_partial(provider.dependency)
             plugin: DIPlugin | None = None
-            if plugin_registry:
+            if app:
                 plugin = next(
-                    (p for p in plugin_registry.di if isinstance(p, DIPlugin) and p.has_typed_init(dependency)),
+                    (p for p in app.plugins.di if isinstance(p, DIPlugin) and p.has_typed_init(dependency)),
                     None,
                 )
             if plugin:
@@ -379,7 +367,7 @@ class BaseRouteHandler:
                 dependency_name_set=self._dependency_name_set,
                 fn=provider.dependency,
                 parsed_signature=provider.parsed_fn_signature,
-                data_dto=self.resolve_data_dto(),
+                data_dto=self.resolve_data_dto(app=app),
                 type_decoders=self.type_decoders,
             )
         return provider
@@ -433,7 +421,7 @@ class BaseRouteHandler:
             self._resolved_signature_namespace = ns
         return self._resolved_signature_namespace
 
-    def resolve_data_dto(self) -> type[AbstractDTO] | None:
+    def resolve_data_dto(self, app: Litestar | None = None) -> type[AbstractDTO] | None:
         """Resolve the data_dto by starting from the route handler and moving up.
         If a handler is found it is returned, otherwise None is set.
         This method is memoized so the computation occurs only once.
@@ -450,7 +438,7 @@ class BaseRouteHandler:
             elif self.parsed_data_field and (
                 plugins_for_data_type := [
                     plugin
-                    for plugin in self.app.plugins.serialization
+                    for plugin in app.plugins.serialization
                     if self.parsed_data_field.match_predicate_recursively(plugin.supports_type)
                 ]
             ):
@@ -468,7 +456,7 @@ class BaseRouteHandler:
 
         return self._resolved_data_dto
 
-    def resolve_return_dto(self) -> type[AbstractDTO] | None:
+    def resolve_return_dto(self, app: Litestar | None = None) -> type[AbstractDTO] | None:
         """Resolve the return_dto by starting from the route handler and moving up.
         If a handler is found it is returned, otherwise None is set.
         This method is memoized so the computation occurs only once.
@@ -484,12 +472,12 @@ class BaseRouteHandler:
                 return_dto: type[AbstractDTO] | None = return_dtos[-1]
             elif plugins_for_return_type := [
                 plugin
-                for plugin in self.app.plugins.serialization
+                for plugin in app.plugins.serialization
                 if self.parsed_return_field.match_predicate_recursively(plugin.supports_type)
             ]:
                 return_dto = plugins_for_return_type[0].create_dto_for_type(self.parsed_return_field)
             else:
-                return_dto = self.resolve_data_dto()
+                return_dto = self.resolve_data_dto(app=app)
 
             if return_dto and return_dto.is_supported_model_type_field(self.parsed_return_field):
                 return_dto.create_for_field_definition(
@@ -526,21 +514,20 @@ class BaseRouteHandler:
         Returns:
             None
         """
-        self._app = app
-        self._validate_handler_function()
-        self.resolve_dependencies()
+        self._validate_handler_function(app=app)
+        self.resolve_dependencies(app=app)
+        self.resolve_data_dto(app=app)
+        self.resolve_return_dto(app=app)
         self._resolve_guards()
         self.resolve_middleware()
         self._resolve_opts()
-        self.resolve_data_dto()
-        self.resolve_return_dto()
 
-    def _validate_handler_function(self) -> None:
+    def _validate_handler_function(self, app: Litestar | None = None) -> None:
         """Validate the route handler function once set by inspecting its return annotations."""
         if (
             self.parsed_data_field is not None
             and self.parsed_data_field.is_subclass_of(DTOData)
-            and not self.resolve_data_dto()
+            and not self.resolve_data_dto(app=app)
         ):
             raise ImproperlyConfiguredException(
                 f"Handler function {self.handler_name} has a data parameter that is a subclass of DTOData but no "

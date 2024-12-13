@@ -28,6 +28,7 @@ from litestar.handlers.http_handlers._utils import (
     cleanup_temporary_files,
 )
 from litestar.openapi.spec import Operation
+from litestar.plugins import PluginRegistry
 from litestar.response import Response, File
 from litestar.response.file import ASGIFileResponse
 from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED
@@ -644,9 +645,9 @@ class HTTPRouteHandler(BaseRouteHandler):
             model = self._kwargs_models[key] = self._create_kwargs_model(path_parameters)
         return model
 
-    def _validate_handler_function(self) -> None:
+    def _validate_handler_function(self, app: PluginRegistry | None = None) -> None:
         """Validate the route handler function once it is set by inspecting its return annotations."""
-        super()._validate_handler_function()
+        super()._validate_handler_function(app=app)
 
         return_type = self.parsed_fn_signature.return_type
 

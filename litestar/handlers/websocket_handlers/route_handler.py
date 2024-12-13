@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any, Callable, Mapping
 from litestar.connection import WebSocket
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import BaseRouteHandler
+from litestar.plugins import PluginRegistry
 from litestar.types import AsyncAnyCallable
 from litestar.types import Empty
 from litestar.types import ParametersMap
@@ -112,9 +113,9 @@ class WebsocketRouteHandler(BaseRouteHandler):
             WebSocket,
         )
 
-    def _validate_handler_function(self) -> None:
+    def _validate_handler_function(self, app: Litestar | None = None) -> None:
         """Validate the route handler function once it's set by inspecting its return annotations."""
-        super()._validate_handler_function()
+        super()._validate_handler_function(app=app)
 
         if not self.parsed_fn_signature.return_type.is_subclass_of(NoneType):
             raise ImproperlyConfiguredException(f"{self}: WebSocket handlers must return 'None'")

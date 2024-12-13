@@ -10,6 +10,7 @@ from msgspec.json import Encoder as JsonEncoder
 
 from litestar.exceptions import ImproperlyConfiguredException, LitestarWarning, WebSocketDisconnect
 from litestar.handlers.websocket_handlers.route_handler import WebsocketRouteHandler
+from litestar.plugins import PluginRegistry
 from litestar.types import Empty
 from litestar.types.builtin_types import NoneType
 from litestar.typing import FieldDefinition
@@ -213,38 +214,7 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
     __slots__ = ("_ws_stream_options",)
     _ws_stream_options: _WebSocketStreamOptions
 
-    def _validate_handler_function(self) -> None:
-        """Validate the route handler function once it's set by inspecting its return annotations."""
-        # super(BaseRouteHandler)._validate_handler_function()
-        pass
-        # if not self.parsed_fn_signature.return_type.is_subclass_of(AsyncGenerator):
-        #     raise ImproperlyConfiguredException(
-        #         f"Route handler {self}: 'websocket_stream' handlers must return an "
-        #         f"'AsyncGenerator', not {type(self.parsed_fn_signature.return_type.raw)!r}"
-        #     )
-
-    # def merge(self, other: Controller | Router) -> WebsocketRouteHandler:
-    #     return WebsocketRouteHandler(
-    #         path=[join_paths([other.path, p]) for p in self.paths],
-    #         fn=self.fn,
-    #         dependencies={**(other.dependencies or {}), **self.dependencies},
-    #         dto=value_or_default(self.dto, other.dto),
-    #         return_dto=value_or_default(self.return_dto, other.return_dto),
-    #         exception_handlers={**(other.exception_handlers or {}), **self.exception_handlers},
-    #         guards=[*(other.guards or []), *self.guards],
-    #         middleware=[*(other.middleware or ()), *self.middleware],
-    #         name=self.name,
-    #         opt={**(other.opt or {}), **(self.opt or {})},
-    #         signature_namespace={**other.signature_namespace, **self.signature_namespace},
-    #         signature_types=getattr(other, "signature_types", None),
-    #         type_decoders=(*(other.type_decoders or ()), *self.type_decoders),
-    #         type_encoders={**(other.type_encoders or {}), **self.type_encoders},
-    #         websocket_class=self.websocket_class or other.websocket_class,
-    #         parameters={**other.parameters, **self.parameters},
-    #     )
-
     def on_registration(self, route: BaseRoute, app: Litestar) -> None:
-        self._app = app
         self._ws_stream_options = self.opt["stream_options"]
 
         parsed_handler_signature = parsed_stream_fn_signature = ParsedSignature.from_fn(
@@ -287,7 +257,7 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
         self._parsed_return_field = parsed_stream_fn_signature.return_type.inner_types[0]
 
         json_encoder = JsonEncoder(enc_hook=self.default_serializer)
-        return_dto = self.resolve_return_dto()
+        return_dto = self.resolve_return_dto(app=app)
 
         # make sure the closure doesn't capture self._ws_stream / self
         send_mode: WebSocketMode = self._ws_stream_options.send_mode  # pyright: ignore
