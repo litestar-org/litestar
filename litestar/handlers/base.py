@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from copy import copy
 from functools import partial
 from typing import TYPE_CHECKING, Any, Callable, Iterable, Mapping, Sequence, cast
 

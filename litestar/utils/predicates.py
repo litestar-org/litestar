@@ -74,6 +74,7 @@ def is_async_callable(value: Callable[P, T]) -> TypeGuard[Callable[P, Awaitable[
         Bool determining if type of ``value`` is an awaitable.
     """
     from litestar.utils.sync import AsyncCallable
+
     if isinstance(value, AsyncCallable):
         return True
     value = unwrap_partial(value)

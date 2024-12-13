@@ -30,6 +30,7 @@ def test_head_decorator_raises_validation_error_if_body_is_declared() -> None:
 
         handler.on_registration(HTTPRoute(path="/", route_handlers=[handler]), app=Litestar())
 
+
 def test_head_decorator_none_response_return_value_allowed() -> None:
     # https://github.com/litestar-org/litestar/issues/3640
     T = TypeVar("T")

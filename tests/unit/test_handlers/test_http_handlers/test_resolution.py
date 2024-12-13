@@ -51,9 +51,10 @@ def test_resolve_request_max_body_size_app_default() -> None:
     app = Litestar(route_handlers=[router_handler])
 
     assert (
-        next(r for r in app.routes if r.path == "/").route_handler_map["POST"].resolve_request_max_body_size() == app.request_max_body_size == 10_000_000
+        next(r for r in app.routes if r.path == "/").route_handler_map["POST"].resolve_request_max_body_size()
+        == app.request_max_body_size
+        == 10_000_000
     )
-
 
 
 def test_resolve_request_max_body_size_empty_on_all_layers_raises() -> None:
