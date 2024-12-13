@@ -11,9 +11,9 @@ from typing import (
     Mapping,
     Optional,
     overload,
-    Self,
 )
 
+from typing_extensions import Self
 from litestar.connection import WebSocket
 from litestar.exceptions import ImproperlyConfiguredException, WebSocketDisconnect
 from litestar.types import (
