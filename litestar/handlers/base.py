@@ -382,15 +382,14 @@ class BaseRouteHandler:
         self._check_registered()
         return self.middleware
 
+    @deprecated("3.0", removal_in="4.0", alternative=".exception_handlers attribute")
     def resolve_exception_handlers(self) -> ExceptionHandlersMap:
         """Resolve the exception_handlers by starting from the route handler and moving up.
 
         This method is memoized so the computation occurs only once.
         """
-        resolved_exception_handlers: dict[int | type[Exception], ExceptionHandler] = {}
-        for layer in self._ownership_layers:
-            resolved_exception_handlers.update(layer.exception_handlers or {})  # pyright: ignore
-        return resolved_exception_handlers
+        self._check_registered()
+        return self.exception_handlers
 
     def _resolve_opts(self) -> None:
         """Build the route handler opt dictionary by going from top to bottom.

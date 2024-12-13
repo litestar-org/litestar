@@ -98,7 +98,7 @@ class ASGIRouter:
             ScopeState.from_scope(scope).exception_handlers = self._app_exception_handlers
             raise
         else:
-            ScopeState.from_scope(scope).exception_handlers = route_handler.resolve_exception_handlers()
+            ScopeState.from_scope(scope).exception_handlers = route_handler.exception_handlers
             scope["route_handler"] = route_handler
             scope["path_template"] = path_template
         await asgi_app(scope, receive, send)

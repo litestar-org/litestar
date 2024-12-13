@@ -302,7 +302,7 @@ class RequestFactory:
                 body += chunk
         scope_state = ScopeState.from_scope(scope)
         scope_state.body = body
-        scope_state.exception_handlers = scope["route_handler"].resolve_exception_handlers()
+        scope_state.exception_handlers = scope["route_handler"].exception_handlers
         self._create_cookie_header(headers, cookies)
         scope["headers"] = self._build_headers(headers)
         return Request(scope=scope)
