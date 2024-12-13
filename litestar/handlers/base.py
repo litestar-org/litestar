@@ -56,7 +56,6 @@ class BaseRouteHandler:
         "_parsed_return_field",
         "_resolved_data_dto",
         "_resolved_dependencies",
-        "_resolved_guards",
         "_resolved_layered_parameters",
         "_resolved_return_dto",
         "_resolved_signature_namespace",
@@ -132,7 +131,6 @@ class BaseRouteHandler:
         self._parsed_data_field: FieldDefinition | None | EmptyType = Empty
         self._resolved_data_dto: type[AbstractDTO] | None | EmptyType = Empty
         self._resolved_dependencies: dict[str, Provide] | EmptyType = Empty
-        self._resolved_guards: list[Guard] | EmptyType = Empty
         self._resolved_layered_parameters: dict[str, FieldDefinition] | EmptyType = Empty
         self._resolved_return_dto: type[AbstractDTO] | None | EmptyType = Empty
         self._resolved_signature_namespace: dict[str, Any] | EmptyType = Empty
@@ -143,7 +141,7 @@ class BaseRouteHandler:
         self.dependencies = dependencies or {}
         self.dto = dto
         self.exception_handlers = exception_handlers or {}
-        self.guards = guards or ()
+        self.guards = tuple(ensure_async_callable(guard) for guard in guards) if guards else ()
         self.middleware = middleware or ()
         self.name = name
         self.opt = dict(opt or {})
@@ -312,19 +310,10 @@ class BaseRouteHandler:
 
         return self._resolved_layered_parameters
 
-    def _resolve_guards(self) -> list[Guard]:
+    @deprecated("3.0", removal_in="4.0", alternative=".guards property")
+    def resolve_guards(self) -> tuple[Guard, ...]:
         """Return all guards in the handlers scope, starting from highest to current layer."""
-        if self._resolved_guards is Empty:
-            self._resolved_guards = []
-
-            for layer in self._ownership_layers:
-                self._resolved_guards.extend(layer.guards or [])  # pyright: ignore
-
-            self._resolved_guards = cast(
-                "list[Guard]", [ensure_async_callable(guard) for guard in self._resolved_guards]
-            )
-
-        return self._resolved_guards
+        return self.guards
 
     def resolve_dependencies(self, app: Litestar | None = None) -> dict[str, Provide]:
         """Return all dependencies correlating to handler function's kwargs that exist in the handler's scope."""
@@ -492,8 +481,8 @@ class BaseRouteHandler:
 
     async def authorize_connection(self, connection: ASGIConnection) -> None:
         """Ensure the connection is authorized by running all the route guards in scope."""
-        for guard in self._resolve_guards():
-            await guard(connection, copy(self))  # type: ignore[misc]
+        for guard in self.guards:
+            await guard(connection, self)  # type: ignore[misc]
 
     @staticmethod
     def _validate_dependency_is_unique(dependencies: dict[str, Provide], key: str, provider: Provide) -> None:
@@ -518,7 +507,6 @@ class BaseRouteHandler:
         self.resolve_dependencies(app=app)
         self.resolve_data_dto(app=app)
         self.resolve_return_dto(app=app)
-        self._resolve_guards()
         self.resolve_middleware()
         self._resolve_opts()
 

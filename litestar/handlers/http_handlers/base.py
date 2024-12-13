@@ -752,7 +752,7 @@ class HTTPRouteHandler(BaseRouteHandler):
                 None
         """
 
-        if self._resolve_guards():
+        if self.guards:
             await self.authorize_connection(connection=connection)
 
         try:

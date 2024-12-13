@@ -150,7 +150,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
         if handler_kwargs_model is Empty:
             raise ImproperlyConfiguredException("handler parameter model not defined")
 
-        if self._resolve_guards():
+        if self.guards:
             await self.authorize_connection(connection=connection)
 
         parsed_kwargs: dict[str, Any] = {}
