@@ -37,6 +37,7 @@ from ._utils import (
     create_stub_dependency,
 )
 from .route_handler import WebsocketRouteHandler
+from ...plugins import PluginRegistry
 from ...routes import BaseRoute
 from ...utils.empty import value_or_default
 
@@ -290,7 +291,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
             listener=self, fn=self.fn, parsed_signature=parsed_signature, namespace=self._resolve_signature_namespace()
         )
 
-    def _validate_handler_function(self) -> None:
+    def _validate_handler_function(self, app: Litestar | None = None) -> None:
         """Validate the route handler function once it's set by inspecting its return annotations."""
         # validation occurs in the call method
 

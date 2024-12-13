@@ -42,7 +42,6 @@ def _create_default_route_handler(
     def _default_route_handler() -> None: ...
 
     handler = handler_decorator("/", sync_to_thread=False, **(handler_kwargs or {}))(_default_route_handler).merge(app)
-    handler._app = app
     return handler
 
 
