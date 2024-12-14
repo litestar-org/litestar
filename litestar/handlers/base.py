@@ -396,21 +396,20 @@ class BaseRouteHandler:
             An optional :class:`DTO type <.dto.base_dto.AbstractDTO>`
         """
         if self._resolved_data_dto is Empty:
-            if data_dtos := cast(
-                "list[type[AbstractDTO] | None]",
-                [layer.dto for layer in self._ownership_layers if layer.dto is not Empty],
-            ):
-                data_dto: type[AbstractDTO] | None = data_dtos[-1]
+            data_dto: type[AbstractDTO] | None = None
+            if (_data_dto := self.dto) is not Empty:
+                data_dto = _data_dto
             elif self.parsed_data_field and (
-                plugins_for_data_type := [
-                    plugin
-                    for plugin in app.plugins.serialization
-                    if self.parsed_data_field.match_predicate_recursively(plugin.supports_type)
-                ]
+                plugin_for_data_type := next(
+                    (
+                        plugin
+                        for plugin in app.plugins.serialization
+                        if self.parsed_data_field.match_predicate_recursively(plugin.supports_type)
+                    ),
+                    None,
+                )
             ):
-                data_dto = plugins_for_data_type[0].create_dto_for_type(self.parsed_data_field)
-            else:
-                data_dto = None
+                data_dto = plugin_for_data_type.create_dto_for_type(self.parsed_data_field)
 
             if self.parsed_data_field and data_dto:
                 data_dto.create_for_field_definition(
@@ -431,17 +430,17 @@ class BaseRouteHandler:
             An optional :class:`DTO type <.dto.base_dto.AbstractDTO>`
         """
         if self._resolved_return_dto is Empty:
-            if return_dtos := cast(
-                "list[type[AbstractDTO] | None]",
-                [layer.return_dto for layer in self._ownership_layers if layer.return_dto is not Empty],
+            if (_return_dto := self.return_dto) is not Empty:
+                return_dto: type[AbstractDTO] | None = _return_dto
+            elif plugin_for_return_type := next(
+                (
+                    plugin
+                    for plugin in app.plugins.serialization
+                    if self.parsed_return_field.match_predicate_recursively(plugin.supports_type)
+                ),
+                None,
             ):
-                return_dto: type[AbstractDTO] | None = return_dtos[-1]
-            elif plugins_for_return_type := [
-                plugin
-                for plugin in app.plugins.serialization
-                if self.parsed_return_field.match_predicate_recursively(plugin.supports_type)
-            ]:
-                return_dto = plugins_for_return_type[0].create_dto_for_type(self.parsed_return_field)
+                return_dto = plugin_for_return_type.create_dto_for_type(self.parsed_return_field)
             else:
                 return_dto = self.resolve_data_dto(app=app)
 
