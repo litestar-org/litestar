@@ -190,7 +190,7 @@ class Request(Generic[UserT, AuthT, StateT], ASGIConnection["HTTPRouteHandler", 
             # float is slightly faster than checking if a value is 'None' and then
             # comparing it to an int. since we expect a limit to be set most of the
             # time, this is a bit more efficient
-            max_content_length = self.route_handler.resolve_request_max_body_size() or math.inf
+            max_content_length = self.route_handler.request_max_body_size or math.inf
 
             # if the 'content-length' header is set, and exceeds the limit, we can bail
             # out early before reading anything
