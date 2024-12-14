@@ -107,6 +107,17 @@ def test_redirect_dynamic_status_code(status_code: Optional[int], expected_statu
         assert res.status_code == expected_status_code
 
 
+def test_redirect_with_query_params() -> None:
+    @get("/")
+    def handler() -> Redirect:
+        return Redirect(path="/something-else", query_params={"single": "a", "list": ["b", "c"]})
+
+    with create_test_client([handler]) as client:
+        location_header = client.get("/", follow_redirects=False).headers["location"]
+        expected = "/something-else?single=a&list=b&list=c"
+        assert location_header == expected
+
+
 @pytest.mark.parametrize("handler_status_code", [301, 307, None])
 def test_redirect(handler_status_code: Optional[int]) -> None:
     @get("/", status_code=handler_status_code)
