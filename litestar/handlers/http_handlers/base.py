@@ -26,7 +26,6 @@ from litestar.handlers.http_handlers._utils import (
     get_default_status_code,
     is_empty_response_annotation,
     normalize_http_method,
-    cleanup_temporary_files,
 )
 from litestar.openapi.spec import Operation
 from litestar.plugins import PluginRegistry
@@ -55,7 +54,7 @@ from litestar.types import (
     TypeEncodersMap,
 )
 from litestar.types.builtin_types import NoneType
-from litestar.utils import ensure_async_callable
+from litestar.utils import ensure_async_callable, deprecated
 from litestar.utils import join_paths
 from litestar.utils.empty import value_or_default
 from litestar.utils.predicates import is_async_callable
@@ -96,9 +95,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         "_resolved_after_response",
         "_resolved_before_request",
         "_resolved_include_in_schema",
-        "_resolved_request_class",
         "_resolved_request_max_body_size",
-        "_resolved_response_class",
         "_resolved_security",
         "_kwargs_models",
         "_resolved_tags",
@@ -337,8 +334,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         self._resolved_after_response: AsyncAnyCallable | None | EmptyType = Empty
         self._resolved_before_request: AsyncAnyCallable | None | EmptyType = Empty
         self._resolved_include_in_schema: bool | EmptyType = Empty
-        self._resolved_response_class: type[Response] | EmptyType = Empty
-        self._resolved_request_class: type[Request] | EmptyType = Empty
         self._resolved_security: list[SecurityRequirement] | EmptyType = Empty
         self._resolved_tags: list[str] | EmptyType = Empty
         self._kwargs_models: dict[tuple[str, ...], KwargsModel] = {}
@@ -430,7 +425,6 @@ class HTTPRouteHandler(BaseRouteHandler):
             tags=[*(other.tags or []), *(self.tags or [])],
             sync_to_thread=False if self.has_sync_callable else None,
             parameters={**(other.parameters or {}), **self.parameters},
-            # sync_to_thread=self._sync_to_thread,
         )
 
     def resolve_request_class(self) -> type[Request]:
@@ -442,13 +436,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             The default :class:`Request <.connection.Request>` class for the route handler.
         """
 
-        if self._resolved_request_class is Empty:
-            self._resolved_request_class = next(
-                (layer.request_class for layer in reversed(self._ownership_layers) if layer.request_class is not None),
-                Request,
-            )
-
-        return cast("type[Request]", self._resolved_request_class)
+        return self.request_class or Request
 
     def resolve_response_class(self) -> type[Response]:
         """Return the closest custom Response class in the owner graph or the default Response class.
@@ -458,17 +446,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         Returns:
             The default :class:`Response <.response.Response>` class for the route handler.
         """
-        if self._resolved_response_class is Empty:
-            self._resolved_response_class = next(
-                (
-                    layer.response_class
-                    for layer in reversed(self._ownership_layers)
-                    if layer.response_class is not None
-                ),
-                Response,
-            )
-
-        return cast("type[Response]", self._resolved_response_class)
+        return self.response_class or Response
 
     def resolve_response_headers(self) -> frozenset[ResponseHeader]:
         """Return all header parameters in the scope of the handler function.
