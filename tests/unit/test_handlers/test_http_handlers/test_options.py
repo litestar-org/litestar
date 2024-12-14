@@ -1,6 +1,6 @@
 import pytest
 
-from litestar import get, Router
+from litestar import Router, get
 from litestar.testing import create_test_client
 
 

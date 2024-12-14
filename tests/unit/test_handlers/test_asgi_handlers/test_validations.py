@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from litestar import asgi, Litestar
+from litestar import Litestar, asgi
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.routes import ASGIRoute
 from litestar.testing import create_test_client

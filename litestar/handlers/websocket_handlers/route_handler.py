@@ -5,17 +5,15 @@ from typing import TYPE_CHECKING, Any, Callable, Mapping
 from litestar.connection import WebSocket
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import BaseRouteHandler
-from litestar.types import AsyncAnyCallable
-from litestar.types import Empty
-from litestar.types import ParametersMap
+from litestar.types import AsyncAnyCallable, Empty, ParametersMap
 from litestar.types.builtin_types import NoneType
-from litestar.utils import join_paths, deprecated
+from litestar.utils import deprecated, join_paths
 from litestar.utils.empty import value_or_default
 from litestar.utils.predicates import is_async_callable
 from litestar.utils.signature import merge_signature_namespaces
 
 if TYPE_CHECKING:
-    from litestar import Controller, Router, Litestar
+    from litestar import Controller, Litestar, Router
     from litestar._kwargs import KwargsModel
     from litestar._kwargs.cleanup import DependencyCleanupGroup
     from litestar.routes import BaseRoute
@@ -61,6 +59,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             websocket_class: A custom subclass of :class:`WebSocket <.connection.WebSocket>` to be used as route handler's
                 default websocket class.
+            parameters: A mapping of :func:`Parameter <.params.Parameter>` definitions
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         self._websocket_class = websocket_class

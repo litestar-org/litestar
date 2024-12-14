@@ -2,7 +2,7 @@ from typing import Any
 
 import pytest
 
-from litestar import WebSocket, websocket, Litestar
+from litestar import Litestar, WebSocket, websocket
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.routes import WebSocketRoute
 from litestar.testing import create_test_client

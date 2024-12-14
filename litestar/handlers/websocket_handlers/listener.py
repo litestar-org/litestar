@@ -13,7 +13,6 @@ from typing import (
     overload,
 )
 
-from typing_extensions import Self
 from litestar.connection import WebSocket
 from litestar.exceptions import ImproperlyConfiguredException, WebSocketDisconnect
 from litestar.types import (
@@ -27,6 +26,7 @@ from litestar.types import (
     TypeEncodersMap,
 )
 from litestar.utils import ensure_async_callable, join_paths
+from litestar.utils.empty import value_or_default
 from litestar.utils.signature import ParsedSignature, get_fn_type_hints, merge_signature_namespaces
 
 from ._utils import (
@@ -37,17 +37,15 @@ from ._utils import (
     create_stub_dependency,
 )
 from .route_handler import WebsocketRouteHandler
-from ...plugins import PluginRegistry
-from ...routes import BaseRoute
-from ...utils.empty import value_or_default
 
 if TYPE_CHECKING:
     from typing import Coroutine
 
-    from litestar import Router, Controller, Litestar
+    from litestar import Controller, Litestar, Router
     from litestar.dto import AbstractDTO
+    from litestar.routes import BaseRoute
     from litestar.types.asgi_types import WebSocketMode
-    from litestar.types.composite_types import TypeDecodersSequence, ParametersMap
+    from litestar.types.composite_types import ParametersMap, TypeDecodersSequence
 
 __all__ = ("WebsocketListener", "WebsocketListenerRouteHandler", "websocket_listener")
 
@@ -181,9 +179,10 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
             type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec
                 hook for deserialization.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
-            **kwargs: Any additional kwarg - will be set in the opt dictionary.
             websocket_class: A custom subclass of :class:`WebSocket <.connection.WebSocket>` to be used as route handler's
                 default websocket class.
+            parameters: A mapping of :func:`Parameter <.params.Parameter>` definitions
+            **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         if connection_lifespan and any([on_accept, on_disconnect, connection_accept_handler is not WebSocket.accept]):
             raise ImproperlyConfiguredException(

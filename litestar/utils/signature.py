@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import sys
 import typing
-from copy import deepcopy
 from dataclasses import dataclass, replace
 from inspect import Signature, getmembers, isclass, ismethod
 from itertools import chain

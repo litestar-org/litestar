@@ -6,8 +6,6 @@ from functools import lru_cache
 from traceback import format_exc
 from typing import TYPE_CHECKING, Any, Pattern
 
-import warnings
-
 from litestar._asgi.routing_trie import validate_node
 from litestar._asgi.routing_trie.mapping import add_route_to_trie
 from litestar._asgi.routing_trie.traversal import parse_path_to_route

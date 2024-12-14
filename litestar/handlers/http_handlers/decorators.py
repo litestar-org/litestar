@@ -3,27 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Callable, Mapping, Sequence
 
 from litestar.enums import HttpMethod, MediaType
-from litestar.handlers.http_handlers.base import HTTPRouteHandler
-from litestar.openapi.spec import Operation, SecurityRequirement
-from litestar.types import (
-    AfterRequestHookHandler,
-    AfterResponseHookHandler,
-    AnyCallable,
-    BeforeRequestHookHandler,
-    CacheKeyBuilder,
-    Dependencies,
-    Empty,
-    EmptyType,
-    ExceptionHandlersMap,
-    Guard,
-    Method,
-    Middleware,
-    OperationIDCreator,
-    ResponseCookies,
-    ResponseHeaders,
-    TypeDecodersSequence,
-    TypeEncodersMap,
-)
 from litestar.exceptions import HTTPException
 from litestar.handlers.http_handlers.base import HTTPRouteHandler
 from litestar.openapi.spec import Operation, SecurityRequirement
@@ -75,7 +54,7 @@ if TYPE_CHECKING:
     )
     from litestar.types.callable_types import AnyCallable, OperationIDCreator
 
-__all__ = ("get", "head", "post", "put", "patch", "delete", "route")
+__all__ = ("delete", "get", "head", "patch", "post", "put", "route")
 
 
 def route(
@@ -674,7 +653,8 @@ def patch(
         request_class: A custom subclass of :class:`Request <.connection.Request>` to be used as route handler's
             default request.
         request_max_body_size: Maximum allowed size of the request body in bytes. If this size is exceeded,
-                a '413 - Request Entity Too Large' error response is returned.response_class: A custom subclass of :class:`Response <.response.Response>` to be used as route handler's
+                a '413 - Request Entity Too Large' error response is returned.
+        response_class: A custom subclass of :class:`Response <.response.Response>` to be used as route handler's
             default response.
         response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>` instances.
         response_headers: A string keyed mapping of :class:`ResponseHeader <.datastructures.ResponseHeader>`
@@ -845,7 +825,8 @@ def post(
         request_class: A custom subclass of :class:`Request <.connection.Request>` to be used as route handler's
             default request.
         request_max_body_size: Maximum allowed size of the request body in bytes. If this size is exceeded,
-                a '413 - Request Entity Too Large' error response is returned.response_class: A custom subclass of :class:`Response <.response.Response>` to be used as route handler's
+                a '413 - Request Entity Too Large' error response is returned.
+        response_class: A custom subclass of :class:`Response <.response.Response>` to be used as route handler's
             default response.
         response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>` instances.
         response_headers: A string keyed mapping of :class:`ResponseHeader <.datastructures.ResponseHeader>`
@@ -1016,7 +997,8 @@ def put(
         request_class: A custom subclass of :class:`Request <.connection.Request>` to be used as route handler's
             default request.
         request_max_body_size: Maximum allowed size of the request body in bytes. If this size is exceeded,
-                a '413 - Request Entity Too Large' error response is returned.response_class: A custom subclass of :class:`Response <.response.Response>` to be used as route handler's
+                a '413 - Request Entity Too Large' error response is returned.
+        response_class: A custom subclass of :class:`Response <.response.Response>` to be used as route handler's
             default response.
         response_cookies: A sequence of :class:`Cookie <.datastructures.Cookie>` instances.
         response_headers: A string keyed mapping of :class:`ResponseHeader <.datastructures.ResponseHeader>`
@@ -1048,7 +1030,6 @@ def put(
             hook for deserialization.
         type_encoders: A mapping of types to callables that transform them into types supported for serialization.
         handler_class: Route handler class instantiated by the decorator
-
         **kwargs: Any additional kwarg - will be set in the opt dictionary.
     """
 

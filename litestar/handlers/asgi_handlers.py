@@ -1,13 +1,10 @@
 from __future__ import annotations
 
 import warnings
-from typing import TYPE_CHECKING, Any, Callable, Mapping, Sequence, Literal
-
-from mypy.plugin import Plugin
+from typing import TYPE_CHECKING, Any, Callable, Mapping, Sequence
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers.base import BaseRouteHandler
-from litestar.plugins import PluginRegistry
 from litestar.types.builtin_types import NoneType
 from litestar.utils import join_paths
 from litestar.utils.empty import value_or_default
@@ -17,7 +14,7 @@ __all__ = ("ASGIRouteHandler", "asgi")
 
 
 if TYPE_CHECKING:
-    from litestar import Controller, Router, Litestar
+    from litestar import Controller, Litestar, Router
     from litestar.connection import ASGIConnection
     from litestar import Litestar
     from litestar.connection import ASGIConnection
@@ -72,6 +69,7 @@ class ASGIRouteHandler(BaseRouteHandler):
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             copy_scope: Copy the ASGI 'scope' before calling the mounted application. Should be set to 'True' unless
                 side effects via scope mutations by the mounted ASGI application are intentional
+            parameters: A mapping of :func:`Parameter <.params.Parameter>` definitions
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         self.is_mount = is_mount
@@ -89,8 +87,8 @@ class ASGIRouteHandler(BaseRouteHandler):
             **kwargs,
         )
 
-    def on_registration(self, app: Litestar) -> None:
-        super().on_registration(app)
+    def on_registration(self, app: Litestar, route: BaseRoute) -> None:
+        super().on_registration(app, route=route)
 
         if self.copy_scope is None:
             warnings.warn(
