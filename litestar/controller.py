@@ -23,6 +23,7 @@ if TYPE_CHECKING:
     from litestar.dto import AbstractDTO
     from litestar.openapi.spec import SecurityRequirement
     from litestar.response import Response
+    from litestar.router import Router
     from litestar.types import (
         AfterRequestHookHandler,
         AfterResponseHookHandler,
@@ -37,7 +38,6 @@ if TYPE_CHECKING:
     )
     from litestar.types.composite_types import ResponseHeaders, TypeDecodersSequence
     from litestar.types.empty import EmptyType
-    from litestar.router import Router
 
 
 class Controller:
@@ -205,7 +205,7 @@ class Controller:
     def as_router(self) -> Router:
         from litestar.router import Router
 
-        router = Router(
+        return Router(
             path=self.path,
             route_handlers=self.get_route_handlers(),  # type: ignore[arg-type]
             after_request=self.after_request,
@@ -235,7 +235,6 @@ class Controller:
             websocket_class=self.websocket_class,
             request_max_body_size=self.request_max_body_size,
         )
-        return router
 
     def get_route_handlers(self) -> list[BaseRouteHandler]:
         """Get a controller's route handlers

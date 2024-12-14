@@ -1,12 +1,9 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable, Mapping, Sequence, Literal
-
-from mypy.plugin import Plugin
+from typing import TYPE_CHECKING, Any, Callable, Mapping, Sequence
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers.base import BaseRouteHandler
-from litestar.plugins import PluginRegistry
 from litestar.types.builtin_types import NoneType
 from litestar.utils import join_paths
 from litestar.utils.empty import value_or_default
@@ -16,7 +13,7 @@ __all__ = ("ASGIRouteHandler", "asgi")
 
 
 if TYPE_CHECKING:
-    from litestar import Controller, Router, Litestar
+    from litestar import Controller, Litestar, Router
     from litestar.connection import ASGIConnection
     from litestar.types import (
         AsyncAnyCallable,
@@ -63,6 +60,7 @@ class ASGIRouteHandler(BaseRouteHandler):
                 ``/some-path/sub-path/`` etc.
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
+            parameters: A mapping of :func:`Parameter <.params.Parameter>` definitions
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         self.is_mount = is_mount

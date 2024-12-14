@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, Any, Mapping, Sequence
 
 from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
 from litestar.exceptions import ImproperlyConfiguredException
-from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 from litestar.types.empty import Empty
 from litestar.utils import normalize_path
 from litestar.utils.signature import add_types_to_signature_namespace
@@ -19,6 +18,7 @@ if TYPE_CHECKING:
     from litestar.dto import AbstractDTO
     from litestar.openapi.spec import SecurityRequirement
     from litestar.response import Response
+    from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
     from litestar.types import (
         AfterRequestHookHandler,
         AfterResponseHookHandler,
@@ -42,6 +42,7 @@ class Router:
     """
 
     __slots__ = (
+        "_route_handlers",
         "after_request",
         "after_response",
         "before_request",
@@ -70,7 +71,6 @@ class Router:
         "type_decoders",
         "type_encoders",
         "websocket_class",
-        "_route_handlers",
     )
 
     def __init__(
@@ -178,7 +178,7 @@ class Router:
         self.path = normalize_path(path)
         self.request_class = request_class
         self.response_class = response_class
-        self.response_cookies = narrow_response_cookies(response_cookies) if response_cookies else tuple()
+        self.response_cookies = narrow_response_cookies(response_cookies) if response_cookies else ()
         self.response_headers = narrow_response_headers(response_headers) if response_headers else ()
         self.return_dto = return_dto
         self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = []

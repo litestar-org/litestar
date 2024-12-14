@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, MagicMock
 import pytest
 from pytest_lazy_fixtures import lf
 
-from litestar import Controller, Request, WebSocket, Litestar
+from litestar import Controller, Litestar, Request, WebSocket
 from litestar.datastructures import State
 from litestar.di import Provide
 from litestar.dto import DataclassDTO, dto_field

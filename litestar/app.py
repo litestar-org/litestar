@@ -15,7 +15,7 @@ from datetime import date, datetime, time, timedelta
 from functools import partial
 from itertools import chain
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Iterable, Mapping, Sequence, TypedDict, cast, Generator
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Generator, Iterable, Mapping, Sequence, TypedDict, cast
 
 from litestar._asgi import ASGIRouter
 from litestar._asgi.utils import get_route_handlers, wrap_in_exception_handler
@@ -28,12 +28,12 @@ from litestar.connection import Request, WebSocket
 from litestar.datastructures.state import State
 from litestar.events.emitter import BaseEventEmitterBackend, SimpleEventEmitter
 from litestar.exceptions import (
+    ImproperlyConfiguredException,
     LitestarWarning,
     MissingDependencyException,
     NoRouteMatchFoundException,
-    ImproperlyConfiguredException,
 )
-from litestar.handlers import HTTPRouteHandler, WebsocketRouteHandler, BaseRouteHandler
+from litestar.handlers import ASGIRouteHandler, BaseRouteHandler, HTTPRouteHandler, WebsocketRouteHandler
 from litestar.handlers.http_handlers._options import create_options_handler
 from litestar.logging.config import LoggingConfig, get_logger_placeholder
 from litestar.middleware._internal.cors import CORSMiddleware
@@ -48,11 +48,11 @@ from litestar.plugins import (
 )
 from litestar.plugins.base import CLIPlugin
 from litestar.router import Router
-from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute, BaseRoute
+from litestar.routes import ASGIRoute, BaseRoute, HTTPRoute, WebSocketRoute
 from litestar.stores.registry import StoreRegistry
 from litestar.types import Empty, TypeDecodersSequence
-from litestar.types.internal_types import PathParameterDefinition, TemplateConfigType, RouteHandlerMapItem
-from litestar.utils import deprecated, ensure_async_callable, join_paths, unique, find_index
+from litestar.types.internal_types import PathParameterDefinition, RouteHandlerMapItem, TemplateConfigType
+from litestar.utils import deprecated, ensure_async_callable, find_index, join_paths, unique
 from litestar.utils.dataclass import extract_dataclass_items
 from litestar.utils.predicates import is_async_callable, is_class_and_subclass
 from litestar.utils.warnings import warn_pdb_on_exception
@@ -469,8 +469,6 @@ class Litestar(Router):
             response_cookies=config.response_cookies,
             response_headers=config.response_headers,
             return_dto=config.return_dto,
-            # route handlers are registered below
-            # route_handlers=[],
             route_handlers=config.route_handlers,
             security=config.security,
             signature_namespace=config.signature_namespace,
@@ -484,10 +482,8 @@ class Litestar(Router):
 
         self.asgi_router = ASGIRouter(app=self)
 
-        # for route_handler in self._reduce_handlers(self._merge_handlers(self._route_handlers)):
         for route_handler in self._merge_handlers(self._route_handlers):
             self._finalize_routes(route_handler)
-            # self.register(route_handler)
 
         self.asgi_router.construct_routing_trie()
 
@@ -710,9 +706,9 @@ class Litestar(Router):
             path: {"websocket" if isinstance(value, WebsocketRouteHandler) else "asgi": value} for path in value.paths
         }
 
-    def _finalize_routes(self, value: ControllerRouterHandler) -> list[BaseRoute]:
+    def _finalize_routes(self, value: ControllerRouterHandler) -> None:
         from litestar.handlers import HTTPRouteHandler
-        from litestar.routes import HTTPRoute, WebSocketRoute, ASGIRoute, BaseRoute
+        from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 
         validated_value = value
 
@@ -749,12 +745,12 @@ class Litestar(Router):
                 routes.append(route)
 
             if websocket_handler := handlers_map.get("websocket"):
-                route = WebSocketRoute(path=path, route_handler=cast("WebsocketRouteHandler", websocket_handler))
+                route = WebSocketRoute(path=path, route_handler=cast(WebsocketRouteHandler, websocket_handler))
                 self.routes.append(route)
                 routes.append(route)
 
             if asgi_handler := handlers_map.get("asgi"):
-                route = ASGIRoute(path=path, route_handler=cast("ASGIRouteHandler", asgi_handler))
+                route = ASGIRoute(path=path, route_handler=cast(ASGIRouteHandler, asgi_handler))
                 self.routes.append(route)
                 routes.append(route)
 
@@ -788,7 +784,7 @@ class Litestar(Router):
     def _validate_registration_value(self, value: ControllerRouterHandler) -> RouteHandlerType | Router:
         """Ensure values passed to the register method are supported."""
         from litestar.controller import Controller
-        from litestar.handlers import WebsocketListener, ASGIRouteHandler
+        from litestar.handlers import ASGIRouteHandler, WebsocketListener
 
         if is_class_and_subclass(value, Controller):
             return value().as_router()

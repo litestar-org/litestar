@@ -41,8 +41,7 @@ def _create_default_route_handler(
 
     def _default_route_handler() -> None: ...
 
-    handler = handler_decorator("/", sync_to_thread=False, **(handler_kwargs or {}))(_default_route_handler).merge(app)
-    return handler
+    return handler_decorator("/", sync_to_thread=False, **(handler_kwargs or {}))(_default_route_handler).merge(app)
 
 
 def _create_default_app() -> Litestar:

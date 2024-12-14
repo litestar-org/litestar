@@ -4,7 +4,6 @@ from typing import Any, AnyStr
 import pytest
 
 from litestar import Litestar, MediaType, get
-from litestar.routes import HTTPRoute
 from tests.models import DataclassPerson
 
 

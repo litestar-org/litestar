@@ -8,7 +8,6 @@ from msgspec.msgpack import decode as _decode_msgpack_plain
 from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
 from litestar.connection import Request
 from litestar.datastructures import CacheControlHeader, ETag, FormMultiDict, Header
-from litestar.datastructures.cookie import Cookie
 from litestar.datastructures.response_header import ResponseHeader
 from litestar.enums import HttpMethod, MediaType
 from litestar.exceptions import (
@@ -27,8 +26,7 @@ from litestar.handlers.http_handlers._utils import (
     normalize_http_method,
 )
 from litestar.openapi.spec import Operation
-from litestar.plugins import PluginRegistry
-from litestar.response import Response, File
+from litestar.response import File, Response
 from litestar.response.file import ASGIFileResponse
 from litestar.status_codes import HTTP_204_NO_CONTENT, HTTP_304_NOT_MODIFIED
 from litestar.types import (
@@ -53,11 +51,9 @@ from litestar.types import (
     TypeEncodersMap,
 )
 from litestar.types.builtin_types import NoneType
-from litestar.utils import ensure_async_callable, deprecated
-from litestar.utils import join_paths
+from litestar.utils import deprecated, ensure_async_callable, join_paths
 from litestar.utils.empty import value_or_default
-from litestar.utils.predicates import is_async_callable
-from litestar.utils.predicates import is_class_and_subclass
+from litestar.utils.predicates import is_async_callable, is_class_and_subclass
 from litestar.utils.scope.state import ScopeState
 from litestar.utils.signature import merge_signature_namespaces
 from litestar.utils.warnings import warn_implicit_sync_to_thread, warn_sync_to_thread_with_async_callable
@@ -65,17 +61,19 @@ from litestar.utils.warnings import warn_implicit_sync_to_thread, warn_sync_to_t
 if TYPE_CHECKING:
     from typing import Any
 
-    from litestar import Router, Litestar
+    from litestar import Litestar, Router
     from litestar._kwargs import KwargsModel
     from litestar._kwargs.cleanup import DependencyCleanupGroup
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
     from litestar.config.response_cache import CACHE_FOREVER
+    from litestar.datastructures.cookie import Cookie
     from litestar.dto import AbstractDTO
     from litestar.openapi.datastructures import ResponseSpec
     from litestar.openapi.spec import SecurityRequirement
+    from litestar.plugins import PluginRegistry
     from litestar.routes import BaseRoute
     from litestar.types.callable_types import AsyncAnyCallable, OperationIDCreator
-    from litestar.types.composite_types import TypeDecodersSequence, ParametersMap
+    from litestar.types.composite_types import ParametersMap, TypeDecodersSequence
     from litestar.typing import FieldDefinition
 
 __all__ = ("HTTPRouteHandler",)
@@ -88,10 +86,15 @@ class ResponseHandlerMap(TypedDict):
 
 class HTTPRouteHandler(BaseRouteHandler):
     __slots__ = (
-        "_kwargs_models",
+        "_default_response_handler",
         "_include_in_schema",
         "_kwargs_models",
+        "_kwargs_models",
+        "_request_class",
         "_request_max_body_size",
+        "_response_class",
+        "_response_type_handler",
+        "_sync_to_thread",
         "after_request",
         "after_response",
         "background",
@@ -110,8 +113,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         "operation_class",
         "operation_id",
         "raises",
-        "_request_class",
-        "_response_class",
         "response_cookies",
         "response_description",
         "response_headers",
@@ -120,9 +121,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         "status_code",
         "summary",
         "tags",
-        "_default_response_handler",
-        "_response_type_handler",
-        "_sync_to_thread",
     )
 
     def __init__(
@@ -240,6 +238,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             include_in_schema: A boolean flag dictating whether  the route handler should be documented in the OpenAPI schema.
             operation_class: :class:`Operation <.openapi.spec.operation.Operation>` to be used with the route's OpenAPI schema.
             operation_id: Either a string or a callable returning a string. An identifier used for the route's schema operationId.
+
             raises:  A list of exception classes extending from litestar.HttpException that is used for the OpenAPI documentation.
                 This list should describe all exceptions raised within the route handler's function/method. The Litestar
                 ValidationException will be added automatically for the schema if any validation is involved.
@@ -249,6 +248,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             tags: A sequence of string tags that will be appended to the OpenAPI schema.
             type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
+            parameters: A mapping of :func:`Parameter <.params.Parameter>` definitions
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         if not http_method:

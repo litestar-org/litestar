@@ -14,7 +14,6 @@ from click import Group
 from pytest import MonkeyPatch
 
 from litestar import Litestar, MediaType, Request, Response, get
-from litestar._asgi.asgi_router import ASGIRouter
 from litestar.config.app import AppConfig, ExperimentalFeatures
 from litestar.config.response_cache import ResponseCacheConfig
 from litestar.contrib.sqlalchemy.plugins import SQLAlchemySerializationPlugin
@@ -28,7 +27,6 @@ from litestar.exceptions import (
 )
 from litestar.logging.config import LoggingConfig
 from litestar.plugins import CLIPluginProtocol
-from litestar.router import Router
 from litestar.status_codes import HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import TestClient, create_test_client
 

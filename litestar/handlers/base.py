@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-import copy
 from functools import partial
-from types import MethodType
 from typing import TYPE_CHECKING, Any, Callable, Iterable, Mapping, Sequence, cast
 
 from litestar._signature import SignatureModel
@@ -17,9 +15,9 @@ from litestar.types import (
     ExceptionHandlersMap,
     Guard,
     Middleware,
+    ParametersMap,
     TypeDecodersSequence,
     TypeEncodersMap,
-    ParametersMap,
 )
 from litestar.typing import FieldDefinition
 from litestar.utils import ensure_async_callable, get_name, join_paths, normalize_path
@@ -34,11 +32,10 @@ if TYPE_CHECKING:
     from litestar._kwargs import KwargsModel
     from litestar.app import Litestar
     from litestar.connection import ASGIConnection
-    from litestar.controller import Controller
     from litestar.dto import AbstractDTO
     from litestar.router import Router
     from litestar.routes import BaseRoute
-    from litestar.types import AsyncAnyCallable
+    from litestar.types import AnyCallable, AsyncAnyCallable
     from litestar.types.empty import EmptyType
 
 __all__ = ("BaseRouteHandler",)
@@ -51,14 +48,14 @@ class BaseRouteHandler:
     """
 
     __slots__ = (
+        "_parameter_field_definitions",
         "_parsed_data_field",
         "_parsed_fn_signature",
         "_parsed_return_field",
+        "_registered",
         "_resolved_data_dto",
-        "_parameter_field_definitions",
         "_resolved_return_dto",
         "_resolved_signature_model",
-        "_registered",
         "dependencies",
         "dto",
         "exception_handlers",
@@ -67,12 +64,12 @@ class BaseRouteHandler:
         "middleware",
         "name",
         "opt",
+        "parameters",
         "paths",
         "return_dto",
         "signature_namespace",
         "type_decoders",
         "type_encoders",
-        "parameters",
     )
 
     def __init__(
@@ -121,6 +118,7 @@ class BaseRouteHandler:
                 These types will be added to the signature namespace using their ``__name__`` attribute.
             type_decoders: A sequence of tuples, each composed of a predicate testing for type identity and a msgspec hook for deserialization.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
+            parameters: A mapping of :func:`Parameter <.params.Parameter>` definitions
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         self._parsed_fn_signature: ParsedSignature | EmptyType = Empty
@@ -458,6 +456,7 @@ class BaseRouteHandler:
 
         Args:
             route: The route this handler is being registered on
+            app: The application instance
 
         Returns:
             None

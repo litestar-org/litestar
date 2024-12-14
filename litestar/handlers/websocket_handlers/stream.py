@@ -10,16 +10,13 @@ from msgspec.json import Encoder as JsonEncoder
 
 from litestar.exceptions import ImproperlyConfiguredException, LitestarWarning, WebSocketDisconnect
 from litestar.handlers.websocket_handlers.route_handler import WebsocketRouteHandler
-from litestar.plugins import PluginRegistry
 from litestar.types import Empty
 from litestar.types.builtin_types import NoneType
 from litestar.typing import FieldDefinition
-from litestar.utils import join_paths
-from litestar.utils.empty import value_or_default
 from litestar.utils.signature import ParsedSignature
 
 if TYPE_CHECKING:
-    from litestar import Litestar, WebSocket, Controller, Router
+    from litestar import Litestar, WebSocket
     from litestar.dto import AbstractDTO
     from litestar.routes import BaseRoute
     from litestar.types import Dependencies, EmptyType, ExceptionHandler, Guard, Middleware, TypeEncodersMap
