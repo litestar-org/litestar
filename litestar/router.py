@@ -54,7 +54,6 @@ class Router:
         "include_in_schema",
         "middleware",
         "opt",
-        "owner",
         "parameters",
         "path",
         "registered_route_handler_ids",
@@ -175,7 +174,6 @@ class Router:
         self.include_in_schema = include_in_schema
         self.middleware = list(middleware or [])
         self.opt = dict(opt or {})
-        self.owner: Router | None = None
         self.parameters = dict(parameters or {})
         self.path = normalize_path(path)
         self.request_class = request_class

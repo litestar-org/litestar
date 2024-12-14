@@ -58,28 +58,6 @@ def test_register_with_controller_class(controller: Type[Controller]) -> None:
                 assert route.path == "/base/test"
 
 
-def test_register_controller_on_different_routers(controller: Type[Controller]) -> None:
-    first_router = Router(path="/first", route_handlers=[controller])
-    second_router = Router(path="/second", route_handlers=[controller])
-    third_router = Router(path="/third", route_handlers=[controller])
-
-    for router in (first_router, second_router, third_router):
-        for route in router.routes:
-            if hasattr(route, "route_handlers"):
-                for route_handler in [
-                    handler
-                    for handler in route.route_handlers  # pyright: ignore
-                    if handler.handler_name != "options_handler"
-                ]:
-                    assert route_handler.owner is not None
-                    assert route_handler.owner.owner is not None
-                    assert route_handler.owner.owner is router
-            else:
-                assert route.route_handler.owner is not None  # pyright: ignore
-                assert route.route_handler.owner.owner is not None  # pyright: ignore
-                assert route.route_handler.owner.owner is router  # pyright: ignore
-
-
 def test_register_with_router_instance(controller: Type[Controller]) -> None:
     top_level_router = Router(path="/top-level", route_handlers=[controller])
     base_router = Litestar(path="/base", route_handlers=[top_level_router], openapi_config=None)

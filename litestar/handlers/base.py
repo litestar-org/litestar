@@ -182,7 +182,7 @@ class BaseRouteHandler:
     @property
     def handler_id(self) -> str:
         """A unique identifier used for generation of DTOs."""
-        return f"{self!s}::{sum(id(layer) for layer in self._ownership_layers)}"
+        return f"{self!s}::{id(self)}"
 
     @property
     def default_deserializer(self) -> Callable[[Any, Any], Any]:
@@ -259,14 +259,6 @@ class BaseRouteHandler:
             Name of the handler function
         """
         return get_name(unwrap_partial(self.fn))
-
-    @property
-    def _ownership_layers(self) -> list[Self | Controller | Router]:
-        """Return the handler layers from the app down to the route handler.
-
-        ``app -> ... -> route handler``
-        """
-        return [self]
 
     def _check_registered(self) -> None:
         if not self._registered:
