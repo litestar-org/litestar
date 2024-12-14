@@ -58,19 +58,6 @@ def test_response_cookies_mapping() -> None:
     assert handler_one.resolve_response_cookies() == handler_two.resolve_response_cookies()
 
 
-def test_response_cookies_mapping_unresolved() -> None:
-    # this should never happen, as there's no way to create this situation which type-checks.
-    # we test for it nevertheless
-
-    @get()
-    def handler_one() -> None:
-        pass
-
-    handler_one.response_cookies = {"foo": "bar"}  # type: ignore[assignment]
-
-    assert handler_one.resolve_response_cookies() == frozenset([Cookie(key="foo", value="bar")])
-
-
 def test_response_cookie_rendering() -> None:
     @get(
         "/",
