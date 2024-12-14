@@ -539,10 +539,6 @@ class HTTPRouteHandler(BaseRouteHandler):
             )
         return max_body_size
 
-    def _resolve_after_request(self) -> AfterRequestHookHandler | None:
-        after = [layer.after_request for layer in self._ownership_layers if layer.after_request]
-        return after[-1] if after else None  # type: ignore[return-value]
-
     def on_registration(self, route: BaseRoute, app: Litestar) -> None:
         super().on_registration(route=route, app=app)
 
@@ -558,7 +554,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             return_type=self.parsed_fn_signature.return_type,
             status_code=self.status_code,
             background=self.background,
-            after_request=self._resolve_after_request(),
+            after_request=self.after_request,
         )
 
     def _get_kwargs_model_for_route(self, path_parameters: Iterable[str]) -> KwargsModel:
