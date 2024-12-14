@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-import copy
 import types
 from collections import defaultdict
-from copy import deepcopy
 from operator import attrgetter
 from typing import TYPE_CHECKING, Any, Mapping, Sequence, cast
 
@@ -36,7 +34,6 @@ if TYPE_CHECKING:
         ParametersMap,
         ResponseCookies,
         TypeEncodersMap,
-        ControllerRouterHandler,
     )
     from litestar.types.composite_types import ResponseHeaders, TypeDecodersSequence
     from litestar.types.empty import EmptyType
@@ -256,11 +253,17 @@ class Controller:
         ]
         self_handlers.sort(key=attrgetter("handler_id"))
         for self_handler in self_handlers:
-            route_handler = deepcopy(self_handler)
             # at the point we get a reference to the handler function, it's unbound, so
             # we replace it with a regular bound method here
-            route_handler.fn = types.MethodType(route_handler.fn, self)
-            route_handlers.append(route_handler)
+
+            original_fn = self_handler.fn
+            # in case this was bound before (happens during handler subclassing), we
+            # need to create a new bound method with the current instance
+            if isinstance(original_fn, types.MethodType):
+                original_fn = original_fn.__func__
+
+            self_handler.fn = types.MethodType(original_fn, self)
+            route_handlers.append(self_handler)
 
         self.validate_route_handlers(route_handlers=route_handlers)
 

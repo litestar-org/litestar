@@ -193,13 +193,6 @@ class ParsedSignature:
     original_signature: Signature
     """The raw signature as returned by :func:`inspect.signature`"""
 
-    def __deepcopy__(self, memo: dict[str, Any]) -> Self:
-        return type(self)(
-            parameters={k: deepcopy(v) for k, v in self.parameters.items()},
-            return_type=deepcopy(self.return_type),
-            original_signature=deepcopy(self.original_signature),
-        )
-
     @classmethod
     def from_fn(cls, fn: AnyCallable, signature_namespace: dict[str, Any]) -> Self:
         """Parse a function signature.
