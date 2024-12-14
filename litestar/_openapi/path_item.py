@@ -36,7 +36,7 @@ class PathItemFactory:
             A PathItem instance.
         """
         for http_method, route_handler in self.route.route_handler_map.items():
-            if not route_handler.resolve_include_in_schema():
+            if not route_handler.include_in_schema:
                 continue
 
             operation = self.create_operation_for_handler_method(route_handler, HttpMethod(http_method))
