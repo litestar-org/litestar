@@ -65,7 +65,7 @@ from litestar.utils.warnings import warn_implicit_sync_to_thread, warn_sync_to_t
 if TYPE_CHECKING:
     from typing import Any
 
-    from litestar import Controller, Router, Litestar
+    from litestar import Router, Litestar
     from litestar._kwargs import KwargsModel
     from litestar._kwargs.cleanup import DependencyCleanupGroup
     from litestar.background_tasks import BackgroundTask, BackgroundTasks
@@ -309,7 +309,9 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.media_type: MediaType | str = media_type or ""
         self.request_class = request_class
         self.response_class = response_class
-        self.response_cookies: Sequence[Cookie] | None = narrow_response_cookies(response_cookies)
+        self.response_cookies = (
+            frozenset(narrow_response_cookies(response_cookies)) if response_cookies else frozenset()
+        )
         self.response_headers: frozenset[ResponseHeader] = self._resolve_response_headers(
             response_headers,
             self.etag,
@@ -342,17 +344,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         self._response_type_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType = Empty
         self._resolved_request_max_body_size: int | EmptyType | None = Empty
 
-    def _merge_response_cookies(self, other: ResponseCookies | None) -> frozenset[Cookie] | None:
-        response_cookies = set()
-        for cookies in [self.response_cookies, other]:
-            if not cookies:
-                continue
-            if isinstance(cookies, Mapping):
-                response_cookies.update({Cookie(key=key, value=value) for key, value in cookies.items()})
-            else:
-                response_cookies.update(cookies)
-        return frozenset(response_cookies)
-
     def merge(self, other: Router) -> HTTPRouteHandler:
         return HTTPRouteHandler(
             # base attributes
@@ -383,7 +374,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             request_class=self.request_class or other.request_class,
             request_max_body_size=value_or_default(self.request_max_body_size, other.request_max_body_size),
             response_class=self.response_class or other.response_class,
-            response_cookies=self._merge_response_cookies(other.response_cookies),
+            response_cookies=[*self.response_cookies, *other.response_cookies],
             response_headers=[*other.response_headers, *self.response_headers],
             status_code=self.status_code,
             # OpenAPI related attributes
@@ -454,24 +445,9 @@ class HTTPRouteHandler(BaseRouteHandler):
 
         return frozenset(resolved_response_headers.values())
 
+    @deprecated("3.0", removal_in="4.0", alternative=".response_cookies attribute")
     def resolve_response_cookies(self) -> frozenset[Cookie]:
-        """Return a list of Cookie instances. Filters the list to ensure each cookie key is unique.
-
-        Returns:
-            A list of :class:`Cookie <.datastructures.Cookie>` instances.
-        """
-        response_cookies: set[Cookie] = set()
-        for layer in reversed(self._ownership_layers):
-            if layer_response_cookies := layer.response_cookies:
-                if isinstance(layer_response_cookies, Mapping):
-                    # this can't happen unless you manually set response_cookies on an instance, which would result in a
-                    # type-checking error on everything but the controller. We cover this case nevertheless
-                    response_cookies.update(
-                        {Cookie(key=key, value=value) for key, value in layer_response_cookies.items()}
-                    )
-                else:
-                    response_cookies.update(cast("set[Cookie]", layer_response_cookies))
-        return frozenset(response_cookies)
+        return self.response_cookies
 
     def _resolve_before_request(self) -> AsyncAnyCallable | None:
         """Resolve the before_handler handler by starting from the route handler and moving up.

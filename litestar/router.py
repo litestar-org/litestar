@@ -180,7 +180,7 @@ class Router:
         self.path = normalize_path(path)
         self.request_class = request_class
         self.response_class = response_class
-        self.response_cookies = narrow_response_cookies(response_cookies)
+        self.response_cookies = narrow_response_cookies(response_cookies) if response_cookies else tuple()
         self.response_headers = narrow_response_headers(response_headers) if response_headers else ()
         self.return_dto = return_dto
         self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = []
