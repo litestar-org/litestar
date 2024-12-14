@@ -90,7 +90,6 @@ class HTTPRouteHandler(BaseRouteHandler):
     __slots__ = (
         "_kwargs_models",
         "_include_in_schema",
-        "_resolved_security",
         "_kwargs_models",
         "_response_handler_mapping",
         "_request_max_body_size",
@@ -329,7 +328,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.security = tuple(security) if security else ()
         self.responses = responses
         # memoized attributes, defaulted to Empty
-        self._resolved_security: list[SecurityRequirement] | EmptyType = Empty
         self._kwargs_models: dict[tuple[str, ...], KwargsModel] = {}
         self._default_response_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType = Empty
         self._response_type_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType = Empty
