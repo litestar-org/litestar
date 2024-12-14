@@ -93,7 +93,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         "_resolved_request_max_body_size",
         "_resolved_security",
         "_kwargs_models",
-        "_resolved_tags",
         "_response_handler_mapping",
         "after_request",
         "after_response",
@@ -327,12 +326,11 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.raises = raises
         self.response_description = response_description
         self.summary = summary
-        self.tags = tags
+        self.tags = frozenset(tags) if tags else frozenset()
         self.security = tuple(security) if security else ()
         self.responses = responses
         # memoized attributes, defaulted to Empty
         self._resolved_security: list[SecurityRequirement] | EmptyType = Empty
-        self._resolved_tags: list[str] | EmptyType = Empty
         self._kwargs_models: dict[tuple[str, ...], KwargsModel] = {}
         self._default_response_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType = Empty
         self._response_type_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType = Empty
@@ -495,22 +493,13 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
         return self.security
 
-    def resolve_tags(self) -> list[str]:
+    @deprecated("3.0", removal_in="4.0", alternative=".tags attribute")
+    def resolve_tags(self) -> frozenset[str]:
         """Resolve the tags property by starting from the route handler and moving up.
 
         Tags are additive, so the tags of the route handler are the sum of all tags of the ownership layers.
-
-        Returns:
-            list[str]: A sorted list of unique tags.
         """
-        if self._resolved_tags is Empty:
-            tag_set = set()
-            for layer in self._ownership_layers:
-                for tag in layer.tags or []:
-                    tag_set.add(tag)
-            self._resolved_tags = sorted(tag_set)
-
-        return self._resolved_tags
+        return self.tags
 
     def resolve_request_max_body_size(self) -> int | None:
         if (resolved_limits := self._resolved_request_max_body_size) is not Empty:

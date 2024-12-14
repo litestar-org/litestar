@@ -74,7 +74,7 @@ class PathItemFactory:
 
         return route_handler.operation_class(
             operation_id=operation_id,
-            tags=route_handler.resolve_tags() or None,
+            tags=tuple(sorted(route_handler.tags)) if route_handler.tags else None,
             summary=route_handler.summary or SEPARATORS_CLEANUP_PATTERN.sub("", route_handler.handler_name.title()),
             description=self.create_description_for_handler(route_handler),
             deprecated=route_handler.deprecated,
