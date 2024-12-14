@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import copy
 from functools import partial
+from types import MethodType
 from typing import TYPE_CHECKING, Any, Callable, Iterable, Mapping, Sequence, cast
 
 from litestar._signature import SignatureModel
@@ -157,7 +159,7 @@ class BaseRouteHandler:
         self.fn = fn
         self.parameters = parameters or {}
 
-    def merge(self, other: Controller | Router) -> Self:
+    def merge(self, other: Router) -> Self:
         return BaseRouteHandler(
             path=[join_paths([other.path, p]) for p in self.paths],
             fn=self.fn,
@@ -170,7 +172,6 @@ class BaseRouteHandler:
             name=self.name,
             opt={**other.opt, **self.opt},
             signature_namespace=merge_signature_namespaces(other.signature_namespace, self.signature_namespace),
-            signature_types=other.signature_types,
             type_decoders=(*(other.type_decoders or ()), *self.type_decoders),
             type_encoders={**(other.type_encoders or {}), **self.type_encoders},
             parameters={**other.parameters, **self.parameters},
