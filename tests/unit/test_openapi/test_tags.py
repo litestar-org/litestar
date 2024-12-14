@@ -45,12 +45,12 @@ def openapi_schema(app: Litestar) -> "OpenAPI":
 
 
 def test_openapi_schema_handler_tags(openapi_schema: "OpenAPI") -> None:
-    assert openapi_schema.paths["/handler"].get.tags == ["handler"]  # type: ignore[index, union-attr]
+    assert openapi_schema.paths["/handler"].get.tags == ("handler",)  # type: ignore[index, union-attr]
 
 
 def test_openapi_schema_controller_tags(openapi_schema: "OpenAPI") -> None:
-    assert openapi_schema.paths["/controller"].get.tags == ["a", "controller", "handler"]  # type: ignore[index, union-attr]
+    assert openapi_schema.paths["/controller"].get.tags == ("a", "controller", "handler")  # type: ignore[index, union-attr]
 
 
 def test_openapi_schema_router_tags(openapi_schema: "OpenAPI") -> None:
-    assert openapi_schema.paths["/router/controller"].get.tags == ["a", "controller", "handler", "router"]  # type: ignore[index, union-attr]
+    assert openapi_schema.paths["/router/controller"].get.tags == ("a", "controller", "handler", "router")  # type: ignore[index, union-attr]
