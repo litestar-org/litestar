@@ -449,7 +449,8 @@ class HTTPRouteHandler(BaseRouteHandler):
     def resolve_response_cookies(self) -> frozenset[Cookie]:
         return self.response_cookies
 
-    def _resolve_before_request(self) -> AsyncAnyCallable | None:
+    @deprecated("3.0", removal_in="4.0", alternative=".before_request attribute")
+    def resolve_before_request(self) -> AsyncAnyCallable | None:
         """Resolve the before_handler handler by starting from the route handler and moving up.
 
         If a handler is found it is returned, otherwise None is set.
@@ -458,10 +459,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         Returns:
             An optional :class:`before request lifecycle hook handler <.types.BeforeRequestHookHandler>`
         """
-        if self._resolved_before_request is Empty:
-            before_request_handlers = [layer.before_request for layer in self._ownership_layers if layer.before_request]
-            self._resolved_before_request = before_request_handlers[-1] if before_request_handlers else None
-        return cast("AsyncAnyCallable | None", self._resolved_before_request)
+        return self.before_request
 
     def _resolve_after_response(self) -> AsyncAnyCallable | None:
         """Resolve the after_response handler by starting from the route handler and moving up.
@@ -724,7 +722,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         response_data: Any = None
         cleanup_group: DependencyCleanupGroup | None = None
 
-        if before_request_handler := self._resolve_before_request():
+        if before_request_handler := self.before_request:
             response_data = await before_request_handler(request)
 
         if not response_data:
