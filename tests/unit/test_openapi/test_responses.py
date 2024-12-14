@@ -74,7 +74,7 @@ def test_create_responses(
     for route in Litestar(route_handlers=[person_controller]).routes:
         assert isinstance(route, HTTPRoute)
         for route_handler in route.route_handler_map.values():
-            if route_handler.resolve_include_in_schema():
+            if route_handler.include_in_schema:
                 responses = create_factory(route_handler).create_responses(True)
                 assert responses
                 assert str(route_handler.status_code) in responses

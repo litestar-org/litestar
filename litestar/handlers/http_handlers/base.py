@@ -89,7 +89,7 @@ class ResponseHandlerMap(TypedDict):
 class HTTPRouteHandler(BaseRouteHandler):
     __slots__ = (
         "_kwargs_models",
-        "_resolved_include_in_schema",
+        "_include_in_schema",
         "_resolved_request_max_body_size",
         "_resolved_security",
         "_kwargs_models",
@@ -109,7 +109,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         "etag",
         "has_sync_callable",
         "http_methods",
-        "include_in_schema",
         "media_type",
         "operation_class",
         "operation_id",
@@ -322,7 +321,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.content_media_type = content_media_type
         self.deprecated = deprecated
         self.description = description
-        self.include_in_schema = include_in_schema
+        self._include_in_schema = include_in_schema
         self.operation_class = operation_class
         self.operation_id = operation_id
         self.raises = raises
@@ -332,7 +331,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.security = security
         self.responses = responses
         # memoized attributes, defaulted to Empty
-        self._resolved_include_in_schema: bool | EmptyType = Empty
         self._resolved_security: list[SecurityRequirement] | EmptyType = Empty
         self._resolved_tags: list[str] | EmptyType = Empty
         self._kwargs_models: dict[tuple[str, ...], KwargsModel] = {}
@@ -378,7 +376,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             content_media_type=self.content_media_type,
             deprecated=self.deprecated,
             description=self.description,
-            include_in_schema=value_or_default(self.include_in_schema, other.include_in_schema),
+            include_in_schema=value_or_default(self._include_in_schema, other.include_in_schema),
             operation_class=self.operation_class,
             operation_id=self.operation_id,
             raises=self.raises,
@@ -469,6 +467,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
         return self.after_response
 
+    @deprecated("3.0", removal_in="4.0", alternative=".include_in_schema attribute")
     def resolve_include_in_schema(self) -> bool:
         """Resolve the 'include_in_schema' property by starting from the route handler and moving up.
 
@@ -478,13 +477,11 @@ class HTTPRouteHandler(BaseRouteHandler):
         Returns:
             bool: The resolved 'include_in_schema' property.
         """
-        if self._resolved_include_in_schema is Empty:
-            include_in_schemas = [
-                i.include_in_schema for i in self._ownership_layers if isinstance(i.include_in_schema, bool)
-            ]
-            self._resolved_include_in_schema = include_in_schemas[-1] if include_in_schemas else True
+        return self.include_in_schema
 
-        return self._resolved_include_in_schema
+    @property
+    def include_in_schema(self) -> bool:
+        return self._include_in_schema if self._include_in_schema is not Empty else True
 
     def resolve_security(self) -> list[SecurityRequirement]:
         """Resolve the security property by starting from the route handler and moving up.
@@ -541,8 +538,6 @@ class HTTPRouteHandler(BaseRouteHandler):
 
     def on_registration(self, route: BaseRoute, app: Litestar) -> None:
         super().on_registration(route=route, app=app)
-
-        self.resolve_include_in_schema()
 
         self._get_kwargs_model_for_route(route.path_parameters)
         self._default_response_handler, self._response_type_handler = self._create_response_handlers(
