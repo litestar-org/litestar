@@ -90,10 +90,10 @@ class HTTPRouteHandler(BaseRouteHandler):
     __slots__ = (
         "_kwargs_models",
         "_include_in_schema",
-        "_resolved_request_max_body_size",
         "_resolved_security",
         "_kwargs_models",
         "_response_handler_mapping",
+        "_request_max_body_size",
         "after_request",
         "after_response",
         "background",
@@ -113,7 +113,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         "operation_id",
         "raises",
         "request_class",
-        "request_max_body_size",
         "response_class",
         "response_cookies",
         "response_description",
@@ -313,7 +312,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             self.etag,
             self.cache_control,
         )
-        self.request_max_body_size = request_max_body_size
+        self._request_max_body_size = request_max_body_size
 
         # OpenAPI related attributes
         self.content_encoding = content_encoding
@@ -334,7 +333,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         self._kwargs_models: dict[tuple[str, ...], KwargsModel] = {}
         self._default_response_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType = Empty
         self._response_type_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType = Empty
-        self._resolved_request_max_body_size: int | EmptyType | None = Empty
 
     def merge(self, other: Router) -> HTTPRouteHandler:
         return HTTPRouteHandler(
@@ -364,7 +362,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             etag=self.etag or other.etag,
             media_type=self.media_type,
             request_class=self.request_class or other.request_class,
-            request_max_body_size=value_or_default(self.request_max_body_size, other.request_max_body_size),
+            request_max_body_size=value_or_default(self._request_max_body_size, other.request_max_body_size),
             response_class=self.response_class or other.response_class,
             response_cookies=[*self.response_cookies, *other.response_cookies],
             response_headers=[*other.response_headers, *self.response_headers],
@@ -501,27 +499,22 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
         return self.tags
 
+    @deprecated("3.0", removal_in="4.0", alternative=".request_max_body_size property")
     def resolve_request_max_body_size(self) -> int | None:
-        if (resolved_limits := self._resolved_request_max_body_size) is not Empty:
-            return resolved_limits
+        return self.request_max_body_size
 
-        max_body_size = self._resolved_request_max_body_size = next(  # pyright: ignore
-            (
-                max_body_size
-                for layer in reversed(self._ownership_layers)
-                if (max_body_size := layer.request_max_body_size) is not Empty
-            ),
-            Empty,
-        )
-        if max_body_size is Empty:
+    @property
+    def request_max_body_size(self) -> int | None:
+        return value_or_default(self._request_max_body_size, None)
+
+    def on_registration(self, route: BaseRoute, app: Litestar) -> None:
+        super().on_registration(route=route, app=app)
+
+        if self._request_max_body_size is Empty:
             raise ImproperlyConfiguredException(
                 "'request_max_body_size' set to 'Empty' on all layers. To omit a limit, "
                 "set 'request_max_body_size=None'"
             )
-        return max_body_size
-
-    def on_registration(self, route: BaseRoute, app: Litestar) -> None:
-        super().on_registration(route=route, app=app)
 
         self._get_kwargs_model_for_route(route.path_parameters)
         self._default_response_handler, self._response_type_handler = self._create_response_handlers(
@@ -550,7 +543,7 @@ class HTTPRouteHandler(BaseRouteHandler):
 
         if return_type.annotation is Empty:
             raise ImproperlyConfiguredException(
-                f"A return value of a route handler function {self} should be type annotated. "
+                f"Missing return type annotation for route handler function {self!r}. "
                 "If your function doesn't return a value, annotate it as returning 'None'."
             )
 

@@ -10,7 +10,6 @@ from litestar.exceptions import ImproperlyConfiguredException, ValidationExcepti
 from litestar.handlers.http_handlers import HTTPRouteHandler
 from litestar.params import Body
 from litestar.response import File, Redirect
-from litestar.routes import HTTPRoute
 from litestar.status_codes import (
     HTTP_100_CONTINUE,
     HTTP_200_OK,
@@ -39,7 +38,7 @@ def test_route_handler_validation_http_method() -> None:
 
 
 async def test_function_validation() -> None:
-    with pytest.raises(ImproperlyConfiguredException):
+    with pytest.raises(ImproperlyConfiguredException, match="Missing return type annotation "):
 
         @get(path="/")
         def method_with_no_annotation():  # type: ignore[no-untyped-def]
@@ -47,11 +46,10 @@ async def test_function_validation() -> None:
 
         Litestar(route_handlers=[method_with_no_annotation])
 
-        method_with_no_annotation.on_registration(
-            HTTPRoute(path="/", route_handlers=[method_with_no_annotation]), app=Litestar()
-        )
-
-    with pytest.raises(ImproperlyConfiguredException):
+    with pytest.raises(
+        ImproperlyConfiguredException,
+        match="A status code 204, 304 or in the range below 200 does not support a response body",
+    ):
 
         @delete(path="/")
         def method_with_no_content() -> Dict[str, str]:
@@ -59,11 +57,10 @@ async def test_function_validation() -> None:
 
         Litestar(route_handlers=[method_with_no_content])
 
-        method_with_no_content.on_registration(
-            HTTPRoute(path="/", route_handlers=[method_with_no_content]), app=Litestar()
-        )
-
-    with pytest.raises(ImproperlyConfiguredException):
+    with pytest.raises(
+        ImproperlyConfiguredException,
+        match="A status code 204, 304 or in the range below 200 does not support a response body",
+    ):
 
         @get(path="/", status_code=HTTP_304_NOT_MODIFIED)
         def method_with_not_modified() -> Dict[str, str]:
@@ -71,11 +68,10 @@ async def test_function_validation() -> None:
 
         Litestar(route_handlers=[method_with_not_modified])
 
-        method_with_not_modified.on_registration(
-            HTTPRoute(path="/", route_handlers=[method_with_not_modified]), app=Litestar()
-        )
-
-    with pytest.raises(ImproperlyConfiguredException):
+    with pytest.raises(
+        ImproperlyConfiguredException,
+        match="A status code 204, 304 or in the range below 200 does not support a response body",
+    ):
 
         @get(path="/", status_code=HTTP_100_CONTINUE)
         def method_with_status_lower_than_200() -> Dict[str, str]:
@@ -83,17 +79,11 @@ async def test_function_validation() -> None:
 
         Litestar(route_handlers=[method_with_status_lower_than_200])
 
-        method_with_status_lower_than_200.on_registration(
-            HTTPRoute(path="/", route_handlers=[method_with_status_lower_than_200]), app=Litestar()
-        )
-
     @get(path="/", status_code=HTTP_307_TEMPORARY_REDIRECT)
     def redirect_method() -> Redirect:
         return Redirect("/test")
 
     Litestar(route_handlers=[redirect_method])
-
-    redirect_method.on_registration(HTTPRoute(path="/", route_handlers=[redirect_method]), app=Litestar())
 
     @get(path="/")
     def file_method() -> File:
@@ -101,27 +91,23 @@ async def test_function_validation() -> None:
 
     Litestar(route_handlers=[file_method])
 
-    file_method.on_registration(HTTPRoute(path="/", route_handlers=[file_method]), app=Litestar())
-
     assert not file_method.media_type
 
-    with pytest.raises(ImproperlyConfiguredException):
+    with pytest.raises(ImproperlyConfiguredException, match="The 'socket' kwarg is not supported"):
 
         @get(path="/test")
         def test_function_1(socket: WebSocket) -> None:
             return None
 
-        test_function_1.on_registration(HTTPRoute(path="/", route_handlers=[test_function_1]), app=Litestar())
+        Litestar([test_function_1])
 
-    with pytest.raises(ImproperlyConfiguredException):
+    with pytest.raises(ImproperlyConfiguredException, match="'data' kwarg is unsupported"):
 
         @get("/person")
         def test_function_2(self, data: DataclassPerson) -> None:  # type: ignore[no-untyped-def]
             return None
 
         Litestar(route_handlers=[test_function_2])
-
-        test_function_2.on_registration(HTTPRoute(path="/", route_handlers=[test_function_2]), app=Litestar())
 
 
 @pytest.mark.parametrize(
