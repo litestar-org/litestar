@@ -11,7 +11,7 @@ from typing import Any, Callable, Generic, List, Optional, TypeVar, Union
 import pytest
 from typing_extensions import Annotated, NotRequired, Required, TypedDict, get_args, get_type_hints
 
-from litestar import Controller, Router, post
+from litestar import Controller, post
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.exceptions.base_exceptions import LitestarWarning
 from litestar.response.base import ASGIResponse
@@ -205,7 +205,7 @@ class GenericController(Controller, Generic[T]):
         cls_dict = {"model_class": model_class}
         return type(f"GenericController[{model_class.__name__}", (cls,), cls_dict)
 
-    def __init__(self, owner: Router) -> None:
+    def __init__(self) -> None:
         super().__init__()
         self.signature_namespace[T] = self.model_class  # type: ignore[misc]
 
@@ -228,8 +228,8 @@ def test_using_generics_in_controller_annotations(annotation_type: type, expecte
     class ConcreteController(BaseController[annotation_type]):  # type: ignore[valid-type]
         path = "/"
 
-    controller_object = ConcreteController(owner=None)  # type: ignore[arg-type]
+    controller_object = ConcreteController()
 
-    signature = (controller_object.get_route_handlers()[0]).merge(controller_object).parsed_fn_signature
+    signature = (controller_object.get_route_handlers()[0]).merge(controller_object.as_router()).parsed_fn_signature
     actual = {"data": signature.parameters["data"].annotation, "return": signature.return_type.annotation}
     assert actual == expected

@@ -7,7 +7,7 @@ from msgspec.msgpack import decode as _decode_msgpack_plain
 
 from litestar._layers.utils import narrow_response_cookies, narrow_response_headers
 from litestar.connection import Request
-from litestar.datastructures import CacheControlHeader, ETag, FormMultiDict
+from litestar.datastructures import CacheControlHeader, ETag, FormMultiDict, Header
 from litestar.datastructures.cookie import Cookie
 from litestar.datastructures.response_header import ResponseHeader
 from litestar.enums import HttpMethod, MediaType
@@ -310,7 +310,11 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.request_class = request_class
         self.response_class = response_class
         self.response_cookies: Sequence[Cookie] | None = narrow_response_cookies(response_cookies)
-        self.response_headers: Sequence[ResponseHeader] | None = narrow_response_headers(response_headers)
+        self.response_headers: frozenset[ResponseHeader] = self._resolve_response_headers(
+            response_headers,
+            self.etag,
+            self.cache_control,
+        )
         self.request_max_body_size = request_max_body_size
 
         # OpenAPI related attributes
@@ -349,30 +353,7 @@ class HTTPRouteHandler(BaseRouteHandler):
                 response_cookies.update(cookies)
         return frozenset(response_cookies)
 
-    def _merge_response_headers(self, other: Controller | Router) -> frozenset[ResponseHeader] | None:
-        resolved_response_headers: dict[str, ResponseHeader] = {}
-
-        for layer in [other, self]:
-            if layer_response_headers := layer.response_headers:
-                if isinstance(layer_response_headers, Mapping):
-                    # this can't happen unless you manually set response_headers on an instance, which would result in a
-                    # type-checking error on everything but the controller. We cover this case nevertheless
-                    resolved_response_headers.update(
-                        {name: ResponseHeader(name=name, value=value) for name, value in layer_response_headers.items()}
-                    )
-                elif layer_response_headers:
-                    resolved_response_headers.update({h.name: h for h in layer_response_headers})
-            for extra_header in ("cache_control", "etag"):
-                if header_model := getattr(layer, extra_header, None):
-                    resolved_response_headers[header_model.HEADER_NAME] = ResponseHeader(
-                        name=header_model.HEADER_NAME,
-                        value=header_model.to_header(),
-                        documentation_only=header_model.documentation_only,
-                    )
-
-        return frozenset(resolved_response_headers.values())
-
-    def merge(self, other: Controller | Router) -> HTTPRouteHandler:
+    def merge(self, other: Router) -> HTTPRouteHandler:
         return HTTPRouteHandler(
             # base attributes
             path=[join_paths([other.path, p]) for p in self.paths],
@@ -386,7 +367,6 @@ class HTTPRouteHandler(BaseRouteHandler):
             name=self.name,
             opt={**(other.opt or {}), **(self.opt or {})},
             signature_namespace=merge_signature_namespaces(other.signature_namespace, self.signature_namespace),
-            # signature_types=getattr(other, "signature_types", None),
             type_decoders=(*(other.type_decoders or ()), *self.type_decoders),
             type_encoders={**(other.type_encoders or {}), **self.type_encoders},
             # http handler specific
@@ -404,7 +384,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             request_max_body_size=value_or_default(self.request_max_body_size, other.request_max_body_size),
             response_class=self.response_class or other.response_class,
             response_cookies=self._merge_response_cookies(other.response_cookies),
-            response_headers=self._merge_response_headers(other),
+            response_headers=[*other.response_headers, *self.response_headers],
             status_code=self.status_code,
             # OpenAPI related attributes
             content_encoding=self.content_encoding,
@@ -445,31 +425,32 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
         return self.response_class or Response
 
+    @deprecated("3.0", removal_in="4.0", alternative=".response_headers attribute")
     def resolve_response_headers(self) -> frozenset[ResponseHeader]:
+        return self.response_headers
+
+    @staticmethod
+    def _resolve_response_headers(
+        response_headers: ResponseHeaders | None,
+        *extra_headers: Header | None,
+    ) -> frozenset[ResponseHeader]:
         """Return all header parameters in the scope of the handler function.
 
         Returns:
             A dictionary mapping keys to :class:`ResponseHeader <.datastructures.ResponseHeader>` instances.
         """
-        resolved_response_headers: dict[str, ResponseHeader] = {}
+        resolved_response_headers: dict[str, ResponseHeader] = (
+            {h.name: h for h in narrow_response_headers(response_headers)} if response_headers else {}
+        )
 
-        for layer in self._ownership_layers:
-            if layer_response_headers := layer.response_headers:
-                if isinstance(layer_response_headers, Mapping):
-                    # this can't happen unless you manually set response_headers on an instance, which would result in a
-                    # type-checking error on everything but the controller. We cover this case nevertheless
-                    resolved_response_headers.update(
-                        {name: ResponseHeader(name=name, value=value) for name, value in layer_response_headers.items()}
-                    )
-                else:
-                    resolved_response_headers.update({h.name: h for h in layer_response_headers})
-            for extra_header in ("cache_control", "etag"):
-                if header_model := getattr(layer, extra_header, None):
-                    resolved_response_headers[header_model.HEADER_NAME] = ResponseHeader(
-                        name=header_model.HEADER_NAME,
-                        value=header_model.to_header(),
-                        documentation_only=header_model.documentation_only,
-                    )
+        for extra_header in extra_headers:
+            if extra_header is None:
+                continue
+            resolved_response_headers[extra_header.HEADER_NAME] = ResponseHeader(
+                name=extra_header.HEADER_NAME,
+                value=extra_header.to_header(),
+                documentation_only=extra_header.documentation_only,
+            )
 
         return frozenset(resolved_response_headers.values())
 
@@ -610,7 +591,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             media_type=self.media_type,
             response_class=self.resolve_response_class(),
             cookies=self.resolve_response_cookies(),
-            headers=self.resolve_response_headers(),
+            headers=self.response_headers,
             type_encoders=self.type_encoders,
             return_type=self.parsed_fn_signature.return_type,
             status_code=self.status_code,

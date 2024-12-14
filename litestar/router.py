@@ -181,7 +181,7 @@ class Router:
         self.request_class = request_class
         self.response_class = response_class
         self.response_cookies = narrow_response_cookies(response_cookies)
-        self.response_headers = narrow_response_headers(response_headers)
+        self.response_headers = narrow_response_headers(response_headers) if response_headers else ()
         self.return_dto = return_dto
         self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = []
         self.security = list(security or [])

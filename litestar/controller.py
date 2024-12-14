@@ -209,7 +209,6 @@ class Controller:
         from litestar.router import Router
 
         router = Router(
-            # path="/",  # paths have already been merged inside Controller.get_route_handlers
             path=self.path,
             route_handlers=self.get_route_handlers(),  # type: ignore[arg-type]
             after_request=self.after_request,

@@ -20,7 +20,7 @@ def dummy_method() -> None:
     media_type=st.sampled_from(MediaType),
     include_in_schema=st.booleans(),
     response_class=st.one_of(st.none(), st.just(Response)),
-    response_headers=st.one_of(st.none(), st.builds(list)),
+    response_headers=st.builds(frozenset),
     status_code=st.one_of(st.none(), st.integers(min_value=200, max_value=204)),
     path=st.one_of(st.none(), st.text()),
 )

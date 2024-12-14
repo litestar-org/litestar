@@ -39,7 +39,7 @@ def test_response_headers() -> None:
     )
 
     route_handler = app.routes[0].route_handler_map[HttpMethod.GET]  # type: ignore[union-attr]
-    resolved_headers = {header.name: header for header in route_handler.resolve_response_headers()}
+    resolved_headers = {header.name: header for header in route_handler.response_headers}
     assert resolved_headers["first"].value == local_first.value
     assert resolved_headers["second"].value == controller_second.value
     assert resolved_headers["third"].value == router_second.value
@@ -56,20 +56,7 @@ def test_response_headers_mapping() -> None:
     def handler_two() -> None:
         pass
 
-    assert handler_one.resolve_response_headers() == handler_two.resolve_response_headers()
-
-
-def test_response_headers_mapping_unresolved() -> None:
-    # this should never happen, as there's no way to create this situation which type-checks.
-    # we test for it nevertheless
-
-    @get()
-    def handler_one() -> None:
-        pass
-
-    handler_one.response_headers = {"foo": "bar"}  # type: ignore[assignment]
-
-    assert handler_one.resolve_response_headers() == frozenset([ResponseHeader(name="foo", value="bar")])
+    assert handler_one.response_headers == handler_two.response_headers
 
 
 def test_response_headers_rendering() -> None:
@@ -185,5 +172,5 @@ def test_explicit_headers_override_response_headers(
     app = Litestar(route_handlers=[my_handler])
 
     route_handler = app.routes[0].route_handler_map[HttpMethod.GET]  # type: ignore[union-attr]
-    resolved_headers = {header.name: header for header in route_handler.resolve_response_headers()}
+    resolved_headers = {header.name: header for header in route_handler.response_headers}
     assert resolved_headers[header.HEADER_NAME].value == header.to_header()
