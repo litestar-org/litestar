@@ -89,8 +89,6 @@ class ResponseHandlerMap(TypedDict):
 class HTTPRouteHandler(BaseRouteHandler):
     __slots__ = (
         "_kwargs_models",
-        "_resolved_after_response",
-        "_resolved_before_request",
         "_resolved_include_in_schema",
         "_resolved_request_max_body_size",
         "_resolved_security",
@@ -334,8 +332,6 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.security = security
         self.responses = responses
         # memoized attributes, defaulted to Empty
-        self._resolved_after_response: AsyncAnyCallable | None | EmptyType = Empty
-        self._resolved_before_request: AsyncAnyCallable | None | EmptyType = Empty
         self._resolved_include_in_schema: bool | EmptyType = Empty
         self._resolved_security: list[SecurityRequirement] | EmptyType = Empty
         self._resolved_tags: list[str] | EmptyType = Empty
@@ -461,7 +457,8 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
         return self.before_request
 
-    def _resolve_after_response(self) -> AsyncAnyCallable | None:
+    @deprecated("3.0", removal_in="4.0", alternative=".after_response attribute")
+    def resolve_after_response(self) -> AsyncAnyCallable | None:
         """Resolve the after_response handler by starting from the route handler and moving up.
 
         If a handler is found it is returned, otherwise None is set.
@@ -470,15 +467,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         Returns:
             An optional :class:`after response lifecycle hook handler <.types.AfterResponseHookHandler>`
         """
-        if self._resolved_after_response is Empty:
-            after_response_handlers: list[AsyncAnyCallable] = [
-                layer.after_response  # type: ignore[misc]
-                for layer in self._ownership_layers
-                if layer.after_response
-            ]
-            self._resolved_after_response = after_response_handlers[-1] if after_response_handlers else None
-
-        return cast("AsyncAnyCallable | None", self._resolved_after_response)
+        return self.after_response
 
     def resolve_include_in_schema(self) -> bool:
         """Resolve the 'include_in_schema' property by starting from the route handler and moving up.
@@ -557,7 +546,6 @@ class HTTPRouteHandler(BaseRouteHandler):
     def on_registration(self, route: BaseRoute, app: Litestar) -> None:
         super().on_registration(route=route, app=app)
 
-        self._resolve_after_response()
         self.resolve_include_in_schema()
 
         self._get_kwargs_model_for_route(route.path_parameters)
@@ -694,7 +682,7 @@ class HTTPRouteHandler(BaseRouteHandler):
 
             await response(connection.scope, connection.receive, connection.send)
 
-            if after_response_handler := self._resolve_after_response():
+            if after_response_handler := self.after_response:
                 await after_response_handler(connection)
         finally:
             if (form_data := ScopeState.from_scope(connection.scope).form) is not Empty:
