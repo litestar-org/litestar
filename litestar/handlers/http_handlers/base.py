@@ -328,7 +328,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.response_description = response_description
         self.summary = summary
         self.tags = tags
-        self.security = security
+        self.security = tuple(security) if security else ()
         self.responses = responses
         # memoized attributes, defaulted to Empty
         self._resolved_security: list[SecurityRequirement] | EmptyType = Empty
@@ -467,7 +467,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         """
         return self.after_response
 
-    @deprecated("3.0", removal_in="4.0", alternative=".include_in_schema attribute")
+    @deprecated("3.0", removal_in="4.0", alternative=".include_in_schema property")
     def resolve_include_in_schema(self) -> bool:
         """Resolve the 'include_in_schema' property by starting from the route handler and moving up.
 
@@ -483,7 +483,8 @@ class HTTPRouteHandler(BaseRouteHandler):
     def include_in_schema(self) -> bool:
         return self._include_in_schema if self._include_in_schema is not Empty else True
 
-    def resolve_security(self) -> list[SecurityRequirement]:
+    @deprecated("3.0", removal_in="4.0", alternative=".security attribute")
+    def resolve_security(self) -> tuple[SecurityRequirement, ...]:
         """Resolve the security property by starting from the route handler and moving up.
 
         Security requirements are additive, so the security requirements of the route handler are the sum of all
@@ -492,13 +493,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         Returns:
             list[SecurityRequirement]: The resolved security property.
         """
-        if self._resolved_security is Empty:
-            self._resolved_security = []
-            for layer in self._ownership_layers:
-                if isinstance(layer.security, Sequence):
-                    self._resolved_security.extend(layer.security)
-
-        return self._resolved_security
+        return self.security
 
     def resolve_tags(self) -> list[str]:
         """Resolve the tags property by starting from the route handler and moving up.
