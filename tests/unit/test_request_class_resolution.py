@@ -50,5 +50,5 @@ def test_request_class_resolution_of_layers(
 
     route_handler: HTTPRouteHandler = app.route_handler_method_map["/"][HttpMethod.GET]  # type: ignore[assignment]
 
-    request_class = route_handler.resolve_request_class()
+    request_class = route_handler.request_class
     assert request_class is expected

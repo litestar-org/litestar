@@ -111,8 +111,8 @@ class HTTPRouteHandler(BaseRouteHandler):
         "operation_class",
         "operation_id",
         "raises",
-        "request_class",
-        "response_class",
+        "_request_class",
+        "_response_class",
         "response_cookies",
         "response_description",
         "response_headers",
@@ -301,8 +301,8 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.cache_key_builder = cache_key_builder
         self.etag = etag
         self.media_type: MediaType | str = media_type or ""
-        self.request_class = request_class
-        self.response_class = response_class
+        self._request_class = request_class
+        self._response_class = response_class
         self.response_cookies = (
             frozenset(narrow_response_cookies(response_cookies)) if response_cookies else frozenset()
         )
@@ -359,9 +359,9 @@ class HTTPRouteHandler(BaseRouteHandler):
             cache_key_builder=self.cache_key_builder,
             etag=self.etag or other.etag,
             media_type=self.media_type,
-            request_class=self.request_class or other.request_class,
+            request_class=self._request_class or other.request_class,
+            response_class=self._response_class or other.response_class,
             request_max_body_size=value_or_default(self._request_max_body_size, other.request_max_body_size),
-            response_class=self.response_class or other.response_class,
             response_cookies=[*self.response_cookies, *other.response_cookies],
             response_headers=[*other.response_headers, *self.response_headers],
             status_code=self.status_code,
@@ -383,6 +383,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             parameters={**(other.parameters or {}), **self.parameters},
         )
 
+    @deprecated("3.0", removal_in="4.0", alternative=".request_class property")
     def resolve_request_class(self) -> type[Request]:
         """Return the closest custom Request class in the owner graph or the default Request class.
 
@@ -392,8 +393,13 @@ class HTTPRouteHandler(BaseRouteHandler):
             The default :class:`Request <.connection.Request>` class for the route handler.
         """
 
-        return self.request_class or Request
+        return self.request_class
 
+    @property
+    def request_class(self) -> type[Request]:
+        return self._request_class or Request
+
+    @deprecated("3.0", removal_in="4.0", alternative=".response_class property")
     def resolve_response_class(self) -> type[Response]:
         """Return the closest custom Response class in the owner graph or the default Response class.
 
@@ -402,7 +408,11 @@ class HTTPRouteHandler(BaseRouteHandler):
         Returns:
             The default :class:`Response <.response.Response>` class for the route handler.
         """
-        return self.response_class or Response
+        return self.response_class
+
+    @property
+    def response_class(self) -> type[Response]:
+        return self._response_class or Response
 
     @deprecated("3.0", removal_in="4.0", alternative=".response_headers attribute")
     def resolve_response_headers(self) -> frozenset[ResponseHeader]:
@@ -517,7 +527,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self._get_kwargs_model_for_route(route.path_parameters)
         self._default_response_handler, self._response_type_handler = self._create_response_handlers(
             media_type=self.media_type,
-            response_class=self.resolve_response_class(),
+            response_class=self.response_class,
             cookies=self.resolve_response_cookies(),
             headers=self.response_headers,
             type_encoders=self.type_encoders,
