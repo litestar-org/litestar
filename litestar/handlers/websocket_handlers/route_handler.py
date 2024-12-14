@@ -5,12 +5,11 @@ from typing import TYPE_CHECKING, Any, Callable, Mapping
 from litestar.connection import WebSocket
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import BaseRouteHandler
-from litestar.plugins import PluginRegistry
 from litestar.types import AsyncAnyCallable
 from litestar.types import Empty
 from litestar.types import ParametersMap
 from litestar.types.builtin_types import NoneType
-from litestar.utils import join_paths
+from litestar.utils import join_paths, deprecated
 from litestar.utils.empty import value_or_default
 from litestar.utils.predicates import is_async_callable
 from litestar.utils.signature import merge_signature_namespaces
@@ -24,7 +23,7 @@ if TYPE_CHECKING:
 
 
 class WebsocketRouteHandler(BaseRouteHandler):
-    __slots__ = ("_kwargs_model", "websocket_class")
+    __slots__ = ("_kwargs_model", "_websocket_class")
 
     def __init__(
         self,
@@ -64,7 +63,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
                 default websocket class.
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
-        self.websocket_class = websocket_class
+        self._websocket_class = websocket_class
         self._kwargs_model: KwargsModel | EmptyType = Empty
 
         super().__init__(
@@ -97,10 +96,11 @@ class WebsocketRouteHandler(BaseRouteHandler):
             signature_types=getattr(other, "signature_types", None),
             type_decoders=(*(other.type_decoders or ()), *self.type_decoders),
             type_encoders={**(other.type_encoders or {}), **self.type_encoders},
-            websocket_class=self.websocket_class or other.websocket_class,
+            websocket_class=self._websocket_class or other.websocket_class,
             parameters={**other.parameters, **self.parameters},
         )
 
+    @deprecated("3.0", removal_in="4.0", alternative=".websocket_class property")
     def resolve_websocket_class(self) -> type[WebSocket]:
         """Return the closest custom WebSocket class in the owner graph or the default Websocket class.
 
@@ -109,10 +109,11 @@ class WebsocketRouteHandler(BaseRouteHandler):
         Returns:
             The default :class:`WebSocket <.connection.WebSocket>` class for the route handler.
         """
-        return next(
-            (layer.websocket_class for layer in reversed(self._ownership_layers) if layer.websocket_class is not None),
-            WebSocket,
-        )
+        return self.websocket_class
+
+    @property
+    def websocket_class(self) -> type[WebSocket]:
+        return self._websocket_class or WebSocket
 
     def _validate_handler_function(self, app: Litestar | None = None) -> None:
         """Validate the route handler function once it's set by inspecting its return annotations."""

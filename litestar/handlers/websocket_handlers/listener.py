@@ -202,7 +202,6 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         self.on_disconnect = ensure_async_callable(on_disconnect) if on_disconnect else None
         self.type_decoders = type_decoders
         self.type_encoders = type_encoders
-        self.websocket_class = websocket_class
 
         listener_dependencies = dict(dependencies or {})
 
@@ -251,7 +250,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
             signature_types=getattr(other, "signature_types", None),
             type_decoders=(*(other.type_decoders or ()), *self.type_decoders),
             type_encoders={**(other.type_encoders or {}), **self.type_encoders},
-            websocket_class=self.websocket_class or other.websocket_class,
+            websocket_class=self._websocket_class or other.websocket_class,
             parameters={**other.parameters, **self.parameters},
             receive_mode=self._receive_mode,
             send_mode=self._send_mode,
