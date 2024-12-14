@@ -42,5 +42,5 @@ class WebSocketRoute(BaseRoute[WebSocketScope]):
         Returns:
             None
         """
-        socket = self.route_handler.resolve_websocket_class()(scope=scope, receive=receive, send=send)
+        socket = self.route_handler.websocket_class(scope=scope, receive=receive, send=send)
         await self.route_handler.handle(connection=socket)

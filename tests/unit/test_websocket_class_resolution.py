@@ -54,7 +54,7 @@ def test_websocket_class_resolution_of_layers(
 
     route_handler = app.routes[0].route_handler  # type: ignore[union-attr]
 
-    websocket_class = route_handler.resolve_websocket_class()  # type: ignore[union-attr]
+    websocket_class = route_handler.websocket_class  # type: ignore[union-attr]
     assert websocket_class is expected
 
 
@@ -93,5 +93,5 @@ def test_listener_websocket_class_resolution_of_layers(
     app = Litestar(route_handlers=[router], websocket_class=app_websocket_class)
     route_handler = app.routes[0].route_handler  # type: ignore[union-attr]
 
-    websocket_class = route_handler.resolve_websocket_class()  # type: ignore[union-attr]
+    websocket_class = route_handler.websocket_class  # type: ignore[union-attr]
     assert websocket_class is expected
