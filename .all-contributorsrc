@@ -1923,6 +1923,17 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "ftsartek",
+      "name": "Jordan Russell",
+      "avatar_url": "https://avatars.githubusercontent.com/u/20253317?v=4",
+      "profile": "https://github.com/ftsartek",
+      "contributions": [
+        "doc",
+        "test",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
