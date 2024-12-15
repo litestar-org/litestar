@@ -95,7 +95,7 @@ _MTIME_KEYS: Final = (
     "last_changed",
     "change_time",
     "last_modified",
-    "last_update",
+    "last_updated",
     "timestamp",
 )
 

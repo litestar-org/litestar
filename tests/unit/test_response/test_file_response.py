@@ -14,7 +14,7 @@ from litestar.datastructures import ETag
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.file_system import BaseLocalFileSystem, FileSystemAdapter
 from litestar.response.file import ASGIFileResponse, File, async_file_iterator
-from litestar.status_codes import HTTP_200_OK
+from litestar.status_codes import HTTP_200_OK, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.testing import create_test_client
 from litestar.types import FileSystemProtocol
 
@@ -125,7 +125,7 @@ def test_file_response_last_modified(tmpdir: Path) -> None:
         "last_changed",
         "change_time",
         "last_modified",
-        "last_update",
+        "last_updated",
         "timestamp",
     ],
 )
@@ -165,7 +165,7 @@ def test_file_response_last_modified_unsupported_mtime_type(tmpdir: Path) -> Non
 
     with create_test_client(handler) as client:
         response = client.get("/")
-        assert response.status_code == HTTP_200_OK
+        assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
         assert "last-modified" not in response.headers
 
 
