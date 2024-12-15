@@ -123,7 +123,7 @@ class Redirect(Response[Any]):
             self.url = path
         elif isinstance(query_params, MultiDict):
             # We can't use MultiDictMixin.dict() because it's not deterministic
-            query_params_dict = {k: query_params.getall(k) for k in list(query_params)}
+            query_params_dict = {k: query_params.getall(k) for k in query_params}
             self.url = f"{path}?{urlencode(query_params_dict, doseq=True)}"
         else:
             self.url = f"{path}?{urlencode(query_params, doseq=True)}"
