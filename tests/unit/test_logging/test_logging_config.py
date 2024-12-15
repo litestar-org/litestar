@@ -158,7 +158,7 @@ def test_default_queue_listener_handler(
 
         expected_listener_class = LoggingQueueListener
     elif expected_listener_class_str == "picologging.handlers.QueueListener":
-        from picologging.handlers import QueueListener
+        from picologging.handlers import QueueListener  # pyright: ignore[reportMissingImports]
 
         expected_listener_class = QueueListener
     else:
