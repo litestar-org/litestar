@@ -4,11 +4,14 @@ https://github.com/encode/starlette/blob/master/tests/test_responses.py And are 
 their API.
 """
 
-from typing import TYPE_CHECKING, Optional
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 import pytest
 
 from litestar import get
+from litestar.datastructures import MultiDict
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.response.base import ASGIResponse
 from litestar.response.redirect import ASGIRedirectResponse, Redirect
@@ -20,7 +23,7 @@ if TYPE_CHECKING:
 
 
 def test_redirect_response() -> None:
-    async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def app(scope: Scope, receive: Receive, send: Send) -> None:
         if scope["path"] == "/":
             response = ASGIResponse(body=b"hello, world", media_type="text/plain")
         else:
@@ -34,7 +37,7 @@ def test_redirect_response() -> None:
 
 
 def test_quoting_redirect_response() -> None:
-    async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def app(scope: Scope, receive: Receive, send: Send) -> None:
         if scope["path"] == "/test/":
             response = ASGIResponse(body=b"hello, world", media_type="text/plain")
         else:
@@ -48,7 +51,7 @@ def test_quoting_redirect_response() -> None:
 
 
 def test_redirect_response_content_length_header() -> None:
-    async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def app(scope: Scope, receive: Receive, send: Send) -> None:
         if scope["path"] == "/":
             response = ASGIResponse(body=b"hello", media_type="text/plain")
         else:
@@ -67,7 +70,7 @@ def test_redirect_response_status_validation() -> None:
 
 
 def test_redirect_response_html_media_type() -> None:
-    async def app(scope: "Scope", receive: "Receive", send: "Send") -> None:
+    async def app(scope: Scope, receive: Receive, send: Send) -> None:
         if scope["path"] == "/":
             response = ASGIResponse(body=b"hello")
         else:
@@ -95,7 +98,7 @@ def test_redirect_response_media_type_validation() -> None:
         (308, 308),
     ],
 )
-def test_redirect_dynamic_status_code(status_code: Optional[int], expected_status_code: int) -> None:
+def test_redirect_dynamic_status_code(status_code: int | None, expected_status_code: int) -> None:
     @get("/")
     def handler() -> Redirect:
         return Redirect(path="/something-else", status_code=status_code)  # type: ignore[arg-type]
@@ -107,10 +110,13 @@ def test_redirect_dynamic_status_code(status_code: Optional[int], expected_statu
         assert res.status_code == expected_status_code
 
 
-def test_redirect_with_query_params() -> None:
+@pytest.mark.parametrize(
+    "query_params", [{"single": "a", "list": ["b", "c"]}, MultiDict([("single", "a"), ("list", "b"), ("list", "c")])]
+)
+def test_redirect_with_query_params(query_params: dict[str, str | list[str]] | MultiDict) -> None:
     @get("/")
     def handler() -> Redirect:
-        return Redirect(path="/something-else", query_params={"single": "a", "list": ["b", "c"]})
+        return Redirect(path="/something-else", query_params=query_params)
 
     with create_test_client([handler]) as client:
         location_header = client.get("/", follow_redirects=False).headers["location"]
@@ -119,7 +125,7 @@ def test_redirect_with_query_params() -> None:
 
 
 @pytest.mark.parametrize("handler_status_code", [301, 307, None])
-def test_redirect(handler_status_code: Optional[int]) -> None:
+def test_redirect(handler_status_code: int | None) -> None:
     @get("/", status_code=handler_status_code)
     def handler() -> Redirect:
         return Redirect(path="/something-else", status_code=handler_status_code)  # type: ignore[arg-type]
