@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import itertools
+from datetime import datetime
 from email.utils import formatdate
 from inspect import iscoroutine
 from mimetypes import encodings_map, guess_type
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Coroutine, Iterable, Literal, cast
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Coroutine, Final, Iterable, Literal, cast
 from urllib.parse import quote
 from zlib import adler32
 
@@ -69,7 +70,7 @@ async def async_file_iterator(
             yield chunk
 
 
-def create_etag_for_file(path: PathType, modified_time: float, file_size: int) -> str:
+def create_etag_for_file(path: PathType, modified_time: float | None, file_size: int) -> str:
     """Create an etag.
 
     Notes:
@@ -79,7 +80,42 @@ def create_etag_for_file(path: PathType, modified_time: float, file_size: int) -
         An etag.
     """
     check = adler32(str(path).encode("utf-8")) & 0xFFFFFFFF
-    return f'"{modified_time}-{file_size}-{check}"'
+    parts = [str(file_size), str(check)]
+    if modified_time:
+        parts.insert(0, str(modified_time))
+    return f'"{"-".join(parts)}"'
+
+
+_MTIME_KEYS: Final = (
+    "mtime",
+    "ctime",
+    "Last-Modified",
+    "updated_at",
+    "modification_time",
+    "last_changed",
+    "change_time",
+    "last_modified",
+    "last_update",
+    "timestamp",
+)
+
+
+def get_fsspec_mtime_equivalent(info: dict[str, Any]) -> float | None:
+    """Return the 'mtime' or equivalent for different fsspec implementations, since they
+    are not standardized.
+
+    See https://github.com/fsspec/filesystem_spec/issues/526.
+    """
+    # inspired by https://github.com/mdshw5/pyfaidx/blob/cac82f24e9c4e334cf87a92e477b92d4615d260f/pyfaidx/__init__.py#L1318-L1345
+    mtime: Any | None = next((info[key] for key in _MTIME_KEYS if key in info), None)
+    if mtime is None or isinstance(mtime, float):
+        return mtime
+    if isinstance(mtime, datetime):
+        return mtime.timestamp()
+    if isinstance(mtime, str):
+        return datetime.fromisoformat(mtime.replace("Z", "+00:00")).timestamp()
+
+    raise ValueError(f"Unsupported mtime-type value type {type(mtime)!r}")
 
 
 class ASGIFileResponse(ASGIStreamingResponse):
@@ -217,14 +253,16 @@ class ASGIFileResponse(ASGIStreamingResponse):
         self.content_length = fs_info["size"]
 
         self.headers.setdefault("content-length", str(self.content_length))
-        self.headers.setdefault("last-modified", formatdate(fs_info["mtime"], usegmt=True))
+        mtime = get_fsspec_mtime_equivalent(fs_info)  # type: ignore[arg-type]
+        if mtime is not None:
+            self.headers.setdefault("last-modified", formatdate(mtime, usegmt=True))
 
         if self.etag:
             self.headers.setdefault("etag", self.etag.to_header())
         else:
             self.headers.setdefault(
                 "etag",
-                create_etag_for_file(path=self.file_path, modified_time=fs_info["mtime"], file_size=fs_info["size"]),
+                create_etag_for_file(path=self.file_path, modified_time=mtime, file_size=fs_info["size"]),
             )
 
         await super().start_response(send=send)
