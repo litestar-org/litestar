@@ -8,7 +8,11 @@ import sys
 from contextlib import AbstractContextManager, contextmanager
 from typing import Any, AsyncContextManager, Awaitable, ContextManager, Generator, TypeVar, cast, overload
 
-import picologging
+try:
+    import picologging
+except ImportError:
+    import logging as picologging
+
 from _pytest.logging import LogCaptureHandler, _LiveLoggingNullHandler
 
 from litestar._openapi.schema_generation import SchemaCreator
