@@ -9,6 +9,7 @@ from litestar.enums import HttpMethod
 from litestar.exceptions import ValidationException
 from litestar.response import Response
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
+from litestar.types.asgi_types import HttpMethodName
 from litestar.types.builtin_types import NoneType
 
 if TYPE_CHECKING:
@@ -160,7 +161,7 @@ def create_response_handler(
     return handler
 
 
-def normalize_http_method(http_methods: HttpMethod | Method | Sequence[HttpMethod | Method]) -> set[Method]:
+def normalize_http_method(http_methods: Method | Sequence[Method]) -> set[HttpMethodName]:
     """Normalize HTTP method(s) into a set of upper-case method names.
 
     Args:
@@ -180,10 +181,10 @@ def normalize_http_method(http_methods: HttpMethod | Method | Sequence[HttpMetho
             raise ValidationException(f"Invalid HTTP method: {method_name}")
         output.add(method_name)
 
-    return cast("set[Method]", output)
+    return cast("set[HttpMethodName]", output)
 
 
-def get_default_status_code(http_methods: set[Method]) -> int:
+def get_default_status_code(http_methods: set[HttpMethodName]) -> int:
     """Return the default status code for a given set of HTTP methods.
 
     Args:
