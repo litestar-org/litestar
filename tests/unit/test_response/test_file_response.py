@@ -99,9 +99,19 @@ def test_file_response_last_modified(tmpdir: Path) -> None:
 @pytest.mark.parametrize(
     "mtime,expected_last_modified",
     [
-        (datetime(2000, 1, 2, 3, 4).timestamp(), "Sun, 02 Jan 2000 02:04:00 GMT"),
-        (datetime(2000, 1, 2, 3, 4, tzinfo=timezone.utc), "Sun, 02 Jan 2000 03:04:00 GMT"),
-        (datetime(2000, 1, 2, 3, 4, tzinfo=timezone.utc).isoformat(), "Sun, 02 Jan 2000 03:04:00 GMT"),
+        pytest.param(
+            datetime(2000, 1, 2, 3, 4, 5, tzinfo=timezone.utc).timestamp(),
+            "Sun, 02 Jan 2000 03:04:05 GMT",
+            id="timestamp",
+        ),
+        pytest.param(
+            datetime(2000, 1, 2, 3, 4, 5, tzinfo=timezone.utc), "Sun, 02 Jan 2000 03:04:05 GMT", id="datetime"
+        ),
+        pytest.param(
+            datetime(2000, 1, 2, 3, 4, 5, tzinfo=timezone.utc).isoformat(),
+            "Sun, 02 Jan 2000 03:04:05 GMT",
+            id="isoformat",
+        ),
     ],
 )
 @pytest.mark.parametrize(
