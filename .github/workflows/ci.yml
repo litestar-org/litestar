@@ -123,6 +123,9 @@ jobs:
           version: "0.5.4"
           enable-cache: true
 
+      - name: Install Build Dependencies
+        run: sudo apt-get install build-essential libpq-dev python3-dev -y
+
       - name: Install dependencies
         run: |
           uv sync
@@ -189,6 +192,9 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+
+      - name: Install Build Dependencies
+        run: sudo apt-get install build-essential libpq-dev python3-dev -y
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -259,6 +265,9 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+
+      - name: Install Build Dependencies
+        run: sudo apt-get install build-essential libpq-dev python3-dev -y
 
       - name: Set up Python
         uses: actions/setup-python@v5
