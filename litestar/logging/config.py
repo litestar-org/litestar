@@ -301,7 +301,7 @@ class LoggingConfig(BaseLoggingConfig):
 
             excluded_fields.add("incremental")
         else:
-            from logging import config, getLogger
+            from logging import config, getLogger  # type: ignore[no-redef,assignment,unused-ignore]
 
         values = {
             _field.name: getattr(self, _field.name)
