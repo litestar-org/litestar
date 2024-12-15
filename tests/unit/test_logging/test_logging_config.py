@@ -1,3 +1,4 @@
+import importlib
 import logging
 import sys
 import time
@@ -5,13 +6,9 @@ from importlib.util import find_spec
 from logging.handlers import QueueHandler
 from queue import Queue
 from types import ModuleType
-from typing import TYPE_CHECKING, Any, Dict, Generator, Optional
+from typing import TYPE_CHECKING, Any, Dict, Generator, Optional, cast
 from unittest.mock import patch
 
-try:
-    import picologging  # pyright: ignore[reportMissingImports]
-except ImportError:
-    import logging as picologging  # type: ignore[no-redef,unused-ignore]
 import pytest
 from _pytest.logging import LogCaptureHandler, _LiveLoggingNullHandler
 
@@ -24,9 +21,6 @@ from litestar.logging.config import (
     default_handlers,
     default_picologging_handlers,
 )
-from litestar.logging.picologging import QueueListenerHandler as PicologgingQueueListenerHandler
-from litestar.logging.standard import LoggingQueueListener
-from litestar.logging.standard import QueueListenerHandler as StandardQueueListenerHandler
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 from tests.helpers import cleanup_logging_impl
@@ -37,6 +31,7 @@ if TYPE_CHECKING:
 
 @pytest.fixture(autouse=True)
 def cleanup_logging() -> Generator:
+    _ = pytest.importorskip("picologging")
     with cleanup_logging_impl():
         yield
 
@@ -126,23 +121,30 @@ def test_dictconfig_on_startup(logging_module: str, dict_config_not_called: str)
 
 
 @pytest.mark.parametrize(
-    "logging_module, expected_handler_class, expected_listener_class",
+    "logging_module_str, expected_handler_class_str, expected_listener_class_str",
     [
         [
-            logging,
-            QueueHandler if sys.version_info >= (3, 12, 0) else StandardQueueListenerHandler,
-            LoggingQueueListener,
+            "logging",
+            "QueueHandler" if sys.version_info >= (3, 12, 0) else "StandardQueueListenerHandler",
+            "LoggingQueueListener",
         ],
         [
-            picologging,
-            PicologgingQueueListenerHandler,
-            picologging.handlers.QueueListener,  # pyright: ignore[reportGeneralTypeIssues,reportAttributeAccessIssue]
+            "picologging",
+            "PicologgingQueueListenerHandler",
+            "picologging.handlers.QueueListener",  # pyright: ignore[reportGeneralTypeIssues,reportAttributeAccessIssue]
         ],
     ],
 )
 def test_default_queue_listener_handler(
-    logging_module: ModuleType, expected_handler_class: Any, expected_listener_class: Any, capsys: "CaptureFixture[str]"
+    logging_module_str: str,
+    expected_handler_class_str: str,
+    expected_listener_class_str: str,
+    capsys: "CaptureFixture[str]",
 ) -> None:
+    logging_module = importlib.import_module(logging_module_str)
+    expected_handler_class = importlib.import_module(expected_handler_class_str)
+    expected_listener_class = importlib.import_module(expected_listener_class_str)
+
     def wait_log_queue(queue: Any, sleep_time: float = 0.1, max_retries: int = 5) -> None:
         retry = 0
         while queue.qsize() > 0 and retry < max_retries:
@@ -196,14 +198,16 @@ def test_get_logger_without_logging_config() -> None:
 
 
 @pytest.mark.parametrize(
-    "logging_module, expected_handler_class",
+    "logging_module_str, expected_handler_class_str",
     [
-        [logging, QueueHandler if sys.version_info >= (3, 12, 0) else StandardQueueListenerHandler],
-        [picologging, PicologgingQueueListenerHandler],
+        ["logging", "QueueHandler" if sys.version_info >= (3, 12, 0) else "StandardQueueListenerHandler"],
+        ["picologging", "PicologgingQueueListenerHandler"],
     ],
 )
-def test_default_loggers(logging_module: ModuleType, expected_handler_class: Any) -> None:
-    with create_test_client(logging_config=LoggingConfig(logging_module=logging_module.__name__)) as client:
+def test_default_loggers(logging_module_str: str, expected_handler_class_str: str) -> None:
+    logging_module = importlib.import_module(logging_module_str)
+    expected_handler_class = importlib.import_module(expected_handler_class_str)
+    with create_test_client(logging_config=LoggingConfig(logging_module=logging_module_str)) as client:
         root_logger = client.app.get_logger()
         assert isinstance(root_logger, logging_module.Logger)
         assert root_logger.name == "root"
@@ -219,28 +223,32 @@ def test_default_loggers(logging_module: ModuleType, expected_handler_class: Any
 
 
 @pytest.mark.parametrize(
-    "logging_module, expected_handler_class",
+    "logging_module_str, expected_handler_class_str",
     [
-        ["logging", QueueHandler if sys.version_info >= (3, 12, 0) else StandardQueueListenerHandler],
-        ["picologging", PicologgingQueueListenerHandler],
+        ["logging", "QueueHandler" if sys.version_info >= (3, 12, 0) else "StandardQueueListenerHandler"],
+        ["picologging", "PicologgingQueueListenerHandler"],
     ],
 )
-def test_connection_logger(logging_module: str, expected_handler_class: Any) -> None:
+def test_connection_logger(logging_module_str: str, expected_handler_class_str: str) -> None:
+    logging_module = importlib.import_module(logging_module_str)
+    expected_handler_class = importlib.import_module(expected_handler_class_str)
+
     @get("/")
     def handler(request: Request) -> Dict[str, bool]:
         return {"isinstance": isinstance(request.logger.handlers[0], expected_handler_class)}  # type: ignore[attr-defined]
 
     with create_test_client(
         route_handlers=[handler],
-        logging_config=LoggingConfig(logging_module=logging_module),
+        logging_config=LoggingConfig(logging_module=logging_module_str),
     ) as client:
         response = client.get("/")
         assert response.status_code == HTTP_200_OK
         assert response.json()["isinstance"]
 
 
-@pytest.mark.parametrize("logging_module", [logging, picologging, None])
-def test_validation(logging_module: Optional[ModuleType]) -> None:
+@pytest.mark.parametrize("logging_module_str", ["logging", "picologging", None])
+def test_validation(logging_module_str: Optional[str]) -> None:
+    logging_module = importlib.import_module(logging_module_str) if logging_module_str else None
     if logging_module is None:
         logging_config = LoggingConfig(
             formatters={},
@@ -270,26 +278,29 @@ def test_validation(logging_module: Optional[ModuleType]) -> None:
 
 
 @pytest.mark.parametrize(
-    "logging_module, expected_handler_class",
+    "logging_module_str, expected_handler_class_str",
     [
-        [logging, QueueHandler if sys.version_info >= (3, 12, 0) else StandardQueueListenerHandler],
-        [picologging, PicologgingQueueListenerHandler],
+        ["logging", "QueueHandler" if sys.version_info >= (3, 12, 0) else "StandardQueueListenerHandler"],
+        ["picologging", "PicologgingQueueListenerHandler"],
     ],
 )
-def test_root_logger(logging_module: ModuleType, expected_handler_class: Any) -> None:
-    logging_config = LoggingConfig(logging_module=logging_module.__name__)
+def test_root_logger(logging_module_str: str, expected_handler_class_str: str) -> None:
+    logging_module = importlib.import_module(logging_module_str)
+    expected_handler_class = importlib.import_module(expected_handler_class_str)
+    logging_config = LoggingConfig(logging_module=logging_module_str)
     get_logger = logging_config.configure()
     root_logger = get_logger()
     assert root_logger.name == "root"  # type: ignore[attr-defined]
     assert isinstance(root_logger, logging_module.Logger)
     root_logger_handler = root_logger.handlers[0]  # pyright: ignore[reportGeneralTypeIssues,reportAttributeAccessIssue]
     assert root_logger_handler.name == "queue_listener"
-    assert isinstance(root_logger_handler, expected_handler_class)
+    assert isinstance(root_logger_handler, cast("Any", expected_handler_class))
 
 
-@pytest.mark.parametrize("logging_module", [logging, picologging])
-def test_root_logger_no_config(logging_module: ModuleType) -> None:
-    logging_config = LoggingConfig(logging_module=logging_module.__name__, configure_root_logger=False)
+@pytest.mark.parametrize("logging_module_str", ["logging", "picologging"])
+def test_root_logger_no_config(logging_module_str: str) -> None:
+    logging_module = importlib.import_module(logging_module_str)
+    logging_config = LoggingConfig(logging_module=logging_module_str, configure_root_logger=False)
     get_logger = logging_config.configure()
     root_logger = get_logger()
 
@@ -305,20 +316,23 @@ def test_root_logger_no_config(logging_module: ModuleType) -> None:
 
 
 @pytest.mark.parametrize(
-    "logging_module, configure_root_logger, expected_root_logger_handler_class",
+    "logging_module_str, configure_root_logger, expected_root_logger_handler_class_str",
     [
-        [logging, True, QueueHandler if sys.version_info >= (3, 12, 0) else StandardQueueListenerHandler],
-        [logging, False, None],
-        [picologging, True, PicologgingQueueListenerHandler],
-        [picologging, False, None],
+        ["logging", True, "QueueHandler" if sys.version_info >= (3, 12, 0) else "StandardQueueListenerHandler"],
+        ["logging", False, None],
+        ["picologging", True, "PicologgingQueueListenerHandler"],
+        ["picologging", False, None],
     ],
 )
 def test_customizing_handler(
-    logging_module: ModuleType,
+    logging_module_str: str,
     configure_root_logger: bool,
-    expected_root_logger_handler_class: Any,
+    expected_root_logger_handler_class_str: str,
     capsys: "CaptureFixture[str]",
 ) -> None:
+    logging_module = importlib.import_module(logging_module_str)
+    expected_root_logger_handler_class = importlib.import_module(expected_root_logger_handler_class_str)
+
     log_format = "%(levelname)s :: %(name)s :: %(message)s"
 
     logging_config = LoggingConfig(
@@ -351,7 +365,7 @@ def test_customizing_handler(
 
     # picologging seems to be broken, cannot make it log on stdout?
     # https://github.com/microsoft/picologging/issues/205
-    if logging_module == picologging:
+    if logging_module_str == "picologging":
         del logging_config.handlers["console_stdout"]["stream"]
 
     get_logger = logging_config.configure()
@@ -384,7 +398,7 @@ def test_customizing_handler(
         assert logger.handlers[0].formatter._fmt == log_format
 
         logger.info("Hello from '%s'", logging_module.__name__)
-        if logging_module == picologging:
+        if logging_module_str == "picologging":
             log_output = capsys.readouterr().err.strip()
         else:
             log_output = capsys.readouterr().out.strip()
