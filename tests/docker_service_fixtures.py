@@ -13,6 +13,8 @@ import asyncpg
 import pytest
 from redis.asyncio import Redis as AsyncRedis
 from redis.exceptions import ConnectionError as RedisConnectionError
+from valkey.asyncio import Valkey as AsyncValkey
+from valkey.exceptions import ConnectionError as ValkeyConnectionError
 
 from litestar.utils import ensure_async_callable
 
@@ -125,6 +127,21 @@ async def redis_responsive(host: str) -> bool:
 @pytest.fixture()
 async def redis_service(docker_services: DockerServiceRegistry) -> None:
     await docker_services.start("redis", check=redis_responsive)
+
+
+async def valkey_responsive(host: str) -> bool:
+    client: AsyncValkey = AsyncValkey(host=host, port=6381)
+    try:
+        return await client.ping()
+    except (ConnectionError, ValkeyConnectionError):
+        return False
+    finally:
+        await client.aclose()
+
+
+@pytest.fixture()
+async def valkey_service(docker_services: DockerServiceRegistry) -> None:
+    await docker_services.start("valkey", check=valkey_responsive)
 
 
 async def postgres_responsive(host: str) -> bool:

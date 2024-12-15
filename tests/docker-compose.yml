@@ -12,3 +12,8 @@ services:
     restart: always
     ports:
       - "6397:6379" # use a non-standard port here
+  valkey:
+    image: valkey/valkey:latest
+    restart: always
+    ports:
+      - "6381:6379" # also a non-standard port
