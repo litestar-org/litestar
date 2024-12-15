@@ -39,8 +39,8 @@ dependencies = [
   "eval_type_backport; python_version <= \"3.9\"",
   "importlib-metadata; python_version < \"3.10\"",
   "importlib-resources>=5.12.0; python_version < \"3.9\"",
-  "litestar-msgspec; python_version >= \"3.9\"",
-  "msgspec>=0.18.2,<=0.18.6; python_version < \"3.9\"",
+  "litestar-msgspec; python_version > \"3.8\"",
+  "msgspec>=0.18.2,<0.19.0; python_version < \"3.9\"",
   "multidict>=6.0.2",
   "polyfactory>=2.6.3",
   "pyyaml",
@@ -101,7 +101,7 @@ opentelemetry = ["opentelemetry-instrumentation-asgi"]
 piccolo = ["piccolo"]
 picologging = ["picologging"]
 prometheus = ["prometheus-client"]
-pydantic = ["pydantic", "email-validator", "pydantic-extra-types"]
+pydantic = ["pydantic", "email-validator", "pydantic-extra-types<=2.9.0; python_version < \"3.9\"", "pydantic-extra-types>=2.9.0; python_version >= \"3.9\""]
 redis = ["redis[hiredis]>=4.4.4"]
 sqlalchemy = ["advanced-alchemy>=0.2.2"]
 standard = ["jinja2", "jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0; sys_platform != 'win32'", "fast-query-parsers>=1.0.2"]
@@ -311,6 +311,13 @@ module = [
   "litestar.plugins.pydantic.plugins.int",
 ]
 disable_error_code = "arg-type"
+
+[[tool.mypy.overrides]]
+warn_unused_ignores = false
+module = [
+  "tests.unit.test_logging.test_logging_config",
+]
+disable_error_code = "assignment"
 
 [tool.pydantic-mypy]
 init_forbid_extra = true

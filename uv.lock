@@ -1707,7 +1707,8 @@ full = [
     { name = "picologging", marker = "python_full_version < '3.13'" },
     { name = "prometheus-client" },
     { name = "pydantic" },
-    { name = "pydantic-extra-types" },
+    { name = "pydantic-extra-types", version = "2.9.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
+    { name = "pydantic-extra-types", version = "2.10.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
     { name = "pyjwt" },
     { name = "redis", extra = ["hiredis"] },
     { name = "structlog" },
@@ -1742,7 +1743,8 @@ prometheus = [
 pydantic = [
     { name = "email-validator" },
     { name = "pydantic" },
-    { name = "pydantic-extra-types" },
+    { name = "pydantic-extra-types", version = "2.9.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
+    { name = "pydantic-extra-types", version = "2.10.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
 ]
 redis = [
     { name = "redis", extra = ["hiredis"] },
@@ -1851,7 +1853,7 @@ requires-dist = [
     { name = "litestar-msgspec", marker = "python_full_version >= '3.9'" },
     { name = "mako", marker = "extra == 'mako'", specifier = ">=1.2.4" },
     { name = "minijinja", marker = "extra == 'minijinja'", specifier = ">=1.0.0" },
-    { name = "msgspec", marker = "python_full_version < '3.9'", specifier = ">=0.18.2,<=0.18.6" },
+    { name = "msgspec", marker = "python_full_version < '3.9'", specifier = ">=0.18.2,<0.19.0" },
     { name = "multidict", specifier = ">=6.0.2" },
     { name = "multipart", specifier = ">=1.2.0" },
     { name = "opentelemetry-instrumentation-asgi", marker = "extra == 'opentelemetry'" },
@@ -1860,7 +1862,8 @@ requires-dist = [
     { name = "polyfactory", specifier = ">=2.6.3" },
     { name = "prometheus-client", marker = "extra == 'prometheus'" },
     { name = "pydantic", marker = "extra == 'pydantic'" },
-    { name = "pydantic-extra-types", marker = "extra == 'pydantic'" },
+    { name = "pydantic-extra-types", marker = "python_full_version >= '3.9' and extra == 'pydantic'", specifier = ">=2.9.0" },
+    { name = "pydantic-extra-types", marker = "python_full_version < '3.9' and extra == 'pydantic'", specifier = "<=2.9.0" },
     { name = "pyjwt", marker = "extra == 'jwt'", specifier = ">=2.9.0" },
     { name = "pyyaml" },
     { name = "redis", extras = ["hiredis"], marker = "extra == 'redis'", specifier = ">=4.4.4" },
@@ -3019,11 +3022,35 @@ wheels = [
 
 [[package]]
 name = "pydantic-extra-types"
+version = "2.9.0"
+source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.8.1' and python_full_version < '3.9' and sys_platform != 'win32'",
+    "python_full_version < '3.8.1' and sys_platform != 'win32'",
+    "python_full_version >= '3.8.1' and python_full_version < '3.9' and sys_platform == 'win32'",
+    "python_full_version < '3.8.1' and sys_platform == 'win32'",
+]
+dependencies = [
+    { name = "pydantic", marker = "python_full_version < '3.9'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/fb/95/d61dcadd933cb34461adc271c13bbe14a7080b9922b9e0dc3c1d18b421cb/pydantic_extra_types-2.9.0.tar.gz", hash = "sha256:e061c01636188743bb69f368dcd391f327b8cfbfede2fe1cbb1211b06601ba3b", size = 39578 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/37/2f/efc4877d1a1536ec76ca0114c3e9dee7d0a10a262c53d384d50163f5684c/pydantic_extra_types-2.9.0-py3-none-any.whl", hash = "sha256:f0bb975508572ba7bf3390b7337807588463b7248587e69f43b1ad7c797530d0", size = 30544 },
+]
+
+[[package]]
+name = "pydantic-extra-types"
 version = "2.10.1"
 source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "python_full_version >= '3.9' and python_full_version < '3.13' and sys_platform != 'win32'",
+    "python_full_version >= '3.9' and python_full_version < '3.13' and sys_platform == 'win32'",
+    "python_full_version >= '3.13' and sys_platform != 'win32'",
+    "python_full_version >= '3.13' and sys_platform == 'win32'",
+]
 dependencies = [
-    { name = "pydantic" },
-    { name = "typing-extensions" },
+    { name = "pydantic", marker = "python_full_version >= '3.9'" },
+    { name = "typing-extensions", marker = "python_full_version >= '3.9'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/c3/12/844a4796dbbc814ef0a706f403cb0f3029bf324c2bca2bf0681f4f7d8618/pydantic_extra_types-2.10.1.tar.gz", hash = "sha256:e4f937af34a754b8f1fa228a2fac867091a51f56ed0e8a61d5b3a6719b13c923", size = 85694 }
 wheels = [
