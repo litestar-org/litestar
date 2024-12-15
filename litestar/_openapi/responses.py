@@ -209,7 +209,7 @@ class ResponseFactory:
         else:
             schema_creator = SchemaCreator.from_openapi_context(self.context, generate_examples=False)
 
-        for response_header in self.route_handler.resolve_response_headers():
+        for response_header in self.route_handler.response_headers:
             header = OpenAPIHeader()
             for attribute_name, attribute_value in (
                 (k, v) for k, v in asdict(response_header).items() if v is not None

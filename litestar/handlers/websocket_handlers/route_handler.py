@@ -1,24 +1,27 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable, Mapping
+from typing import TYPE_CHECKING, Any, Callable, Mapping, Sequence
 
 from litestar.connection import WebSocket
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import BaseRouteHandler
-from litestar.types import AsyncAnyCallable, Empty
+from litestar.types import AsyncAnyCallable, Empty, ParametersMap
 from litestar.types.builtin_types import NoneType
+from litestar.utils import deprecated, join_paths
+from litestar.utils.empty import value_or_default
 from litestar.utils.predicates import is_async_callable
+from litestar.utils.signature import merge_signature_namespaces
 
 if TYPE_CHECKING:
+    from litestar import Litestar, Router
     from litestar._kwargs import KwargsModel
     from litestar._kwargs.cleanup import DependencyCleanupGroup
-    from litestar.app import Litestar
     from litestar.routes import BaseRoute
     from litestar.types import Dependencies, EmptyType, ExceptionHandler, Guard, Middleware
 
 
 class WebsocketRouteHandler(BaseRouteHandler):
-    __slots__ = ("_kwargs_model", "websocket_class")
+    __slots__ = ("_kwargs_model", "_websocket_class")
 
     def __init__(
         self,
@@ -27,12 +30,13 @@ class WebsocketRouteHandler(BaseRouteHandler):
         fn: AsyncAnyCallable,
         dependencies: Dependencies | None = None,
         exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
-        guards: list[Guard] | None = None,
-        middleware: list[Middleware] | None = None,
+        guards: Sequence[Guard] | None = None,
+        middleware: Sequence[Middleware] | None = None,
         name: str | None = None,
         opt: dict[str, Any] | None = None,
         signature_namespace: Mapping[str, Any] | None = None,
         websocket_class: type[WebSocket] | None = None,
+        parameters: ParametersMap | None = None,
         **kwargs: Any,
     ) -> None:
         """Route handler for WebSocket routes.
@@ -55,9 +59,10 @@ class WebsocketRouteHandler(BaseRouteHandler):
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
             websocket_class: A custom subclass of :class:`WebSocket <.connection.WebSocket>` to be used as route handler's
                 default websocket class.
+            parameters: A mapping of :func:`Parameter <.params.Parameter>` definitions
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
-        self.websocket_class = websocket_class
+        self._websocket_class = websocket_class
         self._kwargs_model: KwargsModel | EmptyType = Empty
 
         super().__init__(
@@ -70,9 +75,31 @@ class WebsocketRouteHandler(BaseRouteHandler):
             name=name,
             opt=opt,
             signature_namespace=signature_namespace,
+            parameters=parameters,
             **kwargs,
         )
 
+    def merge(self, other: Router) -> WebsocketRouteHandler:
+        return type(self)(
+            path=[join_paths([other.path, p]) for p in self.paths],
+            fn=self.fn,
+            dependencies={**(other.dependencies or {}), **self.dependencies},
+            dto=value_or_default(self.dto, other.dto),
+            return_dto=value_or_default(self.return_dto, other.return_dto),
+            exception_handlers={**(other.exception_handlers or {}), **self.exception_handlers},
+            guards=(*other.guards, *self.guards),
+            middleware=[*(other.middleware or ()), *self.middleware],
+            name=self.name,
+            opt={**(other.opt or {}), **(self.opt or {})},
+            signature_namespace=merge_signature_namespaces(other.signature_namespace, self.signature_namespace),
+            signature_types=getattr(other, "signature_types", None),
+            type_decoders=(*(other.type_decoders or ()), *self.type_decoders),
+            type_encoders={**(other.type_encoders or {}), **self.type_encoders},
+            websocket_class=self._websocket_class or other.websocket_class,
+            parameters={**other.parameters, **self.parameters},
+        )
+
+    @deprecated("3.0", removal_in="4.0", alternative=".websocket_class property")
     def resolve_websocket_class(self) -> type[WebSocket]:
         """Return the closest custom WebSocket class in the owner graph or the default Websocket class.
 
@@ -81,14 +108,15 @@ class WebsocketRouteHandler(BaseRouteHandler):
         Returns:
             The default :class:`WebSocket <.connection.WebSocket>` class for the route handler.
         """
-        return next(
-            (layer.websocket_class for layer in reversed(self.ownership_layers) if layer.websocket_class is not None),
-            WebSocket,
-        )
+        return self.websocket_class
 
-    def _validate_handler_function(self) -> None:
+    @property
+    def websocket_class(self) -> type[WebSocket]:
+        return self._websocket_class or WebSocket
+
+    def _validate_handler_function(self, app: Litestar | None = None) -> None:
         """Validate the route handler function once it's set by inspecting its return annotations."""
-        super()._validate_handler_function()
+        super()._validate_handler_function(app=app)
 
         if not self.parsed_fn_signature.return_type.is_subclass_of(NoneType):
             raise ImproperlyConfiguredException(f"{self}: WebSocket handlers must return 'None'")
@@ -105,8 +133,8 @@ class WebsocketRouteHandler(BaseRouteHandler):
         if not is_async_callable(self.fn):
             raise ImproperlyConfiguredException(f"{self}: WebSocket handler functions must be asynchronous")
 
-    def on_registration(self, app: Litestar, route: BaseRoute) -> None:
-        super().on_registration(app=app, route=route)
+    def on_registration(self, route: BaseRoute, app: Litestar) -> None:
+        super().on_registration(route=route, app=app)
         self._kwargs_model = self._create_kwargs_model(path_parameters=route.path_parameters)
 
     async def handle(self, connection: WebSocket[Any, Any, Any]) -> None:
@@ -119,23 +147,23 @@ class WebsocketRouteHandler(BaseRouteHandler):
             None
         """
 
-        handler_parameter_model = self._kwargs_model
-        if handler_parameter_model is Empty:
+        handler_kwargs_model = self._kwargs_model
+        if handler_kwargs_model is Empty:
             raise ImproperlyConfiguredException("handler parameter model not defined")
 
-        if self.resolve_guards():
+        if self.guards:
             await self.authorize_connection(connection=connection)
 
         parsed_kwargs: dict[str, Any] = {}
         cleanup_group: DependencyCleanupGroup | None = None
 
-        if handler_parameter_model.has_kwargs and self.signature_model:
-            parsed_kwargs = await handler_parameter_model.to_kwargs(connection=connection)
+        if handler_kwargs_model.has_kwargs and self._signature_model:
+            parsed_kwargs = await handler_kwargs_model.to_kwargs(connection=connection)
 
-            if handler_parameter_model.dependency_batches:
-                cleanup_group = await handler_parameter_model.resolve_dependencies(connection, parsed_kwargs)
+            if handler_kwargs_model.dependency_batches:
+                cleanup_group = await handler_kwargs_model.resolve_dependencies(connection, parsed_kwargs)
 
-            parsed_kwargs = self.signature_model.parse_values_from_connection_kwargs(
+            parsed_kwargs = self._signature_model.parse_values_from_connection_kwargs(
                 connection=connection, kwargs=parsed_kwargs
             )
 

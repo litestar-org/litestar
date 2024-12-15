@@ -5,17 +5,21 @@ from typing import TYPE_CHECKING, Any, Callable, Mapping, Sequence
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers.base import BaseRouteHandler
 from litestar.types.builtin_types import NoneType
+from litestar.utils import join_paths
+from litestar.utils.empty import value_or_default
 from litestar.utils.predicates import is_async_callable
 
 __all__ = ("ASGIRouteHandler", "asgi")
 
 
 if TYPE_CHECKING:
+    from litestar import Litestar, Router
     from litestar.connection import ASGIConnection
     from litestar.types import (
         AsyncAnyCallable,
         ExceptionHandlersMap,
         Guard,
+        ParametersMap,
     )
 
 
@@ -33,6 +37,7 @@ class ASGIRouteHandler(BaseRouteHandler):
         opt: Mapping[str, Any] | None = None,
         is_mount: bool = False,
         signature_namespace: Mapping[str, Any] | None = None,
+        parameters: ParametersMap | None = None,
         **kwargs: Any,
     ) -> None:
         """Route handler for ASGI routes.
@@ -55,6 +60,7 @@ class ASGIRouteHandler(BaseRouteHandler):
                 ``/some-path/sub-path/`` etc.
             signature_namespace: A mapping of names to types for use in forward reference resolution during signature modelling.
             type_encoders: A mapping of types to callables that transform them into types supported for serialization.
+            parameters: A mapping of :func:`Parameter <.params.Parameter>` definitions
             **kwargs: Any additional kwarg - will be set in the opt dictionary.
         """
         self.is_mount = is_mount
@@ -66,12 +72,33 @@ class ASGIRouteHandler(BaseRouteHandler):
             name=name,
             opt=opt,
             signature_namespace=signature_namespace,
+            parameters=parameters,
             **kwargs,
         )
 
-    def _validate_handler_function(self) -> None:
+    def merge(self, other: Router) -> ASGIRouteHandler:
+        return type(self)(
+            path=[join_paths([other.path, p]) for p in self.paths],
+            fn=self.fn,
+            dependencies={**(other.dependencies or {}), **self.dependencies},
+            dto=value_or_default(self.dto, other.dto),
+            return_dto=value_or_default(self.return_dto, other.return_dto),
+            exception_handlers={**(other.exception_handlers or {}), **self.exception_handlers},
+            guards=[*(other.guards or []), *self.guards],
+            middleware=[*(other.middleware or ()), *self.middleware],
+            name=self.name,
+            opt={**(other.opt or {}), **(self.opt or {})},
+            signature_namespace={**other.signature_namespace, **self.signature_namespace},
+            signature_types=getattr(other, "signature_types", None),
+            type_decoders=(*(other.type_decoders or ()), *self.type_decoders),
+            type_encoders={**(other.type_encoders or {}), **self.type_encoders},
+            parameters={**other.parameters, **self.parameters},
+            is_mount=self.is_mount,
+        )
+
+    def _validate_handler_function(self, app: Litestar | None = None) -> None:
         """Validate the route handler function once it's set by inspecting its return annotations."""
-        super()._validate_handler_function()
+        super()._validate_handler_function(app=app)
 
         if not self.parsed_fn_signature.return_type.is_subclass_of(NoneType):
             raise ImproperlyConfiguredException("ASGI handler functions should return 'None'")
@@ -95,7 +122,7 @@ class ASGIRouteHandler(BaseRouteHandler):
                 None
         """
 
-        if self.resolve_guards():
+        if self.guards:
             await self.authorize_connection(connection=connection)
 
         await self.fn(scope=connection.scope, receive=connection.receive, send=connection.send)
