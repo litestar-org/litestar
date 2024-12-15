@@ -8,6 +8,7 @@ from typing import (
     Iterable,
     Iterator,
     TypeVar,
+    overload,
 )
 
 from typing_extensions import ParamSpec
@@ -20,6 +21,14 @@ __all__ = ("AsyncCallable", "AsyncIteratorWrapper", "ensure_async_callable", "is
 
 P = ParamSpec("P")
 T = TypeVar("T")
+
+
+@overload
+def ensure_async_callable(fn: Callable[P, Awaitable[T]]) -> Callable[P, Awaitable[T]]: ...
+
+
+@overload
+def ensure_async_callable(fn: Callable[P, T]) -> Callable[P, Awaitable[T]]: ...
 
 
 def ensure_async_callable(fn: Callable[P, T]) -> Callable[P, Awaitable[T]]:

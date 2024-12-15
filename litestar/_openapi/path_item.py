@@ -74,14 +74,14 @@ class PathItemFactory:
 
         return route_handler.operation_class(
             operation_id=operation_id,
-            tags=tuple(sorted(route_handler.tags)) if route_handler.tags else None,
+            tags=sorted(route_handler.tags) if route_handler.tags else None,
             summary=route_handler.summary or SEPARATORS_CLEANUP_PATTERN.sub("", route_handler.handler_name.title()),
             description=self.create_description_for_handler(route_handler),
             deprecated=route_handler.deprecated,
             responses=responses,
             request_body=request_body,
             parameters=parameters or None,  # type: ignore[arg-type]
-            security=route_handler.security or None,
+            security=list(route_handler.security) if route_handler.security else None,
         )
 
     def create_operation_id(self, route_handler: HTTPRouteHandler, http_method: HttpMethod) -> str:

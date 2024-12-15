@@ -10,6 +10,7 @@ from typing import (
     Dict,
     Mapping,
     Optional,
+    Sequence,
     overload,
 )
 
@@ -41,7 +42,7 @@ from .route_handler import WebsocketRouteHandler
 if TYPE_CHECKING:
     from typing import Coroutine
 
-    from litestar import Controller, Litestar, Router
+    from litestar import Litestar, Router
     from litestar.dto import AbstractDTO
     from litestar.routes import BaseRoute
     from litestar.types.asgi_types import WebSocketMode
@@ -77,8 +78,8 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         dependencies: Dependencies | None = None,
         dto: type[AbstractDTO] | None | EmptyType = Empty,
         exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
-        guards: list[Guard] | None = None,
-        middleware: list[Middleware] | None = None,
+        guards: Sequence[Guard] | None = None,
+        middleware: Sequence[Middleware] | None = None,
         receive_mode: WebSocketMode = "text",
         send_mode: WebSocketMode = "text",
         name: str | None = None,
@@ -102,8 +103,8 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         dependencies: Dependencies | None = None,
         dto: type[AbstractDTO] | None | EmptyType = Empty,
         exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
-        guards: list[Guard] | None = None,
-        middleware: list[Middleware] | None = None,
+        guards: Sequence[Guard] | None = None,
+        middleware: Sequence[Middleware] | None = None,
         receive_mode: WebSocketMode = "text",
         send_mode: WebSocketMode = "text",
         name: str | None = None,
@@ -129,8 +130,8 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         dependencies: Dependencies | None = None,
         dto: type[AbstractDTO] | None | EmptyType = Empty,
         exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
-        guards: list[Guard] | None = None,
-        middleware: list[Middleware] | None = None,
+        guards: Sequence[Guard] | None = None,
+        middleware: Sequence[Middleware] | None = None,
         receive_mode: WebSocketMode = "text",
         send_mode: WebSocketMode = "text",
         name: str | None = None,
@@ -199,8 +200,6 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
         self.connection_accept_handler = connection_accept_handler
         self.on_accept = ensure_async_callable(on_accept) if on_accept else None
         self.on_disconnect = ensure_async_callable(on_disconnect) if on_disconnect else None
-        self.type_decoders = type_decoders
-        self.type_encoders = type_encoders
 
         listener_dependencies = dict(dependencies or {})
 
@@ -233,15 +232,15 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
             **kwargs,
         )
 
-    def merge(self, other: Controller | Router) -> WebsocketListenerRouteHandler:
-        return WebsocketListenerRouteHandler(
+    def merge(self, other: Router) -> WebsocketListenerRouteHandler:
+        return type(self)(
             path=[join_paths([other.path, p]) for p in self.paths],
             fn=self.fn,
             dependencies={**(other.dependencies or {}), **self.dependencies},
             dto=value_or_default(self.dto, other.dto),
             return_dto=value_or_default(self.return_dto, other.return_dto),
             exception_handlers={**(other.exception_handlers or {}), **self.exception_handlers},
-            guards=[*(other.guards or []), *self.guards],
+            guards=(*other.guards, *self.guards),
             middleware=[*(other.middleware or ()), *self.middleware],
             name=self.name,
             opt={**(other.opt or {}), **(self.opt or {})},

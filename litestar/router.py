@@ -31,6 +31,7 @@ if TYPE_CHECKING:
         ResponseCookies,
         TypeEncodersMap,
     )
+    from litestar.types.callable_types import AsyncAfterRequestHookHandler, AsyncAfterResponseHookHandler
     from litestar.types.composite_types import Dependencies, ResponseHeaders, TypeDecodersSequence
     from litestar.types.empty import EmptyType
 
@@ -162,15 +163,19 @@ class Router:
                 all route handlers, controllers and other routers associated with the router instance.
         """
 
-        self.after_request = ensure_async_callable(after_request) if after_request else None  # pyright: ignore
-        self.after_response = ensure_async_callable(after_response) if after_response else None
+        self.after_request: AsyncAfterRequestHookHandler | None = (
+            ensure_async_callable(after_request) if after_request else None  # type: ignore[assignment]
+        )
+        self.after_response: AsyncAfterResponseHookHandler | None = (
+            ensure_async_callable(after_response) if after_response else None
+        )
         self.before_request = ensure_async_callable(before_request) if before_request else None
         self.cache_control = cache_control
         self.dto = dto
         self.etag = etag
         self.dependencies = dict(dependencies or {})
         self.exception_handlers = dict(exception_handlers or {})
-        self.guards = list(guards or [])
+        self.guards = tuple(guards or [])
         self.include_in_schema = include_in_schema
         self.middleware = list(middleware or [])
         self.opt = dict(opt or {})

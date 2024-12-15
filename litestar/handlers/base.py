@@ -36,6 +36,7 @@ if TYPE_CHECKING:
     from litestar.router import Router
     from litestar.routes import BaseRoute
     from litestar.types import AnyCallable, AsyncAnyCallable
+    from litestar.types.callable_types import AsyncGuard
     from litestar.types.empty import EmptyType
 
 __all__ = ("BaseRouteHandler",)
@@ -140,7 +141,7 @@ class BaseRouteHandler:
         )
         self.dto = dto
         self.exception_handlers = exception_handlers or {}
-        self.guards = tuple(ensure_async_callable(guard) for guard in guards) if guards else ()
+        self.guards: tuple[AsyncGuard, ...] = tuple(ensure_async_callable(guard) for guard in guards) if guards else ()
         self.middleware = tuple(middleware) if middleware else ()
         self.name = name
         self.opt = dict(opt or {})
@@ -158,14 +159,14 @@ class BaseRouteHandler:
         self.parameters = parameters or {}
 
     def merge(self, other: Router) -> Self:
-        return BaseRouteHandler(
+        return type(self)(
             path=[join_paths([other.path, p]) for p in self.paths],
             fn=self.fn,
             dependencies={**(other.dependencies or {}), **self.dependencies},
             dto=value_or_default(self.dto, other.dto),
             return_dto=value_or_default(self.return_dto, other.return_dto),
             exception_handlers={**(other.exception_handlers or {}), **self.exception_handlers},
-            guards=[*(other.guards or []), *self.guards],
+            guards=(*other.guards, *self.guards),
             middleware=[*(other.middleware or ()), *self.middleware],
             name=self.name,
             opt={**other.opt, **self.opt},
@@ -314,7 +315,7 @@ class BaseRouteHandler:
         self._check_registered()
         return self.dependencies
 
-    def _finalize_dependencies(self, app: Litestar | None = None):
+    def _finalize_dependencies(self, app: Litestar | None = None) -> None:
         dependencies: dict[str, Provide] = {}
 
         # keep track of which providers are available for each dependency
@@ -390,14 +391,18 @@ class BaseRouteHandler:
             data_dto: type[AbstractDTO] | None = None
             if (_data_dto := self.dto) is not Empty:
                 data_dto = _data_dto
-            elif self.parsed_data_field and (
-                plugin_for_data_type := next(
-                    (
-                        plugin
-                        for plugin in app.plugins.serialization
-                        if self.parsed_data_field.match_predicate_recursively(plugin.supports_type)
-                    ),
-                    None,
+            elif (
+                app
+                and self.parsed_data_field
+                and (
+                    plugin_for_data_type := next(
+                        (
+                            plugin
+                            for plugin in app.plugins.serialization
+                            if self.parsed_data_field.match_predicate_recursively(plugin.supports_type)
+                        ),
+                        None,
+                    )
                 )
             ):
                 data_dto = plugin_for_data_type.create_dto_for_type(self.parsed_data_field)
@@ -423,13 +428,15 @@ class BaseRouteHandler:
         if self._resolved_return_dto is Empty:
             if (_return_dto := self.return_dto) is not Empty:
                 return_dto: type[AbstractDTO] | None = _return_dto
-            elif plugin_for_return_type := next(
-                (
-                    plugin
-                    for plugin in app.plugins.serialization
-                    if self.parsed_return_field.match_predicate_recursively(plugin.supports_type)
-                ),
-                None,
+            elif app and (
+                plugin_for_return_type := next(
+                    (
+                        plugin
+                        for plugin in app.plugins.serialization
+                        if self.parsed_return_field.match_predicate_recursively(plugin.supports_type)
+                    ),
+                    None,
+                )
             ):
                 return_dto = plugin_for_return_type.create_dto_for_type(self.parsed_return_field)
             else:
@@ -449,7 +456,7 @@ class BaseRouteHandler:
     async def authorize_connection(self, connection: ASGIConnection) -> None:
         """Ensure the connection is authorized by running all the route guards in scope."""
         for guard in self.guards:
-            await guard(connection, self)  # type: ignore[misc]
+            await guard(connection, self)
 
     def on_registration(self, route: BaseRoute, app: Litestar) -> None:
         """Called once per handler when the app object is instantiated.

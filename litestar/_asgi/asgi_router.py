@@ -148,13 +148,13 @@ class ASGIRouter:
         This map is used in the asgi router to route requests.
         """
         if self._trie_initialized:
-            self._mount_paths_regex: Pattern | None = None
-            self._mount_routes: dict[str, RouteTrieNode] = {}
-            self._plain_routes: set[str] = set()
-            self._registered_routes: set[HTTPRoute | WebSocketRoute | ASGIRoute] = set()
-            self.root_route_map_node: RouteTrieNode = create_node()
-            self.route_handler_index: dict[str, RouteHandlerType] = {}
-            self.route_mapping: dict[str, list[BaseRoute]] = defaultdict(list)
+            self._mount_paths_regex = None
+            self._mount_routes = {}
+            self._plain_routes = set()
+            self._registered_routes = set()
+            self.root_route_map_node = create_node()
+            self.route_handler_index = {}
+            self.route_mapping = defaultdict(list)
 
         for route in self.app.routes:
             add_route_to_trie(
