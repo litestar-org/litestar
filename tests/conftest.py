@@ -18,6 +18,8 @@ from pytest_lazy_fixtures import lf
 from redis.asyncio import Redis as AsyncRedis
 from redis.client import Redis
 from time_machine import travel
+from valkey.asyncio import Valkey as AsyncValkey
+from valkey.client import Valkey
 
 from litestar.logging import LoggingConfig
 from litestar.middleware.session import SessionMiddleware
@@ -29,6 +31,7 @@ from litestar.stores.base import Store
 from litestar.stores.file import FileStore
 from litestar.stores.memory import MemoryStore
 from litestar.stores.redis import RedisStore
+from litestar.stores.valkey import ValkeyStore
 from litestar.testing import RequestFactory
 from tests.helpers import not_none
 
@@ -83,6 +86,11 @@ def redis_store(redis_client: AsyncRedis) -> RedisStore:
 
 
 @pytest.fixture()
+def valkey_store(valkey_client: AsyncValkey) -> ValkeyStore:
+    return ValkeyStore(valkey=valkey_client)
+
+
+@pytest.fixture()
 def memory_store() -> MemoryStore:
     return MemoryStore()
 
@@ -105,7 +113,12 @@ def file_store_create_directories_flag_false(tmp_path: Path) -> FileStore:
 
 
 @pytest.fixture(
-    params=[pytest.param("redis_store", marks=pytest.mark.xdist_group("redis")), "memory_store", "file_store"]
+    params=[
+        pytest.param("redis_store", marks=pytest.mark.xdist_group("redis")),
+        pytest.param("valkey_store", marks=pytest.mark.xdist_group("valkey")),
+        "memory_store",
+        "file_store",
+    ]
 )
 def store(request: FixtureRequest) -> Store:
     return cast("Store", request.getfixturevalue(request.param))
@@ -323,6 +336,20 @@ async def redis_client(docker_ip: str, redis_service: None) -> AsyncGenerator[As
     yield client
     try:
         await client.aclose()  # type: ignore[attr-defined]
+    except RuntimeError:
+        pass
+
+
+@pytest.fixture()
+async def valkey_client(docker_ip: str, valkey_service: None) -> AsyncGenerator[AsyncValkey, None]:
+    # this is to get around some weirdness with pytest-asyncio and valkey interaction
+    # on 3.8 and 3.9
+
+    Valkey(host=docker_ip, port=6381).flushall()
+    client: AsyncValkey = AsyncValkey(host=docker_ip, port=6381)
+    yield client
+    try:
+        await client.aclose()
     except RuntimeError:
         pass
 

@@ -63,6 +63,7 @@ intersphinx_mapping = {
     "trio": ("https://trio.readthedocs.io/en/stable/", None),
     "pydantic": ("https://docs.pydantic.dev/latest/", None),
     "typing_extensions": ("https://typing-extensions.readthedocs.io/en/stable/", None),
+    "valkey": ("https://valkey-py.readthedocs.io/en/latest/", None),
 }
 
 napoleon_google_docstring = True
@@ -102,6 +103,7 @@ nitpick_ignore = [
     (PY_CLASS, "sqlalchemy.dialects.postgresql.named_types.ENUM"),
     (PY_CLASS, "sqlalchemy.orm.decl_api.DeclarativeMeta"),
     (PY_CLASS, "sqlalchemy.sql.sqltypes.TupleType"),
+    (PY_CLASS, "valkey.asyncio.Valkey"),
     (PY_METH, "_types.TypeDecorator.process_bind_param"),
     (PY_METH, "_types.TypeDecorator.process_result_value"),
     (PY_METH, "litestar.typing.ParsedType.is_subclass_of"),
