@@ -190,8 +190,8 @@ class Router:
         )
         self.tags = list(tags or [])
         self.registered_route_handler_ids: set[int] = set()
-        self.type_encoders = dict(type_encoders) if type_encoders is not None else None
-        self.type_decoders = list(type_decoders) if type_decoders is not None else None
+        self.type_encoders = dict(type_encoders) if type_encoders is not None else {}
+        self.type_decoders = list(type_decoders) if type_decoders is not None else ()
         self.websocket_class = websocket_class
         self.request_max_body_size = request_max_body_size
 

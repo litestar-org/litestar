@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import itertools
 from enum import Enum
 from typing import TYPE_CHECKING, AnyStr, Awaitable, Callable, Iterable, Mapping, Sequence, TypedDict, cast
 
@@ -341,56 +342,57 @@ class HTTPRouteHandler(BaseRouteHandler):
         self._default_response_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType = Empty
         self._response_type_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType = Empty
 
-    def merge(self, other: Router) -> HTTPRouteHandler:
-        return type(self)(
-            # base attributes
-            path=[join_paths([other.path, p]) for p in self.paths],
-            fn=self.fn,
-            dependencies={**(other.dependencies or {}), **self.dependencies},
-            dto=value_or_default(self.dto, other.dto),
-            return_dto=value_or_default(self.return_dto, other.return_dto),
-            exception_handlers={**(other.exception_handlers or {}), **self.exception_handlers},
-            guards=[*other.guards, *self.guards],
-            middleware=[*(other.middleware or ()), *self.middleware],
-            name=self.name,
-            opt={**(other.opt or {}), **(self.opt or {})},
-            signature_namespace=merge_signature_namespaces(other.signature_namespace, self.signature_namespace),
-            type_decoders=(*(other.type_decoders or ()), *self.type_decoders),
-            type_encoders={**(other.type_encoders or {}), **self.type_encoders},
-            # http handler specific
-            after_response=self.after_response or other.after_response,
-            after_request=self.after_request or other.after_request,
-            before_request=self.before_request or other.before_request,
+    def _get_merge_opts(self, others: tuple[Router, ...]) -> dict[str, Any]:
+        merge_opts = super()._get_merge_opts(others)
+        merge_opts.update(
             background=self.background,
             http_method=tuple(self.http_methods),
             cache=self.cache,
-            cache_control=self.cache_control or other.cache_control,
-            cache_key_builder=self.cache_key_builder,
-            etag=self.etag or other.etag,
             media_type=self.media_type,
-            request_class=self._request_class or other.request_class,
-            response_class=self._response_class or other.response_class,
-            request_max_body_size=value_or_default(self._request_max_body_size, other.request_max_body_size),
-            response_cookies=[*self.response_cookies, *other.response_cookies],
-            response_headers=[*other.response_headers, *self.response_headers],
             status_code=self.status_code,
             # OpenAPI related attributes
             content_encoding=self.content_encoding,
             content_media_type=self.content_media_type,
             deprecated=self.deprecated,
             description=self.description,
-            include_in_schema=value_or_default(self._include_in_schema, other.include_in_schema),
             operation_class=self.operation_class,
             operation_id=self.operation_id,
             raises=self.raises,
             response_description=self.response_description,
             responses=self.responses,
-            security=[*(other.security or []), *(self.security or [])],
             summary=self.summary,
-            tags=[*(other.tags or []), *(self.tags or [])],
             sync_to_thread=False if self.has_sync_callable else None,
-            parameters={**(other.parameters or {}), **self.parameters},
+            cache_key_builder=self.cache_key_builder,
         )
+
+        for other in (self, *others):
+            merge_opts["after_response"] = merge_opts.get("after_response") or other.after_response
+            merge_opts["after_request"] =  merge_opts.get("after_request") or other.after_request
+            merge_opts["before_request"] =  merge_opts.get("before_request") or other.before_request
+            merge_opts["cache_control"] =  merge_opts.get("cache_control") or other.cache_control
+            merge_opts["etag"] = merge_opts.get("etag") or other.etag
+            merge_opts["response_cookies"] = (*merge_opts.get("response_cookies", ()), *other.response_cookies)
+            merge_opts["response_headers"] = (*other.response_headers, *merge_opts.get("response_headers", ()))
+            merge_opts["security"] = (*other.security, *merge_opts.get("security", ()))
+            merge_opts["tags"] = (*other.tags, *merge_opts.get("tags", ()))
+            if other is not self:
+                merge_opts["request_class"] = merge_opts.get("request_class") or other.request_class
+                merge_opts["response_class"] = merge_opts.get("response_class") or other.response_class
+                merge_opts["include_in_schema"] = value_or_default(
+                    merge_opts.get("include_in_schema", Empty), other.include_in_schema
+                )
+
+        merge_opts["request_class"] = self._request_class or merge_opts.get("request_class")
+        merge_opts["response_class"] = self._response_class or merge_opts.get("response_class")
+        merge_opts["request_max_body_size"] = value_or_default(
+            self._request_max_body_size,
+            next((o.request_max_body_size for o in others if o.request_max_body_size is not Empty), Empty),
+        )
+        merge_opts["include_in_schema"] = value_or_default(
+            self._include_in_schema, merge_opts.get("include_in_schema", Empty)
+        )
+
+        return merge_opts
 
     @deprecated("3.0", removal_in="4.0", alternative=".request_class property")
     def resolve_request_class(self) -> type[Request]:

@@ -6,8 +6,6 @@ from typing import TYPE_CHECKING, Any, Callable, Mapping, Sequence
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers.base import BaseRouteHandler
 from litestar.types.builtin_types import NoneType
-from litestar.utils import join_paths
-from litestar.utils.empty import value_or_default
 from litestar.utils.predicates import is_async_callable
 
 __all__ = ("ASGIRouteHandler", "asgi")
@@ -100,25 +98,11 @@ class ASGIRouteHandler(BaseRouteHandler):
                 stacklevel=1,
             )
 
-    def merge(self, other: Router) -> ASGIRouteHandler:
-        return type(self)(
-            path=[join_paths([other.path, p]) for p in self.paths],
-            fn=self.fn,
-            dependencies={**(other.dependencies or {}), **self.dependencies},
-            dto=value_or_default(self.dto, other.dto),
-            return_dto=value_or_default(self.return_dto, other.return_dto),
-            exception_handlers={**(other.exception_handlers or {}), **self.exception_handlers},
-            guards=[*(other.guards or []), *self.guards],
-            middleware=[*(other.middleware or ()), *self.middleware],
-            name=self.name,
-            opt={**(other.opt or {}), **(self.opt or {})},
-            signature_namespace={**other.signature_namespace, **self.signature_namespace},
-            signature_types=getattr(other, "signature_types", None),
-            type_decoders=(*(other.type_decoders or ()), *self.type_decoders),
-            type_encoders={**(other.type_encoders or {}), **self.type_encoders},
-            parameters={**other.parameters, **self.parameters},
-            is_mount=self.is_mount,
-        )
+    def _get_merge_opts(self, others: tuple[Router, ...]) -> dict[str, Any]:
+        merge_opts = super()._get_merge_opts(others)
+        merge_opts["is_mount"] = self.is_mount
+        return merge_opts
+
 
     def _validate_handler_function(self, app: Litestar | None = None) -> None:
         """Validate the route handler function once it's set by inspecting its return annotations."""

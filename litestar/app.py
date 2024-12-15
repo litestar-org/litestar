@@ -768,20 +768,21 @@ class Litestar(Router):
                 plugin.receive_route(finalized_route)
 
     def _iter_handlers(
-        self, handlers: Iterable[ControllerRouterHandler], bases: Iterable[Router]
-    ) -> Generator[tuple[BaseRouteHandler, Iterable[Router]], None, None]:
+        self, handlers: Iterable[ControllerRouterHandler], bases: list[Router]
+    ) -> Generator[tuple[BaseRouteHandler, list[Router]], None, None]:
         for handler in handlers:
             handler = self._validate_registration_value(handler)
             if isinstance(handler, Router):
-                yield from self._iter_handlers(handler.route_handlers, [handler, *bases])
+                yield from self._iter_handlers(handler.route_handlers, bases=[handler, *bases])
             else:
                 yield handler, bases
 
     def _merge_handlers(self, handlers: list[ControllerRouterHandler]) -> list[BaseRouteHandler]:
         merged_handlers = []
         for handler, bases in self._iter_handlers(handlers, bases=[self]):
-            for base in bases:
-                handler = handler.merge(base)
+            # for base in bases:
+            #     handler = handler.merge(base)
+            handler = handler.merge(*bases)
             merged_handlers.append(handler)
         return merged_handlers
 

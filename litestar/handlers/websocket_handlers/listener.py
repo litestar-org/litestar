@@ -232,24 +232,9 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
             **kwargs,
         )
 
-    def merge(self, other: Router) -> WebsocketListenerRouteHandler:
-        return type(self)(
-            path=[join_paths([other.path, p]) for p in self.paths],
-            fn=self.fn,
-            dependencies={**(other.dependencies or {}), **self.dependencies},
-            dto=value_or_default(self.dto, other.dto),
-            return_dto=value_or_default(self.return_dto, other.return_dto),
-            exception_handlers={**(other.exception_handlers or {}), **self.exception_handlers},
-            guards=(*other.guards, *self.guards),
-            middleware=[*(other.middleware or ()), *self.middleware],
-            name=self.name,
-            opt={**(other.opt or {}), **(self.opt or {})},
-            signature_namespace=merge_signature_namespaces(other.signature_namespace, self.signature_namespace),
-            signature_types=getattr(other, "signature_types", None),
-            type_decoders=(*(other.type_decoders or ()), *self.type_decoders),
-            type_encoders={**(other.type_encoders or {}), **self.type_encoders},
-            websocket_class=self._websocket_class or other.websocket_class,
-            parameters={**other.parameters, **self.parameters},
+    def _get_merge_opts(self, others: tuple[Router, ...]) -> dict[str, Any]:
+        merge_opts = super()._get_merge_opts(others)
+        merge_opts.update(
             receive_mode=self._receive_mode,
             send_mode=self._send_mode,
             connection_lifespan=self._connection_lifespan,
@@ -257,6 +242,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
             on_accept=self.on_accept,
             on_disconnect=self.on_disconnect,
         )
+        return merge_opts
 
     def on_registration(self, route: BaseRoute, app: Litestar) -> None:
         self.fn = self._prepare_fn()

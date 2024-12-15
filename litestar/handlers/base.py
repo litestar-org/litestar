@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import functools
 from functools import partial
 from typing import TYPE_CHECKING, Any, Callable, Iterable, Mapping, Sequence, cast
 
@@ -35,7 +36,7 @@ if TYPE_CHECKING:
     from litestar.dto import AbstractDTO
     from litestar.router import Router
     from litestar.routes import BaseRoute
-    from litestar.types import AnyCallable, AsyncAnyCallable
+    from litestar.types import AsyncAnyCallable
     from litestar.types.callable_types import AsyncGuard
     from litestar.types.empty import EmptyType
 
@@ -158,23 +159,38 @@ class BaseRouteHandler:
         self.fn = fn
         self.parameters = parameters or {}
 
-    def merge(self, other: Router) -> Self:
-        return type(self)(
-            path=[join_paths([other.path, p]) for p in self.paths],
-            fn=self.fn,
-            dependencies={**(other.dependencies or {}), **self.dependencies},
-            dto=value_or_default(self.dto, other.dto),
-            return_dto=value_or_default(self.return_dto, other.return_dto),
-            exception_handlers={**(other.exception_handlers or {}), **self.exception_handlers},
-            guards=(*other.guards, *self.guards),
-            middleware=[*(other.middleware or ()), *self.middleware],
-            name=self.name,
-            opt={**other.opt, **self.opt},
-            signature_namespace=merge_signature_namespaces(other.signature_namespace, self.signature_namespace),
-            type_decoders=(*(other.type_decoders or ()), *self.type_decoders),
-            type_encoders={**(other.type_encoders or {}), **self.type_encoders},
-            parameters={**other.parameters, **self.parameters},
+    def _get_merge_opts(self, others: tuple[Router, ...]) -> dict[str, Any]:
+        """Get kwargs for .merge. """
+        path = functools.reduce(
+            lambda a, b: join_paths([a, b]),
+            (o.path for o in reversed(others)),
         )
+        merge_opts: dict[str, Any] = {
+            "fn": self.fn,
+            "name": self.name,
+            "path": [join_paths([path, p]) for p in self.paths],
+        }
+
+        for other in (self, *others):
+            merge_opts["dependencies"] = {**other.dependencies, **merge_opts.get("dependencies", {})}
+            merge_opts["dto"] = value_or_default(merge_opts.get("dto", Empty), other.dto)
+            merge_opts["return_dto"] = value_or_default(merge_opts.get("return_dto", Empty), other.return_dto)
+            merge_opts["exception_handlers"] = {**other.exception_handlers, **merge_opts.get("exception_handlers", {})}
+            merge_opts["guards"] = (*other.guards, *merge_opts.get("guards", ()))
+
+            merge_opts["middleware"] = (*other.middleware, *merge_opts.get("middleware", ()))
+            merge_opts["opt"] = {**other.opt, **merge_opts.get("opt", {})}
+            merge_opts["type_decoders"] = (*merge_opts.get("type_decoders", ()), *other.type_decoders)
+            merge_opts["type_encoders"] = {**merge_opts.get("type_encoders", {}), **other.type_encoders}
+            merge_opts["parameters"] = {**merge_opts.get("parameters", {}), **other.parameters}
+            merge_opts["signature_namespace"] = merge_signature_namespaces(
+                merge_opts.get("signature_namespace", {}), other.signature_namespace
+            )
+
+        return merge_opts
+
+    def merge(self, *others: Router) -> Self:
+        return type(self)(**self._get_merge_opts(others))
 
     def finalize(self) -> Self:
         return self
