@@ -32,12 +32,13 @@ class Book(base.UUIDAuditBase):
 
 session_config = AsyncSessionConfig(expire_on_commit=False)
 sqlalchemy_config = SQLAlchemyAsyncConfig(
-    connection_string="sqlite+aiosqlite:///test.sqlite", session_config=session_config, create_all=True
+    connection_string="sqlite+aiosqlite:///test.sqlite", session_config=session_config
 )  # Create 'async_session' dependency.
 
 
-async def on_startup() -> None:
+async def on_startup(app: Litestar) -> None:
     """Adds some dummy data if no data is present."""
+    await sqlalchemy_config.create_all_metadata(app)
     async with sqlalchemy_config.get_session() as session:
         statement = select(func.count()).select_from(Author)
         count = await session.execute(statement)
