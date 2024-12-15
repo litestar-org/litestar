@@ -92,7 +92,7 @@ def cleanup_logging_impl() -> Generator:
             std_root_logger.removeHandler(std_handler)
     picologging = pytest.importorskip("picologging")
     # Reset root logger (`picologging` module)
-    pico_root_logger: picologging.Logger = picologging.getLogger()  # pyright: ignore[reportPrivateUsage,reportGeneralTypeIssues,reportAssignmentType,reportInvalidTypeForm]
+    pico_root_logger: picologging.Logger = picologging.getLogger()  # type: ignore[name-defined,unused-ignore] # pyright: ignore[reportPrivateUsage,reportGeneralTypeIssues,reportAssignmentType,reportInvalidTypeForm]
     for pico_handler in pico_root_logger.handlers:
         pico_root_logger.removeHandler(pico_handler)
 
