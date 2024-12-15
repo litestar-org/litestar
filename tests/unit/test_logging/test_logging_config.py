@@ -8,7 +8,10 @@ from types import ModuleType
 from typing import TYPE_CHECKING, Any, Dict, Generator, Optional
 from unittest.mock import patch
 
-import picologging
+try:
+    import picologging  # pyright: ignore[reportMissingImports]
+except ImportError:
+    import logging as picologging  # type: ignore[no-redef,unused-ignore]
 import pytest
 from _pytest.logging import LogCaptureHandler, _LiveLoggingNullHandler
 
@@ -133,7 +136,7 @@ def test_dictconfig_on_startup(logging_module: str, dict_config_not_called: str)
         [
             picologging,
             PicologgingQueueListenerHandler,
-            picologging.handlers.QueueListener,  # pyright: ignore[reportGeneralTypeIssues]
+            picologging.handlers.QueueListener,  # pyright: ignore[reportGeneralTypeIssues,reportAttributeAccessIssue]
         ],
     ],
 )
@@ -168,7 +171,7 @@ def test_default_queue_listener_handler(
     logger = get_logger("test_logger")
     assert type(logger) is logging_module.Logger
 
-    handler = logger.handlers[0]  # pyright: ignore[reportGeneralTypeIssues]
+    handler = logger.handlers[0]  # pyright: ignore[reportGeneralTypeIssues,reportAttributeAccessIssue]
     assert type(handler) is expected_handler_class
     assert type(handler.queue) is Queue
 
@@ -279,7 +282,7 @@ def test_root_logger(logging_module: ModuleType, expected_handler_class: Any) ->
     root_logger = get_logger()
     assert root_logger.name == "root"  # type: ignore[attr-defined]
     assert isinstance(root_logger, logging_module.Logger)
-    root_logger_handler = root_logger.handlers[0]  # pyright: ignore[reportGeneralTypeIssues]
+    root_logger_handler = root_logger.handlers[0]  # pyright: ignore[reportGeneralTypeIssues,reportAttributeAccessIssue]
     assert root_logger_handler.name == "queue_listener"
     assert isinstance(root_logger_handler, expected_handler_class)
 
@@ -292,7 +295,7 @@ def test_root_logger_no_config(logging_module: ModuleType) -> None:
 
     assert isinstance(root_logger, logging_module.Logger)
 
-    handlers = root_logger.handlers  # pyright: ignore[reportGeneralTypeIssues]
+    handlers = root_logger.handlers  # pyright: ignore[reportGeneralTypeIssues,reportAttributeAccessIssue]
     if logging_module == logging:
         # pytest automatically configures some handlers
         for handler in handlers:
@@ -356,9 +359,9 @@ def test_customizing_handler(
 
     if configure_root_logger is True:
         assert isinstance(root_logger, logging_module.Logger)
-        assert root_logger.level == logging_module.INFO  # pyright: ignore[reportGeneralTypeIssues]
+        assert root_logger.level == logging_module.INFO  # pyright: ignore[reportGeneralTypeIssues,reportAttributeAccessIssue]
 
-        root_logger_handler = root_logger.handlers[0]  # pyright: ignore[reportGeneralTypeIssues]
+        root_logger_handler = root_logger.handlers[0]  # pyright: ignore[reportGeneralTypeIssues,reportAttributeAccessIssue]
         assert root_logger_handler.name == "queue_listener"
         assert type(root_logger_handler) is expected_root_logger_handler_class
 

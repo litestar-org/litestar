@@ -10,13 +10,12 @@ from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from litestar import Litestar, get
-from litestar.contrib.sqlalchemy.base import UUIDAuditBase, UUIDBase
-from litestar.contrib.sqlalchemy.plugins import AsyncSessionConfig, SQLAlchemyAsyncConfig, SQLAlchemyPlugin
+from litestar.plugins.sqlalchemy import AsyncSessionConfig, SQLAlchemyAsyncConfig, SQLAlchemyPlugin, base
 
 
 # The SQLAlchemy base includes a declarative model for you to use in your models.
 # The `UUIDBase` class includes a `UUID` based primary key (`id`)
-class Author(UUIDBase):
+class Author(base.UUIDBase):
     name: Mapped[str]
     dob: Mapped[date]
     books: Mapped[List[Book]] = relationship(back_populates="author", lazy="selectin")
@@ -25,7 +24,7 @@ class Author(UUIDBase):
 # The `UUIDAuditBase` class includes the same UUID` based primary key (`id`) and 2
 # additional columns: `created_at` and `updated_at`. `created_at` is a timestamp of when the
 # record created, and `updated_at` is the last time the record was modified.
-class Book(UUIDAuditBase):
+class Book(base.UUIDAuditBase):
     title: Mapped[str]
     author_id: Mapped[UUID] = mapped_column(ForeignKey("author.id"))
     author: Mapped[Author] = relationship(lazy="joined", innerjoin=True, viewonly=True)

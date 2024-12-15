@@ -9,9 +9,9 @@ from contextlib import AbstractContextManager, contextmanager
 from typing import Any, AsyncContextManager, Awaitable, ContextManager, Generator, TypeVar, cast, overload
 
 try:
-    import picologging
+    import picologging  # pyright: ignore[reportMissingImports]
 except ImportError:
-    import logging as picologging
+    import logging as picologging  # type: ignore[no-redef,unused-ignore]
 
 from _pytest.logging import LogCaptureHandler, _LiveLoggingNullHandler
 
@@ -96,7 +96,7 @@ def cleanup_logging_impl() -> Generator:
             std_root_logger.removeHandler(std_handler)
 
     # Reset root logger (`picologging` module)
-    pico_root_logger: picologging.Logger = picologging.getLogger()
+    pico_root_logger: picologging.Logger = picologging.getLogger()  # pyright: ignore[reportPrivateUsage,reportGeneralTypeIssues,reportAssignmentType]
     for pico_handler in pico_root_logger.handlers:
         pico_root_logger.removeHandler(pico_handler)
 

@@ -141,7 +141,7 @@ dev = [
   "hypercorn>=0.16.0",
   "daphne>=4.0.0",
   "opentelemetry-sdk",
-  "httpx-sse"
+  "httpx-sse",
 ]
 
 docs = [
@@ -286,6 +286,8 @@ module = [
   "pytimeparse.*",
   "importlib_resources",
   "exceptiongroup",
+  "picologging",
+  "picologging.*"
 ]
 
 [[tool.mypy.overrides]]
