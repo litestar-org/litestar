@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable, Mapping
+from typing import TYPE_CHECKING, Any, Callable, Mapping, Sequence
 
 from litestar.connection import WebSocket
 from litestar.exceptions import ImproperlyConfiguredException
@@ -13,7 +13,7 @@ from litestar.utils.predicates import is_async_callable
 from litestar.utils.signature import merge_signature_namespaces
 
 if TYPE_CHECKING:
-    from litestar import Controller, Litestar, Router
+    from litestar import Litestar, Router
     from litestar._kwargs import KwargsModel
     from litestar._kwargs.cleanup import DependencyCleanupGroup
     from litestar.routes import BaseRoute
@@ -30,8 +30,8 @@ class WebsocketRouteHandler(BaseRouteHandler):
         fn: AsyncAnyCallable,
         dependencies: Dependencies | None = None,
         exception_handlers: dict[int | type[Exception], ExceptionHandler] | None = None,
-        guards: list[Guard] | None = None,
-        middleware: list[Middleware] | None = None,
+        guards: Sequence[Guard] | None = None,
+        middleware: Sequence[Middleware] | None = None,
         name: str | None = None,
         opt: dict[str, Any] | None = None,
         signature_namespace: Mapping[str, Any] | None = None,
@@ -79,7 +79,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
             **kwargs,
         )
 
-    def merge(self, other: Controller | Router) -> WebsocketRouteHandler:
+    def merge(self, other: Router) -> WebsocketRouteHandler:
         return type(self)(
             path=[join_paths([other.path, p]) for p in self.paths],
             fn=self.fn,
@@ -87,7 +87,7 @@ class WebsocketRouteHandler(BaseRouteHandler):
             dto=value_or_default(self.dto, other.dto),
             return_dto=value_or_default(self.return_dto, other.return_dto),
             exception_handlers={**(other.exception_handlers or {}), **self.exception_handlers},
-            guards=[*(other.guards or []), *self.guards],
+            guards=(*other.guards, *self.guards),
             middleware=[*(other.middleware or ()), *self.middleware],
             name=self.name,
             opt={**(other.opt or {}), **(self.opt or {})},

@@ -70,9 +70,14 @@ if TYPE_CHECKING:
     from litestar.dto import AbstractDTO
     from litestar.openapi.datastructures import ResponseSpec
     from litestar.openapi.spec import SecurityRequirement
-    from litestar.plugins import PluginRegistry
     from litestar.routes import BaseRoute
-    from litestar.types.callable_types import AsyncAnyCallable, OperationIDCreator
+    from litestar.types.callable_types import (
+        AsyncAfterRequestHookHandler,
+        AsyncAfterResponseHookHandler,
+        AsyncAnyCallable,
+        AsyncBeforeRequestHookHandler,
+        OperationIDCreator,
+    )
     from litestar.types.composite_types import ParametersMap, TypeDecodersSequence
     from litestar.typing import FieldDefinition
 
@@ -289,10 +294,16 @@ class HTTPRouteHandler(BaseRouteHandler):
             **kwargs,
         )
 
-        self.after_request = ensure_async_callable(after_request) if after_request else None  # pyright: ignore
-        self.after_response = ensure_async_callable(after_response) if after_response else None
+        self.after_request: AsyncAfterRequestHookHandler | None = (
+            ensure_async_callable(after_request) if after_request else None  # type: ignore[assignment]
+        )
+        self.after_response: AsyncAfterResponseHookHandler | None = (
+            ensure_async_callable(after_response) if after_response else None
+        )
         self.background = background
-        self.before_request = ensure_async_callable(before_request) if before_request else None
+        self.before_request: AsyncBeforeRequestHookHandler | None = (
+            ensure_async_callable(before_request) if before_request else None
+        )
         self.cache = cache
         self.cache_control = cache_control
         self.cache_key_builder = cache_key_builder
@@ -300,9 +311,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self.media_type: MediaType | str = media_type or ""
         self._request_class = request_class
         self._response_class = response_class
-        self.response_cookies = (
-            frozenset(narrow_response_cookies(response_cookies)) if response_cookies else frozenset()
-        )
+        self.response_cookies = frozenset(narrow_response_cookies(response_cookies if response_cookies else ()))
         self.response_headers: frozenset[ResponseHeader] = self._resolve_response_headers(
             response_headers,
             self.etag,
@@ -330,7 +339,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         self._response_type_handler: Callable[[Any], Awaitable[ASGIApp]] | EmptyType = Empty
 
     def merge(self, other: Router) -> HTTPRouteHandler:
-        return HTTPRouteHandler(
+        return type(self)(
             # base attributes
             path=[join_paths([other.path, p]) for p in self.paths],
             fn=self.fn,
@@ -338,7 +347,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             dto=value_or_default(self.dto, other.dto),
             return_dto=value_or_default(self.return_dto, other.return_dto),
             exception_handlers={**(other.exception_handlers or {}), **self.exception_handlers},
-            guards=[*(other.guards or []), *self.guards],
+            guards=[*other.guards, *self.guards],
             middleware=[*(other.middleware or ()), *self.middleware],
             name=self.name,
             opt={**(other.opt or {}), **(self.opt or {})},
@@ -540,7 +549,7 @@ class HTTPRouteHandler(BaseRouteHandler):
             model = self._kwargs_models[key] = self._create_kwargs_model(path_parameters)
         return model
 
-    def _validate_handler_function(self, app: PluginRegistry | None = None) -> None:
+    def _validate_handler_function(self, app: Litestar | None = None) -> None:
         """Validate the route handler function once it is set by inspecting its return annotations."""
         super()._validate_handler_function(app=app)
 

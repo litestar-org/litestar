@@ -91,19 +91,5 @@ def test_guards_layering_for_same_route_handler() -> None:
     router = Router(path="/router", route_handlers=[http_route_handler], guards=[router_guard])
     app = Litestar(route_handlers=[http_route_handler, router], guards=[app_guard])
 
-    assert (
-        len(
-            app.asgi_router.root_route_map_node.children["/http"]
-            .asgi_handlers["GET"][1]  # type: ignore[arg-type]
-            .guards
-        )
-        == 2
-    )
-    assert (
-        len(
-            app.asgi_router.root_route_map_node.children["/router/http"]
-            .asgi_handlers["GET"][1]  # type: ignore[arg-type]
-            .guards
-        )
-        == 3
-    )
+    assert len(app.asgi_router.root_route_map_node.children["/http"].asgi_handlers["GET"][1].guards) == 2
+    assert len(app.asgi_router.root_route_map_node.children["/router/http"].asgi_handlers["GET"][1].guards) == 3

@@ -91,7 +91,7 @@ def test_schema_with_route_security_overridden(protected_route: "HTTPRouteHandle
     schema_dict = schema.to_schema()
 
     route = schema_dict["paths"]["/protected"]["get"]
-    assert route.get("security", None) == ({"BearerToken": []},)
+    assert route.get("security", None) == [{"BearerToken": []}]
 
 
 def test_layered_security_declaration() -> None:
@@ -148,9 +148,9 @@ def test_layered_security_declaration() -> None:
     paths = app.openapi_schema.paths
     assert paths
     assert paths["/router/controller"].get
-    assert paths["/router/controller"].get.security == (
+    assert paths["/router/controller"].get.security == [
         {"appToken": []},
         {"routerToken": []},
         {"controllerToken": []},
         {"handlerToken": []},
-    )
+    ]

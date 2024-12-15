@@ -13,7 +13,7 @@ __all__ = ("ASGIRouteHandler", "asgi")
 
 
 if TYPE_CHECKING:
-    from litestar import Controller, Litestar, Router
+    from litestar import Litestar, Router
     from litestar.connection import ASGIConnection
     from litestar.types import (
         AsyncAnyCallable,
@@ -76,8 +76,8 @@ class ASGIRouteHandler(BaseRouteHandler):
             **kwargs,
         )
 
-    def merge(self, other: Controller | Router) -> ASGIRouteHandler:
-        return ASGIRouteHandler(
+    def merge(self, other: Router) -> ASGIRouteHandler:
+        return type(self)(
             path=[join_paths([other.path, p]) for p in self.paths],
             fn=self.fn,
             dependencies={**(other.dependencies or {}), **self.dependencies},

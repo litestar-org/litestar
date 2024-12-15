@@ -693,7 +693,7 @@ class Litestar(Router):
     @classmethod
     def get_route_handler_map(
         cls,
-        value: RouteHandlerType | Router,
+        value: BaseRouteHandler | Litestar,
     ) -> dict[str, RouteHandlerMapItem]:
         """Map route handlers to HTTP methods."""
         if isinstance(value, Litestar):
@@ -706,15 +706,13 @@ class Litestar(Router):
             path: {"websocket" if isinstance(value, WebsocketRouteHandler) else "asgi": value} for path in value.paths
         }
 
-    def _finalize_routes(self, value: ControllerRouterHandler) -> None:
+    def _finalize_routes(self, value: BaseRouteHandler) -> None:
         from litestar.handlers import HTTPRouteHandler
         from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
 
-        validated_value = value
+        finalized_routes: list[BaseRoute] = []
 
-        routes: list[BaseRoute] = []
-
-        for path, handlers_map in self.get_route_handler_map(value=validated_value).items():
+        for path, handlers_map in self.get_route_handler_map(value=value).items():
             if http_handlers := unique(
                 [handler for handler in handlers_map.values() if isinstance(handler, HTTPRouteHandler)]
             ):
@@ -742,26 +740,26 @@ class Litestar(Router):
                     )
                     self.routes.append(route)
 
-                routes.append(route)
+                finalized_routes.append(route)
 
             if websocket_handler := handlers_map.get("websocket"):
                 route = WebSocketRoute(path=path, route_handler=cast(WebsocketRouteHandler, websocket_handler))
                 self.routes.append(route)
-                routes.append(route)
+                finalized_routes.append(route)
 
             if asgi_handler := handlers_map.get("asgi"):
                 route = ASGIRoute(path=path, route_handler=cast(ASGIRouteHandler, asgi_handler))
                 self.routes.append(route)
-                routes.append(route)
+                finalized_routes.append(route)
 
-        for route in routes:
-            route_handlers = get_route_handlers(route)
+        for finalized_route in finalized_routes:
+            route_handlers = get_route_handlers(finalized_route)
 
             for route_handler in route_handlers:
-                route_handler.on_registration(route=route, app=self)
+                route_handler.on_registration(route=finalized_route, app=self)
 
             for plugin in self.plugins.receive_route:
-                plugin.receive_route(route)
+                plugin.receive_route(finalized_route)
 
     def _iter_handlers(
         self, handlers: Iterable[ControllerRouterHandler], bases: Iterable[Router]
@@ -808,7 +806,7 @@ class Litestar(Router):
             "make sure to decorate it first with one of the routing decorators"
         )
 
-    def register(self, value: ControllerRouterHandler) -> None:  # type: ignore[override]
+    def register(self, value: ControllerRouterHandler) -> None:
         warnings.warn(
             "Registering routes after the application instance has been "
             "created is discouraged, as it might lead to unexpected behaviour "

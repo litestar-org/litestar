@@ -26,7 +26,7 @@ def get_serializer_from_scope(scope: Scope) -> Serializer:
 
     if response_class := (
         route_handler.response_class  # pyright: ignore
-        if hasattr(route_handler, "resolve_response_class")
+        if hasattr(route_handler, "response_class")
         else app.response_class
     ):
         type_encoders = {**type_encoders, **(response_class.type_encoders or {})}
