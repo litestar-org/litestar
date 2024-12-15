@@ -32,7 +32,7 @@ classifiers = [
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
-  "anyio>=3 ; python_version ~= \"3.8\"",
+  "anyio>=3 ; python_version < \"3.9\"",
   "anyio>=4 ; python_version >= \"3.9\"",
   "httpx>=0.22",
   "exceptiongroup; python_version < \"3.11\"",
@@ -40,7 +40,7 @@ dependencies = [
   "importlib-metadata; python_version < \"3.10\"",
   "importlib-resources>=5.12.0; python_version < \"3.9\"",
   "litestar-msgspec; python_version >= \"3.9\"",
-  "msgspec>=0.18.2,<=0.18.6; python_version ~= \"3.8\"",
+  "msgspec>=0.18.2,<=0.18.6; python_version < \"3.9\"",
   "multidict>=6.0.2",
   "polyfactory>=2.6.3",
   "pyyaml",

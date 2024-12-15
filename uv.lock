@@ -6,8 +6,8 @@ resolution-markers = [
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and sys_platform == 'win32'",
     "python_full_version < '3.8.1' and sys_platform == 'win32'",
     "python_full_version >= '3.9' and python_full_version < '3.13' and sys_platform != 'win32'",
-    "python_full_version >= '3.13' and sys_platform != 'win32'",
     "python_full_version >= '3.9' and python_full_version < '3.13' and sys_platform == 'win32'",
+    "python_full_version >= '3.13' and sys_platform != 'win32'",
     "python_full_version >= '3.13' and sys_platform == 'win32'",
 ]
 
@@ -1662,7 +1662,7 @@ dependencies = [
     { name = "importlib-resources", marker = "python_full_version < '3.9'" },
     { name = "litestar-htmx" },
     { name = "litestar-msgspec", marker = "python_full_version >= '3.9'" },
-    { name = "msgspec" },
+    { name = "msgspec", marker = "python_full_version < '3.9'" },
     { name = "multidict" },
     { name = "multipart" },
     { name = "polyfactory" },
@@ -1827,7 +1827,7 @@ test = [
 requires-dist = [
     { name = "advanced-alchemy", marker = "extra == 'sqlalchemy'", specifier = ">=0.2.2" },
     { name = "annotated-types", marker = "extra == 'annotated-types'" },
-    { name = "anyio", marker = "python_full_version >= '3.8' and python_full_version < '4'", specifier = ">=3" },
+    { name = "anyio", marker = "python_full_version < '3.9'", specifier = ">=3" },
     { name = "anyio", marker = "python_full_version >= '3.9'", specifier = ">=4" },
     { name = "attrs", marker = "extra == 'attrs'" },
     { name = "brotli", marker = "extra == 'brotli'" },
@@ -1850,7 +1850,7 @@ requires-dist = [
     { name = "litestar-msgspec", marker = "python_full_version >= '3.9'" },
     { name = "mako", marker = "extra == 'mako'", specifier = ">=1.2.4" },
     { name = "minijinja", marker = "extra == 'minijinja'", specifier = ">=1.0.0" },
-    { name = "msgspec", marker = "python_full_version >= '3.8' and python_full_version < '4'", specifier = ">=0.18.2,<=0.18.6" },
+    { name = "msgspec", marker = "python_full_version < '3.9'", specifier = ">=0.18.2,<=0.18.6" },
     { name = "multidict", specifier = ">=6.0.2" },
     { name = "multipart", specifier = ">=1.2.0" },
     { name = "opentelemetry-instrumentation-asgi", marker = "extra == 'opentelemetry'" },
@@ -1889,7 +1889,7 @@ dev = [
     { name = "opentelemetry-sdk" },
     { name = "psutil", specifier = ">=5.9.8" },
     { name = "psycopg", extras = ["pool", "binary"], marker = "python_full_version < '3.13'", specifier = ">=3.1.10,<3.2" },
-    { name = "psycopg", extras = ["pool", "c"], marker = "python_full_version >= '3.13' and python_full_version < '4.0'" },
+    { name = "psycopg", extras = ["pool", "c"], marker = "python_full_version >= '3.13' and python_full_version < '4'" },
     { name = "psycopg2-binary" },
     { name = "python-dotenv" },
     { name = "starlette" },
@@ -3557,8 +3557,8 @@ resolution-markers = [
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and sys_platform != 'win32'",
     "python_full_version >= '3.8.1' and python_full_version < '3.9' and sys_platform == 'win32'",
     "python_full_version >= '3.9' and python_full_version < '3.13' and sys_platform != 'win32'",
-    "python_full_version >= '3.13' and sys_platform != 'win32'",
     "python_full_version >= '3.9' and python_full_version < '3.13' and sys_platform == 'win32'",
+    "python_full_version >= '3.13' and sys_platform != 'win32'",
     "python_full_version >= '3.13' and sys_platform == 'win32'",
 ]
 dependencies = [
