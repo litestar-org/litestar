@@ -1889,7 +1889,7 @@ dev = [
     { name = "opentelemetry-sdk" },
     { name = "psutil", specifier = ">=5.9.8" },
     { name = "psycopg", extras = ["pool", "binary"], marker = "python_full_version < '3.13'", specifier = ">=3.1.10,<3.2" },
-    { name = "psycopg", extras = ["pool", "c"], marker = "python_full_version >= '3.13' and python_full_version < '4'" },
+    { name = "psycopg", extras = ["pool", "c"], marker = "python_full_version >= '3.13'" },
     { name = "psycopg2-binary" },
     { name = "python-dotenv" },
     { name = "starlette" },
