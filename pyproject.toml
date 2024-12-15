@@ -32,14 +32,14 @@ classifiers = [
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
-  "anyio>=3.6.0 ; python_version ~= \"3.8\"",
-  "anyio>=4.0.0 ; python_version >= \"3.9\"",
+  "anyio>=3 ; python_version ~= \"3.8\"",
+  "anyio>=4 ; python_version >= \"3.9\"",
   "httpx>=0.22",
   "exceptiongroup; python_version < \"3.11\"",
   "eval_type_backport; python_version <= \"3.9\"",
   "importlib-metadata; python_version < \"3.10\"",
   "importlib-resources>=5.12.0; python_version < \"3.9\"",
-  "msgspec-python313-pre ; python_version >= \"3.9\"",
+  "litestar-msgspec; python_version >= \"3.9\"",
   "msgspec>=0.18.2,<=0.18.6; python_version ~= \"3.8\"",
   "multidict>=6.0.2",
   "polyfactory>=2.6.3",
@@ -48,6 +48,7 @@ dependencies = [
   "click",
   "rich>=13.0.0",
   "rich-click",
+  "multipart>=1.2.0",
   # default litestar plugins
   "litestar-htmx>=0.3.0"
 ]
