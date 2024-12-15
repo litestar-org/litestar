@@ -1404,6 +1404,7 @@ document.write(`
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/memory.html">memory</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/redis.html">redis</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reference/stores/registry.html">registry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reference/stores/valkey.html">valkey</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reference/template.html">template</a></li>
@@ -1564,6 +1565,11 @@ need to be stored, is particularly long-lived, or persistence has a very high im
 </dd>
 <dt><a class="reference internal" href="../reference/stores/redis.html#litestar.stores.redis.RedisStore" title="litestar.stores.redis.RedisStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">RedisStore</span></code></a></dt><dd><p>A store backend by <a class="reference external" href="https://redis.io/">redis</a>. It offers all the guarantees and features of Redis, making it
 suitable for almost all applications. Offers <a class="reference internal" href="#namespacing">namespacing</a>.</p>
+</dd>
+<dt><a class="reference internal" href="../reference/stores/valkey.html#litestar.stores.valkey.ValkeyStore" title="litestar.stores.valkey.ValkeyStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValKeyStore</span></code></a></dt><dd><p>A store backed by <a class="reference external" href="https://valkey.io">valkey</a>, a fork of Redis created as the result of Redis’ license changes.
+Similarly to the RedisStore, it is suitable for almost all applications and supports <a class="reference internal" href="#namespacing">namespacing</a>.
+At the time of writing, <code class="xref py py-class docutils literal notranslate"><span class="pre">Valkey</span></code> is equivalent to <code class="xref py py-class docutils literal notranslate"><span class="pre">redis.asyncio.Redis</span></code>,
+and all notes pertaining to Redis also apply to Valkey.</p>
 </dd>
 </dl>
 <div class="info admonition">

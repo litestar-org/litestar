@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>jwt &#8212; Litestar Framework</title>
+    <title>valkey &#8212; Litestar Framework</title>
   
   
   
@@ -47,13 +47,13 @@
     <script src="../../_static/copybutton.js?v=f281be69"></script>
     <script src="../../_static/litestar-theme.js?v=ab2dcc9e"></script>
     <script src="../../_static/design-tabs.js?v=36754332"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/contrib/jwt';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/stores/valkey';</script>
     <script src="../../_static/versioning.js?v=68b42869"></script>
     <link rel="icon" href="../../_static/favicon.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="mako" href="mako.html" />
-    <link rel="prev" title="jinja" href="jinja.html" />
+    <link rel="next" title="template" href="../template.html" />
+    <link rel="prev" title="registry" href="registry.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -677,6 +677,10 @@ document.write(`
   
 
   
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
+      <span class="fa-solid fa-outdent"></span>
+    </label>
+  
 </div>
 
     </nav>
@@ -1286,20 +1290,20 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../cli.html">cli</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../config.html">config</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../connection.html">connection</a></li>
-<li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">contrib</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="htmx.html">HTMX</a></li>
-<li class="toctree-l3"><a class="reference internal" href="jinja.html">jinja</a></li>
-<li class="toctree-l3 current active"><a class="current reference internal" href="#">jwt</a></li>
-<li class="toctree-l3"><a class="reference internal" href="mako.html">mako</a></li>
-<li class="toctree-l3"><a class="reference internal" href="opentelemetry.html">opentelemetry</a></li>
-<li class="toctree-l3"><a class="reference internal" href="piccolo.html">piccolo_orm</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pydantic.html">pydantic</a></li>
-<li class="toctree-l3 has-children"><a class="reference internal" href="sqlalchemy/index.html">sqlalchemy</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l4"><a class="reference internal" href="sqlalchemy/plugins.html">plugins</a></li>
-<li class="toctree-l4"><a class="reference internal" href="sqlalchemy/repository.html">repository</a></li>
-<li class="toctree-l4"><a class="reference internal" href="sqlalchemy/types.html">types</a></li>
-<li class="toctree-l4"><a class="reference internal" href="sqlalchemy/base.html">base</a></li>
-<li class="toctree-l4"><a class="reference internal" href="sqlalchemy/dto.html">DTO</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="../contrib/index.html">contrib</a><input class="toctree-checkbox" id="toctree-checkbox-14" name="toctree-checkbox-14" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-14"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="../contrib/htmx.html">HTMX</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contrib/jinja.html">jinja</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contrib/jwt.html">jwt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contrib/mako.html">mako</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contrib/opentelemetry.html">opentelemetry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contrib/piccolo.html">piccolo_orm</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../contrib/pydantic.html">pydantic</a></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="../contrib/sqlalchemy/index.html">sqlalchemy</a><input class="toctree-checkbox" id="toctree-checkbox-15" name="toctree-checkbox-15" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-15"><i class="fa-solid fa-chevron-down"></i></label><ul>
+<li class="toctree-l4"><a class="reference internal" href="../contrib/sqlalchemy/plugins.html">plugins</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../contrib/sqlalchemy/repository.html">repository</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../contrib/sqlalchemy/types.html">types</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../contrib/sqlalchemy/base.html">base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../contrib/sqlalchemy/dto.html">DTO</a></li>
 </ul>
 </li>
 </ul>
@@ -1394,13 +1398,13 @@ document.write(`
 <li class="toctree-l2"><a class="reference internal" href="../serialization.html">serialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../static_files.html">static_files</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../status_codes.html">status_code</a></li>
-<li class="toctree-l2 has-children"><a class="reference internal" href="../stores/index.html">stores</a><input class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-26"><i class="fa-solid fa-chevron-down"></i></label><ul>
-<li class="toctree-l3"><a class="reference internal" href="../stores/base.html">base</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../stores/file.html">file</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../stores/memory.html">memory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../stores/redis.html">redis</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../stores/registry.html">registry</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../stores/valkey.html">valkey</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html">stores</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-26" name="toctree-checkbox-26" type="checkbox"/><label class="toctree-toggle" for="toctree-checkbox-26"><i class="fa-solid fa-chevron-down"></i></label><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="base.html">base</a></li>
+<li class="toctree-l3"><a class="reference internal" href="file.html">file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="memory.html">memory</a></li>
+<li class="toctree-l3"><a class="reference internal" href="redis.html">redis</a></li>
+<li class="toctree-l3"><a class="reference internal" href="registry.html">registry</a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#">valkey</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../template.html">template</a></li>
@@ -1521,9 +1525,9 @@ document.write(`
     <li class="breadcrumb-item"><a href="../index.html" class="nav-link">API reference</a></li>
     
     
-    <li class="breadcrumb-item"><a href="index.html" class="nav-link">contrib</a></li>
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">stores</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">jwt</li>
+    <li class="breadcrumb-item active" aria-current="page">valkey</li>
   </ul>
 </nav>
 </div>
@@ -1540,9 +1544,134 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section id="jwt">
-<h1>jwt<a class="headerlink" href="#jwt" title="Permalink to this heading">#</a></h1>
-<p>This page has moved to <a class="reference internal" href="../security/jwt.html"><span class="doc">jwt</span></a></p>
+  <section id="module-litestar.stores.valkey">
+<span id="valkey"></span><h1>valkey<a class="headerlink" href="#module-litestar.stores.valkey" title="Permalink to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="litestar.stores.valkey.ValkeyStore">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">litestar.stores.valkey.</span></span><span class="sig-name descname"><span class="pre">ValkeyStore</span></span><a class="headerlink" href="#litestar.stores.valkey.ValkeyStore" title="Permalink to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="base.html#litestar.stores.base.NamespacedStore" title="litestar.stores.base.NamespacedStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">NamespacedStore</span></code></a></p>
+<p>Valkey based, thread and process safe asynchronous key/value store.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.stores.valkey.ValkeyStore.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">valkey:</span> <span class="pre">~valkey.asyncio.client.Valkey</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">|</span> <span class="pre">~typing.Literal[&lt;_EmptyEnum.EMPTY:</span> <span class="pre">0&gt;]</span> <span class="pre">=</span> <span class="pre">_EmptyEnum.EMPTY</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">handle_client_shutdown:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.stores.valkey.ValkeyStore.__init__" title="Permalink to this definition">#</a></dt>
+<dd><p>Initialize <a class="reference internal" href="#litestar.stores.valkey.ValkeyStore" title="litestar.stores.valkey.ValkeyStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValkeyStore</span></code></a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="litestar.stores.valkey.ValkeyStore.params.valkey"></span><strong>valkey</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.valkey.ValkeyStore.params.valkey">¶</a> – An <code class="xref py py-class docutils literal notranslate"><span class="pre">valkey.asyncio.Valkey</span></code> instance</p></li>
+<li><p><span class="target" id="litestar.stores.valkey.ValkeyStore.params.namespace"></span><strong>namespace</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.valkey.ValkeyStore.params.namespace">¶</a> – A key prefix to simulate a namespace in valkey. If not given,
+defaults to <code class="docutils literal notranslate"><span class="pre">LITESTAR</span></code>. Namespacing can be explicitly disabled by passing
+<code class="docutils literal notranslate"><span class="pre">None</span></code>. This will make <a class="reference internal" href="#litestar.stores.valkey.ValkeyStore.delete_all" title="litestar.stores.valkey.ValkeyStore.delete_all"><code class="xref py py-meth docutils literal notranslate"><span class="pre">delete_all()</span></code></a> unavailable.</p></li>
+<li><p><span class="target" id="litestar.stores.valkey.ValkeyStore.params.handle_client_shutdown"></span><strong>handle_client_shutdown</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.valkey.ValkeyStore.params.handle_client_shutdown">¶</a> – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, handle the shutdown of the <cite>valkey</cite> instance automatically during the store’s lifespan. Should be set to <cite>True</cite> unless the shutdown is handled externally</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.stores.valkey.ValkeyStore.with_client">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">with_client</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url:</span> <span class="pre">str</span> <span class="pre">=</span> <span class="pre">'valkey://localhost:6379'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">db:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port:</span> <span class="pre">int</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">username:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">=</span> <span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace:</span> <span class="pre">str</span> <span class="pre">|</span> <span class="pre">None</span> <span class="pre">|</span> <span class="pre">~typing.Literal[&lt;_EmptyEnum.EMPTY:</span> <span class="pre">0&gt;]</span> <span class="pre">=</span> <span class="pre">_EmptyEnum.EMPTY</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#litestar.stores.valkey.ValkeyStore" title="litestar.stores.valkey.ValkeyStore"><span class="pre">ValkeyStore</span></a></span></span><a class="headerlink" href="#litestar.stores.valkey.ValkeyStore.with_client" title="Permalink to this definition">#</a></dt>
+<dd><p>Initialize a <a class="reference internal" href="#litestar.stores.valkey.ValkeyStore" title="litestar.stores.valkey.ValkeyStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValkeyStore</span></code></a> instance with a new class:<cite>valkey.asyncio.Valkey</cite> instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="litestar.stores.valkey.ValkeyStore.with_client.params.url"></span><strong>url</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.valkey.ValkeyStore.with_client.params.url">¶</a> – Valkey URL to connect to</p></li>
+<li><p><span class="target" id="litestar.stores.valkey.ValkeyStore.with_client.params.db"></span><strong>db</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.valkey.ValkeyStore.with_client.params.db">¶</a> – Valkey database to use</p></li>
+<li><p><span class="target" id="litestar.stores.valkey.ValkeyStore.with_client.params.port"></span><strong>port</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.valkey.ValkeyStore.with_client.params.port">¶</a> – Valkey port to use</p></li>
+<li><p><span class="target" id="litestar.stores.valkey.ValkeyStore.with_client.params.username"></span><strong>username</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.valkey.ValkeyStore.with_client.params.username">¶</a> – Valkey username to use</p></li>
+<li><p><span class="target" id="litestar.stores.valkey.ValkeyStore.with_client.params.password"></span><strong>password</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.valkey.ValkeyStore.with_client.params.password">¶</a> – Valkey password to use</p></li>
+<li><p><span class="target" id="litestar.stores.valkey.ValkeyStore.with_client.params.namespace"></span><strong>namespace</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.valkey.ValkeyStore.with_client.params.namespace">¶</a> – Virtual key namespace to use</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.stores.valkey.ValkeyStore.with_namespace">
+<span class="sig-name descname"><span class="pre">with_namespace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">namespace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#litestar.stores.valkey.ValkeyStore" title="litestar.stores.valkey.ValkeyStore"><span class="pre">ValkeyStore</span></a></span></span><a class="headerlink" href="#litestar.stores.valkey.ValkeyStore.with_namespace" title="Permalink to this definition">#</a></dt>
+<dd><p>Return a new <a class="reference internal" href="#litestar.stores.valkey.ValkeyStore" title="litestar.stores.valkey.ValkeyStore"><code class="xref py py-class docutils literal notranslate"><span class="pre">ValkeyStore</span></code></a> with a nested virtual key namespace.
+The current instances namespace will serve as a prefix for the namespace, so it
+can be considered the parent namespace.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.stores.valkey.ValkeyStore.set">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">expires_in</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.13)"><span class="pre">timedelta</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.stores.valkey.ValkeyStore.set" title="Permalink to this definition">#</a></dt>
+<dd><p>Set a value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="litestar.stores.valkey.ValkeyStore.set.params.key"></span><strong>key</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.valkey.ValkeyStore.set.params.key">¶</a> – Key to associate the value with</p></li>
+<li><p><span class="target" id="litestar.stores.valkey.ValkeyStore.set.params.value"></span><strong>value</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.valkey.ValkeyStore.set.params.value">¶</a> – Value to store</p></li>
+<li><p><span class="target" id="litestar.stores.valkey.ValkeyStore.set.params.expires_in"></span><strong>expires_in</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.valkey.ValkeyStore.set.params.expires_in">¶</a> – Time in seconds before the key is considered expired</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.stores.valkey.ValkeyStore.get">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">renew_for</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.timedelta" title="(in Python v3.13)"><span class="pre">timedelta</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bytes" title="(in Python v3.13)"><span class="pre">bytes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.stores.valkey.ValkeyStore.get" title="Permalink to this definition">#</a></dt>
+<dd><p>Get a value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span class="target" id="litestar.stores.valkey.ValkeyStore.get.params.key"></span><strong>key</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.valkey.ValkeyStore.get.params.key">¶</a> – Key associated with the value</p></li>
+<li><p><span class="target" id="litestar.stores.valkey.ValkeyStore.get.params.renew_for"></span><strong>renew_for</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.valkey.ValkeyStore.get.params.renew_for">¶</a> – If given and the value had an initial expiry time set, renew the
+expiry time for <code class="docutils literal notranslate"><span class="pre">renew_for</span></code> seconds. If the value has not been set
+with an expiry time this is a no-op. Atomicity of this step is guaranteed
+by using a lua script to execute fetch and renewal. If <code class="docutils literal notranslate"><span class="pre">renew_for</span></code> is
+not given, the script will be bypassed so no overhead will occur</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The value associated with <code class="docutils literal notranslate"><span class="pre">key</span></code> if it exists and is not expired, else
+<code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.stores.valkey.ValkeyStore.delete">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.stores.valkey.ValkeyStore.delete" title="Permalink to this definition">#</a></dt>
+<dd><p>Delete a value.</p>
+<p>If no such key exists, this is a no-op.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="target" id="litestar.stores.valkey.ValkeyStore.delete.params.key"></span><strong>key</strong><a class="paramlink headerlink reference internal" href="#litestar.stores.valkey.ValkeyStore.delete.params.key">¶</a> – Key of the value to delete</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.stores.valkey.ValkeyStore.delete_all">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">delete_all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.stores.valkey.ValkeyStore.delete_all" title="Permalink to this definition">#</a></dt>
+<dd><p>Delete all stored values in the virtual key namespace.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../exceptions.html#litestar.exceptions.ImproperlyConfiguredException" title="litestar.exceptions.ImproperlyConfiguredException"><strong>ImproperlyConfiguredException</strong></a> – If no namespace was configured</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.stores.valkey.ValkeyStore.exists">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#litestar.stores.valkey.ValkeyStore.exists" title="Permalink to this definition">#</a></dt>
+<dd><p>Check if a given <code class="docutils literal notranslate"><span class="pre">key</span></code> exists.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="litestar.stores.valkey.ValkeyStore.expires_in">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">expires_in</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#litestar.stores.valkey.ValkeyStore.expires_in" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the time in seconds <code class="docutils literal notranslate"><span class="pre">key</span></code> expires in. If no such <code class="docutils literal notranslate"><span class="pre">key</span></code> exists or no
+expiry time was set, return <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
 
@@ -1556,20 +1685,20 @@ document.write(`
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="jinja.html"
+       href="registry.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">jinja</p>
+        <p class="prev-next-title">registry</p>
       </div>
     </a>
     <a class="right-next"
-       href="mako.html"
+       href="../template.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">mako</p>
+        <p class="prev-next-title">template</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -1579,6 +1708,32 @@ document.write(`
             </div>
             
             
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+  <div class="sidebar-secondary-item">
+
+  <div class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.stores.valkey.ValkeyStore"><code class="docutils literal notranslate"><span class="pre">ValkeyStore</span></code></a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.stores.valkey.ValkeyStore.__init__"><code class="docutils literal notranslate"><span class="pre">ValkeyStore.__init__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.stores.valkey.ValkeyStore.with_client"><code class="docutils literal notranslate"><span class="pre">ValkeyStore.with_client()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.stores.valkey.ValkeyStore.with_namespace"><code class="docutils literal notranslate"><span class="pre">ValkeyStore.with_namespace()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.stores.valkey.ValkeyStore.set"><code class="docutils literal notranslate"><span class="pre">ValkeyStore.set()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.stores.valkey.ValkeyStore.get"><code class="docutils literal notranslate"><span class="pre">ValkeyStore.get()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.stores.valkey.ValkeyStore.delete"><code class="docutils literal notranslate"><span class="pre">ValkeyStore.delete()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.stores.valkey.ValkeyStore.delete_all"><code class="docutils literal notranslate"><span class="pre">ValkeyStore.delete_all()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.stores.valkey.ValkeyStore.exists"><code class="docutils literal notranslate"><span class="pre">ValkeyStore.exists()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#litestar.stores.valkey.ValkeyStore.expires_in"><code class="docutils literal notranslate"><span class="pre">ValkeyStore.expires_in()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
               
             
           </div>
