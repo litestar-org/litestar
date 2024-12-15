@@ -8,11 +8,7 @@ import sys
 from contextlib import AbstractContextManager, contextmanager
 from typing import Any, AsyncContextManager, Awaitable, ContextManager, Generator, TypeVar, cast, overload
 
-try:
-    import picologging  # pyright: ignore[reportMissingImports]
-except ImportError:
-    import logging as picologging  # type: ignore[no-redef,unused-ignore]
-
+import pytest
 from _pytest.logging import LogCaptureHandler, _LiveLoggingNullHandler
 
 from litestar._openapi.schema_generation import SchemaCreator
@@ -94,9 +90,9 @@ def cleanup_logging_impl() -> Generator:
         # Don't interfere with PyTest handler config
         if not isinstance(std_handler, (_LiveLoggingNullHandler, LogCaptureHandler)):
             std_root_logger.removeHandler(std_handler)
-
+    picologging = pytest.importorskip("picologging")
     # Reset root logger (`picologging` module)
-    pico_root_logger: picologging.Logger = picologging.getLogger()  # pyright: ignore[reportPrivateUsage,reportGeneralTypeIssues,reportAssignmentType]
+    pico_root_logger: picologging.Logger = picologging.getLogger()  # pyright: ignore[reportPrivateUsage,reportGeneralTypeIssues,reportAssignmentType,reportInvalidTypeForm]
     for pico_handler in pico_root_logger.handlers:
         pico_root_logger.removeHandler(pico_handler)
 
