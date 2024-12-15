@@ -18,7 +18,6 @@ if TYPE_CHECKING:
     from litestar.dto import AbstractDTO
     from litestar.openapi.spec import SecurityRequirement
     from litestar.response import Response
-    from litestar.routes import ASGIRoute, HTTPRoute, WebSocketRoute
     from litestar.types import (
         AfterRequestHookHandler,
         AfterResponseHookHandler,
@@ -43,7 +42,6 @@ class Router:
     """
 
     __slots__ = (
-        "_route_handlers",
         "after_request",
         "after_response",
         "before_request",
@@ -65,7 +63,7 @@ class Router:
         "response_cookies",
         "response_headers",
         "return_dto",
-        "routes",
+        "route_handlers",
         "security",
         "signature_namespace",
         "tags",
@@ -186,7 +184,6 @@ class Router:
         self.response_cookies = narrow_response_cookies(response_cookies) if response_cookies else ()
         self.response_headers = narrow_response_headers(response_headers) if response_headers else ()
         self.return_dto = return_dto
-        self.routes: list[HTTPRoute | ASGIRoute | WebSocketRoute] = []
         self.security = list(security or [])
         self.signature_namespace = add_types_to_signature_namespace(
             signature_types or [], dict(signature_namespace or {})
@@ -198,10 +195,10 @@ class Router:
         self.websocket_class = websocket_class
         self.request_max_body_size = request_max_body_size
 
-        self._route_handlers = list(route_handlers)
+        self.route_handlers = list(route_handlers)
 
     def register(self, value: ControllerRouterHandler) -> None:
         """Register a Controller, Route instance or RouteHandler on the router"""
         if value is self:
             raise ImproperlyConfiguredException("Cannot register a router on itself")
-        self._route_handlers.append(value)
+        self.route_handlers.append(value)

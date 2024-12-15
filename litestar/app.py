@@ -162,6 +162,7 @@ class Litestar(Router):
         "plugins",
         "response_cache_config",
         "route_map",
+        "routes",
         "state",
         "stores",
         "template_engine",
@@ -482,7 +483,7 @@ class Litestar(Router):
 
         self.asgi_router = ASGIRouter(app=self)
 
-        for route_handler in self._merge_handlers(self._route_handlers):
+        for route_handler in self._merge_handlers(self.route_handlers):
             self._finalize_routes(route_handler)
 
         self.asgi_router.construct_routing_trie()
@@ -516,7 +517,7 @@ class Litestar(Router):
         while handlers_to:
             handler = self._validate_registration_value(handlers_to.pop(0))
             if isinstance(handler, Router):
-                handlers_to.extend(handler._route_handlers)
+                handlers_to.extend(handler.route_handlers)
             else:
                 reduced_handlers.append(handler)
 
@@ -772,7 +773,7 @@ class Litestar(Router):
         for handler in handlers:
             handler = self._validate_registration_value(handler)
             if isinstance(handler, Router):
-                yield from self._iter_handlers(handler._route_handlers, [handler, *bases])
+                yield from self._iter_handlers(handler.route_handlers, [handler, *bases])
             else:
                 yield handler, bases
 
