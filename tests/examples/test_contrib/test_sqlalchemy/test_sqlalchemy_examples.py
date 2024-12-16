@@ -7,7 +7,6 @@ from sqlalchemy.pool import NullPool
 
 from litestar.plugins.sqlalchemy import AsyncSessionConfig, SQLAlchemyAsyncConfig
 from litestar.testing import TestClient
-from tests.helpers import purge_module
 
 pytestmark = pytest.mark.xdist_group("sqlalchemy_examples")
 
