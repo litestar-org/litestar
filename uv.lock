@@ -1823,8 +1823,7 @@ full = [
     { name = "picologging", marker = "python_full_version < '3.13'" },
     { name = "prometheus-client" },
     { name = "pydantic" },
-    { name = "pydantic-extra-types", version = "2.9.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
-    { name = "pydantic-extra-types", version = "2.10.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
+    { name = "pydantic-extra-types" },
     { name = "pyjwt" },
     { name = "redis", extra = ["hiredis"] },
     { name = "structlog" },
@@ -1860,8 +1859,7 @@ prometheus = [
 pydantic = [
     { name = "email-validator" },
     { name = "pydantic" },
-    { name = "pydantic-extra-types", version = "2.9.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
-    { name = "pydantic-extra-types", version = "2.10.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
+    { name = "pydantic-extra-types" },
 ]
 redis = [
     { name = "redis", extra = ["hiredis"] },
@@ -3145,37 +3143,12 @@ wheels = [
 name = "pydantic-extra-types"
 version = "2.9.0"
 source = { registry = "https://pypi.org/simple" }
-resolution-markers = [
-    "python_full_version >= '3.8.1' and python_full_version < '3.9' and sys_platform != 'win32'",
-    "python_full_version < '3.8.1' and sys_platform != 'win32'",
-    "python_full_version >= '3.8.1' and python_full_version < '3.9' and sys_platform == 'win32'",
-    "python_full_version < '3.8.1' and sys_platform == 'win32'",
-]
 dependencies = [
-    { name = "pydantic", marker = "python_full_version < '3.9'" },
+    { name = "pydantic" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/fb/95/d61dcadd933cb34461adc271c13bbe14a7080b9922b9e0dc3c1d18b421cb/pydantic_extra_types-2.9.0.tar.gz", hash = "sha256:e061c01636188743bb69f368dcd391f327b8cfbfede2fe1cbb1211b06601ba3b", size = 39578 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/37/2f/efc4877d1a1536ec76ca0114c3e9dee7d0a10a262c53d384d50163f5684c/pydantic_extra_types-2.9.0-py3-none-any.whl", hash = "sha256:f0bb975508572ba7bf3390b7337807588463b7248587e69f43b1ad7c797530d0", size = 30544 },
-]
-
-[[package]]
-name = "pydantic-extra-types"
-version = "2.10.1"
-source = { registry = "https://pypi.org/simple" }
-resolution-markers = [
-    "python_full_version >= '3.9' and python_full_version < '3.13' and sys_platform != 'win32'",
-    "python_full_version >= '3.9' and python_full_version < '3.13' and sys_platform == 'win32'",
-    "python_full_version >= '3.13' and sys_platform != 'win32'",
-    "python_full_version >= '3.13' and sys_platform == 'win32'",
-]
-dependencies = [
-    { name = "pydantic", marker = "python_full_version >= '3.9'" },
-    { name = "typing-extensions", marker = "python_full_version >= '3.9'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/c3/12/844a4796dbbc814ef0a706f403cb0f3029bf324c2bca2bf0681f4f7d8618/pydantic_extra_types-2.10.1.tar.gz", hash = "sha256:e4f937af34a754b8f1fa228a2fac867091a51f56ed0e8a61d5b3a6719b13c923", size = 85694 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/a8/f1/92f7b4711d3d0d08981c2677ec9cdde6cb114205a69814bf803e0be5ae9b/pydantic_extra_types-2.10.1-py3-none-any.whl", hash = "sha256:db2c86c04a837bbac0d2d79bbd6f5d46c4c9253db11ca3fdd36a2b282575f1e2", size = 35155 },
 ]
 
 [[package]]

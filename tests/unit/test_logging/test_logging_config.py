@@ -124,7 +124,7 @@ def test_dictconfig_on_startup(logging_module: str, dict_config_not_called: str)
     [
         [
             "logging",
-            "logging.QueueHandler"
+            "logging.handlers.QueueHandler"
             if sys.version_info >= (3, 12, 0)
             else "litestar.logging.standard.QueueListenerHandler",
             "litestar.logging.standard.LoggingQueueListener",
@@ -149,6 +149,10 @@ def test_default_queue_listener_handler(
         expected_handler_class = QueueListenerHandler
     elif expected_handler_class_str == "litestar.logging.picologging.QueueListenerHandler":
         from litestar.logging.picologging import QueueListenerHandler
+
+        expected_handler_class = QueueListenerHandler
+    elif expected_handler_class_str == "logging.handlers.QueueHandler":
+        from logging.handlers import QueueHandler as QueueListenerHandler
 
         expected_handler_class = QueueListenerHandler
     else:
@@ -221,7 +225,7 @@ def test_get_logger_without_logging_config() -> None:
     [
         [
             "logging",
-            "logging.QueueHandler"
+            "logging.handlers.QueueHandler"
             if sys.version_info >= (3, 12, 0)
             else "litestar.logging.standard.QueueListenerHandler",
         ],
@@ -236,6 +240,10 @@ def test_default_loggers(logging_module_str: str, expected_handler_class_str: st
         expected_handler_class = QueueListenerHandler
     elif expected_handler_class_str == "litestar.logging.picologging.QueueListenerHandler":
         from litestar.logging.picologging import QueueListenerHandler
+
+        expected_handler_class = QueueListenerHandler
+    elif expected_handler_class_str == "logging.handlers.QueueHandler":
+        from logging.handlers import QueueHandler as QueueListenerHandler
 
         expected_handler_class = QueueListenerHandler
     else:
@@ -260,7 +268,7 @@ def test_default_loggers(logging_module_str: str, expected_handler_class_str: st
     [
         [
             "logging",
-            "litestar.logging.standard.QueueListenerHandler"
+            "logging.handlers.QueueHandler"
             if sys.version_info >= (3, 12, 0)
             else "litestar.logging.standard.QueueListenerHandler",
         ],
@@ -275,6 +283,10 @@ def test_connection_logger(logging_module_str: str, expected_handler_class_str: 
         expected_handler_class = QueueListenerHandler
     elif expected_handler_class_str == "litestar.logging.picologging.QueueListenerHandler":
         from litestar.logging.picologging import QueueListenerHandler
+
+        expected_handler_class = QueueListenerHandler
+    elif expected_handler_class_str == "logging.handlers.QueueHandler":
+        from logging.handlers import QueueHandler as QueueListenerHandler
 
         expected_handler_class = QueueListenerHandler
     else:
@@ -329,7 +341,7 @@ def test_validation(logging_module_str: Optional[str]) -> None:
     [
         [
             "logging",
-            "logging.QueueHandler"
+            "logging.handlers.QueueHandler"
             if sys.version_info >= (3, 12, 0)
             else "litestar.logging.standard.QueueListenerHandler",
         ],
@@ -344,6 +356,10 @@ def test_root_logger(logging_module_str: str, expected_handler_class_str: str) -
         expected_handler_class = QueueListenerHandler
     elif expected_handler_class_str == "litestar.logging.picologging.QueueListenerHandler":
         from litestar.logging.picologging import QueueListenerHandler
+
+        expected_handler_class = QueueListenerHandler
+    elif expected_handler_class_str == "logging.handlers.QueueHandler":
+        from logging.handlers import QueueHandler as QueueListenerHandler
 
         expected_handler_class = QueueListenerHandler
     else:
@@ -383,7 +399,7 @@ def test_root_logger_no_config(logging_module_str: str) -> None:
         [
             "logging",
             True,
-            "logging.QueueHandler"
+            "logging.handlers.QueueHandler"
             if sys.version_info >= (3, 12, 0)
             else "litestar.logging.standard.QueueListenerHandler",
         ],
@@ -407,6 +423,10 @@ def test_customizing_handler(
         expected_root_logger_handler_class = QueueListenerHandler
     elif expected_root_logger_handler_class_str == "litestar.logging.picologging.QueueListenerHandler":
         from litestar.logging.picologging import QueueListenerHandler
+
+        expected_root_logger_handler_class = QueueListenerHandler
+    elif expected_root_logger_handler_class_str == "logging.handlers.QueueHandler":
+        from logging.handlers import QueueHandler as QueueListenerHandler
 
         expected_root_logger_handler_class = QueueListenerHandler
     else:
