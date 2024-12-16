@@ -13,7 +13,6 @@ pytestmark = pytest.mark.xdist_group("sqlalchemy_examples")
 
 
 async def test_sqlalchemy_declarative_models(tmp_path: Path, monkeypatch: MonkeyPatch) -> None:
-    purge_module(["docs.examples.contrib.sqlalchemy.sqlalchemy_declarative_models"], __file__)
     engine = create_async_engine(f"sqlite+aiosqlite:///{tmp_path}/test.sqlite", poolclass=NullPool)
 
     session_config = AsyncSessionConfig(expire_on_commit=False)
