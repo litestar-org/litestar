@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 import atexit
-import inspect
 import importlib.util
+import inspect
 import logging
-from pathlib import Path
 import random
 import sys
 from contextlib import AbstractContextManager, contextmanager
+from pathlib import Path
 from typing import Any, AsyncContextManager, Awaitable, ContextManager, Generator, TypeVar, cast, overload
 
 import pytest
