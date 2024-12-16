@@ -16,6 +16,8 @@ from litestar.plugins.sqlalchemy import AsyncSessionConfig, SQLAlchemyAsyncConfi
 # The SQLAlchemy base includes a declarative model for you to use in your models.
 # The `UUIDBase` class includes a `UUID` based primary key (`id`)
 class Author(base.UUIDBase):
+    __bind_key__ = "demo"  # pyright: ignore[reportAssignmentType]
+    __tablename__ = "author"
     name: Mapped[str]
     dob: Mapped[date]
     books: Mapped[List[Book]] = relationship(back_populates="author", lazy="selectin")
@@ -25,6 +27,8 @@ class Author(base.UUIDBase):
 # additional columns: `created_at` and `updated_at`. `created_at` is a timestamp of when the
 # record created, and `updated_at` is the last time the record was modified.
 class Book(base.UUIDAuditBase):
+    __bind_key__ = "demo"  # pyright: ignore[reportAssignmentType]
+    __tablename__ = "book"
     title: Mapped[str]
     author_id: Mapped[UUID] = mapped_column(ForeignKey("author.id"))
     author: Mapped[Author] = relationship(lazy="joined", innerjoin=True, viewonly=True)
@@ -32,7 +36,7 @@ class Book(base.UUIDAuditBase):
 
 session_config = AsyncSessionConfig(expire_on_commit=False)
 sqlalchemy_config = SQLAlchemyAsyncConfig(
-    connection_string="sqlite+aiosqlite:///test.sqlite", session_config=session_config
+    connection_string="sqlite+aiosqlite:///test.sqlite", session_config=session_config, create_all=True
 )  # Create 'async_session' dependency.
 
 

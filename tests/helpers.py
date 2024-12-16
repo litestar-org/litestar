@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import atexit
 import inspect
+import importlib.util
 import logging
+from pathlib import Path
 import random
 import sys
 from contextlib import AbstractContextManager, contextmanager
@@ -111,3 +113,10 @@ def cleanup_logging_impl() -> Generator:
 def not_none(val: T | None) -> T:
     assert val is not None
     return val
+
+
+def purge_module(module_names: list[str], path: str | Path) -> None:
+    for name in module_names:
+        if name in sys.modules:
+            del sys.modules[name]
+    Path(importlib.util.cache_from_source(path)).unlink(missing_ok=True)  # type: ignore[arg-type]

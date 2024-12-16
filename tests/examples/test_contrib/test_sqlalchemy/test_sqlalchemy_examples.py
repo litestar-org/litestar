@@ -1,14 +1,15 @@
 import pytest
 
 from litestar.testing import TestClient
+from tests.helpers import purge_module
 
 pytestmark = pytest.mark.xdist_group("sqlalchemy_examples")
 
 
-async def test_sqlalchemy_declarative_models() -> None:
-    from docs.examples.contrib.sqlalchemy.sqlalchemy_declarative_models import app, sqlalchemy_config
+def test_sqlalchemy_declarative_models() -> None:
+    purge_module(["docs.examples.contrib.sqlalchemy.sqlalchemy_declarative_models"], __file__)
+    from docs.examples.contrib.sqlalchemy.sqlalchemy_declarative_models import app
 
-    await sqlalchemy_config.create_all_metadata(app)
     with TestClient(app) as client:
         response = client.get("/authors")
         assert response.status_code == 200
