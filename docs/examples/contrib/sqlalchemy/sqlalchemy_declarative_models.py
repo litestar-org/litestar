@@ -16,7 +16,6 @@ from litestar.plugins.sqlalchemy import AsyncSessionConfig, SQLAlchemyAsyncConfi
 # The SQLAlchemy base includes a declarative model for you to use in your models.
 # The `UUIDBase` class includes a `UUID` based primary key (`id`)
 class Author(base.UUIDBase):
-    __bind_key__ = "demo"  # pyright: ignore[reportAssignmentType]
     __tablename__ = "author"
     name: Mapped[str]
     dob: Mapped[date]
@@ -27,7 +26,6 @@ class Author(base.UUIDBase):
 # additional columns: `created_at` and `updated_at`. `created_at` is a timestamp of when the
 # record created, and `updated_at` is the last time the record was modified.
 class Book(base.UUIDAuditBase):
-    __bind_key__ = "demo"  # pyright: ignore[reportAssignmentType]
     __tablename__ = "book"
     title: Mapped[str]
     author_id: Mapped[UUID] = mapped_column(ForeignKey("author.id"))
@@ -42,7 +40,6 @@ sqlalchemy_config = SQLAlchemyAsyncConfig(
 
 async def on_startup(app: Litestar) -> None:
     """Adds some dummy data if no data is present."""
-    await sqlalchemy_config.create_all_metadata(app)
     async with sqlalchemy_config.get_session() as session:
         statement = select(func.count()).select_from(Author)
         count = await session.execute(statement)
