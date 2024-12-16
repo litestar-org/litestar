@@ -12,7 +12,7 @@ pytestmark = pytest.mark.xdist_group("sqlalchemy_examples")
 
 
 async def test_sqlalchemy_declarative_models(tmp_path: Path, monkeypatch: MonkeyPatch) -> None:
-    engine = create_async_engine(f"sqlite+aiosqlite:///{tmp_path}/test.sqlite", poolclass=NullPool)
+    engine = create_async_engine("sqlite+aiosqlite:///test.sqlite", poolclass=NullPool)
 
     session_config = AsyncSessionConfig(expire_on_commit=False)
     sqlalchemy_config = SQLAlchemyAsyncConfig(
@@ -25,6 +25,7 @@ async def test_sqlalchemy_declarative_models(tmp_path: Path, monkeypatch: Monkey
     monkeypatch.setattr(sqlalchemy_declarative_models, "sqlalchemy_config", sqlalchemy_config)
     async with engine.begin() as connection:
         await connection.run_sync(sqlalchemy_declarative_models.Author.metadata.create_all)
+        await connection.commit()
     with TestClient(sqlalchemy_declarative_models.app) as client:
         response = client.get("/authors")
         assert response.status_code == 200
