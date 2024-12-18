@@ -96,7 +96,7 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
     uses: ./.github/workflows/test.yml
     with:
       coverage: ${{ (matrix.python-version == '3.12' || matrix.python-version == '3.8') }}
@@ -122,6 +122,9 @@ jobs:
         with:
           version: "0.5.4"
           enable-cache: true
+
+      - name: Install Build Dependencies
+        run: sudo apt-get install build-essential libpq-dev python3-dev -y
 
       - name: Install dependencies
         run: |
@@ -189,6 +192,9 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+
+      - name: Install Build Dependencies
+        run: sudo apt-get install build-essential libpq-dev python3-dev -y
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -259,6 +265,9 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+
+      - name: Install Build Dependencies
+        run: sudo apt-get install build-essential libpq-dev python3-dev -y
 
       - name: Set up Python
         uses: actions/setup-python@v5

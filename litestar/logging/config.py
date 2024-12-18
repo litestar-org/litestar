@@ -292,13 +292,16 @@ class LoggingConfig(BaseLoggingConfig):
 
         if self.logging_module == "picologging":
             try:
-                from picologging import config, getLogger
+                from picologging import (  # pyright: ignore[reportMissingImports,reportGeneralTypeIssues]
+                    config,  # pyright: ignore[reportMissingImports,reportGeneralTypeIssues]
+                    getLogger,  # pyright: ignore[reportMissingImports,reportGeneralTypeIssues]
+                )
             except ImportError as e:
                 raise MissingDependencyException("picologging") from e
 
             excluded_fields.add("incremental")
         else:
-            from logging import config, getLogger  # type: ignore[no-redef, assignment]
+            from logging import config, getLogger  # type: ignore[no-redef,assignment,unused-ignore]
 
         values = {
             _field.name: getattr(self, _field.name)
