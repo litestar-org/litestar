@@ -96,7 +96,7 @@ async def test_pub_sub_non_blocking(channels_backend: ChannelsBackend, channel: 
         subscriber = await plugin.subscribe(channel)
         plugin.publish(b"foo", channel)
 
-        await asyncio.sleep(0.1)  # give the worker time to process things
+        await asyncio.sleep(0.5)  # give the worker time to process things
 
         res = await get_from_stream(subscriber, 1)
 
@@ -156,7 +156,7 @@ async def test_ws_route_handlers_receive_arbitrary_message(channels_backend: Cha
 
 
 @pytest.mark.flaky(reruns=15)
-def test_create_ws_route_handlers_arbitrary_channels_allowed(channels_backend: ChannelsBackend) -> None:
+async def test_create_ws_route_handlers_arbitrary_channels_allowed(channels_backend: ChannelsBackend) -> None:
     channels_plugin = ChannelsPlugin(
         backend=channels_backend,
         arbitrary_channels_allowed=True,
@@ -171,7 +171,7 @@ def test_create_ws_route_handlers_arbitrary_channels_allowed(channels_backend: C
             channels_plugin.publish("something", "foo")
             assert ws.receive_text(timeout=2) == "something"
 
-        time.sleep(0.1)
+        time.sleep(0.5)
 
         with client.websocket_connect("/ws/bar") as ws:
             channels_plugin.publish("something else", "bar")

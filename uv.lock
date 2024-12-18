@@ -25,7 +25,7 @@ wheels = [
 
 [[package]]
 name = "advanced-alchemy"
-version = "0.26.1"
+version = "0.26.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "alembic" },
@@ -34,9 +34,9 @@ dependencies = [
     { name = "sqlalchemy" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/03/a7/50e2ea5196a15b4fa3558c4cefd5991b18c984c4e1e4c0ef2ea71a7402cd/advanced_alchemy-0.26.1.tar.gz", hash = "sha256:09e5340ff4ec8e84752c98de51aa33910eadab0dbfb09ed79d82eab42ca8055a", size = 942602 }
+sdist = { url = "https://files.pythonhosted.org/packages/3e/94/8783c58213448ae3fe44615e3efd2eb5bfc3d90a8fe47d29f9e6164681f2/advanced_alchemy-0.26.2.tar.gz", hash = "sha256:b56a9c42b7c1b1ab322cccb39b5fd0601232850b10191337f0504debc71735d2", size = 983000 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f2/6e/df2431d8034e61b295d54f5a5263d606931f344c2270cbb691000ce37cf1/advanced_alchemy-0.26.1-py3-none-any.whl", hash = "sha256:04c786df9453676784f71dfc88b5dccce257f8939b8528d5e1f624d048ce081f", size = 147824 },
+    { url = "https://files.pythonhosted.org/packages/9e/ef/35219f6be810e636fbe26e05af6c767d02de825075b7e633f49cf886b355/advanced_alchemy-0.26.2-py3-none-any.whl", hash = "sha256:1f9b1207e757076e13a41782e76ac32f50ab5851a88d40f27321005cd46b6b94", size = 147848 },
 ]
 
 [[package]]
@@ -226,11 +226,11 @@ wheels = [
 
 [[package]]
 name = "attrs"
-version = "24.2.0"
+version = "24.3.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/fc/0f/aafca9af9315aee06a89ffde799a10a582fe8de76c563ee80bbcdc08b3fb/attrs-24.2.0.tar.gz", hash = "sha256:5cfb1b9148b5b086569baec03f20d7b6bf3bcacc9a42bebf87ffaaca362f6346", size = 792678 }
+sdist = { url = "https://files.pythonhosted.org/packages/48/c8/6260f8ccc11f0917360fc0da435c5c9c7504e3db174d5a12a1494887b045/attrs-24.3.0.tar.gz", hash = "sha256:8f5c07333d543103541ba7be0e2ce16eeee8130cb0b3f9238ab904ce1e85baff", size = 805984 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/6a/21/5b6702a7f963e95456c0de2d495f67bf5fd62840ac655dc451586d23d39a/attrs-24.2.0-py3-none-any.whl", hash = "sha256:81921eb96de3191c8258c199618104dd27ac608d9366f5e35d011eae1867ede2", size = 63001 },
+    { url = "https://files.pythonhosted.org/packages/89/aa/ab0f7891a01eeb2d2e338ae8fecbe57fcebea1a24dbb64d45801bfab481d/attrs-24.3.0-py3-none-any.whl", hash = "sha256:ac96cd038792094f438ad1f6ff80837353805ac950cd2aa0e0625ef19850c308", size = 63397 },
 ]
 
 [[package]]
