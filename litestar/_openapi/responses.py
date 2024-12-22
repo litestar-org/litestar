@@ -127,7 +127,7 @@ class ResponseFactory:
         else:
             media_type = self.route_handler.media_type
 
-            if dto := self.route_handler.resolve_return_dto():
+            if dto := self.route_handler.return_dto:
                 result = dto.create_openapi_schema(
                     field_definition=self.field_definition,
                     handler_id=self.route_handler.handler_id,

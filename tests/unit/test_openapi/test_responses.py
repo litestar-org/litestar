@@ -520,13 +520,14 @@ def test_response_generation_with_dto(create_factory: CreateFactoryFixture) -> N
     async def handler(data: Dict[str, Any]) -> Dict[str, Any]:
         return data
 
-    Litestar(route_handlers=[handler])
+    app = Litestar(route_handlers=[handler])
+    resolved_handler = app.route_handler_method_map["/form-upload"]["POST"]
 
-    factory = create_factory(handler)
+    factory = create_factory(resolved_handler)
     field_definition = FieldDefinition.from_annotation(Dict[str, Any])
     factory.create_success_response()
     mock_dto.create_openapi_schema.assert_called_once_with(
-        field_definition=field_definition, handler_id=handler.handler_id, schema_creator=factory.schema_creator
+        field_definition=field_definition, handler_id=resolved_handler.handler_id, schema_creator=factory.schema_creator
     )
 
 

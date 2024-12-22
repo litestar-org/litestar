@@ -64,7 +64,7 @@ class PathItemFactory:
         request_body = None
         if data_field := signature_fields.get("data"):
             request_body = create_request_body(
-                self.context, route_handler.handler_id, route_handler.resolve_data_dto(), data_field
+                self.context, route_handler.handler_id, route_handler.data_dto, data_field
             )
 
         raises_validation_error = bool(data_field or self._path_item.parameters or parameters)

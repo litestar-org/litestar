@@ -103,7 +103,6 @@ class ASGIRouteHandler(BaseRouteHandler):
         merge_opts["is_mount"] = self.is_mount
         return merge_opts
 
-
     def _validate_handler_function(self, app: Litestar | None = None) -> None:
         """Validate the route handler function once it's set by inspecting its return annotations."""
         super()._validate_handler_function(app=app)

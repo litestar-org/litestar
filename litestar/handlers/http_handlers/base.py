@@ -367,9 +367,9 @@ class HTTPRouteHandler(BaseRouteHandler):
 
         for other in (self, *others):
             merge_opts["after_response"] = merge_opts.get("after_response") or other.after_response
-            merge_opts["after_request"] =  merge_opts.get("after_request") or other.after_request
-            merge_opts["before_request"] =  merge_opts.get("before_request") or other.before_request
-            merge_opts["cache_control"] =  merge_opts.get("cache_control") or other.cache_control
+            merge_opts["after_request"] = merge_opts.get("after_request") or other.after_request
+            merge_opts["before_request"] = merge_opts.get("before_request") or other.before_request
+            merge_opts["cache_control"] = merge_opts.get("cache_control") or other.cache_control
             merge_opts["etag"] = merge_opts.get("etag") or other.etag
             merge_opts["response_cookies"] = (*merge_opts.get("response_cookies", ()), *other.response_cookies)
             merge_opts["response_headers"] = (*other.response_headers, *merge_opts.get("response_headers", ()))
@@ -782,7 +782,7 @@ class HTTPRouteHandler(BaseRouteHandler):
         Returns:
             A Response instance
         """
-        if return_dto_type := self.resolve_return_dto():
+        if return_dto_type := self.return_dto:
             data = return_dto_type(request).data_to_encodable_type(data)
 
         handler = cast(

@@ -55,11 +55,10 @@ class BaseRouteHandler:
         "_parsed_fn_signature",
         "_parsed_return_field",
         "_registered",
-        "_resolved_data_dto",
-        "_resolved_return_dto",
         "_resolved_signature_model",
+        "_dto",
+        "_return_dto",
         "dependencies",
-        "dto",
         "exception_handlers",
         "fn",
         "guards",
@@ -68,7 +67,6 @@ class BaseRouteHandler:
         "opt",
         "parameters",
         "paths",
-        "return_dto",
         "signature_namespace",
         "type_decoders",
         "type_encoders",
@@ -126,9 +124,7 @@ class BaseRouteHandler:
         self._parsed_fn_signature: ParsedSignature | EmptyType = Empty
         self._parsed_return_field: FieldDefinition | EmptyType = Empty
         self._parsed_data_field: FieldDefinition | None | EmptyType = Empty
-        self._resolved_data_dto: type[AbstractDTO] | None | EmptyType = Empty
         self._parameter_field_definitions: dict[str, FieldDefinition] | EmptyType = Empty
-        self._resolved_return_dto: type[AbstractDTO] | None | EmptyType = Empty
         self._resolved_signature_model: type[SignatureModel] | EmptyType = Empty
         self._registered = False
 
@@ -140,14 +136,14 @@ class BaseRouteHandler:
             if dependencies
             else {}
         )
-        self.dto = dto
+        self._dto = dto
+        self._return_dto = return_dto
         self.exception_handlers = exception_handlers or {}
         self.guards: tuple[AsyncGuard, ...] = tuple(ensure_async_callable(guard) for guard in guards) if guards else ()
         self.middleware = tuple(middleware) if middleware else ()
         self.name = name
         self.opt = dict(opt or {})
         self.opt.update(**kwargs)
-        self.return_dto = return_dto
         self.signature_namespace = add_types_to_signature_namespace(
             signature_types or [], dict(signature_namespace or {})
         )
@@ -160,7 +156,7 @@ class BaseRouteHandler:
         self.parameters = parameters or {}
 
     def _get_merge_opts(self, others: tuple[Router, ...]) -> dict[str, Any]:
-        """Get kwargs for .merge. """
+        """Get kwargs for .merge."""
         path = functools.reduce(
             lambda a, b: join_paths([a, b]),
             (o.path for o in reversed(others)),
@@ -173,8 +169,6 @@ class BaseRouteHandler:
 
         for other in (self, *others):
             merge_opts["dependencies"] = {**other.dependencies, **merge_opts.get("dependencies", {})}
-            merge_opts["dto"] = value_or_default(merge_opts.get("dto", Empty), other.dto)
-            merge_opts["return_dto"] = value_or_default(merge_opts.get("return_dto", Empty), other.return_dto)
             merge_opts["exception_handlers"] = {**other.exception_handlers, **merge_opts.get("exception_handlers", {})}
             merge_opts["guards"] = (*other.guards, *merge_opts.get("guards", ()))
 
@@ -186,6 +180,13 @@ class BaseRouteHandler:
             merge_opts["signature_namespace"] = merge_signature_namespaces(
                 merge_opts.get("signature_namespace", {}), other.signature_namespace
             )
+
+            if other is not self:
+                merge_opts["dto"] = value_or_default(merge_opts.get("dto", Empty), other.dto)
+                merge_opts["return_dto"] = value_or_default(merge_opts.get("return_dto", Empty), other.return_dto)
+
+        merge_opts["dto"] = value_or_default(self._dto, merge_opts.get("dto", Empty))
+        merge_opts["return_dto"] = value_or_default(self._return_dto, merge_opts.get("return_dto", Empty))
 
         return merge_opts
 
@@ -233,7 +234,7 @@ class BaseRouteHandler:
                 dependency_name_set=set(self.dependencies.keys()),
                 fn=cast("AnyCallable", self.fn),
                 parsed_signature=self.parsed_fn_signature,
-                data_dto=self.resolve_data_dto(),
+                data_dto=self.data_dto,
                 type_decoders=self.type_decoders,
             )
         return self._resolved_signature_model
@@ -369,7 +370,7 @@ class BaseRouteHandler:
                     dependency_name_set=set(self.dependencies.keys()),
                     fn=provider.dependency,
                     parsed_signature=provider.parsed_fn_signature,
-                    data_dto=self.resolve_data_dto(app=app),
+                    data_dto=self.data_dto,
                     type_decoders=self.type_decoders,
                 )
             dependencies[key] = provider
@@ -395,7 +396,16 @@ class BaseRouteHandler:
         self._check_registered()
         return self.signature_namespace
 
-    def resolve_data_dto(self, app: Litestar | None = None) -> type[AbstractDTO] | None:
+    @property
+    def data_dto(self) -> type[AbstractDTO] | None:
+        self._check_registered()
+        return self._dto
+
+    @deprecated("3.0", removal_in="4.0", alternative=".data_dto attribute")
+    def resolve_data_dto(self) -> type[AbstractDTO] | None:
+        return self.data_dto
+
+    def _resolve_data_dto(self, app: Litestar) -> type[AbstractDTO] | None:
         """Resolve the data_dto by starting from the route handler and moving up.
         If a handler is found it is returned, otherwise None is set.
         This method is memoized so the computation occurs only once.
@@ -403,37 +413,39 @@ class BaseRouteHandler:
         Returns:
             An optional :class:`DTO type <.dto.base_dto.AbstractDTO>`
         """
-        if self._resolved_data_dto is Empty:
-            data_dto: type[AbstractDTO] | None = None
-            if (_data_dto := self.dto) is not Empty:
-                data_dto = _data_dto
-            elif (
-                app
-                and self.parsed_data_field
-                and (
-                    plugin_for_data_type := next(
-                        (
-                            plugin
-                            for plugin in app.plugins.serialization
-                            if self.parsed_data_field.match_predicate_recursively(plugin.supports_type)
-                        ),
-                        None,
-                    )
-                )
-            ):
-                data_dto = plugin_for_data_type.create_dto_for_type(self.parsed_data_field)
+        data_dto: type[AbstractDTO] | None = None
+        if (_data_dto := self._dto) is not Empty:
+            data_dto = _data_dto
+        elif self.parsed_data_field and (
+            plugin_for_data_type := next(
+                (
+                    plugin
+                    for plugin in app.plugins.serialization
+                    if self.parsed_data_field.match_predicate_recursively(plugin.supports_type)
+                ),
+                None,
+            )
+        ):
+            data_dto = plugin_for_data_type.create_dto_for_type(self.parsed_data_field)
 
-            if self.parsed_data_field and data_dto:
-                data_dto.create_for_field_definition(
-                    field_definition=self.parsed_data_field,
-                    handler_id=self.handler_id,
-                )
+        if self.parsed_data_field and data_dto:
+            data_dto.create_for_field_definition(
+                field_definition=self.parsed_data_field,
+                handler_id=self.handler_id,
+            )
 
-            self._resolved_data_dto = data_dto
+        return data_dto
 
-        return self._resolved_data_dto
+    @property
+    def return_dto(self) -> type[AbstractDTO] | None:
+        self._check_registered()
+        return self._return_dto
 
-    def resolve_return_dto(self, app: Litestar | None = None) -> type[AbstractDTO] | None:
+    @deprecated("3.0", removal_in="4.0", alternative=".return_dto attribute")
+    def resolve_return_dto(self) -> type[AbstractDTO] | None:
+        return self.return_dto
+
+    def _resolve_return_dto(self, app: Litestar, data_dto: type[AbstractDTO] | None) -> type[AbstractDTO] | None:
         """Resolve the return_dto by starting from the route handler and moving up.
         If a handler is found it is returned, otherwise None is set.
         This method is memoized so the computation occurs only once.
@@ -441,33 +453,30 @@ class BaseRouteHandler:
         Returns:
             An optional :class:`DTO type <.dto.base_dto.AbstractDTO>`
         """
-        if self._resolved_return_dto is Empty:
-            if (_return_dto := self.return_dto) is not Empty:
-                return_dto: type[AbstractDTO] | None = _return_dto
-            elif app and (
-                plugin_for_return_type := next(
-                    (
-                        plugin
-                        for plugin in app.plugins.serialization
-                        if self.parsed_return_field.match_predicate_recursively(plugin.supports_type)
-                    ),
-                    None,
-                )
-            ):
-                return_dto = plugin_for_return_type.create_dto_for_type(self.parsed_return_field)
-            else:
-                return_dto = self.resolve_data_dto(app=app)
+        if (_return_dto := self._return_dto) is not Empty:
+            return_dto: type[AbstractDTO] | None = _return_dto
+        elif plugin_for_return_type := next(
+            (
+                plugin
+                for plugin in app.plugins.serialization
+                if self.parsed_return_field.match_predicate_recursively(plugin.supports_type)
+            ),
+            None,
+        ):
+            return_dto = plugin_for_return_type.create_dto_for_type(self.parsed_return_field)
+        else:
+            return_dto = data_dto
 
-            if return_dto and return_dto.is_supported_model_type_field(self.parsed_return_field):
-                return_dto.create_for_field_definition(
-                    field_definition=self.parsed_return_field,
-                    handler_id=self.handler_id,
-                )
-                self._resolved_return_dto = return_dto
-            else:
-                self._resolved_return_dto = None
+        if return_dto and return_dto.is_supported_model_type_field(self.parsed_return_field):
+            return_dto.create_for_field_definition(
+                field_definition=self.parsed_return_field,
+                handler_id=self.handler_id,
+            )
+            resolved_return_dto = return_dto
+        else:
+            resolved_return_dto = None
 
-        return self._resolved_return_dto
+        return resolved_return_dto
 
     async def authorize_connection(self, connection: ASGIConnection) -> None:
         """Ensure the connection is authorized by running all the route guards in scope."""
@@ -490,19 +499,15 @@ class BaseRouteHandler:
         # constructed in the wrong order (handler > application). reversing the order
         # here is easier than handling it correctly at every intermediary step
         self.middleware = tuple(reversed(self.middleware))
+        self._dto = self._resolve_data_dto(app=app)
+        self._return_dto = self._resolve_return_dto(app=app, data_dto=self._dto)
 
         self._validate_handler_function(app=app)
         self._finalize_dependencies(app=app)
-        self.resolve_data_dto(app=app)
-        self.resolve_return_dto(app=app)
 
     def _validate_handler_function(self, app: Litestar | None = None) -> None:
         """Validate the route handler function once set by inspecting its return annotations."""
-        if (
-            self.parsed_data_field is not None
-            and self.parsed_data_field.is_subclass_of(DTOData)
-            and not self.resolve_data_dto(app=app)
-        ):
+        if self.parsed_data_field is not None and self.parsed_data_field.is_subclass_of(DTOData) and not self.data_dto:
             raise ImproperlyConfiguredException(
                 f"Handler function {self.handler_name} has a data parameter that is a subclass of DTOData but no "
                 "DTO has been registered for it."

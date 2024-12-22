@@ -254,7 +254,8 @@ class WebSocketStreamHandler(WebsocketRouteHandler):
         self._parsed_return_field = parsed_stream_fn_signature.return_type.inner_types[0]
 
         json_encoder = JsonEncoder(enc_hook=self.default_serializer)
-        return_dto = self.resolve_return_dto(app=app)
+        self._dto = self._resolve_data_dto(app=app)
+        self._return_dto = return_dto = self._resolve_return_dto(app=app, data_dto=self._dto)
 
         # make sure the closure doesn't capture self._ws_stream / self
         send_mode: WebSocketMode = self._ws_stream_options.send_mode  # pyright: ignore
