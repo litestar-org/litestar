@@ -12,7 +12,7 @@ __all__ = ("ASGIRouteHandler", "asgi")
 
 
 if TYPE_CHECKING:
-    from litestar import Litestar, Router
+    from litestar import Router
     from litestar.connection import ASGIConnection
     from litestar import Litestar
     from litestar.connection import ASGIConnection
@@ -103,9 +103,9 @@ class ASGIRouteHandler(BaseRouteHandler):
         merge_opts["is_mount"] = self.is_mount
         return merge_opts
 
-    def _validate_handler_function(self, app: Litestar | None = None) -> None:
+    def _validate_handler_function(self) -> None:
         """Validate the route handler function once it's set by inspecting its return annotations."""
-        super()._validate_handler_function(app=app)
+        super()._validate_handler_function()
 
         if not self.parsed_fn_signature.return_type.is_subclass_of(NoneType):
             raise ImproperlyConfiguredException("ASGI handler functions should return 'None'")

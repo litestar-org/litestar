@@ -509,10 +509,10 @@ class BaseRouteHandler:
         self._dto = self._resolve_data_dto(app=app)
         self._return_dto = self._resolve_return_dto(app=app, data_dto=self._dto)
 
-        self._validate_handler_function(app=app)
+        self._validate_handler_function()
         self._finalize_dependencies(app=app)
 
-    def _validate_handler_function(self, app: Litestar | None = None) -> None:
+    def _validate_handler_function(self) -> None:
         """Validate the route handler function once set by inspecting its return annotations."""
         if self.parsed_data_field is not None and self.parsed_data_field.is_subclass_of(DTOData) and not self.data_dto:
             raise ImproperlyConfiguredException(

@@ -273,7 +273,7 @@ class WebsocketListenerRouteHandler(WebsocketRouteHandler):
             listener=self, fn=self.fn, parsed_signature=parsed_signature, namespace=self.signature_namespace
         )
 
-    def _validate_handler_function(self, app: Litestar | None = None) -> None:
+    def _validate_handler_function(self) -> None:
         """Validate the route handler function once it's set by inspecting its return annotations."""
         # validation occurs in the call method
 

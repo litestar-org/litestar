@@ -553,9 +553,9 @@ class HTTPRouteHandler(BaseRouteHandler):
             model = self._kwargs_models[key] = self._create_kwargs_model(path_parameters)
         return model
 
-    def _validate_handler_function(self, app: Litestar | None = None) -> None:
+    def _validate_handler_function(self) -> None:
         """Validate the route handler function once it is set by inspecting its return annotations."""
-        super()._validate_handler_function(app=app)
+        super()._validate_handler_function()
 
         return_type = self.parsed_fn_signature.return_type
 
