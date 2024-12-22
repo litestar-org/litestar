@@ -127,7 +127,7 @@ class OpenAPIHeader(BaseSchemaObject):
 
     def __post_init__(self) -> None:
         if self.allow_reserved is None:
-            self.allow_reserved = False
+            self.allow_reserved = False  # type: ignore[unreachable]
         else:
             warn_deprecation(
                 "2.13.1",
@@ -138,7 +138,7 @@ class OpenAPIHeader(BaseSchemaObject):
             )
 
         if self.allow_empty_value is None:
-            self.allow_empty_value = False
+            self.allow_empty_value = False  # type: ignore[unreachable]
         else:
             warn_deprecation(
                 "2.13.1",
