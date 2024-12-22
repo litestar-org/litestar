@@ -780,10 +780,7 @@ class Litestar(Router):
     def _merge_handlers(self, handlers: list[ControllerRouterHandler]) -> list[BaseRouteHandler]:
         merged_handlers = []
         for handler, bases in self._iter_handlers(handlers, bases=[self]):
-            # for base in bases:
-            #     handler = handler.merge(base)
-            handler = handler.merge(*bases)
-            merged_handlers.append(handler)
+            merged_handlers.append(handler.merge(*bases))
         return merged_handlers
 
     def _validate_registration_value(self, value: ControllerRouterHandler) -> RouteHandlerType | Router:

@@ -2,13 +2,13 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from litestar import Litestar, Router, asgi, get, websocket, Controller
+from litestar import Controller, Litestar, Router, asgi, get, websocket
 from litestar.connection import WebSocket
 from litestar.exceptions import PermissionDeniedException, WebSocketDisconnect
 from litestar.response.base import ASGIResponse
 from litestar.status_codes import HTTP_200_OK, HTTP_403_FORBIDDEN
 from litestar.testing import create_test_client
-from litestar.types import Receive, Scope, Send, Guard
+from litestar.types import Guard, Receive, Scope, Send
 
 if TYPE_CHECKING:
     from litestar.connection import ASGIConnection
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture()
-def local_guard():
+def local_guard() -> Guard:
     async def local_guard_fn(_: "ASGIConnection", route_handler: "BaseRouteHandler") -> None:
         if not route_handler.opt or not route_handler.opt.get("allow_all"):
             raise PermissionDeniedException("local")
@@ -25,7 +25,7 @@ def local_guard():
 
 
 @pytest.fixture()
-def router_guard():
+def router_guard() -> Guard:
     async def router_guard_fn(connection: "ASGIConnection", _: "BaseRouteHandler") -> None:
         if not connection.headers.get("Authorization-Router"):
             raise PermissionDeniedException("router")
@@ -34,7 +34,7 @@ def router_guard():
 
 
 @pytest.fixture()
-def app_guard():
+def app_guard() -> Guard:
     async def app_guard_fn(connection: "ASGIConnection", _: "BaseRouteHandler") -> None:
         if not connection.headers.get("Authorization"):
             raise PermissionDeniedException("app")

@@ -7,10 +7,8 @@ from litestar.exceptions import ImproperlyConfiguredException
 from litestar.handlers import BaseRouteHandler
 from litestar.types import AsyncAnyCallable, Empty, ParametersMap
 from litestar.types.builtin_types import NoneType
-from litestar.utils import deprecated, join_paths
-from litestar.utils.empty import value_or_default
+from litestar.utils import deprecated
 from litestar.utils.predicates import is_async_callable
-from litestar.utils.signature import merge_signature_namespaces
 
 if TYPE_CHECKING:
     from litestar import Litestar, Router

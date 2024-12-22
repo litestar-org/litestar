@@ -2,7 +2,7 @@ from typing import Dict
 
 import pytest
 
-from litestar import Controller, HttpMethod, Litestar, Router, get, post
+from litestar import Controller, Litestar, Router, get, post
 from litestar.datastructures import CacheControlHeader, ETag, ResponseHeader
 from litestar.datastructures.headers import Header
 from litestar.status_codes import HTTP_201_CREATED

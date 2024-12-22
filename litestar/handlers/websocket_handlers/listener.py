@@ -26,9 +26,8 @@ from litestar.types import (
     Middleware,
     TypeEncodersMap,
 )
-from litestar.utils import ensure_async_callable, join_paths
-from litestar.utils.empty import value_or_default
-from litestar.utils.signature import ParsedSignature, get_fn_type_hints, merge_signature_namespaces
+from litestar.utils import ensure_async_callable
+from litestar.utils.signature import ParsedSignature, get_fn_type_hints
 
 from ._utils import (
     ListenerHandler,

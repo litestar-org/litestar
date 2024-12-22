@@ -9,7 +9,6 @@ from litestar.enums import HttpMethod
 from litestar.exceptions import ValidationException
 from litestar.response import Response
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_204_NO_CONTENT
-from litestar.types.asgi_types import HttpMethodName
 from litestar.types.builtin_types import NoneType
 
 if TYPE_CHECKING:
@@ -17,6 +16,7 @@ if TYPE_CHECKING:
     from litestar.connection import Request
     from litestar.datastructures import Cookie, ResponseHeader
     from litestar.types import AfterRequestHookHandler, ASGIApp, AsyncAnyCallable, Method, TypeEncodersMap
+    from litestar.types.asgi_types import HttpMethodName
     from litestar.typing import FieldDefinition
 
 __all__ = (

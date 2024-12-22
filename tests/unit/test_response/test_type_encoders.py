@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Any, Tuple
 
-from litestar import Controller, HttpMethod, Litestar, Response, Router, get
+from litestar import Controller, Litestar, Response, Router, get
 from litestar.testing import create_test_client
 
 if TYPE_CHECKING:

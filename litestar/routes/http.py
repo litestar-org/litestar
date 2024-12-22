@@ -5,11 +5,11 @@ from typing import TYPE_CHECKING, Iterable
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.routes.base import BaseRoute
 from litestar.types import HTTPScope
-from litestar.types.asgi_types import HttpMethodName
 
 if TYPE_CHECKING:
     from litestar.handlers.http_handlers import HTTPRouteHandler
-    from litestar.types import Method, Receive, Send
+    from litestar.types import Receive, Send
+    from litestar.types.asgi_types import HttpMethodName
 
 
 class HTTPRoute(BaseRoute[HTTPScope]):

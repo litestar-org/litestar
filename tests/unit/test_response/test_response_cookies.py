@@ -1,6 +1,6 @@
 from uuid import uuid4
 
-from litestar import Controller, HttpMethod, Litestar, Response, Router, get
+from litestar import Controller, Litestar, Response, Router, get
 from litestar.datastructures import Cookie
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client

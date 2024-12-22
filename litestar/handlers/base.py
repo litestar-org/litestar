@@ -2,13 +2,14 @@ from __future__ import annotations
 
 import functools
 from functools import partial
-from typing import TYPE_CHECKING, Any, Callable, Iterable, Mapping, Sequence, cast
+from typing import TYPE_CHECKING, Any, Callable, Iterable, Mapping, NoReturn, Sequence, cast
 
 from litestar._signature import SignatureModel
 from litestar.di import Provide
 from litestar.dto import DTOData
 from litestar.exceptions import ImproperlyConfiguredException, LitestarException
 from litestar.plugins import DIPlugin
+from litestar.router import Router
 from litestar.serialization import default_deserializer, default_serializer
 from litestar.types import (
     Dependencies,
@@ -34,10 +35,9 @@ if TYPE_CHECKING:
     from litestar.app import Litestar
     from litestar.connection import ASGIConnection
     from litestar.dto import AbstractDTO
-    from litestar.router import Router
     from litestar.routes import BaseRoute
     from litestar.types import AsyncAnyCallable
-    from litestar.types.callable_types import AsyncGuard
+    from litestar.types.callable_types import AnyCallable, AsyncGuard
     from litestar.types.empty import EmptyType
 
 __all__ = ("BaseRouteHandler",)
@@ -50,13 +50,13 @@ class BaseRouteHandler:
     """
 
     __slots__ = (
+        "_dto",
         "_parameter_field_definitions",
         "_parsed_data_field",
         "_parsed_fn_signature",
         "_parsed_return_field",
         "_registered",
         "_resolved_signature_model",
-        "_dto",
         "_return_dto",
         "dependencies",
         "exception_handlers",
@@ -167,7 +167,8 @@ class BaseRouteHandler:
             "path": [join_paths([path, p]) for p in self.paths],
         }
 
-        for other in (self, *others):
+        other: BaseRouteHandler | Router
+        for other in (self, *others):  # type: ignore[assignment]
             merge_opts["dependencies"] = {**other.dependencies, **merge_opts.get("dependencies", {})}
             merge_opts["exception_handlers"] = {**other.exception_handlers, **merge_opts.get("exception_handlers", {})}
             merge_opts["guards"] = (*other.guards, *merge_opts.get("guards", ()))
@@ -182,6 +183,7 @@ class BaseRouteHandler:
             )
 
             if other is not self:
+                other = cast(Router, other)  # mypy cannot narrow with the 'is not self' check
                 merge_opts["dto"] = value_or_default(merge_opts.get("dto", Empty), other.dto)
                 merge_opts["return_dto"] = value_or_default(merge_opts.get("return_dto", Empty), other.return_dto)
 
@@ -279,10 +281,13 @@ class BaseRouteHandler:
 
     def _check_registered(self) -> None:
         if not self._registered:
-            raise LitestarException(
-                f"Handler {self!r}: Accessing this attribute is unsafe until the handler has been"
-                "registered with an application, as it may yield different results after registration."
-            )
+            self._raise_not_registered()
+
+    def _raise_not_registered(self) -> NoReturn:
+        raise LitestarException(
+            f"Handler {self!r}: Accessing this attribute is unsafe until the handler has been"
+            "registered with an application, as it may yield different results after registration."
+        )
 
     @deprecated("3.0", removal_in="4.0", alternative=".type_encoders attribute")
     def resolve_type_encoders(self) -> TypeEncodersMap:
@@ -398,7 +403,8 @@ class BaseRouteHandler:
 
     @property
     def data_dto(self) -> type[AbstractDTO] | None:
-        self._check_registered()
+        if self._dto is Empty:
+            self._raise_not_registered()
         return self._dto
 
     @deprecated("3.0", removal_in="4.0", alternative=".data_dto attribute")
@@ -438,7 +444,8 @@ class BaseRouteHandler:
 
     @property
     def return_dto(self) -> type[AbstractDTO] | None:
-        self._check_registered()
+        if self._return_dto is Empty:
+            self._raise_not_registered()
         return self._return_dto
 
     @deprecated("3.0", removal_in="4.0", alternative=".return_dto attribute")

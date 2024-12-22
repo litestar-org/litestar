@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import itertools
 from enum import Enum
 from typing import TYPE_CHECKING, AnyStr, Awaitable, Callable, Iterable, Mapping, Sequence, TypedDict, cast
 
@@ -53,13 +52,12 @@ from litestar.types import (
     TypeEncodersMap,
 )
 from litestar.types.builtin_types import NoneType
-from litestar.utils import deprecated, ensure_async_callable, join_paths
+from litestar.utils import deprecated, ensure_async_callable
 from litestar.utils.empty import value_or_default
 from litestar.utils.predicates import is_async_callable
 from litestar.utils.scope.state import ScopeState
 from litestar.utils.predicates import is_async_callable, is_class_and_subclass
 from litestar.utils.scope.state import ScopeState
-from litestar.utils.signature import merge_signature_namespaces
 from litestar.utils.warnings import warn_implicit_sync_to_thread, warn_sync_to_thread_with_async_callable
 
 if TYPE_CHECKING:
@@ -365,7 +363,8 @@ class HTTPRouteHandler(BaseRouteHandler):
             cache_key_builder=self.cache_key_builder,
         )
 
-        for other in (self, *others):
+        other: HTTPRouteHandler | Router
+        for other in (self, *others):  # type: ignore[assignment]
             merge_opts["after_response"] = merge_opts.get("after_response") or other.after_response
             merge_opts["after_request"] = merge_opts.get("after_request") or other.after_request
             merge_opts["before_request"] = merge_opts.get("before_request") or other.before_request
