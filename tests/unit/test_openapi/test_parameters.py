@@ -445,3 +445,32 @@ def test_unwrap_annotated_new_type() -> None:
 
     testmodel_schema_name = app.openapi_schema.paths["/"].get.parameters[0].schema.value  # type: ignore[index, union-attr]
     assert app.openapi_schema.components.schemas[testmodel_schema_name].properties["param"].type == OpenAPIType.STRING  # type: ignore[index, union-attr]
+
+
+def test_query_param_only_properties() -> None:
+    @get("/{path_param:str}")
+    def handler(
+        path_param: str,
+        query_param: str,
+        header_param: Annotated[str, Parameter(header="header_param")],
+        cookie_param: Annotated[str, Parameter(cookie="cookie_param")],
+    ) -> None:
+        pass
+
+    app = Litestar([handler])
+    params = {p.name: p for p in app.openapi_schema.paths["/{path_param}"].get.parameters}  # type: ignore[union-attr, index]
+
+    for key in ["path_param", "header_param", "cookie_param"]:
+        schema = params[key].to_schema()
+        assert "allowEmptyValue" not in schema
+        assert "allowReserved" not in schema
+
+    assert params["query_param"].to_schema() == {
+        "name": "query_param",
+        "in": "query",
+        "schema": {"type": "string"},
+        "required": True,
+        "deprecated": False,
+        "allowEmptyValue": False,
+        "allowReserved": False,
+    }
