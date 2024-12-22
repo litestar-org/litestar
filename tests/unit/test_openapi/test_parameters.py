@@ -448,6 +448,7 @@ def test_unwrap_annotated_new_type() -> None:
 
 
 def test_query_param_only_properties() -> None:
+    # https://github.com/litestar-org/litestar/issues/3908
     @get("/{path_param:str}")
     def handler(
         path_param: str,

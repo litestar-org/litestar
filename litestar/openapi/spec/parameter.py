@@ -139,6 +139,7 @@ class Parameter(BaseSchemaObject):
     def _exclude_fields(self) -> set[str]:
         exclude = set()
         if self.param_in != "query":
+            # these are only allowed in query params
             exclude.update({"allow_empty_value", "allow_reserved"})
 
         return exclude
