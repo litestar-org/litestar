@@ -17,6 +17,7 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
   "Programming Language :: Python",
   "Topic :: Internet :: WWW/HTTP",
   "Topic :: Software Development :: Libraries",
@@ -31,22 +32,25 @@ classifiers = [
   "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 dependencies = [
-    "anyio>=3",
-    "httpx>=0.22",
-    "exceptiongroup; python_version < \"3.11\"",
-    "importlib-metadata; python_version < \"3.10\"",
-    "importlib-resources>=5.12.0; python_version < \"3.9\"",
-    "msgspec>=0.18.2",
-    "multidict>=6.0.2",
-    "polyfactory>=2.6.3",
-    "pyyaml",
-    "typing-extensions",
-    "click",
-    "rich>=13.0.0",
-    "rich-click",
-    "multipart>=1.2.0",
-    # default litestar plugins
-    "litestar-htmx>=0.4.0"
+  "anyio>=3 ; python_version < \"3.9\"",
+  "anyio>=4 ; python_version >= \"3.9\"",
+  "httpx>=0.22",
+  "exceptiongroup; python_version < \"3.11\"",
+  "eval_type_backport; python_version <= \"3.9\"",
+  "importlib-metadata; python_version < \"3.10\"",
+  "importlib-resources>=5.12.0; python_version < \"3.9\"",
+  "litestar-msgspec; python_version > \"3.8\"",
+  "msgspec>=0.18.2,<0.19.0; python_version < \"3.9\"",
+  "multidict>=6.0.2",
+  "polyfactory>=2.6.3",
+  "pyyaml",
+  "typing-extensions",
+  "click",
+  "rich>=13.0.0",
+  "rich-click",
+  "multipart>=1.2.0",
+  # default litestar plugins
+  "litestar-htmx>=0.3.0"
 ]
 description = "Litestar - A production-ready, highly performant, extensible ASGI API Framework"
 keywords = ["api", "rest", "asgi", "litestar", "starlite"]
@@ -83,7 +87,8 @@ brotli = ["brotli"]
 cli = ["jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0; sys_platform != 'win32'"]
 cryptography = ["cryptography"]
 full = [
-  "litestar[annotated-types,attrs,brotli,cli,cryptography,jinja,jwt,mako,minijinja,opentelemetry,piccolo,picologging,prometheus,pydantic,redis,sqlalchemy,standard,structlog,valkey]",
+  "litestar[annotated-types,attrs,brotli,cli,cryptography,jinja,jwt,mako,minijinja,opentelemetry,piccolo,picologging,prometheus,pydantic,redis,sqlalchemy,standard,structlog,valkey]; python_version < \"3.13\"",
+  "litestar[annotated-types,attrs,brotli,cli,cryptography,jinja,jwt,mako,minijinja,opentelemetry,piccolo,prometheus,pydantic,redis,sqlalchemy,standard,structlog,valkey]; python_version >= \"3.13\"",
 ]
 jinja = ["jinja2>=3.1.2"]
 jwt = [
@@ -94,9 +99,9 @@ mako = ["mako>=1.2.4"]
 minijinja = ["minijinja>=1.0.0"]
 opentelemetry = ["opentelemetry-instrumentation-asgi"]
 piccolo = ["piccolo"]
-picologging = ["picologging"]
+picologging = ["picologging; python_version < \"3.13\""]
 prometheus = ["prometheus-client"]
-pydantic = ["pydantic", "email-validator", "pydantic-extra-types"]
+pydantic = ["pydantic", "email-validator", "pydantic-extra-types<=2.9.0; python_version < \"3.9\"", "pydantic-extra-types>=2.9.0; python_version >= \"3.9\""]
 redis = ["redis[hiredis]>=4.4.4"]
 valkey = ["valkey[libvalkey]>=6.0.2"]
 sqlalchemy = ["advanced-alchemy>=0.2.2"]
@@ -130,13 +135,14 @@ dev = [
   "trio",
   "aiosqlite",
   "asyncpg>=0.29.0",
-  "psycopg[pool,binary]>=3.1.10,<3.2",
+  "psycopg[pool,binary]>=3.1.10,<3.2; python_version < \"3.13\"",
+  "psycopg[pool,c]; python_version >= \"3.13\"",
   "psycopg2-binary",
   "psutil>=5.9.8",
   "hypercorn>=0.16.0",
   "daphne>=4.0.0",
   "opentelemetry-sdk",
-  "httpx-sse"
+  "httpx-sse",
 ]
 
 docs = [
@@ -281,6 +287,8 @@ module = [
   "pytimeparse.*",
   "importlib_resources",
   "exceptiongroup",
+  "picologging",
+  "picologging.*"
 ]
 
 [[tool.mypy.overrides]]
@@ -304,6 +312,13 @@ module = [
   "litestar.plugins.pydantic.plugins.int",
 ]
 disable_error_code = "arg-type"
+
+[[tool.mypy.overrides]]
+warn_unused_ignores = false
+module = [
+  "tests.unit.test_logging.test_logging_config",
+]
+disable_error_code = "assignment"
 
 [tool.pydantic-mypy]
 init_forbid_extra = true
