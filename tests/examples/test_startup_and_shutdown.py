@@ -1,11 +1,16 @@
 from typing import TYPE_CHECKING
 from unittest.mock import AsyncMock, MagicMock
 
+import pytest
+
 from docs.examples import startup_and_shutdown
 
 from litestar import get
 from litestar.datastructures import State
 from litestar.testing import TestClient
+
+pytestmark = pytest.mark.anyio
+
 
 if TYPE_CHECKING:
     from pytest import MonkeyPatch

@@ -1,8 +1,11 @@
+import pytest
+
 from litestar import asgi
 from litestar.middleware.logging import LoggingMiddlewareConfig
 from litestar.testing import create_async_test_client
 from litestar.types.asgi_types import Receive, Scope, Send
 
+pytestmark = pytest.mark.anyio
 
 @asgi("/")
 async def asgi_app(scope: Scope, receive: Receive, send: Send) -> None:

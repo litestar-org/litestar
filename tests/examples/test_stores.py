@@ -2,6 +2,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import anyio
+import pytest
 
 from litestar import get
 from litestar.stores.file import FileStore
@@ -9,6 +10,7 @@ from litestar.stores.memory import MemoryStore
 from litestar.stores.redis import RedisStore
 from litestar.testing import TestClient
 
+pytestmark = pytest.mark.anyio
 
 @patch("litestar.stores.redis.Redis")
 async def test_configure_integrations_set_names(mock_redis: MagicMock) -> None:

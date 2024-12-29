@@ -13,6 +13,7 @@ from litestar.response.base import ASGIResponse
 from litestar.status_codes import HTTP_200_OK
 from litestar.testing import RequestFactory
 
+pytestmark = pytest.mark.anyio
 factory = RequestFactory()
 
 

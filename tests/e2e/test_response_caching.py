@@ -17,7 +17,7 @@ from litestar.middleware.response_cache import ResponseCacheMiddleware
 from litestar.status_codes import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from litestar.stores.base import Store
 from litestar.stores.memory import MemoryStore
-from litestar.testing import TestClient, create_test_client
+from litestar.testing import TestClient, create_test_client, AsyncTestClient
 from litestar.types import HTTPScope
 
 if TYPE_CHECKING:
@@ -25,6 +25,7 @@ if TYPE_CHECKING:
 
 T = TypeVar("T")
 
+pytestmark = pytest.mark.anyio
 
 @pytest.fixture()
 def mock() -> MagicMock:
@@ -176,7 +177,7 @@ async def test_with_stores(store: Store, mock: MagicMock) -> None:
     def handler() -> str:
         return mock()  # type: ignore[no-any-return]
 
-    app = Litestar([handler], stores={"response_cache": store})
+    app = Litestar([handler], stores={"response_cache": store}, debug=True)
 
     with TestClient(app=app) as client:
         response_one = client.get("/")

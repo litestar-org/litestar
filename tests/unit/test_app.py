@@ -37,6 +37,7 @@ if TYPE_CHECKING:
 
     from litestar.types import Message, Scope
 
+pytestmark = pytest.mark.anyio
 
 @pytest.fixture()
 def app_config_object() -> AppConfig:

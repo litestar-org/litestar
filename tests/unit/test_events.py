@@ -12,6 +12,7 @@ from litestar.status_codes import HTTP_200_OK
 from litestar.testing import create_test_client
 from litestar.types import AnyIOBackend
 
+pytestmark = pytest.mark.anyio
 
 @pytest.fixture()
 def mock() -> MagicMock:
