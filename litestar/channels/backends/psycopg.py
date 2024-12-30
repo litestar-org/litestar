@@ -31,11 +31,7 @@ class PsycoPgChannelsBackend(ChannelsBackend):
                 await conn.execute(SQL("SELECT pg_notify(%s, %s);").format(Identifier(channel), dec_data))
 
     async def subscribe(self, channels: Iterable[str]) -> None:
-        channels_to_subscribe = set(channels) - self._subscribed_channels
-        if not channels_to_subscribe:
-            return
-
-        for channel in channels_to_subscribe:
+        for channel in set(channels) - self._subscribed_channels:
             await self._listener_conn.execute(SQL("LISTEN {}").format(Identifier(channel)))
 
             self._subscribed_channels.add(channel)
