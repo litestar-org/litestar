@@ -9,6 +9,10 @@ from psycopg.sql import SQL, Identifier
 from .base import ChannelsBackend
 
 
+def _safe_quote(ident: str) -> str:
+    return '"{}"'.format(ident.replace('"', '""'))  # sourcery skip
+
+
 class PsycoPgChannelsBackend(ChannelsBackend):
     _listener_conn: AsyncConnection[Any]
 
@@ -32,13 +36,13 @@ class PsycoPgChannelsBackend(ChannelsBackend):
 
     async def subscribe(self, channels: Iterable[str]) -> None:
         for channel in set(channels) - self._subscribed_channels:
-            await self._listener_conn.execute(SQL("LISTEN {}").format(Identifier(channel)))
+            await self._listener_conn.execute(SQL("LISTEN {}").format(Identifier(_safe_quote(channel))))
 
             self._subscribed_channels.add(channel)
 
     async def unsubscribe(self, channels: Iterable[str]) -> None:
         for channel in channels:
-            await self._listener_conn.execute(SQL("UNLISTEN {}").format(Identifier(channel)))
+            await self._listener_conn.execute(SQL("UNLISTEN {}").format(Identifier(_safe_quote(channel))))
         self._subscribed_channels = self._subscribed_channels - set(channels)
 
     async def stream_events(self) -> AsyncGenerator[tuple[str, bytes], None]:
