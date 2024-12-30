@@ -499,7 +499,7 @@ class SwaggerRenderPlugin(OpenAPIRenderPlugin):
 
     def __init__(
         self,
-        version: str = "5.1.3",
+        version: str = "5.18.2",
         js_url: str | None = None,
         css_url: str | None = None,
         standalone_preset_js_url: str | None = None,

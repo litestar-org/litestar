@@ -39,7 +39,7 @@ def test_default_redoc_cdn_urls(
 def test_default_swagger_ui_cdn_urls(
     person_controller: Type[Controller], pet_controller: Type[Controller], config: OpenAPIConfig
 ) -> None:
-    default_swagger_ui_version = "5.1.3"
+    default_swagger_ui_version = "5.18.2"
     default_swagger_bundles = [
         f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{default_swagger_ui_version}/swagger-ui.css",
         f"https://cdn.jsdelivr.net/npm/swagger-ui-dist@{default_swagger_ui_version}/swagger-ui-bundle.js",

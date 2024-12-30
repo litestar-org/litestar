@@ -29,9 +29,9 @@ release = os.getenv("_LITESTAR_DOCS_BUILD_VERSION", importlib.metadata.version("
 
 extensions = [
     "sphinx.ext.intersphinx",
-    "sphinx.ext.autosectionlabel",
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
+    "sphinx.ext.autosectionlabel",
     "sphinx_design",
     "auto_pytabs.sphinx_ext",
     "tools.sphinx_ext",
@@ -48,6 +48,7 @@ intersphinx_mapping = {
     "msgspec": ("https://jcristharif.com/msgspec/", None),
     "anyio": ("https://anyio.readthedocs.io/en/stable/", None),
     "multidict": ("https://multidict.aio-libs.org/en/stable/", None),
+    "cryptography": ("https://cryptography.io/en/latest/", None),
     "sqlalchemy": ("https://docs.sqlalchemy.org/en/20/", None),
     "alembic": ("https://alembic.sqlalchemy.org/en/latest/", None),
     "click": ("https://click.palletsprojects.com/en/8.1.x/", None),
@@ -60,6 +61,9 @@ intersphinx_mapping = {
     "advanced-alchemy": ("https://docs.advanced-alchemy.litestar.dev/latest/", None),
     "jinja2": ("https://jinja.palletsprojects.com/en/latest/", None),
     "trio": ("https://trio.readthedocs.io/en/stable/", None),
+    "pydantic": ("https://docs.pydantic.dev/latest/", None),
+    "typing_extensions": ("https://typing-extensions.readthedocs.io/en/stable/", None),
+    "valkey": ("https://valkey-py.readthedocs.io/en/latest/", None),
 }
 
 napoleon_google_docstring = True
@@ -74,6 +78,7 @@ autodoc_class_signature = "separated"
 autodoc_default_options = {"special-members": "__init__", "show-inheritance": True, "members": True}
 autodoc_member_order = "bysource"
 autodoc_typehints_format = "short"
+autodoc_mock_imports = []
 
 nitpicky = True
 nitpick_ignore = [
@@ -98,6 +103,7 @@ nitpick_ignore = [
     (PY_CLASS, "sqlalchemy.dialects.postgresql.named_types.ENUM"),
     (PY_CLASS, "sqlalchemy.orm.decl_api.DeclarativeMeta"),
     (PY_CLASS, "sqlalchemy.sql.sqltypes.TupleType"),
+    (PY_CLASS, "valkey.asyncio.Valkey"),
     (PY_METH, "_types.TypeDecorator.process_bind_param"),
     (PY_METH, "_types.TypeDecorator.process_result_value"),
     (PY_METH, "litestar.typing.ParsedType.is_subclass_of"),
@@ -164,27 +170,7 @@ nitpick_ignore = [
     (PY_METH, "litestar.dto.factory.DTOData.create_instance"),
     (PY_METH, "litestar.dto.interface.DTOInterface.data_to_encodable_type"),
     (PY_CLASS, "MetaData"),
-    (PY_CLASS, "advanced_alchemy.repository.typing.ModelT"),
-    (PY_OBJ, "advanced_alchemy.config.common.SessionMakerT"),
-    (PY_OBJ, "advanced_alchemy.config.common.ConnectionT"),
-    (PY_CLASS, "advanced_alchemy.extensions.litestar.plugins._slots_base.SlotsBase"),
-    (PY_CLASS, "advanced_alchemy.config.EngineConfig"),
-    (PY_CLASS, "advanced_alchemy.config.common.GenericAlembicConfig"),
-    (PY_CLASS, "advanced_alchemy.extensions.litestar.SQLAlchemyDTO"),
-    (PY_CLASS, "advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO"),
-    (PY_CLASS, "advanced_alchemy.extensions.litestar.plugins.SQLAlchemyPlugin"),
-    (PY_CLASS, "advanced_alchemy.extensions.litestar.plugins.SQLAlchemySerializationPlugin"),
-    (PY_CLASS, "advanced_alchemy.extensions.litestar.plugins.SQLAlchemyInitPlugin"),
-    (PY_CLASS, "advanced_alchemy.extensions.litestar.config.SQLAlchemySyncConfig"),
-    (PY_CLASS, "advanced_alchemy.extensions.litestar.config.SQLAlchemyAsyncConfig"),
-    (PY_METH, "advanced_alchemy.extensions.litestar.plugins.SQLAlchemySerializationPlugin.create_dto_for_type"),
-    (PY_CLASS, "advanced_alchemy.base.BasicAttributes"),
-    (PY_CLASS, "advanced_alchemy.config.AsyncSessionConfig"),
-    (PY_CLASS, "advanced_alchemy.config.SyncSessionConfig"),
-    (PY_CLASS, "advanced_alchemy.types.JsonB"),
-    (PY_CLASS, "advanced_alchemy.types.BigIntIdentity"),
     (PY_FUNC, "sqlalchemy.get_engine"),
-    (PY_ATTR, "advanced_alchemy.repository.AbstractAsyncRepository.id_attribute"),
     (PY_OBJ, "litestar.template.base.T_co"),
     ("py:exc", "RepositoryError"),
     ("py:exc", "InternalServerError"),
@@ -204,6 +190,9 @@ nitpick_ignore = [
     (PY_CLASS, "typing.Self"),
     (PY_CLASS, "attr.AttrsInstance"),
     (PY_CLASS, "typing_extensions.TypeGuard"),
+    (PY_CLASS, "advanced_alchemy.types.BigIntIdentity"),
+    (PY_CLASS, "advanced_alchemy.types.JsonB"),
+    (PY_CLASS, "advanced_alchemy.repository.SQLAlchemyAsyncRepository"),
 ]
 
 nitpick_ignore_regex = [
@@ -247,7 +236,6 @@ ignore_missing_refs = {
     "litestar.template": {"litestar.template.base.T_co"},
     "litestar.openapi.OpenAPIController.security": {"SecurityRequirement"},
     "litestar.response.file.async_file_iterator": {"FileSystemAdapter"},
-    "advanced_alchemy._listeners.touch_updated_timestamp": {"Session"},
     re.compile("litestar.response.redirect.*"): {"RedirectStatusType"},
     re.compile(r"litestar\.plugins.*"): re.compile(".*ModelT"),
     re.compile(r"litestar\.(contrib|repository)\.*"): re.compile(".*T"),
@@ -259,6 +247,7 @@ ignore_missing_refs = {
     "litestar.concurrency.set_asyncio_executor": {"ThreadPoolExecutor"},
     "litestar.concurrency.get_asyncio_executor": {"ThreadPoolExecutor"},
     re.compile(r"litestar\.channels\.backends\.asyncpg.*"): {"asyncpg.connection.Connection", "asyncpg.Connection"},
+    re.compile(r"litestar\.handlers\.websocket_handlers\.stream.*"): {"WebSocketMode"},
 }
 
 # Do not warn about broken links to the following:

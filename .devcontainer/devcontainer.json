@@ -59,8 +59,8 @@
   },
   "forwardPorts": [8000],
   "postCreateCommand": [
-    "pdm",
-    "install"
+    "uv",
+    "sync"
   ],
   "remoteUser": "vscode"
 }

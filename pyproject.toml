@@ -44,8 +44,9 @@ dependencies = [
     "click",
     "rich>=13.0.0",
     "rich-click",
+    "multipart>=1.2.0",
     # default litestar plugins
-    "litestar-htmx>=0.3.0"
+    "litestar-htmx>=0.4.0"
 ]
 description = "Litestar - A production-ready, highly performant, extensible ASGI API Framework"
 keywords = ["api", "rest", "asgi", "litestar", "starlite"]
@@ -82,7 +83,7 @@ brotli = ["brotli"]
 cli = ["jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0; sys_platform != 'win32'"]
 cryptography = ["cryptography"]
 full = [
-  "litestar[annotated-types,attrs,brotli,cli,cryptography,jinja,jwt,mako,minijinja,opentelemetry,piccolo,picologging,prometheus,pydantic,redis,sqlalchemy,standard,structlog]",
+  "litestar[annotated-types,attrs,brotli,cli,cryptography,jinja,jwt,mako,minijinja,opentelemetry,piccolo,picologging,prometheus,pydantic,redis,sqlalchemy,standard,structlog,valkey]",
 ]
 jinja = ["jinja2>=3.1.2"]
 jwt = [
@@ -97,6 +98,7 @@ picologging = ["picologging"]
 prometheus = ["prometheus-client"]
 pydantic = ["pydantic", "email-validator", "pydantic-extra-types"]
 redis = ["redis[hiredis]>=4.4.4"]
+valkey = ["valkey[libvalkey]>=6.0.2"]
 sqlalchemy = ["advanced-alchemy>=0.2.2"]
 standard = ["jinja2", "jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0; sys_platform != 'win32'", "fast-query-parsers>=1.0.2"]
 structlog = ["structlog"]
@@ -104,33 +106,20 @@ structlog = ["structlog"]
 [project.scripts]
 litestar = "litestar.__main__:run_cli"
 
-[tool.hatch.metadata]
-allow-direct-references = true
 
 [tool.hatch.build.targets.sdist]
 include = [
   'docs/PYPI_README.md',
-  '/Makefile',
   '/litestar',
-  '/tests',
-  '/CHANGELOG.rst',
 ]
 
-[tool.pdm]
-ignore_package_warnings = [
-  "alabaster",
-  "sphinxcontrib-*",
-  "sphinx-*",
-  "sphinx",
-  "pre-commit",
-  "pydata-sphinx-*",
-  "slotscheck",
-  "autobahn",
-  "accessible-pygments"
-]
 
-[tool.pdm.dev-dependencies]
+[tool.uv]
+default-groups = ["dev", "linting", "test", "docs"]
+
+[dependency-groups]
 dev = [
+  "litestar[full]",
   "beanie>=1.21.0",
   "beautifulsoup4",
   "fsspec",
@@ -146,8 +135,10 @@ dev = [
   "psutil>=5.9.8",
   "hypercorn>=0.16.0",
   "daphne>=4.0.0",
+  "opentelemetry-sdk",
+  "httpx-sse"
 ]
-dev-contrib = ["opentelemetry-sdk", "httpx-sse"]
+
 docs = [
     "sphinx>=7.1.2",
     "sphinx-autobuild>=2021.3.14",
@@ -186,19 +177,13 @@ test = [
   "time-machine",
 ]
 
-[tool.pdm.scripts]
-ci = {composite = ["lint", "test"]}
-docs-serve = "sphinx-autobuild docs docs/_build/ -j auto --watch litestar --watch docs --watch tests --port 8002"
-lint = "pre-commit run --all-files"
-test = "pytest tests docs/examples"
-
 [build-system]
 build-backend = "hatchling.build"
 requires = ["hatchling"]
 
 [tool.codespell]
 ignore-words-list = "selectin"
-skip = 'pdm.lock,docs/examples/contrib/sqlalchemy/us_state_lookup.json'
+skip = 'uv.lock,docs/examples/contrib/sqlalchemy/us_state_lookup.json'
 
 [tool.coverage.run]
 concurrency = ["multiprocessing", "thread"]
@@ -219,6 +204,9 @@ fail_under = 50
 addopts = "--strict-markers --strict-config --dist=loadgroup -m 'not server_integration'"
 asyncio_mode = "auto"
 filterwarnings = [
+  "error",
+  # https://github.com/pytest-dev/pytest-asyncio/issues/724
+  "default:.*socket.socket:pytest.PytestUnraisableExceptionWarning",
   "ignore::trio.TrioDeprecationWarning:anyio._backends._trio*:",
   "ignore::DeprecationWarning:pkg_resources.*",
   "ignore::DeprecationWarning:google.rpc",
@@ -399,7 +387,7 @@ lint.select = [
   "SIM", # flake8-simplify
   "T10", # flake8-debugger
   "T20", # flake8-print
-  "TCH", # flake8-type-checking
+  "TC", # flake8-type-checking
   "TID", # flake8-tidy-imports
   "UP", # pyupgrade
   "W", # pycodestyle - warning
@@ -450,7 +438,7 @@ classmethod-decorators = [
 known-first-party = ["litestar", "tests", "examples"]
 
 [tool.ruff.lint.per-file-ignores]
-"docs/**/*.*" = ["S", "B", "DTZ", "A", "TCH", "ERA", "D", "RET"]
+"docs/**/*.*" = ["S", "B", "DTZ", "A", "TC", "ERA", "D", "RET"]
 "docs/examples/**" = ["T201"]
 "docs/examples/application_hooks/before_send_hook.py" = ["UP006"]
 "docs/examples/contrib/sqlalchemy/plugins/**/*.*" = ["UP006"]
@@ -483,7 +471,7 @@ known-first-party = ["litestar", "tests", "examples"]
   "S",
   "S101",
   "SIM",
-  "TCH",
+  "TC",
   "TRY",
   "E721",
 ]
