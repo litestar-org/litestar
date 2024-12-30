@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 from litestar.exceptions import ImproperlyConfiguredException
+from litestar.utils import warn_deprecation
 
 if TYPE_CHECKING:
     from litestar.openapi.spec import Example
@@ -46,7 +47,7 @@ class ResponseHeader:
     Default value is `false`.
     """
 
-    allow_empty_value: bool = False
+    allow_empty_value: bool = None  # type: ignore[assignment]
     """Sets the ability to pass empty-valued parameters. This is valid only for
     `query` parameters and allows sending a parameter with an empty value.
     Default value is `false`. If.
@@ -80,7 +81,7 @@ class ResponseHeader:
     For all other styles, the default value is `false`.
     """
 
-    allow_reserved: bool = False
+    allow_reserved: bool = None  # type: ignore[assignment]
     """Determines whether the parameter value SHOULD allow reserved characters,
     as defined by.
 
@@ -120,6 +121,28 @@ class ResponseHeader:
         """Ensure that either value is set or the instance is for documentation_only."""
         if not self.documentation_only and self.value is None:
             raise ImproperlyConfiguredException("value must be set if documentation_only is false")
+
+        if self.allow_reserved is None:
+            self.allow_reserved = False  # type: ignore[unreachable]
+        else:
+            warn_deprecation(
+                "2.13.1",
+                "allow_reserved",
+                kind="parameter",
+                removal_in="4",
+                info="This property is invalid for headers and will be ignored",
+            )
+
+        if self.allow_empty_value is None:
+            self.allow_empty_value = False  # type: ignore[unreachable]
+        else:
+            warn_deprecation(
+                "2.13.1",
+                "allow_empty_value",
+                kind="parameter",
+                removal_in="4",
+                info="This property is invalid for headers and will be ignored",
+            )
 
     def __hash__(self) -> int:
         return hash(self.name)

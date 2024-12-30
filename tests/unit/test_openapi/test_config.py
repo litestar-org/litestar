@@ -30,14 +30,10 @@ def test_merged_components_correct() -> None:
             "one": {
                 "required": False,
                 "deprecated": False,
-                "allowEmptyValue": False,
-                "allowReserved": False,
             },
             "two": {
                 "required": False,
                 "deprecated": False,
-                "allowEmptyValue": False,
-                "allowReserved": False,
             },
         },
     }

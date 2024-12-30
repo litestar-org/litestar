@@ -188,10 +188,12 @@ def test_create_success_response_with_headers(create_factory: CreateFactoryFixtu
 
     assert isinstance(response.headers, dict)
     assert isinstance(response.headers["special-header"], OpenAPIHeader)
-    assert response.headers["special-header"].description == "super-duper special"
-    headers_schema = response.headers["special-header"].schema
-    assert isinstance(headers_schema, Schema)
-    assert headers_schema.type == OpenAPIType.STRING
+    assert response.headers["special-header"].to_schema() == {
+        "schema": {"type": "string"},
+        "description": "super-duper special",
+        "required": False,
+        "deprecated": False,
+    }
 
 
 def test_create_success_response_with_cookies(create_factory: CreateFactoryFixture) -> None:
@@ -538,3 +540,25 @@ def test_file_response_media_type(content_media_type: Any, expected: Any, create
 
     response = create_factory(handler).create_success_response()
     assert next(iter(response.content.values())).schema.content_media_type == expected  # type: ignore[union-attr]
+
+
+def test_response_header_deprecated_properties() -> None:
+    assert ResponseHeader(name="foo", value="bar").allow_empty_value is False
+    assert ResponseHeader(name="foo", value="bar").allow_reserved is False
+
+    with pytest.warns(DeprecationWarning, match="property is invalid for headers"):
+        ResponseHeader(name="foo", value="bar", allow_empty_value=True)
+
+    with pytest.warns(DeprecationWarning, match="property is invalid for headers"):
+        ResponseHeader(name="foo", value="bar", allow_reserved=True)
+
+
+def test_header_deprecated_properties() -> None:
+    assert OpenAPIHeader().allow_empty_value is False
+    assert OpenAPIHeader().allow_reserved is False
+
+    with pytest.warns(DeprecationWarning, match="property is invalid for headers"):
+        OpenAPIHeader(allow_empty_value=True)
+
+    with pytest.warns(DeprecationWarning, match="property is invalid for headers"):
+        OpenAPIHeader(allow_reserved=True)

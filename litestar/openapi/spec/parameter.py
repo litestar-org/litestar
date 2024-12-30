@@ -134,3 +134,12 @@ class Parameter(BaseSchemaObject):
 
     The key is the media type and the value describes it. The map MUST only contain one entry.
     """
+
+    @property
+    def _exclude_fields(self) -> set[str]:
+        exclude = set()
+        if self.param_in != "query":
+            # these are only allowed in query params
+            exclude.update({"allow_empty_value", "allow_reserved"})
+
+        return exclude

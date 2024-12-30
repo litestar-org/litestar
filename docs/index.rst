@@ -155,12 +155,6 @@ A huge thank you to our current sponsors:
         </a>
         <p style="text-align: center;">Telemetry Sports</p>
       </div>
-      <div>
-        <a href="https://www.stok.kr/" title="Stok - Stack Up Your Assets!">
-            <img src="https://avatars.githubusercontent.com/u/144093421?s=400&v=4" alt="Stok" style="border-radius: 10px; width: auto; max-height: 150px;" />
-        </a>
-        <p style="text-align: center;">Stok</p>
-      </div>
     </div>
 
 We invite organizations and individuals to join our sponsorship program.
