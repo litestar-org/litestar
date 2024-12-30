@@ -43,17 +43,19 @@ def __getattr__(attr_name: str) -> object:
             value = globals()[attr_name] = locals()[attr_name]  # pyright: ignore[reportUnknownVariableType]
             return value  # pyright: ignore[reportUnknownVariableType]
         from advanced_alchemy.base import (  # pyright: ignore[reportMissingImports]
-            AuditColumns,
             BigIntAuditBase,
             BigIntBase,
-            BigIntPrimaryKey,
             CommonTableAttributes,
             ModelProtocol,
             UUIDAuditBase,
             UUIDBase,
-            UUIDPrimaryKey,
             create_registry,
             orm_registry,
+        )
+        from advanced_alchemy.mixins import (  # pyright: ignore[reportMissingImports]
+            AuditColumns,
+            BigIntPrimaryKey,
+            UUIDPrimaryKey,
         )
 
         warn_deprecation(
@@ -78,15 +80,17 @@ if TYPE_CHECKING:
         from advanced_alchemy.base import touch_updated_timestamp  # type: ignore[no-redef,attr-defined]
 
     from advanced_alchemy.base import (  # pyright: ignore[reportMissingImports]
-        AuditColumns,
         BigIntAuditBase,
         BigIntBase,
-        BigIntPrimaryKey,
         CommonTableAttributes,
         ModelProtocol,
         UUIDAuditBase,
         UUIDBase,
-        UUIDPrimaryKey,
         create_registry,
         orm_registry,
+    )
+    from advanced_alchemy.mixins import (  # pyright: ignore[reportMissingImports]
+        AuditColumns,
+        BigIntPrimaryKey,
+        UUIDPrimaryKey,
     )
