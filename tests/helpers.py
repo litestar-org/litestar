@@ -1,14 +1,16 @@
 from __future__ import annotations
 
 import atexit
+import importlib.util
 import inspect
 import logging
 import random
 import sys
 from contextlib import AbstractContextManager, contextmanager
+from pathlib import Path
 from typing import Any, AsyncContextManager, Awaitable, ContextManager, Generator, TypeVar, cast, overload
 
-import picologging
+import pytest
 from _pytest.logging import LogCaptureHandler, _LiveLoggingNullHandler
 
 from litestar._openapi.schema_generation import SchemaCreator
@@ -90,9 +92,9 @@ def cleanup_logging_impl() -> Generator:
         # Don't interfere with PyTest handler config
         if not isinstance(std_handler, (_LiveLoggingNullHandler, LogCaptureHandler)):
             std_root_logger.removeHandler(std_handler)
-
+    picologging = pytest.importorskip("picologging")
     # Reset root logger (`picologging` module)
-    pico_root_logger: picologging.Logger = picologging.getLogger()
+    pico_root_logger: picologging.Logger = picologging.getLogger()  # type: ignore[name-defined,unused-ignore] # pyright: ignore[reportPrivateUsage,reportGeneralTypeIssues,reportAssignmentType,reportInvalidTypeForm]
     for pico_handler in pico_root_logger.handlers:
         pico_root_logger.removeHandler(pico_handler)
 
@@ -111,3 +113,10 @@ def cleanup_logging_impl() -> Generator:
 def not_none(val: T | None) -> T:
     assert val is not None
     return val
+
+
+def purge_module(module_names: list[str], path: str | Path) -> None:
+    for name in module_names:
+        if name in sys.modules:
+            del sys.modules[name]
+    Path(importlib.util.cache_from_source(path)).unlink(missing_ok=True)  # type: ignore[arg-type]
