@@ -263,6 +263,10 @@ disable_error_code = ["truthy-bool"]
 module = ["tests.*"]
 
 [[tool.mypy.overrides]]
+disable_error_code = ["assignment"]
+module = ["tests.unit.test_logging.*"]
+
+[[tool.mypy.overrides]]
 disallow_untyped_decorators = false
 module = ["tests.unit.test_kwargs.test_reserved_kwargs_injection"]
 
@@ -297,6 +301,7 @@ module = [
   "litestar.plugins.pydantic.*",
   "tests.unit.test_contrib.test_sqlalchemy",
   "tests.unit.test_contrib.test_pydantic.*",
+  "tests.unit.test_logging.test_logging_config",
   "litestar.openapi.spec.base",
   "litestar.utils.helpers",
   "litestar.channels.plugin",
