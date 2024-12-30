@@ -298,7 +298,7 @@ module = [
   "litestar.openapi.spec.base",
   "litestar.utils.helpers",
   "litestar.channels.plugin",
-  "litestar.handlers.http_handlers._utils"  
+  "litestar.handlers.http_handlers._utils"
 ]
 
 [[tool.mypy.overrides]]
