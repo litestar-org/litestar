@@ -6,11 +6,7 @@ from typing import Any, AsyncGenerator, Iterable
 from psycopg import AsyncConnection
 from psycopg.sql import SQL, Identifier
 
-from .base import ChannelsBackend
-
-
-def _safe_quote(ident: str) -> str:
-    return '"{}"'.format(ident.replace('"', '""'))  # sourcery skip
+from litestar.channels.backends.base import ChannelsBackend
 
 
 class PsycoPgChannelsBackend(ChannelsBackend):
@@ -30,19 +26,20 @@ class PsycoPgChannelsBackend(ChannelsBackend):
 
     async def publish(self, data: bytes, channels: Iterable[str]) -> None:
         dec_data = data.decode("utf-8")
-        async with await AsyncConnection[Any].connect(self._pg_dsn) as conn:
+        async with await AsyncConnection[Any].connect(self._pg_dsn, autocommit=True) as conn:
             for channel in channels:
-                await conn.execute(SQL("SELECT pg_notify(%s, %s);").format(Identifier(channel), dec_data))
+                await conn.execute(SQL("NOTIFY {channel}, {data}").format(channel=Identifier(channel), data=dec_data))
 
     async def subscribe(self, channels: Iterable[str]) -> None:
         for channel in set(channels) - self._subscribed_channels:
-            await self._listener_conn.execute(SQL("LISTEN {}").format(Identifier(_safe_quote(channel))))
-
+            await self._listener_conn.execute(SQL("LISTEN {channel}").format(channel=Identifier(channel)))
             self._subscribed_channels.add(channel)
+        await self._listener_conn.commit()
 
     async def unsubscribe(self, channels: Iterable[str]) -> None:
         for channel in channels:
-            await self._listener_conn.execute(SQL("UNLISTEN {}").format(Identifier(_safe_quote(channel))))
+            await self._listener_conn.execute(SQL("UNLISTEN {channel}").format(channel=Identifier(channel)))
+            await self._listener_conn.commit()
         self._subscribed_channels = self._subscribed_channels - set(channels)
 
     async def stream_events(self) -> AsyncGenerator[tuple[str, bytes], None]:
