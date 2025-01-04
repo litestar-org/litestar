@@ -1,10 +1,10 @@
 [project]
 authors = [
-  { name = "Cody Fincher", email = "cody@litestar.dev" },
-  { name = "Jacob Coffee", email = "jacob@litestar.dev" },
-  { name = "Janek Nouvertné", email = "janek@litestar.dev" },
-  { name = "Na'aman Hirschfeld", email = "nhirschfeld@gmail.com" },
-  { name = "Peter Schutt", email = "peter@litestar.dev" },
+  {name = "Cody Fincher", email = "cody@litestar.dev"},
+  {name = "Jacob Coffee", email = "jacob@litestar.dev"},
+  {name = "Janek Nouvertné", email = "janek@litestar.dev"},
+  {name = "Na'aman Hirschfeld", email = "nhirschfeld@gmail.com"},
+  {name = "Peter Schutt", email = "peter@litestar.dev"},
 ]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
@@ -49,19 +49,19 @@ dependencies = [
   "rich-click",
   "multipart>=1.2.0",
   # default litestar plugins
-  "litestar-htmx>=0.4.0"
+    "litestar-htmx>=0.4.0"
 ]
 description = "Litestar - A production-ready, highly performant, extensible ASGI API Framework"
 keywords = ["api", "rest", "asgi", "litestar", "starlite"]
-license = { text = "MIT" }
+license = {text = "MIT"}
 maintainers = [
-  { name = "Litestar Developers", email = "hello@litestar.dev" },
-  { name = "Cody Fincher", email = "cody@litestar.dev" },
-  { name = "Jacob Coffee", email = "jacob@litestar.dev" },
-  { name = "Janek Nouvertné", email = "janek@litestar.dev" },
-  { name = "Peter Schutt", email = "peter@litestar.dev" },
-  { name = "Visakh Unnikrishnan", email = "guacs@litestar.dev" },
-  { name = "Alc", email = "alc@litestar.dev" },
+  {name = "Litestar Developers", email = "hello@litestar.dev"},
+  {name = "Cody Fincher", email = "cody@litestar.dev"},
+  {name = "Jacob Coffee", email = "jacob@litestar.dev"},
+  {name = "Janek Nouvertné", email = "janek@litestar.dev"},
+  {name = "Peter Schutt", email = "peter@litestar.dev"},
+  {name = "Visakh Unnikrishnan", email = "guacs@litestar.dev"},
+  {name = "Alc", email = "alc@litestar.dev"}
 ]
 name = "litestar"
 readme = "README.md"
@@ -90,7 +90,10 @@ full = [
   "litestar[annotated-types,attrs,brotli,cli,cryptography,jinja,jwt,mako,minijinja,opentelemetry,piccolo,prometheus,pydantic,redis,sqlalchemy,standard,structlog,valkey]; python_version >= \"3.13\"",
 ]
 jinja = ["jinja2>=3.1.2"]
-jwt = ["cryptography", "pyjwt>=2.9.0"]
+jwt = [
+    "cryptography",
+    "pyjwt>=2.9.0",
+]
 mako = ["mako>=1.2.4"]
 minijinja = ["minijinja>=1.0.0"]
 opentelemetry = ["opentelemetry-instrumentation-asgi"]
@@ -104,23 +107,20 @@ pydantic = [
   "pydantic-extra-types; python_version >= \"3.9\"",
 ]
 redis = ["redis[hiredis]>=4.4.4"]
-sqlalchemy = ["advanced-alchemy>=0.2.2"]
-standard = [
-  "jinja2",
-  "jsbeautifier",
-  "uvicorn[standard]",
-  "uvloop>=0.18.0; sys_platform != 'win32'",
-  "fast-query-parsers>=1.0.2",
-]
-structlog = ["structlog"]
 valkey = ["valkey[libvalkey]>=6.0.2"]
+sqlalchemy = ["advanced-alchemy>=0.2.2"]
+standard = ["jinja2", "jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0; sys_platform != 'win32'", "fast-query-parsers>=1.0.2"]
+structlog = ["structlog"]
 
 [project.scripts]
 litestar = "litestar.__main__:run_cli"
 
 
 [tool.hatch.build.targets.sdist]
-include = ['docs/PYPI_README.md', '/litestar']
+include = [
+  'docs/PYPI_README.md',
+  '/litestar',
+]
 
 
 [tool.uv]
@@ -146,7 +146,7 @@ dev = [
   "hypercorn>=0.16.0",
   "daphne>=4.0.0",
   "opentelemetry-sdk",
-  "httpx-sse",
+  "httpx-sse"
 ]
 
 docs = [
@@ -203,7 +203,11 @@ plugins = ["covdefaults"]
 source = ["litestar"]
 
 [tool.coverage.report]
-exclude_lines = ['except ImportError\b', 'if VERSION.startswith("1"):', 'if pydantic.VERSION.startswith("1"):']
+exclude_lines = [
+  'except ImportError\b',
+  'if VERSION.startswith("1"):',
+  'if pydantic.VERSION.startswith("1"):',
+]
 fail_under = 50
 
 [tool.pytest.ini_options]
@@ -223,7 +227,7 @@ filterwarnings = [
   "ignore::DeprecationWarning:litestar.*",
   "ignore::pydantic.PydanticDeprecatedSince20::",
   "ignore:`general_plain_validator_function`:DeprecationWarning::",
-  "ignore: 'RichMultiCommand':DeprecationWarning::",                                          # this is coming from rich_click itself, nothing we can do about # that for now
+  "ignore: 'RichMultiCommand':DeprecationWarning::", # this is coming from rich_click itself, nothing we can do about # that for now
   "ignore: Dropping max_length:litestar.exceptions.LitestarWarning:litestar.contrib.piccolo",
   "ignore: Python Debugger on exception enabled:litestar.exceptions.LitestarWarning:",
   "ignore: datetime.datetime.utcnow:DeprecationWarning:time_machine",
@@ -236,6 +240,8 @@ testpaths = ["tests", "docs/examples/testing"]
 xfail_strict = true
 
 [tool.mypy]
+packages = ["litestar", "tests"]
+plugins = ["pydantic.mypy"]
 enable_error_code = [
   "truthy-bool",
   "truthy-iterable",
@@ -244,27 +250,21 @@ enable_error_code = [
   "possibly-undefined",
   "redundant-self",
 ]
-packages = ["litestar", "tests"]
-plugins = ["pydantic.mypy"]
 python_version = "3.8"
 
 disallow_any_generics = false
-local_partial_types = true
 show_error_codes = true
 strict = true
 warn_unreachable = true
+local_partial_types = true
 
 [[tool.mypy.overrides]]
 ignore_errors = true
 module = ["tests.examples.*", "tests.docker_service_fixtures"]
 
 [[tool.mypy.overrides]]
-disable_error_code = ["truthy-bool"]
 module = ["tests.*"]
-
-[[tool.mypy.overrides]]
-disable_error_code = ["assignment"]
-module = ["tests.unit.test_logging.*"]
+disable_error_code = ["truthy-bool"]
 
 [[tool.mypy.overrides]]
 disable_error_code = ["assignment"]
@@ -279,12 +279,12 @@ module = ["tests.unit.test_contrib.test_repository"]
 strict_equality = false
 
 [[tool.mypy.overrides]]
+module = ["tests.unit.test_plugins.test_pydantic.test_openapi","litestar._asgi.routing_trie.traversal"]
 disable_error_code = "index, union-attr"
-module = ["tests.unit.test_plugins.test_pydantic.test_openapi", "litestar._asgi.routing_trie.traversal"]
 
 [[tool.mypy.overrides]]
-disable_error_code = "arg-type, comparison-overlap, unreachable"
 module = ["tests.unit.test_channels.test_subscriber", "tests.unit.test_response.test_streaming_response"]
+disable_error_code = "arg-type, comparison-overlap, unreachable"
 
 [[tool.mypy.overrides]]
 ignore_missing_imports = true
@@ -300,6 +300,7 @@ module = [
 ]
 
 [[tool.mypy.overrides]]
+warn_unused_ignores = false
 module = [
   "litestar.contrib.sqlalchemy.*",
   "litestar.plugins.pydantic.*",
@@ -309,19 +310,17 @@ module = [
   "litestar.openapi.spec.base",
   "litestar.utils.helpers",
   "litestar.channels.plugin",
-  "litestar.handlers.http_handlers._utils",
+  "litestar.handlers.http_handlers._utils"
 ]
-warn_unused_ignores = false
 
 [[tool.mypy.overrides]]
+warn_unused_ignores = false
+module = [
+  "litestar.openapi.spec.base",
+  "litestar._asgi.routin_trie.traversal",
+  "litestar.plugins.pydantic.plugins.int",
+]
 disable_error_code = "arg-type"
-module = ["litestar.openapi.spec.base", "litestar._asgi.routin_trie.traversal", "litestar.plugins.pydantic.plugins.int"]
-warn_unused_ignores = false
-
-[[tool.mypy.overrides]]
-disable_error_code = "assignment"
-module = ["tests.unit.test_logging.test_logging_config"]
-warn_unused_ignores = false
 
 [tool.pydantic-mypy]
 init_forbid_extra = true
@@ -348,6 +347,7 @@ pythonVersion = "3.8"
 reportUnnecessaryTypeIgnoreComments = true
 
 [tool.slotscheck]
+strict-imports = false
 exclude-classes = """
 (
   # github.com/python/cpython/pull/106771
@@ -367,68 +367,70 @@ exclude-classes = """
   |(^litestar.utils.sync:AsyncIteratorWrapper)
 )
 """
-strict-imports = false
 
 [tool.ruff]
-include = ["{litestar,tests,docs,test_apps,tools}/**/*.{py,pyi}", "pyproject.toml"]
+include = [
+  "{litestar,tests,docs,test_apps,tools}/**/*.{py,pyi}",
+  "pyproject.toml"
+]
 
 lint.select = [
-  "A",   # flake8-builtins
-  "B",   # flake8-bugbear
+  "A", # flake8-builtins
+  "B", # flake8-bugbear
   "BLE", # flake8-blind-except
-  "C4",  # flake8-comprehensions
+  "C4", # flake8-comprehensions
   "C90", # mccabe
-  "D",   # pydocstyle
-  "DJ",  # flake8-django
+  "D", # pydocstyle
+  "DJ", # flake8-django
   "DTZ", # flake8-datetimez
-  "E",   # pycodestyle errors
+  "E", # pycodestyle errors
   "ERA", # eradicate
   "EXE", # flake8-executable
-  "F",   # pyflakes
-  "G",   # flake8-logging-format
-  "I",   # isort
+  "F", # pyflakes
+  "G", # flake8-logging-format
+  "I", # isort
   "ICN", # flake8-import-conventions
   "ISC", # flake8-implicit-str-concat
-  "N",   # pep8-naming
+  "N", # pep8-naming
   "PIE", # flake8-pie
   "PLC", # pylint - convention
   "PLE", # pylint - error
   "PLW", # pylint - warning
   "PTH", # flake8-use-pathlib
-  "Q",   # flake8-quotes
+  "Q", # flake8-quotes
   "RET", # flake8-return
   "RUF", # Ruff-specific rules
-  "S",   # flake8-bandit
+  "S", # flake8-bandit
   "SIM", # flake8-simplify
   "T10", # flake8-debugger
   "T20", # flake8-print
-  "TC",  # flake8-type-checking
+  "TC", # flake8-type-checking
   "TID", # flake8-tidy-imports
-  "UP",  # pyupgrade
-  "W",   # pycodestyle - warning
+  "UP", # pyupgrade
+  "W", # pycodestyle - warning
   "YTT", # flake8-2020
 ]
 
 line-length = 120
 lint.ignore = [
-  "A003",    # flake8-builtins - class attribute {name} is shadowing a python builtin
-  "B010",    # flake8-bugbear - do not call setattr with a constant attribute value
-  "D100",    # pydocstyle - missing docstring in public module
-  "D101",    # pydocstyle - missing docstring in public class
-  "D102",    # pydocstyle - missing docstring in public method
-  "D103",    # pydocstyle - missing docstring in public function
-  "D104",    # pydocstyle - missing docstring in public package
-  "D105",    # pydocstyle - missing docstring in magic method
-  "D106",    # pydocstyle - missing docstring in public nested class
-  "D107",    # pydocstyle - missing docstring in __init__
-  "D202",    # pydocstyle - no blank lines allowed after function docstring
-  "D205",    # pydocstyle - 1 blank line required between summary line and description
-  "D415",    # pydocstyle - first line should end with a period, question mark, or exclamation point
-  "E501",    # pycodestyle line too long, handled by ruff format
+  "A003", # flake8-builtins - class attribute {name} is shadowing a python builtin
+  "B010", # flake8-bugbear - do not call setattr with a constant attribute value
+  "D100", # pydocstyle - missing docstring in public module
+  "D101", # pydocstyle - missing docstring in public class
+  "D102", # pydocstyle - missing docstring in public method
+  "D103", # pydocstyle - missing docstring in public function
+  "D104", # pydocstyle - missing docstring in public package
+  "D105", # pydocstyle - missing docstring in magic method
+  "D106", # pydocstyle - missing docstring in public nested class
+  "D107", # pydocstyle - missing docstring in __init__
+  "D202", # pydocstyle - no blank lines allowed after function docstring
+  "D205", # pydocstyle - 1 blank line required between summary line and description
+  "D415", # pydocstyle - first line should end with a period, question mark, or exclamation point
+  "E501", # pycodestyle line too long, handled by ruff format
   "PLW2901", # pylint - for loop variable overwritten by assignment target
-  "RUF012",  # Ruff-specific rule - annotated with classvar
-  "ISC001",  # Ruff formatter incompatible
-  "CPY001",  # ruff - copyright notice at the top of the file
+  "RUF012", # Ruff-specific rule - annotated with classvar
+  "ISC001", # Ruff formatter incompatible
+  "CPY001", # ruff - copyright notice at the top of the file
 ]
 src = ["litestar", "tests", "docs/examples"]
 target-version = "py38"
@@ -457,8 +459,8 @@ known-first-party = ["litestar", "tests", "examples"]
 "docs/examples/**" = ["T201"]
 "docs/examples/application_hooks/before_send_hook.py" = ["UP006"]
 "docs/examples/contrib/sqlalchemy/plugins/**/*.*" = ["UP006"]
-"docs/examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py" = ["UP006"]
 "docs/examples/data_transfer_objects**/*.*" = ["UP006"]
+"docs/examples/contrib/sqlalchemy/sqlalchemy_declarative_models.py" = ["UP006"]
 "litestar/_openapi/schema_generation/schema.py" = ["C901"]
 "litestar/exceptions/*.*" = ["N818"]
 "litestar/handlers/**/*.*" = ["N801"]
@@ -491,9 +493,9 @@ known-first-party = ["litestar", "tests", "examples"]
   "E721",
 ]
 "tests/unit/test_contrib/test_sqlalchemy/**/*.*" = ["UP006"]
-"tests/unit/test_openapi/test_typescript_converter/test_converter.py" = ["W293"]
 "tools/**/*.*" = ["D", "ARG", "EM", "TRY", "G", "FBT"]
 "tools/prepare_release.py" = ["S603", "S607"]
+"tests/unit/test_openapi/test_typescript_converter/test_converter.py" = ["W293"]
 
 [tool.ruff.format]
 docstring-code-format = true
