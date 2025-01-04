@@ -17,8 +17,7 @@ from litestar.channels.subscriber import BacklogStrategy
 from litestar.exceptions import ImproperlyConfiguredException, LitestarException
 from litestar.testing import TestClient, create_test_client
 from litestar.types.asgi_types import WebSocketMode
-
-from .util import get_from_stream
+from tests.unit.test_channels.util import get_from_stream
 
 
 @pytest.fixture(
