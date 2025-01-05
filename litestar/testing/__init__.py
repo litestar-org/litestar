@@ -14,6 +14,6 @@ __all__ = (
     "WebSocketTestSession",
     "create_async_test_client",
     "create_test_client",
-    "subprocess_sync_client",
     "subprocess_async_client",
+    "subprocess_sync_client",
 )

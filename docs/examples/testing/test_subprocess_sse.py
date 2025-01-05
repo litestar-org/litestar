@@ -10,10 +10,7 @@ from typing import AsyncIterator
 import httpx
 import httpx_sse
 import pytest
-from redis.asyncio import Redis
 
-from litestar.channels import ChannelsPlugin
-from litestar.channels.backends.redis import RedisChannelsPubSubBackend
 from litestar.testing import subprocess_async_client
 
 if sys.platform == "win32":
@@ -36,37 +33,13 @@ async def fx_async_client() -> AsyncIterator[httpx.AsyncClient]:
         yield client
 
 
-@pytest.fixture(name="redis_channels")
-async def fx_redis_channels() -> AsyncIterator[ChannelsPlugin]:
-    # Expects separate redis set-up
-    redis_instance = Redis()
-    channels_backend = RedisChannelsPubSubBackend(redis=redis_instance)
-    channels_instance = ChannelsPlugin(backend=channels_backend, arbitrary_channels_allowed=True)
-    await channels_instance._on_startup()
-    yield channels_instance
-    await channels_instance._on_shutdown()
-
-
-async def test_subprocess_async_client(async_client: httpx.AsyncClient, redis_channels: ChannelsPlugin) -> None:
+async def test_subprocess_async_client(async_client: httpx.AsyncClient) -> None:
     """Demonstrates functionality of the async client with an infinite SSE source that cannot be tested with the
     regular async test client.
     """
     topic = "demo"
-    message = "hello"
-
-    running = asyncio.Event()
-    running.set()
-
-    async def send_notifications() -> None:
-        while running.is_set():
-            await redis_channels.wait_published(message, channels=[topic])
-            await asyncio.sleep(0.1)
-
-    task = asyncio.create_task(send_notifications())
 
     async with httpx_sse.aconnect_sse(async_client, "GET", f"/notify/{topic}") as event_source:
         async for event in event_source.aiter_sse():
-            assert event.data == message
-            running.clear()
+            assert event.data == topic
             break
-    await task
