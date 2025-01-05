@@ -31,6 +31,8 @@ if TYPE_CHECKING:
 
     from litestar import Litestar
 
+pytestmark = pytest.mark.anyio
+
 
 def test_url_encoded_form_data(use_experimental_dto_backend: bool) -> None:
     @dataclass()

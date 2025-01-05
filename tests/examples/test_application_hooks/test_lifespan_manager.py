@@ -13,6 +13,7 @@ from litestar.testing import TestClient
 class FakeAsyncEngine:
     dispose = AsyncMock()
 
+
 @pytest.mark.anyio
 async def test_startup_and_shutdown_example(mocker: MockerFixture) -> None:
     mock_create_engine = mocker.patch("docs.examples.application_hooks.lifespan_manager.create_async_engine")

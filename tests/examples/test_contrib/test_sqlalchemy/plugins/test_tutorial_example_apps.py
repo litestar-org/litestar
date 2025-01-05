@@ -44,6 +44,7 @@ async def app(monkeypatch: MonkeyPatch, request: FixtureRequest) -> Litestar:
         app_module.db_config.engine_instance = engine
 
     yield app_module.app
+    await engine.dispose()
 
 
 @pytest.mark.anyio

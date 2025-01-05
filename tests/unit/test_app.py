@@ -216,6 +216,7 @@ def test_set_state() -> None:
     assert app.state._state == {"a": "b", "c": "D", "e": "f"}
 
 
+@pytest.mark.anyio
 async def test_dont_override_initial_state(create_scope: Callable[..., Scope]) -> None:
     app = Litestar()
 

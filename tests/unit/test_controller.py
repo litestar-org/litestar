@@ -23,6 +23,7 @@ from tests.models import DataclassPerson, DataclassPersonFactory
 
 pytestmark = pytest.mark.anyio
 
+@pytest.mark.anyio
 @pytest.mark.parametrize(
     "decorator, http_method, expected_status_code, return_value, return_annotation",
     [

@@ -97,7 +97,9 @@ piccolo = ["piccolo"]
 picologging = ["picologging"]
 prometheus = ["prometheus-client"]
 pydantic = ["pydantic", "email-validator", "pydantic-extra-types"]
-redis = ["redis[hiredis]>=4.4.4"]
+redis = [
+    "redis",
+]
 valkey = ["valkey[libvalkey]>=6.0.2"]
 sqlalchemy = ["advanced-alchemy>=0.2.2"]
 standard = ["jinja2", "jsbeautifier", "uvicorn[standard]", "uvloop>=0.18.0; sys_platform != 'win32'", "fast-query-parsers>=1.0.2"]
@@ -116,6 +118,9 @@ include = [
 
 [tool.uv]
 default-groups = ["dev", "linting", "test", "docs"]
+
+[tool.uv.sources]
+redis = { git = "https://github.com/redis/redis-py.git", branch = "vv-3431-fix" }
 
 [dependency-groups]
 dev = [
@@ -136,9 +141,8 @@ dev = [
   "hypercorn>=0.16.0",
   "daphne>=4.0.0",
   "opentelemetry-sdk",
-  "httpx-sse"
+  "httpx-sse",
 ]
-
 docs = [
   "sphinx>=7.1.2",
   "sphinx-autobuild>=2021.3.14",
@@ -166,7 +170,7 @@ linting = [
 ]
 test = [
   "covdefaults",
-  "pytest",
+  "pytest<8.0.0",
   "pytest-cov",
   "pytest-lazy-fixtures",
   "pytest-mock",
@@ -203,8 +207,6 @@ fail_under = 50
 addopts = "--strict-markers --strict-config --dist=loadgroup -m 'not server_integration'"
 filterwarnings = [
   "error",
-  # https://github.com/pytest-dev/pytest-asyncio/issues/724
-  "default:.*socket.socket:pytest.PytestUnraisableExceptionWarning",
   "ignore::trio.TrioDeprecationWarning:anyio._backends._trio*:",
   "ignore::DeprecationWarning:pkg_resources.*",
   "ignore::DeprecationWarning:google.rpc",

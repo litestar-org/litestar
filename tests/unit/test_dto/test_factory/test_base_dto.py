@@ -15,6 +15,8 @@ from litestar.typing import FieldDefinition
 
 from . import Model
 
+pytestmark = pytest.mark.anyio
+
 if TYPE_CHECKING:
     from typing import Any
 
