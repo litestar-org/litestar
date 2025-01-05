@@ -75,12 +75,12 @@ def test_set_asyncio_executor_from_running_loop_raises() -> None:
     async def main() -> None:
         set_asyncio_executor(ThreadPoolExecutor())
 
+    loop = asyncio.new_event_loop()
     with pytest.raises(RuntimeError):
-        loop = asyncio.new_event_loop()
         loop.run_until_complete(main())
-        loop.close()
 
     assert get_asyncio_executor() is None
+    loop.close()
 
 
 def test_trio_uses_limiter(mocker: MockerFixture) -> None:
