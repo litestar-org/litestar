@@ -2223,6 +2223,188 @@ expects <code class="docutils literal notranslate"><span class="pre">route_handl
 </div>
 </div>
 </section>
+<section id="running-a-live-server">
+<h2>Running a live server<a class="headerlink" href="#running-a-live-server" title="Permalink to this heading">#</a></h2>
+<p>The test clients make use of HTTPX’s ability to directly call into an ASGI app, without
+having to run an actual server. In most cases this is sufficient but there are some
+exceptions where this won’t work, due to the limitations of the emulated client-server
+communication.</p>
+<p>For example, when using server-sent events with an infinite generator, it will lock up
+the test client, since HTTPX tries to consume the full response before returning a
+request.</p>
+<p>Litestar offers two helper functions,
+<a class="reference internal" href="../reference/testing.html#litestar.testing.subprocess_sync_client" title="litestar.testing.subprocess_sync_client"><code class="xref py py-func docutils literal notranslate"><span class="pre">litestar.testing.subprocess_sync_client()</span></code></a> and
+<a class="reference internal" href="../reference/testing.html#litestar.testing.subprocess_async_client" title="litestar.testing.subprocess_async_client"><code class="xref py py-func docutils literal notranslate"><span class="pre">litestar.testing.subprocess_async_client()</span></code></a> that will
+launch a Litestar instance with in a subprocess and set up an httpx client for running
+tests. You can either load your actual app file or create subsets from it as you would
+with the regular test client setup:</p>
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-24" name="sd-tab-set-11" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-24">
+Python 3.8+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Assemble components into an app that shall be tested</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">AsyncGenerator</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.response</span> <span class="kn">import</span> <span class="n">ServerSentEvent</span>
+<span class="kn">from</span> <span class="nn">litestar.types</span> <span class="kn">import</span> <span class="n">SSEData</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">generator</span><span class="p">(</span><span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="n">SSEData</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">topic</span>
+        <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/notify/{topic:str}&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">get_notified</span><span class="p">(</span><span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ServerSentEvent</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">ServerSentEvent</span><span class="p">(</span><span class="n">generator</span><span class="p">(</span><span class="n">topic</span><span class="p">),</span> <span class="n">event_type</span><span class="o">=</span><span class="s2">&quot;Notifier&quot;</span><span class="p">)</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_notified</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<input checked="checked" id="sd-tab-item-25" name="sd-tab-set-11" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-25">
+Python 3.9+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Assemble components into an app that shall be tested</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">AsyncGenerator</span>
+
+<span class="kn">from</span> <span class="nn">litestar</span> <span class="kn">import</span> <span class="n">Litestar</span><span class="p">,</span> <span class="n">get</span>
+<span class="kn">from</span> <span class="nn">litestar.response</span> <span class="kn">import</span> <span class="n">ServerSentEvent</span>
+<span class="kn">from</span> <span class="nn">litestar.types</span> <span class="kn">import</span> <span class="n">SSEData</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">generator</span><span class="p">(</span><span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="n">SSEData</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="n">count</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">topic</span>
+        <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+
+<span class="nd">@get</span><span class="p">(</span><span class="s2">&quot;/notify/{topic:str}&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">get_notified</span><span class="p">(</span><span class="n">topic</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ServerSentEvent</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">ServerSentEvent</span><span class="p">(</span><span class="n">generator</span><span class="p">(</span><span class="n">topic</span><span class="p">),</span> <span class="n">event_type</span><span class="o">=</span><span class="s2">&quot;Notifier&quot;</span><span class="p">)</span>
+
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Litestar</span><span class="p">(</span><span class="n">route_handlers</span><span class="o">=</span><span class="p">[</span><span class="n">get_notified</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="sd-tab-set docutils">
+<input id="sd-tab-item-26" name="sd-tab-set-12" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.8" for="sd-tab-item-26">
+Python 3.8+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Test the app running in a subprocess</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">AsyncIterator</span>
+
+<span class="kn">import</span> <span class="nn">httpx</span>
+<span class="kn">import</span> <span class="nn">httpx_sse</span>
+<span class="kn">import</span> <span class="nn">pytest</span>
+
+<span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">subprocess_async_client</span>
+
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;win32&quot;</span><span class="p">:</span>
+    <span class="n">asyncio</span><span class="o">.</span><span class="n">set_event_loop_policy</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">WindowsSelectorEventLoopPolicy</span><span class="p">())</span>
+
+<span class="n">pytestmark</span> <span class="o">=</span> <span class="n">pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">anyio</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;session&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">anyio_backend</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="s2">&quot;asyncio&quot;</span>
+
+
+<span class="n">ROOT</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;async_client&quot;</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s2">&quot;session&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">fx_async_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">subprocess_async_client</span><span class="p">(</span><span class="n">workdir</span><span class="o">=</span><span class="n">ROOT</span><span class="p">,</span> <span class="n">app</span><span class="o">=</span><span class="s2">&quot;subprocess_sse_app:app&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">client</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_subprocess_async_client</span><span class="p">(</span><span class="n">async_client</span><span class="p">:</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Demonstrates functionality of the async client with an infinite SSE source that cannot be tested with the</span>
+<span class="sd">    regular async test client.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">topic</span> <span class="o">=</span> <span class="s2">&quot;demo&quot;</span>
+
+    <span class="k">async</span> <span class="k">with</span> <span class="n">httpx_sse</span><span class="o">.</span><span class="n">aconnect_sse</span><span class="p">(</span><span class="n">async_client</span><span class="p">,</span> <span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;/notify/</span><span class="si">{</span><span class="n">topic</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">event_source</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">event_source</span><span class="o">.</span><span class="n">aiter_sse</span><span class="p">():</span>
+            <span class="k">assert</span> <span class="n">event</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="n">topic</span>
+            <span class="k">break</span>
+</pre></div>
+</div>
+</div>
+<input checked="checked" id="sd-tab-item-27" name="sd-tab-set-12" type="radio">
+</input><label class="sd-tab-label" data-sync-id="3.9" for="sd-tab-item-27">
+Python 3.9+</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Test the app running in a subprocess</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">AsyncIterator</span>
+
+<span class="kn">import</span> <span class="nn">httpx</span>
+<span class="kn">import</span> <span class="nn">httpx_sse</span>
+<span class="kn">import</span> <span class="nn">pytest</span>
+
+<span class="kn">from</span> <span class="nn">litestar.testing</span> <span class="kn">import</span> <span class="n">subprocess_async_client</span>
+
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;win32&quot;</span><span class="p">:</span>
+    <span class="n">asyncio</span><span class="o">.</span><span class="n">set_event_loop_policy</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">WindowsSelectorEventLoopPolicy</span><span class="p">())</span>
+
+<span class="n">pytestmark</span> <span class="o">=</span> <span class="n">pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">anyio</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">scope</span><span class="o">=</span><span class="s2">&quot;session&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">anyio_backend</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="s2">&quot;asyncio&quot;</span>
+
+
+<span class="n">ROOT</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span>
+
+
+<span class="nd">@pytest</span><span class="o">.</span><span class="n">fixture</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;async_client&quot;</span><span class="p">,</span> <span class="n">scope</span><span class="o">=</span><span class="s2">&quot;session&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">fx_async_client</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">subprocess_async_client</span><span class="p">(</span><span class="n">workdir</span><span class="o">=</span><span class="n">ROOT</span><span class="p">,</span> <span class="n">app</span><span class="o">=</span><span class="s2">&quot;subprocess_sse_app:app&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">client</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">test_subprocess_async_client</span><span class="p">(</span><span class="n">async_client</span><span class="p">:</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Demonstrates functionality of the async client with an infinite SSE source that cannot be tested with the</span>
+<span class="sd">    regular async test client.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">topic</span> <span class="o">=</span> <span class="s2">&quot;demo&quot;</span>
+
+    <span class="k">async</span> <span class="k">with</span> <span class="n">httpx_sse</span><span class="o">.</span><span class="n">aconnect_sse</span><span class="p">(</span><span class="n">async_client</span><span class="p">,</span> <span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;/notify/</span><span class="si">{</span><span class="n">topic</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">event_source</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">event_source</span><span class="o">.</span><span class="n">aiter_sse</span><span class="p">():</span>
+            <span class="k">assert</span> <span class="n">event</span><span class="o">.</span><span class="n">data</span> <span class="o">==</span> <span class="n">topic</span>
+            <span class="k">break</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
 <section id="requestfactory">
 <h2>RequestFactory<a class="headerlink" href="#requestfactory" title="Permalink to this heading">#</a></h2>
 <p>Another helper is the <a class="reference internal" href="../reference/testing.html#litestar.testing.RequestFactory" title="litestar.testing.RequestFactory"><code class="xref py py-class docutils literal notranslate"><span class="pre">RequestFactory</span></code></a> class, which creates instances of
@@ -2455,6 +2637,7 @@ pydantic models and dataclasses based on type annotations. With it, we could rew
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-a-test-app">Creating a test app</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#running-a-live-server">Running a live server</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#requestfactory">RequestFactory</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#using-polyfactory">Using polyfactory</a></li>
 </ul>
