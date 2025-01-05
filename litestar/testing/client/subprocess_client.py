@@ -35,7 +35,7 @@ def run_app(workdir: pathlib.Path, app: str) -> Iterator[str]:
         cwd=workdir,
     ) as proc:
         url = f"http://127.0.0.1:{port}"
-        for _ in range(100):
+        for _ in range(100):  # pragma: no cover
             try:
                 httpx.get(url, timeout=0.1)
                 break
