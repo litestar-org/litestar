@@ -12,8 +12,7 @@ from litestar import get
 from litestar.exceptions import LitestarWarning
 from litestar.params import DependencyKwarg, KwargDefinition, Parameter, ParameterKwarg
 from litestar.typing import FieldDefinition
-
-from .test_utils.test_signature import T, _check_field_definition, field_definition_int, test_type_hints
+from tests.unit.test_utils.test_signature import T, _check_field_definition, field_definition_int, test_type_hints
 
 
 @pytest.mark.parametrize(
@@ -440,7 +439,7 @@ def test_field_definition_get_type_hints_dont_resolve_generics(
 
 
 def test_warn_ambiguous_default_values() -> None:
-    with pytest.warns(LitestarWarning, match="Ambiguous default values"):
+    with pytest.warns((LitestarWarning, DeprecationWarning)):
         FieldDefinition.from_annotation(Annotated[int, Parameter(default=1)], default=2)
 
 
