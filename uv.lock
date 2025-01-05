@@ -1881,6 +1881,7 @@ dev = [
 docs = [
     { name = "auto-pytabs", extra = ["sphinx"] },
     { name = "litestar-sphinx-theme" },
+    { name = "shibuya" },
     { name = "sphinx" },
     { name = "sphinx-autobuild" },
     { name = "sphinx-click" },
@@ -1988,6 +1989,7 @@ dev = [
 docs = [
     { name = "auto-pytabs", extras = ["sphinx"], specifier = ">=0.5.0" },
     { name = "litestar-sphinx-theme", git = "https://github.com/litestar-org/litestar-sphinx-theme.git" },
+    { name = "shibuya", specifier = ">=2024.12.21" },
     { name = "sphinx", specifier = ">=7.1.2" },
     { name = "sphinx-autobuild", specifier = ">=2021.3.14" },
     { name = "sphinx-click", specifier = ">=4.4.0" },
@@ -3559,6 +3561,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/ed/22/a438e0caa4576f8c383fa4d35f1cc01655a46c75be358960d815bfbb12bd/setuptools-75.3.0.tar.gz", hash = "sha256:fba5dd4d766e97be1b1681d98712680ae8f2f26d7881245f2ce9e40714f1a686", size = 1351577 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/90/12/282ee9bce8b58130cb762fbc9beabd531549952cac11fc56add11dcb7ea0/setuptools-75.3.0-py3-none-any.whl", hash = "sha256:f2504966861356aa38616760c0f66568e535562374995367b4e69c7143cf6bcd", size = 1251070 },
+]
+
+[[package]]
+name = "shibuya"
+version = "2024.12.21"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "sphinx" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ec/f7/65ba735b6999b00a634e3e3da9f6cc3f9f22b57cfc608d2a47a772670066/shibuya-2024.12.21.tar.gz", hash = "sha256:d021b4494e5968e4195593c3f45a0e0e4fba37472230da5560c0603e2eb3bd7d", size = 81002 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/59/10/87ec5249d5046796633fc161c2b65f23099d2bfac67bb619188b048d8ee1/shibuya-2024.12.21-py3-none-any.whl", hash = "sha256:22019c8b86c5814ac9e5c88432176c47df1e9d60051ba979ba4541b4e7e0d995", size = 96814 },
 ]
 
 [[package]]

@@ -150,6 +150,7 @@ docs = [
   "auto-pytabs[sphinx]>=0.5.0",
   "litestar-sphinx-theme @ git+https://github.com/litestar-org/litestar-sphinx-theme.git",
   "sphinx-paramlinks>=0.6.0",
+  "shibuya>=2024.12.21",
 ]
 linting = [
   "ruff>=0.2.1",
@@ -398,8 +399,6 @@ lint.select = [
   "W", # pycodestyle - warning
   "YTT", # flake8-2020
 ]
-
-line-length = 120
 lint.ignore = [
   "A003", # flake8-builtins - class attribute {name} is shadowing a python builtin
   "B010", # flake8-bugbear - do not call setattr with a constant attribute value
@@ -420,6 +419,8 @@ lint.ignore = [
   "ISC001", # Ruff formatter incompatible
   "CPY001", # ruff - copyright notice at the top of the file
 ]
+
+line-length = 120
 src = ["litestar", "tests", "docs/examples"]
 target-version = "py38"
 
