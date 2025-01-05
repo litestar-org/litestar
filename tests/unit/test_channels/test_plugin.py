@@ -17,8 +17,7 @@ from litestar.channels.subscriber import BacklogStrategy
 from litestar.exceptions import ImproperlyConfiguredException, LitestarException
 from litestar.testing import TestClient, create_test_client
 from litestar.types.asgi_types import WebSocketMode
-
-from .util import get_from_stream
+from tests.unit.test_channels.util import get_from_stream
 
 
 @pytest.fixture(
@@ -155,7 +154,7 @@ async def test_ws_route_handlers_receive_arbitrary_message(channels_backend: Cha
         assert ws.receive_json(timeout=2) == ["foo"]
 
 
-@pytest.mark.flaky(reruns=5)
+@pytest.mark.flaky(reruns=15)
 def test_create_ws_route_handlers_arbitrary_channels_allowed(channels_backend: ChannelsBackend) -> None:
     channels_plugin = ChannelsPlugin(
         backend=channels_backend,

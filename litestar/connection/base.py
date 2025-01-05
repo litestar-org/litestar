@@ -57,15 +57,15 @@ class ASGIConnection(Generic[HandlerT, UserT, AuthT, StateT]):
     """The base ASGI connection container."""
 
     __slots__ = (
-        "scope",
-        "receive",
-        "send",
         "_base_url",
-        "_url",
-        "_parsed_query",
-        "_cookies",
-        "_server_extensions",
         "_connection_state",
+        "_cookies",
+        "_parsed_query",
+        "_server_extensions",
+        "_url",
+        "receive",
+        "scope",
+        "send",
     )
 
     scope: Scope

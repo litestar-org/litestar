@@ -27,7 +27,7 @@ C = TypeVar("C", int, str, UUID)
 class ClassicPagination(Generic[T]):
     """Container for data returned using limit/offset pagination."""
 
-    __slots__ = ("items", "page_size", "current_page", "total_pages")
+    __slots__ = ("current_page", "items", "page_size", "total_pages")
 
     items: List[T]
     """List of data being sent as part of the response."""
@@ -39,30 +39,38 @@ class ClassicPagination(Generic[T]):
     """Total number of pages."""
 
 
-@dataclass
-class OffsetPagination(Generic[T]):
-    """Container for data returned using limit/offset pagination."""
+# AA requires it's own `OffsetPagination` class in versions greater that 0.9.0
+# If we find it, use it.
+try:
+    from advanced_alchemy.service import (
+        OffsetPagination,  # pyright: ignore[reportMissingImports,reportGeneralTypeIssues]
+    )
+except ImportError:
 
-    __slots__ = ("items", "limit", "offset", "total")
+    @dataclass
+    class OffsetPagination(Generic[T]):  # type: ignore[no-redef]
+        """Container for data returned using limit/offset pagination."""
 
-    items: List[T]
-    """List of data being sent as part of the response."""
-    limit: int
-    """Maximal number of items to send."""
-    offset: int
-    """Offset from the beginning of the query.
+        __slots__ = ("items", "limit", "offset", "total")
 
-    Identical to an index.
-    """
-    total: int
-    """Total number of items."""
+        items: List[T]
+        """List of data being sent as part of the response."""
+        limit: int
+        """Maximal number of items to send."""
+        offset: int
+        """Offset from the beginning of the query.
+
+        Identical to an index.
+        """
+        total: int
+        """Total number of items."""
 
 
 @dataclass
 class CursorPagination(Generic[C, T]):
     """Container for data returned using cursor pagination."""
 
-    __slots__ = ("items", "results_per_page", "cursor", "next_cursor")
+    __slots__ = ("cursor", "items", "next_cursor", "results_per_page")
 
     items: List[T]
     """List of data being sent as part of the response."""

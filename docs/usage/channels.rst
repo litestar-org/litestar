@@ -232,8 +232,10 @@ It is also possible to unsubscribe from individual :term:`channels <channel>`, w
     :caption: Unsubscribing from a channel manually
 
     subscriber = await channels.subscribe(["foo", "bar"])
-    ...  # do some stuff here
-    await channels.unsubscribe(subscriber, ["foo"])
+    try:
+        ...  # do some stuff here
+    finally:
+        await channels.unsubscribe(subscriber, ["foo"])
 
 
 Or, using the context manager
@@ -419,8 +421,8 @@ A common pattern is to create a route handler per :term:`channel`, sending data 
 client from that channel. This can be fully automated, using the plugin to create these route handlers.
 
 .. literalinclude:: /examples/channels/create_route_handlers.py
-    :caption: Setting :paramref:`~litestar.channels.plugin.ChannelsPlugin.create_ws_route_handlers` to ``True``
-      will create route handlers for all :term:`channels <channel>`
+    :language: python
+    :caption: Setting ``create_ws_route_handlers=True`` will create route handlers for all ``channels``
 
 The generated route handlers can optionally be configured to send the :term:`channel`'s :term:`history`
 after a client has connected:

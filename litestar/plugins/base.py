@@ -18,15 +18,15 @@ if TYPE_CHECKING:
     from litestar.typing import FieldDefinition
 
 __all__ = (
-    "SerializationPluginProtocol",
-    "InitPluginProtocol",
-    "OpenAPISchemaPluginProtocol",
-    "OpenAPISchemaPlugin",
-    "PluginProtocol",
     "CLIPlugin",
     "CLIPluginProtocol",
-    "PluginRegistry",
     "DIPlugin",
+    "InitPluginProtocol",
+    "OpenAPISchemaPlugin",
+    "OpenAPISchemaPluginProtocol",
+    "PluginProtocol",
+    "PluginRegistry",
+    "SerializationPluginProtocol",
 )
 
 
@@ -120,9 +120,6 @@ class CLIPlugin(CLIPluginProtocol):
     """Plugin protocol to extend the CLI Server Lifespan."""
 
     __slots__ = ()
-
-    def on_cli_init(self, cli: Group) -> None:
-        return super().on_cli_init(cli)
 
     @contextmanager
     def server_lifespan(self, app: Litestar) -> Iterator[None]:
@@ -274,7 +271,7 @@ PluginT = TypeVar("PluginT", bound=PluginProtocol)
 
 
 class PluginRegistry:
-    __slots__ = {
+    __slots__ = {  # noqa: RUF023
         "init": "Plugins that implement the InitPluginProtocol",
         "openapi": "Plugins that implement the OpenAPISchemaPluginProtocol",
         "receive_route": "ReceiveRoutePlugin instances",

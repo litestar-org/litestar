@@ -1,3 +1,5 @@
+.. _plugins:
+
 =======
 Plugins
 =======
@@ -89,11 +91,11 @@ The following example shows the actual implementation of the ``SerializationPlug
    :language: python
    :caption: ``SerializationPluginProtocol`` implementation example
 
-:meth:`supports_type(self, field_definition: FieldDefinition) -> bool: <advanced_alchemy.extensions.litestar.plugins.serialization.SQLAlchemySerializationPlugin.supports_type>`
+:meth:`supports_type(self, field_definition: FieldDefinition) -> bool: <advanced_alchemy.extensions.litestar.SQLAlchemySerializationPlugin.supports_type>`
 returns a :class:`bool` indicating whether the plugin supports serialization for the given type. Specifically, we return
 ``True`` if the parsed type is either a collection of SQLAlchemy models or a single SQLAlchemy model.
 
-:meth:`create_dto_for_type(self, field_definition: FieldDefinition) -> type[AbstractDTO]: <advanced_alchemy.extensions.litestar.plugins.SQLAlchemySerializationPlugin.create_dto_for_type>`
+:meth:`create_dto_for_type(self, field_definition: FieldDefinition) -> type[AbstractDTO]: <advanced_alchemy.extensions.litestar.SQLAlchemySerializationPlugin.create_dto_for_type>`
 takes a :class:`FieldDefinition <litestar.typing.FieldDefinition>` instance as an argument and returns a
 :class:`SQLAlchemyDTO <advanced_alchemy.extensions.litestar.dto.SQLAlchemyDTO>` subclass and includes some logic that may be
 interesting to potential serialization plugin authors.
@@ -129,3 +131,4 @@ signature (their :func:`__init__` method).
     :titlesonly:
 
     flash_messages
+    problem_details

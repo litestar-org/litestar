@@ -1,18 +1,18 @@
 SQLAlchemy Plugin
 -----------------
 
-The :class:`SQLAlchemyPlugin <advanced_alchemy.extensions.litestar.plugins.SQLAlchemyPlugin>` provides complete support for
+The :class:`SQLAlchemyPlugin <advanced_alchemy.extensions.litestar.SQLAlchemyPlugin>` provides complete support for
 working with `SQLAlchemy <https://www.sqlalchemy.org/>`_ in Litestar applications.
 
 .. note::
 
     This plugin is only compatible with SQLAlchemy 2.0+.
 
-The :class:`SQLAlchemyPlugin <advanced_alchemy.extensions.litestar.plugins.SQLAlchemyPlugin>` combines the functionality of
-:class:`SQLAlchemyInitPlugin <advanced_alchemy.extensions.litestar.plugins.SQLAlchemyInitPlugin>` and
-:class:`SQLAlchemySerializationPlugin <advanced_alchemy.extensions.litestar.plugins.SQLAlchemySerializationPlugin>`, each of
+The :class:`SQLAlchemyPlugin <advanced_alchemy.extensions.litestar.SQLAlchemyPlugin>` combines the functionality of
+:class:`SQLAlchemyInitPlugin <advanced_alchemy.extensions.litestar.SQLAlchemyInitPlugin>` and
+:class:`SQLAlchemySerializationPlugin <advanced_alchemy.extensions.litestar.SQLAlchemySerializationPlugin>`, each of
 which are examined in detail in the following sections. As such, this section describes a complete example of using the
-:class:`SQLAlchemyPlugin <advanced_alchemy.extensions.litestar.plugins.SQLAlchemyPlugin>` with a Litestar application and a
+:class:`SQLAlchemyPlugin <advanced_alchemy.extensions.litestar.SQLAlchemyPlugin>` with a Litestar application and a
 SQLite database.
 
 Or, skip ahead to :doc:`/usage/databases/sqlalchemy/plugins/sqlalchemy_init_plugin` or
@@ -101,14 +101,14 @@ We create a function ``init_db`` that we'll use to initialize the database when 
         .. literalinclude:: /examples/contrib/sqlalchemy/plugins/sqlalchemy_async_plugin_example.py
             :caption: SQLAlchemy Async Plugin Example
             :language: python
-            :lines: 8,32-37
+            :lines: 9,31-35
 
    .. tab-item:: Sync
 
         .. literalinclude:: /examples/contrib/sqlalchemy/plugins/sqlalchemy_sync_plugin_example.py
             :caption: SQLAlchemy Sync Plugin Example
             :language: python
-            :lines: 8,32-36
+            :lines: 9,31-33
 
 Setting Up the Plugin and the App
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -122,14 +122,14 @@ Finally, we set up the SQLAlchemy Plugin and the Litestar app.
         .. literalinclude:: /examples/contrib/sqlalchemy/plugins/sqlalchemy_async_plugin_example.py
             :caption: SQLAlchemy Async Plugin Example
             :language: python
-            :lines: 8-9,38-41
+            :lines: 8,31-35
 
    .. tab-item:: Sync
 
         .. literalinclude:: /examples/contrib/sqlalchemy/plugins/sqlalchemy_sync_plugin_example.py
             :caption: SQLAlchemy Sync Plugin Example
             :language: python
-            :lines: 8-9,37-40
+            :lines: 9,31-33
 
 This configures the app with the plugin, sets up a route handler for adding items, and specifies that the ``init_db``
 function should be run when the app starts up.

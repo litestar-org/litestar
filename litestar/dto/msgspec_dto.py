@@ -1,13 +1,16 @@
 from __future__ import annotations
 
+import dataclasses
 from dataclasses import replace
 from typing import TYPE_CHECKING, Generic, TypeVar
 
+import msgspec.inspect
 from msgspec import NODEFAULT, Struct, structs
 
 from litestar.dto.base_dto import AbstractDTO
 from litestar.dto.data_structures import DTOFieldDefinition
 from litestar.dto.field import DTO_FIELD_META_KEY, extract_dto_field
+from litestar.plugins.core._msgspec import kwarg_definition_from_field
 from litestar.types.empty import Empty
 
 if TYPE_CHECKING:
@@ -28,16 +31,25 @@ class MsgspecDTO(AbstractDTO[T], Generic[T]):
     def generate_field_definitions(cls, model_type: type[Struct]) -> Generator[DTOFieldDefinition, None, None]:
         msgspec_fields = {f.name: f for f in structs.fields(model_type)}
 
+        # TODO: Move out of here
         def default_or_empty(value: Any) -> Any:
             return Empty if value is NODEFAULT else value
 
         def default_or_none(value: Any) -> Any:
             return None if value is NODEFAULT else value
 
+        inspect_fields: dict[str, msgspec.inspect.Field] = {
+            field.name: field
+            for field in msgspec.inspect.type_info(model_type).fields  # type: ignore[attr-defined]
+        }
+
         for key, field_definition in cls.get_model_type_hints(model_type).items():
-            msgspec_field = msgspec_fields[key]
+            kwarg_definition, extra = kwarg_definition_from_field(inspect_fields[key])
+            field_definition = dataclasses.replace(field_definition, kwarg_definition=kwarg_definition)
+            field_definition.extra.update(extra)
             dto_field = extract_dto_field(field_definition, field_definition.extra)
             field_definition.extra.pop(DTO_FIELD_META_KEY, None)
+            msgspec_field = msgspec_fields[key]
 
             yield replace(
                 DTOFieldDefinition.from_field_definition(

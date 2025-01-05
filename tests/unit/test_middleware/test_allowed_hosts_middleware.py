@@ -31,8 +31,7 @@ def test_allowed_hosts_middleware() -> None:
         cur = cast("Any", cur.app)
     unpacked_middleware.append(cur)
 
-    assert len(unpacked_middleware) == 4
-    allowed_hosts_middleware = cast("Any", unpacked_middleware[1])
+    allowed_hosts_middleware, *_ = unpacked_middleware
     assert isinstance(allowed_hosts_middleware, AllowedHostsMiddleware)
     assert allowed_hosts_middleware.allowed_hosts_regex.pattern == ".*\\.example.com$|moishe.zuchmir.com"  # type: ignore[union-attr]
 

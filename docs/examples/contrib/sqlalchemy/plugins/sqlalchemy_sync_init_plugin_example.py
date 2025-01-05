@@ -6,7 +6,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from litestar import Litestar, post
-from litestar.contrib.sqlalchemy.plugins import SQLAlchemyInitPlugin, SQLAlchemySyncConfig
+from litestar.plugins.sqlalchemy import SQLAlchemyInitPlugin, SQLAlchemySyncConfig
 
 if TYPE_CHECKING:
     from typing import Any, Dict, List
@@ -38,8 +38,8 @@ def add_item(data: Dict[str, Any], db_session: Session) -> List[Dict[str, Any]]:
 
 
 def init_db(app: Litestar) -> None:
-    Base.metadata.drop_all(app.state.db_engine)
-    Base.metadata.create_all(app.state.db_engine)
+    with config.get_engine().begin() as conn:
+        Base.metadata.create_all(conn)
 
 
 config = SQLAlchemySyncConfig(connection_string="sqlite:///todo_sync.sqlite")

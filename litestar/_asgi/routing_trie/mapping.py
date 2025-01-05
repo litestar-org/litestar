@@ -140,6 +140,7 @@ def configure_node(
     """
     from litestar.routes import HTTPRoute, WebSocketRoute
 
+    node.path_template = route.path_format
     if not node.path_parameters:
         node.path_parameters = {}
 
@@ -189,33 +190,36 @@ def build_route_middleware_stack(
     from litestar.middleware.response_cache import ResponseCacheMiddleware
     from litestar.routes import HTTPRoute
 
-    # we wrap the route.handle method in the ExceptionHandlerMiddleware
-    asgi_handler = wrap_in_exception_handler(
-        app=route.handle,  # type: ignore[arg-type]
-        exception_handlers=route_handler.resolve_exception_handlers(),
+    asgi_handler: ASGIApp = route.handle  # type: ignore[assignment]
+    handler_middleware = route_handler.resolve_middleware()
+    has_cached_route = isinstance(route, HTTPRoute) and any(r.cache for r in route.route_handlers)
+    has_middleware = (
+        app.csrf_config or app.compression_config or has_cached_route or app.allowed_hosts or handler_middleware
     )
 
-    if app.csrf_config:
-        asgi_handler = CSRFMiddleware(app=asgi_handler, config=app.csrf_config)
+    if has_middleware:
+        # If there is an exception raised from the handler, the first ExceptionHandlerMiddleware that catches the
+        # exception will create the response and call send(). As middleware may wrap the send() callable, we need there
+        # to be an instance of ExceptionHandlerMiddleware in between the handler and the middleware so that any send
+        # wrappers instated by middleware are called. If there is no middleware, we can skip this step.
+        asgi_handler = wrap_in_exception_handler(app=asgi_handler)
 
-    if app.compression_config:
-        asgi_handler = CompressionMiddleware(app=asgi_handler, config=app.compression_config)
+        if app.csrf_config:
+            asgi_handler = CSRFMiddleware(app=asgi_handler, config=app.csrf_config)
 
-    if isinstance(route, HTTPRoute) and any(r.cache for r in route.route_handlers):
-        asgi_handler = ResponseCacheMiddleware(app=asgi_handler, config=app.response_cache_config)
+        if app.compression_config:
+            asgi_handler = CompressionMiddleware(app=asgi_handler, config=app.compression_config)
 
-    if app.allowed_hosts:
-        asgi_handler = AllowedHostsMiddleware(app=asgi_handler, config=app.allowed_hosts)
+        if has_cached_route:
+            asgi_handler = ResponseCacheMiddleware(app=asgi_handler, config=app.response_cache_config)
 
-    for middleware in route_handler.resolve_middleware():
-        if hasattr(middleware, "__iter__"):
-            handler, kwargs = cast("tuple[Any, dict[str, Any]]", middleware)
-            asgi_handler = handler(app=asgi_handler, **kwargs)
-        else:
-            asgi_handler = middleware(app=asgi_handler)  # type: ignore[call-arg]
+        if app.allowed_hosts:
+            asgi_handler = AllowedHostsMiddleware(app=asgi_handler, config=app.allowed_hosts)
 
-    # we wrap the entire stack again in ExceptionHandlerMiddleware
-    return wrap_in_exception_handler(
-        app=cast("ASGIApp", asgi_handler),
-        exception_handlers=route_handler.resolve_exception_handlers(),
-    )  # pyright: ignore
+        for middleware in handler_middleware:
+            if hasattr(middleware, "__iter__"):
+                handler, kwargs = cast("tuple[Any, dict[str, Any]]", middleware)
+                asgi_handler = handler(app=asgi_handler, **kwargs)
+            else:
+                asgi_handler = middleware(app=asgi_handler)  # type: ignore[call-arg]
+    return asgi_handler

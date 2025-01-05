@@ -1,17 +1,21 @@
+from __future__ import annotations
+
+import dataclasses
 import secrets
 import sys
 from dataclasses import asdict
 from datetime import datetime, timedelta, timezone
-from typing import Any, Dict, Optional
+from typing import Any, Sequence
 from uuid import uuid4
 
+import jwt
 import pytest
 from hypothesis import given
 from hypothesis.strategies import datetimes
-from jose import jwt
 
 from litestar.exceptions import ImproperlyConfiguredException, NotAuthorizedException
 from litestar.security.jwt import Token
+from litestar.security.jwt.token import JWTDecodeOptions
 
 
 @pytest.mark.parametrize("algorithm", ["HS256", "HS384", "HS512"])
@@ -23,10 +27,10 @@ from litestar.security.jwt import Token
 @pytest.mark.parametrize("token_extras", [None, {"email": "test@test.com"}])
 def test_token(
     algorithm: str,
-    token_issuer: Optional[str],
-    token_audience: Optional[str],
-    token_unique_jwt_id: Optional[str],
-    token_extras: Optional[Dict[str, Any]],
+    token_issuer: str | None,
+    token_audience: str | None,
+    token_unique_jwt_id: str | None,
+    token_extras: dict[str, Any] | None,
 ) -> None:
     token_secret = secrets.token_hex()
     token = Token(
@@ -150,7 +154,7 @@ def test_extra_fields() -> None:
         "exp": (datetime.now(timezone.utc) + timedelta(seconds=30)),
     }
     token_secret = secrets.token_hex()
-    encoded_token = jwt.encode(claims=raw_token, key=token_secret, algorithm="HS256")
+    encoded_token = jwt.encode(payload=raw_token, key=token_secret, algorithm="HS256")
     token = Token.decode(encoded_token=encoded_token, secret=token_secret, algorithm="HS256")
     assert "azp" in token.extras
     assert "email" in token.extras
@@ -161,6 +165,60 @@ def test_extra_fields() -> None:
         "exp": (datetime.now(timezone.utc) + timedelta(seconds=30)),
     }
     token_secret = secrets.token_hex()
-    encoded_token = jwt.encode(claims=raw_token, key=token_secret, algorithm="HS256")
+    encoded_token = jwt.encode(payload=raw_token, key=token_secret, algorithm="HS256")
     token = Token.decode(encoded_token=encoded_token, secret=token_secret, algorithm="HS256")
     assert token.extras == {}
+
+
+@pytest.mark.parametrize("audience", [None, ["foo", "bar"]])
+def test_strict_aud_with_multiple_audiences_raises(audience: str | list[str]) -> None:
+    with pytest.raises(ValueError, match="When using 'strict_audience=True'"):
+        Token.decode(
+            "",
+            secret="",
+            algorithm="HS256",
+            audience=audience,
+            strict_audience=True,
+        )
+
+
+@pytest.mark.parametrize("audience", ["foo", ["foo", "bar"]])
+def test_strict_aud_with_one_element_sequence(audience: str | list[str]) -> None:
+    # when validating with strict audience, PyJWT requires that the 'audience' parameter
+    # is passed as a string - one element lists are not allowed. Since we allow these
+    # generally, we convert them to a string in this case
+    secret = secrets.token_hex()
+    encoded = Token(exp=datetime.now() + timedelta(days=1), sub="foo", aud="foo").encode(secret, "HS256")
+    Token.decode(
+        encoded,
+        secret=secret,
+        algorithm="HS256",
+        audience=["foo"],
+        strict_audience=True,
+    )
+
+
+def test_custom_decode_payload() -> None:
+    @dataclasses.dataclass
+    class CustomToken(Token):
+        @classmethod
+        def decode_payload(
+            cls,
+            encoded_token: str,
+            secret: str,
+            algorithms: list[str],
+            issuer: list[str] | None = None,
+            audience: str | Sequence[str] | None = None,
+            options: JWTDecodeOptions | None = None,
+        ) -> Any:
+            payload = super().decode_payload(
+                encoded_token=encoded_token,
+                secret=secret,
+                algorithms=algorithms,
+            )
+            payload["sub"] = "some-random-value"
+            return payload
+
+    _secret = secrets.token_hex()
+    encoded = CustomToken(exp=datetime.now() + timedelta(days=1), sub="foo").encode(_secret, "HS256")
+    assert CustomToken.decode(encoded, secret=_secret, algorithm="HS256").sub == "some-random-value"

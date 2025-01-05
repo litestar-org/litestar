@@ -10,6 +10,7 @@ from litestar.status_codes import (
     HTTP_403_FORBIDDEN,
     HTTP_404_NOT_FOUND,
     HTTP_405_METHOD_NOT_ALLOWED,
+    HTTP_413_REQUEST_ENTITY_TOO_LARGE,
     HTTP_429_TOO_MANY_REQUESTS,
     HTTP_500_INTERNAL_SERVER_ERROR,
     HTTP_503_SERVICE_UNAVAILABLE,
@@ -117,6 +118,11 @@ class MethodNotAllowedException(ClientException):
     """Server knows the request method, but the target resource doesn't support this method."""
 
     status_code = HTTP_405_METHOD_NOT_ALLOWED
+
+
+class RequestEntityTooLarge(ClientException):
+    status_code = HTTP_413_REQUEST_ENTITY_TOO_LARGE
+    detail = "Request Entity Too Large"
 
 
 class TooManyRequestsException(ClientException):

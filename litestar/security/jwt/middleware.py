@@ -28,8 +28,15 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
     __slots__ = (
         "algorithm",
         "auth_header",
+        "require_claims",
         "retrieve_user_handler",
+        "strict_audience",
+        "token_audience",
+        "token_cls",
+        "token_issuer",
         "token_secret",
+        "verify_expiry",
+        "verify_not_before",
     )
 
     def __init__(
@@ -43,6 +50,13 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         retrieve_user_handler: Callable[[Token, ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]],
         scopes: Scopes,
         token_secret: str,
+        token_cls: type[Token] = Token,
+        token_audience: Sequence[str] | None = None,
+        token_issuer: Sequence[str] | None = None,
+        require_claims: Sequence[str] | None = None,
+        verify_expiry: bool = True,
+        verify_not_before: bool = True,
+        strict_audience: bool = False,
     ) -> None:
         """Check incoming requests for an encoded token in the auth header specified, and if present retrieve the user
         from persistence using the provided function.
@@ -57,8 +71,21 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
             retrieve_user_handler: A function that receives a :class:`Token <.security.jwt.Token>` and returns a user,
                 which can be any arbitrary value.
             scopes: ASGI scopes processed by the authentication middleware.
-            token_secret: Secret for decoding the JWT token. This value should be equivalent to the secret used to
+            token_secret: Secret for decoding the JWT. This value should be equivalent to the secret used to
                 encode it.
+            token_cls: Token class used when encoding / decoding JWTs
+            token_audience: Verify the audience when decoding the token. If the audience
+                in the token does not match any audience given, raise a
+                :exc:`NotAuthorizedException`
+            token_issuer: Verify the issuer when decoding the token. If the issuer in
+                the token does not match any issuer given, raise a
+                :exc:`NotAuthorizedException`
+            require_claims: Require these claims to be present in the JWT payload
+            verify_expiry: Verify that the value of the ``exp`` (*expiration*) claim is in the future
+            verify_not_before: Verify that the value of the ``nbf`` (*not before*) claim is in the past
+            strict_audience: Verify that the value of the ``aud`` (*audience*) claim is a single value, and
+                not a list of values, and matches ``audience`` exactly. Requires that
+                ``accepted_audiences`` is a sequence of length 1
         """
         super().__init__(
             app=app,
@@ -71,6 +98,13 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         self.auth_header = auth_header
         self.retrieve_user_handler = retrieve_user_handler
         self.token_secret = token_secret
+        self.token_cls = token_cls
+        self.token_audience = token_audience
+        self.token_issuer = token_issuer
+        self.require_claims = require_claims
+        self.verify_expiry = verify_expiry
+        self.verify_not_before = verify_not_before
+        self.strict_audience = strict_audience
 
     async def authenticate_request(self, connection: ASGIConnection[Any, Any, Any, Any]) -> AuthenticationResult:
         """Given an HTTP Connection, parse the JWT api key stored in the header and retrieve the user correlating to the
@@ -106,10 +140,16 @@ class JWTAuthenticationMiddleware(AbstractAuthenticationMiddleware):
         Returns:
             AuthenticationResult
         """
-        token = Token.decode(
+        token = self.token_cls.decode(
             encoded_token=encoded_token,
             secret=self.token_secret,
             algorithm=self.algorithm,
+            audience=self.token_audience,
+            issuer=self.token_issuer,
+            require_claims=self.require_claims,
+            verify_exp=self.verify_expiry,
+            verify_nbf=self.verify_not_before,
+            strict_audience=self.strict_audience,
         )
 
         user = await self.retrieve_user_handler(token, connection)
@@ -137,6 +177,13 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
         retrieve_user_handler: Callable[[Token, ASGIConnection[Any, Any, Any, Any]], Awaitable[Any]],
         scopes: Scopes,
         token_secret: str,
+        token_cls: type[Token] = Token,
+        token_audience: Sequence[str] | None = None,
+        token_issuer: Sequence[str] | None = None,
+        require_claims: Sequence[str] | None = None,
+        verify_expiry: bool = True,
+        verify_not_before: bool = True,
+        strict_audience: bool = False,
     ) -> None:
         """Check incoming requests for an encoded token in the auth header or cookie name specified, and if present
         retrieves the user from persistence using the provided function.
@@ -152,8 +199,21 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
             retrieve_user_handler: A function that receives a :class:`Token <.security.jwt.Token>` and returns a user,
                 which can be any arbitrary value.
             scopes: ASGI scopes processed by the authentication middleware.
-            token_secret: Secret for decoding the JWT token. This value should be equivalent to the secret used to
+            token_secret: Secret for decoding the JWT. This value should be equivalent to the secret used to
                 encode it.
+            token_cls: Token class used when encoding / decoding JWTs
+            token_audience: Verify the audience when decoding the token. If the audience
+                in the token does not match any audience given, raise a
+                :exc:`NotAuthorizedException`
+            token_issuer: Verify the issuer when decoding the token. If the issuer in
+                the token does not match any issuer given, raise a
+                :exc:`NotAuthorizedException`
+            require_claims: Require these claims to be present in the JWT payload
+            verify_expiry: Verify that the value of the ``exp`` (*expiration*) claim is in the future
+            verify_not_before: Verify that the value of the ``nbf`` (*not before*) claim is in the past
+            strict_audience: Verify that the value of the ``aud`` (*audience*) claim is a single value, and
+                not a list of values, and matches ``audience`` exactly. Requires that
+                ``accepted_audiences`` is a sequence of length 1
         """
         super().__init__(
             algorithm=algorithm,
@@ -165,6 +225,13 @@ class JWTCookieAuthenticationMiddleware(JWTAuthenticationMiddleware):
             retrieve_user_handler=retrieve_user_handler,
             scopes=scopes,
             token_secret=token_secret,
+            token_cls=token_cls,
+            token_audience=token_audience,
+            token_issuer=token_issuer,
+            require_claims=require_claims,
+            verify_expiry=verify_expiry,
+            verify_not_before=verify_not_before,
+            strict_audience=strict_audience,
         )
         self.auth_cookie_key = auth_cookie_key
 

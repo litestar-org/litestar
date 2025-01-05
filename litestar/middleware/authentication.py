@@ -20,9 +20,9 @@ if TYPE_CHECKING:
 
 @dataclass
 class AuthenticationResult:
-    """Pydantic model for authentication data."""
+    """Dataclass for authentication result."""
 
-    __slots__ = ("user", "auth")
+    __slots__ = ("auth", "user")
 
     user: Any
     """The user model, this can be any value corresponding to a user of the API."""
@@ -61,7 +61,7 @@ class AbstractAuthenticationMiddleware(ABC):
             scopes: ASGI scopes processed by the authentication middleware.
         """
         self.app = app
-        self.exclude = build_exclude_path_pattern(exclude=exclude)
+        self.exclude = build_exclude_path_pattern(exclude=exclude, middleware_cls=type(self))
         self.exclude_http_methods = (HttpMethod.OPTIONS,) if exclude_http_methods is None else exclude_http_methods
         self.exclude_opt_key = exclude_from_auth_key
         self.scopes = scopes or {ScopeType.HTTP, ScopeType.WEBSOCKET}

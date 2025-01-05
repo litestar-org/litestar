@@ -24,6 +24,7 @@ from litestar.dto._backend import DTOBackend
 from litestar.dto._types import (
     CollectionType,
     CompositeType,
+    MappingType,
     SimpleType,
     TransferDTOFieldDefinition,
     TransferType,
@@ -42,11 +43,11 @@ __all__ = ("DTOCodegenBackend",)
 
 class DTOCodegenBackend(DTOBackend):
     __slots__ = (
-        "_transfer_to_dict",
-        "_transfer_to_model_type",
+        "_encode_data",
         "_transfer_data_from_builtins",
         "_transfer_data_from_builtins_with_overrides",
-        "_encode_data",
+        "_transfer_to_dict",
+        "_transfer_to_model_type",
     )
 
     def __init__(
@@ -500,6 +501,21 @@ class TransferFunctionFactory:
                 transfer_type_data_name = self._add_to_fn_globals("transfer_type_data", transfer_type_data_fn)
                 self._add_stmt(
                     f"{assignment_target} = {origin_name}({transfer_type_data_name}(item) for item in {source_value_name})"
+                )
+                return
+
+            self._add_stmt(f"{assignment_target} = {origin_name}({source_value_name})")
+            return
+
+        if isinstance(transfer_type, MappingType):
+            origin_name = self._add_to_fn_globals("origin", transfer_type.field_definition.instantiable_origin)
+            if transfer_type.has_nested:
+                transfer_type_data_fn = TransferFunctionFactory.create_transfer_type_data(
+                    is_data_field=self.is_data_field, transfer_type=transfer_type.value_type
+                )
+                transfer_type_data_name = self._add_to_fn_globals("transfer_type_data", transfer_type_data_fn)
+                self._add_stmt(
+                    f"{assignment_target} = {origin_name}((key, {transfer_type_data_name}(item)) for key, item in {source_value_name}.items())"
                 )
                 return
 

@@ -2,7 +2,11 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass, fields, is_dataclass
 from enum import Enum
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
+    from dataclasses import Field
 
 __all__ = ("BaseSchemaObject",)
 
@@ -22,7 +26,11 @@ def _normalize_value(value: Any) -> Any:
     if isinstance(value, BaseSchemaObject):
         return value.to_schema()
     if is_dataclass(value):
-        return {_normalize_value(k): _normalize_value(v) for k, v in asdict(value).items() if v is not None}
+        return {
+            _normalize_value(k): _normalize_value(v)
+            for k, v in asdict(value).items()  # type: ignore[call-overload]
+            if v is not None
+        }
     if isinstance(value, dict):
         return {_normalize_value(k): _normalize_value(v) for k, v in value.items() if v is not None}
     if isinstance(value, list):
@@ -34,13 +42,23 @@ def _normalize_value(value: Any) -> Any:
 class BaseSchemaObject:
     """Base class for schema spec objects"""
 
+    @property
+    def _exclude_fields(self) -> set[str]:
+        return set()
+
+    def _iter_fields(self) -> Iterator[Field[Any]]:
+        yield from fields(self)
+
     def to_schema(self) -> dict[str, Any]:
         """Transform the spec dataclass object into a string keyed dictionary. This method traverses all nested values
         recursively.
         """
         result: dict[str, Any] = {}
+        exclude = self._exclude_fields
 
-        for field in fields(self):
+        for field in self._iter_fields():
+            if field.name in exclude:
+                continue
             value = _normalize_value(getattr(self, field.name, None))
 
             if value is not None:

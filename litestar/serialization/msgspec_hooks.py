@@ -22,6 +22,7 @@ import msgspec
 from litestar.datastructures.secret_values import SecretBytes, SecretString
 from litestar.exceptions import SerializationException
 from litestar.types import Empty, EmptyType, Serializer, TypeDecodersSequence
+from litestar.utils.typing import get_origin_or_inner_type
 
 if TYPE_CHECKING:
     from litestar.types import TypeEncodersMap
@@ -107,8 +108,19 @@ def default_deserializer(
 
     from litestar.datastructures.state import ImmutableState
 
-    if isinstance(value, target_type):
-        return value
+    try:
+        if isinstance(value, target_type):
+            return value
+    except TypeError as exc:
+        # we might get a TypeError here if target_type is a subscribed generic. For
+        # performance reasons, we let this happen and only unwrap this when we're
+        # certain this might be the case
+        if (origin := get_origin_or_inner_type(target_type)) is not None:
+            target_type = origin
+            if isinstance(value, target_type):
+                return value
+        else:
+            raise exc
 
     if type_decoders:
         for predicate, decoder in type_decoders:
@@ -153,25 +165,28 @@ def encode_json(value: Any, serializer: Callable[[Any], Any] | None = None) -> b
 
 
 @overload
-def decode_json(value: str | bytes) -> Any: ...
+def decode_json(value: str | bytes, strict: bool = ...) -> Any: ...
 
 
 @overload
-def decode_json(value: str | bytes, type_decoders: TypeDecodersSequence | None) -> Any: ...
+def decode_json(value: str | bytes, type_decoders: TypeDecodersSequence | None, strict: bool = ...) -> Any: ...
 
 
 @overload
-def decode_json(value: str | bytes, target_type: type[T]) -> T: ...
+def decode_json(value: str | bytes, target_type: type[T], strict: bool = ...) -> T: ...
 
 
 @overload
-def decode_json(value: str | bytes, target_type: type[T], type_decoders: TypeDecodersSequence | None) -> T: ...
+def decode_json(
+    value: str | bytes, target_type: type[T], type_decoders: TypeDecodersSequence | None, strict: bool = ...
+) -> T: ...
 
 
 def decode_json(  # type: ignore[misc]
     value: str | bytes,
     target_type: type[T] | EmptyType = Empty,  # pyright: ignore
     type_decoders: TypeDecodersSequence | None = None,
+    strict: bool = True,
 ) -> Any:
     """Decode a JSON string/bytes into an object.
 
@@ -179,6 +194,8 @@ def decode_json(  # type: ignore[misc]
         value: Value to decode
         target_type: An optional type to decode the data into
         type_decoders: Optional sequence of type decoders
+        strict: Whether type coercion rules should be strict. Setting to False enables
+            a wider set of coercion rules from string to non-string types for all values
 
     Returns:
         An object
@@ -190,7 +207,13 @@ def decode_json(  # type: ignore[misc]
         if target_type is Empty:
             return _msgspec_json_decoder.decode(value)
         return msgspec.json.decode(
-            value, dec_hook=partial(default_deserializer, type_decoders=type_decoders), type=target_type
+            value,
+            dec_hook=partial(
+                default_deserializer,
+                type_decoders=type_decoders,
+            ),
+            type=target_type,
+            strict=strict,
         )
     except msgspec.DecodeError as msgspec_error:
         raise SerializationException(str(msgspec_error)) from msgspec_error
@@ -218,25 +241,28 @@ def encode_msgpack(value: Any, serializer: Callable[[Any], Any] | None = default
 
 
 @overload
-def decode_msgpack(value: bytes) -> Any: ...
+def decode_msgpack(value: bytes, strict: bool = ...) -> Any: ...
 
 
 @overload
-def decode_msgpack(value: bytes, type_decoders: TypeDecodersSequence | None) -> Any: ...
+def decode_msgpack(value: bytes, type_decoders: TypeDecodersSequence | None, strict: bool = ...) -> Any: ...
 
 
 @overload
-def decode_msgpack(value: bytes, target_type: type[T]) -> T: ...
+def decode_msgpack(value: bytes, target_type: type[T], strict: bool = ...) -> T: ...
 
 
 @overload
-def decode_msgpack(value: bytes, target_type: type[T], type_decoders: TypeDecodersSequence | None) -> T: ...
+def decode_msgpack(
+    value: bytes, target_type: type[T], type_decoders: TypeDecodersSequence | None, strict: bool = ...
+) -> T: ...
 
 
 def decode_msgpack(  # type: ignore[misc]
     value: bytes,
     target_type: type[T] | EmptyType = Empty,  # pyright: ignore[reportInvalidTypeVarUse]
     type_decoders: TypeDecodersSequence | None = None,
+    strict: bool = True,
 ) -> Any:
     """Decode a MessagePack string/bytes into an object.
 
@@ -244,6 +270,8 @@ def decode_msgpack(  # type: ignore[misc]
         value: Value to decode
         target_type: An optional type to decode the data into
         type_decoders: Optional sequence of type decoders
+        strict: Whether type coercion rules should be strict. Setting to False enables
+            a wider set of coercion rules from string to non-string types for all values
 
     Returns:
         An object
@@ -255,7 +283,10 @@ def decode_msgpack(  # type: ignore[misc]
         if target_type is Empty:
             return _msgspec_msgpack_decoder.decode(value)
         return msgspec.msgpack.decode(
-            value, dec_hook=partial(default_deserializer, type_decoders=type_decoders), type=target_type
+            value,
+            dec_hook=partial(default_deserializer, type_decoders=type_decoders),
+            type=target_type,
+            strict=strict,
         )
     except msgspec.DecodeError as msgspec_error:
         raise SerializationException(str(msgspec_error)) from msgspec_error

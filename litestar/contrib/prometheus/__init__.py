@@ -1,5 +1,38 @@
-from .config import PrometheusConfig
-from .controller import PrometheusController
-from .middleware import PrometheusMiddleware
+# ruff: noqa: TC004, F401
+from __future__ import annotations
 
-__all__ = ("PrometheusMiddleware", "PrometheusConfig", "PrometheusController")
+from typing import TYPE_CHECKING
+
+from litestar.utils import warn_deprecation
+
+__all__ = ("PrometheusConfig", "PrometheusController", "PrometheusMiddleware")
+
+
+def __getattr__(attr_name: str) -> object:
+    if attr_name in __all__:
+        from litestar.plugins.prometheus import (
+            PrometheusConfig,
+            PrometheusController,
+            PrometheusMiddleware,
+        )
+
+        warn_deprecation(
+            deprecated_name=f"litestar.contrib.prometheus.{attr_name}",
+            version="2.13.0",
+            kind="import",
+            removal_in="3.0",
+            info=f"importing {attr_name} from 'litestar.contrib.prometheus' is deprecated, please "
+            f"import it from 'litestar.plugins.prometheus' instead",
+        )
+        value = globals()[attr_name] = locals()[attr_name]
+        return value
+
+    raise AttributeError(f"module {__name__!r} has no attribute {attr_name!r}")  # pragma: no cover
+
+
+if TYPE_CHECKING:
+    from litestar.plugins.prometheus import (
+        PrometheusConfig,
+        PrometheusController,
+        PrometheusMiddleware,
+    )

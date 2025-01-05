@@ -1,16 +1,15 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from pathlib import PurePath  # noqa: TCH003
+from pathlib import PurePath  # noqa: TC003
 from typing import TYPE_CHECKING, Any, Sequence
 
 from litestar.exceptions import ImproperlyConfiguredException
 from litestar.file_system import BaseLocalFileSystem
 from litestar.handlers import asgi, get, head
-from litestar.response.file import ASGIFileResponse  # noqa: TCH001
+from litestar.response.file import ASGIFileResponse  # noqa: TC001
 from litestar.router import Router
 from litestar.static_files.base import StaticFiles
-from litestar.types import Empty
 from litestar.utils import normalize_path, warn_deprecation
 
 __all__ = ("StaticFilesConfig",)
@@ -119,7 +118,7 @@ def create_static_files_router(
     cache_control: CacheControlHeader | None = None,
     exception_handlers: ExceptionHandlersMap | None = None,
     guards: list[Guard] | None = None,
-    include_in_schema: bool | EmptyType = Empty,
+    include_in_schema: bool | EmptyType = False,
     middleware: Sequence[Middleware] | None = None,
     opt: dict[str, Any] | None = None,
     security: Sequence[SecurityRequirement] | None = None,

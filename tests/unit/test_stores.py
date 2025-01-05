@@ -19,9 +19,11 @@ from litestar.stores.file import FileStore
 from litestar.stores.memory import MemoryStore
 from litestar.stores.redis import RedisStore
 from litestar.stores.registry import StoreRegistry
+from litestar.stores.valkey import ValkeyStore
 
 if TYPE_CHECKING:
     from redis.asyncio import Redis
+    from valkey.asyncio import Valkey
 
     from litestar.stores.base import NamespacedStore, Store
 
@@ -29,6 +31,11 @@ if TYPE_CHECKING:
 @pytest.fixture()
 def mock_redis() -> None:
     patch("litestar.Store.redis_backend.Redis")
+
+
+@pytest.fixture()
+def mock_valkey() -> None:
+    patch("litestar.Store.valkey_backend.Valkey")
 
 
 async def test_get(store: Store) -> None:
@@ -70,6 +77,8 @@ async def test_expires(store: Store, frozen_datetime: Coordinates) -> None:
         # shifting time does not affect the Redis instance
         # this is done to emulate auto-expiration
         await store._redis.expire(f"{store.namespace}:foo", 0)
+    if isinstance(store, ValkeyStore):
+        await store._valkey.expire(f"{store.namespace}:foo", 0)
 
     stored_value = await store.get("foo")
 
@@ -79,7 +88,7 @@ async def test_expires(store: Store, frozen_datetime: Coordinates) -> None:
 @pytest.mark.flaky(reruns=5)
 @pytest.mark.parametrize("renew_for", [10, timedelta(seconds=10)])
 async def test_get_and_renew(store: Store, renew_for: int | timedelta, frozen_datetime: Coordinates) -> None:
-    if isinstance(store, RedisStore):
+    if isinstance(store, (RedisStore, ValkeyStore)):
         pytest.skip()
 
     await store.set("foo", b"bar", expires_in=1)
@@ -104,6 +113,22 @@ async def test_get_and_renew_redis(redis_store: RedisStore, renew_for: int | tim
     await asyncio.sleep(1.1)
 
     stored_value = await redis_store.get("foo")
+
+    assert stored_value is not None
+
+
+@pytest.mark.flaky(reruns=5)
+@pytest.mark.parametrize("renew_for", [10, timedelta(seconds=10)])
+@pytest.mark.xdist_group("valkey")
+async def test_get_and_renew_valkey(valkey_store: ValkeyStore, renew_for: int | timedelta) -> None:
+    # we can't sleep() in frozen datetime, and frozen datetime doesn't affect the redis
+    # instance, so we test this separately
+    await valkey_store.set("foo", b"bar", expires_in=1)
+    await valkey_store.get("foo", renew_for=renew_for)
+
+    await asyncio.sleep(1.1)
+
+    stored_value = await valkey_store.get("foo")
 
     assert stored_value is not None
 
@@ -152,7 +177,7 @@ async def test_delete_all(store: Store) -> None:
 
 
 async def test_expires_in(store: Store, frozen_datetime: Coordinates) -> None:
-    if not isinstance(store, RedisStore):
+    if not isinstance(store, (RedisStore, ValkeyStore)):
         pytest.xfail("bug in FileStore and MemoryStore")
 
     assert await store.expires_in("foo") is None
@@ -165,7 +190,10 @@ async def test_expires_in(store: Store, frozen_datetime: Coordinates) -> None:
     assert expiration is not None
     assert math.ceil(expiration / 10) == 1
 
-    await store._redis.expire(f"{store.namespace}:foo", 0)
+    if isinstance(store, RedisStore):
+        await store._redis.expire(f"{store.namespace}:foo", 0)
+    elif isinstance(store, ValkeyStore):
+        await store._valkey.expire(f"{store.namespace}:foo", 0)
     expiration = await store.expires_in("foo")
     assert expiration is None
 
@@ -179,6 +207,17 @@ def test_redis_with_client_default(connection_pool_from_url_mock: Mock, mock_red
     )
     mock_redis.assert_called_once_with(connection_pool=connection_pool_from_url_mock.return_value)
     assert backend._redis is mock_redis.return_value
+
+
+@patch("litestar.stores.valkey.Valkey")
+@patch("litestar.stores.valkey.ConnectionPool.from_url")
+def test_valkey_with_client_default(connection_pool_from_url_mock: Mock, mock_valkey: Mock) -> None:
+    backend = ValkeyStore.with_client()
+    connection_pool_from_url_mock.assert_called_once_with(
+        url="valkey://localhost:6379", db=None, port=None, username=None, password=None, decode_responses=False
+    )
+    mock_valkey.assert_called_once_with(connection_pool=connection_pool_from_url_mock.return_value)
+    assert backend._valkey is mock_valkey.return_value
 
 
 @patch("litestar.stores.redis.Redis")
@@ -195,6 +234,22 @@ def test_redis_with_non_default(connection_pool_from_url_mock: Mock, mock_redis:
     )
     mock_redis.assert_called_once_with(connection_pool=connection_pool_from_url_mock.return_value)
     assert backend._redis is mock_redis.return_value
+
+
+@patch("litestar.stores.valkey.Valkey")
+@patch("litestar.stores.valkey.ConnectionPool.from_url")
+def test_valkey_with_non_default(connection_pool_from_url_mock: Mock, mock_valkey: Mock) -> None:
+    url = "valkey://localhost"
+    db = 2
+    port = 1234
+    username = "user"
+    password = "password"
+    backend = ValkeyStore.with_client(url=url, db=db, port=port, username=username, password=password)
+    connection_pool_from_url_mock.assert_called_once_with(
+        url=url, db=db, port=port, username=username, password=password, decode_responses=False
+    )
+    mock_valkey.assert_called_once_with(connection_pool=connection_pool_from_url_mock.return_value)
+    assert backend._valkey is mock_valkey.return_value
 
 
 @pytest.mark.xdist_group("redis")
@@ -216,6 +271,25 @@ async def test_redis_delete_all(redis_store: RedisStore) -> None:
     assert stored_value == b"test_value"  # check it doesn't delete other values
 
 
+@pytest.mark.xdist_group("valkey")
+async def test_valkey_delete_all(valkey_store: ValkeyStore) -> None:
+    await valkey_store._valkey.set("test_key", b"test_value")
+
+    keys = []
+    for i in range(10):
+        key = f"key-{i}"
+        keys.append(key)
+        await valkey_store.set(key, b"value", expires_in=10 if i % 2 else None)
+
+    await valkey_store.delete_all()
+
+    for key in keys:
+        assert await valkey_store.get(key) is None
+
+    stored_value = await valkey_store._valkey.get("test_key")
+    assert stored_value == b"test_value"  # check it doesn't delete other values
+
+
 @pytest.mark.xdist_group("redis")
 async def test_redis_delete_all_no_namespace_raises(redis_client: Redis) -> None:
     redis_store = RedisStore(redis=redis_client, namespace=None)
@@ -224,10 +298,24 @@ async def test_redis_delete_all_no_namespace_raises(redis_client: Redis) -> None
         await redis_store.delete_all()
 
 
+@pytest.mark.xdist_group("valkey")
+async def test_valkey_delete_all_no_namespace_raises(valkey_client: Valkey) -> None:
+    valkey_store = ValkeyStore(valkey=valkey_client, namespace=None)
+
+    with pytest.raises(ImproperlyConfiguredException):
+        await valkey_store.delete_all()
+
+
 @pytest.mark.xdist_group("redis")
 def test_redis_namespaced_key(redis_store: RedisStore) -> None:
     assert redis_store.namespace == "LITESTAR"
     assert redis_store._make_key("foo") == "LITESTAR:foo"
+
+
+@pytest.mark.xdist_group("valkey")
+def test_valkey_namespaced_key(valkey_store: ValkeyStore) -> None:
+    assert valkey_store.namespace == "LITESTAR"
+    assert valkey_store._make_key("foo") == "LITESTAR:foo"
 
 
 @pytest.mark.xdist_group("redis")
@@ -239,15 +327,43 @@ def test_redis_with_namespace(redis_store: RedisStore) -> None:
     assert namespaced_test._redis is redis_store._redis
 
 
+@pytest.mark.xdist_group("valkey")
+def test_valkey_with_namespace(valkey_store: ValkeyStore) -> None:
+    namespaced_test = valkey_store.with_namespace("TEST")
+    namespaced_test_foo = namespaced_test.with_namespace("FOO")
+    assert namespaced_test.namespace == "LITESTAR_TEST"
+    assert namespaced_test_foo.namespace == "LITESTAR_TEST_FOO"
+    assert namespaced_test._valkey is valkey_store._valkey
+
+
 @pytest.mark.xdist_group("redis")
 def test_redis_namespace_explicit_none(redis_client: Redis) -> None:
     assert RedisStore.with_client(url="redis://127.0.0.1", namespace=None).namespace is None
     assert RedisStore(redis=redis_client, namespace=None).namespace is None
 
 
+@pytest.mark.xdist_group("valkey")
+def test_valkey_namespace_explicit_none(valkey_client: Valkey) -> None:
+    assert ValkeyStore.with_client(url="redis://127.0.0.1", namespace=None).namespace is None
+    assert ValkeyStore(valkey=valkey_client, namespace=None).namespace is None
+
+
 async def test_file_init_directory(file_store: FileStore) -> None:
     shutil.rmtree(file_store.path)
     await file_store.set("foo", b"bar")
+
+
+async def test_file_init_subdirectory(file_store_create_directories: FileStore) -> None:
+    file_store = file_store_create_directories
+    async with file_store:
+        await file_store.set("foo", b"bar")
+
+
+async def test_file_init_subdirectory_negative(file_store_create_directories_flag_false: FileStore) -> None:
+    file_store = file_store_create_directories_flag_false
+    async with file_store:
+        with pytest.raises(FileNotFoundError):
+            await file_store.set("foo", b"bar")
 
 
 async def test_file_path(file_store: FileStore) -> None:
@@ -267,7 +383,13 @@ def test_file_with_namespace_invalid_namespace_char(file_store: FileStore, inval
         file_store.with_namespace(f"foo{invalid_char}")
 
 
-@pytest.fixture(params=[pytest.param("redis_store", marks=pytest.mark.xdist_group("redis")), "file_store"])
+@pytest.fixture(
+    params=[
+        pytest.param("redis_store", marks=pytest.mark.xdist_group("redis")),
+        pytest.param("valkey_store", marks=pytest.mark.xdist_group("valkey")),
+        "file_store",
+    ]
+)
 def namespaced_store(request: FixtureRequest) -> NamespacedStore:
     return cast("NamespacedStore", request.getfixturevalue(request.param))
 
@@ -379,4 +501,18 @@ async def test_redis_store_with_client_shutdown(redis_service: None) -> None:
         x.is_connected
         for x in redis_store._redis.connection_pool._available_connections
         + list(redis_store._redis.connection_pool._in_use_connections)
+    )
+
+
+@pytest.mark.xdist_group("valkey")
+async def test_valkey_store_with_client_shutdown(valkey_service: None) -> None:
+    valkey_store = ValkeyStore.with_client(url="valkey://localhost:6381")
+    assert await valkey_store._valkey.ping()
+    # remove the private shutdown and the assert below fails
+    # the check on connection is a mimic of https://github.com/redis/redis-py/blob/d529c2ad8d2cf4dcfb41bfd93ea68cfefd81aa66/tests/test_asyncio/test_connection_pool.py#L35-L39
+    await valkey_store._shutdown()
+    assert not any(
+        x.is_connected
+        for x in valkey_store._valkey.connection_pool._available_connections
+        + list(valkey_store._valkey.connection_pool._in_use_connections)
     )

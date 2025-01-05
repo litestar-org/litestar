@@ -13,7 +13,7 @@ Litestar maintains and ships with UI plugins for a range of popular popular Open
 - `RapiDoc <https://rapidocweb.com/>`_
 - `ReDoc <https://redocly.com/>`_
 - `Stoplight Elements <https://stoplight.io/open-source/elements>`_
-- `Swagger UI <https://swagger.io/tools/swagger-ui/yy>`_
+- `Swagger UI <https://swagger.io/tools/swagger-ui/>`_
 - `YAML <https://yaml.org/>`_
 
 Each plugin is easily configurable, allowing developers to customize aspects like version, paths, CSS and JavaScript
@@ -87,7 +87,7 @@ All plugins support:
 Most plugins support the following additional options:
 
 - ``version``: The version of the UIs JS and (in some cases) CSS bundle to use. We use the ``version`` to construct the
-  URL to retrieve the the bundle from ``unpkg``, e.g., ``https://unpkg.com/rapidoc@<version>/dist/rapidoc-min.js``
+  URL to retrieve the bundle from ``unpkg``, e.g., ``https://unpkg.com/rapidoc@<version>/dist/rapidoc-min.js``
 - ``js_url``: The URL to the JS bundle. If provided, this will override the ``version`` option.
 - ``css_url``: The URL to the CSS bundle. If provided, this will override the ``version`` option.
 

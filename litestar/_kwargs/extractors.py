@@ -16,12 +16,14 @@ from litestar.enums import ParamType, RequestEncodingType
 from litestar.exceptions import ValidationException
 from litestar.params import BodyKwarg
 from litestar.types import Empty
-from litestar.utils.predicates import is_non_string_sequence
+from litestar.utils import make_non_optional_union
+from litestar.utils.predicates import is_non_string_sequence, is_optional_union
 from litestar.utils.scope.state import ScopeState
 
 if TYPE_CHECKING:
     from litestar._kwargs import KwargsModel
     from litestar._kwargs.parameter_definition import ParameterDefinition
+    from litestar._kwargs.types import Extractor
     from litestar.connection import ASGIConnection, Request
     from litestar.dto import AbstractDTO
     from litestar.typing import FieldDefinition
@@ -82,7 +84,7 @@ def create_connection_value_extractor(
     connection_key: str,
     expected_params: set[ParameterDefinition],
     parser: Callable[[ASGIConnection, KwargsModel], Mapping[str, Any]] | None = None,
-) -> Callable[[dict[str, Any], ASGIConnection], None]:
+) -> Extractor:
     """Create a kwargs extractor function.
 
     Args:
@@ -97,7 +99,7 @@ def create_connection_value_extractor(
 
     alias_and_key_tuples, alias_defaults, alias_to_params = _create_param_mappings(expected_params)
 
-    def extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
+    async def extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
         data = parser(connection, kwargs_model) if parser else getattr(connection, connection_key, {})
 
         try:
@@ -177,7 +179,7 @@ def parse_connection_headers(connection: ASGIConnection, _: KwargsModel) -> Head
     return Headers.from_scope(connection.scope)
 
 
-def state_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
+async def state_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
     """Extract the app state from the connection and insert it to the kwargs injected to the handler.
 
     Args:
@@ -190,7 +192,7 @@ def state_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
     values["state"] = connection.app.state._state
 
 
-def headers_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
+async def headers_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
     """Extract the headers from the connection and insert them to the kwargs injected to the handler.
 
     Args:
@@ -205,7 +207,7 @@ def headers_extractor(values: dict[str, Any], connection: ASGIConnection) -> Non
     values["headers"] = dict(connection.headers.items())
 
 
-def cookies_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
+async def cookies_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
     """Extract the cookies from the connection and insert them to the kwargs injected to the handler.
 
     Args:
@@ -218,7 +220,7 @@ def cookies_extractor(values: dict[str, Any], connection: ASGIConnection) -> Non
     values["cookies"] = connection.cookies
 
 
-def query_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
+async def query_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
     """Extract the query params from the connection and insert them to the kwargs injected to the handler.
 
     Args:
@@ -231,7 +233,7 @@ def query_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
     values["query"] = connection.query_params
 
 
-def scope_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
+async def scope_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
     """Extract the scope from the connection and insert it into the kwargs injected to the handler.
 
     Args:
@@ -244,7 +246,7 @@ def scope_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
     values["scope"] = connection.scope
 
 
-def request_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
+async def request_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
     """Set the connection instance as the 'request' value in the kwargs injected to the handler.
 
     Args:
@@ -257,7 +259,7 @@ def request_extractor(values: dict[str, Any], connection: ASGIConnection) -> Non
     values["request"] = connection
 
 
-def socket_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
+async def socket_extractor(values: dict[str, Any], connection: ASGIConnection) -> None:
     """Set the connection instance as the 'socket' value in the kwargs injected to the handler.
 
     Args:
@@ -270,7 +272,7 @@ def socket_extractor(values: dict[str, Any], connection: ASGIConnection) -> None
     values["socket"] = connection
 
 
-def body_extractor(
+async def body_extractor(
     values: dict[str, Any],
     connection: Request[Any, Any, Any],
 ) -> None:
@@ -286,7 +288,7 @@ def body_extractor(
     Returns:
         The Body value.
     """
-    values["body"] = connection.body()
+    values["body"] = await connection.body()
 
 
 async def json_extractor(connection: Request[Any, Any, Any]) -> Any:
@@ -335,20 +337,23 @@ async def _extract_multipart(
         if body_kwarg_multipart_form_part_limit is not None
         else connection.app.multipart_form_part_limit
     )
-    connection.scope["_form"] = form_values = (  # type: ignore[typeddict-unknown-key]
-        connection.scope["_form"]  # type: ignore[typeddict-item]
-        if "_form" in connection.scope
-        else parse_multipart_form(
-            body=await connection.body(),
+    scope_state = ScopeState.from_scope(connection.scope)
+    if scope_state.form is Empty:
+        scope_state.form = form_values = await parse_multipart_form(
+            stream=connection.stream(),
             boundary=connection.content_type[-1].get("boundary", "").encode(),
             multipart_form_part_limit=multipart_form_part_limit,
             type_decoders=connection.route_handler.resolve_type_decoders(),
         )
-    )
+    else:
+        form_values = scope_state.form
 
     if field_definition.is_non_string_sequence:
         values = list(form_values.values())
-        if field_definition.has_inner_subclass_of(UploadFile) and isinstance(values[0], list):
+        if isinstance(values[0], list) and (
+            field_definition.has_inner_subclass_of(UploadFile)
+            or (field_definition.is_optional and field_definition.inner_types[0].is_non_string_sequence)
+        ):
             return values[0]
 
         return values
@@ -364,8 +369,15 @@ async def _extract_multipart(
 
     for name, tp in field_definition.get_type_hints().items():
         value = form_values.get(name)
-        if value is not None and is_non_string_sequence(tp) and not isinstance(value, list):
-            form_values[name] = [value]
+        if (
+            value is not None
+            and not isinstance(value, list)
+            and (
+                is_non_string_sequence(tp)
+                or (is_optional_union(tp) and is_non_string_sequence(make_non_optional_union(tp)))
+            )
+        ):
+            form_values[name] = [value]  # pyright: ignore
 
     return form_values
 
@@ -414,11 +426,13 @@ def create_url_encoded_data_extractor(
     async def extract_url_encoded_extractor(
         connection: Request[Any, Any, Any],
     ) -> Any:
-        connection.scope["_form"] = form_values = (  # type: ignore[typeddict-unknown-key]
-            connection.scope["_form"]  # type: ignore[typeddict-item]
-            if "_form" in connection.scope
-            else parse_url_encoded_form_data(await connection.body())
-        )
+        scope_state = ScopeState.from_scope(connection.scope)
+        if scope_state.form is Empty:
+            scope_state.form = form_values = (  # type: ignore[assignment]
+                parse_url_encoded_form_data(await connection.body())
+            )
+        else:
+            form_values = scope_state.form  # type: ignore[assignment]
 
         if not form_values and is_data_optional:
             return None
@@ -430,7 +444,7 @@ def create_url_encoded_data_extractor(
     )
 
 
-def create_data_extractor(kwargs_model: KwargsModel) -> Callable[[dict[str, Any], ASGIConnection], None]:
+def create_data_extractor(kwargs_model: KwargsModel) -> Extractor:
     """Create an extractor for a request's body.
 
     Args:
@@ -465,11 +479,11 @@ def create_data_extractor(kwargs_model: KwargsModel) -> Callable[[dict[str, Any]
             "Callable[[ASGIConnection[Any, Any, Any, Any]], Coroutine[Any, Any, Any]]", json_extractor
         )
 
-    def extractor(
+    async def extractor(
         values: dict[str, Any],
         connection: ASGIConnection[Any, Any, Any, Any],
     ) -> None:
-        values["data"] = data_extractor(connection)
+        values["data"] = await data_extractor(connection)
 
     return extractor
 

@@ -4,12 +4,13 @@ import importlib.util
 import logging
 import os
 import random
+import shutil
 import string
 import sys
 from datetime import datetime
 from os import urandom
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Generator, TypeVar, Union, cast
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Callable, Generator, Union, cast
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -17,9 +18,10 @@ from pytest_lazy_fixtures import lf
 from redis.asyncio import Redis as AsyncRedis
 from redis.client import Redis
 from time_machine import travel
+from valkey.asyncio import Valkey as AsyncValkey
+from valkey.client import Valkey
 
 from litestar.logging import LoggingConfig
-from litestar.logging.config import default_handlers as logging_default_handlers
 from litestar.middleware.session import SessionMiddleware
 from litestar.middleware.session.base import BaseSessionBackend
 from litestar.middleware.session.client_side import ClientSideSessionBackend, CookieBackendConfig
@@ -29,7 +31,9 @@ from litestar.stores.base import Store
 from litestar.stores.file import FileStore
 from litestar.stores.memory import MemoryStore
 from litestar.stores.redis import RedisStore
+from litestar.stores.valkey import ValkeyStore
 from litestar.testing import RequestFactory
+from tests.helpers import not_none
 
 if TYPE_CHECKING:
     from types import ModuleType
@@ -82,6 +86,11 @@ def redis_store(redis_client: AsyncRedis) -> RedisStore:
 
 
 @pytest.fixture()
+def valkey_store(valkey_client: AsyncValkey) -> ValkeyStore:
+    return ValkeyStore(valkey=valkey_client)
+
+
+@pytest.fixture()
 def memory_store() -> MemoryStore:
     return MemoryStore()
 
@@ -91,8 +100,25 @@ def file_store(tmp_path: Path) -> FileStore:
     return FileStore(path=tmp_path)
 
 
+@pytest.fixture()
+def file_store_create_directories(tmp_path: Path) -> FileStore:
+    path = tmp_path / "subdir1" / "subdir2"
+    return FileStore(path=path, create_directories=True)
+
+
+@pytest.fixture()
+def file_store_create_directories_flag_false(tmp_path: Path) -> FileStore:
+    shutil.rmtree(tmp_path, ignore_errors=True)  # in case the path was already created by different tests - we clean it
+    return FileStore(path=tmp_path.joinpath("subdir"), create_directories=False)
+
+
 @pytest.fixture(
-    params=[pytest.param("redis_store", marks=pytest.mark.xdist_group("redis")), "memory_store", "file_store"]
+    params=[
+        pytest.param("redis_store", marks=pytest.mark.xdist_group("redis")),
+        pytest.param("valkey_store", marks=pytest.mark.xdist_group("valkey")),
+        "memory_store",
+        "file_store",
+    ]
 )
 def store(request: FixtureRequest) -> Store:
     return cast("Store", request.getfixturevalue(request.param))
@@ -203,6 +229,7 @@ def create_scope() -> Callable[..., Scope]:
             "route_handler": route_handler,
             "user": user,
             "session": session,
+            "headers": [],
             **kwargs,
         }
         return cast("Scope", scope)
@@ -228,11 +255,6 @@ def create_module(tmp_path: Path, monkeypatch: MonkeyPatch) -> Callable[[str], M
         Returns:
             An imported module.
         """
-        T = TypeVar("T")
-
-        def not_none(val: T | T | None) -> T:
-            assert val is not None
-            return val
 
         def module_name_generator() -> str:
             letters = string.ascii_lowercase
@@ -297,7 +319,7 @@ def get_logger() -> GetLogger:
     # due to the limitations of caplog we have to place this call here.
     # we also have to allow propagation.
     return LoggingConfig(
-        handlers=logging_default_handlers,
+        logging_module="logging",
         loggers={
             "litestar": {"level": "INFO", "handlers": ["queue_listener"], "propagate": True},
         },
@@ -314,6 +336,20 @@ async def redis_client(docker_ip: str, redis_service: None) -> AsyncGenerator[As
     yield client
     try:
         await client.aclose()  # type: ignore[attr-defined]
+    except RuntimeError:
+        pass
+
+
+@pytest.fixture()
+async def valkey_client(docker_ip: str, valkey_service: None) -> AsyncGenerator[AsyncValkey, None]:
+    # this is to get around some weirdness with pytest-asyncio and valkey interaction
+    # on 3.8 and 3.9
+
+    Valkey(host=docker_ip, port=6381).flushall()
+    client: AsyncValkey = AsyncValkey(host=docker_ip, port=6381)
+    yield client
+    try:
+        await client.aclose()
     except RuntimeError:
         pass
 

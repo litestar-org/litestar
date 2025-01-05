@@ -12,3 +12,8 @@ class Gender(str, Enum):
     FEMALE = "F"
     OTHER = "O"
     ANY = "A"
+
+
+class LuckyNumber(int, Enum):
+    TWO = 2
+    SEVEN = 7

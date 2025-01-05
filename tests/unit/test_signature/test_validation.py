@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import Generic, List, Optional, TypeVar
 
 import pytest
 from attr import define
@@ -28,7 +28,7 @@ def test_parses_values_from_connection_kwargs_raises() -> None:
         type_decoders=[],
     )
     with pytest.raises(ValidationException):
-        model.parse_values_from_connection_kwargs(connection=RequestFactory().get(), a="not an int")
+        model.parse_values_from_connection_kwargs(connection=RequestFactory().get(), kwargs={"a": "not an int"})
 
 
 def test_create_signature_validation() -> None:
@@ -74,6 +74,20 @@ def test_validation_failure_raises_400() -> None:
     assert response.json() == {
         "detail": "Validation failed for GET /?param=thirteen",
         "extra": [{"key": "param", "message": "Expected `int`, got `str`", "source": "query"}],
+        "status_code": 400,
+    }
+
+
+def test_invalid_path_parameter() -> None:
+    @get("/{param:int}")
+    def test(param: Annotated[int, Parameter(le=10)]) -> None: ...
+
+    with create_test_client(route_handlers=[test]) as client:
+        response = client.get("/11")
+
+    assert response.json() == {
+        "detail": "Validation failed for GET /11",
+        "extra": [{"key": "param", "message": "Expected `int` <= 10", "source": "path"}],
         "status_code": 400,
     }
 
@@ -128,7 +142,7 @@ def test_validation_error_exception_key() -> None:
 
     with pytest.raises(ValidationException) as exc_info:
         model.parse_values_from_connection_kwargs(
-            connection=RequestFactory().get(route_handler=handler), data={"child": {}, "other_child": {}}
+            connection=RequestFactory().get(route_handler=handler), kwargs={"data": {"child": {}, "other_child": {}}}
         )
 
     assert isinstance(exc_info.value.extra, list)
@@ -283,9 +297,47 @@ def test_parse_values_from_connection_kwargs_with_multiple_errors() -> None:
         type_decoders=[],
     )
     with pytest.raises(ValidationException) as exc:
-        model.parse_values_from_connection_kwargs(connection=RequestFactory().get(), a=0, b=9)
+        model.parse_values_from_connection_kwargs(connection=RequestFactory().get(), kwargs={"a": 0, "b": 9})
 
     assert exc.value.extra == [
         {"message": "Expected `int` >= 6", "key": "a", "source": ParamType.QUERY},
         {"message": "Expected `int` <= 4", "key": "b", "source": ParamType.QUERY},
     ]
+
+
+def test_validate_subscribed_generics() -> None:
+    T = TypeVar("T")
+
+    class Foo(Generic[T]):
+        pass
+
+    @get("/")
+    async def something(foo: Foo[str] = Foo()) -> None:
+        return None
+
+    with create_test_client([something]) as client:
+        assert client.get("/").status_code == 200
+
+
+def test_separate_model_namespace() -> None:
+    # https://github.com/litestar-org/litestar/issues/3593
+
+    async def provide_connection() -> str:
+        return "connection"
+
+    @get("/connection", dependencies={"connection": provide_connection})
+    async def get_connection(connection: str) -> str:
+        return connection
+
+    async def provide_deserializer() -> str:
+        return "deserializer"
+
+    @get("/deserializer", dependencies={"deserializer": provide_deserializer})
+    async def get_deserializer(deserializer: int) -> str:
+        return deserializer  # type: ignore[return-value]
+
+    with create_test_client([get_connection, get_deserializer], raise_server_exceptions=True, debug=True) as client:
+        assert client.get("/connection").text == "connection"
+        res = client.get("/deserializer")
+        assert res.status_code == 500
+        assert "Expected `int`, got `str` - at `$.deserializer`" in res.text

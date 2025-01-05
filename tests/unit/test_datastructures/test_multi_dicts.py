@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from unittest.mock import patch
+
 import pytest
-from pytest_mock import MockerFixture
 
 from litestar.datastructures import UploadFile
 from litestar.datastructures.multi_dicts import FormMultiDict, ImmutableMultiDict, MultiDict
@@ -34,19 +35,18 @@ def test_immutable_multi_dict_as_mutable() -> None:
     assert multi.mutable_copy().dict() == MultiDict(data).dict()
 
 
-async def test_form_multi_dict_close(mocker: MockerFixture) -> None:
-    close = mocker.patch("litestar.datastructures.multi_dicts.UploadFile.close")
-
+async def test_form_multi_dict_close() -> None:
     multi = FormMultiDict(
         [
             ("foo", UploadFile(filename="foo", content_type="text/plain")),
             ("bar", UploadFile(filename="foo", content_type="text/plain")),
         ]
     )
-
+    with patch("litestar.datastructures.multi_dicts.UploadFile.close") as mock_close:
+        await multi.close()
+        assert mock_close.call_count == 2
+    # calls the real UploadFile.close method to clean up
     await multi.close()
-
-    assert close.call_count == 2
 
 
 @pytest.mark.parametrize("type_", [MultiDict, ImmutableMultiDict])

@@ -112,7 +112,7 @@ def parse_path_to_route(
     path: str,
     plain_routes: set[str],
     root_node: RouteTrieNode,
-) -> tuple[ASGIApp, RouteHandlerType, str, dict[str, Any]]:
+) -> tuple[ASGIApp, RouteHandlerType, str, dict[str, Any], str]:
     """Given a scope object, retrieve the asgi_handlers and is_mount boolean values from correct trie node.
 
     Args:
@@ -134,21 +134,25 @@ def parse_path_to_route(
     try:
         if path in plain_routes:
             asgi_app, handler = parse_node_handlers(node=root_node.children[path], method=method)
-            return asgi_app, handler, path, {}
+            return asgi_app, handler, path, {}, path
 
-        if mount_paths_regex and (match := mount_paths_regex.search(path)):
-            mount_path = path[match.start() : match.end()]
+        if mount_paths_regex and (match := mount_paths_regex.match(path)):
+            mount_path = path[: match.end()]
             mount_node = mount_routes[mount_path]
             remaining_path = path[match.end() :]
             # since we allow regular handlers under static paths, we must validate that the request does not match
             # any such handler.
-            children = [sub_route for sub_route in mount_node.children or [] if sub_route != mount_path]
-            if not children or all(sub_route not in path for sub_route in children):  # type: ignore[operator]
+            children = (
+                normalize_path(sub_route)
+                for sub_route in mount_node.children or []
+                if sub_route != mount_path and isinstance(sub_route, str)
+            )
+            if not any(remaining_path.startswith(f"{sub_route}/") for sub_route in children):
                 asgi_app, handler = parse_node_handlers(node=mount_node, method=method)
                 remaining_path = remaining_path or "/"
                 if not mount_node.is_static:
                     remaining_path = remaining_path if remaining_path.endswith("/") else f"{remaining_path}/"
-                return asgi_app, handler, remaining_path, {}
+                return asgi_app, handler, remaining_path, {}, root_node.path_template
 
         node, path_parameters, path = traverse_route_map(
             root_node=root_node,
@@ -163,6 +167,7 @@ def parse_path_to_route(
             handler,
             path,
             parsed_path_parameters,
+            node.path_template,
         )
     except KeyError as e:
         raise MethodNotAllowedException() from e

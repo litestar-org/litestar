@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import os.path
 import sys
 from importlib import import_module
 from importlib.util import find_spec
@@ -39,7 +38,8 @@ def module_to_os_path(dotted_path: str = "app") -> Path:
     except ModuleNotFoundError as e:
         raise TypeError(f"Couldn't find the path for {dotted_path}") from e
 
-    return Path(str(src.origin).rsplit(os.path.sep + "__init__.py", maxsplit=1)[0])
+    path = Path(str(src.origin))
+    return path.parent if path.is_file() else path
 
 
 def import_string(dotted_path: str) -> Any:
