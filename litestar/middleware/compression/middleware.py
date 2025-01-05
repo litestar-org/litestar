@@ -175,6 +175,7 @@ class CompressionMiddleware(AbstractMiddleware):
                         await send(message)
 
                     else:
+                        facade.close()
                         await send(initial_message)
                         await send(message)
 
