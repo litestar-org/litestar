@@ -300,8 +300,8 @@ the test client, since HTTPX tries to consume the full response before returning
 request.
 
 Litestar offers two helper functions,
-:func:`~litestar.testing.client.subprocess_client.subprocess_sync_client` and
-:func:`~litestar.testing.client.subprocess_client.subprocess_async_client` that will
+:func:`litestar.testing.subprocess_sync_client` and
+:func:`litestar.testing.subprocess_async_client` that will
 launch a Litestar instance with in a subprocess and set up an httpx client for running
 tests. You can either load your actual app file or create subsets from it as you would
 with the regular test client setup:
