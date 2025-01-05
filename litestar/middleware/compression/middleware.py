@@ -131,6 +131,11 @@ class CompressionMiddleware(AbstractMiddleware):
             if initial_message is not None and value_or_default(connection_state.is_cached, False):
                 await send(initial_message)
                 await send(message)
+                facade.close()
+                return
+
+            if initial_message and message["type"] == "http.disconnect":
+                facade.close()
                 return
 
             if initial_message and message["type"] == "http.response.body":
