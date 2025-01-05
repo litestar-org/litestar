@@ -268,7 +268,7 @@ suppress_warnings = [
     "ref.python",  # TODO: remove when https://github.com/sphinx-doc/sphinx/issues/4961 is fixed
 ]
 
-html_theme = "shibuya"
+html_theme = "litestar_sphinx_theme"
 html_static_path = ["_static"]
 html_js_files = ["versioning.js"]
 html_css_files = ["style.css"]
